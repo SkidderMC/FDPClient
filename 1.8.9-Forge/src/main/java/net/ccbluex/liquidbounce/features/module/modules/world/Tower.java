@@ -44,7 +44,7 @@ public class Tower extends Module {
      */
 
     private final ListValue modeValue = new ListValue("Mode", new String[] {
-            "Jump", "Motion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4"
+            "Jump", "Motion", "ConstantMotion", "PlusMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4"
     }, "Motion");
     private final BoolValue autoBlockValue = new BoolValue("AutoBlock", true);
     private final BoolValue stayAutoBlock = new BoolValue("StayAutoBlock", false);
@@ -60,6 +60,10 @@ public class Tower extends Module {
     // Jump mode
     private final FloatValue jumpMotionValue = new FloatValue("JumpMotion", 0.42F, 0.3681289F, 0.79F);
     private final IntegerValue jumpDelayValue = new IntegerValue("JumpDelay", 0, 0, 20);
+
+    // PlusMotion
+    private final FloatValue plusMotionValue = new FloatValue("PlusMotion", 0.1F, 0.01F, 0.2F);
+    private final FloatValue plusMaxMotionValue = new FloatValue("PlusMaxMotion", 0.8F, 0.1F, 2F);
 
     // ConstantMotion
     private final FloatValue constantMotionValue = new FloatValue("ConstantMotion", 0.42F, 0.1F, 1F);
@@ -193,6 +197,12 @@ public class Tower extends Module {
                     fakeJump();
                     mc.thePlayer.setPositionAndUpdate(mc.thePlayer.posX, mc.thePlayer.posY + teleportHeightValue.get(), mc.thePlayer.posZ);
                     timer.reset();
+                }
+                break;
+            case "plusmotion":
+                mc.thePlayer.motionY += plusMotionValue.get();
+                if(mc.thePlayer.motionY>=plusMaxMotionValue.get()){
+                    mc.thePlayer.motionY=plusMaxMotionValue.get();
                 }
                 break;
             case "constantmotion":

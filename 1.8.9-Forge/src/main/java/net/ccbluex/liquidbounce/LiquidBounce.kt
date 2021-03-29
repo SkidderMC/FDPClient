@@ -7,15 +7,12 @@ package net.ccbluex.liquidbounce
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.ccbluex.liquidbounce.cape.CapeAPI.registerCapeService
-import net.ccbluex.liquidbounce.discord.ClientRichPresence
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof
-import net.ccbluex.liquidbounce.features.special.DonatorCape
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
@@ -37,10 +34,10 @@ import net.minecraft.util.ResourceLocation
 object LiquidBounce {
 
     // Client information
-    const val CLIENT_NAME = "LiquidBounce"
-    const val CLIENT_VERSION = 72
+    const val CLIENT_NAME = "FDPClient"
+    const val CLIENT_VERSION = 1
     const val IN_DEV = false
-    const val CLIENT_CREATOR = "CCBlueX"
+    const val CLIENT_CREATOR = "Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
     const val CLIENT_CLOUD = "https://cloud.liquidbounce.net/LiquidBounce"
 
@@ -64,9 +61,6 @@ object LiquidBounce {
     // Menu Background
     var background: ResourceLocation? = null
 
-    // Discord RPC
-    private lateinit var clientRichPresence: ClientRichPresence
-
     /**
      * Execute if client will be started
      */
@@ -85,7 +79,6 @@ object LiquidBounce {
         eventManager.registerListener(RotationUtils())
         eventManager.registerListener(AntiForge())
         eventManager.registerListener(BungeeCordSpoof())
-        eventManager.registerListener(DonatorCape())
         eventManager.registerListener(InventoryUtils())
 
         // Create command manager
@@ -128,21 +121,6 @@ object LiquidBounce {
             HeadsTab()
         }
 
-        // Register capes service
-        try {
-            registerCapeService()
-        } catch (throwable: Throwable) {
-            ClientUtils.getLogger().error("Failed to register cape service", throwable)
-        }
-
-        // Setup Discord RPC
-        try {
-            clientRichPresence = ClientRichPresence()
-            clientRichPresence.setup()
-        } catch (throwable: Throwable) {
-            ClientUtils.getLogger().error("Failed to setup Discord RPC.", throwable)
-        }
-
         // Set HUD
         hud = createDefault()
         fileManager.loadConfig(fileManager.hudConfig)
@@ -180,9 +158,6 @@ object LiquidBounce {
 
         // Save all available configs
         fileManager.saveAllConfigs()
-
-        // Shutdown discord rpc
-        clientRichPresence.shutdown()
     }
 
 }

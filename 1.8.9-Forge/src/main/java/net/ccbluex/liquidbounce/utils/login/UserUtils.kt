@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils.login
 
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.apache.http.HttpHeaders
 import org.apache.http.client.methods.HttpGet
@@ -13,8 +15,6 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicHeader
 import org.apache.http.util.EntityUtils
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -34,20 +34,20 @@ object UserUtils {
     fun isValidToken(token: String): Boolean {
         val client = HttpClients.createDefault()
         val headers = arrayOf(
-                BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+            BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json")
         )
 
         val request = HttpPost("https://authserver.mojang.com/validate")
         request.setHeaders(headers)
 
-        val body = JSONObject()
-        body.put("accessToken", token)
-        request.entity = StringEntity(body.toString())
+        val body = JsonObject()
+        body.addProperty("accessToken", token)
+        request.entity = StringEntity(Gson().toJson(body))
+        println(Gson().toJson(body));
 
         val response = client.execute(request)
-        val valid = response.statusLine.statusCode == 204
 
-        return valid
+        return response.statusLine.statusCode == 204
     }
 
     fun getUsername(uuid: String): String? {
@@ -59,14 +59,11 @@ object UserUtils {
             return null
         }
 
-        val username = try {
-            val names = JSONArray(EntityUtils.toString(response.entity))
-
-            JSONObject(names.get(names.length() - 1).toString()).getString("name")
-        } catch(e : Exception) {
-            e.printStackTrace()
-            return null
-        }
+        val ent=EntityUtils.toString(response.entity)
+        println(ent)
+        val names = JsonParser().parse(ent).asJsonArray
+        val username = names.get(names.size()-1).asJsonObject.get("name").asString
+        println(username)
 
         return username
     }

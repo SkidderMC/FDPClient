@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.script.api.global.Chat;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
@@ -42,13 +43,14 @@ import static org.lwjgl.opengl.GL11.*;
 
 @ModuleInfo(name = "ESP", description = "Allows you to see targets through walls.", category = ModuleCategory.RENDER)
 public class ESP extends Module {
-
     public static boolean renderNameTags = true;
-    public final ListValue modeValue = new ListValue("Mode", new String[]{"Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "ShaderOutline", "ShaderGlow"}, "Box");
+    public final ListValue modeValue = new ListValue("Mode", new String[]{"Box", "OtherBox", "WireFrame", "2D", "CSGO", "Outline", "ShaderOutline", "ShaderGlow"}, "Box");
     public final FloatValue outlineWidth = new FloatValue("Outline-Width", 3F, 0.5F, 5F);
     public final FloatValue wireframeWidth = new FloatValue("WireFrame-Width", 2F, 0.5F, 5F);
     private final FloatValue shaderOutlineRadius = new FloatValue("ShaderOutline-Radius", 1.35F, 1F, 2F);
     private final FloatValue shaderGlowRadius = new FloatValue("ShaderGlow-Radius", 2.3F, 2F, 3F);
+    public final FloatValue CSGOWidth = new FloatValue("CSGO-Width", 2F, 0.5F, 5F);
+    private final BoolValue CSGONameTag = new BoolValue("CSGO-NameTag", true);
     private final IntegerValue colorRedValue = new IntegerValue("R", 255, 0, 255);
     private final IntegerValue colorGreenValue = new IntegerValue("G", 255, 0, 255);
     private final IntegerValue colorBlueValue = new IntegerValue("B", 255, 0, 255);
@@ -62,10 +64,9 @@ public class ESP extends Module {
         Matrix4f mvMatrix = getMatrix(GL11.GL_MODELVIEW_MATRIX);
         Matrix4f projectionMatrix = getMatrix(GL11.GL_PROJECTION_MATRIX);
 
-        boolean real2d = mode.equalsIgnoreCase("real2d");
+        boolean csgo = mode.equalsIgnoreCase("csgo");
 
-        //<editor-fold desc="Real2D-Setup">
-        if (real2d) {
+        if (csgo) {
             GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
 
             GL11.glEnable(GL11.GL_BLEND);
@@ -87,10 +88,9 @@ public class ESP extends Module {
 
             GL11.glLineWidth(1.0f);
         }
-        //</editor-fold>
 
         for (final Entity entity : mc.theWorld.loadedEntityList) {
-            if (entity != null && entity != mc.thePlayer && EntityUtils.isSelected(entity, false)) {
+            if (EntityUtils.isSelected(entity, true)) {
                 final EntityLivingBase entityLiving = (EntityLivingBase) entity;
 
                 Color color = getColor(entityLiving);
@@ -111,7 +111,7 @@ public class ESP extends Module {
                         RenderUtils.draw2D(entityLiving, posX, posY, posZ, color.getRGB(), Color.BLACK.getRGB());
                         break;
                     }
-                    case "real2d": {
+                    case "csgo": {
                         final RenderManager renderManager = mc.getRenderManager();
                         final Timer timer = mc.timer;
 
@@ -133,11 +133,11 @@ public class ESP extends Module {
                                 {bb.maxX, bb.minY, bb.maxZ},
                         };
 
-                        float minX = Float.MAX_VALUE;
-                        float minY = Float.MAX_VALUE;
+                        float minX = mc.displayWidth;
+                        float minY = mc.displayHeight;
 
-                        float maxX = -1;
-                        float maxY = -1;
+                        float maxX = 0;
+                        float maxY = 0;
 
                         for (double[] boxVertex : boxVertices) {
                             Vector2f screenPos = WorldToScreen.worldToScreen(new Vector3f((float) boxVertex[0], (float) boxVertex[1], (float) boxVertex[2]), mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight);
@@ -153,26 +153,34 @@ public class ESP extends Module {
                             maxY = Math.max(screenPos.y, maxY);
                         }
 
-                        if (minX > 0 || minY > 0 || maxX <= mc.displayWidth || maxY <= mc.displayWidth) {
-                            GL11.glColor4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 1.0f);
+                        //out of screen
+                        if (!(minX==mc.displayWidth || minY==mc.displayHeight || maxX==0 || maxY==0)) {
+                            float width=CSGOWidth.get()*((maxY - minY)/50);
+                            RenderUtils.drawRect(minX-width,minY-width,minX,maxY,color);
+                            RenderUtils.drawRect(maxX,minY-width,maxX+width,maxY+width,color);
+                            RenderUtils.drawRect(minX-width,maxY,maxX,maxY+width,color);
+                            RenderUtils.drawRect(minX-width,minY-width,maxX,minY,color);
 
-                            GL11.glBegin(GL11.GL_LINE_LOOP);
+                            //hp bar
+                            float hpSize=((maxY+width)-minY)*(entityLiving.getHealth()/entityLiving.getMaxHealth());
+                            RenderUtils.drawRect(minX-(width*3),minY-width,minX-(width*2),maxY+width,Color.RED);
+                            RenderUtils.drawRect(minX-(width*3),maxY-hpSize,minX-(width*2),maxY+width,Color.GREEN);
 
-                            GL11.glVertex2f(minX, minY);
-                            GL11.glVertex2f(minX, maxY);
-                            GL11.glVertex2f(maxX, maxY);
-                            GL11.glVertex2f(maxX, minY);
-
-                            GL11.glEnd();
+                            //nametags
+                            boolean nametag=CSGONameTag.get();
+                            if(nametag) {
+                                String drawStr = entityLiving.getName();
+                                float sScale = (maxY - minY)/mc.fontRendererObj.getStringWidth(drawStr);
+                                RenderUtils.drawText(drawStr, (int) (minX - 8 - width), (int) (minY - width*sScale*2),sScale);
+                            }
                         }
-
                         break;
                     }
                 }
             }
         }
 
-        if (real2d) {
+        if (csgo) {
             glEnable(GL_DEPTH_TEST);
 
             GL11.glMatrixMode(GL11.GL_PROJECTION);

@@ -54,7 +54,7 @@ idea {
     }
 }
 
-archivesBaseName = 'LiquidBounce'
+archivesBaseName = 'FDPClient'
 
 minecraft {
     version = '1.8.9-11.15.1.2318-1.8.9'
@@ -77,7 +77,6 @@ dependencies {
         exclude module: 'launchwrapper'
     }
 
-    compile 'com.jagrosh:DiscordIPC:0.4'
     compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
 
     implementation 'com.github.TheAltening:TheAltening4j:master-SNAPSHOT'
@@ -125,8 +124,6 @@ jar {
 shadowJar {
     dependencies {
         include(dependency('org.spongepowered:mixin'))
-        include(dependency('com.jagrosh:DiscordIPC'))
-        include(dependency('org.json:json'))
         include(dependency('org.slf4j:slf4j-api'))
         include(dependency('log4j:log4j:1.2.17'))
         include(dependency('org.scijava:native-lib-loader'))

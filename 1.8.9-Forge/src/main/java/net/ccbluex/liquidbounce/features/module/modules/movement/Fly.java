@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
+import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
@@ -41,6 +42,9 @@ public class Fly extends Module {
             // NCP
             "NCP",
             "OldNCP",
+
+            // RedeSky
+            "RedeSkyCollide",
 
             // AAC
             "AAC1.9.10",
@@ -102,6 +106,10 @@ public class Fly extends Module {
 
     private final FloatValue mineplexSpeedValue = new FloatValue("MineplexSpeed", 1F, 0.5F, 10F);
     private final IntegerValue neruxVaceTicks = new IntegerValue("NeruxVace-Ticks", 6, 0, 20);
+
+    // RedeSky Collide
+    private final FloatValue rscSpeedValue = new FloatValue("RSCollideSpeed", 15.5F, 7F, 30F);
+    private final FloatValue rscTimerValue = new FloatValue("RSCollideTimer", 0.8F, 0.1F, 1F);
 
     // Visuals
     private final BoolValue markValue = new BoolValue("Mark", true);
@@ -252,12 +260,13 @@ public class Fly extends Module {
 
         final String mode = modeValue.get();
 
-        if (!mode.toUpperCase().startsWith("AAC") && !mode.equalsIgnoreCase("Hypixel") &&
-                !mode.equalsIgnoreCase("CubeCraft")) {
-            mc.thePlayer.motionX = 0;
-            mc.thePlayer.motionY = 0;
-            mc.thePlayer.motionZ = 0;
+        switch (mode.toLowerCase()){
+            case "redeskycollide":{
+                mc.thePlayer.motionY=0;
+                break;
+            }
         }
+
         mc.thePlayer.capabilities.isFlying = false;
 
         mc.timer.timerSpeed = 1F;
@@ -676,6 +685,18 @@ public class Fly extends Module {
     @EventTarget
     public void onMove(final MoveEvent event) {
         switch(modeValue.get().toLowerCase()) {
+            case "redeskycollide":
+                mc.timer.timerSpeed=rscTimerValue.get();
+                RotationUtils.reset();
+                if(mc.gameSettings.keyBindForward.isKeyDown()) {
+                    float speed = rscSpeedValue.get() / 100F;
+                    float f = mc.thePlayer.rotationYaw * 0.017453292F;
+                    mc.thePlayer.motionX -= MathHelper.sin(f) * speed;
+                    mc.thePlayer.motionZ += MathHelper.cos(f) * speed;
+                    event.setX(mc.thePlayer.motionX);
+                    event.setZ(mc.thePlayer.motionZ);
+                }
+                break;
             case "cubecraft": {
                 final double yaw = Math.toRadians(mc.thePlayer.rotationYaw);
 
@@ -744,7 +765,7 @@ public class Fly extends Module {
 
         final String mode = modeValue.get();
 
-        if (event.getBlock() instanceof BlockAir && (mode.equalsIgnoreCase("Hypixel") ||
+        if (event.getBlock() instanceof BlockAir && (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("RedeskyCollide") ||
                 mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") ||
                 (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null)) && event.getY() < mc.thePlayer.posY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, mc.thePlayer.posY, event.getZ() + 1));

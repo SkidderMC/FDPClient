@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.features.module.modules.`fun`.AutoAbuse
 import net.ccbluex.liquidbounce.features.module.modules.`fun`.Derp
 import net.ccbluex.liquidbounce.features.module.modules.`fun`.SkinDerp
 import net.ccbluex.liquidbounce.features.module.modules.combat.*
@@ -136,7 +137,6 @@ class ModuleManager : Listenable {
                 TNTBlock::class.java,
                 InventoryCleaner::class.java,
                 TrueSight::class.java,
-                LiquidChat::class.java,
                 AntiBlind::class.java,
                 NoSwing::class.java,
                 BedGodMode::class.java,
@@ -178,10 +178,10 @@ class ModuleManager : Listenable {
                 KeepAlive::class.java,
                 ResourcePackSpoof::class.java,
                 NoSlowBreak::class.java,
-                PortalMenu::class.java
+                PortalMenu::class.java,
+                AutoAbuse::class.java
         )
 
-        registerModule(NoScoreboard)
         registerModule(Fucker)
         registerModule(ChestAura)
 

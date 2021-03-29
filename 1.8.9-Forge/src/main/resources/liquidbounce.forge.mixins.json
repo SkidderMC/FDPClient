@@ -23,6 +23,7 @@
     "gui.MixinGuiButtonExt",
     "gui.MixinGuiChat",
     "gui.MixinGuiConnecting",
+    "gui.MixinGuiContainer",
     "gui.MixinGuiDisconnected",
     "gui.MixinGuiEditSign",
     "gui.MixinGuiInGame",

@@ -8,30 +8,28 @@ package net.ccbluex.liquidbounce.ui.font;
 import com.google.gson.*;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.io.IOUtils;
 
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 @SideOnly(Side.CLIENT)
 public class Fonts {
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 35)
+    @FontDetails(fontName = "Comfortaa Small", fontSize = 35)
     public static GameFontRenderer font35;
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 40)
+    @FontDetails(fontName = "Comfortaa Medium", fontSize = 40)
     public static GameFontRenderer font40;
 
-    @FontDetails(fontName = "Roboto Bold", fontSize = 180)
+    @FontDetails(fontName = "Comfortaa Bold", fontSize = 180)
     public static GameFontRenderer fontBold180;
 
     @FontDetails(fontName = "Minecraft Font")
@@ -44,11 +42,11 @@ public class Fonts {
 
         ClientUtils.getLogger().info("Loading Fonts.");
 
-        downloadFonts();
+        initFonts();
 
-        font35 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 35));
-        font40 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 40));
-        fontBold180 = new GameFontRenderer(getFont("Roboto-Bold.ttf", 180));
+        font35 = new GameFontRenderer(getFont("Comfortaa.ttf", 35));
+        font40 = new GameFontRenderer(getFont("Comfortaa.ttf", 40));
+        fontBold180 = new GameFontRenderer(getFont("Comfortaa.ttf", 180));
 
         try {
             CUSTOM_FONT_RENDERERS.clear();
@@ -85,15 +83,15 @@ public class Fonts {
         ClientUtils.getLogger().info("Loaded Fonts. (" + (System.currentTimeMillis() - l) + "ms)");
     }
 
-    private static void downloadFonts() {
+    private static void initFonts() {
         try {
-            final File outputFile = new File(LiquidBounce.fileManager.fontsDir, "roboto.zip");
+            final File outputFile = new File(LiquidBounce.fileManager.fontsDir, "Comfortaa.ttf");
 
             if(!outputFile.exists()) {
-                ClientUtils.getLogger().info("Downloading fonts...");
-                HttpUtils.download(LiquidBounce.CLIENT_CLOUD + "/fonts/Roboto.zip", outputFile);
                 ClientUtils.getLogger().info("Extract fonts...");
-                extractZip(outputFile.getPath(), LiquidBounce.fileManager.fontsDir.getPath());
+                FileOutputStream fos=new FileOutputStream(outputFile);
+                IOUtils.copy(Fonts.class.getClassLoader().getResourceAsStream("font.ttf"), fos);
+                fos.close();
             }
         }catch(IOException e) {
             e.printStackTrace();
@@ -185,38 +183,6 @@ public class Fonts {
             e.printStackTrace();
 
             return new Font("default", Font.PLAIN, size);
-        }
-    }
-
-    private static void extractZip(final String zipFile, final String outputFolder) {
-        final byte[] buffer = new byte[1024];
-
-        try {
-            final File folder = new File(outputFolder);
-
-            if(!folder.exists()) folder.mkdir();
-
-            final ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile));
-
-            ZipEntry zipEntry = zipInputStream.getNextEntry();
-            while(zipEntry != null) {
-                File newFile = new File(outputFolder + File.separator + zipEntry.getName());
-                new File(newFile.getParent()).mkdirs();
-
-                FileOutputStream fileOutputStream = new FileOutputStream(newFile);
-
-                int i;
-                while((i = zipInputStream.read(buffer)) > 0)
-                    fileOutputStream.write(buffer, 0, i);
-
-                fileOutputStream.close();
-                zipEntry = zipInputStream.getNextEntry();
-            }
-
-            zipInputStream.closeEntry();
-            zipInputStream.close();
-        }catch(final IOException e) {
-            e.printStackTrace();
         }
     }
 }

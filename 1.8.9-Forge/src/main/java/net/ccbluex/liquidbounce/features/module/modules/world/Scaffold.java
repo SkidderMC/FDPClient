@@ -78,6 +78,7 @@ public class Scaffold extends Module {
     private final BoolValue swingValue = new BoolValue("Swing", true);
     private final BoolValue searchValue = new BoolValue("Search", true);
     private final BoolValue downValue = new BoolValue("Down", true);
+    private final BoolValue towerValue = new BoolValue("AutoTower", true);
     private final ListValue placeModeValue = new ListValue("PlaceTiming", new String[]{"Pre", "Post"}, "Post");
 
     // Eagle
@@ -161,6 +162,16 @@ public class Scaffold extends Module {
      */
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
+        if(towerValue.get()) {
+            if (!(!mc.gameSettings.keyBindJump.isKeyDown() || mc.gameSettings.keyBindLeft.isKeyDown()
+                    || mc.gameSettings.keyBindRight.isKeyDown() || mc.gameSettings.keyBindForward.isKeyDown()
+                    || mc.gameSettings.keyBindBack.isKeyDown())) {
+                LiquidBounce.moduleManager.getModule(Tower.class).setState(true);
+            }else{
+                LiquidBounce.moduleManager.getModule(Tower.class).setState(false);
+            }
+        }
+
         mc.timer.timerSpeed = timerValue.get();
 
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && getBlocksAmount() > 1;
