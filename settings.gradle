@@ -1,3 +1,2 @@
-rootProject.name = 'LiquidBounce'
+rootProject.name = 'FDPClient'
 include '1.8.9-Forge'
-include '1.8.9-Vanilla'
