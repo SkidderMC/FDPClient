@@ -124,7 +124,7 @@ public class NoFall extends Module {
         if (packet instanceof C03PacketPlayer) {
             final C03PacketPlayer playerPacket = (C03PacketPlayer) packet;
 
-            if (mode.equalsIgnoreCase("SpoofGround"))
+            if (mode.equalsIgnoreCase("SpoofGround") && mc.thePlayer.fallDistance>2.5)
                 playerPacket.onGround = true;
 
             if (mode.equalsIgnoreCase("NoGround"))

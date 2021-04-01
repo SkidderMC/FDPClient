@@ -42,7 +42,7 @@ class GuiServerStatus(private val prevGui: GuiScreen) : GuiScreen() {
             }
         }
 
-        Fonts.fontBold180.drawCenteredString("Server Status", this.width / 2F, height / 8f + 5F, 4673984, true)
+        Fonts.fontBold40.drawCenteredString("Server Status", this.width / 2F, height / 8f + 5F, 4673984, true)
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

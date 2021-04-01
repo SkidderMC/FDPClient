@@ -29,8 +29,8 @@ public class Fonts {
     @FontDetails(fontName = "Comfortaa Medium", fontSize = 40)
     public static GameFontRenderer font40;
 
-    @FontDetails(fontName = "Comfortaa Bold", fontSize = 180)
-    public static GameFontRenderer fontBold180;
+    @FontDetails(fontName = "Comfortaa Bold", fontSize = 40)
+    public static GameFontRenderer fontBold40;
 
     @FontDetails(fontName = "Minecraft Font")
     public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
@@ -44,9 +44,9 @@ public class Fonts {
 
         initFonts();
 
-        font35 = new GameFontRenderer(getFont("Comfortaa.ttf", 35));
-        font40 = new GameFontRenderer(getFont("Comfortaa.ttf", 40));
-        fontBold180 = new GameFontRenderer(getFont("Comfortaa.ttf", 180));
+        font35 = new GameFontRenderer(getFont("Comfortaa-Regular.ttf", 35));
+        font40 = new GameFontRenderer(getFont("Comfortaa-Regular.ttf", 40));
+        fontBold40 = new GameFontRenderer(getFont("Comfortaa-Bold.ttf", 40));
 
         try {
             CUSTOM_FONT_RENDERERS.clear();
@@ -85,16 +85,19 @@ public class Fonts {
 
     private static void initFonts() {
         try {
-            final File outputFile = new File(LiquidBounce.fileManager.fontsDir, "Comfortaa.ttf");
-
-            if(!outputFile.exists()) {
-                ClientUtils.getLogger().info("Extract fonts...");
-                FileOutputStream fos=new FileOutputStream(outputFile);
-                IOUtils.copy(Fonts.class.getClassLoader().getResourceAsStream("font.ttf"), fos);
-                fos.close();
-            }
+            initSingleFont("Comfortaa-Regular.ttf");
+            initSingleFont("Comfortaa-Bold.ttf");
         }catch(IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void initSingleFont(String name) throws IOException {
+        File fontFile = new File(LiquidBounce.fileManager.fontsDir, name);
+        if(!fontFile.exists()) {
+            FileOutputStream fos=new FileOutputStream(fontFile);
+            IOUtils.copy(Fonts.class.getClassLoader().getResourceAsStream(name), fos);
+            fos.close();
         }
     }
 

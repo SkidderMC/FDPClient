@@ -52,6 +52,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
 
     private val shadowValue = BoolValue("Shadow", false)
+    private val serverValue = BoolValue("ServerIp", true)
     private val fontValue = FontValue("Font", Fonts.minecraftFont)
 
     /**

@@ -59,11 +59,8 @@ object UserUtils {
             return null
         }
 
-        val ent=EntityUtils.toString(response.entity)
-        println(ent)
-        val names = JsonParser().parse(ent).asJsonArray
+        val names = JsonParser().parse(EntityUtils.toString(response.entity)).asJsonArray
         val username = names.get(names.size()-1).asJsonObject.get("name").asString
-        println(username)
 
         return username
     }

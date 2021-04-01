@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.icon.IconManager
 import net.ccbluex.liquidbounce.utils.ClassUtils.hasForge
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
@@ -86,6 +87,9 @@ object LiquidBounce {
 
         // Load client fonts
         Fonts.loadFonts()
+
+        // Load client icons
+        IconManager.loadIcons()
 
         // Setup module manager and register modules
         moduleManager = ModuleManager()

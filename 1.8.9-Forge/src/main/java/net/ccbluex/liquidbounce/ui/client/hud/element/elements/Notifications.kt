@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.icon.IconManager
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
@@ -27,7 +28,7 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
     /**
      * Example notification for CustomHUD designer
      */
-    private val exampleNotification = Notification("Example Notification")
+    private val exampleNotification = Notification("Example Notification",NotifyType.INFO)
 
     /**
      * Draw element
@@ -51,7 +52,7 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
 
 }
 
-class Notification(private val message: String) {
+class Notification(private val message: String,private val type: NotifyType) {
     var x = 0F
     var textLength = 0
 
@@ -73,9 +74,10 @@ class Notification(private val message: String) {
      */
     fun drawNotification() {
         // Draw notification
-        RenderUtils.drawRect(-x + 8 + textLength, 0F, -x, -20F, Color.BLACK.rgb)
-        RenderUtils.drawRect(-x, 0F, -x - 5, -20F, Color(0, 160, 255).rgb)
-        Fonts.font35.drawString(message, -x + 4, -14F, Int.MAX_VALUE)
+        RenderUtils.drawRect(-x + 10 + textLength, 0F, -x - 10, -20F, Color.BLACK.rgb)
+        RenderUtils.drawFilledCircle((-x-10).toInt(), -10, 10F,Color.BLACK)
+        RenderUtils.drawImage(IconManager.getIcon(type.icon),(-x-17).toInt(), -17,14,14)
+        Fonts.font35.drawString(message, -x + 5, -13F, Int.MAX_VALUE)
         GlStateManager.resetColor()
 
         // Animation
