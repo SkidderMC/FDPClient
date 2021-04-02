@@ -37,7 +37,12 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
      * Draw element
      */
     override fun drawElement(): Border? {
+        val notifications = mutableListOf<Notification>()
+        //FUCK YOU java.util.ConcurrentModificationException
         for(notify in LiquidBounce.hud.notifications){
+            notifications.add(notify)
+        }
+        for(notify in notifications){
             notify.drawNotification(LiquidBounce.hud.notifications.indexOf(notify))
         }
 

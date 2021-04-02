@@ -381,6 +381,10 @@ public class Scaffold extends Module {
     public void onDisable() {
         if (mc.thePlayer == null) return;
 
+        if(towerValue.get()) {
+            LiquidBounce.moduleManager.getModule(Tower.class).setState(false);
+        }
+
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
             mc.gameSettings.keyBindSneak.pressed = false;
 

@@ -7,33 +7,33 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
+import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.render.SwingAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemRenderer.class)
 @SideOnly(Side.CLIENT)
 public abstract class MixinItemRenderer {
-
     @Shadow
     private float prevEquippedProgress;
 
@@ -97,13 +97,13 @@ public abstract class MixinItemRenderer {
         GlStateManager.pushMatrix();
 
         if(this.itemToRender != null) {
+            final Animations animations = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
             final KillAura killAura = (KillAura) LiquidBounce.moduleManager.getModule(KillAura.class);
 
             if(this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
             } else if (abstractclientplayer.getItemInUseCount() > 0 || (itemToRender.getItem() instanceof ItemSword && killAura.getBlockingStatus())) {
                 EnumAction enumaction = killAura.getBlockingStatus() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
-
                 switch(enumaction) {
                     case NONE:
                         this.transformFirstPersonItem(f, 0.0F);
@@ -114,9 +114,36 @@ public abstract class MixinItemRenderer {
                         this.transformFirstPersonItem(f, f1);
                         break;
                     case BLOCK:
-                        this.transformFirstPersonItem(f + 0.1F, f1);
-                        this.doBlockTransformations();
-                        GlStateManager.translate(-0.5F, 0.2F, 0.0F);
+                        if(animations.getState()){
+                            switch (animations.getPresetValue().get().toLowerCase()){
+                                case "sigma":{
+                                    GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+                                    GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
+                                    GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+                                    float var3 = MathHelper.sin(0);
+                                    float var4 = MathHelper.sin(0);
+                                    GlStateManager.rotate(var3 * -20.0F, 0.0F, 1.0F, 0.0F);
+                                    GlStateManager.rotate(var4 * -20.0F, 0.0F, 0.0F, 1.0F);
+                                    GlStateManager.rotate(var4 * -80.0F, 1.0F, 0.0F, 0.0F);
+                                    GlStateManager.scale(0.4, 0.4, 0.4);
+                                    float var14 = MathHelper.sin(f1 * f1 * 3.1415927F);
+                                    float var15 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
+                                    GlStateManager.rotate(-var15 * 55F / 2.0F, -8.0F, -0.0F, 9.0F);
+                                    GlStateManager.rotate(-var15 * 45F, 1.0F, var15 / 2F, -0.0F);
+                                    GlStateManager.translate(-0.5F, 0.2F, 0.0F);
+                                    GlStateManager.rotate(30.0F, 0.0F, 1.0F, 0.0F);
+                                    GlStateManager.rotate(-80.0F, 1.0F, 0.0F, 0.0F);
+                                    GlStateManager.rotate(60.0F, 0.0F, 1.0F, 0.0F);
+                                    GL11.glTranslated(1.2F, 0.3F, 0.5F);
+                                    GL11.glTranslatef(-1F, -0.2F, 0.2F);
+                                    break;
+                                }
+                            }
+                        }else{
+                            this.transformFirstPersonItem(f + 0.1F, f1);
+                            this.doBlockTransformations();
+                            GlStateManager.translate(-0.5F, 0.2F, 0.0F);
+                        }
                         break;
                     case BOW:
                         this.transformFirstPersonItem(f, f1);
@@ -138,10 +165,51 @@ public abstract class MixinItemRenderer {
         RenderHelper.disableStandardItemLighting();
     }
 
-    @Inject(method = "renderFireInFirstPerson", at = @At("HEAD"), cancellable = true)
-    private void renderFireInFirstPerson(final CallbackInfo callbackInfo) {
+    @Overwrite
+    private void renderFireInFirstPerson(float partialTicks) {
         final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
 
-        if(antiBlind.getState() && antiBlind.getFireEffect().get()) callbackInfo.cancel();
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        float f = 1.0F;
+        if(antiBlind.getState() && antiBlind.getFireEffect().get()){
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 0.3F);
+            f = 0.7F;
+        }else{
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 0.9F);
+        }
+        GlStateManager.depthFunc(519);
+        GlStateManager.depthMask(false);
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+
+        for(int i = 0; i < 2; ++i) {
+            GlStateManager.pushMatrix();
+            TextureAtlasSprite textureatlassprite = this.mc.getTextureMapBlocks().getAtlasSprite("minecraft:blocks/fire_layer_1");
+            this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+            float f1 = textureatlassprite.getMinU();
+            float f2 = textureatlassprite.getMaxU();
+            float f3 = textureatlassprite.getMinV();
+            float f4 = textureatlassprite.getMaxV();
+            float f5 = (0.0F - f) / 2.0F;
+            float f6 = f5 + f;
+            float f7 = 0.0F - f / 2.0F;
+            float f8 = f7 + f;
+            float f9 = -0.5F;
+            GlStateManager.translate((float)(-(i * 2 - 1)) * 0.24F, -0.3F, 0.0F);
+            GlStateManager.rotate((float)(i * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+            worldrenderer.pos(f5, f7, f9).tex(f2, f4).endVertex();
+            worldrenderer.pos(f6, f7, f9).tex(f1, f4).endVertex();
+            worldrenderer.pos(f6, f8, f9).tex(f1, f3).endVertex();
+            worldrenderer.pos(f5, f8, f9).tex(f2, f3).endVertex();
+            tessellator.draw();
+            GlStateManager.popMatrix();
+        }
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
+        GlStateManager.depthFunc(515);
     }
 }

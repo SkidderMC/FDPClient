@@ -120,7 +120,9 @@ class ModuleManager : Listenable {
                 ResourcePackSpoof::class.java,
                 NoSlowBreak::class.java,
                 AutoAbuse::class.java,
-                Gapple::class.java
+                Gapple::class.java,
+                HealthWarn::class.java,
+                Animations::class.java
         )
 
         registerModule(Fucker)
