@@ -8,9 +8,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiHunger;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.PortalMenu;
-import net.ccbluex.liquidbounce.features.module.modules.fun.Derp;
 import net.ccbluex.liquidbounce.features.module.modules.movement.InventoryMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sneak;
@@ -142,7 +139,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
             final InventoryMove inventoryMove = (InventoryMove) LiquidBounce.moduleManager.getModule(InventoryMove.class);
             final Sneak sneak = (Sneak) LiquidBounce.moduleManager.getModule(Sneak.class);
-            final boolean fakeSprint = (inventoryMove.getState() && inventoryMove.getAacAdditionProValue().get()) || LiquidBounce.moduleManager.getModule(AntiHunger.class).getState() || (sneak.getState() && (!MovementUtils.isMoving() || !sneak.stopMoveValue.get()) && sneak.modeValue.get().equalsIgnoreCase("MineSecure"));
+            final boolean fakeSprint = (inventoryMove.getState() && inventoryMove.getAacAdditionProValue().get()) || (sneak.getState() && (!MovementUtils.isMoving() || !sneak.stopMoveValue.get()) && sneak.modeValue.get().equalsIgnoreCase("MineSecure"));
 
             boolean sprinting = this.isSprinting() && !fakeSprint;
 
@@ -171,13 +168,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 float pitch = rotationPitch;
                 float lastReportedYaw = RotationUtils.serverRotation.getYaw();
                 float lastReportedPitch = RotationUtils.serverRotation.getPitch();
-
-                final Derp derp = (Derp) LiquidBounce.moduleManager.getModule(Derp.class);
-                if (derp.getState()) {
-                    float[] rot = derp.getRotation();
-                    yaw = rot[0];
-                    pitch = rot[1];
-                }
 
                 if (RotationUtils.targetRotation != null) {
                     yaw = RotationUtils.targetRotation.getYaw();
@@ -272,10 +262,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         this.prevTimeInPortal = this.timeInPortal;
 
         if (this.inPortal) {
-            if (this.mc.currentScreen != null && !this.mc.currentScreen.doesGuiPauseGame()
-                    && !LiquidBounce.moduleManager.getModule(PortalMenu.class).getState()) {
-                this.mc.displayGuiScreen(null);
-            }
 
             if (this.timeInPortal == 0.0F) {
                 this.mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("portal.trigger"), this.rand.nextFloat() * 0.4F + 0.8F));

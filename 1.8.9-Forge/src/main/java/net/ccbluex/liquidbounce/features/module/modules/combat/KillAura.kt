@@ -487,7 +487,7 @@ class KillAura : Module() {
                 if (entity.isSpectator || AntiBot.isBot(entity))
                     return false
 
-                if (EntityUtils.isFriend(entity) && !LiquidBounce.moduleManager[NoFriends::class.java]!!.state)
+                if (EntityUtils.isFriend(entity))
                     return false
 
                 val teams = LiquidBounce.moduleManager[Teams::class.java] as Teams
@@ -614,7 +614,7 @@ class KillAura : Module() {
             }
 
             if (raycastValue.get() && raycastedEntity is EntityLivingBase
-                    && (LiquidBounce.moduleManager[NoFriends::class.java]!!.state || !EntityUtils.isFriend(raycastedEntity)))
+                    && !EntityUtils.isFriend(raycastedEntity))
                 currentTarget = raycastedEntity
 
             hitable = if(maxTurnSpeed.get() > 0F) currentTarget == raycastedEntity else true

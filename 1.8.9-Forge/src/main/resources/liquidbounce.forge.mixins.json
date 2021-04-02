@@ -6,8 +6,6 @@
   "mixins": [
     "block.MixinBlock",
     "block.MixinBlockAnvil",
-    "block.MixinBlockLadder",
-    "block.MixinBlockLiquid",
     "block.MixinBlockModelRenderer",
     "block.MixinBlockSoulSand",
     "client.MixinMinecraft",
@@ -56,7 +54,6 @@
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinVisGraph",
     "resources.MixinSkinManager",
-    "world.MixinChunk",
     "world.MixinWorld",
     "world.MixinWorldClient"
   ]

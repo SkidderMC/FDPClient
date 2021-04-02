@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.features.special.AutoReconnect;
-import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
@@ -80,8 +79,6 @@ public class ValuesConfig extends FileConfig {
                     AntiForge.blockProxyPacket = jsonValue.get("AntiForgeProxy").getAsBoolean();
                 if (jsonValue.has("AntiForgePayloads"))
                     AntiForge.blockPayloadPackets = jsonValue.get("AntiForgePayloads").getAsBoolean();
-                if (jsonValue.has("BungeeSpoof"))
-                    BungeeCordSpoof.enabled = jsonValue.get("BungeeSpoof").getAsBoolean();
                 if (jsonValue.has("AutoReconnectDelay"))
                     AutoReconnect.INSTANCE.setDelay(jsonValue.get("AutoReconnectDelay").getAsInt());
             } else if (entry.getKey().equalsIgnoreCase("thealtening")) {
@@ -137,7 +134,6 @@ public class ValuesConfig extends FileConfig {
         jsonFeatures.addProperty("AntiForgeFML", AntiForge.blockFML);
         jsonFeatures.addProperty("AntiForgeProxy", AntiForge.blockProxyPacket);
         jsonFeatures.addProperty("AntiForgePayloads", AntiForge.blockPayloadPackets);
-        jsonFeatures.addProperty("BungeeSpoof", BungeeCordSpoof.enabled);
         jsonFeatures.addProperty("AutoReconnectDelay", AutoReconnect.INSTANCE.getDelay());
         jsonObject.add("features", jsonFeatures);
 

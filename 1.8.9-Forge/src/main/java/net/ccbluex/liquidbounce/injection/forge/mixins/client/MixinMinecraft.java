@@ -7,9 +7,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
-import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
 import net.ccbluex.liquidbounce.ui.client.GuiMainMenu;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
@@ -165,9 +162,6 @@ public abstract class MixinMinecraft {
     @Inject(method = "clickMouse", at = @At("HEAD"))
     private void clickMouse(CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
-
-        if (LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
-            leftClickCounter = 0;
     }
 
     @Inject(method = "middleClickMouse", at = @At("HEAD"))
@@ -198,7 +192,7 @@ public abstract class MixinMinecraft {
         if(!leftClick)
             this.leftClickCounter = 0;
 
-        if (this.leftClickCounter <= 0 && (!this.thePlayer.isUsingItem() || LiquidBounce.moduleManager.getModule(MultiActions.class).getState())) {
+        if (this.leftClickCounter <= 0 && !this.thePlayer.isUsingItem()) {
             if(leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 BlockPos blockPos = this.objectMouseOver.getBlockPos();
 
@@ -210,8 +204,6 @@ public abstract class MixinMinecraft {
                     this.effectRenderer.addBlockHitEffects(blockPos, this.objectMouseOver.sideHit);
                     this.thePlayer.swingItem();
                 }
-            } else if (!LiquidBounce.moduleManager.getModule(AbortBreaking.class).getState()) {
-                this.playerController.resetBlockRemoving();
             }
         }
     }

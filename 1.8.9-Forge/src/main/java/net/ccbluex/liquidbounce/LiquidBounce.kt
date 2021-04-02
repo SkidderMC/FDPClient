@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
-import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
@@ -79,7 +78,6 @@ object LiquidBounce {
         // Register listeners
         eventManager.registerListener(RotationUtils())
         eventManager.registerListener(AntiForge())
-        eventManager.registerListener(BungeeCordSpoof())
         eventManager.registerListener(InventoryUtils())
 
         // Create command manager

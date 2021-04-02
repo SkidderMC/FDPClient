@@ -53,7 +53,10 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
 
     private val shadowValue = BoolValue("Shadow", false)
     private val serverValue = BoolValue("ServerIp", true)
+    private val noPointValue = BoolValue("NoPoints", false)
     private val fontValue = FontValue("Font", Fonts.minecraftFont)
+
+    private val allowedDomains=arrayOf(".com",".net",".cc",".cn",".tk",".pw",".xyz",".gg")
 
     /**
      * Draw element
@@ -109,7 +112,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
         scoreCollection.forEachIndexed { index, score ->
             val team = scoreboard.getPlayersTeam(score.playerName)
 
-            val name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
+            var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
             val scorePoints = "${EnumChatFormatting.RED}${score.scorePoints}"
 
             val width = 5 - if (rectValue.get()) 4 else 0
@@ -117,8 +120,26 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
 
             GlStateManager.resetColor()
 
+            if(serverValue.get()){
+                val lowerName=name.toLowerCase();
+                for(domain in allowedDomains){
+                    if(lowerName.contains(domain)){
+                        name="§c§lFDP§6§lClient"
+                        break;
+                    }
+                }
+            }
+
             fontRenderer.drawString(name, l1.toFloat(), height.toFloat(), textColor, shadowValue.get())
-            fontRenderer.drawString(scorePoints, (width - fontRenderer.getStringWidth(scorePoints)).toFloat(), height.toFloat(), textColor, shadowValue.get())
+            if(!noPointValue.get()) {
+                fontRenderer.drawString(
+                    scorePoints,
+                    (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
+                    height.toFloat(),
+                    textColor,
+                    shadowValue.get()
+                )
+            }
 
             if (index == scoreCollection.size - 1) {
                 val displayName = objective.displayName
