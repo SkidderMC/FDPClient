@@ -24,12 +24,6 @@ class XRay : Module() {
             Blocks.diamond_ore,
             Blocks.emerald_ore,
             Blocks.quartz_ore,
-            Blocks.clay,
-            Blocks.glowstone,
-            Blocks.crafting_table,
-            Blocks.torch,
-            Blocks.ladder,
-            Blocks.tnt,
             Blocks.coal_block,
             Blocks.iron_block,
             Blocks.gold_block,
@@ -37,19 +31,9 @@ class XRay : Module() {
             Blocks.emerald_block,
             Blocks.redstone_block,
             Blocks.lapis_block,
-            Blocks.fire,
-            Blocks.mossy_cobblestone,
             Blocks.mob_spawner,
             Blocks.end_portal_frame,
-            Blocks.enchanting_table,
-            Blocks.bookshelf,
-            Blocks.command_block,
-            Blocks.lava,
-            Blocks.flowing_lava,
-            Blocks.water,
-            Blocks.flowing_water,
-            Blocks.furnace,
-            Blocks.lit_furnace
+            Blocks.command_block
     )
 
     init {
