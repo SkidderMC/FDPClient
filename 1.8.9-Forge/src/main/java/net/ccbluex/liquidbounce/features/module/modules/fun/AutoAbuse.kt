@@ -9,6 +9,8 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.player.EntityPlayer
@@ -18,6 +20,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.lang.Exception
 import java.nio.charset.StandardCharsets
+import kotlin.math.roundToInt
 
 @ModuleInfo(name = "AutoAbuse", description = "Automatically abuse peoples you killed.", category = ModuleCategory.FUN)
 class AutoAbuse : Module() {
@@ -27,7 +30,8 @@ class AutoAbuse : Module() {
     val modeValue = ListValue(
         "Mode", arrayOf(
             "Clear",
-            "WithWords"
+            "WithWords",
+            "RawWords"
         ), "WithWords"
     )
     private val waterMarkValue = BoolValue("WaterMark", true)
@@ -77,15 +81,21 @@ class AutoAbuse : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
         if (target != null && target!!.isDead) {
+            val name=target!!.name
+            LiquidBounce.hud.addNotification(Notification("§cKilled §a$name",NotifyType.INFO))
             when (modeValue.get().toLowerCase()) {
                 "clear" -> {
-                    sendAbuseWords("L " + target!!.name)
+                    sendAbuseWords("L $name")
                 }
                 "withwords" -> {
                     sendAbuseWords(
-                        "L " + target!!.name + " " + abuseWords!![Math.round(Math.random() * abuseWords!!.size())
+                        "L $name " + abuseWords!![(Math.random() * abuseWords!!.size()).roundToInt()
                             .toInt()].asString
                     )
+                }
+                "rawwords" -> {
+                    sendAbuseWords(abuseWords!![(Math.random() * abuseWords!!.size()).roundToInt()
+                        .toInt()].asString)
                 }
             }
             target = null

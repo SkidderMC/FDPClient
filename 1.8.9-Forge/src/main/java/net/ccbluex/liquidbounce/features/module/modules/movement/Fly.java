@@ -108,7 +108,9 @@ public class Fly extends Module {
     private final IntegerValue neruxVaceTicks = new IntegerValue("NeruxVace-Ticks", 6, 0, 20);
 
     // RedeSky Collide
-    private final FloatValue rscSpeedValue = new FloatValue("RSCollideSpeed", 15.5F, 7F, 30F);
+    private final FloatValue rscSpeedValue = new FloatValue("RSCollideSpeed", 15.5F, 0F, 30F);
+    private final FloatValue rscBoostValue = new FloatValue("RSCollideBoost", 0.3F, 0.0F, 1F);
+    private final FloatValue rscMaxSpeedValue = new FloatValue("RSCollideMaxSpeed", 20F, 7F, 30F);
     private final FloatValue rscTimerValue = new FloatValue("RSCollideTimer", 0.8F, 0.1F, 1F);
 
     // Visuals
@@ -151,12 +153,15 @@ public class Fly extends Module {
     private float freeHypixelYaw;
     private float freeHypixelPitch;
 
+    private int flyTick;
+
     @Override
     public void onEnable() {
         if(mc.thePlayer == null)
             return;
 
         flyTimer.reset();
+        flyTick=0;
 
         noPacketModify = true;
 
@@ -684,12 +689,17 @@ public class Fly extends Module {
 
     @EventTarget
     public void onMove(final MoveEvent event) {
+        flyTick++;
         switch(modeValue.get().toLowerCase()) {
             case "redeskycollide":
                 mc.timer.timerSpeed=rscTimerValue.get();
                 RotationUtils.reset();
                 if(mc.gameSettings.keyBindForward.isKeyDown()) {
-                    float speed = rscSpeedValue.get() / 100F;
+                    float speed = rscSpeedValue.get() / 100F + flyTick*(rscBoostValue.get()/100F);
+                    float maxSpeed = rscMaxSpeedValue.get() / 100F;
+                    if(speed>maxSpeed){
+                        speed=maxSpeed;
+                    }
                     float f = mc.thePlayer.rotationYaw * 0.017453292F;
                     mc.thePlayer.motionX -= MathHelper.sin(f) * speed;
                     mc.thePlayer.motionZ += MathHelper.cos(f) * speed;

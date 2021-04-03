@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.utils.RaycastUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -39,12 +38,15 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
+import net.minecraft.util.Vec3
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
-import java.awt.Color
+import org.lwjgl.opengl.GL11
 import java.util.*
+import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sin
 
 @ModuleInfo(name = "KillAura", description = "Automatically attacks targets around you.",
         category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
@@ -157,6 +159,8 @@ class KillAura : Module() {
 
     // Target
     var target: EntityLivingBase? = null
+    private var markEntity: EntityLivingBase? = null
+    private val markTimer=MSTimer()
     private var currentTarget: EntityLivingBase? = null
     private var hitable = false
     private val prevTargetEntities = mutableListOf<Int>()
@@ -327,28 +331,79 @@ class KillAura : Module() {
             currentTarget = null
             hitable = false
             stopBlocking()
-            return
         }
-
-        if (noInventoryAttackValue.get() && (mc.currentScreen is GuiContainer ||
-                        System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())) {
-            target = null
-            currentTarget = null
-            hitable = false
-            if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
-            return
-        }
-
-        target ?: return
-
-        if (markValue.get() && !targetModeValue.get().equals("Multi", ignoreCase = true))
-            RenderUtils.drawPlatform(target, if (hitable) Color(37, 126, 255, 70) else Color(255, 0, 0, 70))
-
         if (currentTarget != null && attackTimer.hasTimePassed(attackDelay) &&
-                currentTarget!!.hurtTime <= hurtTimeValue.get()) {
+            currentTarget!!.hurtTime <= hurtTimeValue.get()) {
             clicks++
             attackTimer.reset()
             attackDelay = TimeUtils.randomClickDelay(minCPS.get(), maxCPS.get())
+        }
+
+        if (markValue.get() && markEntity!=null){
+            if(markTimer.hasTimePassed(500) || markEntity!!.isDead){
+                markEntity=null
+                return
+            }
+            //can mark
+            val drawTime = (System.currentTimeMillis() % 2000).toInt()
+            val drawMode=drawTime>1000
+            var drawPercent=drawTime/1000F
+            //true when goes up
+            if(!drawMode){
+                drawPercent=1-drawPercent
+            }else{
+                drawPercent-=1
+            }
+            val points = mutableListOf<Vec3>()
+            val bb=markEntity!!.entityBoundingBox
+            val radius=bb.maxX-bb.minX
+            val height=bb.maxY-bb.minY
+            val posX = markEntity!!.lastTickPosX + (markEntity!!.posX - markEntity!!.lastTickPosX) * mc.timer.renderPartialTicks
+            var posY = markEntity!!.lastTickPosY + (markEntity!!.posY - markEntity!!.lastTickPosY) * mc.timer.renderPartialTicks
+            if(drawMode){
+                posY-=0.5
+            }else{
+                posY+=0.5
+            }
+            val posZ = markEntity!!.lastTickPosZ + (markEntity!!.posZ - markEntity!!.lastTickPosZ) * mc.timer.renderPartialTicks
+            for(i in 0..360 step 7){
+                points.add(Vec3(posX - sin(i * Math.PI / 180F) * radius,posY+height*drawPercent,posZ + cos(i * Math.PI / 180F) * radius))
+            }
+            points.add(points[0])
+            //draw
+            mc.entityRenderer.disableLightmap()
+            for(i in 0..20) {
+                GL11.glPushMatrix()
+                GL11.glDisable(GL11.GL_TEXTURE_2D)
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                GL11.glEnable(GL11.GL_BLEND)
+                GL11.glDisable(GL11.GL_DEPTH_TEST)
+                GL11.glBegin(GL11.GL_LINE_STRIP)
+                var moveFace=(height/60F)*i
+                if(drawMode){
+                    moveFace=-moveFace
+                }
+                val firstPoint=points[0]
+                GL11.glVertex3d(
+                    firstPoint.xCoord - mc.renderManager.viewerPosX, firstPoint.yCoord - moveFace - mc.renderManager.viewerPosY,
+                    firstPoint.zCoord - mc.renderManager.viewerPosZ
+                )
+                GL11.glColor4f(1F, 1F, 1F, 0.7F*(i/20F))
+                for (vec3 in points) {
+                    GL11.glVertex3d(
+                        vec3.xCoord - mc.renderManager.viewerPosX, vec3.yCoord - moveFace - mc.renderManager.viewerPosY,
+                        vec3.zCoord - mc.renderManager.viewerPosZ
+                    )
+                }
+                GL11.glColor4f(0F,0F,0F,0F)
+                GL11.glEnd()
+                GL11.glEnable(GL11.GL_DEPTH_TEST)
+                GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                GL11.glDisable(GL11.GL_BLEND)
+                GL11.glEnable(GL11.GL_TEXTURE_2D)
+                GL11.glPopMatrix()
+            }
         }
     }
 
@@ -515,6 +570,8 @@ class KillAura : Module() {
 
         // Call attack event
         LiquidBounce.eventManager.callEvent(AttackEvent(entity))
+        markEntity=entity
+        markTimer.reset()
 
         // Attack target
         if (swingValue.get())

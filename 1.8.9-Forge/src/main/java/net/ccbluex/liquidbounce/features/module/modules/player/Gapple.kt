@@ -20,7 +20,7 @@ class Gapple : Module() {
     val modeValue = ListValue("Mode", arrayOf("Auto", "Once"), "Once")
     // Auto Mode
     private val healthValue = FloatValue("Health", 10F, 1F, 20F)
-    private val delayValue = IntegerValue("Delay", 150, 0, 500)
+    private val delayValue = IntegerValue("Delay", 150, 0, 1000)
     private val timer = MSTimer()
 
     @EventTarget

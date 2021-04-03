@@ -29,8 +29,10 @@ public class MixinGuiContainer {
                 mc.currentScreen=guiScreen;
                 //hide GUI
                 ScaledResolution scaledResolution=new ScaledResolution(mc);
-                mc.fontRendererObj.drawString("STEALING CHEST",(scaledResolution.getScaledWidth()/2)-50
-                        ,(scaledResolution.getScaledHeight()/2)+30,0xffffffff);
+                String tipString="STEALING CHEST";
+                mc.fontRendererObj.drawString(tipString,
+                        (scaledResolution.getScaledWidth()/2)-(mc.fontRendererObj.getStringWidth(tipString)/2),
+                        (scaledResolution.getScaledHeight()/2)+30,0xffffffff);
                 callbackInfo.cancel();
             }
         } catch (Exception e) {

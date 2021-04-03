@@ -46,7 +46,7 @@ public class Spammer extends Module {
         }
     };
 
-    private final TextValue messageValue = new TextValue("Message", LiquidBounce.CLIENT_NAME + " Client | liquidbounce(.net) | CCBlueX on yt");
+    private final TextValue messageValue = new TextValue("Message", "FDP CLIENT | github.com/Project-EZ4H/FDPClient");
     private final BoolValue customValue = new BoolValue("Custom", false);
 
     private final MSTimer msTimer = new MSTimer();
@@ -55,7 +55,7 @@ public class Spammer extends Module {
     @EventTarget
     public void onUpdate(UpdateEvent event) {
         if(msTimer.hasTimePassed(delay)) {
-            mc.thePlayer.sendChatMessage(customValue.get() ? replace(messageValue.get()) : messageValue.get() + " >" + RandomUtils.randomString(5 + new Random().nextInt(5)) + "<");
+            mc.thePlayer.sendChatMessage(customValue.get() ? replace(messageValue.get()) : messageValue.get() + " [" + RandomUtils.randomString(5 + new Random().nextInt(5)) + "]");
             msTimer.reset();
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
         }
