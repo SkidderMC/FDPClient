@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.player.EntityPlayer
-import sun.misc.IOUtils
+import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -42,20 +42,14 @@ class AutoAbuse : Module() {
             val abuseFile=File(LiquidBounce.fileManager.dir, "abuse.json")
             if(!abuseFile.exists()){
                 val fos = FileOutputStream(abuseFile)
-                org.apache.commons.io.IOUtils.copy(
+                IOUtils.copy(
                     AutoAbuse::class.java.classLoader.getResourceAsStream("abuse.json"),
                     fos
                 )
                 fos.close()
             }
             //read it
-            abuseWords = JsonParser()
-                .parse(
-                    String(
-                        IOUtils.readAllBytes(FileInputStream(abuseFile)),
-                        StandardCharsets.UTF_8
-                    )
-                ).asJsonArray
+            abuseWords = JsonParser().parse(IOUtils.toString(FileInputStream(abuseFile))).asJsonArray
         } catch (e: Exception) {
             e.printStackTrace()
             abuseWords = JsonArray()
