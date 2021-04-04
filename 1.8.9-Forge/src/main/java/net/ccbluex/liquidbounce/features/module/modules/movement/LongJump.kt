@@ -73,7 +73,9 @@ class LongJump : Module() {
             val mode = modeValue.get()
 
             if(!thePlayer.onGround){
-                airTicks++;
+                airTicks++
+            }else{
+                airTicks=0
             }
 
             if (thePlayer.onGround || thePlayer.capabilities.isFlying) {

@@ -27,7 +27,7 @@ import net.minecraft.network.play.server.S0BPacketAnimation
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "NoGround", "RedeSkySmartGround", "Hop", "TPHop", "Jump", "LowJump"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "NoGround", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "Jump", "LowJump"), "packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val debugValue = BoolValue("DebugMessage",false)
@@ -100,6 +100,7 @@ class Criticals : Module() {
                 }
                 "jump" -> mc.thePlayer.motionY = 0.42
                 "lowjump" -> mc.thePlayer.motionY = 0.3425
+                "redeskylowhop" -> mc.thePlayer.motionY = 0.35
             }
 
             msTimer.reset()

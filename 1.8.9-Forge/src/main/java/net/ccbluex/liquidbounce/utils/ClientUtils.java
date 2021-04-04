@@ -57,6 +57,10 @@ public final class ClientUtils extends MinecraftInstance {
         networkManager.sendPacket(new C01PacketEncryptionResponse(secretKey, publicKey, encryptionRequest.getVerifyToken()), p_operationComplete_1_ -> networkManager.enableEncryption(secretKey));
     }
 
+    public static void displayAlert(final String message){
+        displayChatMessage("§8[§c§lFDP§6§lClient] §f"+message);
+    }
+
     public static void displayChatMessage(final String message) {
         if (mc.thePlayer == null) {
             getLogger().info("(MCChat)" + message);

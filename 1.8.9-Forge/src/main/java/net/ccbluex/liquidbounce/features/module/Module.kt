@@ -113,7 +113,7 @@ open class Module : MinecraftInstance(), Listenable {
     }
 
     fun chat(msg: String){
-        ClientUtils.displayChatMessage("§8[§9§l${LiquidBounce.CLIENT_NAME}§8] §3$msg")
+        ClientUtils.displayAlert(msg)
     }
 
     /**

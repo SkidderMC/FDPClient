@@ -1,9 +1,9 @@
-version = "b1"
+version = "v1"
 group = "me.method17"
 
 subprojects {
 
-    version = "b1"
+    version = "v1"
     group = "me.method17"
 
 }

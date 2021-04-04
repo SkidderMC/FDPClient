@@ -372,14 +372,14 @@ class KillAura : Module() {
             points.add(points[0])
             //draw
             mc.entityRenderer.disableLightmap()
+            GL11.glPushMatrix()
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            GL11.glEnable(GL11.GL_LINE_SMOOTH)
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glDisable(GL11.GL_DEPTH_TEST)
+            GL11.glBegin(GL11.GL_LINE_STRIP)
             for(i in 0..20) {
-                GL11.glPushMatrix()
-                GL11.glDisable(GL11.GL_TEXTURE_2D)
-                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-                GL11.glEnable(GL11.GL_LINE_SMOOTH)
-                GL11.glEnable(GL11.GL_BLEND)
-                GL11.glDisable(GL11.GL_DEPTH_TEST)
-                GL11.glBegin(GL11.GL_LINE_STRIP)
                 var moveFace=(height/60F)*i
                 if(drawMode){
                     moveFace=-moveFace
@@ -397,13 +397,13 @@ class KillAura : Module() {
                     )
                 }
                 GL11.glColor4f(0F,0F,0F,0F)
-                GL11.glEnd()
-                GL11.glEnable(GL11.GL_DEPTH_TEST)
-                GL11.glDisable(GL11.GL_LINE_SMOOTH)
-                GL11.glDisable(GL11.GL_BLEND)
-                GL11.glEnable(GL11.GL_TEXTURE_2D)
-                GL11.glPopMatrix()
             }
+            GL11.glEnd()
+            GL11.glEnable(GL11.GL_DEPTH_TEST)
+            GL11.glDisable(GL11.GL_LINE_SMOOTH)
+            GL11.glDisable(GL11.GL_BLEND)
+            GL11.glEnable(GL11.GL_TEXTURE_2D)
+            GL11.glPopMatrix()
         }
     }
 

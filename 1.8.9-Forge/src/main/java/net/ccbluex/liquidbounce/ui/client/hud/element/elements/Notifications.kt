@@ -94,8 +94,11 @@ class Notification(private val message: String,private val type: NotifyType) {
             firstY=y
         }
         if(firstY>y){
-            firstY-=(firstY-y)*((System.currentTimeMillis()-animeTime)/500F)
-            y=firstY
+            val cacheY=firstY-(firstY-y)*((System.currentTimeMillis()-animeTime)/300F)
+            if(cacheY<=y){
+                firstY=cacheY
+            }
+            y=cacheY
         }else{
             firstY=y
             animeTime=System.currentTimeMillis()

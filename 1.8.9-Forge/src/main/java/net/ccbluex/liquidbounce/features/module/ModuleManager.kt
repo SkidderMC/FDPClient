@@ -122,7 +122,9 @@ class ModuleManager : Listenable {
                 AutoAbuse::class.java,
                 Gapple::class.java,
                 HealthWarn::class.java,
-                Animations::class.java
+                Animations::class.java,
+                AuthBypass::class.java,
+                AutoPlay::class.java
         )
 
         registerModule(Fucker)
