@@ -73,7 +73,7 @@ class Image : Element() {
     /**
      * Draw element
      */
-    override fun drawElement(): Border {
+    override fun drawElement(partialTicks: Float): Border {
         RenderUtils.drawImage(resourceLocation, 0, 0, width / 2, height / 2)
 
         return Border(0F, 0F, width / 2F, height / 2F)

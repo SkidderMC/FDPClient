@@ -39,7 +39,7 @@ class Model(x: Double = 40.0, y: Double = 100.0) : Element(x, y) {
     /**
      * Draw element
      */
-    override fun drawElement(): Border {
+    override fun drawElement(partialTicks: Float): Border {
         val yaw = when (yawMode.get().toLowerCase()) {
             "player" -> mc.thePlayer.rotationYaw
             "animation" -> {

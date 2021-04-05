@@ -28,7 +28,7 @@ class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    override fun drawElement(): Border {
+    override fun drawElement(partialTicks: Float): Border {
         if (mc.playerController.isNotCreative) {
             GL11.glPushMatrix()
 

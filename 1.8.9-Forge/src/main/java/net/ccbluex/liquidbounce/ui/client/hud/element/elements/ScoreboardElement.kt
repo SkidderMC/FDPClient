@@ -61,7 +61,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    override fun drawElement(): Border? {
+    override fun drawElement(partialTicks: Float): Border? {
         val fontRenderer = fontValue.get()
         val textColor = textColor().rgb
         val backColor = backgroundColor().rgb

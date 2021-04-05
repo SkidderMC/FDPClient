@@ -63,7 +63,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
 
     private var modules = emptyList<Module>()
 
-    override fun drawElement(): Border? {
+    override fun drawElement(partialTicks: Float): Border? {
         val fontRenderer = fontValue.get()
 
         AWTFontRenderer.assumeNonVolatile = true

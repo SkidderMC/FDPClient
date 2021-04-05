@@ -19,12 +19,20 @@ import net.ccbluex.liquidbounce.features.module.modules.render.*
 import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.features.module.modules.world.Timer
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.util.ResourceLocation
 import java.util.*
 
 class ModuleManager : Listenable {
 
     val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
+
+    val enableSound=
+        PositionedSoundRecord.create(ResourceLocation("sound/enable.ogg",LiquidBounce.CLIENT_NAME.toLowerCase()),1F)
+    val disableSound=
+        PositionedSoundRecord.create(ResourceLocation("sound/disable.ogg",LiquidBounce.CLIENT_NAME.toLowerCase()),1F)
+
 
     init {
         LiquidBounce.eventManager.registerListener(this)

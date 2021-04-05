@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.ui.icon
+package net.ccbluex.liquidbounce.ui.other
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.MinecraftInstance

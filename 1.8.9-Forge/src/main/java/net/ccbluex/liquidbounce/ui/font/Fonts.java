@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.font;
 import com.google.gson.*;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.FileUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -93,12 +94,7 @@ public class Fonts {
     }
 
     private static void initSingleFont(String name) throws IOException {
-        File fontFile = new File(LiquidBounce.fileManager.fontsDir, name);
-        if(!fontFile.exists()) {
-            FileOutputStream fos=new FileOutputStream(fontFile);
-            IOUtils.copy(Fonts.class.getClassLoader().getResourceAsStream(name), fos);
-            fos.close();
-        }
+        FileUtils.unpackFile(new File(LiquidBounce.fileManager.fontsDir, name),name);
     }
 
     public static FontRenderer getFontRenderer(final String name, final int size) {

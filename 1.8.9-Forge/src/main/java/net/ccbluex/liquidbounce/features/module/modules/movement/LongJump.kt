@@ -29,9 +29,9 @@ class LongJump : Module() {
     private val rsMoveReducerValue = BoolValue("RedeSkyMovementReducer", true)
     private val rsReduceMovementValue = FloatValue("RedeSkyReduceMovement",0.08F,0.05F,0.25F)
     private val rsMotYReducerValue = BoolValue("RedeSkyMotionYReducer", true)
-    private val rsReduceYMotionValue = FloatValue("RedeSkyReduceYMotion",0.12F,0.01F,0.20F)
+    private val rsReduceYMotionValue = FloatValue("RedeSkyReduceYMotion",0.15F,0.01F,0.20F)
     private val rsUseTimerValue = BoolValue("RedeSkyTimer", true)
-    private val rsTimerValue = FloatValue("RedeSkyTimer",0.36F,0.1F,1F)
+    private val rsTimerValue = FloatValue("RedeSkyTimer",0.30F,0.1F,1F)
     //redesky2
     private val rs2AirSpeedValue = FloatValue("RedeSky2AirSpeed",0.1F,0.05F,0.25F)
     private val rs2MinAirSpeedValue = FloatValue("RedeSky2MinAirSpeed",0.08F,0.05F,0.25F)

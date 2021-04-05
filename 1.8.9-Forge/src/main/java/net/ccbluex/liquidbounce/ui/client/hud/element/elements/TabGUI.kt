@@ -74,7 +74,7 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
         }
     }
 
-    override fun drawElement(): Border? {
+    override fun drawElement(partialTicks: Float): Border? {
         updateAnimation()
 
         AWTFontRenderer.assumeNonVolatile = true

@@ -5,13 +5,11 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import co.uk.hexeption.utils.OutlineUtils;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.Chams;
 import net.ccbluex.liquidbounce.features.module.modules.render.ESP;
 import net.ccbluex.liquidbounce.features.module.modules.render.NameTags;
 import net.ccbluex.liquidbounce.features.module.modules.render.TrueSight;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -29,8 +27,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.awt.*;
 
 @Mixin(RendererLivingEntity.class)
 @SideOnly(Side.CLIENT)
@@ -113,26 +109,6 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                         GL11.glPopAttrib();
                         GL11.glPopMatrix();
                         break;
-                    case "outline":
-                        ClientUtils.disableFastRender();
-                        GlStateManager.resetColor();
-
-                        final Color color = esp.getColor(entitylivingbaseIn);
-                        OutlineUtils.setColor(color);
-                        OutlineUtils.renderOne(esp.outlineWidth.get());
-                        this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
-                        OutlineUtils.setColor(color);
-                        OutlineUtils.renderTwo();
-                        this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
-                        OutlineUtils.setColor(color);
-                        OutlineUtils.renderThree();
-                        this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
-                        OutlineUtils.setColor(color);
-                        OutlineUtils.renderFour(color);
-                        this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
-                        OutlineUtils.setColor(color);
-                        OutlineUtils.renderFive();
-                        OutlineUtils.setColor(Color.WHITE);
                 }
                 mc.gameSettings.fancyGraphics = fancyGraphics;
                 mc.gameSettings.gammaSetting = gamma;

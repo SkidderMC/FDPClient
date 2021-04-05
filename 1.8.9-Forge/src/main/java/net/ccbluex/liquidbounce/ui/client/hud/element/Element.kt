@@ -82,7 +82,7 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, var scale: Floa
     /**
      * Draw element
      */
-    abstract fun drawElement(): Border?
+    abstract fun drawElement(partialTicks: Float): Border?
 
     /**
      * Update element

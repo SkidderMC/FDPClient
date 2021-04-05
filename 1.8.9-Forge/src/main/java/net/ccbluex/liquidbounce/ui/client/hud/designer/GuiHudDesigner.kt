@@ -26,7 +26,7 @@ class GuiHudDesigner : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        LiquidBounce.hud.render(true)
+        LiquidBounce.hud.render(true, partialTicks)
         LiquidBounce.hud.handleMouseMove(mouseX, mouseY)
 
         if (!LiquidBounce.hud.elements.contains(selectedElement))

@@ -58,7 +58,7 @@ public final class ClientUtils extends MinecraftInstance {
     }
 
     public static void displayAlert(final String message){
-        displayChatMessage("§8[§c§lFDP§6§lClient] §f"+message);
+        displayChatMessage("§8[§c§lFDP§6§lClient§8] §f"+message);
     }
 
     public static void displayChatMessage(final String message) {

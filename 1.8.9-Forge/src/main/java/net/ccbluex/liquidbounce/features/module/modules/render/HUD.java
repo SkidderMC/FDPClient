@@ -34,7 +34,7 @@ public class HUD extends Module {
         if (mc.currentScreen instanceof GuiHudDesigner)
             return;
 
-        LiquidBounce.hud.render(false);
+        LiquidBounce.hud.render(false,event.getPartialTicks());
     }
 
     @EventTarget

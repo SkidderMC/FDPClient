@@ -15,10 +15,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
-import net.ccbluex.liquidbounce.value.BlockValue;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
-import net.ccbluex.liquidbounce.value.ListValue;
+import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
@@ -29,8 +26,9 @@ import java.util.List;
 
 @ModuleInfo(name = "BlockESP", description = "Allows you to see a selected block through walls.", category = ModuleCategory.RENDER)
 public class BlockESP extends Module {
-    private final ListValue modeValue = new ListValue("Mode", new String[] {"Box", "2D"}, "Box");
+    private final ListValue modeValue = new ListValue("Mode", new String[] {"Box", "OtherBox", "Outline", "2D"}, "Box");
 
+    private final FloatValue outlineWidth = new FloatValue("Outline-Width", 3F, 0.5F, 5F);
     private final BlockValue blockValue = new BlockValue("Block", 168);
     private final IntegerValue radiusValue = new IntegerValue("Radius", 40, 5, 120);
 
@@ -88,12 +86,22 @@ public class BlockESP extends Module {
 
             for(final BlockPos blockPos : posList) {
                 switch(modeValue.get().toLowerCase()) {
-                    case "box":
-                        RenderUtils.drawBlockBox(blockPos, color, true);
+                    case "box": {
+                        RenderUtils.drawBlockBox(blockPos, color, true, true, outlineWidth.get());
                         break;
-                    case "2d":
+                    }
+                    case "otherbox":{
+                        RenderUtils.drawBlockBox(blockPos, color, false, true, outlineWidth.get());
+                        break;
+                    }
+                    case "outline":{
+                        RenderUtils.drawBlockBox(blockPos, color, true,false, outlineWidth.get());
+                        break;
+                    }
+                    case "2d": {
                         RenderUtils.draw2D(blockPos, color.getRGB(), Color.BLACK.getRGB());
                         break;
+                    }
                 }
             }
         }

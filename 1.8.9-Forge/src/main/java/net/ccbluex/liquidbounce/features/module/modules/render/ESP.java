@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.script.api.global.Chat;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
@@ -44,8 +43,8 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "ESP", description = "Allows you to see targets through walls.", category = ModuleCategory.RENDER)
 public class ESP extends Module {
     public static boolean renderNameTags = true;
-    public final ListValue modeValue = new ListValue("Mode", new String[]{"Box", "OtherBox", "WireFrame", "2D", "CSGO", "Outline", "ShaderOutline", "ShaderGlow"}, "Box");
-    public final FloatValue outlineWidth = new FloatValue("Outline-Width", 3F, 0.5F, 5F);
+    public final ListValue modeValue = new ListValue("Mode", new String[]{"Box", "OtherBox", "WireFrame", "2D", "CSGO", "Outline", "ShaderOutline", "ShaderGlow", "Jello"}, "Jello");
+    private final FloatValue outlineWidth = new FloatValue("Outline-Width", 3F, 0.5F, 5F);
     public final FloatValue wireframeWidth = new FloatValue("WireFrame-Width", 2F, 0.5F, 5F);
     private final FloatValue shaderOutlineRadius = new FloatValue("ShaderOutline-Radius", 1.35F, 1F, 2F);
     private final FloatValue shaderGlowRadius = new FloatValue("ShaderGlow-Radius", 2.3F, 2F, 3F);
@@ -98,7 +97,10 @@ public class ESP extends Module {
                 switch (mode.toLowerCase()) {
                     case "box":
                     case "otherbox":
-                        RenderUtils.drawEntityBox(entity, color, !mode.equalsIgnoreCase("otherbox"));
+                        RenderUtils.drawEntityBox(entity, color, !mode.equalsIgnoreCase("otherbox"),true, outlineWidth.get());
+                        break;
+                    case "outline":
+                        RenderUtils.drawEntityBox(entity, color, true,false, outlineWidth.get());
                         break;
                     case "2d": {
                         final RenderManager renderManager = mc.getRenderManager();
@@ -196,6 +198,26 @@ public class ESP extends Module {
     @EventTarget
     public void onRender2D(final Render2DEvent event) {
         final String mode = modeValue.get().toLowerCase();
+
+        if(mode.equalsIgnoreCase("jello")){
+            GlowShader.GLOW_SHADER.startDraw(event.getPartialTicks());
+            OutlineShader.OUTLINE_SHADER.startDraw(event.getPartialTicks());
+            renderNameTags = false;
+            try {
+                for (final Entity entity : mc.theWorld.loadedEntityList) {
+                    if (!EntityUtils.isSelected(entity, false))
+                        continue;
+
+                    mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
+                }
+            } catch (final Exception ex) {
+                ClientUtils.getLogger().error("An error occurred while rendering all entities for shader esp", ex);
+            }
+            renderNameTags = true;
+            GlowShader.GLOW_SHADER.stopDraw(new Color(120,120,120), 3F,1F);
+            OutlineShader.OUTLINE_SHADER.stopDraw(new Color(255,255,255,170), 1.2F,1F);
+            return;
+        }
 
         final FramebufferShader shader = mode.equalsIgnoreCase("shaderoutline")
                 ? OutlineShader.OUTLINE_SHADER : mode.equalsIgnoreCase("shaderglow")

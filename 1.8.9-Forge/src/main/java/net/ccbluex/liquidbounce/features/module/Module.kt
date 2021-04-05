@@ -66,11 +66,11 @@ open class Module : MinecraftInstance(), Listenable {
 
             // Play sound and add notification
             if (!LiquidBounce.isStarting) {
-                mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.click"),
-                    1F))
                 if(value){
+                    LiquidBounce.musicManager.enableSound.asyncPlay()
                     LiquidBounce.hud.addNotification(Notification("$name Enabled",NotifyType.OKAY))
                 }else{
+                    LiquidBounce.musicManager.disableSound.asyncPlay()
                     LiquidBounce.hud.addNotification(Notification("$name Disabled",NotifyType.WARN))
                 }
             }

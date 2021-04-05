@@ -23,7 +23,8 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.icon.IconManager
+import net.ccbluex.liquidbounce.ui.other.IconManager
+import net.ccbluex.liquidbounce.ui.other.MusicManager
 import net.ccbluex.liquidbounce.utils.ClassUtils.hasForge
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
@@ -35,7 +36,7 @@ object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
-    const val CLIENT_VERSION = "v1.0.1"
+    const val CLIENT_VERSION = "v1.0.2"
     const val IN_DEV = false
     const val CLIENT_CREATOR = "Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
@@ -49,6 +50,7 @@ object LiquidBounce {
     lateinit var eventManager: EventManager
     lateinit var fileManager: FileManager
     lateinit var scriptManager: ScriptManager
+    lateinit var musicManager: MusicManager
 
     // HUD & ClickGUI
     lateinit var hud: HUD
@@ -107,6 +109,8 @@ object LiquidBounce {
 
         // Register commands
         commandManager.registerCommands()
+
+        musicManager=MusicManager()
 
         // Load configs
         fileManager.loadConfigs(fileManager.modulesConfig, fileManager.valuesConfig, fileManager.accountsConfig,

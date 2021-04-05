@@ -41,7 +41,7 @@ public class ItemESP extends Module {
                 if (!(entity instanceof EntityItem || entity instanceof EntityArrow))
                     continue;
 
-                RenderUtils.drawEntityBox(entity, color, true);
+                RenderUtils.drawEntityBox(entity, color, true, true, 1F);
             }
         }
     }

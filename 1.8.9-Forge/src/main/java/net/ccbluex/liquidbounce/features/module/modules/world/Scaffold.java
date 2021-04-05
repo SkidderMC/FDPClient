@@ -459,7 +459,7 @@ public class Scaffold extends Module {
             final PlaceInfo placeInfo = PlaceInfo.get(blockPos);
 
             if (BlockUtils.isReplaceable(blockPos) && placeInfo != null) {
-                RenderUtils.drawBlockBox(blockPos, new Color(68, 117, 255, 100), false);
+                RenderUtils.drawBlockBox(blockPos, new Color(68, 117, 255, 100), false,true, 1F);
                 break;
             }
         }

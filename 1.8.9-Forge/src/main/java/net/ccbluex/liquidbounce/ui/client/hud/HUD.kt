@@ -55,14 +55,14 @@ open class HUD : MinecraftInstance() {
     /**
      * Render all elements
      */
-    fun render(designer: Boolean) {
+    fun render(designer: Boolean,partialTicks: Float) {
         for (element in elements) {
             GL11.glPushMatrix()
             GL11.glScalef(element.scale, element.scale, element.scale)
             GL11.glTranslated(element.renderX, element.renderY, 0.0)
 
             try {
-                element.border = element.drawElement()
+                element.border = element.drawElement(partialTicks)
 
                 if (designer)
                     element.border?.draw()

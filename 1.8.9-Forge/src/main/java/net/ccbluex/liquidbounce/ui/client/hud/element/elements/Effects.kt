@@ -31,7 +31,7 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    override fun drawElement(): Border {
+    override fun drawElement(partialTicks: Float): Border {
         var y = 0F
         var width = 0F
 

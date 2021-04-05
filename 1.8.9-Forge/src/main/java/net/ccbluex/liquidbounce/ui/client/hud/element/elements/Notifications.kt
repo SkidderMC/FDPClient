@@ -6,18 +6,16 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.icon.IconManager
+import net.ccbluex.liquidbounce.ui.other.IconManager
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.FontValue
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 
@@ -36,7 +34,7 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    override fun drawElement(): Border? {
+    override fun drawElement(partialTicks: Float): Border? {
         val notifications = mutableListOf<Notification>()
         //FUCK YOU java.util.ConcurrentModificationException
         for(notify in LiquidBounce.hud.notifications){

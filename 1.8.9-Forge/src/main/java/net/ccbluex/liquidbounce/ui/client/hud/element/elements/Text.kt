@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -23,6 +24,7 @@ import net.ccbluex.liquidbounce.value.TextValue
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -64,6 +66,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
+    private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
     private val rainbow = BoolValue("Rainbow", false)
     private val shadow = BoolValue("Shadow", true)
     private var fontValue = FontValue("Font", Fonts.font40)
@@ -148,8 +151,8 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    override fun drawElement(): Border? {
-        val color = Color(redValue.get(), greenValue.get(), blueValue.get()).rgb
+    override fun drawElement(partialTicks: Float): Border {
+        val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get()).rgb
 
         val fontRenderer = fontValue.get()
 

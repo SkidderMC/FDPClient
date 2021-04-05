@@ -95,7 +95,7 @@ public final class RenderUtils extends MinecraftInstance {
         return length;
     }
 
-    public static void drawBlockBox(final BlockPos blockPos, final Color color, final boolean outline) {
+    public static void drawBlockBox(final BlockPos blockPos, final Color color, final boolean outline, final boolean box, final float outlineWidth) {
         final RenderManager renderManager = mc.getRenderManager();
         final Timer timer = mc.timer;
 
@@ -122,11 +122,13 @@ public final class RenderUtils extends MinecraftInstance {
         disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST);
         glDepthMask(false);
 
-        glColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() != 255 ? color.getAlpha() : outline ? 26 : 35);
-        drawFilledBox(axisAlignedBB);
+        if(box) {
+            glColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() != 255 ? color.getAlpha() : outline ? 26 : 35);
+            drawFilledBox(axisAlignedBB);
+        }
 
         if (outline) {
-            glLineWidth(1F);
+            glLineWidth(outlineWidth);
             enableGlCap(GL_LINE_SMOOTH);
             glColor(color);
 
@@ -171,7 +173,7 @@ public final class RenderUtils extends MinecraftInstance {
         tessellator.draw();
     }
 
-    public static void drawEntityBox(final Entity entity, final Color color, final boolean outline) {
+    public static void drawEntityBox(final Entity entity, final Color color, final boolean outline, final boolean box, final float outlineWidth) {
         final RenderManager renderManager = mc.getRenderManager();
         final Timer timer = mc.timer;
 
@@ -198,14 +200,17 @@ public final class RenderUtils extends MinecraftInstance {
         );
 
         if (outline) {
-            glLineWidth(1F);
+            glLineWidth(outlineWidth);
             enableGlCap(GL_LINE_SMOOTH);
             glColor(color.getRed(), color.getGreen(), color.getBlue(), 95);
             drawSelectionBoundingBox(axisAlignedBB);
         }
 
-        glColor(color.getRed(), color.getGreen(), color.getBlue(), outline ? 26 : 35);
-        drawFilledBox(axisAlignedBB);
+        if(box) {
+            glColor(color.getRed(), color.getGreen(), color.getBlue(), outline ? 26 : 35);
+            drawFilledBox(axisAlignedBB);
+        }
+
         GlStateManager.resetColor();
         glDepthMask(true);
         resetCaps();
