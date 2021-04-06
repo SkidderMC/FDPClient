@@ -52,9 +52,9 @@ class NameTags : Module() {
                 renderNameTag(
                     entity as EntityLivingBase,
                     if (clearNamesValue.get())
-                        ColorUtils.stripColor(entity.getDisplayName().unformattedText) ?: continue
-                    else
                         entity.name
+                    else
+                        entity.getDisplayName().unformattedText
                 )
             }
         }
@@ -114,7 +114,7 @@ class NameTags : Module() {
         // Draw nametag
         if(jelloValue.get()){
             //colors
-            var hpBarColor=Color(255,255,255)
+            var hpBarColor=jelloColor(255,255,255)
             val name=entity.displayName.unformattedText
             if(jelloColorValue.get() && name.startsWith("§")){
                 when(name.substring(1,2).toLowerCase()){

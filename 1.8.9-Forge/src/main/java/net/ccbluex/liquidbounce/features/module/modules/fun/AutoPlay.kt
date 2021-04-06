@@ -9,16 +9,19 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import java.util.*
 
 @ModuleInfo(name = "AutoPlay", description = "Auto join another game(only redesky).", category = ModuleCategory.FUN)
 class AutoPlay : Module(){
     private var clickState=0
+    private val silentValue=BoolValue("Silent",true)
     private val delayValue=IntegerValue("JoinDelay",3,0,7)
 
     override fun onEnable() {
@@ -29,7 +32,7 @@ class AutoPlay : Module(){
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if (packet is S2FPacketSetSlot) {
-            val item= packet.func_149174_e() ?: return
+            val item=packet.func_149174_e() ?: return
             val windowId=packet.func_149175_c()
             val slot=packet.func_149173_d()
             val name=item.unlocalizedName
@@ -48,6 +51,9 @@ class AutoPlay : Module(){
             }else if(clickState==2 && windowId!=0 && slot==11 && name.contains("enderPearl",ignoreCase = true)){
                 mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId,slot,0,0,item,1919))
             }
+        }
+        if(silentValue.get() && clickState==2 && packet is S2DPacketOpenWindow){
+            event.cancelEvent()
         }
     }
 

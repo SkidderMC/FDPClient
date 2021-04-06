@@ -36,13 +36,13 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 import static net.ccbluex.liquidbounce.utils.render.WorldToScreen.getMatrix;
 import static org.lwjgl.opengl.GL11.*;
 
 @ModuleInfo(name = "ESP", description = "Allows you to see targets through walls.", category = ModuleCategory.RENDER)
 public class ESP extends Module {
-    public static boolean renderNameTags = true;
     public final ListValue modeValue = new ListValue("Mode", new String[]{"Box", "OtherBox", "WireFrame", "2D", "CSGO", "Outline", "ShaderOutline", "ShaderGlow", "Jello"}, "Jello");
     private final FloatValue outlineWidth = new FloatValue("Outline-Width", 3F, 0.5F, 5F);
     public final FloatValue wireframeWidth = new FloatValue("WireFrame-Width", 2F, 0.5F, 5F);
@@ -198,55 +198,71 @@ public class ESP extends Module {
     @EventTarget
     public void onRender2D(final Render2DEvent event) {
         final String mode = modeValue.get().toLowerCase();
+        final ArrayList<EntityLivingBase> hurtingEntities=new ArrayList<>();
 
         if(mode.equalsIgnoreCase("jello")){
             GlowShader.GLOW_SHADER.startDraw(event.getPartialTicks());
             OutlineShader.OUTLINE_SHADER.startDraw(event.getPartialTicks());
-            renderNameTags = false;
-            try {
-                for (final Entity entity : mc.theWorld.loadedEntityList) {
-                    if (!EntityUtils.isSelected(entity, false))
+            for (final Entity entity : mc.theWorld.loadedEntityList) {
+                if (EntityUtils.isSelected(entity, false)){
+                    EntityLivingBase entityLivingBase=(EntityLivingBase) entity;
+                    if(entityLivingBase.hurtTime>0){
+                        hurtingEntities.add(entityLivingBase);
                         continue;
-
+                    }
                     mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
                 }
-            } catch (final Exception ex) {
-                ClientUtils.getLogger().error("An error occurred while rendering all entities for shader esp", ex);
             }
-            renderNameTags = true;
             GlowShader.GLOW_SHADER.stopDraw(new Color(120,120,120), 3F,1F);
             OutlineShader.OUTLINE_SHADER.stopDraw(new Color(255,255,255,170), 1.2F,1F);
+
+            //hurt
+            if(hurtingEntities.size()>0) {
+                GlowShader.GLOW_SHADER.startDraw(event.getPartialTicks());
+                OutlineShader.OUTLINE_SHADER.startDraw(event.getPartialTicks());
+                for (EntityLivingBase entity : hurtingEntities) {
+                    mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
+                }
+                GlowShader.GLOW_SHADER.stopDraw(new Color(120, 0, 0), 3F, 1F);
+                OutlineShader.OUTLINE_SHADER.stopDraw(new Color(255, 0, 0, 170), 1.2F, 1F);
+            }
             return;
         }
-
-        final FramebufferShader shader = mode.equalsIgnoreCase("shaderoutline")
-                ? OutlineShader.OUTLINE_SHADER : mode.equalsIgnoreCase("shaderglow")
-                ? GlowShader.GLOW_SHADER : null;
-
-        if (shader == null) return;
-
-        shader.startDraw(event.getPartialTicks());
-
-        renderNameTags = false;
-
+        //normal shader esp
         try {
-            for (final Entity entity : mc.theWorld.loadedEntityList) {
-                if (!EntityUtils.isSelected(entity, false))
-                    continue;
+            final FramebufferShader shader = mode.equalsIgnoreCase("shaderoutline")
+                    ? OutlineShader.OUTLINE_SHADER : mode.equalsIgnoreCase("shaderglow")
+                    ? GlowShader.GLOW_SHADER : null;
+            if (shader == null) return;
+            shader.startDraw(event.getPartialTicks());
 
-                mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
+            for (final Entity entity : mc.theWorld.loadedEntityList) {
+                if (EntityUtils.isSelected(entity, false)){
+                    EntityLivingBase entityLivingBase=(EntityLivingBase) entity;
+                    if(entityLivingBase.hurtTime>0){
+                        hurtingEntities.add(entityLivingBase);
+                        continue;
+                    }
+                    mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
+                }
+            }
+
+            final float radius = mode.equalsIgnoreCase("shaderoutline")
+                    ? shaderOutlineRadius.get() : mode.equalsIgnoreCase("shaderglow")
+                    ? shaderGlowRadius.get() : 1F;
+
+            shader.stopDraw(getColor(null), radius, 1F);
+
+            if(hurtingEntities.size()>0) {
+                shader.startDraw(event.getPartialTicks());
+                for (EntityLivingBase entity : hurtingEntities) {
+                    mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
+                }
+                shader.stopDraw(Color.RED, radius, 1F);
             }
         } catch (final Exception ex) {
             ClientUtils.getLogger().error("An error occurred while rendering all entities for shader esp", ex);
         }
-
-        renderNameTags = true;
-
-        final float radius = mode.equalsIgnoreCase("shaderoutline")
-                ? shaderOutlineRadius.get() : mode.equalsIgnoreCase("shaderglow")
-                ? shaderGlowRadius.get() : 1F;
-
-        shader.stopDraw(getColor(null), radius, 1F);
     }
 
     @Override

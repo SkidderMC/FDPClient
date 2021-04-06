@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.SessionEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.login.UserUtils.getUUID
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.minecraft.util.Session
 import java.net.Proxy
 import java.util.*
@@ -52,6 +53,11 @@ object LoginUtils : MinecraftInstance() {
     fun loginCracked(username: String?) {
         mc.session = Session(username, getUUID(username!!), "-", "legacy")
         LiquidBounce.eventManager.callEvent(SessionEvent())
+    }
+
+    @JvmStatic
+    fun randomCracked(){
+        loginCracked("FDPUser_" +RandomUtils.randomString(RandomUtils.nextInt(3, 8)))
     }
 
     @JvmStatic

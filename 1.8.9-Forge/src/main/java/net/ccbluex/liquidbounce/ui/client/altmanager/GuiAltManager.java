@@ -44,7 +44,7 @@ public class GuiAltManager extends GuiScreen {
     private final GuiScreen prevGui;
     public String status = "§7Idle...";
     private GuiButton loginButton;
-    private GuiButton randomButton;
+    private GuiButton randomAltButton;
     private GuiList altsList;
 
     public GuiAltManager(final GuiScreen prevGui) {
@@ -144,16 +144,17 @@ public class GuiAltManager extends GuiScreen {
         this.buttonList.add(new GuiButton(0, width - 80, height - 65, 70, 20, "Back"));
 
         this.buttonList.add(loginButton = new GuiButton(3, 5, j + 24, 90, 20, "Login"));
-        this.buttonList.add(randomButton = new GuiButton(4, 5, j + 24 * 2, 90, 20, "Random"));
-        this.buttonList.add(new GuiButton(6, 5, j + 24 * 3, 90, 20, "Direct Login"));
-        this.buttonList.add(new GuiButton(88, 5, j + 24 * 4, 90, 20, "Change Name"));
+        this.buttonList.add(randomAltButton = new GuiButton(4, 5, j + 24 * 2, 90, 20, "Random Alt"));
+        this.buttonList.add(new GuiButton(89, 5, j + 24 * 3, 90, 20, "Random Cracked"));
+        this.buttonList.add(new GuiButton(6, 5, j + 24 * 4, 90, 20, "Direct Login"));
+        this.buttonList.add(new GuiButton(88, 5, j + 24 * 5, 90, 20, "Change Name"));
 
         if (GENERATORS.getOrDefault("mcleaks", true))
-            this.buttonList.add(new GuiButton(5, 5, j + 24 * 5 + 5, 90, 20, "MCLeaks"));
+            this.buttonList.add(new GuiButton(5, 5, j + 24 * 6 + 5, 90, 20, "MCLeaks"));
         if (GENERATORS.getOrDefault("thealtening", true))
-            this.buttonList.add(new GuiButton(9, 5, j + 24 * 6 + 5, 90, 20, "TheAltening"));
+            this.buttonList.add(new GuiButton(9, 5, j + 24 * 7 + 5, 90, 20, "TheAltening"));
 
-        this.buttonList.add(new GuiButton(10, 5, j + 24 * 7 + 5, 90, 20, "Session Login"));
+        this.buttonList.add(new GuiButton(10, 5, j + 24 * 8 + 5, 90, 20, "Session Login"));
 
     }
 
@@ -193,14 +194,14 @@ public class GuiAltManager extends GuiScreen {
                 break;
             case 3:
                 if (altsList.getSelectedSlot() != -1 && altsList.getSelectedSlot() < altsList.getSize()) {
-                    loginButton.enabled = randomButton.enabled = false;
+                    loginButton.enabled = randomAltButton.enabled = false;
 
                     final Thread thread = new Thread(() -> {
                         final MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.get(altsList.getSelectedSlot());
                         status = "§aLogging in...";
                         status = login(minecraftAccount);
 
-                        loginButton.enabled = randomButton.enabled = true;
+                        loginButton.enabled = randomAltButton.enabled = true;
                     }, "AltLogin");
                     thread.start();
                 } else
@@ -217,14 +218,14 @@ public class GuiAltManager extends GuiScreen {
                 if (randomInteger < altsList.getSize())
                     altsList.selectedSlot = randomInteger;
 
-                loginButton.enabled = randomButton.enabled = false;
+                loginButton.enabled = randomAltButton.enabled = false;
 
                 final Thread thread = new Thread(() -> {
                     final MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.get(randomInteger);
                     status = "§aLogging in...";
                     status = login(minecraftAccount);
 
-                    loginButton.enabled = randomButton.enabled = true;
+                    loginButton.enabled = randomAltButton.enabled = true;
                 }, "AltLogin");
                 thread.start();
                 break;
@@ -289,6 +290,9 @@ public class GuiAltManager extends GuiScreen {
                 break;
             case 10:
                 mc.displayGuiScreen(new GuiSessionLogin(this));
+                break;
+            case 89:
+                LoginUtils.randomCracked();
                 break;
         }
     }
@@ -370,14 +374,14 @@ public class GuiAltManager extends GuiScreen {
 
             if (doubleClick) {
                 if (altsList.getSelectedSlot() != -1 && altsList.getSelectedSlot() < altsList.getSize() && loginButton.enabled) {
-                    loginButton.enabled = randomButton.enabled = false;
+                    loginButton.enabled = randomAltButton.enabled = false;
 
                     new Thread(() -> {
                         MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.get(altsList.getSelectedSlot());
                         status = "§aLogging in...";
                         status = "§c" + login(minecraftAccount);
 
-                        loginButton.enabled = randomButton.enabled = true;
+                        loginButton.enabled = randomAltButton.enabled = true;
                     }, "AltManagerLogin").start();
                 } else
                     status = "§cSelect an account.";
