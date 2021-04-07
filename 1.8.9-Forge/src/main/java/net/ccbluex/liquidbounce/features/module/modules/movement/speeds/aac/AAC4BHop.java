@@ -17,21 +17,6 @@ public class AAC4BHop extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-
-    }
-
-    @Override
-    public void onUpdate() {
-
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-
-    }
-
-    @Override
     public void onEnable() {
         legitHop = true;
     }

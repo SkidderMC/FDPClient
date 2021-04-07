@@ -71,14 +71,6 @@ public class Boost extends SpeedMode {
         }
     }
 
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
-
     private boolean shouldSpeedUp() {
         return !mc.thePlayer.isInWater() && (!mc.thePlayer.isOnLadder()) && !mc.thePlayer.isSneaking() && MovementUtils.isMoving();
     }

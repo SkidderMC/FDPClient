@@ -60,9 +60,8 @@ object UserUtils {
         }
 
         val names = JsonParser().parse(EntityUtils.toString(response.entity)).asJsonArray
-        val username = names.get(names.size()-1).asJsonObject.get("name").asString
 
-        return username
+        return names.get(names.size() - 1).asJsonObject.get("name").asString
     }
 
     /**
@@ -95,5 +94,4 @@ object UserUtils {
 
         return ""
     }
-
 }

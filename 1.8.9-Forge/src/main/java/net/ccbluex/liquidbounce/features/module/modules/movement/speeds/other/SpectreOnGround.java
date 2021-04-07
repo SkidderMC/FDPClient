@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/CCBlueX/LiquidBounce/
  */
-package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre;
+package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other;
 
 import net.ccbluex.liquidbounce.event.MoveEvent;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode;
@@ -16,14 +16,6 @@ public class SpectreOnGround extends SpeedMode {
 
     public SpectreOnGround() {
         super("SpectreOnGround");
-    }
-
-    @Override
-    public void onMotion() {
-    }
-
-    @Override
-    public void onUpdate() {
     }
 
     @Override

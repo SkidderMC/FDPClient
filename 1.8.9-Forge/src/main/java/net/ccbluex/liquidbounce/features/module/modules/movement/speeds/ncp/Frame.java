@@ -49,12 +49,4 @@ public class Frame extends SpeedMode {
             tickTimer.update();
         }
     }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
 }

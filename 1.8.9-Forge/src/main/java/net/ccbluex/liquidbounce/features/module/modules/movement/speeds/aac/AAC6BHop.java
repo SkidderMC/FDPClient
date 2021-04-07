@@ -17,11 +17,6 @@ public class AAC6BHop extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-
-    }
-
-    @Override
     public void onUpdate() {
         mc.timer.timerSpeed = 1F;
 
@@ -51,11 +46,6 @@ public class AAC6BHop extends SpeedMode {
             mc.thePlayer.motionX = 0D;
             mc.thePlayer.motionZ = 0D;
         }
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-
     }
 
     @Override

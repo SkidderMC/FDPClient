@@ -21,16 +21,6 @@ public class TeleportCubeCraft extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-
-    }
-
-    @Override
-    public void onUpdate() {
-
-    }
-
-    @Override
     public void onMove(final MoveEvent event) {
         if(MovementUtils.isMoving() && mc.thePlayer.onGround && timer.hasTimePassed(300L)) {
             final double yaw = MovementUtils.getDirection();

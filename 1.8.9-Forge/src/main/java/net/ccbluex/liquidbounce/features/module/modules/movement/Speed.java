@@ -13,10 +13,11 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spartan.SpartanYPort;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.SpectreBHop;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.SpectreLowHop;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.SpectreOnGround;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.SpartanYPort;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.SpectreBHop;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.SpectreLowHop;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.SpectreOnGround;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -78,7 +79,10 @@ public class Speed extends Module {
 
             // Other
             new SlowHop(),
-            new CustomSpeed()
+            new CustomSpeed(),
+
+            // RedeSky
+            new RedeSkyHop()
     };
 
     public final ListValue modeValue = new ListValue("Mode", getModes(), "NCPBHop") {
@@ -104,6 +108,9 @@ public class Speed extends Module {
     public final BoolValue resetYValue = new BoolValue("CustomResetY", false);
 
     public final FloatValue portMax = new FloatValue("AAC-PortLength", 1, 1, 20);
+    public final FloatValue redeSkyHopGSpeed = new FloatValue("RedeSkyHop-GSpeed", 0.3F, 0.1F, 0.7F);
+    public final FloatValue redeSkyHopHeight = new FloatValue("RedeSkyHop-Height", 0.45F, 0.30F, 0.55F);
+    public final FloatValue redeSkyHopTimer = new FloatValue("RedeSkyHop-Timer", 6F, 1.1F, 10F);
     public final FloatValue aacGroundTimerValue = new FloatValue("AACGround-Timer", 3F, 1.1F, 10F);
     public final FloatValue cubecraftPortLengthValue = new FloatValue("CubeCraft-PortLength", 1F, 0.1F, 2F);
     public final FloatValue mineplexGroundSpeedValue = new FloatValue("MineplexGround-Speed", 0.5F, 0.1F, 1F);

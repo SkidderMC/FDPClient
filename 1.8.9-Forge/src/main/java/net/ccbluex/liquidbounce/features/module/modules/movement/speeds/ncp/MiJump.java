@@ -38,12 +38,4 @@ public class MiJump extends SpeedMode {
 
         MovementUtils.strafe();
     }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
 }

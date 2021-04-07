@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/CCBlueX/LiquidBounce/
  */
-package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spartan;
+package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other;
 
 import net.ccbluex.liquidbounce.event.MoveEvent;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode;
@@ -36,13 +36,5 @@ public class SpartanYPort extends SpeedMode {
                 airMoves++;
             }
         }
-    }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
     }
 }

@@ -15,6 +15,7 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -223,6 +224,7 @@ public abstract class MixinItemRenderer {
                     this.doItemUsedTransformations(f1);
                 this.transformFirstPersonItem(f, f1);
             }
+
             this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
         }else if(!abstractclientplayer.isInvisible()) {
             this.renderPlayerArm(abstractclientplayer, f, f1);

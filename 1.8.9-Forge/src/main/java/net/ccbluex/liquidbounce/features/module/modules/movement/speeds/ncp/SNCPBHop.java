@@ -48,10 +48,6 @@ public class SNCPBHop extends SpeedMode {
     }
 
     @Override
-    public void onUpdate() {
-    }
-
-    @Override
     public void onMove(MoveEvent event) {
         ++timerDelay;
         timerDelay %= 5;

@@ -17,22 +17,12 @@ public class AACGround2 extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-
-    }
-
-    @Override
     public void onUpdate() {
         if(!MovementUtils.isMoving())
             return;
 
         mc.timer.timerSpeed = ((Speed) LiquidBounce.moduleManager.getModule(Speed.class)).aacGroundTimerValue.get();
         MovementUtils.strafe(0.02F);
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-
     }
 
     @Override

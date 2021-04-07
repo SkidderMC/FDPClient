@@ -55,13 +55,4 @@ public class CustomSpeed extends SpeedMode {
         mc.timer.timerSpeed = 1F;
         super.onDisable();
     }
-
-    @Override
-    public void onUpdate() {
-
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
 }

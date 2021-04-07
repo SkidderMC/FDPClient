@@ -72,10 +72,6 @@ public class MineplexGround extends SpeedMode {
     }
 
     @Override
-    public void onMove(final MoveEvent event) {
-    }
-
-    @Override
     public void onDisable() {
         speed = 0F;
         mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));

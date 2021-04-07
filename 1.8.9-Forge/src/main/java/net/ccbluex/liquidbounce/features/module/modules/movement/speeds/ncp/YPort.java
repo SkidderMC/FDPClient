@@ -47,11 +47,6 @@ public class YPort extends SpeedMode {
     }
 
     @Override
-    public void onUpdate() {
-
-    }
-
-    @Override
     public void onMove(MoveEvent event) {
         this.timerDelay += 1;
         this.timerDelay %= 5;

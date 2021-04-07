@@ -42,15 +42,6 @@ public class AACBHop extends SpeedMode {
     }
 
     @Override
-    public void onUpdate() {
-
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
-
-    @Override
     public void onDisable() {
         mc.timer.timerSpeed = 1F;
     }

@@ -22,9 +22,13 @@ import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.*;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -39,6 +43,27 @@ public class StorageESP extends Module {
     private final BoolValue dispenserValue = new BoolValue("Dispenser", true);
     private final BoolValue hopperValue = new BoolValue("Hopper", true);
 
+    private Color getColor(TileEntity tileEntity){
+        Color color = null;
+
+        if (chestValue.get() && tileEntity instanceof TileEntityChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
+            color = new Color(0, 66, 255);
+
+        if (enderChestValue.get() && tileEntity instanceof TileEntityEnderChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
+            color = Color.MAGENTA;
+
+        if (furnaceValue.get() && tileEntity instanceof TileEntityFurnace)
+            color = Color.BLACK;
+
+        if (dispenserValue.get() && tileEntity instanceof TileEntityDispenser)
+            color = Color.BLACK;
+
+        if (hopperValue.get() && tileEntity instanceof TileEntityHopper)
+            color = Color.GRAY;
+
+        return color;
+    }
+
     @EventTarget
     public void onRender3D(Render3DEvent event) {
         try {
@@ -48,22 +73,7 @@ public class StorageESP extends Module {
             mc.gameSettings.gammaSetting = 100000.0F;
 
             for (final TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
-                Color color = null;
-
-                if (chestValue.get() && tileEntity instanceof TileEntityChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
-                    color = new Color(0, 66, 255);
-
-                if (enderChestValue.get() && tileEntity instanceof TileEntityEnderChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
-                    color = Color.MAGENTA;
-
-                if (furnaceValue.get() && tileEntity instanceof TileEntityFurnace)
-                    color = Color.BLACK;
-
-                if (dispenserValue.get() && tileEntity instanceof TileEntityDispenser)
-                    color = Color.BLACK;
-
-                if (hopperValue.get() && tileEntity instanceof TileEntityHopper)
-                    color = Color.GRAY;
+                Color color=getColor(tileEntity);
 
                 if (color == null)
                     continue;
@@ -89,7 +99,6 @@ public class StorageESP extends Module {
                         glEnable(GL_LINE_SMOOTH);
                         glEnable(GL_BLEND);
                         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                        TileEntityRendererDispatcher.instance.renderTileEntity(tileEntity, event.getPartialTicks(), -1);
                         RenderUtils.glColor(color);
                         glLineWidth(1.5F);
                         TileEntityRendererDispatcher.instance.renderTileEntity(tileEntity, event.getPartialTicks(), -1);
@@ -107,6 +116,8 @@ public class StorageESP extends Module {
     @EventTarget
     public void onRender2D(final Render2DEvent event) {
         final String mode = modeValue.get();
+        final RenderManager renderManager = mc.getRenderManager();
+        final float partialTicks=event.getPartialTicks();
 
         final FramebufferShader shader = mode.equalsIgnoreCase("shaderoutline")
                 ? OutlineShader.OUTLINE_SHADER : mode.equalsIgnoreCase("shaderglow")
@@ -115,40 +126,34 @@ public class StorageESP extends Module {
         if (shader == null) return;
 
         try {
-            final RenderManager renderManager = mc.getRenderManager();
-
+            Map<Color, ArrayList<TileEntity>> entityMap=new HashMap<>();
+            //search
             for (final TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
-                Color color = null;
-
-                if (chestValue.get() && tileEntity instanceof TileEntityChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
-                    color = new Color(0, 66, 255);
-
-                if (enderChestValue.get() && tileEntity instanceof TileEntityEnderChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
-                    color = Color.MAGENTA;
-
-                if (furnaceValue.get() && tileEntity instanceof TileEntityFurnace)
-                    color = Color.BLACK;
-
-                if (dispenserValue.get() && tileEntity instanceof TileEntityDispenser)
-                    color = Color.BLACK;
-
-                if (hopperValue.get() && tileEntity instanceof TileEntityHopper)
-                    color = Color.GRAY;
+                Color color=getColor(tileEntity);
 
                 if (color == null)
                     continue;
 
-                shader.startDraw(event.getPartialTicks());
+                if(!entityMap.containsKey(color)){
+                    entityMap.put(color,new ArrayList<>());
+                }
+                entityMap.get(color).add(tileEntity);
+            }
+            //draw
+            for(Map.Entry<Color, ArrayList<TileEntity>> entry:entityMap.entrySet()){
+                shader.startDraw(partialTicks);
 
-                TileEntityRendererDispatcher.instance.renderTileEntityAt(
-                        tileEntity,
-                        tileEntity.getPos().getX() - renderManager.renderPosX,
-                        tileEntity.getPos().getY() - renderManager.renderPosY,
-                        tileEntity.getPos().getZ() - renderManager.renderPosZ,
-                        event.getPartialTicks()
-                );
+                for(TileEntity tileEntity:entry.getValue()){
+                    TileEntityRendererDispatcher.instance.renderTileEntityAt(
+                            tileEntity,
+                            tileEntity.getPos().getX() - renderManager.renderPosX,
+                            tileEntity.getPos().getY() - renderManager.renderPosY,
+                            tileEntity.getPos().getZ() - renderManager.renderPosZ,
+                            partialTicks
+                    );
+                }
 
-                shader.stopDraw(color, mode.equalsIgnoreCase("shaderglow") ? 2.5F : 1.5F, 1F);
+                shader.stopDraw(entry.getKey(), mode.equalsIgnoreCase("shaderglow") ? 2.5F : 1.5F, 1F);
             }
         } catch (final Exception ex) {
             ClientUtils.getLogger().error("An error occurred while rendering all storages for shader esp", ex);

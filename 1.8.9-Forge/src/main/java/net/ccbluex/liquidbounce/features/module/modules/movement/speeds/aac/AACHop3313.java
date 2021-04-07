@@ -21,11 +21,6 @@ public class AACHop3313 extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-
-    }
-
-    @Override
     public void onUpdate() {
         if (!MovementUtils.isMoving() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() ||
                 mc.thePlayer.isOnLadder() || mc.thePlayer.isRiding() || mc.thePlayer.hurtTime > 0)
@@ -53,10 +48,6 @@ public class AACHop3313 extends SpeedMode {
                 mc.thePlayer.motionY -= 0.014999993F;
         } else
             mc.thePlayer.jumpMovementFactor = 0.02F;
-    }
-
-    @Override
-    public void onMove(final MoveEvent event) {
     }
 
     @Override

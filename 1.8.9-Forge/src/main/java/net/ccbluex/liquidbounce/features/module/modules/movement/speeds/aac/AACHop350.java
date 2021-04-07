@@ -13,20 +13,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils;
 public class AACHop350 extends SpeedMode implements Listenable {
     public AACHop350() {
         super("AACHop3.5.0");
-
         LiquidBounce.eventManager.registerListener(this);
-    }
-
-    @Override
-    public void onMotion() {
-    }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(final MoveEvent event) {
     }
 
     @EventTarget

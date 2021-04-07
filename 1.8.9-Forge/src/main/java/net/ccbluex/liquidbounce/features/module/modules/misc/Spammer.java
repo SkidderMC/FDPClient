@@ -46,8 +46,7 @@ public class Spammer extends Module {
         }
     };
 
-    private final TextValue messageValue = new TextValue("Message", "FDP CLIENT | github.com/Project-EZ4H/FDPClient");
-    private final BoolValue customValue = new BoolValue("Custom", false);
+    private final TextValue messageValue = new TextValue("Message", "Buy %r Minecraft %r Legit %r and %r stop %r using %r cracked %r servers %r%r");
 
     private final MSTimer msTimer = new MSTimer();
     private long delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
@@ -55,29 +54,16 @@ public class Spammer extends Module {
     @EventTarget
     public void onUpdate(UpdateEvent event) {
         if(msTimer.hasTimePassed(delay)) {
-            mc.thePlayer.sendChatMessage(customValue.get() ? replace(messageValue.get()) : messageValue.get() + " [" + RandomUtils.randomString(5 + new Random().nextInt(5)) + "]");
+            mc.thePlayer.sendChatMessage(replace(messageValue.get()));
             msTimer.reset();
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
         }
     }
 
     private String replace(String object) {
-        final Random r = new Random();
+        object=object.replaceAll("%r", String.valueOf(RandomUtils.nextInt(0, 99)));
+        object=object.replaceAll("%c", RandomUtils.randomString(1));
 
-        while(object.contains("%f"))
-            object = object.substring(0, object.indexOf("%f")) + r.nextFloat() + object.substring(object.indexOf("%f") + "%f".length());
-
-        while(object.contains("%i"))
-            object = object.substring(0, object.indexOf("%i")) + r.nextInt(10000) + object.substring(object.indexOf("%i") + "%i".length());
-
-        while(object.contains("%s"))
-            object = object.substring(0, object.indexOf("%s")) + RandomUtils.randomString(r.nextInt(8) + 1) + object.substring(object.indexOf("%s") + "%s".length());
-
-        while(object.contains("%ss"))
-            object = object.substring(0, object.indexOf("%ss")) + RandomUtils.randomString(r.nextInt(4) + 1) + object.substring(object.indexOf("%ss") + "%ss".length());
-
-        while(object.contains("%ls"))
-            object = object.substring(0, object.indexOf("%ls")) + RandomUtils.randomString(r.nextInt(15) + 1) + object.substring(object.indexOf("%ls") + "%ls".length());
         return object;
     }
 

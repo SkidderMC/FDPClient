@@ -22,11 +22,6 @@ public class AACPort extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-
-    }
-
-    @Override
     public void onUpdate() {
         if(!MovementUtils.isMoving())
             return;
@@ -41,10 +36,5 @@ public class AACPort extends SpeedMode {
 
             mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, mc.thePlayer.posY, z, true));
         }
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-
     }
 }

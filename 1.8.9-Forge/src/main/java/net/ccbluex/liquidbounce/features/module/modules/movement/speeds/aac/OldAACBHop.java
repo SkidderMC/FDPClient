@@ -28,12 +28,4 @@ public class OldAACBHop extends SpeedMode {
             mc.thePlayer.motionZ = 0.0;
         }
     }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
 }

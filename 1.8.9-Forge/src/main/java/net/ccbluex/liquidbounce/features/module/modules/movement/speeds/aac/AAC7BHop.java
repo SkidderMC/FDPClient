@@ -15,10 +15,6 @@ public class AAC7BHop extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-    }
-
-    @Override
     public void onUpdate() {
         if(!MovementUtils.isMoving() || mc.thePlayer.ridingEntity != null || mc.thePlayer.hurtTime > 0)
             return;
@@ -35,9 +31,5 @@ public class AAC7BHop extends SpeedMode {
         final double yaw = Math.toRadians(mc.thePlayer.rotationYaw);
         mc.thePlayer.motionX = -Math.sin(yaw) * speed;
         mc.thePlayer.motionZ = Math.cos(yaw) * speed;
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
     }
 }

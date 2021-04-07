@@ -42,12 +42,4 @@ public class OnGround extends SpeedMode {
             mc.timer.timerSpeed = 1.199F;
         }
     }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
 }

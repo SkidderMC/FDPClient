@@ -17,21 +17,6 @@ public class AAC3BHop extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-
-    }
-
-    @Override
-    public void onUpdate() {
-
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-
-    }
-
-    @Override
     public void onTick() {
         mc.timer.timerSpeed = 1F;
 

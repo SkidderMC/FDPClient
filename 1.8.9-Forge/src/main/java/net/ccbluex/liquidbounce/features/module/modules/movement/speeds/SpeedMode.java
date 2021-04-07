@@ -27,11 +27,17 @@ public abstract class SpeedMode extends MinecraftInstance {
         return speed != null && !mc.thePlayer.isSneaking() && speed.getState() && speed.modeValue.get().equals(modeName);
     }
 
-    public abstract void onMotion();
+    public void onMotion(){
 
-    public abstract void onUpdate();
+    }
 
-    public abstract void onMove(final MoveEvent event);
+    public void onUpdate(){
+
+    }
+
+    public void onMove(final MoveEvent event){
+
+    }
 
     public void onTick() {
     }

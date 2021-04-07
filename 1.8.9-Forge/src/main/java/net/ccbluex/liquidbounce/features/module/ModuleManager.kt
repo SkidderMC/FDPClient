@@ -28,12 +28,6 @@ class ModuleManager : Listenable {
     val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
 
-    val enableSound=
-        PositionedSoundRecord.create(ResourceLocation("sound/enable.ogg",LiquidBounce.CLIENT_NAME.toLowerCase()),1F)
-    val disableSound=
-        PositionedSoundRecord.create(ResourceLocation("sound/disable.ogg",LiquidBounce.CLIENT_NAME.toLowerCase()),1F)
-
-
     init {
         LiquidBounce.eventManager.registerListener(this)
     }
@@ -93,7 +87,6 @@ class ModuleManager : Listenable {
                 MidClick::class.java,
                 XRay::class.java,
                 Timer::class.java,
-                Sneak::class.java,
                 GhostHand::class.java,
                 AutoBreak::class.java,
                 FreeCam::class.java,
@@ -132,7 +125,8 @@ class ModuleManager : Listenable {
                 HealthWarn::class.java,
                 Animations::class.java,
                 AuthBypass::class.java,
-                AutoPlay::class.java
+                AutoPlay::class.java,
+                ChatBypass::class.java
         )
 
         registerModule(Fucker)

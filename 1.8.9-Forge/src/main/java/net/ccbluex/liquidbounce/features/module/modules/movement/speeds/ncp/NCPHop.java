@@ -29,10 +29,6 @@ public class NCPHop extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-    }
-
-    @Override
     public void onUpdate() {
         if(MovementUtils.isMoving()) {
             if(mc.thePlayer.onGround) {
@@ -45,10 +41,5 @@ public class NCPHop extends SpeedMode {
             mc.thePlayer.motionX = 0D;
             mc.thePlayer.motionZ = 0D;
         }
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-
     }
 }

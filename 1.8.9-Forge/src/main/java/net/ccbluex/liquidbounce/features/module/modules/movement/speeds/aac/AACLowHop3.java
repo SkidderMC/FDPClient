@@ -60,12 +60,4 @@ public class AACLowHop3 extends SpeedMode {
         mc.thePlayer.motionX = -(Math.sin(MovementUtils.getDirection()) * speed);
         mc.thePlayer.motionZ = Math.cos(MovementUtils.getDirection()) * speed;
     }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
 }

@@ -1,0 +1,27 @@
+package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky
+
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
+import net.ccbluex.liquidbounce.utils.MovementUtils
+
+class RedeSkyHop : SpeedMode("RedeSkyHop") {
+    override fun onMotion() {
+        if(MovementUtils.isMoving()){
+            mc.thePlayer.isSprinting = true
+            mc.timer.timerSpeed = 1F
+            if (mc.thePlayer.onGround) {
+                val speedModule=LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
+
+                mc.thePlayer.motionY=speedModule.redeSkyHopHeight.get().toDouble()
+                MovementUtils.strafe(MovementUtils.getSpeed()
+                        +speedModule.redeSkyHopGSpeed.get())
+                mc.timer.timerSpeed = speedModule.redeSkyHopTimer.get()
+            }
+        }
+    }
+
+    override fun onDisable() {
+        mc.timer.timerSpeed = 1F
+    }
+}

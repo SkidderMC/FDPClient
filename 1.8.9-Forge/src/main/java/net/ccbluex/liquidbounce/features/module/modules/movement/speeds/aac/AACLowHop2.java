@@ -53,12 +53,4 @@ public class AACLowHop2 extends SpeedMode {
             mc.thePlayer.motionZ = 0D;
         }
     }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
 }

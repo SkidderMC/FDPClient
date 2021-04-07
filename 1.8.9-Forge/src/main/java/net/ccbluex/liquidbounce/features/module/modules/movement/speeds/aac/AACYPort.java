@@ -27,12 +27,4 @@ public class AACYPort extends SpeedMode {
                 mc.thePlayer.motionY = -0.19D;
         }
     }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
-    }
 }

@@ -28,10 +28,6 @@ public class HiveHop extends SpeedMode {
     }
 
     @Override
-    public void onMotion() {
-    }
-
-    @Override
     public void onUpdate() {
         if(MovementUtils.isMoving()) {
             if(mc.thePlayer.onGround)
@@ -45,9 +41,5 @@ public class HiveHop extends SpeedMode {
             mc.thePlayer.speedInAir = 0.02F;
             mc.timer.timerSpeed = 1F;
         }
-    }
-
-    @Override
-    public void onMove(MoveEvent event) {
     }
 }

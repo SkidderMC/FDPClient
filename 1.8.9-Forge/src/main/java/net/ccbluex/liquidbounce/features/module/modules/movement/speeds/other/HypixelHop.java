@@ -38,12 +38,4 @@ public class HypixelHop extends SpeedMode {
             mc.thePlayer.motionX = mc.thePlayer.motionZ = 0D;
         }
     }
-
-    @Override
-    public void onUpdate() {
-    }
-
-    @Override
-    public void onMove(final MoveEvent event) {
-    }
 }
