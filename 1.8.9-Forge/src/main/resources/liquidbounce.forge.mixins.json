@@ -35,7 +35,6 @@
     "gui.MixinServerSelectionList",
     "item.MixinItemRenderer",
     "item.MixinItemStack",
-    "network.MixinNetHandlerLoginClient",
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "network.MixinNetworkPlayerInfo",

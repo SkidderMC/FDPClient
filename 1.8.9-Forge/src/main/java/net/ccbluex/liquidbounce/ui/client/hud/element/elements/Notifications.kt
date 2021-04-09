@@ -40,8 +40,8 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
         for(notify in LiquidBounce.hud.notifications){
             notifications.add(notify)
         }
-        for(notify in notifications){
-            notify.drawNotification(LiquidBounce.hud.notifications.indexOf(notify))
+        for((index, notify) in notifications.withIndex()){
+            notify.drawNotification(index)
         }
 
         if (mc.currentScreen is GuiHudDesigner) {

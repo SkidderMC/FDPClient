@@ -8,11 +8,8 @@ package net.ccbluex.liquidbounce.ui.client.altmanager;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.thealtening.AltService;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.*;
-import net.ccbluex.liquidbounce.ui.client.altmanager.sub.altgenerator.GuiMCLeaks;
-import net.ccbluex.liquidbounce.ui.client.altmanager.sub.altgenerator.GuiTheAltening;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.login.LoginUtils;
@@ -20,7 +17,6 @@ import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
 import net.ccbluex.liquidbounce.utils.login.UserUtils;
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
-import net.mcleaks.MCLeaks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -39,7 +35,6 @@ import java.util.Random;
 
 public class GuiAltManager extends GuiScreen {
 
-    public static final AltService altService = new AltService();
     private static final Map<String, Boolean> GENERATORS = new HashMap<>();
     private final GuiScreen prevGui;
     public String status = "§7Idle...";
@@ -73,23 +68,13 @@ public class GuiAltManager extends GuiScreen {
         if (minecraftAccount == null)
             return "";
 
-        if (altService.getCurrentService() != AltService.EnumAltService.MOJANG) {
-            try {
-                altService.switchService(AltService.EnumAltService.MOJANG);
-            } catch (final NoSuchFieldException | IllegalAccessException e) {
-                ClientUtils.getLogger().error("Something went wrong while trying to switch alt service.", e);
-            }
-        }
-
         if (minecraftAccount.isCracked()) {
             LoginUtils.loginCracked(minecraftAccount.getName());
-            MCLeaks.remove();
             return "§cYour name is now §8" + minecraftAccount.getName() + "§c.";
         }
 
         LoginUtils.LoginResult result = LoginUtils.login(minecraftAccount.getName(), minecraftAccount.getPassword());
         if (result == LoginUtils.LoginResult.LOGGED) {
-            MCLeaks.remove();
             String userName = Minecraft.getMinecraft().getSession().getUsername();
             minecraftAccount.setAccountName(userName);
             LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig);
@@ -148,14 +133,6 @@ public class GuiAltManager extends GuiScreen {
         this.buttonList.add(new GuiButton(89, 5, j + 24 * 3, 90, 20, "Random Cracked"));
         this.buttonList.add(new GuiButton(6, 5, j + 24 * 4, 90, 20, "Direct Login"));
         this.buttonList.add(new GuiButton(88, 5, j + 24 * 5, 90, 20, "Change Name"));
-
-        if (GENERATORS.getOrDefault("mcleaks", true))
-            this.buttonList.add(new GuiButton(5, 5, j + 24 * 6 + 5, 90, 20, "MCLeaks"));
-        if (GENERATORS.getOrDefault("thealtening", true))
-            this.buttonList.add(new GuiButton(9, 5, j + 24 * 7 + 5, 90, 20, "TheAltening"));
-
-        this.buttonList.add(new GuiButton(10, 5, j + 24 * 8 + 5, 90, 20, "Session Login"));
-
     }
 
     @Override
@@ -167,8 +144,8 @@ public class GuiAltManager extends GuiScreen {
         Fonts.font40.drawCenteredString("AltManager", width / 2, 6, 0xffffff);
         Fonts.font35.drawCenteredString(LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size() + " Alts", width / 2, 18, 0xffffff);
         Fonts.font35.drawCenteredString(status, width / 2, 32, 0xffffff);
-        Fonts.font35.drawStringWithShadow("§7User: §a" + (MCLeaks.isAltActive() ? MCLeaks.getSession().getUsername() : mc.getSession().getUsername()), 6, 6, 0xffffff);
-        Fonts.font35.drawStringWithShadow("§7Type: §a" + (altService.getCurrentService() == AltService.EnumAltService.THEALTENING ? "TheAltening" : MCLeaks.isAltActive() ? "MCLeaks" : UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "Premium" : "Cracked"), 6, 15, 0xffffff);
+        Fonts.font35.drawStringWithShadow("§7User: §a" + mc.getSession().getUsername(), 6, 6, 0xffffff);
+        Fonts.font35.drawStringWithShadow("§7Type: §a" + (UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "Premium" : "Cracked"), 6, 15, 0xffffff);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -229,9 +206,6 @@ public class GuiAltManager extends GuiScreen {
                 }, "AltLogin");
                 thread.start();
                 break;
-            case 5:
-                mc.displayGuiScreen(new GuiMCLeaks(this));
-                break;
             case 6:
                 mc.displayGuiScreen(new GuiDirectLogin(this));
                 break;
@@ -284,12 +258,6 @@ public class GuiAltManager extends GuiScreen {
                 break;
             case 88:
                 mc.displayGuiScreen(new GuiChangeName(this));
-                break;
-            case 9:
-                mc.displayGuiScreen(new GuiTheAltening(this));
-                break;
-            case 10:
-                mc.displayGuiScreen(new GuiSessionLogin(this));
                 break;
             case 89:
                 LoginUtils.randomCracked();

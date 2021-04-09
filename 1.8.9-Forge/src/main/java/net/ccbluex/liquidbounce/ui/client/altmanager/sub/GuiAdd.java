@@ -9,7 +9,6 @@ import com.mojang.authlib.Agent;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
-import com.thealtening.AltService;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.elements.GuiPasswordField;
@@ -173,12 +172,6 @@ public class GuiAdd extends GuiScreen {
                 status = "§aChecking...";
 
                 try {
-                    final AltService.EnumAltService oldService = GuiAltManager.altService.getCurrentService();
-
-                    if (oldService != AltService.EnumAltService.MOJANG) {
-                        GuiAltManager.altService.switchService(AltService.EnumAltService.MOJANG);
-                    }
-
                     final YggdrasilUserAuthentication userAuthentication = (YggdrasilUserAuthentication)
                             new YggdrasilAuthenticationService(Proxy.NO_PROXY, "")
                                     .createUserAuthentication(Agent.MINECRAFT);
@@ -188,10 +181,7 @@ public class GuiAdd extends GuiScreen {
 
                     userAuthentication.logIn();
                     account.setAccountName(userAuthentication.getSelectedProfile().getName());
-
-                    if (oldService == AltService.EnumAltService.THEALTENING)
-                        GuiAltManager.altService.switchService(AltService.EnumAltService.THEALTENING);
-                } catch (NullPointerException | AuthenticationException | NoSuchFieldException | IllegalAccessException e) {
+                } catch (NullPointerException | AuthenticationException e) {
                     status = "§cThe account doesn't work.";
                     addButton.enabled = clipboardButton.enabled = true;
                     return;

@@ -78,11 +78,7 @@ dependencies {
     }
 
     compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
-
-    implementation 'com.github.TheAltening:TheAltening4j:d0771f42d3'
-    implementation 'com.github.TheAltening:API-Java-AuthLib:-SNAPSHOT'
-    compile 'com.github.TheAltening:TheAltening4j:api-2.0-22541fa70f-1'
-    compile 'com.github.TheAltening:API-Java-AuthLib:-SNAPSHOT'
+    compile 'com.google.code.gson:gson:2.8.5'
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
 }
@@ -131,9 +127,6 @@ shadowJar {
         include(dependency('com.kohlschutter.junixsocket:junixsocket-native-common'))
 
         include(dependency('org.jetbrains.kotlin:kotlin-stdlib'))
-
-        include(dependency('com.github.TheAltening:API-Java'))
-        include(dependency('com.github.TheAltening:API-Java-AuthLib'))
     }
 
     exclude 'dummyThing'

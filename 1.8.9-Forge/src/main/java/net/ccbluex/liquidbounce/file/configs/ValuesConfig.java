@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.features.special.AutoReconnect;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
-import net.ccbluex.liquidbounce.ui.client.altmanager.sub.altgenerator.GuiTheAltening;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.value.Value;
 
@@ -81,11 +80,6 @@ public class ValuesConfig extends FileConfig {
                     AntiForge.blockPayloadPackets = jsonValue.get("AntiForgePayloads").getAsBoolean();
                 if (jsonValue.has("AutoReconnectDelay"))
                     AutoReconnect.INSTANCE.setDelay(jsonValue.get("AutoReconnectDelay").getAsInt());
-            } else if (entry.getKey().equalsIgnoreCase("thealtening")) {
-                JsonObject jsonValue = (JsonObject) entry.getValue();
-
-                if (jsonValue.has("API-Key"))
-                    GuiTheAltening.Companion.setApiKey(jsonValue.get("API-Key").getAsString());
             } else if (entry.getKey().equalsIgnoreCase("Background")) {
                 JsonObject jsonValue = (JsonObject) entry.getValue();
 
@@ -136,10 +130,6 @@ public class ValuesConfig extends FileConfig {
         jsonFeatures.addProperty("AntiForgePayloads", AntiForge.blockPayloadPackets);
         jsonFeatures.addProperty("AutoReconnectDelay", AutoReconnect.INSTANCE.getDelay());
         jsonObject.add("features", jsonFeatures);
-
-        final JsonObject theAlteningObject = new JsonObject();
-        theAlteningObject.addProperty("API-Key", GuiTheAltening.Companion.getApiKey());
-        jsonObject.add("thealtening", theAlteningObject);
 
         final JsonObject backgroundObject = new JsonObject();
         backgroundObject.addProperty("Enabled", GuiBackground.Companion.getEnabled());

@@ -107,7 +107,6 @@ class ModuleManager : Listenable {
                 TrueSight::class.java,
                 AntiBlind::class.java,
                 NoSwing::class.java,
-                BugUp::class.java,
                 Breadcrumbs::class.java,
                 CameraClip::class.java,
                 NoPitchLimit::class.java,
@@ -126,7 +125,8 @@ class ModuleManager : Listenable {
                 Animations::class.java,
                 AuthBypass::class.java,
                 AutoPlay::class.java,
-                ChatBypass::class.java
+                ChatBypass::class.java,
+                AntiVoid::class.java
         )
 
         registerModule(Fucker)

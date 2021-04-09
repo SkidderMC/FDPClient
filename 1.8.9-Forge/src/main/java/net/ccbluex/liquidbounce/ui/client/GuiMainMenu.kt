@@ -16,20 +16,17 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun initGui() {
         val defaultHeight = this.height / 4 + 48
 
-        this.buttonList.add(GuiButton(100, this.width / 2 - 100, defaultHeight + 24, 98, 20, "AltManager"))
-        this.buttonList.add(GuiButton(103, this.width / 2 + 2, defaultHeight + 24, 98, 20, "Mods"))
-        this.buttonList.add(GuiButton(101, this.width / 2 - 100, defaultHeight + 24 * 2, 98, 20, "Server Status"))
-        this.buttonList.add(GuiButton(102, this.width / 2 + 2, defaultHeight + 24 * 2, 98, 20, "Background"))
-
         this.buttonList.add(GuiButton(1, this.width / 2 - 100, defaultHeight, 98, 20, I18n.format("menu.singleplayer")))
         this.buttonList.add(GuiButton(2, this.width / 2 + 2, defaultHeight, 98, 20, I18n.format("menu.multiplayer")))
 
-        // Minecraft Realms
-        //		this.buttonList.add(new GuiButton(14, this.width / 2 - 100, j + 24 * 2, I18n.format("menu.online", new Object[0])));
+        this.buttonList.add(GuiButton(100, this.width / 2 - 100, defaultHeight + 24, 98, 20, "AltManager"))
+        this.buttonList.add(GuiButton(103, this.width / 2 + 2, defaultHeight + 24, 98, 20, "Mods"))
 
-        this.buttonList.add(GuiButton(108, this.width / 2 - 100, defaultHeight + 24 * 3, "Contributors"))
-        this.buttonList.add(GuiButton(0, this.width / 2 - 100, defaultHeight + 24 * 4, 98, 20, I18n.format("menu.options")))
-        this.buttonList.add(GuiButton(4, this.width / 2 + 2, defaultHeight + 24 * 4, 98, 20, I18n.format("menu.quit")))
+        this.buttonList.add(GuiButton(101, this.width / 2 - 100, defaultHeight + 24 * 2, 98, 20, "Server Status"))
+        this.buttonList.add(GuiButton(102, this.width / 2 + 2, defaultHeight + 24 * 2, 98, 20, "Background"))
+
+        this.buttonList.add(GuiButton(0, this.width / 2 - 100, defaultHeight + 24 * 3, 98, 20, I18n.format("menu.options")))
+        this.buttonList.add(GuiButton(4, this.width / 2 + 2, defaultHeight + 24 * 3, 98, 20, I18n.format("menu.quit")))
 
         super.initGui()
     }
@@ -54,7 +51,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             101 -> mc.displayGuiScreen(GuiServerStatus(this))
             102 -> mc.displayGuiScreen(GuiBackground(this))
             103 -> mc.displayGuiScreen(GuiModsMenu(this))
-            108 -> mc.displayGuiScreen(GuiContributors(this))
         }
     }
 

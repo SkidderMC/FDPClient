@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -119,7 +120,25 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
                 MiscUtils.showErrorPopup(t.javaClass.name, t.message)
             }
             3 -> try {
-                LiquidBounce.scriptManager.reloadScripts()
+                LiquidBounce.commandManager = CommandManager()
+                LiquidBounce.commandManager.registerCommands()
+                LiquidBounce.isStarting = true
+                LiquidBounce.scriptManager.disableScripts()
+                LiquidBounce.scriptManager.unloadScripts()
+                for(module in LiquidBounce.moduleManager.modules)
+                    LiquidBounce.moduleManager.generateCommand(module)
+                LiquidBounce.scriptManager.loadScripts()
+                LiquidBounce.scriptManager.enableScripts()
+                Fonts.loadFonts()
+                LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.modulesConfig)
+                LiquidBounce.isStarting = false
+                LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.valuesConfig)
+                LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.accountsConfig)
+                LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.friendsConfig)
+                LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.xrayConfig)
+                LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.hudConfig)
+                LiquidBounce.clickGui = ClickGui()
+                LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.clickGuiConfig)
             } catch (t: Throwable) {
                 ClientUtils.getLogger().error("Something went wrong while reloading all scripts.", t)
                 MiscUtils.showErrorPopup(t.javaClass.name, t.message)
