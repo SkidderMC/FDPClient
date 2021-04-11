@@ -3,6 +3,9 @@
 *.iml
 *.ipr
 *.iws
-/bin/
+/run/
+/out/
+/build/
 /.settings/
+/bin/
 /.gradle/

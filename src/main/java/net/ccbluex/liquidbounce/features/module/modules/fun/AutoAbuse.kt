@@ -19,6 +19,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.lang.Exception
+import java.nio.charset.Charset
 import kotlin.math.roundToInt
 
 @ModuleInfo(name = "AutoAbuse", description = "Automatically abuse peoples you killed.", category = ModuleCategory.FUN)
@@ -48,7 +49,7 @@ class AutoAbuse : Module() {
                 fos.close()
             }
             //read it
-            abuseWords = JsonParser().parse(IOUtils.toString(FileInputStream(abuseFile))).asJsonArray
+            abuseWords = JsonParser().parse(IOUtils.toString(FileInputStream(abuseFile),"utf-8")).asJsonArray
         } catch (e: Exception) {
             e.printStackTrace()
             abuseWords = JsonArray()

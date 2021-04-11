@@ -9,8 +9,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -93,6 +91,41 @@ public final class RenderUtils extends MinecraftInstance {
         int length = mc.fontRendererObj.drawString(text, Math.round(width / size), Math.round(height / size), 0xffffffff);
         GlStateManager.popMatrix();
         return length;
+    }
+
+    public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
+        float f = (col1 >> 24 & 0xFF) / 255.0F;
+        float f1 = (col1 >> 16 & 0xFF) / 255.0F;
+        float f2 = (col1 >> 8 & 0xFF) / 255.0F;
+        float f3 = (col1 & 0xFF) / 255.0F;
+
+        float f4 = (col2 >> 24 & 0xFF) / 255.0F;
+        float f5 = (col2 >> 16 & 0xFF) / 255.0F;
+        float f6 = (col2 >> 8 & 0xFF) / 255.0F;
+        float f7 = (col2 & 0xFF) / 255.0F;
+
+        glEnable(3042);
+        glDisable(3553);
+        glBlendFunc(770, 771);
+        glEnable(2848);
+        glShadeModel(7425);
+
+        glPushMatrix();
+        glBegin(7);
+        glColor4f(f1, f2, f3, f);
+        glVertex2d(left, top);
+        glVertex2d(left, bottom);
+
+        glColor4f(f5, f6, f7, f4);
+        glVertex2d(right, bottom);
+        glVertex2d(right, top);
+        glEnd();
+        glPopMatrix();
+
+        glEnable(3553);
+        glDisable(3042);
+        glDisable(2848);
+        glShadeModel(7424);
     }
 
     public static void drawBlockBox(final BlockPos blockPos, final Color color, final boolean outline, final boolean box, final float outlineWidth) {
