@@ -22,6 +22,7 @@ open class HUD : MinecraftInstance() {
 
     val elements = mutableListOf<Element>()
     val notifications = mutableListOf<Notification>()
+    val alerts = mutableListOf<Alert>()
 
     companion object {
 
@@ -34,7 +35,8 @@ open class HUD : MinecraftInstance() {
                 Notifications::class.java,
                 TabGUI::class.java,
                 Text::class.java,
-                ScoreboardElement::class.java
+                ScoreboardElement::class.java,
+                Alerts::class.java
         )
 
         /**
@@ -203,4 +205,7 @@ open class HUD : MinecraftInstance() {
      */
     fun removeNotification(notification: Notification) = notifications.remove(notification)
 
+    fun addAlert(alert: Alert) = alerts.add(alert)
+
+    fun removeAlert(alert: Alert) = alerts.remove(alert)
 }

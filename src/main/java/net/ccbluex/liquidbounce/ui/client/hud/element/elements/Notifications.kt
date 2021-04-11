@@ -48,7 +48,7 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
             if (!LiquidBounce.hud.notifications.contains(exampleNotification))
                 LiquidBounce.hud.addNotification(exampleNotification)
 
-            exampleNotification.fadeState = Notification.FadeState.STAY
+            exampleNotification.fadeState = FadeState.STAY
             exampleNotification.x = exampleNotification.textLength + 8F
 
             return Border(-95F, -20F, 0F, 0F)
@@ -59,7 +59,7 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
 
 }
 
-class Notification(private val message: String,private val type: NotifyType) {
+class Notification(val message: String, val type: NotifyType) {
     var x = 0F
     var textLength = 0
 
@@ -69,11 +69,6 @@ class Notification(private val message: String,private val type: NotifyType) {
     private var stayTimer = MSTimer()
     private var firstY:Float=1919F
     private var animeTime=System.currentTimeMillis()
-
-    /**
-     * Fade state for animation
-     */
-    enum class FadeState { IN, STAY, OUT, END }
 
     init {
         textLength = Fonts.font35.getStringWidth(message)
@@ -140,11 +135,5 @@ class Notification(private val message: String,private val type: NotifyType) {
             FadeState.END -> LiquidBounce.hud.removeNotification(this)
         }
     }
-}
-
-enum class NotifyType(var renderColor: Color, var icon: String) {
-    OKAY(Color(0, 255, 127), "check-circle"),
-    WARN(Color(255, 75, 0), "close-circle"),
-    INFO(Color(0, 160, 255),"information");
 }
 

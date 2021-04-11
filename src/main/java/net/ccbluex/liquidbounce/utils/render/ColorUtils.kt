@@ -91,4 +91,9 @@ object ColorUtils {
         val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 10000000000F % 1, 1F, 1F))
         return Color(currentColor.red / 255F * 1F, currentColor.green / 255f * 1F, currentColor.blue / 255F * 1F, alpha)
     }
+
+    @JvmStatic
+    fun reAlpha(color: Color,alpha: Int): Color{
+        return Color(color.red,color.green,color.blue,alpha)
+    }
 }

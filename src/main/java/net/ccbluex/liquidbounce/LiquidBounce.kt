@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
-import net.ccbluex.liquidbounce.features.special.TipManager
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
@@ -37,7 +36,7 @@ object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
-    const val CLIENT_VERSION = "v1.0.3"
+    const val CLIENT_VERSION = "v1.0.4"
     const val IN_DEV = false
     const val CLIENT_CREATOR = "Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
@@ -52,7 +51,6 @@ object LiquidBounce {
     lateinit var fileManager: FileManager
     lateinit var scriptManager: ScriptManager
     lateinit var musicManager: MusicManager
-    lateinit var tipManager: TipManager
 
     // HUD & ClickGUI
     lateinit var hud: HUD
@@ -113,8 +111,6 @@ object LiquidBounce {
         commandManager.registerCommands()
 
         musicManager = MusicManager()
-        tipManager = TipManager()
-        eventManager.registerListener(tipManager)
 
         // Load configs
         fileManager.loadConfigs(fileManager.modulesConfig, fileManager.valuesConfig, fileManager.accountsConfig,

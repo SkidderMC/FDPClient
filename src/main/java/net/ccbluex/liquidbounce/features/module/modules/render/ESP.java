@@ -205,31 +205,38 @@ public class ESP extends Module {
 
         if(mode.equalsIgnoreCase("jello")){
             final ArrayList<EntityLivingBase> hurtingEntities=new ArrayList<>();
+            FramebufferShader shader=GlowShader.GLOW_SHADER;
+            float radius=3F;
+            Color color=new Color(120,120,120),hurtColor=new Color(120, 0, 0);
+            boolean firstRun=true;
 
-            GlowShader.GLOW_SHADER.startDraw(partialTicks);
-            OutlineShader.OUTLINE_SHADER.startDraw(partialTicks);
-            for (final Entity entity : mc.theWorld.loadedEntityList) {
-                if (EntityUtils.isSelected(entity, false)){
-                    EntityLivingBase entityLivingBase=(EntityLivingBase) entity;
-                    if(entityLivingBase.hurtTime>0){
-                        hurtingEntities.add(entityLivingBase);
-                        continue;
+            for(int i=0;i<2;i++){
+                shader.startDraw(partialTicks);
+                for (final Entity entity : mc.theWorld.loadedEntityList) {
+                    if (EntityUtils.isSelected(entity, false)){
+                        EntityLivingBase entityLivingBase=(EntityLivingBase) entity;
+                        if (firstRun && entityLivingBase.hurtTime > 0) {
+                            hurtingEntities.add(entityLivingBase);
+                            continue;
+                        }
+                        mc.getRenderManager().renderEntityStatic(entity, partialTicks, true);
                     }
-                    mc.getRenderManager().renderEntityStatic(entity, partialTicks, true);
                 }
-            }
-            GlowShader.GLOW_SHADER.stopDraw(new Color(120,120,120), 3F,1F);
-            OutlineShader.OUTLINE_SHADER.stopDraw(new Color(255,255,255,170), 1.2F,1F);
+                shader.stopDraw(color, radius, 1F);
 
-            //hurt
-            if(hurtingEntities.size()>0) {
-                GlowShader.GLOW_SHADER.startDraw(partialTicks);
-                OutlineShader.OUTLINE_SHADER.startDraw(partialTicks);
-                for (EntityLivingBase entity : hurtingEntities) {
-                    mc.getRenderManager().renderEntityStatic(entity, partialTicks, true);
+                //hurt
+                if(hurtingEntities.size()>0) {
+                    shader.startDraw(partialTicks);
+                    for (EntityLivingBase entity : hurtingEntities) {
+                        mc.getRenderManager().renderEntityStatic(entity, partialTicks, true);
+                    }
+                    shader.stopDraw(hurtColor, radius, 1F);
                 }
-                GlowShader.GLOW_SHADER.stopDraw(new Color(120, 0, 0), 3F, 1F);
-                OutlineShader.OUTLINE_SHADER.stopDraw(new Color(255, 0, 0, 170), 1.2F, 1F);
+                shader=OutlineShader.OUTLINE_SHADER;
+                radius=1.2F;
+                color=new Color(255,255,255,170);
+                hurtColor=new Color(255, 0, 0, 170);
+                firstRun=false;
             }
             return;
         }

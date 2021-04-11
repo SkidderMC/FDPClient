@@ -126,7 +126,8 @@ class ModuleManager : Listenable {
                 AuthBypass::class.java,
                 AutoPlay::class.java,
                 ChatBypass::class.java,
-                AntiVoid::class.java
+                AntiVoid::class.java,
+                AntiVanish::class.java
         )
 
         registerModule(Fucker)
