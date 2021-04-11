@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.misc
+package net.ccbluex.liquidbounce.features.module.modules.`fun`
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C01PacketChatMessage
 import java.lang.StringBuilder
 
-@ModuleInfo(name = "ChatBypass", description = "Bypass chat limit", category = ModuleCategory.MISC)
+@ModuleInfo(name = "ChatBypass", description = "Bypass chat limit", category = ModuleCategory.FUN)
 class ChatBypass : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Null","RandomChar"),"Sigma")
     private val chanceValue = FloatValue("Chance",0.2F,0F,0.5F)

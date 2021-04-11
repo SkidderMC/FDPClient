@@ -34,7 +34,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
 
-        Gui.drawRect(width / 2 - 115, height / 4 + 35, width / 2 + 115, height / 4 + 175, Integer.MIN_VALUE)
+        Gui.drawRect(width / 2 - 115, height / 4 + 35, width / 2 + 115, height / 4 + 153, Integer.MIN_VALUE)
 
         Fonts.fontBold40.drawCenteredString(LiquidBounce.CLIENT_NAME, this.width / 2F, height / 8F, 4673984, true)
         Fonts.font35.drawCenteredString(LiquidBounce.CLIENT_VERSION, this.width / 2F + 148, height / 8F + Fonts.font35.FONT_HEIGHT, 0xffffff, true)

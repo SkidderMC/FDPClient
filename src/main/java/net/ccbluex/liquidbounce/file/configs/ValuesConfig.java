@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.features.special.AutoReconnect;
+import net.ccbluex.liquidbounce.features.special.ServerSpoof;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
@@ -80,6 +81,10 @@ public class ValuesConfig extends FileConfig {
                     AntiForge.blockPayloadPackets = jsonValue.get("AntiForgePayloads").getAsBoolean();
                 if (jsonValue.has("AutoReconnectDelay"))
                     AutoReconnect.INSTANCE.setDelay(jsonValue.get("AutoReconnectDelay").getAsInt());
+                if (jsonValue.has("ServerSpoof_Enable"))
+                    ServerSpoof.enable=jsonValue.get("ServerSpoof_Enable").getAsBoolean();
+                if (jsonValue.has("ServerSpoof_Server"))
+                    ServerSpoof.ip=jsonValue.get("ServerSpoof_Server").getAsString();
             } else if (entry.getKey().equalsIgnoreCase("Background")) {
                 JsonObject jsonValue = (JsonObject) entry.getValue();
 
@@ -129,6 +134,8 @@ public class ValuesConfig extends FileConfig {
         jsonFeatures.addProperty("AntiForgeProxy", AntiForge.blockProxyPacket);
         jsonFeatures.addProperty("AntiForgePayloads", AntiForge.blockPayloadPackets);
         jsonFeatures.addProperty("AutoReconnectDelay", AutoReconnect.INSTANCE.getDelay());
+        jsonFeatures.addProperty("ServerSpoof_Enable", ServerSpoof.enable);
+        jsonFeatures.addProperty("ServerSpoof_Server", ServerSpoof.ip);
         jsonObject.add("features", jsonFeatures);
 
         final JsonObject backgroundObject = new JsonObject();

@@ -7,6 +7,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -21,6 +22,7 @@ class Gapple : Module() {
     // Auto Mode
     private val healthValue = FloatValue("Health", 10F, 1F, 20F)
     private val delayValue = IntegerValue("Delay", 150, 0, 1000)
+    private val noAbsorption = BoolValue("NoAbsorption",true)
     private val timer = MSTimer()
 
     @EventTarget
@@ -42,6 +44,13 @@ class Gapple : Module() {
     }
 
     private fun doEat(warn: Boolean){
+        if(noAbsorption.get()&&!warn){
+            val abAmount:Float=mc.thePlayer.absorptionAmount
+            if(abAmount>0){
+                return
+            }
+        }
+
         val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
         if(gappleInHotbar != -1){
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))

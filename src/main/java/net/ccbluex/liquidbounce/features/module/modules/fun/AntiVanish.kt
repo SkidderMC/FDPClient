@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.misc
+package net.ccbluex.liquidbounce.features.module.modules.`fun`
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S13PacketDestroyEntities
 
-@ModuleInfo(name = "AntiVanish", description = "Anti player vanish", category = ModuleCategory.MISC)
+@ModuleInfo(name = "AntiVanish", description = "Anti player vanish", category = ModuleCategory.FUN)
 class AntiVanish : Module() {
     private var lastAlert=-1L
     private var vanishCount=0

@@ -12,6 +12,8 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.`fun`.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.*
 import net.ccbluex.liquidbounce.features.module.modules.exploit.*
+import net.ccbluex.liquidbounce.features.module.modules.gui.ClickGUI
+import net.ccbluex.liquidbounce.features.module.modules.gui.HUD
 import net.ccbluex.liquidbounce.features.module.modules.misc.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.*
 import net.ccbluex.liquidbounce.features.module.modules.player.*
@@ -19,8 +21,6 @@ import net.ccbluex.liquidbounce.features.module.modules.render.*
 import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.features.module.modules.world.Timer
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.minecraft.client.audio.PositionedSoundRecord
-import net.minecraft.util.ResourceLocation
 import java.util.*
 
 class ModuleManager : Listenable {
@@ -127,7 +127,8 @@ class ModuleManager : Listenable {
                 AutoPlay::class.java,
                 ChatBypass::class.java,
                 AntiVoid::class.java,
-                AntiVanish::class.java
+                AntiVanish::class.java,
+                Crasher::class.java
         )
 
         registerModule(Fucker)

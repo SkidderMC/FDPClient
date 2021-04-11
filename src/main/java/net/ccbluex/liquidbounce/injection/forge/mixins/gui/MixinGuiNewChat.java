@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.gui.HUD;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;

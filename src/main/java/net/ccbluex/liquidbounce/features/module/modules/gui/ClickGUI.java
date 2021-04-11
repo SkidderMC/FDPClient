@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/CCBlueX/LiquidBounce/
  */
-package net.ccbluex.liquidbounce.features.module.modules.render;
+package net.ccbluex.liquidbounce.features.module.modules.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EventTarget;
@@ -26,7 +26,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
-@ModuleInfo(name = "ClickGUI", description = "Opens the ClickGUI.", category = ModuleCategory.RENDER, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
+@ModuleInfo(name = "ClickGUI", description = "Opens the ClickGUI.", category = ModuleCategory.GUI, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUI extends Module {
     private final ListValue styleValue = new ListValue("Style", new String[] {"LiquidBounce", "Null", "Slowly"}, "Slowly") {
         @Override

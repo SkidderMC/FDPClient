@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
-import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.gui.HUD;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.ClassUtils;
 import net.minecraft.client.Minecraft;

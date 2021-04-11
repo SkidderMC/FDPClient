@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
+import net.ccbluex.liquidbounce.features.module.modules.gui.ClickGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ButtonElement;
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.Element;
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement;
