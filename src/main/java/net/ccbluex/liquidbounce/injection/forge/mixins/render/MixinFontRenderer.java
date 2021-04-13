@@ -16,8 +16,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(FontRenderer.class)
 @SideOnly(Side.CLIENT)
-public class MixinFontRenderer {
-
+public abstract class MixinFontRenderer {
     @ModifyVariable(method = "renderString", at = @At("HEAD"), ordinal = 0)
     private String renderString(final String string) {
         if (string == null || LiquidBounce.eventManager == null)

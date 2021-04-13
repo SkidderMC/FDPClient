@@ -15,8 +15,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.item.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -37,6 +39,8 @@ class NoSlow : Module() {
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F)
 
     private val packet = BoolValue("Packet", true)
+    private val packetDelayValue=IntegerValue("PacketDelay",100,0,300)
+    private val packetTimer=MSTimer()
 
     // Soulsand
     val soulsandValue = BoolValue("Soulsand", true)
@@ -51,13 +55,14 @@ class NoSlow : Module() {
         if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
             return
         }
-        if (this.packet.get()) {
+        if (this.packet.get() && packetTimer.hasTimePassed(packetDelayValue.get().toLong())) {
             when (event.eventState) {
                 EventState.PRE -> {
                     val digging = C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN)
                     mc.netHandler.addToSendQueue(digging)
                 }
                 EventState.POST -> {
+                    packetTimer.reset()
                     val blockPlace = C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem())
                     mc.netHandler.addToSendQueue(blockPlace)
                 }
@@ -85,5 +90,4 @@ class NoSlow : Module() {
         }
         else -> 0.2F
     }
-
 }

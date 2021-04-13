@@ -5,10 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.event.ClickWindowEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -29,8 +26,7 @@ class InventoryMove : Module() {
     private val rotateValue = BoolValue("Rotate", true)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    private fun updateKeyState(){
         if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)) {
             mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
             mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
@@ -58,6 +54,16 @@ class InventoryMove : Module() {
                 }
             }
         }
+    }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        updateKeyState()
+    }
+
+    @EventTarget
+    fun onScreen(event: ScreenEvent){
+        updateKeyState()
     }
 
     @EventTarget

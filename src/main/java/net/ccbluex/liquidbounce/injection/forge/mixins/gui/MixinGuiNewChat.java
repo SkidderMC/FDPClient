@@ -93,7 +93,7 @@ public abstract class MixinGuiNewChat {
                     int lvt_11_1_;
                     int lvt_14_1_;
                     for(lvt_9_1_ = 0; lvt_9_1_ + this.scrollPos < this.drawnChatLines.size() && lvt_9_1_ < lvt_2_1_; ++lvt_9_1_) {
-                        ChatLine lvt_10_1_ = (ChatLine) this.drawnChatLines.get(lvt_9_1_ + this.scrollPos);
+                        ChatLine lvt_10_1_ = this.drawnChatLines.get(lvt_9_1_ + this.scrollPos);
                         if(lvt_10_1_ != null) {
                             lvt_11_1_ = p_drawChat_1_ - lvt_10_1_.getUpdatedCounter();
                             if(lvt_11_1_ < 200 || lvt_3_1_) {
