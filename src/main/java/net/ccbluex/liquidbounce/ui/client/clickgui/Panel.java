@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.gui.ClickGUI;
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.Element;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.client.audio.PositionedSoundRecord;

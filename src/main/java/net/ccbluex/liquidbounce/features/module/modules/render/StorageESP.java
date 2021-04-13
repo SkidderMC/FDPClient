@@ -22,7 +22,6 @@ import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.*;
 
 import java.awt.*;

@@ -49,7 +49,11 @@ class AutoPlay : Module(){
                     }
                 },delayValue.get()*1000L)
             }else if(clickState==2 && windowId!=0 && slot==11 && name.contains("enderPearl",ignoreCase = true)){
-                mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId,slot,0,0,item,1919))
+                Timer().schedule(object :TimerTask() {
+                    override fun run() {
+                        mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId, slot, 0, 0, item, 1919))
+                    }
+                },500L)
             }
         }
         if(silentValue.get() && clickState==2 && packet is S2DPacketOpenWindow){

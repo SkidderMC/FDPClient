@@ -10,10 +10,12 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.`fun`.*
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.modules.client.KeyBindManager
+import net.ccbluex.liquidbounce.features.module.modules.client.Target
 import net.ccbluex.liquidbounce.features.module.modules.combat.*
 import net.ccbluex.liquidbounce.features.module.modules.exploit.*
-import net.ccbluex.liquidbounce.features.module.modules.gui.ClickGUI
-import net.ccbluex.liquidbounce.features.module.modules.gui.HUD
 import net.ccbluex.liquidbounce.features.module.modules.misc.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.*
 import net.ccbluex.liquidbounce.features.module.modules.player.*
@@ -128,7 +130,10 @@ class ModuleManager : Listenable {
                 ChatBypass::class.java,
                 AntiVoid::class.java,
                 AntiVanish::class.java,
-                Crasher::class.java
+                Crasher::class.java,
+                Target::class.java,
+                KeyBindManager::class.java,
+                AutoLogin::class.java
         )
 
         registerModule(Fucker)

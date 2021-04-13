@@ -6,10 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.world
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventState
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.MotionEvent
-import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -18,17 +15,17 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.extensions.getVec
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BlockValue
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.minecraft.block.Block
+import net.minecraft.block.BlockChest
 import net.minecraft.client.gui.inventory.GuiContainer
-import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C0APacketAnimation
+import net.minecraft.network.play.server.S24PacketBlockAction
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
+import java.util.*
 
 @ModuleInfo(name = "ChestAura", description = "Automatically opens chests around you.", category = ModuleCategory.WORLD)
 object ChestAura : Module() {
@@ -37,11 +34,15 @@ object ChestAura : Module() {
     private val delayValue = IntegerValue("Delay", 100, 50, 200)
     private val throughWallsValue = BoolValue("ThroughWalls", true)
     private val visualSwing = BoolValue("VisualSwing", true)
-    private val chestValue = BlockValue("Chest", Block.getIdFromBlock(Blocks.chest))
-    private val rotationsValue = BoolValue("Rotations", true)
+    private val rotations = BoolValue("Rotations", true)
+    private val discoverDelay = BoolValue("DiscoverDelay", true)
+    private val discoverDelayValue = IntegerValue("DiscoverDelayValue", 200, 50, 300)
+    private val onlyNotOpened = BoolValue("NotOpened", true)
 
     private var currentBlock: BlockPos? = null
     private val timer = MSTimer()
+
+    private var underClick=false
 
     val clickedBlocks = mutableListOf<BlockPos>()
 
@@ -62,7 +63,7 @@ object ChestAura : Module() {
 
                 currentBlock = BlockUtils.searchBlocks(radius.toInt())
                         .filter {
-                            Block.getIdFromBlock(it.value) == chestValue.get() && !clickedBlocks.contains(it.key)
+                            it.value is BlockChest && !clickedBlocks.contains(it.key)
                                     && BlockUtils.getCenterDistance(it.key) < rangeValue.get()
                         }
                         .filter {
@@ -77,22 +78,52 @@ object ChestAura : Module() {
                         }
                         .minBy { BlockUtils.getCenterDistance(it.key) }?.key
 
-                if (rotationsValue.get())
+                if (rotations.get())
                     RotationUtils.setTargetRotation((RotationUtils.faceBlock(currentBlock ?: return)
                             ?: return).rotation)
             }
 
-            EventState.POST -> if (currentBlock != null && timer.hasTimePassed(delayValue.get().toLong())) {
-                if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.heldItem, currentBlock,
-                                EnumFacing.DOWN, currentBlock!!.getVec())) {
-                    if (visualSwing.get())
-                        mc.thePlayer.swingItem()
-                    else
-                        mc.netHandler.addToSendQueue(C0APacketAnimation())
+            EventState.POST -> if (currentBlock != null && timer.hasTimePassed(delayValue.get().toLong()) && !underClick) {
+                underClick=true
+                if(discoverDelay.get()){
+                    java.util.Timer().schedule(object :TimerTask() {
+                        override fun run() {
+                            click()
+                        }
+                    }, discoverDelayValue.get().toLong())
+                }else{
+                    click()
+                }
+            }
+        }
+    }
 
-                    clickedBlocks.add(currentBlock!!)
-                    currentBlock = null
-                    timer.reset()
+    private fun click(){
+        try {
+            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.heldItem, currentBlock,
+                    EnumFacing.DOWN, currentBlock!!.getVec())) {
+                if (visualSwing.get())
+                    mc.thePlayer.swingItem()
+                else
+                    mc.netHandler.addToSendQueue(C0APacketAnimation())
+
+                clickedBlocks.add(currentBlock!!)
+                currentBlock = null
+                timer.reset()
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+        underClick=false
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent){
+        if(onlyNotOpened.get() && event.packet is S24PacketBlockAction){
+            val packet=event.packet
+            if(packet.blockType is BlockChest && packet.data2==1){
+                if(!clickedBlocks.contains(packet.blockPosition)){
+                    clickedBlocks.add(packet.blockPosition)
                 }
             }
         }

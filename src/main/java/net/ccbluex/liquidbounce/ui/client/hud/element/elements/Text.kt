@@ -16,15 +16,11 @@ import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.TextValue
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -69,6 +65,12 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
     private val rainbow = BoolValue("Rainbow", false)
     private val shadow = BoolValue("Shadow", true)
+    private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
+    private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
+    private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
+    private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
+    private val rect = BoolValue("Rect", false)
+    private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private var fontValue = FontValue("Font", Fonts.font40)
 
     private var editMode = false
@@ -155,6 +157,13 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get()).rgb
 
         val fontRenderer = fontValue.get()
+
+        if(rect.get()){
+            val rectColor = Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
+            val expand = fontRenderer.FONT_HEIGHT*rectExpandValue.get()
+
+            RenderUtils.drawRect(-expand,-expand,fontRenderer.getStringWidth(displayText)+expand,fontRenderer.FONT_HEIGHT+expand,rectColor)
+        }
 
         fontRenderer.drawString(displayText, 0F, 0F, if (rainbow.get())
             ColorUtils.rainbow(400000000L).rgb else color, shadow.get())

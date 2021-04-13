@@ -24,7 +24,6 @@ import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
@@ -52,7 +51,6 @@ public class ESP extends Module {
     private final FloatValue shaderOutlineRadius = new FloatValue("ShaderOutline-Radius", 1.35F, 1F, 2F);
     private final FloatValue shaderGlowRadius = new FloatValue("ShaderGlow-Radius", 2.3F, 2F, 3F);
     public final FloatValue CSGOWidth = new FloatValue("CSGO-Width", 2F, 0.5F, 5F);
-    private final BoolValue CSGONameTag = new BoolValue("CSGO-NameTag", true);
     private final IntegerValue colorRedValue = new IntegerValue("R", 255, 0, 255);
     private final IntegerValue colorGreenValue = new IntegerValue("G", 255, 0, 255);
     private final IntegerValue colorBlueValue = new IntegerValue("B", 255, 0, 255);
@@ -170,14 +168,6 @@ public class ESP extends Module {
                             float hpSize=((maxY+width)-minY)*(entityLiving.getHealth()/entityLiving.getMaxHealth());
                             RenderUtils.drawRect(minX-(width*3),minY-width,minX-(width*2),maxY+width,Color.RED);
                             RenderUtils.drawRect(minX-(width*3),maxY-hpSize,minX-(width*2),maxY+width,Color.GREEN);
-
-                            //nametags
-                            boolean nametag=CSGONameTag.get();
-                            if(nametag) {
-                                String drawStr = entityLiving.getName();
-                                float sScale = (maxY - minY)/mc.fontRendererObj.getStringWidth(drawStr);
-                                RenderUtils.drawText(drawStr, (int) (minX - 8 - width), (int) (minY - width*sScale*2),sScale);
-                            }
                         }
                         break;
                     }

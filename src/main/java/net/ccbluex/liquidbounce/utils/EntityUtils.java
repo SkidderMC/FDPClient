@@ -72,11 +72,11 @@ public final class EntityUtils extends MinecraftInstance {
 
     public static boolean isAnimal(final Entity entity) {
         return entity instanceof EntityAnimal || entity instanceof EntitySquid || entity instanceof EntityGolem ||
-                entity instanceof EntityBat;
+                entity instanceof EntityVillager || entity instanceof EntityBat;
     }
 
     public static boolean isMob(final Entity entity) {
-        return entity instanceof EntityMob || entity instanceof EntityVillager || entity instanceof EntitySlime ||
+        return entity instanceof EntityMob  || entity instanceof EntitySlime ||
                 entity instanceof EntityGhast || entity instanceof EntityDragon;
     }
 

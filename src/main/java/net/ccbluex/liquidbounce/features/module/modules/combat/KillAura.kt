@@ -45,7 +45,6 @@ import org.lwjgl.opengl.GL11
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.sin
 
 @ModuleInfo(name = "KillAura", description = "Automatically attacks targets around you.",

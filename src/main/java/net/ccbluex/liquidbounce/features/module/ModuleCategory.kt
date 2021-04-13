@@ -11,7 +11,7 @@ enum class ModuleCategory(val displayName: String) {
     PLAYER("Player"),
     MOVEMENT("Movement"),
     RENDER("Render"),
-    GUI("GUI"),
+    CLIENT("Client"),
     WORLD("World"),
     MISC("Misc"),
     EXPLOIT("Exploit"),

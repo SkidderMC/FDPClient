@@ -6,7 +6,10 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.event.EventState;
+import net.ccbluex.liquidbounce.event.EventTarget;
+import net.ccbluex.liquidbounce.event.Listenable;
+import net.ccbluex.liquidbounce.event.MotionEvent;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 

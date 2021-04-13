@@ -32,6 +32,7 @@ public class GuiServerSpoof extends GuiScreen {
 
         textField = new GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20);
         textField.setText(ServerSpoof.ip);
+        textField.setFocused(true);
 
         updateButtonStat();
     }

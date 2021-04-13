@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.misc.ComponentOnHover;
-import net.ccbluex.liquidbounce.features.module.modules.gui.HUD;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader;

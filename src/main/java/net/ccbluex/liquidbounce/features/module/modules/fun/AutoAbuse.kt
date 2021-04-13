@@ -18,8 +18,6 @@ import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.lang.Exception
-import java.nio.charset.Charset
 import kotlin.math.roundToInt
 
 @ModuleInfo(name = "AutoAbuse", description = "Automatically abuse peoples you killed.", category = ModuleCategory.FUN)
@@ -79,28 +77,24 @@ class AutoAbuse : Module() {
             LiquidBounce.hud.addNotification(Notification("§cKilled §a$name",NotifyType.INFO))
             when (modeValue.get().toLowerCase()) {
                 "clear" -> {
-                    sendAbuseWords("L $name")
+                    sendAbuseWords("L $name",name)
                 }
                 "withwords" -> {
-                    sendAbuseWords(
-                        "L $name " + abuseWords!![(Math.random() * abuseWords!!.size()).roundToInt()
-                            .toInt()].asString
-                    )
+                    sendAbuseWords("L $name " + abuseWords!![(Math.random() * abuseWords!!.size()).roundToInt()].asString,name)
                 }
                 "rawwords" -> {
-                    sendAbuseWords(abuseWords!![(Math.random() * abuseWords!!.size()).roundToInt()
-                        .toInt()].asString)
+                    sendAbuseWords(abuseWords!![(Math.random() * abuseWords!!.size()).roundToInt()].asString,name)
                 }
             }
             target = null
         }
     }
 
-    private fun sendAbuseWords(msg: String) {
-        var msg = msg
+    private fun sendAbuseWords(msg: String,name: String) {
+        var message = msg.replace("%name%",name)
         if (waterMarkValue.get()) {
-            msg = "[FDPClient] $msg"
+            message = "[FDPClient] $message"
         }
-        mc.thePlayer.sendChatMessage(msg)
+        mc.thePlayer.sendChatMessage(message)
     }
 }

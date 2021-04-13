@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
+import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindMgr
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.other.IconManager
 import net.ccbluex.liquidbounce.ui.other.MusicManager
@@ -37,7 +38,7 @@ object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
-    const val CLIENT_VERSION = "v1.0.4"
+    const val CLIENT_VERSION = "v1.1.0 PRE1"
     const val IN_DEV = false
     const val CLIENT_CREATOR = "Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
@@ -53,10 +54,10 @@ object LiquidBounce {
     lateinit var scriptManager: ScriptManager
     lateinit var musicManager: MusicManager
 
-    // HUD & ClickGUI
+    // HUD & ClickGUI & KeybindMgr
     lateinit var hud: HUD
-
     lateinit var clickGui: ClickGui
+    lateinit var keyBindMgr: KeyBindMgr
 
     // Update information
     var latestVersion = 0
@@ -121,6 +122,9 @@ object LiquidBounce {
         // ClickGUI
         clickGui = ClickGui()
         fileManager.loadConfig(fileManager.clickGuiConfig)
+
+        // KeyBindManager
+        keyBindMgr=KeyBindMgr()
 
         // Tabs (Only for Forge!)
         if (hasForge()) {

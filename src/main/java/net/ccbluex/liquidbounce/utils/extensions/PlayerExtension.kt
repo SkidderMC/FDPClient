@@ -9,8 +9,8 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import kotlin.math.abs
-import kotlin.math.sqrt
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * Allows to get the distance between the current entity and [entity] from the nearest corner of the bounding box

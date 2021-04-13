@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C01PacketChatMessage
-import java.lang.StringBuilder
 
 @ModuleInfo(name = "ChatBypass", description = "Bypass chat limit", category = ModuleCategory.FUN)
 class ChatBypass : Module() {

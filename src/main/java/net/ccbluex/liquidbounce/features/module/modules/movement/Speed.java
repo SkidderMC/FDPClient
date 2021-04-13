@@ -14,10 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.SpartanYPort;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.SpectreBHop;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.SpectreLowHop;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.SpectreOnGround;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop2;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -82,7 +79,8 @@ public class Speed extends Module {
             new CustomSpeed(),
 
             // RedeSky
-            new RedeSkyHop()
+            new RedeSkyHop(),
+            new RedeSkyHop2()
     };
 
     public final ListValue modeValue = new ListValue("Mode", getModes(), "NCPBHop") {

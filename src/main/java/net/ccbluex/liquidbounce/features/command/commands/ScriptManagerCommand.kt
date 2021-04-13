@@ -15,7 +15,6 @@ import org.apache.commons.io.IOUtils
 import java.awt.Desktop
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
 import java.util.zip.ZipFile
 
 class ScriptManagerCommand : Command("scriptmanager", arrayOf("scripts")) {

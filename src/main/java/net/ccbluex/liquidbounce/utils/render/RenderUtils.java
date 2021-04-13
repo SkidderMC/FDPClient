@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -84,11 +85,11 @@ public final class RenderUtils extends MinecraftInstance {
         glEndList();
     }
 
-    public static int drawText(String text, int width, int height, float size) {
+    public static int drawText(String text, FontRenderer fontRenderer, int width, int height, float scale) {
         GlStateManager.pushMatrix();
         //set scale
-        GlStateManager.scale(size, size, size);
-        int length = mc.fontRendererObj.drawString(text, Math.round(width / size), Math.round(height / size), 0xffffffff);
+        GlStateManager.scale(scale, scale, scale);
+        int length = fontRenderer.drawString(text, Math.round(width / scale), Math.round(height / scale), 0xffffffff);
         GlStateManager.popMatrix();
         return length;
     }

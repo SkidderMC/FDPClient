@@ -21,7 +21,6 @@ import java.awt.Desktop
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
-import java.util.*
 import java.util.zip.ZipFile
 
 class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {

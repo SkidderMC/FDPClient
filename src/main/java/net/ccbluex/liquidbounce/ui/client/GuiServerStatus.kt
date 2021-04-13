@@ -14,7 +14,6 @@ import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.IOException
-import java.util.*
 import kotlin.concurrent.thread
 
 class GuiServerStatus(private val prevGui: GuiScreen) : GuiScreen() {
