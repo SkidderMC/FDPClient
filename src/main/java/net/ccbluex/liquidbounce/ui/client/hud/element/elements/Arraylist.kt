@@ -32,11 +32,11 @@ import java.awt.Color
 class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
 
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow"), "Custom")
+    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "SkyRainbow"), "Custom")
     private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
     private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
-    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow"), "Rainbow")
+    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "SkyRainbow"), "Rainbow")
     private val rectColorRedValue = IntegerValue("Rect-R", 255, 0, 255)
     private val rectColorGreenValue = IntegerValue("Rect-G", 255, 0, 255)
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
@@ -45,12 +45,12 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tags = BoolValue("Tags", true)
     private val shadow = BoolValue("ShadowText", true)
-    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow"), "Custom")
+    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "SkyRainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 0, 0, 255)
-    private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right"), "None")
+    private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline"), "None")
     private val upperCaseValue = BoolValue("UpperCase", false)
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
@@ -138,31 +138,59 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             xPos - if (rectMode.equals("right", true)) 5 else 2,
                             yPos,
                             if (rectMode.equals("right", true)) -3F else 0F,
-                            yPos + textHeight, when {
-                        backgroundColorMode.equals("Rainbow", ignoreCase = true) -> ColorUtils.rainbow(400000000L * index).rgb
-                        backgroundColorMode.equals("Random", ignoreCase = true) -> moduleColor
-                        else -> backgroundCustomColor
-                    }
+                            yPos + textHeight,
+                        when(backgroundColorMode.toLowerCase()) {
+                            "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
+                            "random" -> moduleColor
+                            "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
+                            else -> backgroundCustomColor
+                        }
                     )
 
-                    fontRenderer.drawString(displayString, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY, when {
-                        colorMode.equals("Rainbow", ignoreCase = true) -> ColorUtils.rainbow(400000000L * index).rgb
-                        colorMode.equals("Random", ignoreCase = true) -> moduleColor
-                        else -> customColor
-                    }, textShadow)
+                    fontRenderer.drawString(displayString, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY,
+                        when(colorMode.toLowerCase()) {
+                            "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
+                            "random" -> moduleColor
+                            "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
+                            else -> customColor
+                        }, textShadow)
 
                     if (!rectMode.equals("none", true)) {
-                        val rectColor = when {
-                            rectColorMode.equals("Rainbow", ignoreCase = true) -> ColorUtils.rainbow(400000000L * index).rgb
-                            rectColorMode.equals("Random", ignoreCase = true) -> moduleColor
+                        val rectColor = when(rectColorMode.toLowerCase()) {
+                            "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
+                            "random" -> moduleColor
+                            "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
                             else -> rectCustomColor
                         }
 
-                        when {
-                            rectMode.equals("left", true) -> RenderUtils.drawRect(xPos - 5, yPos, xPos - 2, yPos + textHeight,
+                        when(rectMode.toLowerCase()) {
+                            "left" -> RenderUtils.drawRect(xPos - 5, yPos, xPos - 2, yPos + textHeight,
                                     rectColor)
-                            rectMode.equals("right", true) -> RenderUtils.drawRect(-3F, yPos, 0F,
+                            "right" -> RenderUtils.drawRect(-3F, yPos, 0F,
                                     yPos + textHeight, rectColor)
+                            "outline" -> {
+                                RenderUtils.drawRect(-1F, yPos - 1F, 0F,
+                                    yPos + textHeight, rectColor)
+                                RenderUtils.drawRect(xPos - 3, yPos, xPos - 2, yPos + textHeight,
+                                    rectColor)
+                                if (module != modules[0]) {
+                                    var displayStrings = if (!tags.get())
+                                        modules[index - 1].name
+                                    else if (tagsArrayColor.get())
+                                        modules[index - 1].colorlessTagName
+                                    else modules[index - 1].tagName
+
+                                    if (upperCaseValue.get())
+                                        displayStrings = displayStrings.toUpperCase()
+
+                                    RenderUtils.drawRect(xPos - 3 - (fontRenderer.getStringWidth(displayStrings) - fontRenderer.getStringWidth(displayString)), yPos, xPos - 2, yPos + 1,
+                                        rectColor)
+                                    if (module == modules[modules.size - 1]) {
+                                        RenderUtils.drawRect(xPos - 3, yPos + textHeight, 0.0F, yPos + textHeight + 1,
+                                            rectColor)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -189,23 +217,26 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             0F,
                             yPos,
                             xPos + width + if (rectMode.equals("right", true)) 5 else 2,
-                            yPos + textHeight, when {
-                        backgroundColorMode.equals("Rainbow", ignoreCase = true) -> ColorUtils.rainbow(400000000L * index).rgb
-                        backgroundColorMode.equals("Random", ignoreCase = true) -> moduleColor
+                            yPos + textHeight, when(backgroundColorMode.toLowerCase()) {
+                        "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
+                        "random" -> moduleColor
+                            "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
                         else -> backgroundCustomColor
                     }
                     )
 
-                    fontRenderer.drawString(displayString, xPos, yPos + textY, when {
-                        colorMode.equals("Rainbow", ignoreCase = true) -> ColorUtils.rainbow(400000000L * index).rgb
-                        colorMode.equals("Random", ignoreCase = true) -> moduleColor
+                    fontRenderer.drawString(displayString, xPos, yPos + textY, when(colorMode.toLowerCase()) {
+                        "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
+                        "random" -> moduleColor
+                        "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
                         else -> customColor
                     }, textShadow)
 
                     if (!rectMode.equals("none", true)) {
-                        val rectColor = when {
-                            rectColorMode.equals("Rainbow", ignoreCase = true) -> ColorUtils.rainbow(400000000L * index).rgb
-                            rectColorMode.equals("Random", ignoreCase = true) -> moduleColor
+                        val rectColor = when(rectColorMode.toLowerCase()) {
+                            "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
+                            "random" -> moduleColor
+                            "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
                             else -> rectCustomColor
                         }
 

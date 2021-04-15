@@ -27,16 +27,13 @@ public class ScaffoldUtils extends MinecraftInstance {
     public static void drawTip(){
         GlStateManager.pushMatrix();
 
-        final String info = "Blocks: " + getBlocksAmount();
+        final String info = "Blocks > " + getBlocksAmount();
         final ScaledResolution scaledResolution = new ScaledResolution(mc);
         final int width=scaledResolution.getScaledWidth();
         final int height=scaledResolution.getScaledHeight();
         final int fWidth= Fonts.font40.getStringWidth(info)/2;
         final int fHeight= (int) (Fonts.font40.FONT_HEIGHT*1.2F);
-        RenderUtils.drawRect(width/2-fWidth,(int)(height*0.7-fHeight),width/2+fWidth, (int) (height*0.7+fHeight), Color.GRAY.getRGB());
-        RenderUtils.drawFilledCircle(width/2-fWidth, (int) (height*0.7),fHeight,Color.GRAY);
-        RenderUtils.drawFilledCircle(width/2+fWidth, (int) (height*0.7),fHeight,Color.GRAY);
-        Fonts.font40.drawCenteredString(info, width/2F, height*0.7F-1, Color.WHITE.getRGB(),false);
+        Fonts.font40.drawCenteredString(info, width/2F, height*0.6F, Color.WHITE.getRGB(),false);
 
         GlStateManager.popMatrix();
     }

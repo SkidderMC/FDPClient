@@ -23,13 +23,13 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public class Fonts {
 
-    @FontDetails(fontName = "Comfortaa Small", fontSize = 35)
+    @FontDetails(fontName = "Jello Small", fontSize = 35)
     public static GameFontRenderer font35;
 
-    @FontDetails(fontName = "Comfortaa Medium", fontSize = 40)
+    @FontDetails(fontName = "Jello Medium", fontSize = 40)
     public static GameFontRenderer font40;
 
-    @FontDetails(fontName = "Comfortaa Bold", fontSize = 40)
+    @FontDetails(fontName = "Jello Bold", fontSize = 40)
     public static GameFontRenderer fontBold40;
 
     @FontDetails(fontName = "Minecraft Font")
@@ -44,9 +44,9 @@ public class Fonts {
 
         initFonts();
 
-        font35 = new GameFontRenderer(getFont("Comfortaa-Regular.ttf", 35));
-        font40 = new GameFontRenderer(getFont("Comfortaa-Regular.ttf", 40));
-        fontBold40 = new GameFontRenderer(getFont("Comfortaa-Bold.ttf", 40));
+        font35 = new GameFontRenderer(getFont("jelloregular.ttf", 35));
+        font40 = new GameFontRenderer(getFont("jelloregular.ttf", 40));
+        fontBold40 = new GameFontRenderer(getFont("jellomedium.ttf", 40));
 
         try {
             CUSTOM_FONT_RENDERERS.clear();
@@ -85,8 +85,8 @@ public class Fonts {
 
     private static void initFonts() {
         try {
-            initSingleFont("Comfortaa-Regular.ttf");
-            initSingleFont("Comfortaa-Bold.ttf");
+            initSingleFont("jelloregular.ttf");
+            initSingleFont("jellomedium.ttf");
         }catch(IOException e) {
             e.printStackTrace();
         }

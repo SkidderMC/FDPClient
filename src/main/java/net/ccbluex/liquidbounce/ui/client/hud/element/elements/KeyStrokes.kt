@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
+import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -16,13 +17,13 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 
 @ElementInfo(name = "KeyStrokes")
-class KeyStrokes : Element() {
+class KeyStrokes : Element(5.0,25.0,1.25F, Side.default()) {
     private val keys=ArrayList<KeyStroke>()
 
-    private val backGroundRedValue = IntegerValue("BackGroundRed", 170, 0, 255)
-    private val backGroundGreenValue = IntegerValue("BackGroundGreen", 170, 0, 255)
-    private val backGroundBlueValue = IntegerValue("BackGroundBlue", 170, 0, 255)
-    private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 120, 0, 255)
+    private val backGroundRedValue = IntegerValue("BackGroundRed", 0, 0, 255)
+    private val backGroundGreenValue = IntegerValue("BackGroundGreen", 0, 0, 255)
+    private val backGroundBlueValue = IntegerValue("BackGroundBlue", 0, 0, 255)
+    private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
     private val textRedValue = IntegerValue("TextRed", 255, 0, 255)
     private val textGreenValue = IntegerValue("TextGreen", 255, 0, 255)
     private val textBlueValue = IntegerValue("TextBlue", 255, 0, 255)
@@ -32,7 +33,7 @@ class KeyStrokes : Element() {
     private val outline = BoolValue("Outline", false)
     private val outlineBoldValue = IntegerValue("OutlineBold", 1,0,5)
     private val outlineRainbow = BoolValue("OutLineRainbow", false)
-    private val fontValue = FontValue("Font", Fonts.minecraftFont)
+    private val fontValue = FontValue("Font", Fonts.font35)
 
     init {
         keys.add(KeyStroke(mc.gameSettings.keyBindForward,16,0,15,15).initKeyName())

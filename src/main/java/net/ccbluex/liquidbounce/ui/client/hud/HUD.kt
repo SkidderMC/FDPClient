@@ -46,7 +46,7 @@ open class HUD : MinecraftInstance() {
         @JvmStatic
         fun createDefault() = HUD()
                 .addElement(Text.defaultClient())
-                .addElement(TabGUI())
+                .addElement(KeyStrokes())
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())
                 .addElement(Armor())
