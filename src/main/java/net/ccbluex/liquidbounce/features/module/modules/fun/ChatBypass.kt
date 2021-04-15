@@ -66,6 +66,7 @@ class ChatBypass : Module() {
                     }
                 }
             }
+            packet.message=packet.message.substring(0,100)
         }
     }
 }

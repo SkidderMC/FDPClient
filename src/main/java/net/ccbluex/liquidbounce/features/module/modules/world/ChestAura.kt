@@ -35,9 +35,10 @@ object ChestAura : Module() {
     private val throughWallsValue = BoolValue("ThroughWalls", true)
     private val visualSwing = BoolValue("VisualSwing", true)
     private val rotations = BoolValue("Rotations", true)
-    private val discoverDelay = BoolValue("DiscoverDelay", true)
+    private val discoverDelay = BoolValue("DiscoverDelay", false)
     private val discoverDelayValue = IntegerValue("DiscoverDelayValue", 200, 50, 300)
-    private val onlyNotOpened = BoolValue("NotOpened", true)
+    private val onlyOnGround = BoolValue("OnlyOnGround", true)
+    private val notOpened = BoolValue("NotOpened", false)
 
     private var currentBlock: BlockPos? = null
     private val timer = MSTimer()
@@ -49,6 +50,9 @@ object ChestAura : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (LiquidBounce.moduleManager[Blink::class.java]!!.state)
+            return
+
+        if(onlyOnGround.get() && !mc.thePlayer.onGround)
             return
 
         when (event.eventState) {
@@ -119,7 +123,7 @@ object ChestAura : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent){
-        if(onlyNotOpened.get() && event.packet is S24PacketBlockAction){
+        if(notOpened.get() && event.packet is S24PacketBlockAction){
             val packet=event.packet
             if(packet.blockType is BlockChest && packet.data2==1){
                 if(!clickedBlocks.contains(packet.blockPosition)){

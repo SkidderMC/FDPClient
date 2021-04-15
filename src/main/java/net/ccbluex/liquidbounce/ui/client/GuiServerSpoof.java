@@ -31,8 +31,9 @@ public class GuiServerSpoof extends GuiScreen {
         buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 144, "Back"));
 
         textField = new GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20);
-        textField.setText(ServerSpoof.ip);
         textField.setFocused(true);
+        textField.setText(ServerSpoof.ip);
+        textField.setMaxStringLength(114514);
 
         updateButtonStat();
     }
@@ -43,19 +44,16 @@ public class GuiServerSpoof extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        System.out.println("W="+width+", H="+height);
         drawBackground(0);
         Gui.drawRect(30, 30, width - 30, height - 30, Integer.MIN_VALUE);
 
-        for(GuiButton button:buttonList) {
-            button.drawButton(mc,mouseX,mouseY);
-        }
-
         drawCenteredString(Fonts.font40, "Server Spoof", width / 2, 34, 0xffffff);
-        textField.drawTextBox();
 
+        textField.drawTextBox();
         if(textField.getText().isEmpty() && !textField.isFocused())
             drawString(Fonts.font40, "§7Server Address", width / 2 - 100, 66, 0xffffff);
+
+        super.drawScreen(mouseX,mouseY,partialTicks);
     }
 
     @Override
@@ -89,6 +87,20 @@ public class GuiServerSpoof extends GuiScreen {
             return;
         }
 
+        if(textField.isFocused())
+            textField.textboxKeyTyped(typedChar, keyCode);
         super.keyTyped(typedChar, keyCode);
+    }
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        textField.mouseClicked(mouseX, mouseY, mouseButton);
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
+    public void updateScreen() {
+        textField.updateCursorCounter();
+        super.updateScreen();
     }
 }

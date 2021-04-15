@@ -130,7 +130,6 @@ class ModuleManager : Listenable {
                 ChatBypass::class.java,
                 AntiVoid::class.java,
                 AntiVanish::class.java,
-                Crasher::class.java,
                 Target::class.java,
                 KeyBindManager::class.java,
                 AutoLogin::class.java

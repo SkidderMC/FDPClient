@@ -380,19 +380,7 @@ public class Tower extends Module {
     @EventTarget
     public void onRender2D(final Render2DEvent event) {
         if(counterDisplayValue.get()) {
-            GlStateManager.pushMatrix();
-
-            final BlockOverlay blockOverlay = (BlockOverlay) LiquidBounce.moduleManager.getModule(BlockOverlay.class);
-            if (blockOverlay.getState() && blockOverlay.getInfoValue().get() && blockOverlay.getCurrentBlock() != null)
-                GlStateManager.translate(0, 15F, 0);
-
-            final String info = "Blocks: §7" + getBlocksAmount();
-            final ScaledResolution scaledResolution = new ScaledResolution(mc);
-            RenderUtils.drawBorderedRect((scaledResolution.getScaledWidth() / 2) - 2, (scaledResolution.getScaledHeight() / 2) + 5, (scaledResolution.getScaledWidth() / 2) + Fonts.font40.getStringWidth(info) + 2, (scaledResolution.getScaledHeight() / 2) + 16, 3, Color.BLACK.getRGB(), Color.BLACK.getRGB());
-            GlStateManager.resetColor();
-            Fonts.font40.drawString(info, scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 2 + 7, Color.WHITE.getRGB());
-
-            GlStateManager.popMatrix();
+            ScaffoldUtils.drawTip();
         }
     }
 
@@ -400,22 +388,6 @@ public class Tower extends Module {
     public void onJump(final JumpEvent event) {
         if (onJumpValue.get())
             event.cancelEvent();
-    }
-
-    /**
-     * @return hotbar blocks amount
-     */
-    private int getBlocksAmount() {
-        int amount = 0;
-
-        for(int i = 36; i < 45; i++) {
-            final ItemStack itemStack = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
-
-            if(itemStack != null && itemStack.getItem() instanceof ItemBlock)
-                amount += itemStack.stackSize;
-        }
-
-        return amount;
     }
 
     @Override
