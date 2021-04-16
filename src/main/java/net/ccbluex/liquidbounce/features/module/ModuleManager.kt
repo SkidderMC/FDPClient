@@ -132,7 +132,8 @@ class ModuleManager : Listenable {
                 AntiVanish::class.java,
                 Target::class.java,
                 KeyBindManager::class.java,
-                AutoLogin::class.java
+                AutoLogin::class.java,
+                ChatTranslator::class.java
         )
 
         registerModule(Fucker)

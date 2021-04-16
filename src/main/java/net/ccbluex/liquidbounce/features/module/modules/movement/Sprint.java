@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement;
 
 import net.ccbluex.liquidbounce.event.EventTarget;
+import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.UpdateEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
@@ -14,12 +15,14 @@ import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.Rotation;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
+import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.potion.Potion;
 
 @ModuleInfo(name = "Sprint", description = "Automatically sprints all the time.", category = ModuleCategory.MOVEMENT)
 public class Sprint extends Module {
 
     public final BoolValue allDirectionsValue = new BoolValue("AllDirections", true);
+    public final BoolValue allDirectionsRotateValue = new BoolValue("AllDirectionsRotate", true);
     public final BoolValue blindnessValue = new BoolValue("Blindness", true);
     public final BoolValue foodValue = new BoolValue("Food", true);
 
@@ -38,7 +41,11 @@ public class Sprint extends Module {
             return;
         }
 
-        if(allDirectionsValue.get() || mc.thePlayer.movementInput.moveForward >= 0.8F)
+        if(allDirectionsValue.get() || mc.thePlayer.movementInput.moveForward >= 0.8F) {
             mc.thePlayer.setSprinting(true);
+            if(allDirectionsRotateValue.get()) {
+                RotationUtils.setTargetRotation(new Rotation((float) (MovementUtils.getDirection() * 180F / Math.PI), mc.thePlayer.rotationPitch));
+            }
+        }
     }
 }

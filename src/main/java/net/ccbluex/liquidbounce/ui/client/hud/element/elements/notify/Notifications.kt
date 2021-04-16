@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/CCBlueX/LiquidBounce/
  */
-package net.ccbluex.liquidbounce.ui.client.hud.element.elements
+package net.ccbluex.liquidbounce.ui.client.hud.element.elements.notify
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.FadeState
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.other.IconManager
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
@@ -29,7 +31,7 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
     /**
      * Example notification for CustomHUD designer
      */
-    private val exampleNotification = Notification("Example Notification",NotifyType.INFO)
+    private val exampleNotification = Notification("Example Notification", NotifyType.INFO)
 
     /**
      * Draw element
@@ -37,11 +39,13 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
     override fun drawElement(partialTicks: Float): Border? {
         val notifications = mutableListOf<Notification>()
         //FUCK YOU java.util.ConcurrentModificationException
-        for(notify in LiquidBounce.hud.notifications){
-            notifications.add(notify)
+        for((index, notify) in LiquidBounce.hud.notifications.withIndex()){
+            if(notify.drawNotification(index)){
+                notifications.add(notify)
+            }
         }
-        for((index, notify) in notifications.withIndex()){
-            notify.drawNotification(index)
+        for(notify in notifications){
+            LiquidBounce.hud.notifications.remove(notify)
         }
 
         if (mc.currentScreen is GuiHudDesigner) {
@@ -77,7 +81,7 @@ class Notification(val message: String, val type: NotifyType) {
     /**
      * Draw notification
      */
-    fun drawNotification(index: Int) {
+    fun drawNotification(index: Int):Boolean {
         // Animation
         val delta = RenderUtils.deltaTime
         val width = textLength + 8F
@@ -132,8 +136,9 @@ class Notification(val message: String, val type: NotifyType) {
             } else
                 fadeState = FadeState.END
 
-            FadeState.END -> LiquidBounce.hud.removeNotification(this)
+            FadeState.END -> return true
         }
+        return false
     }
 }
 
