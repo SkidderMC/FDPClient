@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop2;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop3;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -80,7 +81,8 @@ public class Speed extends Module {
 
             // RedeSky
             new RedeSkyHop(),
-            new RedeSkyHop2()
+            new RedeSkyHop2(),
+            new RedeSkyHop3()
     };
 
     public final ListValue modeValue = new ListValue("Mode", getModes(), "NCPBHop") {
@@ -107,8 +109,9 @@ public class Speed extends Module {
 
     public final FloatValue portMax = new FloatValue("AAC-PortLength", 1, 1, 20);
     public final FloatValue redeSkyHopGSpeed = new FloatValue("RedeSkyHop-GSpeed", 0.3F, 0.1F, 0.7F);
-    public final FloatValue redeSkyHopHeight = new FloatValue("RedeSkyHop-Height", 0.45F, 0.30F, 0.55F);
+    public final FloatValue redeSkyHeight = new FloatValue("RedeSkyHeight", 0.45F, 0.30F, 0.55F);
     public final FloatValue redeSkyHopTimer = new FloatValue("RedeSkyHop-Timer", 6F, 1.1F, 10F);
+    public final FloatValue redeSkyHop3Speed = new FloatValue("RedeSkyHop3-Speed", 0.07F, 0.01F, 0.1F);
     public final FloatValue aacGroundTimerValue = new FloatValue("AACGround-Timer", 3F, 1.1F, 10F);
     public final FloatValue cubecraftPortLengthValue = new FloatValue("CubeCraft-PortLength", 1F, 0.1F, 2F);
     public final FloatValue mineplexGroundSpeedValue = new FloatValue("MineplexGround-Speed", 0.5F, 0.1F, 1F);

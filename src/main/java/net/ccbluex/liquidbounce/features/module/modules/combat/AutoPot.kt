@@ -64,18 +64,36 @@ class AutoPot : Module() {
 
         if(openInventoryValue.get()){
             val invPotion=findPotion(9,36)
-            if (invPotion != -1 && InventoryUtils.hasSpaceHotbar()) {
+            if (invPotion != -1) {
                 val openInventory = mc.currentScreen !is GuiInventory && simulateInventory.get()
+                if(InventoryUtils.hasSpaceHotbar()) {
+                    if (openInventory)
+                        mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
 
-                if (openInventory)
-                    mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                    mc.playerController.windowClick(0, invPotion, 0, 1, mc.thePlayer)
 
-                mc.playerController.windowClick(0, invPotion, 0, 1, mc.thePlayer)
+                    if (openInventory)
+                        mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
 
-                if (openInventory)
-                    mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
+                    return
+                }else{
+                    for (i in 36 until 45) {
+                        val stack = mc.thePlayer.inventoryContainer.getSlot(i).stack
+                        if (stack == null || stack.item !is ItemPotion || !ItemPotion.isSplash(stack.itemDamage))
+                            continue
 
-                return
+                        if (openInventory)
+                            mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+
+                        mc.playerController.windowClick(0, invPotion, 0, 0, mc.thePlayer)
+                        mc.playerController.windowClick(0, i, 0, 0, mc.thePlayer)
+
+                        if (openInventory)
+                            mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
+
+                        break
+                    }
+                }
             }
         }
     }

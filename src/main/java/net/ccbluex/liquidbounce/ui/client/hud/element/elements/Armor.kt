@@ -33,10 +33,9 @@ class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
             GL11.glPushMatrix()
 
             val renderItem = mc.renderItem
-            val isInsideWater = mc.thePlayer.isInsideOfMaterial(Material.water)
 
             var x = 1
-            var y = if (isInsideWater) 10 else 0
+            var y = 0
 
             val mode = modeValue.get()
 

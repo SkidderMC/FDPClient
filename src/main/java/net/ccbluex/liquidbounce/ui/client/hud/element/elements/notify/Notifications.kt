@@ -104,7 +104,7 @@ class Notification(val message: String, val type: NotifyType) {
         // Draw notification
         RenderUtils.drawRect(-x + 10 + textLength, 0F-y, -x - 10, -20F-y, Color.BLACK.rgb)
         RenderUtils.drawFilledCircle((-x-10).toInt(), (-10-y).toInt(), 10F,Color.BLACK)
-        RenderUtils.drawImage(IconManager.getIcon(type.icon),(-x-17).toInt(), (-17-y).toInt(),14,14)
+        RenderUtils.drawImage(LiquidBounce.iconManager.getIcon(type.icon),(-x-17).toInt(), (-17-y).toInt(),14,14)
         Fonts.font35.drawString(message, -x + 5, -13F-y, Int.MAX_VALUE)
         GlStateManager.resetColor()
 

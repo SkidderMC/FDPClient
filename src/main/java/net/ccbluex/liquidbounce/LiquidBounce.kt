@@ -53,6 +53,7 @@ object LiquidBounce {
     lateinit var fileManager: FileManager
     lateinit var scriptManager: ScriptManager
     lateinit var musicManager: MusicManager
+    lateinit var iconManager: IconManager
 
     // HUD & ClickGUI & KeybindMgr
     lateinit var hud: HUD
@@ -92,7 +93,7 @@ object LiquidBounce {
         Fonts.loadFonts()
 
         // Load client icons
-        IconManager.loadIcons()
+        iconManager = IconManager()
 
         // Setup module manager and register modules
         moduleManager = ModuleManager()

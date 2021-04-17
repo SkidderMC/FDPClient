@@ -45,6 +45,7 @@ public class Fly extends Module {
 
             // RedeSky
             "RedeSkyCollide",
+            "RedeSkySmooth",
 
             // AAC
             "AAC1.9.10",
@@ -112,6 +113,10 @@ public class Fly extends Module {
     private final FloatValue rscBoostValue = new FloatValue("RSCollideBoost", 0.3F, 0.0F, 1F);
     private final FloatValue rscMaxSpeedValue = new FloatValue("RSCollideMaxSpeed", 20F, 7F, 30F);
     private final FloatValue rscTimerValue = new FloatValue("RSCollideTimer", 0.8F, 0.1F, 1F);
+    private final FloatValue rssSpeedValue = new FloatValue("RSSmoothSpeed", 0.9F, 0.05F, 1F);
+    private final FloatValue rssSpeedAddValue = new FloatValue("RSSmoothAddSpeed", 0.1F, 0.5F, 1F);
+    private final FloatValue rssMotionValue = new FloatValue("RSSmoothMotion", 0.2F, 0F, 0.5F);
+    private final FloatValue rssTimerValue = new FloatValue("RSSmoothTimer", 0.3F, 0.1F, 1F);
 
     // Visuals
     private final BoolValue markValue = new BoolValue("Mark", true);
@@ -146,7 +151,6 @@ public class Fly extends Module {
     private double moveSpeed, lastDistance;
     private boolean failedStart = false;
 
-    private final TickTimer cubecraft2TickTimer = new TickTimer();
     private final TickTimer cubecraftTeleportTickTimer = new TickTimer();
 
     private final TickTimer freeHypixelTimer = new TickTimer();
@@ -239,6 +243,10 @@ public class Fly extends Module {
                 lastDistance = 0D;
                 failedStart = false;
                 break;
+            case "redeskysmooth":{
+                mc.thePlayer.addVelocity(0, rssMotionValue.get(), 0);
+                break;
+            }
         }
 
         startY = mc.thePlayer.posY;
@@ -268,6 +276,10 @@ public class Fly extends Module {
         switch (mode.toLowerCase()){
             case "redeskycollide":{
                 mc.thePlayer.motionY=0;
+                break;
+            }
+            case "redeskysmooth":{
+                mc.thePlayer.capabilities.isFlying = false;
                 break;
             }
         }
@@ -707,6 +719,13 @@ public class Fly extends Module {
                     event.setZ(mc.thePlayer.motionZ);
                 }
                 break;
+            case "redeskysmooth":{
+                float speed = rssSpeedValue.get()/10F + flyTick*(rssSpeedAddValue.get()/1000F);
+                mc.timer.timerSpeed=rssTimerValue.get();
+                mc.thePlayer.capabilities.setFlySpeed(speed);
+                mc.thePlayer.capabilities.isFlying = true;
+                break;
+            }
             case "cubecraft": {
                 final double yaw = Math.toRadians(mc.thePlayer.rotationYaw);
 

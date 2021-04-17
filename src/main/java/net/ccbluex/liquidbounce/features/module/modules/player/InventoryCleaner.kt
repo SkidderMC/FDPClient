@@ -59,7 +59,7 @@ class InventoryCleaner : Module() {
     private val sortValue = BoolValue("Sort", true)
     private val itemDelayValue = IntegerValue("ItemDelay", 0, 0, 5000)
 
-    private val items = arrayOf("None", "Ignore", "Sword", "Bow", "Pickaxe", "Axe", "Food", "Block", "Water", "Gapple", "Pearl")
+    private val items = arrayOf("None", "Ignore", "Sword", "Bow", "Pickaxe", "Axe", "Food", "Block", "Water", "Gapple", "Pearl", "Potion")
     private val sortSlot1Value = ListValue("SortSlot-1", items, "Sword")
     private val sortSlot2Value = ListValue("SortSlot-2", items, "Bow")
     private val sortSlot3Value = ListValue("SortSlot-3", items, "Pickaxe")
@@ -328,6 +328,19 @@ class InventoryCleaner : Module() {
 
                     if (item is ItemEnderPearl && !type(index).equals("Pearl", ignoreCase = true)) {
                         val replaceCurr = slotStack == null || slotStack.item !is ItemEnderPearl
+
+                        return if (replaceCurr) index else null
+                    }
+                }
+            }
+
+            "potion" -> {
+                mc.thePlayer.inventory.mainInventory.forEachIndexed { index, stack ->
+                    val item = stack?.item
+
+                    if ((item is ItemPotion && ItemPotion.isSplash(stack.itemDamage))
+                        && !type(index).equals("Potion", ignoreCase = true)) {
+                        val replaceCurr = slotStack == null || slotStack.item !is ItemPotion || !ItemPotion.isSplash(slotStack.itemDamage)
 
                         return if (replaceCurr) index else null
                     }

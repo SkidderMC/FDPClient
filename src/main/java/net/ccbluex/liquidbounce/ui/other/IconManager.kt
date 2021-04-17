@@ -9,32 +9,30 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 
 class IconManager : MinecraftInstance() {
-    companion object {
-        private val icons=HashMap<String,ResourceLocation>()
+    private val icons=HashMap<String,ResourceLocation>()
 
-        @JvmStatic
-        fun loadIcons() {
-            loadIcon("check-circle")
-            loadIcon("close-circle")
-            loadIcon("information")
-        }
+    init {
+        loadIcon("check-circle")
+        loadIcon("close-circle")
+        loadIcon("information")
+        loadIcon("shadow")
+    }
 
-        private fun loadIcon(name: String){
-            icons[name] = genResource(ImageIO.read(IconManager.javaClass.classLoader.getResourceAsStream("icon/$name.png")))
-        }
+    private fun loadIcon(name: String){
+        icons[name] = genResource(ImageIO.read(IconManager::class.java.classLoader.getResourceAsStream("icon/$name.png")))
+    }
 
-        fun getIcon(name: String): ResourceLocation? {
-            return icons[name]
-        }
+    fun getIcon(name: String): ResourceLocation? {
+        return icons[name]
+    }
 
-        fun genResource(image: BufferedImage?): ResourceLocation {
-            //create and load
-            val resourceLocation = ResourceLocation(
-                LiquidBounce.CLIENT_NAME.toLowerCase()+"/"
-                        + RandomUtils.randomString(10)
-            )
-            mc.textureManager.loadTexture(resourceLocation, DynamicTexture(image))
-            return resourceLocation
-        }
+    fun genResource(image: BufferedImage?): ResourceLocation {
+        //create and load
+        val resourceLocation = ResourceLocation(
+            LiquidBounce.CLIENT_NAME.toLowerCase()+"/"
+                    + RandomUtils.randomString(10)
+        )
+        mc.textureManager.loadTexture(resourceLocation, DynamicTexture(image))
+        return resourceLocation
     }
 }

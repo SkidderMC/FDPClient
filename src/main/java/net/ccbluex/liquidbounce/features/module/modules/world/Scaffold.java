@@ -427,7 +427,7 @@ public class Scaffold extends Module {
     @EventTarget
     public void onRender2D(final Render2DEvent event) {
         if (counterDisplayValue.get()) {
-            ScaffoldUtils.drawTip();
+            ScaffoldUtils.drawTip(slot);
         }
     }
 

@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @ElementInfo(name = "KeyStrokes")
@@ -67,15 +68,17 @@ class KeyStroke(val key:KeyBinding,val posX:Int,val posY:Int, val width:Int, val
     private val animations=ArrayList<Long>()
 
     fun render(speed: Int, bgColor: Color, textColor: Color, highLightPct: Float, outline: Boolean, outlineBold: Int, font: FontRenderer){
+        GL11.glPushMatrix()
+        GL11.glTranslatef(posX.toFloat(),posY.toFloat(),0F)
+
         val highLightColor=Color(255-((255-bgColor.red)*highLightPct).toInt(),255-((255-bgColor.blue)*highLightPct).toInt(),255-((255-bgColor.green)*highLightPct).toInt())
         val clickAlpha=255-(255-bgColor.alpha)*highLightPct
-        val centerX=posX+(width/2)
-        val centerY=posY+(height/2)
+        val centerX=width/2
+        val centerY=height/2
         val nowTime=System.currentTimeMillis()
 
         val rectColor=if(lastClick&&animations.isEmpty()){ ColorUtils.reAlpha(highLightColor,clickAlpha.toInt()) }else{ bgColor }
-        RenderUtils.drawRect(posX.toFloat(),posY.toFloat(),(posX+width).toFloat(),(posY+height).toFloat()
-            ,rectColor)
+        RenderUtils.drawRect(0F,0F,width.toFloat(),height.toFloat(),rectColor)
 
         val removeAble=ArrayList<Long>()
         for(time in animations){
@@ -84,8 +87,7 @@ class KeyStroke(val key:KeyBinding,val posX:Int,val posY:Int, val width:Int, val
                 removeAble.add(time)
                 continue
             }
-            RenderUtils.drawLimitedCircle(posX.toFloat(),posY.toFloat(),(posX+width).toFloat(),(posY+height).toFloat(),
-                centerX,centerY,(width*0.7F)*pct
+            RenderUtils.drawLimitedCircle(0F,0F,width.toFloat(),height.toFloat(), centerX,centerY,(width*0.7F)*pct
                 ,Color(255-((255-highLightColor.red)*pct).toInt(),255-((255-highLightColor.green)*pct).toInt(),255-((255-highLightColor.blue)*pct).toInt(),255-((255-clickAlpha)*pct).toInt()))
         }
         for(time in removeAble){
@@ -99,11 +101,13 @@ class KeyStroke(val key:KeyBinding,val posX:Int,val posY:Int, val width:Int, val
         font.drawString(keyName,centerX-(font.getStringWidth(keyName)/2),centerY-(font.FONT_HEIGHT/2)
             ,textColor.rgb)
         if(outline){
-            RenderUtils.drawRect(posX.toFloat(),posY.toFloat(),(posX+outlineBold).toFloat(),(posY+height).toFloat(),textColor.rgb)
-            RenderUtils.drawRect((posX+width-outlineBold).toFloat(),posY.toFloat(),(posX+width).toFloat(),(posY+height).toFloat(),textColor.rgb)
-            RenderUtils.drawRect((posX+outlineBold).toFloat(),posY.toFloat(),(posX+width-outlineBold).toFloat(),(posY+outlineBold).toFloat(),textColor.rgb)
-            RenderUtils.drawRect((posX+outlineBold).toFloat(),(posY+height-outlineBold).toFloat(),(posX+width-outlineBold).toFloat(),(posY+height).toFloat(),textColor.rgb)
+            RenderUtils.drawRect(0F,0F,outlineBold.toFloat(),height.toFloat(),textColor.rgb)
+            RenderUtils.drawRect((width-outlineBold).toFloat(),0F,width.toFloat(),height.toFloat(),textColor.rgb)
+            RenderUtils.drawRect((outlineBold).toFloat(),0F,(width-outlineBold).toFloat(),outlineBold.toFloat(),textColor.rgb)
+            RenderUtils.drawRect((outlineBold).toFloat(),(height-outlineBold).toFloat(),(width-outlineBold).toFloat(),height.toFloat(),textColor.rgb)
         }
+
+        GL11.glPopMatrix()
     }
 
     fun initKeyName():KeyStroke{

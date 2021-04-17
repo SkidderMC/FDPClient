@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -22,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
+import kotlin.math.abs
 
 /**
  * CustomHUD Arraylist element
@@ -45,6 +47,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tags = BoolValue("Tags", true)
     private val shadow = BoolValue("ShadowText", true)
+    private val jelloShadow = BoolValue("JelloShadow", false)
     private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "SkyRainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
@@ -116,6 +119,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         val textSpacer = textHeight + space
         val saturation = saturationValue.get()
         val brightness = brightnessValue.get()
+        val jelloShadow=jelloShadow.get()
+        val shadowImage=LiquidBounce.iconManager.getIcon("shadow")
 
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
@@ -134,8 +139,13 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             if (side.vertical == Vertical.DOWN) index + 1 else index
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
+                    val rectX=xPos - if (rectMode.equals("right", true)) 5 else 2
+                    if(jelloShadow) {
+                        RenderUtils.drawImage(shadowImage, rectX.toInt(), yPos.toInt()
+                            , abs(rectX).toInt(), textHeight.toInt())
+                    }
                     RenderUtils.drawRect(
-                            xPos - if (rectMode.equals("right", true)) 5 else 2,
+                            rectX,
                             yPos,
                             if (rectMode.equals("right", true)) -3F else 0F,
                             yPos + textHeight,
@@ -213,16 +223,21 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             if (side.vertical == Vertical.DOWN) index + 1 else index
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
+                    if(jelloShadow) {
+                        RenderUtils.drawImage(shadowImage, 0, yPos.toInt()
+                            , (xPos + width + if (rectMode.equals("right", true)) 5 else 2).toInt(), textHeight.toInt())
+                    }
                     RenderUtils.drawRect(
                             0F,
                             yPos,
                             xPos + width + if (rectMode.equals("right", true)) 5 else 2,
-                            yPos + textHeight, when(backgroundColorMode.toLowerCase()) {
-                        "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
-                        "random" -> moduleColor
+                            yPos + textHeight,
+                        when(backgroundColorMode.toLowerCase()) {
+                            "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
+                            "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
-                        else -> backgroundCustomColor
-                    }
+                            else -> backgroundCustomColor
+                        }
                     )
 
                     fontRenderer.drawString(displayString, xPos, yPos + textY, when(colorMode.toLowerCase()) {

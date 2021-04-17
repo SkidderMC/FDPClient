@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.other.IconManager
 import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils
@@ -65,6 +66,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
     private val rainbow = BoolValue("Rainbow", false)
     private val shadow = BoolValue("Shadow", true)
+    private val jelloShadow = BoolValue("JelloShadow", false)
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
@@ -157,6 +159,11 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get()).rgb
 
         val fontRenderer = fontValue.get()
+
+        if(jelloShadow.get()){
+            RenderUtils.drawImage(LiquidBounce.iconManager.getIcon("shadow"),0,(-fontRenderer.FONT_HEIGHT*0.5).toInt()
+                ,fontRenderer.getStringWidth(displayText), (fontRenderer.FONT_HEIGHT*1.5).toInt())
+        }
 
         if(rect.get()){
             val rectColor = Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
