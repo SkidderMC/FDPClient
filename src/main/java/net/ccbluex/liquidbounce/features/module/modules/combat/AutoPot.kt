@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -34,22 +35,32 @@ class AutoPot : Module() {
     private val simulateInventory = BoolValue("SimulateInventory", true)
     private val regen = BoolValue("Regen", true)
     private val utility = BoolValue("Utility", true)
+    private val notCombat = BoolValue("NotCombat", true)
 
     private val timer = MSTimer()
     private var throwing=false
+    private var throwTime=0
     private var pot=-1
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
+        if(notCombat.get()&&LiquidBounce.combatHelper.inCombat) return
         if(!mc.thePlayer.onGround) return
 
         if(throwing){
-            RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw,90F))
-            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(pot-36))
-            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
-            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-            throwing=false
-            pot=-1
+            throwTime++
+            RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, 90F))
+            if(throwTime==3) {
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(pot - 36))
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                pot = -1
+            }
+            if(throwTime>=6){
+                throwTime=0
+                throwing = false
+            }
+            return
         }
         if(!timer.hasTimePassed(delayValue.get().toLong())) return
 

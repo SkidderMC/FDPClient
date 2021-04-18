@@ -22,6 +22,7 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
 import kotlin.random.Random
@@ -53,11 +54,13 @@ class ChestStealer : Module() {
         }
     }
 
+    private val chestValue=IntegerValue("ChestOpenDelay",300,0,1000)
+
     private val takeRandomizedValue = BoolValue("TakeRandomized", false)
     private val onlyItemsValue = BoolValue("OnlyItems", false)
     private val noCompassValue = BoolValue("NoCompass", false)
     private val autoCloseValue = BoolValue("AutoClose", true)
-    public val silenceValue = BoolValue("Silence", true)
+    val silenceValue = BoolValue("Silence", true)
 
     private val autoCloseMaxDelayValue: IntegerValue = object : IntegerValue("AutoCloseMaxDelay", 0, 0, 400) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -81,8 +84,8 @@ class ChestStealer : Module() {
     /**
      * VALUES
      */
-
     private val delayTimer = MSTimer()
+    private val chestTimer = MSTimer()
     private var nextDelay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
 
     private val autoCloseTimer = MSTimer()
@@ -92,6 +95,9 @@ class ChestStealer : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
+        if(!chestTimer.hasTimePassed(chestValue.get().toLong()))
+            return
+
         val screen = mc.currentScreen
 
         if (screen !is GuiChest || !delayTimer.hasTimePassed(nextDelay)) {
@@ -155,6 +161,9 @@ class ChestStealer : Module() {
 
         if (packet is S30PacketWindowItems)
             contentReceived = packet.func_148911_c()
+
+        if(packet is S2DPacketOpenWindow)
+            chestTimer.reset()
     }
 
     private fun move(screen: GuiChest, slot: Slot) {

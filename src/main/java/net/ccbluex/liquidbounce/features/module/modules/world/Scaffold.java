@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo;
@@ -21,8 +20,6 @@ import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
@@ -89,7 +86,7 @@ public class Scaffold extends Module {
     private final IntegerValue expandLengthValue = new IntegerValue("ExpandLength", 5, 1, 6);
 
     // Rotations
-    private final BoolValue rotationsValue = new BoolValue("Rotations", true);
+    private final ListValue rotationsValue = new ListValue("Rotations",new String[]{"None","Vanilla","AAC"},"AAC");
     private final IntegerValue keepLengthValue = new IntegerValue("KeepRotationLength", 0, 0, 20);
     private final BoolValue keepRotationValue = new BoolValue("KeepRotation", false);
 
@@ -143,6 +140,8 @@ public class Scaffold extends Module {
 
     // Down
     private boolean shouldGoDown = false;
+
+    private Rotation noRotation=new Rotation(0,0);
 
     /**
      * Enable module
@@ -264,7 +263,7 @@ public class Scaffold extends Module {
         final EventState eventState = event.getEventState();
 
         // Lock Rotation
-        if (rotationsValue.get() && keepRotationValue.get() && lockRotation != null)
+        if ((!rotationsValue.get().equals("None"))&& keepRotationValue.get() && lockRotation != null)
             RotationUtils.setTargetRotation(lockRotation);
 
         // Place block
@@ -513,9 +512,22 @@ public class Scaffold extends Module {
 
         if (placeRotation == null) return false;
 
-        if (rotationsValue.get()) {
-            RotationUtils.setTargetRotation(placeRotation.getRotation(), keepLengthValue.get());
-            lockRotation = placeRotation.getRotation();
+        if ((!rotationsValue.get().equals("None"))) {
+            Rotation rotation=noRotation;
+
+            switch (rotationsValue.get().toLowerCase()){
+                case "aac":{
+                    rotation=new Rotation(mc.thePlayer.rotationYaw + ((mc.thePlayer.movementInput.moveForward > 0)?180:0), 86);
+                    break;
+                }
+                case "vanilla":{
+                    rotation=placeRotation.getRotation();
+                    break;
+                }
+            }
+
+            RotationUtils.setTargetRotation(rotation, keepLengthValue.get());
+            lockRotation = rotation;
         }
         targetPlace = placeRotation.getPlaceInfo();
         return true;

@@ -34,7 +34,6 @@ class Criticals : Module() {
 
     val msTimer = MSTimer()
 
-    private var rsEntityInReach=false
     private val rsGroundTimer = MSTimer()
     private var rsCritChange=false
     private var target=0;
@@ -42,18 +41,6 @@ class Criticals : Module() {
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
             mc.thePlayer.jump()
-    }
-
-    @EventTarget
-    fun onUpdate(event: UpdateEvent){
-        if(modeValue.get() == "RedeSkySmartGround"){
-            rsEntityInReach=false
-            for(entity in mc.theWorld.loadedEntityList){
-                if(entity.getDistanceToEntity(mc.thePlayer)<7 && EntityUtils.isSelected(entity,true)){
-                    rsEntityInReach=true
-                }
-            }
-        }
     }
 
     @EventTarget
@@ -134,12 +121,12 @@ class Criticals : Module() {
                 }
                 "redeskysmartground" -> {
                     if(rsGroundTimer.hasTimePassed(1000)){
-                        packet.onGround = rsEntityInReach
+                        packet.onGround = LiquidBounce.combatHelper.inCombat
                         if(rsGroundTimer.hasTimePassed(1200)){
                             rsGroundTimer.reset()
                         }
                     }else{
-                        packet.onGround = !rsEntityInReach
+                        packet.onGround = !LiquidBounce.combatHelper.inCombat
                     }
                     if((!packet.onGround) && rsCritChange && (packet is C04PacketPlayerPosition||packet is C03PacketPlayer.C06PacketPlayerPosLook)){
                         packet.y += 0.000000001

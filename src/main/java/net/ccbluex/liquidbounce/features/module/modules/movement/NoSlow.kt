@@ -58,7 +58,7 @@ class NoSlow : Module() {
         if (this.packet.get() && packetTimer.hasTimePassed(packetDelayValue.get().toLong())) {
             when (event.eventState) {
                 EventState.PRE -> {
-                    val digging = C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN)
+                    val digging = C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN)
                     mc.netHandler.addToSendQueue(digging)
                 }
                 EventState.POST -> {

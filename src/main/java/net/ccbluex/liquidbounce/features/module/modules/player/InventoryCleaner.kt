@@ -231,8 +231,9 @@ class InventoryCleaner : Module() {
                         if (bestWeapon == -1) {
                             bestWeapon = index
                         } else {
-                            val currDamage = (itemStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount
-                                    ?: 0.0) + 1.25 * ItemUtils.getEnchantment(itemStack, Enchantment.sharpness)
+                            val currDamage = (itemStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount ?: 0.0)
+                                    + 1.25 * ItemUtils.getEnchantment(itemStack, Enchantment.sharpness)
+                                    + 1 * ItemUtils.getEnchantment(itemStack, Enchantment.fireAspect)
 
                             val bestStack = mc.thePlayer.inventory.getStackInSlot(bestWeapon)
                                     ?: return@forEachIndexed

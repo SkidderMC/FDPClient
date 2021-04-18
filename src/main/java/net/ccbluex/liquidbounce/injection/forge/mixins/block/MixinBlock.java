@@ -77,14 +77,6 @@ public abstract class MixinBlock {
             callbackInfoReturnable.setReturnValue(xray.getXrayBlocks().contains(this));
     }
 
-    @Inject(method = "isCollidable", at = @At("HEAD"), cancellable = true)
-    private void isCollidable(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        final GhostHand ghostHand = (GhostHand) LiquidBounce.moduleManager.getModule(GhostHand.class);
-
-        if (ghostHand.getState() && !(ghostHand.getBlockValue().get() == Block.getIdFromBlock((Block) (Object) this)))
-            callbackInfoReturnable.setReturnValue(false);
-    }
-
     @Inject(method = "getAmbientOcclusionLightValue", at = @At("HEAD"), cancellable = true)
     private void getAmbientOcclusionLightValue(final CallbackInfoReturnable<Float> floatCallbackInfoReturnable) {
         if (LiquidBounce.moduleManager.getModule(XRay.class).getState())

@@ -133,7 +133,10 @@ class ModuleManager : Listenable {
                 Target::class.java,
                 KeyBindManager::class.java,
                 AutoLogin::class.java,
-                ChatTranslator::class.java
+                ChatTranslator::class.java,
+                AutoIgnore::class.java,
+                BoatJump::class.java,
+                AutoMakeBoat::class.java
         )
 
         registerModule(Fucker)
