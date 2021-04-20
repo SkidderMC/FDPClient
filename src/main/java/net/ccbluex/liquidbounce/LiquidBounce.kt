@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
-import net.ccbluex.liquidbounce.features.special.CombatHelper
+import net.ccbluex.liquidbounce.features.special.CombatManager
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.MetricsLite
@@ -40,7 +40,7 @@ object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
-    const val CLIENT_VERSION = "v1.1.1"
+    const val CLIENT_VERSION = "v1.1.2"
     const val IN_DEV = false
     const val CLIENT_CREATOR = "Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
@@ -56,7 +56,7 @@ object LiquidBounce {
     lateinit var scriptManager: ScriptManager
     lateinit var musicManager: MusicManager
     lateinit var iconManager: IconManager
-    lateinit var combatHelper: CombatHelper
+    lateinit var combatManager: CombatManager
 
     // HUD & ClickGUI & KeybindMgr
     lateinit var hud: HUD
@@ -165,8 +165,8 @@ object LiquidBounce {
 
         metricsLite=MetricsLite(11076)
 
-        combatHelper=CombatHelper()
-        eventManager.registerListener(combatHelper)
+        combatManager=CombatManager()
+        eventManager.registerListener(combatManager)
 
         // Set is starting status
         isStarting = false

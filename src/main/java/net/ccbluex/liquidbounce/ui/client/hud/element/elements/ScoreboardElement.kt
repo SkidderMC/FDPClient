@@ -56,7 +56,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
     private val noPointValue = BoolValue("NoPoints", false)
     private val fontValue = FontValue("Font", Fonts.minecraftFont)
 
-    private val allowedDomains=arrayOf(".com",".net",".cc",".cn",".tk",".pw",".xyz",".gg")
+    private val allowedDomains=arrayOf(".co",".net",".cc",".cn",".tk",".pw",".xyz",".gg",".gq",".ml")
 
     /**
      * Draw element

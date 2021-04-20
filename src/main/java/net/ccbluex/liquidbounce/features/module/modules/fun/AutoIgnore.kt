@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.features.module.modules.`fun`
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -17,7 +18,7 @@ class AutoIgnore : Module() {
     private val timer=MSTimer()
 
     @EventTarget
-    fun onUpdate(){
+    fun onUpdate(event: UpdateEvent){
         if(timer.hasTimePassed(3000)) {
             for((name,time) in chatTimes){
                 if(time>maxTimeValue.get()){
@@ -25,6 +26,7 @@ class AutoIgnore : Module() {
                     chat("$name ignored for spamming...")
                 }
             }
+            chatTimes.clear()
             timer.reset()
         }
     }

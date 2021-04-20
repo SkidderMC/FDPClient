@@ -30,6 +30,7 @@ import net.minecraft.potion.Potion
 class AutoPot : Module() {
     private val healthValue = FloatValue("Health", 15F, 1F, 20F)
     private val delayValue = IntegerValue("Delay", 500, 500, 1000)
+    private val throwTickValue = IntegerValue("ThrowTick", 3, 1, 10)
 
     private val openInventoryValue = BoolValue("OpenInv", false)
     private val simulateInventory = BoolValue("SimulateInventory", true)
@@ -44,19 +45,19 @@ class AutoPot : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
-        if(notCombat.get()&&LiquidBounce.combatHelper.inCombat) return
+        if(notCombat.get()&&LiquidBounce.combatManager.inCombat) return
         if(!mc.thePlayer.onGround) return
 
         if(throwing){
             throwTime++
             RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, 90F))
-            if(throwTime==3) {
+            if(throwTime==throwTickValue.get()) {
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(pot - 36))
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                 pot = -1
             }
-            if(throwTime>=6){
+            if(throwTime>=(throwTickValue.get()*2)){
                 throwTime=0
                 throwing = false
             }

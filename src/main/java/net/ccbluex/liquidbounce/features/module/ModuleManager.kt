@@ -10,9 +10,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.`fun`.*
-import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
-import net.ccbluex.liquidbounce.features.module.modules.client.KeyBindManager
+import net.ccbluex.liquidbounce.features.module.modules.client.*
 import net.ccbluex.liquidbounce.features.module.modules.client.Target
 import net.ccbluex.liquidbounce.features.module.modules.combat.*
 import net.ccbluex.liquidbounce.features.module.modules.exploit.*
@@ -111,7 +109,6 @@ class ModuleManager : Listenable {
                 NoSwing::class.java,
                 Breadcrumbs::class.java,
                 CameraClip::class.java,
-                NoPitchLimit::class.java,
                 Kick::class.java,
                 ForceUnicodeChat::class.java,
                 Freeze::class.java,
@@ -136,7 +133,9 @@ class ModuleManager : Listenable {
                 ChatTranslator::class.java,
                 AutoIgnore::class.java,
                 BoatJump::class.java,
-                AutoMakeBoat::class.java
+                DamageParticle::class.java,
+                AutoSpam::class.java,
+                LegitSpoof::class.java
         )
 
         registerModule(Fucker)

@@ -9,12 +9,10 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
-import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -121,12 +119,12 @@ class Criticals : Module() {
                 }
                 "redeskysmartground" -> {
                     if(rsGroundTimer.hasTimePassed(1000)){
-                        packet.onGround = LiquidBounce.combatHelper.inCombat
+                        packet.onGround = LiquidBounce.combatManager.inCombat
                         if(rsGroundTimer.hasTimePassed(1200)){
                             rsGroundTimer.reset()
                         }
                     }else{
-                        packet.onGround = !LiquidBounce.combatHelper.inCombat
+                        packet.onGround = !LiquidBounce.combatManager.inCombat
                     }
                     if((!packet.onGround) && rsCritChange && (packet is C04PacketPlayerPosition||packet is C03PacketPlayer.C06PacketPlayerPosLook)){
                         packet.y += 0.000000001

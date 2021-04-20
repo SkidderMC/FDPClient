@@ -67,6 +67,7 @@ public class Scaffold extends Module {
 
     // AutoBlock
     private final BoolValue autoBlockValue = new BoolValue("AutoBlock", true);
+    private final BoolValue silentAutoBlock = new BoolValue("SilentAutoBlock", true);
     private final BoolValue stayAutoBlock = new BoolValue("StayAutoBlock", false);
 
     // Basic stuff
@@ -87,6 +88,7 @@ public class Scaffold extends Module {
 
     // Rotations
     private final ListValue rotationsValue = new ListValue("Rotations",new String[]{"None","Vanilla","AAC"},"AAC");
+    private final BoolValue silentRotationValue = new BoolValue("SilentRotation", true);
     private final IntegerValue keepLengthValue = new IntegerValue("KeepRotationLength", 0, 0, 20);
     private final BoolValue keepRotationValue = new BoolValue("KeepRotation", false);
 
@@ -263,7 +265,7 @@ public class Scaffold extends Module {
         final EventState eventState = event.getEventState();
 
         // Lock Rotation
-        if ((!rotationsValue.get().equals("None"))&& keepRotationValue.get() && lockRotation != null)
+        if ((!rotationsValue.get().equals("None"))&& keepRotationValue.get() && lockRotation != null && silentRotationValue.get())
             RotationUtils.setTargetRotation(lockRotation);
 
         // Place block
@@ -343,7 +345,11 @@ public class Scaffold extends Module {
             if (blockSlot == -1)
                 return;
 
-            mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(blockSlot - 36));
+            if(silentAutoBlock.get()){
+                mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(blockSlot - 36));
+            }else{
+                mc.thePlayer.inventory.changeCurrentItem(blockSlot - 36);
+            }
             itemStack = mc.thePlayer.inventoryContainer.getSlot(blockSlot).getStack();
         }
 
@@ -365,7 +371,7 @@ public class Scaffold extends Module {
                 mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
         }
 
-        if (!stayAutoBlock.get() && blockSlot >= 0)
+        if (!stayAutoBlock.get() && blockSlot >= 0 && silentAutoBlock.get())
             mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
 
         // Reset
@@ -526,7 +532,13 @@ public class Scaffold extends Module {
                 }
             }
 
-            RotationUtils.setTargetRotation(rotation, keepLengthValue.get());
+            if(silentRotationValue.get()) {
+                RotationUtils.setTargetRotation(rotation, keepLengthValue.get());
+            }else{
+                mc.thePlayer.rotationYaw=rotation.getYaw();
+                mc.thePlayer.rotationPitch=rotation.getPitch();
+            }
+
             lockRotation = rotation;
         }
         targetPlace = placeRotation.getPlaceInfo();

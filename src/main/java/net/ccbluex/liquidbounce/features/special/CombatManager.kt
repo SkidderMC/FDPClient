@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 
-class CombatHelper : Listenable,MinecraftInstance() {
+class CombatManager : Listenable,MinecraftInstance() {
     var inCombat=false
     private var lastAttack=-1L
 

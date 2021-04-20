@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C01PacketChatMessage
+import kotlin.math.min
 
 @ModuleInfo(name = "ChatBypass", description = "Bypass chat limit", category = ModuleCategory.FUN)
 class ChatBypass : Module() {
@@ -66,7 +67,7 @@ class ChatBypass : Module() {
                     }
                 }
             }
-            packet.message=packet.message.substring(0,100)
+            packet.message=packet.message.substring(0, min(packet.message.length,100))
         }
     }
 }

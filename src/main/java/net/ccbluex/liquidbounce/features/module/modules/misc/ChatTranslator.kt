@@ -12,7 +12,6 @@ import net.minecraft.network.play.server.S02PacketChat
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
-import java.lang.IllegalStateException
 
 @ModuleInfo(name = "ChatTranslator", description = "Translate words in chat.", category = ModuleCategory.MISC)
 class ChatTranslator : Module() {

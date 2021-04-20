@@ -139,12 +139,12 @@ class InventoryCleaner : Module() {
                 }
 
                 val damage = (itemStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount
-                        ?: 0.0) + 1.25 * ItemUtils.getEnchantment(itemStack, Enchantment.sharpness)
+                        ?: 0.0) + getEnchPlus(itemStack)
 
                 items(0, 45).none { (_, stack) ->
                     stack != itemStack && stack.javaClass == itemStack.javaClass
                             && damage <= (stack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount
-                            ?: 0.0) + 1.25 * ItemUtils.getEnchantment(stack, Enchantment.sharpness)
+                            ?: 0.0) + getEnchPlus(stack)
                 }
             } else if (item is ItemBow) {
                 val currPower = ItemUtils.getEnchantment(itemStack, Enchantment.power)
@@ -231,14 +231,12 @@ class InventoryCleaner : Module() {
                         if (bestWeapon == -1) {
                             bestWeapon = index
                         } else {
-                            val currDamage = (itemStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount ?: 0.0)
-                                    + 1.25 * ItemUtils.getEnchantment(itemStack, Enchantment.sharpness)
-                                    + 1 * ItemUtils.getEnchantment(itemStack, Enchantment.fireAspect)
+                            val currDamage = (itemStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount ?: 0.0) + getEnchPlus(itemStack)
 
                             val bestStack = mc.thePlayer.inventory.getStackInSlot(bestWeapon)
                                     ?: return@forEachIndexed
                             val bestDamage = (bestStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount
-                                    ?: 0.0) + 1.25 * ItemUtils.getEnchantment(bestStack, Enchantment.sharpness)
+                                    ?: 0.0) + getEnchPlus(bestStack)
 
                             if (bestDamage < currDamage)
                                 bestWeapon = index
@@ -386,5 +384,10 @@ class InventoryCleaner : Module() {
         7 -> sortSlot8Value.get()
         8 -> sortSlot9Value.get()
         else -> ""
+    }
+
+    private fun getEnchPlus(stack: ItemStack):Double{
+        return (1.25*ItemUtils.getEnchantment(stack, Enchantment.sharpness)) +
+                (1.0*ItemUtils.getEnchantment(stack, Enchantment.fireAspect))
     }
 }

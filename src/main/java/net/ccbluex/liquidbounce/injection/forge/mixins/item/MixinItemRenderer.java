@@ -99,7 +99,7 @@ public abstract class MixinItemRenderer {
         }
 
         float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
-        AbstractClientPlayer abstractclientplayer = this.mc.thePlayer;
+        AbstractClientPlayer abstractclientplayer = mc.thePlayer;
         float f1 = abstractclientplayer.getSwingProgress(partialTicks);
         float f2 = abstractclientplayer.prevRotationPitch + (abstractclientplayer.rotationPitch - abstractclientplayer.prevRotationPitch) * partialTicks;
         float f3 = abstractclientplayer.prevRotationYaw + (abstractclientplayer.rotationYaw - abstractclientplayer.prevRotationYaw) * partialTicks;
@@ -197,14 +197,37 @@ public abstract class MixinItemRenderer {
                                 }
                                 case "Swong": {
                                     transformFirstPersonItem(f / 2.0F, 0.0F);
-                                    GlStateManager.rotate(-MathHelper.sin(MathHelper.sqrt_float(mc.thePlayer.getSwingProgress(partialTicks)) * 3.1415927F) * 40.0F / 2.0F, MathHelper.sqrt_float(mc.thePlayer.getSwingProgress(partialTicks)) / 2.0F, -0.0F, 9.0F);
-                                    GlStateManager.rotate(-MathHelper.sqrt_float(mc.thePlayer.getSwingProgress(partialTicks)) * 30.0F, 1.0F, MathHelper.sqrt_float(mc.thePlayer.getSwingProgress(partialTicks)) / 2.0F, -0.0F);
+                                    GlStateManager.rotate(-MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F) * 40.0F / 2.0F, MathHelper.sqrt_float(f1) / 2.0F, -0.0F, 9.0F);
+                                    GlStateManager.rotate(-MathHelper.sqrt_float(f1) * 30.0F, 1.0F, MathHelper.sqrt_float(f1) / 2.0F, -0.0F);
                                     doBlockTransformations();
                                     break;
                                 }
                                 case "VisionFX": {
                                     continuity(f1);
                                     doBlockTransformations();
+                                    break;
+                                }
+                                case "Swank":{
+                                    GL11.glTranslated(-0.1, 0.15, 0.0);
+                                    this.transformFirstPersonItem(f / 0.15f, f1);
+                                    final float rot = MathHelper.sin(MathHelper.sqrt_float(f2) * 3.1415927f);
+                                    GlStateManager.rotate(rot * 30.0f, 2.0f, -rot, 9.0f);
+                                    GlStateManager.rotate(rot * 35.0f, 1.0f, -rot, -0.0f);
+                                    this.doBlockTransformations();
+                                    break;
+                                }
+                                case "Jello":{
+                                    this.transformFirstPersonItem(0.0f, 0.0f);
+                                    this.doBlockTransformations();
+                                    final int alpha = (int)Math.min(255L, ((System.currentTimeMillis() % 255L > 127L) ? Math.abs(Math.abs(System.currentTimeMillis()) % 255L - 255L) : (System.currentTimeMillis() % 255L)) * 2L);
+                                    GlStateManager.translate(0.3f, -0.0f, 0.4f);
+                                    GlStateManager.rotate(0.0f, 0.0f, 0.0f, 1.0f);
+                                    GlStateManager.translate(0.0f, 0.5f, 0.0f);
+                                    GlStateManager.rotate(90.0f, 1.0f, 0.0f, -1.0f);
+                                    GlStateManager.translate(0.6f, 0.5f, 0.0f);
+                                    GlStateManager.rotate(-90.0f, 1.0f, 0.0f, -1.0f);
+                                    GlStateManager.rotate(-10.0f, 1.0f, 0.0f, -1.0f);
+                                    GlStateManager.rotate(abstractclientplayer.isSwingInProgress ? (-alpha / 5.0f) : 1.0f, 1.0f, -0.0f, 1.0f);
                                     break;
                                 }
                             }

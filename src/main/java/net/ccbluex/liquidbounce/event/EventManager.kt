@@ -5,7 +5,12 @@
  */
 package net.ccbluex.liquidbounce.event
 
-class EventManager {
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.modules.client.LegitSpoof
+import net.ccbluex.liquidbounce.utils.MinecraftInstance
+
+class EventManager : MinecraftInstance() {
 
     private val registry = HashMap<Class<out Event>, MutableList<EventHook>>()
 
@@ -47,6 +52,17 @@ class EventManager {
      * @param event to call
      */
     fun callEvent(event: Event) {
+        if(mc.thePlayer==null) return
+        if(event is Render2DEvent||event is Render3DEvent){
+            val legitSpoof=LiquidBounce.moduleManager[LegitSpoof::class.java] as LegitSpoof
+            if(legitSpoof.state&&legitSpoof.render.get()){
+                if(event is Render2DEvent) {
+                    (LiquidBounce.moduleManager[HUD::class.java] as HUD).onRender2D(event)
+                }
+                return
+            }
+        }
+
         val targets = registry[event.javaClass] ?: return
 
         for (invokableEventTarget in targets) {

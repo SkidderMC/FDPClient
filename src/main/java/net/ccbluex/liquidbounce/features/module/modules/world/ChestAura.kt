@@ -11,10 +11,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
+import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.extensions.getVec
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -31,7 +31,7 @@ import java.util.*
 object ChestAura : Module() {
 
     private val rangeValue = FloatValue("Range", 5F, 1F, 6F)
-    private val delayValue = IntegerValue("Delay", 100, 50, 200)
+    private val delayValue = IntegerValue("Delay", 100, 50, 500)
     private val throughWallsValue = BoolValue("ThroughWalls", true)
     private val visualSwing = BoolValue("VisualSwing", true)
     private val rotations = BoolValue("Rotations", true)
@@ -41,8 +41,6 @@ object ChestAura : Module() {
     private val notOpened = BoolValue("NotOpened", false)
 
     private var currentBlock: BlockPos? = null
-    private val timer = MSTimer()
-
     private var underClick=false
 
     val clickedBlocks = mutableListOf<BlockPos>()
@@ -58,7 +56,7 @@ object ChestAura : Module() {
         when (event.eventState) {
             EventState.PRE -> {
                 if (mc.currentScreen is GuiContainer)
-                    timer.reset()
+                    return
 
                 val radius = rangeValue.get() + 1
 
@@ -87,7 +85,7 @@ object ChestAura : Module() {
                             ?: return).rotation)
             }
 
-            EventState.POST -> if (currentBlock != null && timer.hasTimePassed(delayValue.get().toLong()) && !underClick) {
+            EventState.POST -> if (currentBlock != null && InventoryUtils.INV_TIMER.hasTimePassed(delayValue.get().toLong()) && !underClick) {
                 underClick=true
                 if(discoverDelay.get()){
                     java.util.Timer().schedule(object :TimerTask() {
@@ -113,7 +111,6 @@ object ChestAura : Module() {
 
                 clickedBlocks.add(currentBlock!!)
                 currentBlock = null
-                timer.reset()
             }
         }catch (e: Exception){
             e.printStackTrace()

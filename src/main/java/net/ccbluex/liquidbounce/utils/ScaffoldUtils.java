@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class ScaffoldUtils extends MinecraftInstance {
     public static int getBlocksAmount() {

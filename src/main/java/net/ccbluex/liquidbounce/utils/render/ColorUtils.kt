@@ -9,6 +9,7 @@ import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
+import kotlin.math.abs
 
 object ColorUtils {
 
@@ -95,5 +96,16 @@ object ColorUtils {
     @JvmStatic
     fun reAlpha(color: Color,alpha: Int): Color{
         return Color(color.red,color.green,color.blue,alpha)
+    }
+
+    @JvmStatic
+    fun fade(color: Color, index: Int, count: Int): Color {
+        val hsb = FloatArray(3)
+        Color.RGBtoHSB(color.red, color.green, color.blue, hsb)
+        var brightness =
+            abs(((System.currentTimeMillis() % 2000L).toFloat() / 1000.0f + index.toFloat() / count.toFloat() * 2.0f) % 2.0f - 1.0f)
+        brightness = 0.5f + 0.5f * brightness
+        hsb[2] = brightness % 2.0f
+        return Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]))
     }
 }

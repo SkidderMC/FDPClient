@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -34,11 +33,11 @@ import kotlin.math.abs
 class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
 
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "SkyRainbow"), "Custom")
+    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
     private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
-    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "SkyRainbow"), "Rainbow")
+    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Rainbow")
     private val rectColorRedValue = IntegerValue("Rect-R", 255, 0, 255)
     private val rectColorGreenValue = IntegerValue("Rect-G", 255, 0, 255)
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
@@ -48,7 +47,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val tags = BoolValue("Tags", true)
     private val shadow = BoolValue("ShadowText", true)
     private val jelloShadow = BoolValue("JelloShadow", false)
-    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "SkyRainbow"), "Custom")
+    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
@@ -106,15 +105,15 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         val colorMode = colorModeValue.get()
         val rectColorMode = rectColorModeValue.get()
         val backgroundColorMode = backgroundColorModeValue.get()
-        val customColor = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 1).rgb
+        val customColor = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 1)
         val rectCustomColor = Color(rectColorRedValue.get(), rectColorGreenValue.get(), rectColorBlueValue.get(),
-                rectColorBlueAlpha.get()).rgb
+                rectColorBlueAlpha.get())
         val space = spaceValue.get()
         val textHeight = textHeightValue.get()
         val textY = textYValue.get()
         val rectMode = rectValue.get()
         val backgroundCustomColor = Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(),
-                backgroundColorBlueValue.get(), backgroundColorAlphaValue.get()).rgb
+                backgroundColorBlueValue.get(), backgroundColorAlphaValue.get())
         val textShadow = shadow.get()
         val textSpacer = textHeight + space
         val saturation = saturationValue.get()
@@ -153,7 +152,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
-                            else -> backgroundCustomColor
+                            "anotherrainbow" -> ColorUtils.fade(backgroundCustomColor,100,index+1).rgb
+                            else -> backgroundCustomColor.rgb
                         }
                     )
 
@@ -162,7 +162,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
-                            else -> customColor
+                            "anotherrainbow" -> ColorUtils.fade(customColor,100,index+1).rgb
+                            else -> customColor.rgb
                         }, textShadow)
 
                     if (!rectMode.equals("none", true)) {
@@ -170,7 +171,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
-                            else -> rectCustomColor
+                            "anotherrainbow" -> ColorUtils.fade(rectCustomColor,100,index+1).rgb
+                            else -> rectCustomColor.rgb
                         }
 
                         when(rectMode.toLowerCase()) {
@@ -236,7 +238,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
-                            else -> backgroundCustomColor
+                            "anotherrainbow" -> ColorUtils.fade(backgroundCustomColor,100,index+1).rgb
+                            else -> backgroundCustomColor.rgb
                         }
                     )
 
@@ -244,7 +247,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                         "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                         "random" -> moduleColor
                         "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
-                        else -> customColor
+                        "anotherrainbow" -> ColorUtils.fade(customColor,100,index+1).rgb
+                        else -> customColor.rgb
                     }, textShadow)
 
                     if (!rectMode.equals("none", true)) {
@@ -252,7 +256,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get())
-                            else -> rectCustomColor
+                            "anotherrainbow" -> ColorUtils.fade(rectCustomColor,100,index+1).rgb
+                            else -> rectCustomColor.rgb
                         }
 
                         when {

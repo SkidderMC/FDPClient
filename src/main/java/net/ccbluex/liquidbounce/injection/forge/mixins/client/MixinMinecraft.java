@@ -138,19 +138,8 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/MovingObjectPosition;getBlockPos()Lnet/minecraft/util/BlockPos;"))
     private void onClickBlock(CallbackInfo callbackInfo) {
-        if(this.leftClickCounter == 0 && theWorld.getBlockState(objectMouseOver.getBlockPos()).getBlock().getMaterial() != Material.air) {
+        if (this.leftClickCounter == 0 && theWorld.getBlockState(objectMouseOver.getBlockPos()).getBlock().getMaterial() != Material.air) {
             LiquidBounce.eventManager.callEvent(new ClickBlockEvent(objectMouseOver.getBlockPos(), this.objectMouseOver.sideHit));
-        }
-    }
-
-    @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
-    private void setWindowIcon(CallbackInfo callbackInfo) {
-        if(Util.getOSType() != Util.EnumOS.OSX) {
-            final ByteBuffer[] liquidBounceFavicon = IconUtils.getFavicon();
-            if(liquidBounceFavicon != null) {
-                Display.setIcon(liquidBounceFavicon);
-                callbackInfo.cancel();
-            }
         }
     }
 

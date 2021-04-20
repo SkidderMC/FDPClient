@@ -17,13 +17,14 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.play.client.C0EPacketClickWindow;
 
 import java.util.Arrays;
 import java.util.List;
 
 public final class InventoryUtils extends MinecraftInstance implements Listenable {
-
     public static final MSTimer CLICK_TIMER = new MSTimer();
+    public static final MSTimer INV_TIMER = new MSTimer();
     public static final List<Block> BLOCK_BLACKLIST = Arrays.asList(Blocks.enchanting_table, Blocks.chest, Blocks.ender_chest, Blocks.trapped_chest,
             Blocks.anvil, Blocks.sand, Blocks.web, Blocks.torch, Blocks.crafting_table, Blocks.furnace, Blocks.waterlily, Blocks.dispenser,
             Blocks.stone_pressure_plate, Blocks.wooden_pressure_plate, Blocks.noteblock, Blocks.dropper, Blocks.tnt, Blocks.standing_banner, Blocks.wall_banner);
@@ -84,6 +85,9 @@ public final class InventoryUtils extends MinecraftInstance implements Listenabl
     @EventTarget
     public void onPacket(final PacketEvent event) {
         final Packet packet = event.getPacket();
+
+        if(packet instanceof C0EPacketClickWindow)
+            INV_TIMER.reset();
 
         if (packet instanceof C08PacketPlayerBlockPlacement)
             CLICK_TIMER.reset();

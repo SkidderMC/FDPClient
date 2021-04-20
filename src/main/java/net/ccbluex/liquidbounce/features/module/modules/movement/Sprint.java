@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement;
 
 import net.ccbluex.liquidbounce.event.EventTarget;
-import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.UpdateEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
@@ -15,7 +14,6 @@ import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.Rotation;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
-import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.potion.Potion;
 
 @ModuleInfo(name = "Sprint", description = "Automatically sprints all the time.", category = ModuleCategory.MOVEMENT)
@@ -31,6 +29,7 @@ public class Sprint extends Module {
 
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
+        mc.thePlayer.setSprinting(true);
         if(!MovementUtils.isMoving() || mc.thePlayer.isSneaking() ||
                 (blindnessValue.get() && mc.thePlayer.isPotionActive(Potion.blindness))||
                 (foodValue.get() && !(mc.thePlayer.getFoodStats().getFoodLevel() > 6.0F || mc.thePlayer.capabilities.allowFlying))
@@ -41,9 +40,9 @@ public class Sprint extends Module {
             return;
         }
 
-        if(allDirectionsValue.get() || mc.thePlayer.movementInput.moveForward >= 0.8F) {
+        if(allDirectionsValue.get()) {
             mc.thePlayer.setSprinting(true);
-            if(allDirectionsRotateValue.get()) {
+            if(allDirectionsRotateValue.get()&&!mc.gameSettings.keyBindForward.pressed) {
                 RotationUtils.setTargetRotation(new Rotation((float) (MovementUtils.getDirection() * 180F / Math.PI), mc.thePlayer.rotationPitch));
             }
         }
