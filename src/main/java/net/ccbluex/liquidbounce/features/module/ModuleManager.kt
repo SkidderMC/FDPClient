@@ -71,7 +71,6 @@ class ModuleManager : Listenable {
                 NameTags::class.java,
                 FastUse::class.java,
                 Teleport::class.java,
-                Fullbright::class.java,
                 ItemESP::class.java,
                 StorageESP::class.java,
                 Projectiles::class.java,
@@ -101,16 +100,13 @@ class ModuleManager : Listenable {
                 Clip::class.java,
                 Phase::class.java,
                 NoFOV::class.java,
-                SwingAnimation::class.java,
                 TNTBlock::class.java,
                 InventoryCleaner::class.java,
                 TrueSight::class.java,
                 AntiBlind::class.java,
-                NoSwing::class.java,
                 Breadcrumbs::class.java,
                 CameraClip::class.java,
                 Kick::class.java,
-                ForceUnicodeChat::class.java,
                 Freeze::class.java,
                 Rotations::class.java,
                 NoJumpDelay::class.java,
@@ -135,11 +131,13 @@ class ModuleManager : Listenable {
                 BoatJump::class.java,
                 DamageParticle::class.java,
                 AutoSpam::class.java,
-                LegitSpoof::class.java
+                LegitSpoof::class.java,
+                InventoryAnimation::class.java
         )
 
         registerModule(Fucker)
         registerModule(ChestAura)
+        registerModule(ToggleSound)
 
         ClientUtils.getLogger().info("[ModuleManager] Loaded ${modules.size} modules.")
     }

@@ -13,14 +13,16 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "LongJump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT)
 class LongJump : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSky", "RedeSky2"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSky", "RedeSky2", "RedeSky3"), "NCP")
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
     //redesky
@@ -41,16 +43,23 @@ class LongJump : Module() {
     private val rs2MinYMotionValue = FloatValue("RedeSky2MinYMotion",0.04F,0.01F,0.20F)
     private val rs2ReduceYMotionValue = FloatValue("RedeSky2ReduceYMotion",0.15F,0.01F,0.20F)
     private val rs2YMotionReducerValue = BoolValue("RedeSky2YMotionReducer", true)
+    private val rs3JumpTimeValue=IntegerValue("RedeSky3JumpTime",500,300,1000)
+    private val rs3BoostValue=FloatValue("RedeSky3Boost",1F,0.3F,1.5F)
+    private val rs3HeightValue=FloatValue("RedeSky3Height",1F,0.3F,1.5F)
     private val autoJumpValue = BoolValue("AutoJump", true)
+    private val autoCloseValue = BoolValue("AutoClose", true)
     private var jumped = false
+    private var hasJumped=false
     private var canBoost = false
     private var teleported = false
     private var canMineplexBoost = false
+    private var timer=MSTimer()
 
     var airTicks=0
 
     override fun onEnable() {
         airTicks=0
+        hasJumped=false
     }
 
     override fun onDisable() {
@@ -66,7 +75,6 @@ class LongJump : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-
         val thePlayer = mc.thePlayer ?: return
 
         if (jumped) {
@@ -180,12 +188,23 @@ class LongJump : Module() {
                             }
                         }
                     }
+                    "redesky3" -> {
+                        if(!timer.hasTimePassed(rs3JumpTimeValue.get().toLong())){
+                            mc.thePlayer.motionY+=rs3HeightValue.get()/10F
+                            MovementUtils.move(rs3BoostValue.get()/10F)
+                        }
+                    }
                 }
             }
         }
         if (autoJumpValue.get() && thePlayer.onGround && MovementUtils.isMoving()) {
             jumped = true
+            if(hasJumped&&autoCloseValue.get()){
+                state=false
+                return
+            }
             thePlayer.jump()
+            hasJumped=true
         }
     }
 
@@ -209,6 +228,8 @@ class LongJump : Module() {
         jumped = true
         canBoost = true
         teleported = false
+
+        timer.reset()
 
         if (state) {
             when (modeValue.get().toLowerCase()) {

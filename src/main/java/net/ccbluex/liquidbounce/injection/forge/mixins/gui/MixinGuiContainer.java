@@ -1,14 +1,13 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.render.InventoryAnimation;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -22,9 +21,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @SideOnly(Side.CLIENT)
 public class MixinGuiContainer {
     @Shadow
-    private int guiTop;
+    private int xSize;
     @Shadow
     private int ySize;
+    @Shadow
+    private int guiLeft;
+    @Shadow
+    private int guiTop;
 
     private long guiOpenTime=-1;
     private boolean translated=false;
@@ -53,11 +56,27 @@ public class MixinGuiContainer {
                 callbackInfo.cancel();
             }else{
                 mc.currentScreen.drawWorldBackground(0);
-                float pct=Math.max(300-(System.currentTimeMillis()-guiOpenTime),0)/300F;
-                if(pct!=0) {
-                    GL11.glPushMatrix();
-                    GL11.glTranslatef(0F, -(guiTop + ySize) * pct, 0F);
-                    translated = true;
+
+                InventoryAnimation inventoryAnimation=(InventoryAnimation) LiquidBounce.moduleManager.getModule(InventoryAnimation.class);
+                if(inventoryAnimation!=null&& inventoryAnimation.getState()) {
+                    float pct = Math.max(inventoryAnimation.getTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((float)inventoryAnimation.getTimeValue().get());
+                    if (pct != 0) {
+                        GL11.glPushMatrix();
+
+                        switch (inventoryAnimation.getMoveValue().get().toLowerCase()){
+                            case "slide":{
+                                GL11.glTranslatef(0F, -(guiTop + ySize) * pct, 0F);
+                                break;
+                            }
+                            case "zoom":{
+                                float scale=1-pct;
+                                GL11.glScalef(scale,scale,scale);
+                                GL11.glTranslatef(((guiLeft+(xSize*0.5F*pct))/scale)-guiLeft,((guiTop+(ySize*0.5F*pct))/scale)-guiTop, 0F);
+                            }
+                        }
+
+                        translated = true;
+                    }
                 }
             }
         } catch (Exception e) {

@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
-import net.ccbluex.liquidbounce.features.module.modules.render.NoSwing;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
 import net.ccbluex.liquidbounce.utils.Rotation;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
@@ -29,7 +28,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import net.minecraftforge.fml.relauncher.Side;
@@ -40,7 +38,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -185,18 +182,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.POST));
         } catch (final Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    @Inject(method = "swingItem", at = @At("HEAD"), cancellable = true)
-    private void swingItem(CallbackInfo callbackInfo) {
-        final NoSwing noSwing = (NoSwing) LiquidBounce.moduleManager.getModule(NoSwing.class);
-
-        if (noSwing.getState()) {
-            callbackInfo.cancel();
-
-            if (!noSwing.getServerSideValue().get())
-                this.sendQueue.addToSendQueue(new C0APacketAnimation());
         }
     }
 

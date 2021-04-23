@@ -68,7 +68,7 @@ class AutoPot : Module() {
 
         val enableSelect=selectValue.get()!=-1
         val potion=if(enableSelect){
-            if(findSinglePotion(selectValue.get())){
+            if(findSinglePotion(36+selectValue.get())){
                 selectValue.get()
             }else{
                 -1

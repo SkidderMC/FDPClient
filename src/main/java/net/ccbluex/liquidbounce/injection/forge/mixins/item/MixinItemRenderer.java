@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
-import net.ccbluex.liquidbounce.features.module.modules.render.SwingAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -242,7 +241,7 @@ public abstract class MixinItemRenderer {
                         this.doBowTransformations(partialTicks, abstractclientplayer);
                 }
             }else{
-                if (!LiquidBounce.moduleManager.getModule(SwingAnimation.class).getState())
+                if (!(animations.getState()&&animations.getSwingAnim().get()))
                     this.doItemUsedTransformations(f1);
                 this.transformFirstPersonItem(f, f1);
             }

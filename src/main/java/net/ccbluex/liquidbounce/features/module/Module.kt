@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.features.module.modules.client.ToggleSound
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.notify.Notification
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -65,10 +66,10 @@ open class Module : MinecraftInstance(), Listenable {
             // Play sound and add notification
             if (!LiquidBounce.isStarting) {
                 if(value){
-                    LiquidBounce.musicManager.enableSound.asyncPlay()
+                    ToggleSound.playSound(true)
                     LiquidBounce.hud.addNotification(Notification("$name Enabled",NotifyType.OKAY))
                 }else{
-                    LiquidBounce.musicManager.disableSound.asyncPlay()
+                    ToggleSound.playSound(false)
                     LiquidBounce.hud.addNotification(Notification("$name Disabled",NotifyType.WARN))
                 }
             }
