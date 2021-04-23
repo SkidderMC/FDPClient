@@ -52,7 +52,6 @@ class EventManager : MinecraftInstance() {
      * @param event to call
      */
     fun callEvent(event: Event) {
-        if(mc.thePlayer==null) return
         if(event is Render2DEvent||event is Render3DEvent){
             val legitSpoof=LiquidBounce.moduleManager[LegitSpoof::class.java] as LegitSpoof
             if(legitSpoof.state&&legitSpoof.render.get()){

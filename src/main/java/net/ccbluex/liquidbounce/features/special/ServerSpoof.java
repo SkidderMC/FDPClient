@@ -11,10 +11,8 @@ public class ServerSpoof implements Listenable {
 
     @EventTarget
     public void onPacket(PacketEvent event) {
-        System.out.println("[ServerSpoof] ENABLE="+enable+", isPacket="+(event.getPacket() instanceof C00Handshake));
         if(enable&&event.getPacket() instanceof C00Handshake){
             C00Handshake packet=(C00Handshake) event.getPacket();
-            System.out.println("[ServerSpoof] "+packet.ip+":"+packet.port+" -> "+ip);
             String[] ipList=ip.split(":");
             packet.ip=ipList[0];
             if(ipList.length>1){

@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -74,6 +75,13 @@ public abstract class MixinGuiScreen {
         }
     }
 
+
+    @Inject(method = "drawDefaultBackground", at = @At("HEAD"), cancellable = true)
+    private void drawDefaultBackground(final CallbackInfo callbackInfo){
+        if(mc.currentScreen instanceof GuiContainer){
+            callbackInfo.cancel();
+        }
+    }
     /**
      * @author CCBlueX
      */

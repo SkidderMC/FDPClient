@@ -14,6 +14,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 
 @ModuleInfo(name = "Freeze", description = "Allows you to stay stuck in mid air.", category = ModuleCategory.MOVEMENT)
 class Freeze : Module() {
+    private var motionX = 0.0
+    private var motionY = 0.0
+    private var motionZ = 0.0
     private var x = 0.0
     private var y = 0.0
     private var z = 0.0
@@ -22,6 +25,9 @@ class Freeze : Module() {
         x=mc.thePlayer.posX
         y=mc.thePlayer.posY
         z=mc.thePlayer.posZ
+        motionX=mc.thePlayer.motionX
+        motionY=mc.thePlayer.motionY
+        motionZ=mc.thePlayer.motionZ
     }
 
     @EventTarget
@@ -40,6 +46,9 @@ class Freeze : Module() {
     }
 
     override fun onDisable() {
-        mc.thePlayer?.isDead = false
+        mc.thePlayer.motionX=motionX
+        mc.thePlayer.motionY=motionY
+        mc.thePlayer.motionZ=motionZ
+        mc.thePlayer.setPositionAndRotation(x,y,z, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
     }
 }

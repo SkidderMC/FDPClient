@@ -31,6 +31,7 @@ class AutoPot : Module() {
     private val healthValue = FloatValue("Health", 15F, 1F, 20F)
     private val delayValue = IntegerValue("Delay", 500, 500, 1000)
     private val throwTickValue = IntegerValue("ThrowTick", 3, 1, 10)
+    private val selectValue = IntegerValue("SelectSlot", -1, -1, 9)
 
     private val openInventoryValue = BoolValue("OpenInv", false)
     private val simulateInventory = BoolValue("SimulateInventory", true)
@@ -65,7 +66,17 @@ class AutoPot : Module() {
         }
         if(!timer.hasTimePassed(delayValue.get().toLong())) return
 
-        val potion=findPotion(36,45)
+        val enableSelect=selectValue.get()!=-1
+        val potion=if(enableSelect){
+            if(findSinglePotion(selectValue.get())){
+                selectValue.get()
+            }else{
+                -1
+            }
+        }else{
+            findPotion(36,45)
+        }
+
         if(potion!=-1){
             RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw,90F))
             pot=potion
@@ -74,7 +85,7 @@ class AutoPot : Module() {
             return
         }
 
-        if(openInventoryValue.get()){
+        if(openInventoryValue.get()&&!enableSelect){
             val invPotion=findPotion(9,36)
             if (invPotion != -1) {
                 val openInventory = mc.currentScreen !is GuiInventory && simulateInventory.get()
@@ -112,28 +123,36 @@ class AutoPot : Module() {
 
     private fun findPotion(startSlot: Int, endSlot: Int): Int {
         for (i in startSlot until endSlot) {
-            val stack = mc.thePlayer.inventoryContainer.getSlot(i).stack
-
-            if (stack == null || stack.item !is ItemPotion || !ItemPotion.isSplash(stack.itemDamage))
-                continue
-
-            val itemPotion = stack.item as ItemPotion
-
-            if(mc.thePlayer.health<healthValue.get()&&regen.get()) {
-                for (potionEffect in itemPotion.getEffects(stack))
-                    if (potionEffect.potionID == Potion.heal.id)
-                        return i
-
-                if (!mc.thePlayer.isPotionActive(Potion.regeneration))
-                    for (potionEffect in itemPotion.getEffects(stack))
-                        if (potionEffect.potionID == Potion.regeneration.id) return i
-            }else if(utility.get()){
-                for (potionEffect in itemPotion.getEffects(stack)){
-                    if(isUsefulPotion(potionEffect.potionID)) return i
-                }
+            if(findSinglePotion(i)){
+                return i
             }
         }
         return -1
+    }
+
+    private fun findSinglePotion(slot:Int):Boolean{
+        val stack = mc.thePlayer.inventoryContainer.getSlot(slot).stack
+
+        if (stack == null || stack.item !is ItemPotion || !ItemPotion.isSplash(stack.itemDamage))
+            return false
+
+        val itemPotion = stack.item as ItemPotion
+
+        if(mc.thePlayer.health<healthValue.get()&&regen.get()) {
+            for (potionEffect in itemPotion.getEffects(stack))
+                if (potionEffect.potionID == Potion.heal.id)
+                    return true
+
+            if (!mc.thePlayer.isPotionActive(Potion.regeneration))
+                for (potionEffect in itemPotion.getEffects(stack))
+                    if (potionEffect.potionID == Potion.regeneration.id) return true
+        }else if(utility.get()){
+            for (potionEffect in itemPotion.getEffects(stack)){
+                if(isUsefulPotion(potionEffect.potionID)) return true
+            }
+        }
+
+        return false
     }
 
     private fun isUsefulPotion(id: Int):Boolean{

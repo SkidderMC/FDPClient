@@ -114,9 +114,11 @@ public class Fly extends Module {
     private final FloatValue rscMaxSpeedValue = new FloatValue("RSCollideMaxSpeed", 20F, 7F, 30F);
     private final FloatValue rscTimerValue = new FloatValue("RSCollideTimer", 0.8F, 0.1F, 1F);
     private final FloatValue rssSpeedValue = new FloatValue("RSSmoothSpeed", 0.9F, 0.05F, 1F);
-    private final FloatValue rssSpeedAddValue = new FloatValue("RSSmoothAddSpeed", 0.1F, 0.5F, 1F);
+    private final FloatValue rssSpeedChangeValue = new FloatValue("RSSmoothChangeSpeed", 0.1F, -1F, 1F);
     private final FloatValue rssMotionValue = new FloatValue("RSSmoothMotion", 0.2F, 0F, 0.5F);
     private final FloatValue rssTimerValue = new FloatValue("RSSmoothTimer", 0.3F, 0.1F, 1F);
+    private final FloatValue rssDropoffValue = new FloatValue("RSSmoothDropoff", 1F, 0F, 5F);
+    private final BoolValue rssDropoff = new BoolValue("RSSmoothDropoffA", true);
 
     // Visuals
     private final BoolValue markValue = new BoolValue("Mark", true);
@@ -720,10 +722,13 @@ public class Fly extends Module {
                 }
                 break;
             case "redeskysmooth":{
-                float speed = rssSpeedValue.get()/10F + flyTick*(rssSpeedAddValue.get()/1000F);
+                float speed = rssSpeedValue.get()/10F + flyTick*(rssSpeedChangeValue.get()/1000F);
                 mc.timer.timerSpeed=rssTimerValue.get();
                 mc.thePlayer.capabilities.setFlySpeed(speed);
                 mc.thePlayer.capabilities.isFlying = true;
+                mc.thePlayer.setPosition(mc.thePlayer.posX
+                        ,mc.thePlayer.posY-(rssDropoff.get()?(rssDropoffValue.get()/1000F)*flyTick:(rssDropoffValue.get()/300F))
+                        ,mc.thePlayer.posZ);
                 break;
             }
             case "cubecraft": {

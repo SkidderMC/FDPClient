@@ -163,7 +163,7 @@ class NameTags : Module() {
                     }
                 }
             }
-            val bgColor=jelloColor(170,170,170)
+            val bgColor=jelloColor(50,50,50)
             val width = fontRenderer.getStringWidth(tag) / 2
             val maxWidth=(width + 4F)-(-width - 4F)
             var healthPercent=entity.health/entity.maxHealth

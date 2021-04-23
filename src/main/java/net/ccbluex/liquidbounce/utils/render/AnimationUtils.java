@@ -31,6 +31,7 @@ public class AnimationUtils {
         }
         return current + movement;
     }
+
     public static float calculateCompensation(float target, float current, long delta, int speed) {
         float diff = current - target;
         if (delta < 1L) {
