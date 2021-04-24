@@ -28,6 +28,6 @@ object ClassUtils {
         }
     }
 
-    fun hasForge() = hasClass("net.minecraftforge.common.MinecraftForge")
+//    fun hasForge() = hasClass("net.minecraftforge.common.MinecraftForge")
 
 }

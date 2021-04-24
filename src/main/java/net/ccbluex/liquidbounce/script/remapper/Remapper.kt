@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.script.remapper
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils
+import net.ccbluex.liquidbounce.utils.FileUtils
 import java.io.File
 
 /**
@@ -17,8 +17,8 @@ import java.io.File
  */
 object Remapper {
 
-    private const val srgName = "stable_22"
-    private val srgFile = File(LiquidBounce.fileManager.dir, "mcp-$srgName.srg")
+    private const val srgName = "mcp-stable_22.srg"
+    private val srgFile = File(LiquidBounce.fileManager.dir, srgName)
 
     private val fields : HashMap<String, HashMap<String, String>> = hashMapOf()
     private val methods : HashMap<String, HashMap<String, String>> = hashMapOf()
@@ -27,14 +27,10 @@ object Remapper {
      * Load srg
      */
     fun loadSrg() {
-        // Check if srg file is already downloaded
+        // Check if srg file is already unpacked
         if(!srgFile.exists()) {
-            // Download srg file
-            srgFile.createNewFile()
-
-            ClientUtils.getLogger().info("[Remapper] Downloading $srgName srg...")
-            HttpUtils.download("${LiquidBounce.CLIENT_CLOUD}/srgs/mcp-$srgName.srg", srgFile)
-            ClientUtils.getLogger().info("[Remapper] Downloaded $srgName.")
+            ClientUtils.getLogger().info("[Remapper] Unpacking $srgName.")
+            FileUtils.unpackFile(srgFile, srgName)
         }
 
         // Load srg

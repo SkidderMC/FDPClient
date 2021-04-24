@@ -6,14 +6,14 @@ import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.minecraft.network.handshake.client.C00Handshake;
 
 public class ServerSpoof implements Listenable {
-    public static boolean enable=true;
-    public static String ip="redesky.com";
+    public static boolean enable=false;
+    public static String address="redesky.com";
 
     @EventTarget
     public void onPacket(PacketEvent event) {
         if(enable&&event.getPacket() instanceof C00Handshake){
             C00Handshake packet=(C00Handshake) event.getPacket();
-            String[] ipList=ip.split(":");
+            String[] ipList=address.split(":");
             packet.ip=ipList[0];
             if(ipList.length>1){
                 packet.port=Integer.parseInt(ipList[1]);

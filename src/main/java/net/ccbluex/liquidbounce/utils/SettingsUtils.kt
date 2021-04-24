@@ -34,11 +34,7 @@ object SettingsUtils {
                 "unchat" -> ClientUtils.displayChatMessage(translateAlternateColorCodes(StringUtils.toCompleteString(args, 1)))
 
                 "load" -> {
-                    val urlRaw = StringUtils.toCompleteString(args, 1)
-                    val url = if (urlRaw.startsWith("http"))
-                        urlRaw
-                    else
-                        "${LiquidBounce.CLIENT_CLOUD}/settings/${urlRaw.toLowerCase()}"
+                    val url = StringUtils.toCompleteString(args, 1)
 
                     try {
                         ClientUtils.displayChatMessage("§7[§3§lAutoSettings§7] §7Loading settings from §a§l$url§7...")

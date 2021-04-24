@@ -28,7 +28,6 @@ class CommandManager {
         registerCommand(HelpCommand())
         registerCommand(SayCommand())
         registerCommand(FriendCommand())
-        registerCommand(AutoSettingsCommand())
         registerCommand(LocalAutoSettingsCommand())
         registerCommand(ToggleCommand())
         registerCommand(TargetCommand())

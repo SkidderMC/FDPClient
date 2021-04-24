@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
+import net.ccbluex.liquidbounce.features.module.modules.client.Target;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.features.special.AutoReconnect;
 import net.ccbluex.liquidbounce.features.special.ServerSpoof;
@@ -55,19 +56,19 @@ public class ValuesConfig extends FileConfig {
 
             if (entry.getKey().equalsIgnoreCase("CommandPrefix")) {
                 LiquidBounce.commandManager.setPrefix(entry.getValue().getAsCharacter());
-            } else if (entry.getKey().equalsIgnoreCase("targets")) {
+            } else if (entry.getKey().equalsIgnoreCase("Target")) {
                 JsonObject jsonValue = (JsonObject) entry.getValue();
 
-                if (jsonValue.has("TargetPlayer"))
-                    EntityUtils.targetPlayer = jsonValue.get("TargetPlayer").getAsBoolean();
-                if (jsonValue.has("TargetMobs"))
-                    EntityUtils.targetMobs = jsonValue.get("TargetMobs").getAsBoolean();
-                if (jsonValue.has("TargetAnimals"))
-                    EntityUtils.targetAnimals = jsonValue.get("TargetAnimals").getAsBoolean();
-                if (jsonValue.has("TargetInvisible"))
-                    EntityUtils.targetInvisible = jsonValue.get("TargetInvisible").getAsBoolean();
-                if (jsonValue.has("TargetDead"))
-                    EntityUtils.targetDead = jsonValue.get("TargetDead").getAsBoolean();
+                if (jsonValue.has("Player"))
+                    EntityUtils.targetPlayer = jsonValue.get("Player").getAsBoolean();
+                if (jsonValue.has("Animal"))
+                    EntityUtils.targetAnimals = jsonValue.get("Animal").getAsBoolean();
+                if (jsonValue.has("Mob"))
+                    EntityUtils.targetMobs = jsonValue.get("Mob").getAsBoolean();
+                if (jsonValue.has("Invisible"))
+                    EntityUtils.targetInvisible = jsonValue.get("Invisible").getAsBoolean();
+                if (jsonValue.has("Dead"))
+                    EntityUtils.targetDead = jsonValue.get("Dead").getAsBoolean();
             } else if (entry.getKey().equalsIgnoreCase("features")) {
                 JsonObject jsonValue = (JsonObject) entry.getValue();
 
@@ -81,10 +82,13 @@ public class ValuesConfig extends FileConfig {
                     AntiForge.blockPayloadPackets = jsonValue.get("AntiForgePayloads").getAsBoolean();
                 if (jsonValue.has("AutoReconnectDelay"))
                     AutoReconnect.INSTANCE.setDelay(jsonValue.get("AutoReconnectDelay").getAsInt());
-                if (jsonValue.has("ServerSpoof_Enable"))
-                    ServerSpoof.enable=jsonValue.get("ServerSpoof_Enable").getAsBoolean();
-                if (jsonValue.has("ServerSpoof_Server"))
-                    ServerSpoof.ip=jsonValue.get("ServerSpoof_Server").getAsString();
+            } else if (entry.getKey().equalsIgnoreCase("ServerSpoof")) {
+                JsonObject jsonValue = (JsonObject) entry.getValue();
+
+                if (jsonValue.has("Enabled"))
+                    ServerSpoof.enable=jsonValue.get("Enabled").getAsBoolean();
+                if (jsonValue.has("ServerAddress"))
+                    ServerSpoof.address =jsonValue.get("ServerAddress").getAsString();
             } else if (entry.getKey().equalsIgnoreCase("Background")) {
                 JsonObject jsonValue = (JsonObject) entry.getValue();
 
@@ -116,17 +120,19 @@ public class ValuesConfig extends FileConfig {
      */
     @Override
     protected void saveConfig() throws IOException {
+        //change targets data to module
+        final Target target=(Target) LiquidBounce.moduleManager.getModule(Target.class);
+        if(target!=null){
+            target.getPlayer().set(EntityUtils.targetPlayer);
+            target.getAnimal().set(EntityUtils.targetAnimals);
+            target.getMob().set(EntityUtils.targetMobs);
+            target.getInvisible().set(EntityUtils.targetInvisible);
+            target.getDead().set(EntityUtils.targetDead);
+        }
+
         final JsonObject jsonObject = new JsonObject();
 
         jsonObject.addProperty("CommandPrefix", LiquidBounce.commandManager.getPrefix());
-
-        final JsonObject jsonTargets = new JsonObject();
-        jsonTargets.addProperty("TargetPlayer", EntityUtils.targetPlayer);
-        jsonTargets.addProperty("TargetMobs", EntityUtils.targetMobs);
-        jsonTargets.addProperty("TargetAnimals", EntityUtils.targetAnimals);
-        jsonTargets.addProperty("TargetInvisible", EntityUtils.targetInvisible);
-        jsonTargets.addProperty("TargetDead", EntityUtils.targetDead);
-        jsonObject.add("targets", jsonTargets);
 
         final JsonObject jsonFeatures = new JsonObject();
         jsonFeatures.addProperty("AntiForge", AntiForge.enabled);
@@ -134,9 +140,12 @@ public class ValuesConfig extends FileConfig {
         jsonFeatures.addProperty("AntiForgeProxy", AntiForge.blockProxyPacket);
         jsonFeatures.addProperty("AntiForgePayloads", AntiForge.blockPayloadPackets);
         jsonFeatures.addProperty("AutoReconnectDelay", AutoReconnect.INSTANCE.getDelay());
-        jsonFeatures.addProperty("ServerSpoof_Enable", ServerSpoof.enable);
-        jsonFeatures.addProperty("ServerSpoof_Server", ServerSpoof.ip);
         jsonObject.add("features", jsonFeatures);
+
+        final JsonObject serverSpoofObject = new JsonObject();
+        serverSpoofObject.addProperty("Enabled", ServerSpoof.enable);
+        serverSpoofObject.addProperty("ServerAddress", ServerSpoof.address);
+        jsonObject.add("ServerSpoof", serverSpoofObject);
 
         final JsonObject backgroundObject = new JsonObject();
         backgroundObject.addProperty("Enabled", GuiBackground.Companion.getEnabled());

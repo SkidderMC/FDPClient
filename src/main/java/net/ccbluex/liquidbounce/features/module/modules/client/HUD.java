@@ -15,13 +15,15 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.value.BoolValue;
+import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @ModuleInfo(name = "HUD", description = "Toggles visibility of the HUD.", category = ModuleCategory.CLIENT, array = false)
 @SideOnly(Side.CLIENT)
 public class HUD extends Module {
-    public final BoolValue blackHotbarValue = new BoolValue("BlackHotbar", true);
+    public final BoolValue betterHotbarValue = new BoolValue("BetterHotbar", true);
+    public final IntegerValue hotbarAlphaValue = new IntegerValue("HotbarAlpha",150,0,255);
     public final BoolValue inventoryParticle = new BoolValue("InventoryParticle", false);
     public final BoolValue fontChatValue = new BoolValue("FontChat", false);
 

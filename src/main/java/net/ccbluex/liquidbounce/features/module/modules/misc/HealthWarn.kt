@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Alert
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.value.IntegerValue
 
-@ModuleInfo(name = "HealthWarn", description = "Show warning when you during low health.", category = ModuleCategory.FUN, array = false)
+@ModuleInfo(name = "HealthWarn", description = "Show warning when you during low health.", category = ModuleCategory.MISC, array = false)
 class HealthWarn : Module() {
     private val healthValue = IntegerValue("Health", 7, 1, 20)
     private var canWarn=true

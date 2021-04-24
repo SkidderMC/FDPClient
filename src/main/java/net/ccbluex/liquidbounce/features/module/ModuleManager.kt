@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.features.module.modules.`fun`.*
 import net.ccbluex.liquidbounce.features.module.modules.client.*
 import net.ccbluex.liquidbounce.features.module.modules.client.Target
 import net.ccbluex.liquidbounce.features.module.modules.combat.*
@@ -100,7 +99,6 @@ class ModuleManager : Listenable {
                 Clip::class.java,
                 Phase::class.java,
                 NoFOV::class.java,
-                TNTBlock::class.java,
                 InventoryCleaner::class.java,
                 TrueSight::class.java,
                 AntiBlind::class.java,
@@ -111,8 +109,6 @@ class ModuleManager : Listenable {
                 Rotations::class.java,
                 NoJumpDelay::class.java,
                 HUD::class.java,
-                ComponentOnHover::class.java,
-                ResourcePackSpoof::class.java,
                 NoSlowBreak::class.java,
                 AutoAbuse::class.java,
                 Gapple::class.java,
@@ -132,7 +128,8 @@ class ModuleManager : Listenable {
                 DamageParticle::class.java,
                 AutoSpam::class.java,
                 LegitSpoof::class.java,
-                InventoryAnimation::class.java
+                InventoryAnimation::class.java,
+                MessageSpam::class.java
         )
 
         registerModule(Fucker)

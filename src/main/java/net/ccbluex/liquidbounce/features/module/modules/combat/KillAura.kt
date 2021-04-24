@@ -48,7 +48,7 @@ import kotlin.math.max
 import kotlin.math.sin
 
 @ModuleInfo(name = "KillAura", description = "Automatically attacks targets around you.",
-        category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
+    category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
 
     /**
@@ -120,6 +120,7 @@ class KillAura : Module() {
 
     private val silentRotationValue = BoolValue("SilentRotation", true)
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
+    private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true)
     private val randomCenterValue = BoolValue("RandomCenter", true)
     private val outborderValue = BoolValue("Outborder", false)
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
@@ -204,6 +205,9 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        if (mc.thePlayer.isRiding)
+            return
+
         if (event.eventState == EventState.POST) {
             target ?: return
             currentTarget ?: return
@@ -220,6 +224,13 @@ class KillAura : Module() {
 
         if (rotationStrafeValue.get().equals("Off", true))
             update()
+
+        if (target != null && currentTarget != null) {
+            while (clicks > 0) {
+                runAttack()
+                clicks--
+            }
+        }
     }
 
     /**
@@ -227,10 +238,13 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        if (rotationStrafeValue.get().equals("Off", true))
+        if (rotationStrafeValue.get().equals("Off", true) && !mc.thePlayer.isRiding)
             return
 
         update()
+
+        if(strafeOnlyGroundValue.get()&&!mc.thePlayer.onGround)
+            return
 
         if (currentTarget != null && RotationUtils.targetRotation != null) {
             when (rotationStrafeValue.get().toLowerCase()) {
@@ -272,7 +286,7 @@ class KillAura : Module() {
 
     fun update() {
         if (cancelRun || (noInventoryAttackValue.get() && (mc.currentScreen is GuiContainer ||
-                        System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())))
+                    System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())))
             return
 
         // Update target
@@ -304,13 +318,19 @@ class KillAura : Module() {
         }
 
         if (noInventoryAttackValue.get() && (mc.currentScreen is GuiContainer ||
-                        System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())) {
+                    System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())) {
             target = null
             currentTarget = null
             hitable = false
             if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
             return
         }
+
+        if (!rotationStrafeValue.get().equals("Off", true) && !mc.thePlayer.isRiding)
+            return
+
+        if (mc.thePlayer.isRiding)
+            update()
 
         if (target != null && currentTarget != null) {
             while (clicks > 0) {
@@ -563,7 +583,7 @@ class KillAura : Module() {
         // Stop blocking
         if (mc.thePlayer.isBlocking || blockingStatus) {
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
-                    BlockPos.ORIGIN, EnumFacing.DOWN))
+                BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
         }
 
@@ -580,7 +600,7 @@ class KillAura : Module() {
         if (keepSprintValue.get()) {
             // Critical Effect
             if (mc.thePlayer.fallDistance > 0F && !mc.thePlayer.onGround && !mc.thePlayer.isOnLadder &&
-                    !mc.thePlayer.isInWater && !mc.thePlayer.isPotionActive(Potion.blindness) && !mc.thePlayer.isRiding)
+                !mc.thePlayer.isInWater && !mc.thePlayer.isPotionActive(Potion.blindness) && !mc.thePlayer.isRiding)
                 mc.thePlayer.onCriticalHit(entity)
 
             // Enchant Effect
@@ -627,21 +647,21 @@ class KillAura : Module() {
 
         if (predictValue.get())
             boundingBox = boundingBox.offset(
-                    (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
+                (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
+                (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
+                (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
             )
 
         val (_, rotation) = RotationUtils.searchCenter(
-                boundingBox,
-                outborderValue.get() && !attackTimer.hasTimePassed(attackDelay / 2),
-                randomCenterValue.get(),
-                predictValue.get(),
-                mc.thePlayer.getDistanceToEntityBox(entity) < throughWallsRangeValue.get()
+            boundingBox,
+            outborderValue.get() && !attackTimer.hasTimePassed(attackDelay / 2),
+            randomCenterValue.get(),
+            predictValue.get(),
+            mc.thePlayer.getDistanceToEntityBox(entity) < throughWallsRangeValue.get()
         ) ?: return false
 
         val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation,
-                (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
+            (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
 
         if (silentRotationValue.get())
             RotationUtils.setTargetRotation(limitedRotation, if (aacValue.get()) 15 else 0)
@@ -670,7 +690,7 @@ class KillAura : Module() {
             }
 
             if (raycastValue.get() && raycastedEntity is EntityLivingBase
-                    && !EntityUtils.isFriend(raycastedEntity))
+                && !EntityUtils.isFriend(raycastedEntity))
                 currentTarget = raycastedEntity
 
             hitable = if(maxTurnSpeed.get() > 0F) currentTarget == raycastedEntity else true
@@ -729,7 +749,7 @@ class KillAura : Module() {
         get() = max(rangeValue.get(), throughWallsRangeValue.get())
 
     private fun getRange(entity: Entity) =
-            (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRangeValue.get()) rangeValue.get() else throughWallsRangeValue.get()) - if (mc.thePlayer.isSprinting) rangeSprintReducementValue.get() else 0F
+        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRangeValue.get()) rangeValue.get() else throughWallsRangeValue.get()) - if (mc.thePlayer.isSprinting) rangeSprintReducementValue.get() else 0F
 
     /**
      * HUD Tag

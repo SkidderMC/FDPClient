@@ -32,7 +32,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.awt.Color
 
-@ModuleInfo(name = "Fucker", description = "Destroys selected blocks around you. (aka.  IDNuker)", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "Fucker", description = "Destroys selected blocks around you.", category = ModuleCategory.WORLD)
 object Fucker : Module() {
 
     /**

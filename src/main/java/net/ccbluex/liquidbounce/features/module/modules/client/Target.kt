@@ -8,31 +8,31 @@ import net.ccbluex.liquidbounce.value.BoolValue
 
 @ModuleInfo(name = "Target", description = "Target settings.", category = ModuleCategory.CLIENT, canEnable = false)
 class Target : Module() {
-    private val player=object : BoolValue("Player",true) {
+    val player=object : BoolValue("Player", EntityUtils.targetPlayer) {
         override fun onChanged(oldValue: Boolean, newValue: Boolean) {
             EntityUtils.targetPlayer=newValue
         }
     }
 
-    private val animal=object : BoolValue("Animal",false) {
+    val animal=object : BoolValue("Animal",EntityUtils.targetAnimals) {
         override fun onChanged(oldValue: Boolean, newValue: Boolean) {
             EntityUtils.targetAnimals=newValue
         }
     }
 
-    private val mob=object : BoolValue("Mob",true) {
+    val mob=object : BoolValue("Mob",EntityUtils.targetMobs) {
         override fun onChanged(oldValue: Boolean, newValue: Boolean) {
             EntityUtils.targetMobs=newValue
         }
     }
 
-    private val invisible=object : BoolValue("Invisible",false) {
+    val invisible=object : BoolValue("Invisible",EntityUtils.targetInvisible) {
         override fun onChanged(oldValue: Boolean, newValue: Boolean) {
             EntityUtils.targetInvisible=newValue
         }
     }
 
-    private val dead=object : BoolValue("Dead",false) {
+    val dead=object : BoolValue("Dead",EntityUtils.targetDead) {
         override fun onChanged(oldValue: Boolean, newValue: Boolean) {
             EntityUtils.targetDead=newValue
         }

@@ -1,9 +1,9 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import org.lwjgl.opengl.Display
 
@@ -19,6 +19,6 @@ class LegitSpoof : Module() {
     }
 
     override fun onDisable() {
-        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_VERSION + " | " + LiquidBounce.MINECRAFT_VERSION + if (LiquidBounce.IN_DEV) " | DEVELOPMENT BUILD" else "")
+        ClientUtils.setTitle()
     }
 }

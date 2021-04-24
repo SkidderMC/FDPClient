@@ -27,12 +27,11 @@ public class GuiServerSpoof extends GuiScreen {
         Keyboard.enableRepeatEvents(true);
         stat=new GuiButton(2, width / 2 - 100, height / 4 + 96, "STATUS");
         buttonList.add(stat);
-        buttonList.add(new GuiButton(1, width / 2 - 100, height / 4 + 120, "Save"));
-        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 144, "Back"));
+        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, "Back"));
 
         textField = new GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20);
         textField.setFocused(true);
-        textField.setText(ServerSpoof.ip);
+        textField.setText(ServerSpoof.address);
         textField.setMaxStringLength(114514);
 
         updateButtonStat();
@@ -60,11 +59,7 @@ public class GuiServerSpoof extends GuiScreen {
     protected void actionPerformed(GuiButton button) throws IOException {
         switch (button.id) {
             case 0: {
-                mc.displayGuiScreen(prevGui);
-                break;
-            }
-            case 1: {
-                ServerSpoof.ip=textField.getText();
+                ServerSpoof.address=textField.getText();
                 mc.displayGuiScreen(prevGui);
                 break;
             }
@@ -75,9 +70,12 @@ public class GuiServerSpoof extends GuiScreen {
         }
 
         updateButtonStat();
-        if(button.id!=0) {
-            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig);
-        }
+        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig);
+    }
+
+    @Override
+    public void onGuiClosed() {
+        ServerSpoof.address=textField.getText();
     }
 
     @Override

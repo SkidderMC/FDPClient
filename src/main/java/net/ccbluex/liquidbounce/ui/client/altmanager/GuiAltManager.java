@@ -5,19 +5,14 @@
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiAdd;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiChangeName;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiDirectLogin;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.login.LoginUtils;
 import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
 import net.ccbluex.liquidbounce.utils.login.UserUtils;
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -31,13 +26,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class GuiAltManager extends GuiScreen {
 
-    private static final Map<String, Boolean> GENERATORS = new HashMap<>();
     private final GuiScreen prevGui;
     public String status = "§7Idle...";
     private GuiButton loginButton;
@@ -46,24 +38,6 @@ public class GuiAltManager extends GuiScreen {
 
     public GuiAltManager(final GuiScreen prevGui) {
         this.prevGui = prevGui;
-    }
-
-    public static void loadGenerators() {
-        try {
-            // Read versions json from cloud
-            final JsonElement jsonElement = new JsonParser().parse(HttpUtils.get(LiquidBounce.CLIENT_CLOUD + "/generators.json"));
-
-            // Check json is valid object
-            if (jsonElement.isJsonObject()) {
-                // Get json object of element
-                final JsonObject jsonObject = jsonElement.getAsJsonObject();
-
-                jsonObject.entrySet().forEach(stringJsonElementEntry -> GENERATORS.put(stringJsonElementEntry.getKey(), stringJsonElementEntry.getValue().getAsBoolean()));
-            }
-        } catch (final Throwable throwable) {
-            // Print throwable to console
-            ClientUtils.getLogger().error("Failed to load enabled generators.", throwable);
-        }
     }
 
     public static String login(final MinecraftAccount minecraftAccount) {
