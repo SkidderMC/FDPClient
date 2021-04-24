@@ -12,8 +12,8 @@ class Animations : Module() {
     val presetValue = ListValue(
         "Preset", arrayOf(
             "Akrien", "Avatar", "ETB", "Exhibition", "Push", "Reverse",
-            "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "Swong", "VisionFX",
-            "Swank", "Jello"
+            "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX",
+            "Swank", "Jello", "None"
         ),
         "SlideDown"
     )

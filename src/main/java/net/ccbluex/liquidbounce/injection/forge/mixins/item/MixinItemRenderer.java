@@ -33,6 +33,9 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ItemRenderer.class)
 @SideOnly(Side.CLIENT)
 public abstract class MixinItemRenderer {
+    private float lastSwingProgress=0;
+    private long hSwing=-1;
+
     @Shadow
     private float prevEquippedProgress;
 
@@ -227,6 +230,16 @@ public abstract class MixinItemRenderer {
                                     GlStateManager.rotate(-90.0f, 1.0f, 0.0f, -1.0f);
                                     GlStateManager.rotate(-10.0f, 1.0f, 0.0f, -1.0f);
                                     GlStateManager.rotate(abstractclientplayer.isSwingInProgress ? (-alpha / 5.0f) : 1.0f, 1.0f, -0.0f, 1.0f);
+                                    break;
+                                }
+                                case "HSlide":{
+                                    transformFirstPersonItem(f1!=0?Math.max(1-(f1*2),0)*0.7F:0, 1F);
+                                    doBlockTransformations();
+                                    break;
+                                }
+                                case "None":{
+                                    transformFirstPersonItem(0F,0F);
+                                    doBlockTransformations();
                                     break;
                                 }
                             }

@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.ui.client
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
 
@@ -36,8 +38,10 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         Gui.drawRect(width / 2 - 115, height / 4 + 35, width / 2 + 115, height / 4 + 153, Integer.MIN_VALUE)
 
-        Fonts.fontBold40.drawCenteredString(LiquidBounce.CLIENT_NAME, this.width / 2F, height / 8F, 4673984, true)
-        Fonts.font35.drawCenteredString(LiquidBounce.CLIENT_VERSION, this.width / 2F + 148, height / 8F + Fonts.font35.FONT_HEIGHT, 0xffffff, true)
+        RenderUtils.drawText(LiquidBounce.CLIENT_NAME,Fonts.fontBold40, width / 2, height / 8,4F,ColorUtils.rainbow().rgb)
+        Fonts.fontBold40.drawCenteredString(LiquidBounce.CLIENT_VERSION, this.width / 2F + 148, height / 8F + Fonts.font35.FONT_HEIGHT, 0xffffff, true)
+        val str="§cWebsite: §fhttps://fdp.liulihaocai.pw/"
+        Fonts.font35.drawString(str, (this.width - Fonts.font35.getStringWidth(str)).toFloat(), (height - Fonts.font35.FONT_HEIGHT).toFloat(), 0xffffff, true)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 

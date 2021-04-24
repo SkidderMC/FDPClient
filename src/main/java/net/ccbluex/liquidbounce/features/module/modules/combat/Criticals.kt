@@ -33,7 +33,7 @@ class Criticals : Module() {
     val msTimer = MSTimer()
 
     private val rsGroundTimer = MSTimer()
-    private var rsCritChange=false
+    private var rsCritChange=0
     private var target=0;
 
     override fun onEnable() {
@@ -126,11 +126,16 @@ class Criticals : Module() {
                     }else{
                         packet.onGround = !LiquidBounce.combatManager.inCombat
                     }
-                    if((!packet.onGround) && rsCritChange && (packet is C04PacketPlayerPosition||packet is C03PacketPlayer.C06PacketPlayerPosLook)){
-                        packet.y += 0.000000001
-                        rsCritChange=false
-                    }else{
-                        rsCritChange=true
+                    if((!packet.onGround) && mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition||packet is C03PacketPlayer.C06PacketPlayerPosLook)){
+                        when(rsCritChange){
+                            0 -> packet.y += 0.00000000000003
+                            1 -> packet.y += 0.00000000000001
+                            2 -> packet.y += 0.000000000000008
+                        }
+                        rsCritChange++
+                        if(rsCritChange==3){
+                            rsCritChange=0
+                        }
                     }
                 }
             }
@@ -142,6 +147,6 @@ class Criticals : Module() {
         }
     }
 
-    override val tag: String?
+    override val tag: String
         get() = modeValue.get()
 }

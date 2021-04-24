@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render;
 
 import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.minecraft.block.Block;
@@ -85,11 +86,11 @@ public final class RenderUtils extends MinecraftInstance {
         glEndList();
     }
 
-    public static int drawText(String text, FontRenderer fontRenderer, int width, int height, float scale) {
+    public static int drawText(String text, GameFontRenderer fontRenderer, int width, int height, float scale, int color) {
         GlStateManager.pushMatrix();
         //set scale
         GlStateManager.scale(scale, scale, scale);
-        int length = fontRenderer.drawString(text, Math.round(width / scale), Math.round(height / scale), 0xffffffff);
+        int length = fontRenderer.drawCenteredString(text, Math.round(width / scale), Math.round(height / scale), color, false);
         GlStateManager.popMatrix();
         return length;
     }

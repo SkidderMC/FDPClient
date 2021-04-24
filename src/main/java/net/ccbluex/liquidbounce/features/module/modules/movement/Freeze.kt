@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 @ModuleInfo(name = "Freeze", description = "Allows you to stay stuck in mid air.", category = ModuleCategory.MOVEMENT)
 class Freeze : Module() {
@@ -44,6 +45,14 @@ class Freeze : Module() {
     fun onPacket(event: PacketEvent){
         if(event.packet is C03PacketPlayer){
             event.cancelEvent()
+        }
+        if(event.packet is S08PacketPlayerPosLook){
+            x=event.packet.x
+            y=event.packet.y
+            z=event.packet.z
+            motionX=0.0
+            motionY=0.0
+            motionZ=0.0
         }
     }
 

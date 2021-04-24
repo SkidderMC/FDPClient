@@ -126,10 +126,10 @@ class ModuleManager : Listenable {
                 AutoIgnore::class.java,
                 BoatJump::class.java,
                 DamageParticle::class.java,
-                AutoSpam::class.java,
                 LegitSpoof::class.java,
                 InventoryAnimation::class.java,
-                MessageSpam::class.java
+                MessageSpam::class.java,
+                AntiStuck::class.java
         )
 
         registerModule(Fucker)

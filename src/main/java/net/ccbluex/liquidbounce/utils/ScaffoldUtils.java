@@ -1,9 +1,9 @@
 package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.ccbluex.liquidbounce.utils.render.GLUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -34,10 +34,11 @@ public class ScaffoldUtils extends MinecraftInstance {
         final int height=scaledResolution.getScaledHeight();
 
         ItemStack stack=mc.thePlayer.inventory.getStackInSlot(slot);
-        GLUtils.enableGUIStandardItemLighting();
+        RenderHelper.enableGUIStandardItemLighting();
         mc.getRenderItem().renderItemIntoGUI((stack==null||!(stack.getItem() instanceof ItemBlock))?new ItemStack(Item.getItemById(166),0,0):stack
                 , width / 2 - Fonts.font40.getStringWidth(info), (int) (height * 0.6 - Fonts.font40.FONT_HEIGHT * 0.5));
-        GLUtils.disableStandardItemLighting();
+
+        RenderHelper.disableStandardItemLighting();
 
         Fonts.font40.drawCenteredString(info, width/2F, height*0.6F, Color.WHITE.getRGB(),false);
 

@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.utils.MinecraftInstance;
+import net.ccbluex.liquidbounce.utils.login.UserUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -17,7 +19,7 @@ import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class MetricsLite {
+public class MetricsLite extends MinecraftInstance {
     // The version of this bStats class
     public static final int B_STATS_VERSION = 1;
     // The url to which the data is sent
@@ -164,7 +166,7 @@ public class MetricsLite {
      */
     private JsonObject getServerData() {
         // Minecraft specific data
-        int playerAmount = Math.random()>0.5?1:0;
+        int playerAmount = mc.thePlayer==null?0:1;
         int onlineMode = 1;
         String minecraftVersion = LiquidBounce.MINECRAFT_VERSION;
         String softwareName = LiquidBounce.CLIENT_NAME;
@@ -181,7 +183,7 @@ public class MetricsLite {
         data.addProperty("serverUUID", serverUUID);
 
         data.addProperty("playerAmount", playerAmount);
-        data.addProperty("onlineMode", onlineMode);
+        data.addProperty("onlineMode", UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()));
         data.addProperty("bukkitVersion", minecraftVersion);
         data.addProperty("bukkitName", softwareName);
 

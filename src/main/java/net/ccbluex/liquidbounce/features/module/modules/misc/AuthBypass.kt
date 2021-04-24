@@ -18,6 +18,7 @@ import java.util.*
 class AuthBypass : Module(){
     //redesky add a authbypass check :(
     private val delayValue=IntegerValue("Delay",1500,100,5000)
+    private var windowId=0
 
     @EventTarget
     fun onPacket(event: PacketEvent){
@@ -30,7 +31,7 @@ class AuthBypass : Module(){
             if(item!=null&&item.displayName.contains("aqui",ignoreCase = true)){
                 Timer().schedule(object :TimerTask(){
                     override fun run() {
-                        mc.netHandler.addToSendQueue(C0EPacketClickWindow(packet.func_149175_c(),packet.func_149173_d(),0,0,item,1919))
+                        mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId,packet.func_149173_d(),0,0,item,1919))
                         LiquidBounce.hud.addNotification(Notification("Authenticate Bypassed",NotifyType.OKAY))
                     }
                 },delayValue.get().toLong())
@@ -40,6 +41,7 @@ class AuthBypass : Module(){
         if(packet is S2DPacketOpenWindow){
             if(packet.slotCount==27 && packet.guiId.contains("container",ignoreCase = true)
                 && packet.windowTitle.unformattedText.contains("Clique no bloco verde",ignoreCase = true)){
+                windowId=packet.windowId
                 event.cancelEvent()
             }
         }

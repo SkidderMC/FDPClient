@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -20,7 +20,7 @@ class HealthWarn : Module() {
     }
 
     @EventTarget
-    fun onRender2d(event: Render2DEvent){
+    fun onUpdate(event: UpdateEvent){
         if(mc.thePlayer.health <= healthValue.get()){
             if(canWarn){
                 LiquidBounce.hud.addAlert(Alert("HP Warning","YOU ARE AT LOW HP!",NotifyType.WARN,3000))
