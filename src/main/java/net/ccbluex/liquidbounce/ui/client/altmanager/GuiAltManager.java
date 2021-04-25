@@ -236,7 +236,7 @@ public class GuiAltManager extends GuiScreen {
                 mc.displayGuiScreen(new GuiChangeName(this));
                 break;
             case 89:
-                LoginUtils.randomCracked();
+                new Thread(LoginUtils::randomCracked).start();
                 break;
         }
     }

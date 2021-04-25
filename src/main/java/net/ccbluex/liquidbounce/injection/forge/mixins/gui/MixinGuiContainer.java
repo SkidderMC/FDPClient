@@ -5,7 +5,6 @@ import net.ccbluex.liquidbounce.features.module.modules.render.InventoryAnimatio
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -19,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiContainer.class)
 @SideOnly(Side.CLIENT)
-public class MixinGuiContainer {
+public abstract class MixinGuiContainer extends MixinGuiScreen {
     @Shadow
     private int xSize;
     @Shadow
@@ -48,11 +47,10 @@ public class MixinGuiContainer {
                 mc.setIngameFocus();
                 mc.currentScreen=guiScreen;
                 //hide GUI
-                ScaledResolution scaledResolution=new ScaledResolution(mc);
                 String tipString="STEALING CHEST";
                 mc.fontRendererObj.drawString(tipString,
-                        (scaledResolution.getScaledWidth()/2)-(mc.fontRendererObj.getStringWidth(tipString)/2),
-                        (scaledResolution.getScaledHeight()/2)+30,0xffffffff);
+                        (width/2)-(mc.fontRendererObj.getStringWidth(tipString)/2),
+                        (height/2)+30,0xffffffff);
                 callbackInfo.cancel();
             }else{
                 mc.currentScreen.drawWorldBackground(0);

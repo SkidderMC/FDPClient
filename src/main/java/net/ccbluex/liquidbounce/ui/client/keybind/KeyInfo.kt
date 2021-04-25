@@ -21,7 +21,7 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
 
         RenderUtils.drawRect(0F,0F,keyStopX,keyStopY,keyColor.rgb)
         RenderUtils.drawRect(0F,keyStopY,keyStopX,keyStopY+mcHeight*0.02F,shadowColor.rgb)
-        Fonts.font35.drawCenteredString(keyName,keyStopX*0.5F,keyStopY*0.5F-Fonts.font35.FONT_HEIGHT,Color.BLACK.rgb,false)
+        Fonts.font35.drawCenteredString(keyName,keyStopX*0.5F,keyStopY*0.5F-(Fonts.font35.FONT_HEIGHT*0.5F),Color.BLACK.rgb,false)
 
         GL11.glPopMatrix()
     }
@@ -30,4 +30,3 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
 
     }
 }
-

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce
 
+import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
@@ -26,6 +27,7 @@ import net.ccbluex.liquidbounce.ui.other.MusicManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.minecraft.util.ResourceLocation
 
 object LiquidBounce {
@@ -57,7 +59,8 @@ object LiquidBounce {
     lateinit var metricsLite: MetricsLite
 
     // Update information
-    var latestVersion = 0
+    var latestVersion = ""
+    var displayedUpdateScreen=false
 
     // Menu Background
     var background: ResourceLocation? = null
@@ -68,7 +71,18 @@ object LiquidBounce {
     fun startClient() {
         isStarting = true
 
-        ClientUtils.getLogger().info("Starting $CLIENT_NAME b$CLIENT_VERSION, by $CLIENT_CREATOR")
+        ClientUtils.getLogger().info("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
+
+        // check update
+        Thread {
+            val jsonObj = JsonParser()
+                .parse(HttpUtils.get("https://dl.liulihaocai.pw/fdp-ver.php")).asJsonObject
+            val version=jsonObj.get("version").asString
+
+            if(!version.equals(CLIENT_VERSION)){
+                latestVersion=version
+            }
+        }.start()
 
         // Create file manager
         fileManager = FileManager()

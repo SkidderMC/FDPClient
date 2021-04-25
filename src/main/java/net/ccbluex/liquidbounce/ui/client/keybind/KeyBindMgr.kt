@@ -24,7 +24,7 @@ class KeyBindMgr : GuiScreen() {
         drawDefaultBackground()
 
         GL11.glPushMatrix()
-        RenderUtils.drawText("KeyBind Manager", Fonts.fontBold40, (width * 0.21).toInt(), (height * 0.2).toInt(), 2f, Color.WHITE.rgb)
+        RenderUtils.drawText("KeyBind Manager", Fonts.fontBold40, (width * 0.21).toInt(), (height * 0.2).toInt(), 2f, Color.WHITE.rgb, false)
         GL11.glTranslatef(width*0.2f,height * 0.2f + Fonts.fontBold40.height * 2.3f,0F)
 
         val mcWidth=((width*0.8f)-(width*0.2f)).toInt()

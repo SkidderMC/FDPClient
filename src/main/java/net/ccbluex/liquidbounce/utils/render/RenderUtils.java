@@ -86,11 +86,24 @@ public final class RenderUtils extends MinecraftInstance {
         glEndList();
     }
 
-    public static int drawText(String text, GameFontRenderer fontRenderer, int width, int height, float scale, int color) {
+    public static int drawText(String text, GameFontRenderer fontRenderer, int width, int height, float scale, int color, boolean shadow){
+        return drawText(text, fontRenderer, width, height, scale, color,  false, shadow);
+    }
+
+    public static int drawCenterText(String text, GameFontRenderer fontRenderer, int width, int height, float scale, int color, boolean shadow){
+        return drawText(text, fontRenderer, width, height, scale, color,  true, shadow);
+    }
+
+    public static int drawText(String text, GameFontRenderer fontRenderer, int width, int height, float scale, int color, boolean center, boolean shadow) {
         GlStateManager.pushMatrix();
         //set scale
         GlStateManager.scale(scale, scale, scale);
-        int length = fontRenderer.drawCenteredString(text, Math.round(width / scale), Math.round(height / scale), color, false);
+        int length=0;
+        if(center){
+            length = fontRenderer.drawCenteredString(text, Math.round(width / scale), Math.round(height / scale), color, shadow);
+        }else{
+            length = fontRenderer.drawString(text, Math.round(width / scale), Math.round(height / scale), color, shadow);
+        }
         GlStateManager.popMatrix();
         return length;
     }

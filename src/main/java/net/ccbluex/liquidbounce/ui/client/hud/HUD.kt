@@ -39,7 +39,9 @@ open class HUD : MinecraftInstance() {
                 Text::class.java,
                 ScoreboardElement::class.java,
                 Alerts::class.java,
-                KeyStrokes::class.java
+                KeyStrokes::class.java,
+                SpeedGraph::class.java,
+                Inventory::class.java
         )
 
         /**
@@ -54,7 +56,7 @@ open class HUD : MinecraftInstance() {
                 .addElement(Armor())
                 .addElement(Effects())
                 .addElement(Notifications())
-
+                .addElement(Inventory())
     }
 
     /**

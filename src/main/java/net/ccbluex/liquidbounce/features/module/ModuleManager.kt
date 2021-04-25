@@ -120,7 +120,7 @@ class ModuleManager : Listenable {
                 AntiVoid::class.java,
                 AntiVanish::class.java,
                 Target::class.java,
-                KeyBindManager::class.java,
+//                KeyBindManager::class.java, 还没写完，咕咕咕
                 AutoLogin::class.java,
                 ChatTranslator::class.java,
                 AutoIgnore::class.java,
@@ -129,7 +129,10 @@ class ModuleManager : Listenable {
                 LegitSpoof::class.java,
                 InventoryAnimation::class.java,
                 MessageSpam::class.java,
-                AntiStuck::class.java
+                AntiStuck::class.java,
+                AutoAdvertise::class.java,
+                NoUnicode::class.java,
+                HudDesigner::class.java
         )
 
         registerModule(Fucker)
