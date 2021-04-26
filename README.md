@@ -1,7 +1,7 @@
-# LiquidBounce
+# FDPClient
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient?ref=badge_shield)
 
-A free mixin-based injection hacked-client for Minecraft using Minecraft Forge.
+A free mixin-based injection hacked-client for Minecraft using Minecraft Forge by LiquidBounce.
 
 Website: https://fdp.liulihaocai.pw/ \
 Forum: https://forums.ccbluex.net/ \
