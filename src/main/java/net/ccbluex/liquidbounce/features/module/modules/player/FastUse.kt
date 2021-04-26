@@ -23,7 +23,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 class FastUse : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Instant", "NCP", "Timer", "CustomDelay"), "NCP")
-    private val timerValue = FloatValue("Timer", 1.22, 0.1, 2.0)
+    private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F)
     private val delayValue = IntegerValue("Delay", 0, 0, 300)
 
     private val msTimer = MSTimer()
@@ -82,6 +82,6 @@ class FastUse : Module() {
         }
     }
 
-    override val tag: String?
+    override val tag: String
         get() = modeValue.get()
 }

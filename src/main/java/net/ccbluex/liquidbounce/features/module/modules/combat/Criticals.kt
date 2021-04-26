@@ -21,11 +21,12 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
+import net.minecraft.network.play.server.S0BPacketAnimation
 
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "RedeSkyPacket", "Hop", "TPHop", "Jump", "LowJump"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "Jump", "LowJump"), "packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
@@ -114,22 +115,10 @@ class Criticals : Module() {
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.02, z, yaw, pitch, false))
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.01, z, yaw, pitch, false))
                     }else{
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.02, z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.01, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.02, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.01, z, false))
                     }
-                    mc.hePlayer.setPosition(x, y + 0.01, z)
-                }
-
-                "redeskypacket" -> {
-                    if(lookValue.get()){
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX - mc.thePlayer.motionX * 1.5, mc.thePlayer.posY + 3e-14, mc.thePlayer.posZ - mc.thePlayer.motionZ / 1.5, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX - mc.thePlayer.motionX / 3, mc.thePlayer.posY + 8e-15, mc.thePlayer.posZ - mc.thePlayer.motionZ / 3, yaw, pitch, false))
-                    }else{
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX - mc.thePlayer.motionX * 1.5, mc.thePlayer.posY + 3e-14, mc.thePlayer.posZ - mc.thePlayer.motionZ / 1.5, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX - mc.thePlayer.motionX / 3, mc.thePlayer.posY + 8e-15, mc.thePlayer.posZ - mc.thePlayer.motionZ / 3, false))
-                    }
-                    mc.thePlayer.motionX *= 0.0
-                    mc.thePlayer.motionZ *= 0.0
+                    mc.thePlayer.setPosition(x, y + 0.01, z)
                 }
                 
                 "visual" -> mc.thePlayer.onCriticalHit(entity)
@@ -169,7 +158,7 @@ class Criticals : Module() {
                 }
             }
         }
-        if(packet is S0BPacketAnimation&&debugValue.get()){
+        if(packet is S0BPacketAnimation &&debugValue.get()){
             if(packet.animationType==4&&packet.entityID==target){
                 chat("CRIT")
             }
