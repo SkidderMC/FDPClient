@@ -171,9 +171,11 @@ object Fucker : Module() {
                     }
                 }
 
-                if (swingValue.get())
+                if (swingValue.get().equals("Normal")) {
                     mc.thePlayer.swingItem()
-
+                } else if (swingValue.get().equals("Packet")) {
+                    mc.netHandler.addToSendQueue(C0APacketAnimation())
+                }
                 currentDamage += block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, currentPos)
                 mc.theWorld.sendBlockBreakProgress(mc.thePlayer.entityId, currentPos, (currentDamage * 10F).toInt() - 1)
 
@@ -191,9 +193,11 @@ object Fucker : Module() {
             actionValue.get().equals("use", true) -> if (mc.playerController.onPlayerRightClick(
                             mc.thePlayer, mc.theWorld, mc.thePlayer.heldItem, pos, EnumFacing.DOWN,
                             Vec3(currentPos.x.toDouble(), currentPos.y.toDouble(), currentPos.z.toDouble()))) {
-                if (swingValue.get())
+                if (swingValue.get().equals("Normal")) {
                     mc.thePlayer.swingItem()
-
+                } else if (swingValue.get().equals("Packet")) {
+                    mc.netHandler.addToSendQueue(C0APacketAnimation())
+                }
                 blockHitDelay = 4
                 currentDamage = 0F
                 pos = null
