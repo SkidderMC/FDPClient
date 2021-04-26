@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 
-@ModuleInfo(name = "Animations", description = "Render sword while blocking", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "Animations", description = "Render sword while blocking and inventory animation", category = ModuleCategory.RENDER)
 class Animations : Module() {
     val presetValue = ListValue(
         "Preset", arrayOf(
@@ -18,6 +18,8 @@ class Animations : Module() {
         "SlideDown"
     )
 
+    val moveValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "None")
+    val timeValue = IntegerValue("InvTime",300,100,500)
     var translateX = FloatValue("TranslateX", 0.0f, 0.0f, 1.5f)
     var translateY = FloatValue("TranslateY", 0.0f, 0.0f, 0.5f)
     var translateZ = FloatValue("TranslateZ", 0.0f, 0.0f, -2.0f)

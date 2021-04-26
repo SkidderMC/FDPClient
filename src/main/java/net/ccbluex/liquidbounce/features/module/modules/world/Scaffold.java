@@ -313,7 +313,7 @@ public class Scaffold extends Module {
             place();
 
         // Update and search for new block
-        if (eventState == EventState.PRE)
+        if (event.isPre())
             update();
 
         // Reset placeable delay

@@ -208,7 +208,7 @@ class KillAura : Module() {
         if (mc.thePlayer.isRiding)
             return
 
-        if (event.eventState == EventState.POST) {
+        if (!event.isPre()) {
             target ?: return
             currentTarget ?: return
 

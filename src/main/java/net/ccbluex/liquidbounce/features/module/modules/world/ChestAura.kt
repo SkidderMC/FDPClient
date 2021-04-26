@@ -53,8 +53,7 @@ object ChestAura : Module() {
         if(onlyOnGround.get() && !mc.thePlayer.onGround)
             return
 
-        when (event.eventState) {
-            EventState.PRE -> {
+        if(event.isPre()){
                 if (mc.currentScreen is GuiContainer)
                     return
 
@@ -83,10 +82,8 @@ object ChestAura : Module() {
                 if (rotations.get())
                     RotationUtils.setTargetRotation((RotationUtils.faceBlock(currentBlock ?: return)
                             ?: return).rotation)
-            }
-
-            EventState.POST -> if (currentBlock != null && InventoryUtils.INV_TIMER.hasTimePassed(delayValue.get().toLong()) && !underClick) {
-                underClick=true
+        }else if(currentBlock != null && InventoryUtils.INV_TIMER.hasTimePassed(delayValue.get().toLong()) && !underClick){
+                 underClick=true
                 if(discoverDelay.get()){
                     java.util.Timer().schedule(object :TimerTask() {
                         override fun run() {
@@ -95,8 +92,7 @@ object ChestAura : Module() {
                     }, discoverDelayValue.get().toLong())
                 }else{
                     click()
-                }
-            }
+                } 
         }
     }
 
@@ -115,18 +111,15 @@ object ChestAura : Module() {
         }catch (e: Exception){
             e.printStackTrace()
         }
-        underClick=false
+        underClick = false
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent){
         if(notOpened.get() && event.packet is S24PacketBlockAction){
-            val packet=event.packet
-            if(packet.blockType is BlockChest && packet.data2==1){
-                if(!clickedBlocks.contains(packet.blockPosition)){
+            val packet = event.packet
+            if(packet.blockType is BlockChest && packet.data2 == 1 && !clickedBlocks.contains(packet.blockPosition))
                     clickedBlocks.add(packet.blockPosition)
-                }
-            }
         }
     }
 
