@@ -1,4 +1,6 @@
 # LiquidBounce
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient?ref=badge_shield)
+
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge.
 
 Website: https://liquidbounce.net \
@@ -26,6 +28,9 @@ this project entirely or partially for free and even commercially. However, plea
 - **Your modified application must also be licensed under the GPL** 
 
 Do the above and share your source code with everyone; just like we do.
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient?ref=badge_large)
 
 ## Setting up a Workspace
 LiquidBounce is using Gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
