@@ -31,7 +31,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 @ModuleInfo(name = "Blink", description = "Suspends all movement packets.", category = ModuleCategory.PLAYER)
 public class Blink extends Module {
-
     private final LinkedBlockingQueue<Packet> packets = new LinkedBlockingQueue<>();
     private EntityOtherPlayerMP fakePlayer = null;
     private boolean disableLogger;

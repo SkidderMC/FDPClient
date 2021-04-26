@@ -61,7 +61,6 @@ class ModuleManager : Listenable {
                 AntiBot::class.java,
                 ChestStealer::class.java,
                 Scaffold::class.java,
-                Tower::class.java,
                 FastBreak::class.java,
                 FastPlace::class.java,
                 ESP::class.java,

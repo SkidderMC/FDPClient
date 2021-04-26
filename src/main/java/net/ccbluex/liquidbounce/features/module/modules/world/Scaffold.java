@@ -9,25 +9,33 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
+import net.ccbluex.liquidbounce.utils.timer.TickTimer;
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBush;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
-import net.minecraft.network.play.server.S09PacketHeldItemChange;
+import net.minecraft.stats.StatList;
 import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
 
@@ -94,6 +102,11 @@ public class Scaffold extends Module {
     private final FloatValue staticPitchValue = new FloatValue("StaticPitchOffset", 86F, 70F, 90F);
     private final FloatValue staticYawOffsetValue = new FloatValue("StaticYawOffset", 0F, 0F, 90F);
 
+    // Tower
+    private final ListValue towerModeValue = new ListValue("TowerMode", new String[] {
+            "None", "Jump", "Motion", "ConstantMotion", "PlusMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4"
+    }, "None");
+    private final BoolValue stopWhenBlockAbove = new BoolValue("StopWhenBlockAbove", false);
 
     // Other
     private final FloatValue xzRangeValue = new FloatValue("xzRange", 0.8F, 0.1F, 1.0F);
@@ -160,6 +173,24 @@ public class Scaffold extends Module {
     private final BoolValue safeWalkValue = new BoolValue("SafeWalk", true);
     private final BoolValue airSafeValue = new BoolValue("AirSafe", false);
 
+    // Jump mode
+    private final FloatValue jumpMotionValue = new FloatValue("TowerJumpMotion", 0.42F, 0.3681289F, 0.79F);
+    private final IntegerValue jumpDelayValue = new IntegerValue("TowerJumpDelay", 0, 0, 20);
+
+    // PlusMotion
+    private final FloatValue plusMotionValue = new FloatValue("TowerPlusMotion", 0.1F, 0.01F, 0.2F);
+    private final FloatValue plusMaxMotionValue = new FloatValue("TowerPlusMaxMotion", 0.8F, 0.1F, 2F);
+
+    // ConstantMotion
+    private final FloatValue constantMotionValue = new FloatValue("TowerConstantMotion", 0.42F, 0.1F, 1F);
+    private final FloatValue constantMotionJumpGroundValue = new FloatValue("TowerConstantMotionJumpGround", 0.79F, 0.76F, 1F);
+
+    // Teleport
+    private final FloatValue teleportHeightValue = new FloatValue("TowerTeleportHeight", 1.15F, 0.1F, 5F);
+    private final IntegerValue teleportDelayValue = new IntegerValue("TowerTeleportDelay", 0, 0, 20);
+    private final BoolValue teleportGroundValue = new BoolValue("TowerTeleportGround", true);
+    private final BoolValue teleportNoMotionValue = new BoolValue("TowerTeleportNoMotion", false);
+
     // Visuals
     private final BoolValue counterDisplayValue = new BoolValue("Counter", true);
     private final BoolValue markValue = new BoolValue("Mark", false);
@@ -188,6 +219,7 @@ public class Scaffold extends Module {
     // Delay
     private final MSTimer delayTimer = new MSTimer();
     private final MSTimer zitterTimer = new MSTimer();
+    private final TickTimer towerTimer = new TickTimer();
     private long delay;
 
     // Eagle
@@ -197,6 +229,7 @@ public class Scaffold extends Module {
     // Down
     private boolean shouldGoDown = false;
 
+    private double jumpGround = 0;
     /**
      * Enable module
      */
@@ -217,7 +250,7 @@ public class Scaffold extends Module {
         mc.timer.timerSpeed=timerValue.get();
 
 
-        shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && ScaffoldUtils.getBlocksAmount() > 1;
+        shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && getBlocksAmount() > 1;
         if (shouldGoDown)
             mc.gameSettings.keyBindSneak.pressed=false;
 
@@ -388,10 +421,10 @@ public class Scaffold extends Module {
             return;
 
         // AutoBlock
-        if (event.getPacket() instanceof S09PacketHeldItemChange) {
-            final S09PacketHeldItemChange packetHeldItemChange=(S09PacketHeldItemChange)event.getPacket();
+        if (event.getPacket() instanceof C09PacketHeldItemChange) {
+            final C09PacketHeldItemChange packetHeldItemChange=(C09PacketHeldItemChange)event.getPacket();
 
-            slot = packetHeldItemChange.getHeldItemHotbarIndex();
+            slot = packetHeldItemChange.getSlotId();
         }
     }
 
@@ -408,6 +441,16 @@ public class Scaffold extends Module {
     public void onMotion(final MotionEvent event) {
         final EventState eventState = event.getEventState();
 
+        // Tower
+        if (!(towerModeValue.get().equalsIgnoreCase("None")
+                || (!mc.gameSettings.keyBindJump.isKeyDown() || mc.gameSettings.keyBindLeft.isKeyDown()
+                || mc.gameSettings.keyBindRight.isKeyDown() || mc.gameSettings.keyBindForward.isKeyDown()
+                || mc.gameSettings.keyBindBack.isKeyDown()))
+                && (!stopWhenBlockAbove.get() || BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX,
+                mc.thePlayer.posY + 2, mc.thePlayer.posZ)) instanceof BlockAir)){
+            move();
+        }
+
         // Lock Rotation
         if (!rotationModeValue.get().equalsIgnoreCase("Off") && keepRotationValue.get() && lockRotation != null)
             setRotation(lockRotation);
@@ -423,6 +466,98 @@ public class Scaffold extends Module {
         // Reset placeable delay
         if (targetPlace == null && placeableDelay.get())
             delayTimer.reset();
+    }
+
+    private void fakeJump() {
+        mc.thePlayer.isAirBorne = true;
+        mc.thePlayer.triggerAchievement(StatList.jumpStat);
+    }
+
+    private void move() {
+        switch (towerModeValue.get().toLowerCase()) {
+            case "jump":
+                if (mc.thePlayer.onGround && towerTimer.hasTimePassed(jumpDelayValue.get())) {
+                    fakeJump();
+                    mc.thePlayer.motionY = jumpMotionValue.get();
+                    towerTimer.reset();
+                }
+                break;
+            case "motion":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    mc.thePlayer.motionY = 0.42D;
+                } else if (mc.thePlayer.motionY < 0.1D) mc.thePlayer.motionY = -0.3D;
+                break;
+            case "motiontp":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    mc.thePlayer.motionY = 0.42D;
+                } else if (mc.thePlayer.motionY < 0.23D)
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, (int) mc.thePlayer.posY, mc.thePlayer.posZ);
+                break;
+            case "packet":
+                if (mc.thePlayer.onGround && towerTimer.hasTimePassed(2)) {
+                    fakeJump();
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+                            mc.thePlayer.posY + 0.42D, mc.thePlayer.posZ, false));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+                            mc.thePlayer.posY + 0.753D, mc.thePlayer.posZ, false));
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1D, mc.thePlayer.posZ);
+                    towerTimer.reset();
+                }
+                break;
+            case "teleport":
+                if (teleportNoMotionValue.get())
+                    mc.thePlayer.motionY = 0;
+
+                if ((mc.thePlayer.onGround || !teleportGroundValue.get()) && towerTimer.hasTimePassed(teleportDelayValue.get())) {
+                    fakeJump();
+                    mc.thePlayer.setPositionAndUpdate(mc.thePlayer.posX, mc.thePlayer.posY + teleportHeightValue.get(), mc.thePlayer.posZ);
+                    towerTimer.reset();
+                }
+                break;
+            case "plusmotion":
+                mc.thePlayer.motionY += plusMotionValue.get();
+                if(mc.thePlayer.motionY>=plusMaxMotionValue.get()){
+                    mc.thePlayer.motionY=plusMaxMotionValue.get();
+                }
+                break;
+            case "constantmotion":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    jumpGround = mc.thePlayer.posY;
+                    mc.thePlayer.motionY = constantMotionValue.get();
+                }
+
+                if (mc.thePlayer.posY > jumpGround + constantMotionJumpGroundValue.get()) {
+                    fakeJump();
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, (int) mc.thePlayer.posY, mc.thePlayer.posZ);
+                    mc.thePlayer.motionY = constantMotionValue.get();
+                    jumpGround = mc.thePlayer.posY;
+                }
+                break;
+            case "aac3.3.9":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    mc.thePlayer.motionY = 0.4001;
+                }
+                mc.timer.timerSpeed = 1F;
+
+                if (mc.thePlayer.motionY < 0) {
+                    mc.thePlayer.motionY -= 0.00000945;
+                    mc.timer.timerSpeed = 1.6F;
+                }
+                break;
+            case "aac3.6.4":
+                if (mc.thePlayer.ticksExisted % 4 == 1) {
+                    mc.thePlayer.motionY = 0.4195464;
+                    mc.thePlayer.setPosition(mc.thePlayer.posX - 0.035, mc.thePlayer.posY, mc.thePlayer.posZ);
+                } else if (mc.thePlayer.ticksExisted % 4 == 0) {
+                    mc.thePlayer.motionY = -0.5;
+                    mc.thePlayer.setPosition(mc.thePlayer.posX + 0.035, mc.thePlayer.posY, mc.thePlayer.posZ);
+                }
+                break;
+        }
     }
 
     private void update() {
@@ -593,7 +728,7 @@ public class Scaffold extends Module {
     @EventTarget
     public void onRender2D(final Render2DEvent event) {
         if (counterDisplayValue.get()) {
-            ScaffoldUtils.drawTip(slot);
+            drawTip();
         }
     }
 
@@ -749,6 +884,40 @@ public class Scaffold extends Module {
         if (range / accuracy < 0.01D)
             return 0.01D;
         return range / accuracy;
+    }
+
+    public int getBlocksAmount() {
+        int amount = 0;
+
+        for (int i = 36; i < 45; i++) {
+            final ItemStack itemStack = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
+
+            if (itemStack != null && itemStack.getItem() instanceof ItemBlock
+                    && !InventoryUtils.BLOCK_BLACKLIST.contains(((ItemBlock) itemStack.getItem()).getBlock()))
+                amount += itemStack.stackSize;
+        }
+
+        return amount;
+    }
+
+    public void drawTip(){
+        GlStateManager.pushMatrix();
+
+        final String info = "Blocks > " + getBlocksAmount();
+        final ScaledResolution scaledResolution = new ScaledResolution(mc);
+        final int width=scaledResolution.getScaledWidth();
+        final int height=scaledResolution.getScaledHeight();
+
+        ItemStack stack=mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock()-36);
+        RenderHelper.enableGUIStandardItemLighting();
+        mc.getRenderItem().renderItemIntoGUI((stack==null||!(stack.getItem() instanceof ItemBlock))?new ItemStack(Item.getItemById(166),0,0):stack
+                , width / 2 - Fonts.font40.getStringWidth(info), (int) (height * 0.6 - Fonts.font40.FONT_HEIGHT * 0.5));
+
+        RenderHelper.disableStandardItemLighting();
+
+        Fonts.font40.drawCenteredString(info, width/2F, height*0.6F, Color.WHITE.getRGB(),false);
+
+        GlStateManager.popMatrix();
     }
 
     @Override
