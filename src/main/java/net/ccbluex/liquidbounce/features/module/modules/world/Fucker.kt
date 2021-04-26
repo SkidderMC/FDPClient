@@ -138,10 +138,11 @@ object Fucker : Module() {
                     // CivBreak style block breaking
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
                             currentPos, EnumFacing.DOWN))
-
-                    if (swingValue.get())
+                    if (swingValue.get().equals("Normal")) {
                         mc.thePlayer.swingItem()
-
+                    } else if (swingValue.get().equals("Packet")) {
+                        mc.netHandler.addToSendQueue(C0APacketAnimation())
+                    }
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
                             currentPos, EnumFacing.DOWN))
                     currentDamage = 0F
