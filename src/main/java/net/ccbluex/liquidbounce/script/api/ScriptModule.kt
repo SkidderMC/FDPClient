@@ -90,6 +90,30 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
 
     @EventTarget
     fun onAttack(attackEvent: AttackEvent) = callEvent("attack", attackEvent)
+    
+    @EventTarget
+    fun onBlockBB(blockBBEvent: BlockBBEvent) = callEvent("blockBB", blockBBEvent)
+    
+    @EventTarget
+    fun onClientShutdown(clientShutdownEvent: ClientShutdownEvent) = callEvent("clientShutdown")
+    
+    @EventTarget
+    fun onEntityMovement(entityMovementEvent: EntityMovementEvent) = callEvent("entityMovement", entityMovementEvent)
+   
+    @EventTarget
+    fun onPushOut(pushOutEvent: PushOutEvent) = callEvent("pushOut", pushOutEvent)
+    
+    @EventTarget
+    fun onRenderEntity(renderEntityEvent: RenderEntityEvent) = callEvent("renderEntity", renderEntityEvent)
+    
+    @EventTarget
+    fun onScreen(screenEvent: ScreenEvent) = callEvent("screen", screenEvent)
+    
+    @EventTarget
+    fun onText(textEvent: TextEvent) = callEvent("text", textEvent)
+    
+    @EventTarget
+    fun onTick(tickEvent: TickEvent) = callEvent("tick")
 
     @EventTarget
     fun onKey(keyEvent: KeyEvent) = callEvent("key", keyEvent)
@@ -105,6 +129,9 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
 
     @EventTarget
     fun onWorld(worldEvent: WorldEvent) = callEvent("world", worldEvent)
+    
+    @EventTarget
+    fun onClickWindow(clickWindowEvent: ClickWindowEvent) = callEvent("clickWindow", clickWindowEvent)
 
     @EventTarget
     fun onSession(sessionEvent: SessionEvent) = callEvent("session")

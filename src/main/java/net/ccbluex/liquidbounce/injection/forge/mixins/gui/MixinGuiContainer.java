@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.render.InventoryAnimation;
+import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -55,8 +55,8 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
             }else{
                 mc.currentScreen.drawWorldBackground(0);
 
-                InventoryAnimation inventoryAnimation=(InventoryAnimation) LiquidBounce.moduleManager.getModule(InventoryAnimation.class);
-                if(inventoryAnimation!=null&& inventoryAnimation.getState()) {
+                Animations inventoryAnimation = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
+                if(inventoryAnimation != null && inventoryAnimation.getState()) {
                     float pct = Math.max(inventoryAnimation.getTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((float)inventoryAnimation.getTimeValue().get());
                     if (pct != 0) {
                         GL11.glPushMatrix();

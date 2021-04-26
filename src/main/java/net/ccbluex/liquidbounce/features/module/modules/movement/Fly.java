@@ -630,8 +630,7 @@ public class Fly extends Module {
     @EventTarget
     public void onMotion(final MotionEvent event) {
         if(modeValue.get().equalsIgnoreCase("boosthypixel")) {
-            switch(event.getEventState()) {
-                case PRE:
+            if(event.isPre()){
                     hypixelTimer.update();
 
                     if (hypixelTimer.hasTimePassed(2)) {
@@ -640,12 +639,10 @@ public class Fly extends Module {
                     }
 
                     if(!failedStart) mc.thePlayer.motionY = 0D;
-                    break;
-                case POST:
+            }else{
                     double xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX;
                     double zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ;
                     lastDistance = Math.sqrt(xDist * xDist + zDist * zDist);
-                    break;
             }
         }
     }

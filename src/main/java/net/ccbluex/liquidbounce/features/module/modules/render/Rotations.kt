@@ -17,13 +17,14 @@ import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "Rotations", description = "Allows you to see server-sided head and body rotations.", category = ModuleCategory.RENDER)
 class Rotations : Module() {
+    private val headValue = BoolValue("Head", true)
     private val bodyValue = BoolValue("Body", true)
 
     private var playerYaw: Float? = null
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (RotationUtils.serverRotation != null && !bodyValue.get())
+        if (RotationUtils.serverRotation != null && !bodyValue.get() && headValue.get())
             mc.thePlayer?.rotationYawHead = RotationUtils.serverRotation.yaw
     }
 
@@ -31,7 +32,7 @@ class Rotations : Module() {
     fun onPacket(event: PacketEvent) {
         val thePlayer = mc.thePlayer
 
-        if (!bodyValue.get() || thePlayer == null)
+        if (thePlayer == null)
             return
 
         val packet = event.packet
@@ -40,14 +41,15 @@ class Rotations : Module() {
             val packetPlayer = packet as C03PacketPlayer
 
             playerYaw = packetPlayer.yaw
-
-            thePlayer.renderYawOffset = packetPlayer.yaw
-            thePlayer.rotationYawHead = packetPlayer.yaw
+            if (bodyValue.get())
+                thePlayer.renderYawOffset = packetPlayer.yaw
+            if (headValue.get())
+                thePlayer.rotationYawHead = packetPlayer.yaw
         } else {
-            if (playerYaw != null)
+            if (playerYaw != null && bodyValue.get())
                 thePlayer.renderYawOffset = this.playerYaw!!
-
-            thePlayer.rotationYawHead = thePlayer.renderYawOffset
+            if (headValue.get())
+                thePlayer.rotationYawHead = thePlayer.renderYawOffset
         }
     }
 }

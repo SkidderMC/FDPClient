@@ -126,7 +126,6 @@ class ModuleManager : Listenable {
                 BoatJump::class.java,
                 DamageParticle::class.java,
                 LegitSpoof::class.java,
-                InventoryAnimation::class.java,
                 MessageSpam::class.java,
                 AntiStuck::class.java,
                 AutoAdvertise::class.java,

@@ -48,26 +48,16 @@ class NoSlow : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         val heldItem = mc.thePlayer.heldItem
-        if (heldItem == null || heldItem.item !is ItemSword || !MovementUtils.isMoving()) {
-            return
-        }
         val killAura = LiquidBounce.moduleManager[KillAura::class.java] as KillAura
-        if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
+        if (heldItem == null || heldItem.item !is ItemSword || !MovementUtils.isMoving() || (!mc.thePlayer.isBlocking && !killAura.blockingStatus))
             return
-        }
-        if (this.packet.get() && packetTimer.hasTimePassed(packetDelayValue.get().toLong())) {
-            when (event.eventState) {
-                EventState.PRE -> {
-                    val digging = C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN)
-                    mc.netHandler.addToSendQueue(digging)
-                }
-                EventState.POST -> {
+        if (this.packet.get() && packetTimer.hasTimePassed(packetDelayValue.get().toLong()))
+                if(event.isPre()){
+                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN))
+                }else{
                     packetTimer.reset()
-                    val blockPlace = C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem())
-                    mc.netHandler.addToSendQueue(blockPlace)
+                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))   
                 }
-            }
-        }
     }
 
     @EventTarget
