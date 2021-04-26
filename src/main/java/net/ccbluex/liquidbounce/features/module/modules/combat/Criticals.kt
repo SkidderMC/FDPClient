@@ -20,21 +20,22 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
-import net.minecraft.network.play.server.S0BPacketAnimation
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "AACPacket", "NoGround", "RedeSkySmartGround", "RedeSkyLowHop", "RedeSkyPacket", "Hop", "TPHop", "Jump", "LowJump"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "RedeSkyPacket", "Hop", "TPHop", "Jump", "LowJump"), "packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val debugValue = BoolValue("DebugMessage",false)
+    private val lookValue = BoolValue("UseC06Packet", false)
+    private val debugValue = BoolValue("DebugMessage", false)
 
     val msTimer = MSTimer()
 
     private val rsGroundTimer = MSTimer()
-    private var rsCritChange=0
-    private var target=0;
+    private var rsCritChange = 0
+    private var target = 0;
 
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
@@ -45,7 +46,7 @@ class Criticals : Module() {
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
             val entity = event.targetEntity
-            target=entity.entityId
+            target = entity.entityId
 
             if (!mc.thePlayer.onGround || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb || mc.thePlayer.isInWater ||
                     mc.thePlayer.isInLava || mc.thePlayer.ridingEntity != null || entity.hurtTime > hurtTimeValue.get() ||
@@ -55,28 +56,50 @@ class Criticals : Module() {
             val x = mc.thePlayer.posX
             val y = mc.thePlayer.posY
             val z = mc.thePlayer.posZ
+            val yaw = mc.thePlayer.rotationYaw
+            val pitch = mc.thePlayer.rotationPitch
 
             when (modeValue.get().toLowerCase()) {
                 "packet" -> {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0625, z, true))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 1.1E-5, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
+                    if(lookValue.get()){
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0625, z, yaw, pitch, true))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 1.1E-5, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y, z, yaw, pitch, false))
+                    }else{
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0625, z, true))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 1.1E-5, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
+                    }
                     mc.thePlayer.onCriticalHit(entity)
                 }
 
                 "ncppacket" -> {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.11, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.1100013579, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0000013579, z, false))
+                    if(lookValue.get()){
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.11, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.1100013579, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0000013579, z, yaw, pitch, false))
+                    }else{
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.11, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.1100013579, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0000013579, z, false))
+                    }
                     mc.thePlayer.onCriticalHit(entity)
                 }
 
                 "aacpacket" -> {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.05250000001304,z, true))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00150000001304, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.01400000001304, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00150000001304, z, false))
+                    if(lookValue.get()){
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.05250000001304, z, yaw, pitch, true))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.00150000001304, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.01400000001304, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.00150000001304, z, yaw, pitch, false))
+                    }else{
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.05250000001304,z, true))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00150000001304, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.01400000001304, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00150000001304, z, false))
+                    }
                     mc.thePlayer.onCriticalHit(entity)
                 }
 
@@ -87,23 +110,33 @@ class Criticals : Module() {
                 }
 
                 "tphop" -> {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.02, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.01, z, false))
-                    mc.thePlayer.setPosition(x, y + 0.01, z)
+                    if(lookValue.get()){
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.02, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.01, z, yaw, pitch, false))
+                    }else{
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.02, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.01, z, yaw, pitch, false))
+                    }
+                    mc.hePlayer.setPosition(x, y + 0.01, z)
                 }
 
                 "redeskypacket" -> {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX - mc.thePlayer.motionX * 1.5, mc.thePlayer.posY + 3e-14, mc.thePlayer.posZ - mc.thePlayer.motionZ / 1.5, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX - mc.thePlayer.motionX / 3, mc.thePlayer.posY + 8e-15, mc.thePlayer.posZ - mc.thePlayer.motionZ / 3, false))
+                    if(lookValue.get()){
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX - mc.thePlayer.motionX * 1.5, mc.thePlayer.posY + 3e-14, mc.thePlayer.posZ - mc.thePlayer.motionZ / 1.5, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX - mc.thePlayer.motionX / 3, mc.thePlayer.posY + 8e-15, mc.thePlayer.posZ - mc.thePlayer.motionZ / 3, yaw, pitch, false))
+                    }else{
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX - mc.thePlayer.motionX * 1.5, mc.thePlayer.posY + 3e-14, mc.thePlayer.posZ - mc.thePlayer.motionZ / 1.5, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX - mc.thePlayer.motionX / 3, mc.thePlayer.posY + 8e-15, mc.thePlayer.posZ - mc.thePlayer.motionZ / 3, false))
+                    }
                     mc.thePlayer.motionX *= 0.0
                     mc.thePlayer.motionZ *= 0.0
                 }
-
+                
+                "visual" -> mc.thePlayer.onCriticalHit(entity)
                 "jump" -> mc.thePlayer.motionY = 0.42
                 "lowjump" -> mc.thePlayer.motionY = 0.3425
                 "redeskylowhop" -> mc.thePlayer.motionY = 0.35
             }
-
             msTimer.reset()
         }
     }
@@ -114,28 +147,24 @@ class Criticals : Module() {
 
         if (packet is C03PacketPlayer){
             when (modeValue.get().toLowerCase()) {
-                "noground" -> {
-                    packet.onGround = false
-                }
+                "noground" -> packet.onGround = false
                 "redeskysmartground" -> {
                     if(rsGroundTimer.hasTimePassed(1000)){
                         packet.onGround = LiquidBounce.combatManager.inCombat
-                        if(rsGroundTimer.hasTimePassed(1200)){
+                        if(rsGroundTimer.hasTimePassed(1200))
                             rsGroundTimer.reset()
-                        }
                     }else{
                         packet.onGround = !LiquidBounce.combatManager.inCombat
                     }
-                    if((!packet.onGround) && mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition||packet is C03PacketPlayer.C06PacketPlayerPosLook)){
+                    if(!packet.onGround && mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
                         when(rsCritChange){
                             0 -> packet.y += 0.00000000000003
                             1 -> packet.y += 0.00000000000001
                             2 -> packet.y += 0.000000000000008
                         }
                         rsCritChange++
-                        if(rsCritChange==3){
-                            rsCritChange=0
-                        }
+                        if(rsCritChange == 3)
+                            rsCritChange = 0
                     }
                 }
             }

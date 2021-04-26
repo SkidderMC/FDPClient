@@ -589,7 +589,7 @@ class KillAura : Module() {
 
         // Call attack event
         LiquidBounce.eventManager.callEvent(AttackEvent(entity))
-        markEntity=entity
+        markEntity = entity
         markTimer.reset()
 
         // Attack target
@@ -733,7 +733,7 @@ class KillAura : Module() {
      * Check if [entity] is alive
      */
     private fun isAlive(entity: EntityLivingBase) = entity.isEntityAlive && entity.health > 0 ||
-            aacValue.get() && entity.hurtTime > 5
+            aacValue.get() && entity.hurtTime > 3
 
 
     /**

@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.item.ItemBucketMilk
@@ -21,7 +22,8 @@ import net.minecraft.network.play.client.C03PacketPlayer
 @ModuleInfo(name = "FastUse", description = "Allows you to use items faster.", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Instant", "NCP", "AAC", "CustomDelay"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("Instant", "NCP", "Timer", "CustomDelay"), "NCP")
+    private val timerValue = FloatValue("Timer", 1.22, 0.1, 2.0)
     private val delayValue = IntegerValue("Delay", 0, 0, 300)
 
     private val msTimer = MSTimer()
@@ -57,8 +59,8 @@ class FastUse : Module() {
                     mc.playerController.onStoppedUsingItem(mc.thePlayer)
                 }
 
-                "aac" -> {
-                    mc.timer.timerSpeed = 1.22F
+                "timer" -> {
+                    mc.timer.timerSpeed = timerValue.get()
                     usedTimer = true
                 }
 
