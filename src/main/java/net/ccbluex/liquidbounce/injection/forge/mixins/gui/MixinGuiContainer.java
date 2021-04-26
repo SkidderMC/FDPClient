@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
+import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -55,14 +56,15 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
             }else{
                 mc.currentScreen.drawWorldBackground(0);
 
-                Animations inventoryAnimation = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
-                if(inventoryAnimation != null && inventoryAnimation.getState()) {
-                    float pct = Math.max(inventoryAnimation.getTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((float)inventoryAnimation.getTimeValue().get());
+                Animations animations = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
+                if(animations != null && animations.getState()) {
+                    float pct = Math.max(animations.getTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((float)animations.getTimeValue().get());
                     if (pct != 0) {
                         GL11.glPushMatrix();
 
-                        switch (inventoryAnimation.getMoveValue().get().toLowerCase()){
+                        switch (animations.getMoveValue().get().toLowerCase()){
                             case "slide":{
+                                pct=(float)EaseUtils.easeInBack(pct);
                                 GL11.glTranslatef(0F, -(guiTop + ySize) * pct, 0F);
                                 break;
                             }
