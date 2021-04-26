@@ -75,8 +75,10 @@ object LiquidBounce {
 
         // check update
         Thread {
+            val get=HttpUtils.get("https://fdp.liulihaocai.workers.dev/")
+            println(get)
             val jsonObj = JsonParser()
-                .parse(HttpUtils.get("https://dl.liulihaocai.pw/fdp-ver.php")).asJsonObject
+                .parse(get).asJsonObject
             val version=jsonObj.get("version").asString
 
             if(!version.equals(CLIENT_VERSION)){

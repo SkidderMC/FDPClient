@@ -8,36 +8,55 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.minecraft.network.play.client.C01PacketChatMessage
 import net.minecraft.network.play.server.S02PacketChat
 
 @ModuleInfo(name = "AutoIgnore", description = "Auto ignore spammers(only redesky).", category = ModuleCategory.MISC)
 class AutoIgnore : Module() {
-    private val maxTimeValue=IntegerValue("MaxTimes",3,2,10)
+    private val minDelayValue=IntegerValue("MinDelay",3000,1000,5000)
+    private val vlValue=IntegerValue("IgnoreVL",3,1,7)
 
-    private val chatTimes=HashMap<String,Int>()
+    private val chatTimes=HashMap<String,Long>()
+    private val chatVL=HashMap<String,Float>()
+    private val blockedPlayer=ArrayList<String>()
     private val timer=MSTimer()
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent){
-        if(timer.hasTimePassed(3000)) {
-            for((name,time) in chatTimes){
-                if(time>maxTimeValue.get()){
-                    mc.thePlayer.sendChatMessage("/ignorar add $name")
-                    chat("$name ignored for spamming...")
-                }
-            }
-            chatTimes.clear()
-            timer.reset()
-        }
-    }
-
-    @EventTarget
     fun onPacket(event: PacketEvent){
+        if(event.packet is C01PacketChatMessage){
+            val msg=event.packet.message
+            if(msg.startsWith("/ignorar remover ",ignoreCase = true)){
+                blockedPlayer.remove((msg.replace("/ignorar remover ","").toLowerCase()))
+            }
+        }
+
         if(event.packet is S02PacketChat){
             val msg=event.packet.chatComponent.unformattedText
             if(msg.contains("Mensagem de",ignoreCase = true)){
+                val nowTime=System.currentTimeMillis()
                 val name=msg.split(":")[0].replace("Mensagem de ","")
-                chatTimes[name] = chatTimes.getOrDefault(name,0)+1
+                if(blockedPlayer.contains(name.toLowerCase())){
+                    event.cancelEvent()
+                    return
+                }
+
+                val vl=chatVL.getOrDefault(name,0F)
+                if((nowTime-chatTimes.getOrDefault(name,0))<minDelayValue.get()){
+                    chatVL[name]=vl+1
+                }else{
+                    if(vl>1) {
+                        chatVL[name]=vl-0.5F
+                    }
+                }
+
+                chatTimes[name] = System.currentTimeMillis()
+
+                if(chatVL[name]!!>vlValue.get()){
+                    mc.thePlayer.sendChatMessage("/ignorar add $name")
+                    chat("$name ignored for spamming...")
+                    blockedPlayer.add(name.toLowerCase())
+                    event.cancelEvent()
+                }
             }
         }
     }

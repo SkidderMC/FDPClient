@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 
 class CombatManager : Listenable,MinecraftInstance() {
-    private var scanResult=false
     var inCombat=false
     private val lastAttackTimer=MSTimer()
     private val entityScanTimer=MSTimer()
@@ -19,23 +18,19 @@ class CombatManager : Listenable,MinecraftInstance() {
         if(mc.thePlayer==null) return
         inCombat=false
 
-        if(lastAttackTimer.hasTimePassed(1500)){
+        if(!lastAttackTimer.hasTimePassed(1500)){
             inCombat=true
             return
         }
 
         if(entityScanTimer.hasTimePassed(500)) {
-            scanResult=false
+            inCombat=false
             for (entity in mc.theWorld.loadedEntityList) {
                 if (entity.getDistanceToEntity(mc.thePlayer) < 7 && EntityUtils.isSelected(entity, true)) {
-                    scanResult = true
+                    inCombat = true
                     break
                 }
             }
-        }
-
-        if(scanResult){
-            inCombat=true
         }
     }
 

@@ -27,6 +27,8 @@ class NameProtect : Module() {
 
     @EventTarget(ignoreCondition = true)
     fun onText(event: TextEvent) {
+        if(!state) return
+        
         val text = event.text
 
         if (mc.thePlayer == null || text == null || text.contains(LiquidBounce.CLIENT_NAME))

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.font
 
+import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.TextureUtil
@@ -269,14 +270,12 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
         var width = 0
 
         for (c in text.toCharArray()) {
-            val fontChar = charLocations[
-                    if (c.toInt() < charLocations.size)
-                        c.toInt()
-                    else
-                        '\u0003'.toInt()
-            ] ?: continue
-
-            width += fontChar.width - 8
+            val charCode=c.toInt()
+            width += if(c.toInt()<charLocations.size){
+                (charLocations[charCode]?.width ?: continue) - 8
+            }else{
+                ((charLocations['\u0003'.toInt()]?.width ?: continue)*1.5).toInt()
+            }
         }
 
         return width / 2
