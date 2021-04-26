@@ -27,6 +27,7 @@ import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C07PacketPlayerDigging
+import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
@@ -40,12 +41,12 @@ object Fucker : Module() {
      */
 
     private val blockValue = BlockValue("Block", 26)
+    private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val throughWallsValue = ListValue("ThroughWalls", arrayOf("None", "Raycast", "Around"), "None")
     private val rangeValue = FloatValue("Range", 5F, 1F, 7F)
     private val actionValue = ListValue("Action", arrayOf("Destroy", "Use"), "Destroy")
     private val instantValue = BoolValue("Instant", false)
     private val switchValue = IntegerValue("SwitchDelay", 250, 0, 1000)
-    private val swingValue = BoolValue("Swing", true)
     private val rotationsValue = BoolValue("Rotations", true)
     private val surroundingsValue = BoolValue("Surroundings", true)
     private val noHitValue = BoolValue("NoHit", false)
@@ -156,8 +157,11 @@ object Fucker : Module() {
 
                     if (mc.thePlayer.capabilities.isCreativeMode ||
                             block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, pos) >= 1.0F) {
-                        if (swingValue.get())
+                        if (swingValue.get().equals("Normal")) {
                             mc.thePlayer.swingItem()
+                        } else if (swingValue.get().equals("Packet")) {
+                            mc.netHandler.addToSendQueue(C0APacketAnimation())
+                        }
                         mc.playerController.onPlayerDestroyBlock(pos, EnumFacing.DOWN)
 
                         currentDamage = 0F
