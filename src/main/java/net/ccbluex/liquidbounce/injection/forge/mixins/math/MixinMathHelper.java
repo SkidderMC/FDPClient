@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @SideOnly(Side.CLIENT)
 public class MixinMathHelper {
   @Inject(method = "sin", at = @At("HEAD"), cancellable = true)
-  private void sin(float value, CallbackInfoReturnable<Float> callbackInfoReturnable){
+  private static void sin(float value, CallbackInfoReturnable<Float> callbackInfoReturnable){
     if(!LiquidBounce.INSTANCE.getStartSUCCESS())
       return;
 
@@ -46,7 +46,7 @@ public class MixinMathHelper {
   }
   
   @Inject(method = "cos", at = @At("HEAD"), cancellable = true)
-  private void cos(float value, CallbackInfoReturnable<Float> callbackInfoReturnable){
+  private static void cos(float value, CallbackInfoReturnable<Float> callbackInfoReturnable){
     if(!LiquidBounce.INSTANCE.getStartSUCCESS())
       return;
 
