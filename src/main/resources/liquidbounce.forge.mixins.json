@@ -54,6 +54,7 @@
     "render.MixinVisGraph",
     "resources.MixinSkinManager",
     "world.MixinWorld",
-    "world.MixinWorldClient"
+    "world.MixinWorldClient",
+    "math.MixinMathHelper"
   ]
 }
