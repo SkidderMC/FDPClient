@@ -39,7 +39,6 @@ class AutoPot : Module() {
     private val utility = BoolValue("Utility", true)
     private val notCombat = BoolValue("NotCombat", true)
 
-    private val timer = MSTimer()
     private var throwing=false
     private var throwTime=0
     private var pot=-1
@@ -64,7 +63,7 @@ class AutoPot : Module() {
             }
             return
         }
-        if(!timer.hasTimePassed(delayValue.get().toLong())) return
+        if(!InventoryUtils.INV_TIMER.hasTimePassed(delayValue.get().toLong())) return
 
         val enableSelect=selectValue.get()!=-1
         val potion=if(enableSelect){
@@ -81,7 +80,7 @@ class AutoPot : Module() {
             RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw,90F))
             pot=potion
             throwing=true
-            timer.reset()
+            InventoryUtils.INV_TIMER.reset()
             return
         }
 

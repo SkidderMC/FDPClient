@@ -36,7 +36,7 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "FDPClient"
     const val CLIENT_VERSION = "v1.1.4 Pre3"
-    const val IN_DEV = false
+    const val IN_DEV = true
     const val CLIENT_CREATOR = "Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
 
@@ -80,17 +80,19 @@ object LiquidBounce {
         ClientUtils.getLogger().info("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
 
         // check update
-        Thread {
-            val get=HttpUtils.get("https://fdp.liulihaocai.workers.dev/")
-            println(get)
-            val jsonObj = JsonParser()
-                .parse(get).asJsonObject
-            val version=jsonObj.get("version").asString
+        if(!IN_DEV) {
+            Thread {
+                val get = HttpUtils.get("https://fdp.liulihaocai.workers.dev/")
+                println(get)
+                val jsonObj = JsonParser()
+                    .parse(get).asJsonObject
+                val version = jsonObj.get("version").asString
 
-            if(!version.equals(CLIENT_VERSION)){
-                latestVersion=version
-            }
-        }.start()
+                if (!version.equals(CLIENT_VERSION)) {
+                    latestVersion = version
+                }
+            }.start()
+        }
 
         // Create file manager
         fileManager = FileManager()

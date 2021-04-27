@@ -719,7 +719,7 @@ public class Fly extends Module {
                 }
                 break;
             case "redeskysmooth":{
-                if(mc.thePlayer.isCollided||mc.thePlayer.onGround){
+                if(flyTick>10&&(mc.thePlayer.isCollided||mc.thePlayer.onGround)){
                     setState(false);
                     return;
                 }

@@ -45,6 +45,19 @@ public final class MovementUtils extends MinecraftInstance {
         mc.thePlayer.motionZ += Math.cos(yaw) * speed;
     }
 
+    public static void limitSpeed(final float speed){
+        final double yaw = getDirection();
+        final double maxXSpeed=-Math.sin(yaw) * speed;
+        final double maxZSpeed=Math.cos(yaw) * speed;
+
+        if(mc.thePlayer.motionX>maxZSpeed){
+            mc.thePlayer.motionX=maxXSpeed;
+        }
+        if(mc.thePlayer.motionZ>maxZSpeed){
+            mc.thePlayer.motionZ=maxZSpeed;
+        }
+    }
+
     public static void forward(final double length) {
         final double yaw = Math.toRadians(mc.thePlayer.rotationYaw);
         mc.thePlayer.setPosition(mc.thePlayer.posX + (-Math.sin(yaw) * length), mc.thePlayer.posY, mc.thePlayer.posZ + (Math.cos(yaw) * length));

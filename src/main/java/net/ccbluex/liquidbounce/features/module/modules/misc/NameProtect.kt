@@ -18,28 +18,31 @@ import net.ccbluex.liquidbounce.value.TextValue
 
 @ModuleInfo(name = "NameProtect", description = "Changes playernames clientside.", category = ModuleCategory.MISC)
 class NameProtect : Module() {
-    private val fakeNameValue = TextValue("FakeName", "&cMe")
-    private val otherFakeNameValue = TextValue("FakeName", "Guy")
     @JvmField
     val allPlayersValue = BoolValue("AllPlayers", false)
+
     @JvmField
     val skinProtectValue = BoolValue("SkinProtect", true)
+    private val fakeNameValue = TextValue("FakeName", "FDPUser")
+    private val playerNameValue = TextValue("PlayerName", "SIGMA_HATAR")
 
     @EventTarget(ignoreCondition = true)
     fun onText(event: TextEvent) {
-        if(!state) return
-        
-        val text = event.text
+        val thePlayer = mc.thePlayer
 
-        if (mc.thePlayer == null || text == null || text.contains(LiquidBounce.CLIENT_NAME))
+        if (thePlayer == null || event.text!!.contains("§8[§9§l" + LiquidBounce.CLIENT_NAME + "§8] §3"))
             return
 
         for (friend in LiquidBounce.fileManager.friendsConfig.friends)
-            event.text = StringUtils.replace(text, friend.playerName, translateAlternateColorCodes(friend.alias) + "§f")
+            event.text = StringUtils.replace(event.text, friend.playerName, translateAlternateColorCodes(friend.alias) + "§f")
 
-        event.text = StringUtils.replace(text, mc.thePlayer.name, translateAlternateColorCodes(fakeNameValue.get()) + "§f")
+        if (!state)
+            return
+        event.text = StringUtils.replace(event.text, thePlayer.name, translateAlternateColorCodes(fakeNameValue.get()) + "§f")
 
-        if (allPlayersValue.get()) for (playerInfo in mc.netHandler.playerInfoMap)
-            event.text = StringUtils.replace(text, playerInfo.gameProfile.name, otherFakeNameValue.get())
+        if (allPlayersValue.get()) {
+            for (playerInfo in mc.netHandler.playerInfoMap)
+                event.text = StringUtils.replace(event.text, playerInfo.gameProfile.name, playerNameValue.get())
+        }
     }
 }

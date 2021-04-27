@@ -42,12 +42,13 @@ class AntiStuck : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent){
         if(stuck){
-            mc.timer.timerSpeed=0.1F
+            val freeze=LiquidBounce.moduleManager.getModule(Freeze::class.java) ?: return
+            freeze.state=true
 
             if(timer.hasTimePassed(1500)){
                 stuck=false
                 flagTime=0
-                mc.timer.timerSpeed=1F
+                freeze.state=false
                 timer.reset()
             }
         }else{
@@ -55,7 +56,7 @@ class AntiStuck : Module() {
                 timer.reset()
                 flagTime=0
                 stuck=true
-                LiquidBounce.hud.addAlert(Alert("AntiStuck","Trying to unstuck you",NotifyType.OKAY,3000))
+                LiquidBounce.hud.addAlert(Alert("AntiStuck","Trying to unstuck you",NotifyType.OKAY,1500))
             }
             if(timer.hasTimePassed(1000)){
                 flagTime=0

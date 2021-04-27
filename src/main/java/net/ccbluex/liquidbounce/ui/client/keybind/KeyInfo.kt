@@ -1,5 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11
@@ -8,6 +10,9 @@ import java.awt.Color
 class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float,val key: Int,val keyName:String) {
     private val keyColor=Color(210,210,210)
     private val shadowColor=Color.LIGHT_GRAY
+
+    private var modules=ArrayList<Module>()
+    private var hasKeyBind=false
 
     init {
 
@@ -27,6 +32,7 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
     }
 
     fun update(){
-
+        modules=LiquidBounce.moduleManager.getKeyBind(key) as ArrayList<Module>
+        hasKeyBind=modules.size>0
     }
 }

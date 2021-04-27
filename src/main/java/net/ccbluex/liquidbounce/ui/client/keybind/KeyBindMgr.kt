@@ -26,18 +26,16 @@ class KeyBindMgr : GuiScreen() {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
 
-        val baseHeight=500
-        val baseWidth=1000
+        val baseHeight=250
+        val baseWidth=500
         val mcWidth=((width*0.8f)-(width*0.2f)).toInt()
-        val mcHeight=((height * 0.8f)-(height*0.2f + Fonts.fontBold40.height * 2.3f)).toInt()
-        println("width=$mcWidth")
 
         GL11.glPushMatrix()
         RenderUtils.drawText("KeyBind Manager", Fonts.fontBold40, (width * 0.21).toInt(), (height * 0.2).toInt(), 2f, Color.WHITE.rgb, false)
         GL11.glTranslatef(width*0.2f,height * 0.2f + Fonts.fontBold40.height * 2.3f,0F)
         GL11.glScalef(mcWidth/baseWidth.toFloat(),mcWidth/baseWidth.toFloat(),mcWidth/baseWidth.toFloat())
 
-        RenderUtils.drawRect(0F,0F,baseHeight.toFloat(),baseWidth.toFloat(),Color.WHITE.rgb)
+        RenderUtils.drawRect(0F,0F,baseWidth.toFloat(),baseHeight.toFloat(),Color.WHITE.rgb)
 
 //        for(key in keys){
 //            key.render(mcWidth,mcHeight)
