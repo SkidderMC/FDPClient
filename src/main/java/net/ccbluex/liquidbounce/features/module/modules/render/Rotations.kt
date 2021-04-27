@@ -56,6 +56,8 @@ class Rotations : Module() {
     
     companion object {
         @JvmStatic
-        var fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
+        val fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
+        @JvmStatic
+        val nanValue = BoolValue("NaNCheck", true)
     }
 }
