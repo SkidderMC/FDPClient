@@ -1,9 +1,9 @@
 package net.vitox;
 
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.vitox.particle.util.RenderUtils;
 
 import java.util.ArrayList;
 import java.util.List;

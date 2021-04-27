@@ -1,10 +1,10 @@
 package net.vitox;
 
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.vitox.particle.util.RenderUtils;
 
 import java.util.Random;
 
@@ -34,11 +34,11 @@ class Particle {
     }
 
     private float lint1(float f) {
-        return ((float) 1.02 * (1.0f - f)) + ((float) 1.0 * f);
+        return (1.02F * (1.0F - f)) + f;
     }
 
     private float lint2(float f) {
-        return (float) 1.02 + f * ((float) 1.0 - (float) 1.02);
+        return 1.02F + f * (1.0F - 1.02F);
     }
 
     void connect(float x, float y) {
@@ -110,7 +110,7 @@ class Particle {
     }
 
     private float genRandom() {
-        return (float) (0.3f + Math.random() * (0.6f - 0.3f + 1.0F));
+        return (0.3f + (float) Math.random() * (0.6f - 0.3f + 1.0F));
     }
 }
 
