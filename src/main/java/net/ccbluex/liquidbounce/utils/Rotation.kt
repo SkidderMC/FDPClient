@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
+import net.ccbluex.liquidbounce.features.module.modules.render.Rotations
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
@@ -35,6 +36,15 @@ data class Rotation(var yaw: Float, var pitch: Float) {
      * @see net.minecraft.client.renderer.EntityRenderer.updateCameraAndRender
      */
     fun fixedSensitivity(sensitivity: Float) {
+        if(Rotations.fixedValue.get().equals("None")) return
+        if(Rotations.fixedValue.get().equals("Old")){
+            val f = sensitivity * 0.6F + 0.2F
+            val gcd = f * f * f * 1.2F
+
+            yaw -= yaw % gcd
+            pitch -= pitch % gcd
+            return
+        }
         val f = sensitivity * 0.6F + 0.2F
         val gcd = f * f * f * 1.2F
 
