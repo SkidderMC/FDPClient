@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -28,6 +27,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Timer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -127,6 +127,67 @@ public final class RenderUtils extends MinecraftInstance {
         glColor4f(1F, 1F, 1F, 1F);
     }
 
+    public static void renderCircle(double x, double y, double radius, int color) {
+        renderCircle(x, y, 0, 360, radius - 1, color);
+    }
+
+    public static void renderCircle(double x, double y, double start, double end, double radius, int color) {
+        renderCircle(x, y, start, end, radius, radius, color);
+    }
+
+    public static void renderCircle(double x, double y, double start, double end, double w, double h, int color) {
+        GlStateManager.color(0, 0, 0);
+        GL11.glColor4f(0, 0, 0, 0);
+
+        double temp;
+
+        if (start > end) {
+            temp = end;
+            end = start;
+            start = temp;
+        }
+
+        float var11 = (color >> 24 & 255) / 255.0F;
+        float var6 = (color >> 16 & 255) / 255.0F;
+        float var7 = (color >> 8 & 255) / 255.0F;
+        float var8 = (color & 255) / 255.0F;
+
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(var6, var7, var8, var11);
+
+        if (var11 > 0.5F) {
+            glEnable(GL_BLEND);
+            glEnable(GL_LINE_SMOOTH);
+            glEnable(GL_POINT_SMOOTH);
+            glLineWidth(2);
+            glBegin(GL11.GL_LINE_STRIP);
+            for(double i = end; i >= start; i-= 4) {
+                double ldx = Math.cos(i * Math.PI / 180.0) * (w * 1.001);
+                double ldy = Math.sin(i * Math.PI / 180.0) * (h * 1.001);
+                glVertex2d(x + ldx, y + ldy);
+            }
+            glEnd();
+            glDisable(GL_BLEND);
+            glDisable(GL_LINE_SMOOTH);
+            glDisable(GL_POINT_SMOOTH);
+        }
+
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+
+        for(double i = end; i >= start; i-= 4) {
+            double ldx = Math.cos(i * Math.PI / 180.0) * w;
+            double ldy = Math.sin(i * Math.PI / 180.0) * h;
+            GL11.glVertex2d(x + ldx, y + ldy);
+        }
+
+        GL11.glEnd();
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+    
     public static int drawText(String text, GameFontRenderer fontRenderer, int width, int height, float scale, int color, boolean shadow){
         return drawText(text, fontRenderer, width, height, scale, color,  false, shadow);
     }
