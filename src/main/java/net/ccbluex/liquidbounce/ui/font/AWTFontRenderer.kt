@@ -5,24 +5,34 @@
  */
 package net.ccbluex.liquidbounce.ui.font
 
-import net.ccbluex.liquidbounce.script.api.global.Chat
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.Writer
+import javax.imageio.ImageIO
 
 /**
  * Generate new bitmap based font renderer
  */
 @SideOnly(Side.CLIENT)
-class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
+class AWTFontRenderer(val font: Font) {
 
     companion object {
         var assumeNonVolatile: Boolean = false
@@ -54,7 +64,7 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
     }
 
     private var fontHeight = -1
-    private val charLocations = arrayOfNulls<CharLocation>(stopChar)
+    private val charLocations = arrayOfNulls<CharLocation>(255)
 
     private val cachedStrings: HashMap<String, CachedFont> = HashMap()
 
@@ -66,7 +76,7 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
         get() = (fontHeight - 8) / 2
 
     init {
-        renderBitmap(startChar, stopChar)
+        loadBitmap()
 
         activeFontRenderers.add(this)
     }
@@ -178,18 +188,49 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
         GL11.glVertex2f(x + width, y)
     }
 
+    private fun loadBitmap(){
+        val cacheFontDir=File(LiquidBounce.fileManager.cacheDir,font.fontName.toLowerCase())
+        if(!cacheFontDir.exists()) cacheFontDir.mkdirs()
+        val jsonFile=File(cacheFontDir,"data.json")
+        val imageFile=File(cacheFontDir,"image.png")
+
+        if(!jsonFile.exists() || !imageFile.exists()){
+            println("bitmap cache not found! rendering...")
+            renderBitmap(jsonFile, imageFile)
+        }else{
+            println("loading bitmap cache...")
+            val json=JsonParser().parse(IOUtils.toString(FileInputStream(jsonFile),"utf-8")).asJsonObject
+            textureHeight=json.get("height").asInt
+            textureWidth=json.get("width").asInt
+            fontHeight=json.get("fheight").asInt
+            val chars=json.getAsJsonArray("chars")
+            for(jsonElement in chars){
+                val charJson=jsonElement.asJsonObject
+                charLocations[charJson.get("char").asInt]= CharLocation(charJson)
+            }
+
+            val bufferedImage=ImageIO.read(imageFile)
+            textureID = TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), bufferedImage, true,
+                true)
+        }
+    }
+
     /**
      * Render font chars to a bitmap
      */
-    private fun renderBitmap(startChar: Int, stopChar: Int) {
-        val fontImages = arrayOfNulls<BufferedImage>(stopChar)
+    private fun renderBitmap(jsonFile: File, imageFile: File) {
+        val json=JsonObject()
+
+        val fontImages = arrayOfNulls<BufferedImage>(255)
         var rowHeight = 0
         var charX = 0
         var charY = 0
 
-        for (targetChar in startChar until stopChar) {
+        val charLocs=JsonArray()
+        for (targetChar in 0 until 255) {
             val fontImage = drawCharToImage(targetChar.toChar())
-            val fontChar = CharLocation(charX, charY, fontImage.width, fontImage.height)
+            val fontChar = CharLocation(targetChar, charX, charY, fontImage.width, fontImage.height)
+            charLocs.add(fontChar.toJson())
 
             if (fontChar.height > fontHeight)
                 fontHeight = fontChar.height
@@ -212,6 +253,13 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
         }
         textureHeight = charY + rowHeight
 
+        json.addProperty("height",textureHeight)
+        json.addProperty("width",textureWidth)
+        json.addProperty("fheight",fontHeight)
+        json.add("chars",charLocs)
+
+        IOUtils.write(Gson().toJson(json),FileOutputStream(jsonFile),"utf-8")
+
         val bufferedImage = BufferedImage(textureWidth, textureHeight, BufferedImage.TYPE_INT_ARGB)
         val graphics2D = bufferedImage.graphics as Graphics2D
         graphics2D.font = font
@@ -219,10 +267,12 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
         graphics2D.fillRect(0, 0, textureWidth, textureHeight)
         graphics2D.color = Color.white
 
-        for (targetChar in startChar until stopChar)
+        for (targetChar in 0 until 255)
             if (fontImages[targetChar] != null && charLocations[targetChar] != null)
                 graphics2D.drawImage(fontImages[targetChar], charLocations[targetChar]!!.x, charLocations[targetChar]!!.y,
                         null)
+
+        ImageIO.write(bufferedImage,"png",imageFile)
 
         textureID = TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), bufferedImage, true,
                 true)
@@ -284,5 +334,19 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
     /**
      * Data class for saving char location of the font image
      */
-    private data class CharLocation(var x: Int, var y: Int, var width: Int, var height: Int)
+    private data class CharLocation(val char: Int, var x: Int, var y: Int, var width: Int, var height: Int){
+        constructor(json:JsonObject) : this(json.get("char").asInt,json.get("x").asInt,json.get("y").asInt,json.get("width").asInt,json.get("height").asInt)
+
+        fun toJson():JsonObject{
+            val json=JsonObject()
+
+            json.addProperty("char",char)
+            json.addProperty("x",x)
+            json.addProperty("y",y)
+            json.addProperty("width",width)
+            json.addProperty("height",height)
+
+            return json
+        }
+    }
 }
