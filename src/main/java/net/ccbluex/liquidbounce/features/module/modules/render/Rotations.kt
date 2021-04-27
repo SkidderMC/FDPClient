@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "Rotations", description = "Allows you to see server-sided head and body rotations.", category = ModuleCategory.RENDER)
@@ -51,5 +52,10 @@ class Rotations : Module() {
             if (headValue.get())
                 thePlayer.rotationYawHead = thePlayer.renderYawOffset
         }
+    }
+    
+    companion object {
+        @JvmStatic
+        var fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
     }
 }
