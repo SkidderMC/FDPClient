@@ -21,7 +21,7 @@ data class Rotation(var yaw: Float, var pitch: Float) {
      * Set rotations to [player]
      */
     fun toPlayer(player: EntityPlayer) {
-        if (yaw.isNaN() || pitch.isNaN())
+        if ((yaw.isNaN() || pitch.isNaN()) && Rotations.nanValue.get())
             return
 
         fixedSensitivity(MinecraftInstance.mc.gameSettings.mouseSensitivity)
