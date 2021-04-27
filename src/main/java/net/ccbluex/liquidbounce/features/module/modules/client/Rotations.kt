@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/Project-EZ4H/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.render
+package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -16,10 +16,12 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
-@ModuleInfo(name = "Rotations", description = "Allows you to see server-sided head and body rotations.", category = ModuleCategory.RENDER)
-class Rotations : Module() {
-    private val headValue = BoolValue("Head", true)
-    private val bodyValue = BoolValue("Body", true)
+@ModuleInfo(name = "Rotations", description = "Rotation settings.", category = ModuleCategory.CLIENT, canEnable = false, array = false)
+object Rotations : Module() {
+    val headValue = BoolValue("Head", true)
+    val bodyValue = BoolValue("Body", true)
+    val fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
+    val nanValue = BoolValue("NaNCheck", true)
 
     private var playerYaw: Float? = null
 
@@ -31,10 +33,7 @@ class Rotations : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        val thePlayer = mc.thePlayer
-
-        if (thePlayer == null)
-            return
+        val thePlayer = mc.thePlayer ?: return
 
         val packet = event.packet
 
@@ -48,16 +47,12 @@ class Rotations : Module() {
                 thePlayer.rotationYawHead = packetPlayer.yaw
         } else {
             if (playerYaw != null && bodyValue.get())
-                thePlayer.renderYawOffset = this.playerYaw!!
+                thePlayer.renderYawOffset = playerYaw!!
             if (headValue.get())
                 thePlayer.rotationYawHead = thePlayer.renderYawOffset
         }
     }
-    
-    companion object {
-        @JvmStatic
-        val fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
-        @JvmStatic
-        val nanValue = BoolValue("NaNCheck", true)
-    }
+
+    //always handle event
+    override fun handleEvents() = true
 }

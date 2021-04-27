@@ -190,7 +190,7 @@ class AWTFontRenderer(val font: Font) {
 
     private fun loadBitmap(){
         val cacheFontDir=File(LiquidBounce.fileManager.cacheDir,font.fontName.toLowerCase())
-        if(!cacheFontDir.exists()) cacheFontDir.mkdirs()
+        if(!cacheFontDir.exists()) cacheFontDir.mkdir()
         val jsonFile=File(cacheFontDir,"data.json")
         val imageFile=File(cacheFontDir,"image.png")
 

@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.login.LoginUtils;
 import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraftforge.fml.client.config.GuiSlider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,10 +38,13 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     private GuiSlider autoReconnectDelaySlider;
     private GuiButton forgeBypassButton;
     private int reconnectTimer;
+    private String infoStr="null";
 
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
         reconnectTimer = 0;
+        final ServerData server=ServerUtils.serverData;
+        infoStr="§fPlaying on: "+mc.session.getUsername()+" | "+server.serverIP;
         buttonList.add(reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "Reconnect"));
 
         this.drawReconnectDelaySlider();
@@ -89,7 +93,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(CallbackInfo callbackInfo) {
-        Fonts.fontBold40.drawCenteredString("§fUser: §7"+mc.session.getUsername(),width*0.5F,height*0.8F, 0,false);
+        Fonts.fontBold40.drawCenteredString(infoStr, this.width / 2F, this.height / 2F + field_175353_i / 2F + this.fontRendererObj.FONT_HEIGHT + 100, 0,false);
         if (AutoReconnect.INSTANCE.isEnabled()) {
             this.updateReconnectButton();
         }

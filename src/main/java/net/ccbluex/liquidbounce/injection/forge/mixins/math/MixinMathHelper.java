@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.math;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.misc.BetterFPS;
+import net.ccbluex.liquidbounce.features.module.modules.client.BetterFPS;
 import net.ccbluex.liquidbounce.utils.misc.betterfps.BetterFPSCore;
 import net.minecraft.util.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;

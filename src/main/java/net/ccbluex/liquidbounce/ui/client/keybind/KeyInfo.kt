@@ -7,9 +7,14 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float,val key: Int,val keyName:String) {
-    private val keyColor=Color(210,210,210)
-    private val shadowColor=Color.LIGHT_GRAY
+class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float,val key: Int,val keyName:String,val keyDisplayName:String) {
+    constructor(posX: Float,posY: Float,width: Float,height: Float,key: Int,keyName:String)
+            : this(posX, posY, width, height, key, keyName, keyName)
+
+    private val keyColor=Color(240,240,240).rgb
+    private val shadowColor=Color(210,210,210).rgb
+    private val unusedColor=Color(200,200,200).rgb
+    private val usedColor=Color(0,0,0).rgb
 
     private var modules=ArrayList<Module>()
     private var hasKeyBind=false
@@ -18,15 +23,15 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
 
     }
 
-    fun render(mcWidth:Int,mcHeight:Int){
+    fun render(){
         GL11.glPushMatrix()
-        GL11.glTranslatef(posX*mcWidth,posY*mcHeight,0F)
-        val keyStopX=width*mcWidth
-        val keyStopY=height*mcHeight
+        GL11.glTranslatef(posX,posY,0F)
 
-        RenderUtils.drawRect(0F,0F,keyStopX,keyStopY,keyColor.rgb)
-        RenderUtils.drawRect(0F,keyStopY,keyStopX,keyStopY+mcHeight*0.02F,shadowColor.rgb)
-        Fonts.font35.drawCenteredString(keyName,keyStopX*0.5F,keyStopY*0.5F-(Fonts.font35.FONT_HEIGHT*0.5F),Color.BLACK.rgb,false)
+        RenderUtils.drawRect(0F,0F,width,height,keyColor)
+        RenderUtils.drawRect(0F,height*0.9F,width,height,shadowColor)
+        (if(hasKeyBind){Fonts.fontBold40}else{Fonts.font40})
+            .drawCenteredString(keyName,width*0.5F,height*0.9F*0.5F-(Fonts.font35.FONT_HEIGHT*0.5F)+3F
+            ,if(hasKeyBind){usedColor}else{unusedColor},false)
 
         GL11.glPopMatrix()
     }

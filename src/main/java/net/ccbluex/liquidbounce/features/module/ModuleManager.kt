@@ -106,7 +106,6 @@ class ModuleManager : Listenable {
             CameraClip::class.java,
             Kick::class.java,
             Freeze::class.java,
-            Rotations::class.java,
             NoJumpDelay::class.java,
             HUD::class.java,
             NoSlowBreak::class.java,
@@ -137,6 +136,7 @@ class ModuleManager : Listenable {
         registerModule(Fucker)
         registerModule(ChestAura)
         registerModule(ToggleSound)
+        registerModule(Rotations)
 
         ClientUtils.getLogger().info("[ModuleManager] Loaded ${modules.size} modules.")
     }

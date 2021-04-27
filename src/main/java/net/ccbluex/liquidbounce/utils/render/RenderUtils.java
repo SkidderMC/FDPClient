@@ -139,10 +139,9 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.color(0, 0, 0);
         GL11.glColor4f(0, 0, 0, 0);
 
-        double temp;
 
         if (start > end) {
-            temp = end;
+            double temp = end;
             end = start;
             start = temp;
         }

@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
 public class FileManager extends MinecraftInstance {
 
     public final File dir = new File(mc.mcDataDir, LiquidBounce.CLIENT_NAME + "-1.8");
-    public final File cacheDir = new File(mc.mcDataDir,".cache");
+    public final File cacheDir = new File(mc.mcDataDir,".cache/"+LiquidBounce.CLIENT_NAME);
     public final File fontsDir = new File(dir, "fonts");
     public final File settingsDir = new File(dir, "settings");
     public final File soundsDir = new File(dir, "sounds");
@@ -72,6 +72,10 @@ public class FileManager extends MinecraftInstance {
 
         if(!soundsDir.exists()){
             soundsDir.mkdir();
+        }
+
+        if(!cacheDir.exists()){
+            cacheDir.mkdirs();
         }
     }
 
