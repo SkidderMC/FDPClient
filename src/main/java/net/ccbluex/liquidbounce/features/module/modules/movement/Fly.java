@@ -227,7 +227,7 @@ public class Fly extends Module {
 
                 for (int i = 0; i < 10; i++) //Imagine flagging to NCP.
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
-                
+
                 double fallDistance = 3.0125; //add 0.0125 to ensure we get the fall dmg
                 while (fallDistance > 0) {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0624986421, mc.thePlayer.posZ, false));
@@ -237,7 +237,7 @@ public class Fly extends Module {
                     fallDistance -= 0.0624986421;
                 }
                 mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
-                
+
                 mc.thePlayer.jump();
                 mc.thePlayer.posY += 0.42F; // Visual
                 boostHypixelState = 1;
@@ -631,18 +631,18 @@ public class Fly extends Module {
     public void onMotion(final MotionEvent event) {
         if(modeValue.get().equalsIgnoreCase("boosthypixel")) {
             if(event.isPre()){
-                    hypixelTimer.update();
+                hypixelTimer.update();
 
-                    if (hypixelTimer.hasTimePassed(2)) {
-                        mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.0E-5, mc.thePlayer.posZ);
-                        hypixelTimer.reset();
-                    }
+                if (hypixelTimer.hasTimePassed(2)) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.0E-5, mc.thePlayer.posZ);
+                    hypixelTimer.reset();
+                }
 
-                    if(!failedStart) mc.thePlayer.motionY = 0D;
+                if(!failedStart) mc.thePlayer.motionY = 0D;
             }else{
-                    double xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX;
-                    double zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ;
-                    lastDistance = Math.sqrt(xDist * xDist + zDist * zDist);
+                double xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX;
+                double zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ;
+                lastDistance = Math.sqrt(xDist * xDist + zDist * zDist);
             }
         }
     }
@@ -719,6 +719,10 @@ public class Fly extends Module {
                 }
                 break;
             case "redeskysmooth":{
+                if(mc.thePlayer.isCollided||mc.thePlayer.onGround){
+                    setState(false);
+                    return;
+                }
                 float speed = rssSpeedValue.get()/10F + flyTick*(rssSpeedChangeValue.get()/1000F);
                 mc.timer.timerSpeed=rssTimerValue.get();
                 mc.thePlayer.capabilities.setFlySpeed(speed);

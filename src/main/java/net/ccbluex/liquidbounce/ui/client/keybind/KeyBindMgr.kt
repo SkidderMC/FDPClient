@@ -15,25 +15,33 @@ class KeyBindMgr : GuiScreen() {
     }
 
     override fun initGui() {
-        for(key in keys){
-            key.update()
-        }
+        //use async because this may a bit slow
+        Thread {
+            for (key in keys) {
+                key.update()
+            }
+        }.start()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
 
+        val baseHeight=500
+        val baseWidth=1000
+        val mcWidth=((width*0.8f)-(width*0.2f)).toInt()
+        val mcHeight=((height * 0.8f)-(height*0.2f + Fonts.fontBold40.height * 2.3f)).toInt()
+        println("width=$mcWidth")
+
         GL11.glPushMatrix()
         RenderUtils.drawText("KeyBind Manager", Fonts.fontBold40, (width * 0.21).toInt(), (height * 0.2).toInt(), 2f, Color.WHITE.rgb, false)
         GL11.glTranslatef(width*0.2f,height * 0.2f + Fonts.fontBold40.height * 2.3f,0F)
+        GL11.glScalef(mcWidth/baseWidth.toFloat(),mcWidth/baseWidth.toFloat(),mcWidth/baseWidth.toFloat())
 
-        val mcWidth=((width*0.8f)-(width*0.2f)).toInt()
-        val mcHeight=((height * 0.8f)-(height*0.2f + Fonts.fontBold40.height * 2.3f)).toInt()
-        RenderUtils.drawRect(0F,0F,mcWidth.toFloat(),mcHeight.toFloat(),Color.WHITE.rgb)
+        RenderUtils.drawRect(0F,0F,baseHeight.toFloat(),baseWidth.toFloat(),Color.WHITE.rgb)
 
-        for(key in keys){
-            key.render(mcWidth,mcHeight)
-        }
+//        for(key in keys){
+//            key.render(mcWidth,mcHeight)
+//        }
 
         GL11.glPopMatrix()
     }
