@@ -30,7 +30,6 @@ public class RivensMath {
             BF_cos[i] = (float) Math.cos((i + 0.5f) / BF_SIN_COUNT * BF_radFull);
         }
 
-        // Four cardinal directions (credits: Nate)
         for (int i = 0; i < 360; i += 90) {
             BF_sin[(int)(i * BF_degToIndex) & BF_SIN_MASK] = (float)Math.sin(i * Math.PI / 180.0);
             BF_cos[(int)(i * BF_degToIndex) & BF_SIN_MASK] = (float)Math.cos(i * Math.PI / 180.0);

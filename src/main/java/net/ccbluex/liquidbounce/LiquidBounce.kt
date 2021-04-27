@@ -28,6 +28,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
+import net.ccbluex.liquidbounce.utils.misc.betterfps.BetterFPSCore
 import net.minecraft.util.ResourceLocation
 
 object LiquidBounce {
@@ -40,6 +41,7 @@ object LiquidBounce {
     const val MINECRAFT_VERSION = "1.8.9"
 
     var isStarting = false
+    var startSUCCESS = false
 
     // Managers
     lateinit var moduleManager: ModuleManager
@@ -65,10 +67,14 @@ object LiquidBounce {
     // Menu Background
     var background: ResourceLocation? = null
 
+    // Better FPS
+    lateinit var betterFPSCore: BetterFPSCore
+
     /**
      * Execute if client will be started
      */
     fun startClient() {
+        betterFPSCore = BetterFPSCore()
         isStarting = true
 
         ClientUtils.getLogger().info("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
@@ -153,6 +159,7 @@ object LiquidBounce {
 
         // Set is starting status
         isStarting = false
+        startSUCCESS = true
     }
 
     /**

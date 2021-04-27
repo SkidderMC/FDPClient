@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.utils.misc.betterfps;
 public class LibGDXMath {
     public static final float BF_PI = 3.1415927f;
 
-    private static final int BF_SIN_BITS = 14; // 16KB. Adjust for accuracy.
+    private static final int BF_SIN_BITS = 14;
     private static final int BF_SIN_MASK = ~(-1 << BF_SIN_BITS);
     private static final int BF_SIN_COUNT = BF_SIN_MASK + 1;
 
