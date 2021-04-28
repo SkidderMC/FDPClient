@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.util.*
 import kotlin.math.sqrt
 
 /**

@@ -7,6 +7,7 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
@@ -14,7 +15,6 @@ import org.lwjgl.opengl.GL11
 import java.math.BigDecimal
 import java.util.*
 import kotlin.math.abs
-
 
 @ModuleInfo(name = "DamageParticle", description = "Allows you to see targets damage.", category = ModuleCategory.RENDER)
 class DamageParticle : Module() {
@@ -28,7 +28,7 @@ class DamageParticle : Module() {
     fun onUpdate(event: UpdateEvent){
         synchronized(particles){
             for(entity in mc.theWorld.loadedEntityList){
-                if(entity is EntityLivingBase&&entity.isEntityAlive&&!entity.isInvisible&&entity!=mc.thePlayer){
+                if(entity is EntityLivingBase && EntityUtils.isSelected(entity,true)){
                     val lastHealth=healthData.getOrDefault(entity.entityId,entity.maxHealth)
                     healthData[entity.entityId] = entity.health
                     if(lastHealth==entity.health) continue

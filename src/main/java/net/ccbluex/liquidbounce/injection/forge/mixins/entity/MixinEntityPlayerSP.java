@@ -295,22 +295,23 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             this.setSprinting(false);
         }
 
-        if (this.capabilities.allowFlying) {
-            if (this.mc.playerController.isSpectatorMode()) {
-                if (!this.capabilities.isFlying) {
-                    this.capabilities.isFlying = true;
-                    this.sendPlayerAbilities();
-                }
-            } else if (!flag && this.movementInput.jump) {
-                if (this.flyToggleTimer == 0) {
-                    this.flyToggleTimer = 7;
-                } else {
-                    this.capabilities.isFlying = !this.capabilities.isFlying;
-                    this.sendPlayerAbilities();
-                    this.flyToggleTimer = 0;
-                }
-            }
-        }
+        //aac will check it :(
+//        if (this.capabilities.allowFlying) {
+//            if (this.mc.playerController.isSpectatorMode()) {
+//                if (!this.capabilities.isFlying) {
+//                    this.capabilities.isFlying = true;
+//                    this.sendPlayerAbilities();
+//                }
+//            } else if (!flag && this.movementInput.jump) {
+//                if (this.flyToggleTimer == 0) {
+//                    this.flyToggleTimer = 7;
+//                } else {
+//                    this.capabilities.isFlying = !this.capabilities.isFlying;
+//                    this.sendPlayerAbilities();
+//                    this.flyToggleTimer = 0;
+//                }
+//            }
+//        }
 
         if (this.capabilities.isFlying && this.isCurrentViewEntity()) {
             if (this.movementInput.sneak) {

@@ -1,14 +1,97 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
+/**
+ * @author liulihaocai
+ * FDPClient
+ */
 class KeyBindMgr : GuiScreen() {
+    private val baseHeight=205
+    private val baseWidth=500
+
     private val keys=ArrayList<KeyInfo>()
+    var nowDisplayKey:KeyInfo?=null
+
+    override fun initGui() {
+        nowDisplayKey=null
+        //use async because this may a bit slow
+        Thread {
+            for (key in keys) {
+                key.update()
+            }
+        }.start()
+    }
+
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        drawDefaultBackground()
+
+        val mcWidth=((width*0.8f)-(width*0.2f)).toInt()
+
+        GL11.glPushMatrix()
+        RenderUtils.drawText("KeyBind Manager", Fonts.fontBold40, (width * 0.21).toInt(), (height * 0.2).toInt(), 2f, Color.WHITE.rgb, false)
+        GL11.glTranslatef(width*0.2f,height * 0.2f + Fonts.fontBold40.height * 2.3f,0F)
+        val scale=mcWidth/baseWidth.toFloat()
+        GL11.glScalef(scale,scale,scale)
+
+        RenderUtils.drawRect(0F,0F,baseWidth.toFloat(),baseHeight.toFloat(),Color.WHITE.rgb)
+
+        for(key in keys){
+            key.render()
+        }
+
+        //render key tab
+        if(nowDisplayKey!=null){
+            nowDisplayKey!!.renderTab()
+
+            if (Mouse.hasWheel()) {
+                val wheel = Mouse.getDWheel()
+                val scaledMouseX=(mouseX-width*0.2f)/scale
+                val scaledMouseY=(mouseY-(height * 0.2f + Fonts.fontBold40.height * 2.3f))/scale
+
+                println("wheel=$wheel")
+                nowDisplayKey!!.stroll(scaledMouseX,scaledMouseY,wheel)
+            }
+        }
+
+        GL11.glPopMatrix()
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        val scale=((width*0.8f)-(width*0.2f))/baseWidth
+        val scaledMouseX=(mouseX-width*0.2f)/scale
+        val scaledMouseY=(mouseY-(height * 0.2f + Fonts.fontBold40.height * 2.3f))/scale
+
+        if(nowDisplayKey==null) {
+            //click out of area
+            if (scaledMouseX < 0 || scaledMouseY < 0 || scaledMouseX > baseWidth || scaledMouseY > baseHeight) {
+                mc.displayGuiScreen(null)
+                return
+            }
+
+            //process click
+            for (key in keys) {
+                if (scaledMouseX > key.posX && scaledMouseY > key.posY
+                    && scaledMouseX < (key.posX + key.width) && scaledMouseY < (key.posY + key.height)) {
+                    key.click(scaledMouseX,scaledMouseY)
+                    break
+                }
+            }
+        }
+    }
+
+
+    override fun onGuiClosed() {
+        //save keybind data
+        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
+    }
 
     init {
         //line1
@@ -58,13 +141,13 @@ class KeyBindMgr : GuiScreen() {
         //line4
         keys.add(KeyInfo(12F,12F+37F*3,32F*2.5F-5F,32F,Keyboard.KEY_LSHIFT,"Shift","LShift"))
         keys.add(KeyInfo(12F+32F*2.5F,12F+37F*3,27F,32F,Keyboard.KEY_Z,"Z"))
-        keys.add(KeyInfo(12F+32F*3.5F,12F+37F*3,27F,32F,Keyboard.KEY_Z,"X"))
-        keys.add(KeyInfo(12F+32F*4.5F,12F+37F*3,27F,32F,Keyboard.KEY_Z,"C"))
-        keys.add(KeyInfo(12F+32F*5.5F,12F+37F*3,27F,32F,Keyboard.KEY_Z,"V"))
-        keys.add(KeyInfo(12F+32F*6.5F,12F+37F*3,27F,32F,Keyboard.KEY_Z,"B"))
-        keys.add(KeyInfo(12F+32F*7.5F,12F+37F*3,27F,32F,Keyboard.KEY_Z,"N"))
-        keys.add(KeyInfo(12F+32F*8.5F,12F+37F*3,27F,32F,Keyboard.KEY_Z,"M"))
-        keys.add(KeyInfo(12F+32F*9.5F,12F+37F*3,27F,32F,Keyboard.KEY_Z,","))
+        keys.add(KeyInfo(12F+32F*3.5F,12F+37F*3,27F,32F,Keyboard.KEY_X,"X"))
+        keys.add(KeyInfo(12F+32F*4.5F,12F+37F*3,27F,32F,Keyboard.KEY_C,"C"))
+        keys.add(KeyInfo(12F+32F*5.5F,12F+37F*3,27F,32F,Keyboard.KEY_V,"V"))
+        keys.add(KeyInfo(12F+32F*6.5F,12F+37F*3,27F,32F,Keyboard.KEY_B,"B"))
+        keys.add(KeyInfo(12F+32F*7.5F,12F+37F*3,27F,32F,Keyboard.KEY_N,"N"))
+        keys.add(KeyInfo(12F+32F*8.5F,12F+37F*3,27F,32F,Keyboard.KEY_M,"M"))
+        keys.add(KeyInfo(12F+32F*9.5F,12F+37F*3,27F,32F,Keyboard.KEY_COMMA,","))
         keys.add(KeyInfo(12F+32F*10.5F,12F+37F*3,27F,32F,Keyboard.KEY_PERIOD,"."))
         keys.add(KeyInfo(12F+32F*11.5F,12F+37F*3,27F,32F,Keyboard.KEY_SLASH,"/"))
         keys.add(KeyInfo(12F+32F*12.5F,12F+37F*3,32F*2.5F-5F,32F,Keyboard.KEY_RSHIFT,"Shift","RShift"))
@@ -73,38 +156,8 @@ class KeyBindMgr : GuiScreen() {
         keys.add(KeyInfo(12F+32F*1.5F,12F+37F*4,32F*1.5F-5F,32F,Keyboard.KEY_LMENU,"Alt","LAlt"))
         keys.add(KeyInfo(12F+32F*3F,12F+37F*4,32*8F-5F,32F,Keyboard.KEY_SPACE," ","Space"))
         keys.add(KeyInfo(12F+32F*11F,12F+37F*4,32F*1.5F-5F,32F,Keyboard.KEY_RMENU,"Alt","RAlt"))
-        keys.add(KeyInfo(12F+32F*12.5F,12F+37F*4,27F,32F,Keyboard.KEY_HOME,"\u0000","Home"))
+        keys.add(KeyInfo(12F+32F*12.5F,12F+37F*4,27F,32F,Keyboard.KEY_HOME,"\u00d8","Home"))
         keys.add(KeyInfo(12F+32F*13.5F,12F+37F*4,32F*1.5F-5F,32F,Keyboard.KEY_RCONTROL,"Ctrl","RCtrl"))
-    }
-
-    override fun initGui() {
-        //use async because this may a bit slow
-        Thread {
-            for (key in keys) {
-                key.update()
-            }
-        }.start()
-    }
-
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        drawDefaultBackground()
-
-        val baseHeight=205
-        val baseWidth=500
-        val mcWidth=((width*0.8f)-(width*0.2f)).toInt()
-
-        GL11.glPushMatrix()
-        RenderUtils.drawText("KeyBind Manager", Fonts.fontBold40, (width * 0.21).toInt(), (height * 0.2).toInt(), 2f, Color.WHITE.rgb, false)
-        GL11.glTranslatef(width*0.2f,height * 0.2f + Fonts.fontBold40.height * 2.3f,0F)
-        GL11.glScalef(mcWidth/baseWidth.toFloat(),mcWidth/baseWidth.toFloat(),mcWidth/baseWidth.toFloat())
-
-        RenderUtils.drawRect(0F,0F,baseWidth.toFloat(),baseHeight.toFloat(),Color.WHITE.rgb)
-
-        for(key in keys){
-            key.render()
-        }
-
-        GL11.glPopMatrix()
     }
 
     override fun doesGuiPauseGame(): Boolean {
