@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.ui.client.other.PopUI
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.GuiScreen
@@ -19,9 +20,11 @@ class KeyBindMgr : GuiScreen() {
 
     private val keys=ArrayList<KeyInfo>()
     var nowDisplayKey:KeyInfo?=null
+    var popUI: PopUI?=null
 
     override fun initGui() {
         nowDisplayKey=null
+        popUI=null
         //use async because this may a bit slow
         Thread {
             for (key in keys) {
@@ -50,40 +53,53 @@ class KeyBindMgr : GuiScreen() {
         //render key tab
         if(nowDisplayKey!=null){
             nowDisplayKey!!.renderTab()
-
-            if (Mouse.hasWheel()) {
-                val wheel = Mouse.getDWheel()
-                val scaledMouseX=(mouseX-width*0.2f)/scale
-                val scaledMouseY=(mouseY-(height * 0.2f + Fonts.fontBold40.height * 2.3f))/scale
-
-                println("wheel=$wheel")
-                nowDisplayKey!!.stroll(scaledMouseX,scaledMouseY,wheel)
-            }
         }
 
         GL11.glPopMatrix()
+
+
+        if (Mouse.hasWheel()) {
+            val wheel = Mouse.getDWheel()
+            if(popUI!=null){
+                popUI!!.onStroll(width, height, mouseX, mouseY, wheel)
+            }else if(nowDisplayKey!=null) {
+                val scaledMouseX = (mouseX - width * 0.2f) / scale
+                val scaledMouseY = (mouseY - (height * 0.2f + Fonts.fontBold40.height * 2.3f)) / scale
+
+                nowDisplayKey!!.stroll(scaledMouseX, scaledMouseY, wheel)
+            }
+        }
+
+        popUI?.onRender(width, height)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val scale=((width*0.8f)-(width*0.2f))/baseWidth
-        val scaledMouseX=(mouseX-width*0.2f)/scale
-        val scaledMouseY=(mouseY-(height * 0.2f + Fonts.fontBold40.height * 2.3f))/scale
+        if(popUI==null) {
+            val scale = ((width * 0.8f) - (width * 0.2f)) / baseWidth
+            val scaledMouseX = (mouseX - width * 0.2f) / scale
+            val scaledMouseY = (mouseY - (height * 0.2f + Fonts.fontBold40.height * 2.3f)) / scale
 
-        if(nowDisplayKey==null) {
-            //click out of area
-            if (scaledMouseX < 0 || scaledMouseY < 0 || scaledMouseX > baseWidth || scaledMouseY > baseHeight) {
-                mc.displayGuiScreen(null)
-                return
-            }
-
-            //process click
-            for (key in keys) {
-                if (scaledMouseX > key.posX && scaledMouseY > key.posY
-                    && scaledMouseX < (key.posX + key.width) && scaledMouseY < (key.posY + key.height)) {
-                    key.click(scaledMouseX,scaledMouseY)
-                    break
+            if (nowDisplayKey == null) {
+                //click out of area
+                if (scaledMouseX < 0 || scaledMouseY < 0 || scaledMouseX > baseWidth || scaledMouseY > baseHeight) {
+                    mc.displayGuiScreen(null)
+                    return
                 }
+
+                //process click
+                for (key in keys) {
+                    if (scaledMouseX > key.posX && scaledMouseY > key.posY
+                        && scaledMouseX < (key.posX + key.width) && scaledMouseY < (key.posY + key.height)
+                    ) {
+                        key.click(scaledMouseX, scaledMouseY)
+                        break
+                    }
+                }
+            } else {
+                nowDisplayKey!!.click(scaledMouseX, scaledMouseY)
             }
+        }else{
+            popUI!!.onClick(width, height,mouseX, mouseY)
         }
     }
 
@@ -91,6 +107,21 @@ class KeyBindMgr : GuiScreen() {
     override fun onGuiClosed() {
         //save keybind data
         LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
+    }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (Keyboard.KEY_ESCAPE == keyCode) {
+            if(popUI!=null){
+                popUI=null
+            }else if(nowDisplayKey!=null){
+                nowDisplayKey=null
+            }else{
+                mc.displayGuiScreen(null)
+            }
+            return
+        }
+
+        popUI?.onKey(typedChar, keyCode)
     }
 
     init {

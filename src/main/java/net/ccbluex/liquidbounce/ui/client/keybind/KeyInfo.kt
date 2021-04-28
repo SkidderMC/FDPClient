@@ -7,6 +7,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -103,6 +104,30 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
         if(keyBindMgr.nowDisplayKey==null) {
             keyBindMgr.nowDisplayKey = this
             mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.click"), 1F))
+        }else{
+            val scaledMouseX=mouseX-((posX+width*0.5F)-baseTabWidth*0.5F)
+            val scaledMouseY=mouseY-(if(direction){posY-baseTabHeight}else{posY+height})
+            if(scaledMouseX<0||scaledMouseY<0||scaledMouseX>baseTabWidth||scaledMouseY>baseTabHeight){
+                keyBindMgr.nowDisplayKey=null //close it when click out of area
+                return
+            }
+
+            if(scaledMouseY>22F+Fonts.font40.height
+                &&scaledMouseX>baseTabWidth-12F-Fonts.font40.getStringWidth("+ Add")){
+                if(scaledMouseY>baseTabHeight-22F-Fonts.font40.height){
+                    keyBindMgr.popUI=KeySelectUI(this)
+                }else{
+                    var yOffset=(12F+Fonts.font40.height+10F)-stroll
+                    for(module in modules) {
+                        if(scaledMouseY>(yOffset+5)&&scaledMouseY<(yOffset+15)){
+                            module.keyBind=Keyboard.KEY_NONE
+                            update()
+                            break
+                        }
+                        yOffset+=20
+                    }
+                }
+            }
         }
     }
 }

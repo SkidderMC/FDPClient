@@ -27,7 +27,7 @@ public final class PathUtils extends MinecraftInstance {
             final double diffX = curX - tpX;
             final double diffY = curY - tpY;
             final double diffZ = curZ - tpZ;
-            final double offset = (count & 1) == 0 ? 0.4D : 0.1D;
+            final double offset = (count & 1) == 0 ? 3D : 1D;
 
             final double minX = Math.min(Math.abs(diffX), offset);
             if (diffX < 0.0D) curX += minX;
