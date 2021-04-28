@@ -16,7 +16,7 @@ class RedeSkyHop : SpeedMode("RedeSkyHop") {
                 mc.thePlayer.motionY=speedModule.redeSkyHeight.get().toDouble()
 
                 val speed=MovementUtils.getSpeed()+speedModule.redeSkyHopGSpeed.get()
-                MovementUtils.move(speed*0.5F)
+                MovementUtils.move(speed*0.2F)
                 MovementUtils.limitSpeed(speed)
 
                 mc.timer.timerSpeed = speedModule.redeSkyHopTimer.get()

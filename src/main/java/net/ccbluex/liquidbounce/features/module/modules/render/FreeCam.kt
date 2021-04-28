@@ -25,16 +25,25 @@ class FreeCam : Module() {
     private val speedValue = FloatValue("Speed", 0.8f, 0.1f, 2f)
     private val flyValue = BoolValue("Fly", true)
     private val noClipValue = BoolValue("NoClip", true)
+    private val motionValue = BoolValue("RecordMotion", true)
+    private val c03SpoofValue = BoolValue("C03Spoof", true)
     private var fakePlayer: EntityOtherPlayerMP? = null
-    private var oldX = 0.0
-    private var oldY = 0.0
-    private var oldZ = 0.0
+    private var motionX=0.0
+    private var motionY=0.0
+    private var motionZ=0.0
 
     override fun onEnable() {
         if (mc.thePlayer == null) return
-        oldX = mc.thePlayer.posX
-        oldY = mc.thePlayer.posY
-        oldZ = mc.thePlayer.posZ
+        if(motionValue.get()){
+            motionX=mc.thePlayer.motionX
+            motionY=mc.thePlayer.motionY
+            motionZ=mc.thePlayer.motionZ
+        }else{
+            motionX=0.0
+            motionY=0.0
+            motionZ=0.0
+        }
+
         fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
         fakePlayer!!.clonePlayer(mc.thePlayer, true)
         fakePlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
@@ -45,12 +54,12 @@ class FreeCam : Module() {
 
     override fun onDisable() {
         if (mc.thePlayer == null || fakePlayer == null) return
-        mc.thePlayer.setPositionAndRotation(oldX, oldY, oldZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+        mc.thePlayer.setPositionAndRotation(fakePlayer!!.posX, fakePlayer!!.posY, fakePlayer!!.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
         mc.theWorld.removeEntityFromWorld(fakePlayer!!.entityId)
         fakePlayer = null
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionY = 0.0
-        mc.thePlayer.motionZ = 0.0
+        mc.thePlayer.motionX = motionX
+        mc.thePlayer.motionY = motionY
+        mc.thePlayer.motionZ = motionZ
     }
 
     @EventTarget
@@ -71,14 +80,22 @@ class FreeCam : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet is C03PacketPlayer || packet is C0BPacketEntityAction)
+        if(c03SpoofValue.get()){
+            if(packet is C03PacketPlayer.C04PacketPlayerPosition||packet is C03PacketPlayer.C05PacketPlayerLook||packet is C03PacketPlayer.C06PacketPlayerPosLook){
+                mc.netHandler.addToSendQueue(C03PacketPlayer(fakePlayer!!.onGround))
+                event.cancelEvent()
+            }
+        }else if(packet is C03PacketPlayer){
             event.cancelEvent()
+        }
 
         if (packet is S08PacketPlayerPosLook) {
-            oldX = packet.x
-            oldY = packet.y
-            oldZ = packet.z
-            fakePlayer!!.setPosition(oldX, oldY, oldZ)
+            fakePlayer!!.setPosition(packet.x,packet.y,packet.z)
+            //when teleport,motion reset
+            motionX=0.0
+            motionY=0.0
+            motionZ=0.0
+
             event.cancelEvent()
         }
     }
