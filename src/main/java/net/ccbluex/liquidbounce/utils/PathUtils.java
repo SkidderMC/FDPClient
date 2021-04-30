@@ -6,19 +6,20 @@
 package net.ccbluex.liquidbounce.utils;
 
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
 import javax.vecmath.Vector3d;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class PathUtils extends MinecraftInstance {
+    public static List<Vec3> findBlinkPath(final double tpX, final double tpY, final double tpZ){
+        return findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,tpX,tpY,tpZ);
+    }
 
-    public static List<Vector3d> findBlinkPath(final double tpX, final double tpY, final double tpZ) {
-        final List<Vector3d> positions = new ArrayList<>();
+    public static List<Vec3> findBlinkPath(double curX, double curY, double curZ,final double tpX, final double tpY, final double tpZ) {
+        final List<Vec3> positions = new ArrayList<>();
 
-        double curX = mc.thePlayer.posX;
-        double curY = mc.thePlayer.posY;
-        double curZ = mc.thePlayer.posZ;
         double distance = Math.abs(curX - tpX) + Math.abs(curY - tpY) + Math.abs(curZ - tpZ);
 
         for (int count = 0; distance > 0.0D; count++) {
@@ -27,7 +28,7 @@ public final class PathUtils extends MinecraftInstance {
             final double diffX = curX - tpX;
             final double diffY = curY - tpY;
             final double diffZ = curZ - tpZ;
-            final double offset = (count & 1) == 0 ? 3D : 1D;
+            final double offset = (count & 1) == 0 ? 1D : 0.5D;
 
             final double minX = Math.min(Math.abs(diffX), offset);
             if (diffX < 0.0D) curX += minX;
@@ -41,7 +42,7 @@ public final class PathUtils extends MinecraftInstance {
             if (diffZ < 0.0D) curZ += minZ;
             if (diffZ > 0.0D) curZ -= minZ;
 
-            positions.add(new Vector3d(curX, curY, curZ));
+            positions.add(new Vec3(curX, curY, curZ));
         }
 
         return positions;

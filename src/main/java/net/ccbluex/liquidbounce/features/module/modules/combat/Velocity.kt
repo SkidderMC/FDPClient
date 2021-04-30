@@ -31,7 +31,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch"), "Simple")
 
     // Reverse
@@ -116,6 +116,13 @@ class Velocity : Module() {
                 mc.thePlayer.motionZ *= horizontalValue.get()
                 //mc.thePlayer.motionY *= verticalValue.get() ?
                 velocityInput = false
+            }
+
+            "aacv4" -> {
+                if (mc.thePlayer.hurtTime>0 && !mc.thePlayer.onGround){
+                    mc.thePlayer.motionX *= 0.62
+                    mc.thePlayer.motionZ *= 0.62
+                }
             }
 
             "aacpush" -> {

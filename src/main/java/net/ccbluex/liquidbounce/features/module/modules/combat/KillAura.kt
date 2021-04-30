@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.utils.RaycastUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
+import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -366,13 +367,14 @@ class KillAura : Module() {
             //can mark
             val drawTime = (System.currentTimeMillis() % 2000).toInt()
             val drawMode=drawTime>1000
-            var drawPercent=drawTime/1000F
+            var drawPercent=drawTime/1000.0
             //true when goes up
             if(!drawMode){
                 drawPercent=1-drawPercent
             }else{
                 drawPercent-=1
             }
+            drawPercent=EaseUtils.easeInOutCubic(drawPercent)
             val points = mutableListOf<Vec3>()
             val bb=markEntity!!.entityBoundingBox
             val radius=bb.maxX-bb.minX
