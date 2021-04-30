@@ -210,7 +210,19 @@ open class HUD : MinecraftInstance() {
      */
     fun removeNotification(notification: Notification) = notifications.remove(notification)
 
-    fun addAlert(alert: Alert) = alerts.add(alert)
+    fun addAlert(alert: Alert) {
+        var hasAlert=false
+        for(element in elements) {
+            if(element is Alerts){
+                hasAlert=true
+            }
+        }
+        if(hasAlert) {
+            alerts.add(alert)
+        }else{
+            addNotification(alert.toNotify())
+        }
+    }
 
     fun removeAlert(alert: Alert) = alerts.remove(alert)
 }

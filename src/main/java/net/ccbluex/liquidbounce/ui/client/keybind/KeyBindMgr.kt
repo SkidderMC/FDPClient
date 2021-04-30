@@ -25,6 +25,10 @@ class KeyBindMgr : GuiScreen() {
     override fun initGui() {
         nowDisplayKey=null
         popUI=null
+        updateAllKeys()
+    }
+
+    fun updateAllKeys(){
         //use async because this may a bit slow
         Thread {
             for (key in keys) {
@@ -42,6 +46,7 @@ class KeyBindMgr : GuiScreen() {
         RenderUtils.drawText("KeyBind Manager", Fonts.fontBold40, (width * 0.21).toInt(), (height * 0.2).toInt(), 2f, Color.WHITE.rgb, false)
         GL11.glTranslatef(width*0.2f,height * 0.2f + Fonts.fontBold40.height * 2.3f,0F)
         val scale=mcWidth/baseWidth.toFloat()
+        //用scale可以方便些
         GL11.glScalef(scale,scale,scale)
 
         RenderUtils.drawRect(0F,0F,baseWidth.toFloat(),baseHeight.toFloat(),Color.WHITE.rgb)
@@ -58,18 +63,22 @@ class KeyBindMgr : GuiScreen() {
         GL11.glPopMatrix()
 
 
+        //鼠标滚轮滑动
         if (Mouse.hasWheel()) {
             val wheel = Mouse.getDWheel()
-            if(popUI!=null){
-                popUI!!.onStroll(width, height, mouseX, mouseY, wheel)
-            }else if(nowDisplayKey!=null) {
-                val scaledMouseX = (mouseX - width * 0.2f) / scale
-                val scaledMouseY = (mouseY - (height * 0.2f + Fonts.fontBold40.height * 2.3f)) / scale
+            if(wheel!=0) { //没滚轮，只是正常鼠标移动
+                if (popUI != null) {
+                    popUI!!.onStroll(width, height, mouseX, mouseY, wheel)
+                } else if (nowDisplayKey != null) {
+                    val scaledMouseX = (mouseX - width * 0.2f) / scale
+                    val scaledMouseY = (mouseY - (height * 0.2f + Fonts.fontBold40.height * 2.3f)) / scale
 
-                nowDisplayKey!!.stroll(scaledMouseX, scaledMouseY, wheel)
+                    nowDisplayKey!!.stroll(scaledMouseX, scaledMouseY, wheel)
+                }
             }
         }
 
+        //渲染功能选择弹窗
         popUI?.onRender(width, height)
     }
 

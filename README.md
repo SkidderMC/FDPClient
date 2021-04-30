@@ -1,16 +1,13 @@
 # FDPClient
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient?ref=badge_shield)
+[![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 
-A free mixin-based injection hacked-client for Minecraft using Minecraft Forge by LiquidBounce.
+A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.
 
 Website: https://fdp.liulihaocai.pw/ \
-Forum: https://forums.ccbluex.net/ \
-Discord: https://discord.gg/gdQ82He \
-YouTube: https://youtube.com/CCBlueX \
-Twitter: https://twitter.com/CCBlueX 
 
 ## Issues
-If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/CCBlueX/LiquidBounce1.8-Issues/issues).
+If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/Project-EZ4H/FDPClient/issues).
 
 ## License
 This project is subject to the [GNU General Public License v3.0](LICENSE). This does only apply for source code located directly in this clean repository. During the development and compilation process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL license.
@@ -34,7 +31,7 @@ Do the above and share your source code with everyone; just like we do.
 
 ## Setting up a Workspace
 LiquidBounce is using Gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
-1. Clone the repository using `git clone https://github.com/Project-EZ4H/FDPClient`. 
+1. Clone the repository using `git clone https://github.com/Project-EZ4H/FDPClient.git`. 
 2. CD into the local repository folder.
 3. Depending on which IDE you are using execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`

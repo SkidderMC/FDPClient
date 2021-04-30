@@ -43,7 +43,7 @@ class LongJump : Module() {
     private val rs2MinYMotionValue = FloatValue("RedeSky2MinYMotion",0.04F,0.01F,0.20F)
     private val rs2ReduceYMotionValue = FloatValue("RedeSky2ReduceYMotion",0.15F,0.01F,0.20F)
     private val rs2YMotionReducerValue = BoolValue("RedeSky2YMotionReducer", true)
-    private val rs3JumpTimeValue=IntegerValue("RedeSky3JumpTime",500,300,1000)
+    private val rs3JumpTimeValue=IntegerValue("RedeSky3JumpTime",500,300,1500)
     private val rs3BoostValue=FloatValue("RedeSky3Boost",1F,0.3F,1.5F)
     private val rs3HeightValue=FloatValue("RedeSky3Height",1F,0.3F,1.5F)
     private val autoJumpValue = BoolValue("AutoJump", true)

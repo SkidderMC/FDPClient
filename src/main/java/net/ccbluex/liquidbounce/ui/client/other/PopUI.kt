@@ -10,8 +10,8 @@ import java.awt.Color
  * FDPClient
  */
 open class PopUI(val title:String) {
-    val baseWidth=100
-    val baseHeight=130
+    val baseWidth=150
+    val baseHeight=210
 
     fun onRender(width: Int, height: Int){
         GL11.glPushMatrix()

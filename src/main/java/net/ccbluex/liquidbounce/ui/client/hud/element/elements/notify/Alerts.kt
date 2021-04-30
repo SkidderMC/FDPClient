@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.notify.Notification
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -120,5 +121,9 @@ class Alert(val title: String, message: String, val type: NotifyType, val stayTi
                 }
             }
         }
+    }
+
+    fun toNotify(): Notification {
+        return Notification(title,type)
     }
 }
