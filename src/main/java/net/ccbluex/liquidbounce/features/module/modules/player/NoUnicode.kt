@@ -8,8 +8,12 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.minecraft.network.play.server.S02PacketChat
 
-@ModuleInfo(name = "NoUnicode", description = "change unicode chars into normal ones", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "NoUnicode", description = "change unicode chars into normal ones", category = ModuleCategory.PLAYER, array = false)
 class NoUnicode : Module() {
+    init {
+        state = true
+    }
+
     @EventTarget
     fun onPacket(event: PacketEvent){
         if(event.packet is S02PacketChat){

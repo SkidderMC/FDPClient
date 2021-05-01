@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.commands.*
 import net.ccbluex.liquidbounce.features.command.shortcuts.Shortcut
 import net.ccbluex.liquidbounce.features.command.shortcuts.ShortcutParser
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -24,22 +25,30 @@ class CommandManager {
      * Register all default commands
      */
     fun registerCommands() {
-        registerCommand(BindCommand())
-        registerCommand(HelpCommand())
-        registerCommand(SayCommand())
-        registerCommand(FriendCommand())
-        registerCommand(LocalAutoSettingsCommand())
-        registerCommand(ToggleCommand())
-        registerCommand(TargetCommand())
-        registerCommand(BindsCommand())
-        registerCommand(PingCommand())
-        registerCommand(ReloadCommand())
-        registerCommand(ScriptManagerCommand())
-        registerCommand(RemoteViewCommand())
-        registerCommand(PrefixCommand())
-        registerCommand(ShortcutCommand())
-        registerCommand(HideCommand())
-        registerCommand(UsernameCommand())
+        registerCommands(
+            BindCommand::class.java,
+            HelpCommand::class.java,
+            SayCommand::class.java,
+            FriendCommand::class.java,
+            LocalAutoSettingsCommand::class.java,
+            ToggleCommand::class.java,
+            TargetCommand::class.java,
+            BindsCommand::class.java,
+            PingCommand::class.java,
+            ReloadCommand::class.java,
+            ScriptManagerCommand::class.java,
+            RemoteViewCommand::class.java,
+            PrefixCommand::class.java,
+            ShortcutCommand::class.java,
+            HideCommand::class.java,
+            UsernameCommand::class.java,
+            ServerInfoCommand::class.java
+        )
+    }
+
+    @SafeVarargs
+    fun registerCommands(vararg commands: Class<out Command>) {
+        commands.forEach { registerCommand(it.newInstance()) }
     }
 
     /**

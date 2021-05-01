@@ -14,10 +14,14 @@ import java.util.List;
 
 public final class PathUtils extends MinecraftInstance {
     public static List<Vec3> findBlinkPath(final double tpX, final double tpY, final double tpZ){
-        return findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,tpX,tpY,tpZ);
+        return findBlinkPath(tpX, tpY, tpZ,1);
     }
 
-    public static List<Vec3> findBlinkPath(double curX, double curY, double curZ,final double tpX, final double tpY, final double tpZ) {
+    public static List<Vec3> findBlinkPath(final double tpX, final double tpY, final double tpZ,final double dist){
+        return findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,tpX,tpY,tpZ,dist);
+    }
+
+    public static List<Vec3> findBlinkPath(double curX, double curY, double curZ,final double tpX, final double tpY, final double tpZ, final double dist) {
         final List<Vec3> positions = new ArrayList<>();
 
         double distance = Math.abs(curX - tpX) + Math.abs(curY - tpY) + Math.abs(curZ - tpZ);
@@ -28,9 +32,8 @@ public final class PathUtils extends MinecraftInstance {
             final double diffX = curX - tpX;
             final double diffY = curY - tpY;
             final double diffZ = curZ - tpZ;
-            final double offset = (count & 1) == 0 ? 1D : 0.5D;
 
-            final double minX = Math.min(Math.abs(diffX), offset);
+            final double minX = Math.min(Math.abs(diffX), dist);
             if (diffX < 0.0D) curX += minX;
             if (diffX > 0.0D) curX -= minX;
 
@@ -38,7 +41,7 @@ public final class PathUtils extends MinecraftInstance {
             if (diffY < 0.0D) curY += minY;
             if (diffY > 0.0D) curY -= minY;
 
-            double minZ = Math.min(Math.abs(diffZ), offset);
+            double minZ = Math.min(Math.abs(diffZ), dist);
             if (diffZ < 0.0D) curZ += minZ;
             if (diffZ > 0.0D) curZ -= minZ;
 

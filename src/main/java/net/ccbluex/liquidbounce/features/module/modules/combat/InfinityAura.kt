@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -10,10 +11,13 @@ import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PathUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
@@ -24,9 +28,13 @@ class InfinityAura : Module() {
     private val targetsValue=IntegerValue("Targets",3,1,10)
     private val cpsValue=IntegerValue("CPS",1,1,10)
     private val distValue=IntegerValue("Distance",30,20,100)
+    private val moveDistValue=FloatValue("MoveDist",1F,0.3F,5F)
+    private val antiFlag=BoolValue("AntiFlag",true)
 
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
+    private var needAntiTP=false
+    private var lastPos:Vec3?=null
 
     private fun getDelay():Int{
         return 1000/cpsValue.get()
@@ -35,14 +43,29 @@ class InfinityAura : Module() {
     override fun onEnable() {
         timer.reset()
         points.clear()
+        needAntiTP=false
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
+        if(needAntiTP&&lastPos!=null){
+            val path=PathUtils.findBlinkPath(lastPos!!.xCoord,lastPos!!.yCoord,lastPos!!.zCoord,moveDistValue.get().toDouble())
+            path.forEach {
+                val f = mc.thePlayer.width / 2.0F;
+                val f1 = mc.thePlayer.height;
+                if(!mc.theWorld.checkBlockCollision(AxisAlignedBB(it.xCoord - f, it.yCoord, it.zCoord - f, it.xCoord + f, it.yCoord + f1, it.zCoord + f))){
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
+                }
+            }
+            mc.thePlayer.setPosition(lastPos!!.xCoord,lastPos!!.yCoord,lastPos!!.zCoord)
+            needAntiTP=false
+            return
+        }
+
         if(!timer.hasTimePassed(getDelay().toLong())) return
         timer.reset()
-
         points.clear()
+
         val targets=ArrayList<EntityLivingBase>()
         for(entity in mc.theWorld.loadedEntityList){
             if(entity is EntityLivingBase&&EntityUtils.isSelected(entity,true)
@@ -54,34 +77,58 @@ class InfinityAura : Module() {
         targets.sortBy { mc.thePlayer.getDistanceToEntity(it) }
         var count=0
         val playerPos=Vec3(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
+        var posX=mc.thePlayer.posX
+        var posY=mc.thePlayer.posY
+        var posZ=mc.thePlayer.posZ
+
+        points.add(playerPos)
         for(entity in targets){
             count++
             if(count>targetsValue.get()) break
 
-            val path=PathUtils.findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,entity.posX,entity.posY,entity.posZ)
-            val passedPos=ArrayList<Vec3>()
+            val path=PathUtils.findBlinkPath(posX,posY,posZ,entity.posX,entity.posY,entity.posZ,distValue.get().toDouble())
+            posX=entity.posX
+            posY=entity.posY
+            posZ=entity.posZ
 
-            points.add(playerPos)
             path.forEach {
                 val f = mc.thePlayer.width / 2.0F;
                 val f1 = mc.thePlayer.height;
                 if(!mc.theWorld.checkBlockCollision(AxisAlignedBB(it.xCoord - f, it.yCoord, it.zCoord - f, it.xCoord + f, it.yCoord + f1, it.zCoord + f))){
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
                     points.add(it)
-                }else{
-                    passedPos.add(it)
                 }
             }
             mc.thePlayer.swingItem()
             mc.netHandler.addToSendQueue(C02PacketUseEntity(entity,C02PacketUseEntity.Action.ATTACK))
-            for(i in path.size-1 downTo 0){
-                val it=path[i]
-                if(!passedPos.contains(it)){
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
-                    points.add(it)
-                }
+        }
+        //come back
+        val path=PathUtils.findBlinkPath(posX,posY,posZ,mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,distValue.get().toDouble())
+        path.forEach {
+            val f = mc.thePlayer.width / 2.0F;
+            val f1 = mc.thePlayer.height;
+            if(!mc.theWorld.checkBlockCollision(AxisAlignedBB(it.xCoord - f, it.yCoord, it.zCoord - f, it.xCoord + f, it.yCoord + f1, it.zCoord + f))){
+                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
+                points.add(it)
             }
-            points.add(playerPos)
+        }
+        points.add(playerPos)
+
+        lastPos=playerPos
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent){
+        if(antiFlag.get()&&event.packet is S08PacketPlayerPosLook){
+            val packet=event.packet
+            if(mc.thePlayer.getDistance(packet.x,packet.y,packet.z)<distValue.get()){
+                needAntiTP=true
+                event.cancelEvent()
+            }
+        }
+        if(needAntiTP&&
+            (event.packet is C03PacketPlayer.C04PacketPlayerPosition||event.packet is C03PacketPlayer.C06PacketPlayerPosLook)){
+            event.cancelEvent()
         }
     }
 
