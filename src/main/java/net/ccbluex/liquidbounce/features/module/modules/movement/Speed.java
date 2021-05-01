@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop2;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop3;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHopOld;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -82,7 +83,8 @@ public class Speed extends Module {
             // RedeSky
             new RedeSkyHop(),
             new RedeSkyHop2(),
-            new RedeSkyHop3()
+            new RedeSkyHop3(),
+            new RedeSkyHopOld()
     };
 
     public final ListValue modeValue = new ListValue("Mode", getModes(), "NCPBHop") {

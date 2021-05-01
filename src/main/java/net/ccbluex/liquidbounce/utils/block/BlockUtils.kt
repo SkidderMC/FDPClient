@@ -12,12 +12,17 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
+import net.minecraft.util.Vec3
+import kotlin.math.floor
 
 object BlockUtils : MinecraftInstance() {
 
     /**
      * Get block from [blockPos]
      */
+    @JvmStatic
+    fun getBlock(vec3: Vec3?): Block? = getBlock(BlockPos(vec3))
+
     @JvmStatic
     fun getBlock(blockPos: BlockPos?): Block? = mc.theWorld?.getBlockState(blockPos)?.block
 
@@ -133,6 +138,9 @@ object BlockUtils : MinecraftInstance() {
         }
         return false
     }
+
+    @JvmStatic
+    fun floorVec3(vec3: Vec3) = Vec3(floor(vec3.xCoord),floor(vec3.yCoord),floor(vec3.zCoord))
 
     interface Collidable {
 

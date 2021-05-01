@@ -131,7 +131,8 @@ class ModuleManager : Listenable {
             AutoAdvertise::class.java,
             NoUnicode::class.java,
             HudDesigner::class.java,
-            InfinityAura::class.java
+            InfinityAura::class.java,
+            Regen::class.java
         )
 
         registerModule(Fucker)

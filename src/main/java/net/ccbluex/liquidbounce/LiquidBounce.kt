@@ -35,8 +35,8 @@ object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
-    const val CLIENT_VERSION = "v1.1.4"
-    const val IN_DEV = false
+    const val CLIENT_VERSION = "v1.1.5 Pre1"
+    const val IN_DEV = true
     const val CLIENT_CREATOR = "Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
 

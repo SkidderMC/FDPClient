@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.other.PopUI
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -30,7 +31,9 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select mod to bind") {
                 GL11.glTranslatef(0F, yOffset, 0F)
 
                 val name=module.name
-                Fonts.font35.drawString(name,8F,singleHeight*0.5F,Color.BLACK.rgb,false)
+                Fonts.font35.drawString(if(str.isNotEmpty()){
+                    "§0"+name.substring(0,str.length)+"§7"+name.substring(str.length,name.length)
+                }else{ "§0$name" },8F,singleHeight*0.5F,Color.BLACK.rgb,false)
 
                 GL11.glPopMatrix()
             }
@@ -50,6 +53,12 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select mod to bind") {
             if (str.isNotEmpty()) {
                 str = str.substring(0, str.length - 1)
                 update()
+            }
+            return
+        }else if(keyCode == Keyboard.KEY_RETURN){
+            //backspace key
+            if(modules.isNotEmpty()) {
+                apply(modules[0])
             }
             return
         }
@@ -74,13 +83,17 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select mod to bind") {
         var yOffset=height-stroll+2F
         for(module in modules){
             if(mouseY>yOffset&&mouseY<(yOffset+singleHeight)){
-                module.keyBind=info.key
-                LiquidBounce.keyBindMgr.updateAllKeys()
-                close()
+                apply(module)
                 break
             }
             yOffset+=singleHeight
         }
+    }
+
+    private fun apply(module: Module){
+        module.keyBind=info.key
+        LiquidBounce.keyBindMgr.updateAllKeys()
+        close()
     }
 
     override fun close() {

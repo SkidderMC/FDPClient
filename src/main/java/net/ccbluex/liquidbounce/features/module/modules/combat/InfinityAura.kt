@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.PathUtils
+import net.ccbluex.liquidbounce.utils.path.PathUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
@@ -30,6 +31,7 @@ class InfinityAura : Module() {
     private val distValue=IntegerValue("Distance",30,20,100)
     private val moveDistValue=FloatValue("MoveDist",1F,0.3F,5F)
     private val antiFlag=BoolValue("AntiFlag",true)
+    private val kickBypass=BoolValue("KickBypass",true)
 
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
@@ -49,12 +51,12 @@ class InfinityAura : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent){
         if(needAntiTP&&lastPos!=null){
-            val path=PathUtils.findBlinkPath(lastPos!!.xCoord,lastPos!!.yCoord,lastPos!!.zCoord,moveDistValue.get().toDouble())
+            val path= PathUtils.findBlinkPath(lastPos!!.xCoord,lastPos!!.yCoord,lastPos!!.zCoord,moveDistValue.get().toDouble())
             path.forEach {
                 val f = mc.thePlayer.width / 2.0F;
                 val f1 = mc.thePlayer.height;
                 if(!mc.theWorld.checkBlockCollision(AxisAlignedBB(it.xCoord - f, it.yCoord, it.zCoord - f, it.xCoord + f, it.yCoord + f1, it.zCoord + f))){
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
                 }
             }
             mc.thePlayer.setPosition(lastPos!!.xCoord,lastPos!!.yCoord,lastPos!!.zCoord)
@@ -92,29 +94,73 @@ class InfinityAura : Module() {
             posZ=entity.posZ
 
             path.forEach {
-                val f = mc.thePlayer.width / 2.0F;
-                val f1 = mc.thePlayer.height;
-                if(!mc.theWorld.checkBlockCollision(AxisAlignedBB(it.xCoord - f, it.yCoord, it.zCoord - f, it.xCoord + f, it.yCoord + f1, it.zCoord + f))){
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
+                if(!mc.theWorld.checkBlockCollision(getBB(it))){
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
                     points.add(it)
                 }
             }
             mc.thePlayer.swingItem()
-            mc.netHandler.addToSendQueue(C02PacketUseEntity(entity,C02PacketUseEntity.Action.ATTACK))
+            mc.playerController.attackEntity(mc.thePlayer,entity)
+
+            if(kickBypass.get()){
+                val vec3=if(path.size>0){path[path.size-1]}else{playerPos}
+                val ground=calculateGround(vec3.yCoord,getBB(vec3))
+
+                var yCoord = vec3.yCoord
+                while (yCoord > ground) {
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec3.xCoord, yCoord, vec3.zCoord, true))
+                    if (yCoord - 8.0 < ground) break // Prevent next step
+                    yCoord -= 8.0
+                }
+                yCoord=ground
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec3.xCoord, ground, vec3.zCoord, true))
+                while (yCoord < ground) {
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec3.xCoord, yCoord, vec3.zCoord, true))
+                    if (yCoord + 8.0 < ground) break // Prevent next step
+                    yCoord += 8.0
+                }
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec3.xCoord, vec3.yCoord, vec3.zCoord, true))
+            }
         }
         //come back
-        val path=PathUtils.findBlinkPath(posX,posY,posZ,mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,distValue.get().toDouble())
+        val path= PathUtils.findBlinkPath(posX,posY,posZ,mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,distValue.get().toDouble())
         path.forEach {
-            val f = mc.thePlayer.width / 2.0F;
-            val f1 = mc.thePlayer.height;
-            if(!mc.theWorld.checkBlockCollision(AxisAlignedBB(it.xCoord - f, it.yCoord, it.zCoord - f, it.xCoord + f, it.yCoord + f1, it.zCoord + f))){
-                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
+            if(!mc.theWorld.checkBlockCollision(getBB(it))){
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
                 points.add(it)
             }
         }
         points.add(playerPos)
 
         lastPos=playerPos
+    }
+
+    private fun getBB(vec3: Vec3):AxisAlignedBB{
+        val f = mc.thePlayer.width / 2.0F
+        val f1 = mc.thePlayer.height
+        return AxisAlignedBB(vec3.xCoord - f, vec3.yCoord, vec3.zCoord - f, vec3.xCoord + f, vec3.yCoord + f1, vec3.zCoord + f)
+    }
+
+    private fun calculateGround(posY: Double,bb: AxisAlignedBB): Double {
+        var blockHeight = 1.0
+        var ground = posY
+        while (ground > 0.0) {
+            val customBox = AxisAlignedBB(
+                bb.maxX,
+                ground + blockHeight,
+                bb.maxZ,
+                bb.minX,
+                ground,
+                bb.minZ
+            )
+            if (mc.theWorld.checkBlockCollision(customBox)) {
+                if (blockHeight <= 0.05) return ground + blockHeight
+                ground += blockHeight
+                blockHeight = 0.05
+            }
+            ground -= blockHeight
+        }
+        return 0.0
     }
 
     @EventTarget
@@ -127,7 +173,7 @@ class InfinityAura : Module() {
             }
         }
         if(needAntiTP&&
-            (event.packet is C03PacketPlayer.C04PacketPlayerPosition||event.packet is C03PacketPlayer.C06PacketPlayerPosLook)){
+            (event.packet is C04PacketPlayerPosition||event.packet is C03PacketPlayer.C06PacketPlayerPosLook)){
             event.cancelEvent()
         }
     }
