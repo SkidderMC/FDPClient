@@ -38,7 +38,7 @@ class ChatTranslator : Module() {
         val message=msg.replace(" ","%20")
         return when(apiValue.get().toLowerCase()){
             "google" -> "http://translate.google.cn/translate_a/single?client=gtx&dt=t&dj=1&ie=UTF-8&sl=auto&tl=" + (if (languageValue.get().euqals("Chinese")) "zh_cn" else "en_us") + "&q=$message"
-            "bing" -> "http://api.microsofttranslator.com/v2/Http.svc/Translate?appId=A4D660A48A6A97CCA791C34935E4C02BBB1BEC1C&from=&to=zh&text=$message"
+            "bing" -> "http://api.microsofttranslator.com/v2/Http.svc/Translate?appId=A4D660A48A6A97CCA791C34935E4C02BBB1BEC1C&from=&to=" + (if (languageValue.get().euqals("Chinese")) "zh" else "en") + "&text=$message"
             "youdao" -> "http://fanyi.youdao.com/translate?&doctype=json&type=AUTO&i=$message"
             else -> ""
         }
