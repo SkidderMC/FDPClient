@@ -1,5 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -37,4 +39,16 @@ class Target : Module() {
             EntityUtils.targetDead=newValue
         }
     }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent){
+        player.set(EntityUtils.targetPlayer)
+        animal.set(EntityUtils.targetAnimals)
+        mob.set(EntityUtils.targetMobs)
+        invisible.set(EntityUtils.targetInvisible)
+        dead.set(EntityUtils.targetDead)
+    }
+
+    //always handle event
+    override fun handleEvents() = true
 }

@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -21,7 +20,9 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.math.pow
 import kotlin.math.sqrt
+
 
 @ModuleInfo(name = "HackerDetector", description = "Detect SIGMA Hackers.", category = ModuleCategory.PLAYER)
 class HackerDetector : Module() {
@@ -123,16 +124,16 @@ class HackerDetector : Module() {
 
         //killaura from jigsaw
         if (data.aps >= 10) {
-            flag("killaura",30,data,"HIGH APS")
+            flag("killaura",30,data,"HIGH APS(aps=${data.aps})")
             passed=false
         }
         if (data.aps > 2 && data.aps == data.preAps && data.aps != 0) {
-            flag("killaura",30,data,"STRANGE APS")
+            flag("killaura",30,data,"STRANGE APS(aps=${data.aps})")
             passed=false
         }
         if (abs(player.rotationYaw - player.prevRotationYaw) > 50 && player.swingProgress != 0F
             && data.aps >= 3) {
-            flag("killaura",30,data,"YAW RATE")
+            flag("killaura",30,data,"YAW RATE(aps=${data.aps},yawRot=${abs(player.rotationYaw - player.prevRotationYaw)})")
             passed=false
         }
 
@@ -160,15 +161,49 @@ class HackerDetector : Module() {
         }
 
         //speed
-        if (abs(data.motionX) > 0.42
-            || abs(data.motionZ) > 0.42){
-            flag("speed",30,data,"HIGH SPEED")
-            passed=false
+        val distanceXZ=abs(data.motionXZ)
+        if(data.airTicks==0){ //onGround
+            var limit = 0.34
+            if(data.groundTicks < 5) limit += 0.1
+            if(player.isBlocking) limit *= 0.45
+            if(player.isSneaking) limit *= 0.68
+            if(player.isPotionActive(Potion.moveSpeed)){ //server will send real player potionData?i hope that
+                limit += player.getActivePotionEffect(Potion.moveSpeed).amplifier
+                limit *= 1.5
+            }
+            if (distanceXZ > limit) {
+                flag("speed",20,data,"GROUND SPEED(speed=$distanceXZ,limit=$limit)")
+            }
+        }else{
+
+            val multiplier = 0.985
+            var predict = 0.36 * multiplier.pow(data.airTicks + 1)
+            if (data.airTicks >= 115)
+                predict = Math.max(0.08, predict);
+            var limit=0.05
+            if(player.isPotionActive(Potion.moveSpeed)){
+                predict += player.getActivePotionEffect(Potion.moveSpeed).amplifier * 0.05
+                limit *= 1.2
+            }
+            if(player.isPotionActive(Potion.jump)) {
+                predict += player.getActivePotionEffect(Potion.jump).amplifier * 0.05
+            }
+            if(player.isBlocking)
+                predict *= 0.7
+
+            if (distanceXZ - predict > limit) {
+                flag("speed",20,data,"AIR SPEED(speed=$distanceXZ,limit=$limit,predict=$predict)")
+            }
         }
-        if (player.isBlocking && (abs(data.motionX) > 0.2 || abs(data.motionZ) > 0.2)) {
-            flag("speed",30,data,"HIGH SPEED(BLOCKING)") //blocking is just noslow lol
-            passed=false
-        }
+//        if (abs(data.motionX) > 0.42
+//            || abs(data.motionZ) > 0.42){
+//            flag("speed",30,data,"HIGH SPEED")
+//            passed=false
+//        }
+//        if (player.isBlocking && (abs(data.motionX) > 0.2 || abs(data.motionZ) > 0.2)) {
+//            flag("speed",30,data,"HIGH SPEED(BLOCKING)") //blocking is just noslow lol
+//            passed=false
+//        }
 
         //reduce vl
         if(passed){
