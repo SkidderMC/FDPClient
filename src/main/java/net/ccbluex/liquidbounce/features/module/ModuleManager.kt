@@ -134,7 +134,8 @@ class ModuleManager : Listenable {
             HudDesigner::class.java,
             InfinityAura::class.java,
             Regen::class.java,
-            HatarDetector::class.java
+            HatarDetector::class.java,
+            LightningDetect::class.java
         )
 
         registerModule(Fucker)
