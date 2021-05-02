@@ -28,6 +28,7 @@ class HackerDetector : Module() {
     private val GRAVITY_FRICTION = 0.9800000190734863
 
     private val combatCheck=BoolValue("Combat",true)
+    private val noslowCheck = BoolValue("NoSlow",true);
     private val movementCheck=BoolValue("Movement",true)
     private val debugMode=BoolValue("Debug",false)
     private val vlValue=IntegerValue("VL",300,100,500)
@@ -101,6 +102,9 @@ class HackerDetector : Module() {
         val maxOffset = 0.07
         var passed=true
 
+        if(player.isBlocking && (player.moveStrafing > 0.2f || player.moveForward > 0.2f) && noslowCheck.get())
+            flag("noslow",30,data,"NO SLOW DOWN")
+        
         if(player.hurtTime>0){
             //velocity
             if (player.hurtResistantTime in 7..11
