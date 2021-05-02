@@ -32,7 +32,7 @@ class HackerDetector : Module() {
     private val debugMode=BoolValue("Debug",false)
     private val vlValue=IntegerValue("VL",300,100,500)
 
-    private val datas=HashMap<EntityPlayer,HatarData>()
+    private val datas=HashMap<EntityPlayer,HackerData>()
 
 //    @EventTarget
 //    fun onUpdate(event: UpdateEvent){
@@ -87,7 +87,7 @@ class HackerDetector : Module() {
 
     private fun checkPlayer(player: EntityPlayer){
         if(player.equals(mc.thePlayer)) return
-        if(datas[player]==null) datas[player] = HatarData(player)
+        if(datas[player]==null) datas[player] = HackerData(player)
         val data=datas[player] ?: return
         data.update()
         if(data.aliveTicks<20) return
@@ -176,7 +176,7 @@ class HackerDetector : Module() {
         }
     }
 
-    private fun flag(type: String,vl: Int,data: HatarData,msg: String){
+    private fun flag(type: String,vl: Int,data: HackerData,msg: String){
         if(!data.useHacks.contains(type)) data.useHacks.add(type)
         //display debug message
         if(debugMode.get()){
@@ -237,7 +237,7 @@ class HackerDetector : Module() {
     }
 }
 
-class HatarData(val player:EntityPlayer){
+class HackerData(val player:EntityPlayer){
     var aliveTicks=0
     // Ticks in air
     var airTicks = 0
