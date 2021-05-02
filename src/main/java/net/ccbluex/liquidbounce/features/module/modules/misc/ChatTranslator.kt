@@ -17,8 +17,8 @@ import org.apache.http.util.EntityUtils
 class ChatTranslator : Module() {
     private val client = HttpClients.createDefault()
     private val cache=HashMap<String,String>()
-
-    private val apiValue=ListValue("API", arrayOf("Google","Bing","Youdao"),"Bing")
+    private val languageValue = ListValue("Language", arrayOf("Chinese", "English"), "Chinese")
+    private val apiValue=ListValue("API", arrayOf("Google","Bing","YouDao"), "Bing")
 
     @EventTarget
     fun onPacket(event: PacketEvent){
@@ -37,7 +37,7 @@ class ChatTranslator : Module() {
     private fun getLink(msg: String):String{
         val message=msg.replace(" ","%20")
         return when(apiValue.get().toLowerCase()){
-            "google" -> "http://translate.google.cn/translate_a/single?client=gtx&dt=t&dj=1&ie=UTF-8&sl=auto&tl=zh_CN&q=$message"
+            "google" -> "http://translate.google.cn/translate_a/single?client=gtx&dt=t&dj=1&ie=UTF-8&sl=auto&tl=" + (if (languageValue.get().euqals("Chinese")) "zh_cn" else "en_us") + "&q=$message"
             "bing" -> "http://api.microsofttranslator.com/v2/Http.svc/Translate?appId=A4D660A48A6A97CCA791C34935E4C02BBB1BEC1C&from=&to=zh&text=$message"
             "youdao" -> "http://fanyi.youdao.com/translate?&doctype=json&type=AUTO&i=$message"
             else -> ""
