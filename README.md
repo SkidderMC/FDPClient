@@ -4,7 +4,7 @@
 
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.
 
-Website: https://fdp.liulihaocai.pw/ \
+Website: https://fdp.liulihaocai.pw/
 
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/Project-EZ4H/FDPClient/issues).

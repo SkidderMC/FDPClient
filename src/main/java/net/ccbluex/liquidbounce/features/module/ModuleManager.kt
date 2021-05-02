@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.exploit.*
 import net.ccbluex.liquidbounce.features.module.modules.misc.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.*
 import net.ccbluex.liquidbounce.features.module.modules.player.*
+import net.ccbluex.liquidbounce.features.module.modules.player.HatarDetector
 import net.ccbluex.liquidbounce.features.module.modules.render.*
 import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.features.module.modules.world.Timer
@@ -132,7 +133,8 @@ class ModuleManager : Listenable {
             NoUnicode::class.java,
             HudDesigner::class.java,
             InfinityAura::class.java,
-            Regen::class.java
+            Regen::class.java,
+            HatarDetector::class.java
         )
 
         registerModule(Fucker)
