@@ -23,8 +23,8 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
-@ModuleInfo(name = "HatarDetector", description = "Detect SIGMA HATARs.", category = ModuleCategory.PLAYER)
-class HatarDetector : Module() {
+@ModuleInfo(name = "HackerDetector", description = "Detect SIGMA Hackers.", category = ModuleCategory.PLAYER)
+class HackerDetector : Module() {
     private val GRAVITY_FRICTION = 0.9800000190734863
 
     private val combatCheck=BoolValue("Combat",true)
