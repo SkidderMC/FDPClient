@@ -134,7 +134,7 @@ class ModuleManager : Listenable {
             HudDesigner::class.java,
             InfinityAura::class.java,
             Regen::class.java,
-            HatarDetector::class.java,
+            HackerDetector::class.java,
             LightningDetect::class.java
         )
 
