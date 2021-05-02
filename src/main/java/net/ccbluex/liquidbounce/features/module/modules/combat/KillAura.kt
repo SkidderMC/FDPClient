@@ -374,7 +374,7 @@ class KillAura : Module() {
             }else{
                 drawPercent-=1
             }
-            drawPercent=EaseUtils.easeInOutCubic(drawPercent)
+            drawPercent=EaseUtils.easeInOutQuad(drawPercent)
             val points = mutableListOf<Vec3>()
             val bb=markEntity!!.entityBoundingBox
             val radius=bb.maxX-bb.minX
@@ -400,20 +400,22 @@ class KillAura : Module() {
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glDisable(GL11.GL_DEPTH_TEST)
             GL11.glBegin(GL11.GL_LINE_STRIP)
+            val baseMove=(if(drawPercent>0.5){1-drawPercent}else{drawPercent})*2
+            val min=(height/60)*20*(1-baseMove)*(if(drawMode){-1}else{1})
             for(i in 0..20) {
-                var moveFace=(height/60F)*i
+                var moveFace=(height/60F)*i*baseMove
                 if(drawMode){
                     moveFace=-moveFace
                 }
                 val firstPoint=points[0]
                 GL11.glVertex3d(
-                    firstPoint.xCoord - mc.renderManager.viewerPosX, firstPoint.yCoord - moveFace - mc.renderManager.viewerPosY,
+                    firstPoint.xCoord - mc.renderManager.viewerPosX, firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY,
                     firstPoint.zCoord - mc.renderManager.viewerPosZ
                 )
                 GL11.glColor4f(1F, 1F, 1F, 0.7F*(i/20F))
                 for (vec3 in points) {
                     GL11.glVertex3d(
-                        vec3.xCoord - mc.renderManager.viewerPosX, vec3.yCoord - moveFace - mc.renderManager.viewerPosY,
+                        vec3.xCoord - mc.renderManager.viewerPosX, vec3.yCoord - moveFace - min - mc.renderManager.viewerPosY,
                         vec3.zCoord - mc.renderManager.viewerPosZ
                     )
                 }

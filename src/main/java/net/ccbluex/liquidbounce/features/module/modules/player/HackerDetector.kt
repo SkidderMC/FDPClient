@@ -28,12 +28,13 @@ class HackerDetector : Module() {
     private val GRAVITY_FRICTION = 0.9800000190734863
 
     private val combatCheck=BoolValue("Combat",true)
-    private val noslowCheck = BoolValue("NoSlow",true);
     private val movementCheck=BoolValue("Movement",true)
     private val debugMode=BoolValue("Debug",false)
+    private val report=BoolValue("AutoReport",true)
     private val vlValue=IntegerValue("VL",300,100,500)
 
     private val datas=HashMap<EntityPlayer,HackerData>()
+    private val reportedPlayers=ArrayList<String>()
 
 //    @EventTarget
 //    fun onUpdate(event: UpdateEvent){
@@ -56,26 +57,24 @@ class HackerDetector : Module() {
             if(entity !is EntityPlayer||packet.animationType!=0) return
             val data=datas[entity] ?: return
             data.tempAps++
-        }else if(event.packet is S18PacketEntityTeleport){
-            val packet=event.packet
-            val entity=mc.theWorld.getEntityByID(packet.entityId)
-            if(entity !is EntityPlayer) return
-            Thread{ checkPlayer(entity) }.start()
-        }else if(event.packet is S14PacketEntity){
-            val packet=event.packet
-            val entity=packet.getEntity(mc.theWorld)
-            if(entity !is EntityPlayer) return
-            Thread{ checkPlayer(entity) }.start()
+        }else if(movementCheck.get()){
+            if(event.packet is S18PacketEntityTeleport){
+                val packet=event.packet
+                val entity=mc.theWorld.getEntityByID(packet.entityId)
+                if(entity !is EntityPlayer) return
+                Thread{ checkPlayer(entity) }.start()
+            }else if(event.packet is S14PacketEntity){
+                val packet=event.packet
+                val entity=packet.getEntity(mc.theWorld)
+                if(entity !is EntityPlayer) return
+                Thread{ checkPlayer(entity) }.start()
+            }
         }
-    }
-
-    @EventTarget
-    fun onWorld(event: WorldEvent){
-        datas.clear()
     }
 
     override fun onEnable() {
         datas.clear()
+        reportedPlayers.clear()
     }
 
     //onupdate
@@ -101,9 +100,6 @@ class HackerDetector : Module() {
         val maxMotionY = 0.47 //for strict check u can change this to 0.42
         val maxOffset = 0.07
         var passed=true
-
-        if(player.isBlocking && (player.moveStrafing > 0.2f || player.moveForward > 0.2f) && noslowCheck.get())
-            flag("noslow",30,data,"NO SLOW DOWN")
         
         if(player.hurtTime>0){
             //velocity
@@ -169,8 +165,8 @@ class HackerDetector : Module() {
             flag("speed",30,data,"HIGH SPEED")
             passed=false
         }
-        if (player.isBlocking && (abs(data.motionX) > 0.3 || abs(data.motionZ) > 0.3)) {
-            flag("speed",30,data,"HIGH SPEED(BLOCKING)")
+        if (player.isBlocking && (abs(data.motionX) > 0.2 || abs(data.motionZ) > 0.2)) {
+            flag("speed",30,data,"HIGH SPEED(BLOCKING)") //blocking is just noslow lol
             passed=false
         }
 
@@ -196,6 +192,13 @@ class HackerDetector : Module() {
             use=use.substring(0,use.length-3)
             chat("§f${data.player.name} §eusing hack $use")
             data.vl=-vlValue.get()
+
+            //autoreport only redesky
+            val name=data.player.name
+            if(report.get()&&!reportedPlayers.contains(name)){
+                mc.thePlayer.sendChatMessage("/reportar $name")
+                reportedPlayers.add(name)
+            }
         }
     }
 
