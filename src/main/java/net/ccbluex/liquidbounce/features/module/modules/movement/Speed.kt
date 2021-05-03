@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.features.module.AutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -18,15 +18,12 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop2
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop3
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHopOld
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-@ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT, autoDisable = AutoDisableType.FLAG)
 class Speed : Module() {
     private val speedModes = arrayOf( // NCP
         NCPBHop(),
@@ -108,15 +105,6 @@ class Speed : Module() {
     val cubecraftPortLengthValue = FloatValue("CubeCraft-PortLength", 1f, 0.1f, 2f)
     @JvmField
     val mineplexGroundSpeedValue = FloatValue("MineplexGround-Speed", 0.5f, 0.1f, 1f)
-    private val autoClose=BoolValue("AutoClose",true)
-
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        if (autoClose.get()&&event.packet is S08PacketPlayerPosLook) {
-            state = false
-            LiquidBounce.hud.addNotification(Notification("Flag", "Don't use $name until this notification disappear.", NotifyType.ERROR, time = 5000))
-        }
-    }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {

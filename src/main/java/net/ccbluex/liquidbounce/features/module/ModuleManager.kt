@@ -134,7 +134,8 @@ class ModuleManager : Listenable {
             Regen::class.java,
             HackerDetector::class.java,
             LightningDetect::class.java,
-            NoRotate::class.java
+            NoRotate::class.java,
+            AutoDisable::class.java
         )
 
         registerModule(Fucker)

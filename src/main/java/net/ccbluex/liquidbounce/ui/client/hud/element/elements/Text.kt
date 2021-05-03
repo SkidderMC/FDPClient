@@ -26,7 +26,6 @@ import java.awt.Color
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import kotlin.math.sqrt
-import kotlin.math.pow
 
 /**
  * CustomHUD text element
@@ -38,34 +37,18 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
            side: Side = Side.default()) : Element(x, y, scale, side) {
 
     companion object {
-
         val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd")
         val HOUR_FORMAT = SimpleDateFormat("HH:mm")
 
         val DECIMAL_FORMAT = DecimalFormat("#.##")
-
-        /**
-         * Create default element
-         */
-        fun defaultClient(): Text {
-            val text = Text(x = 2.0, y = 2.0, scale = 2F)
-
-            text.displayString.set("%clientName%")
-            text.shadow.set(true)
-            text.fontValue.set(Fonts.font40)
-            text.setColor(Color(0, 111, 255))
-
-            return text
-        }
-
     }
 
-    private val displayString = TextValue("DisplayText", "")
+    val displayString = TextValue("DisplayText", "")
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
-    private val rainbow = BoolValue("Rainbow", false)
+    val rainbow = BoolValue("Rainbow", false)
     private val shadow = BoolValue("Shadow", true)
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)

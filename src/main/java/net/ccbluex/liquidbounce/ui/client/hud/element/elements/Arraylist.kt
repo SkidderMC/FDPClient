@@ -32,14 +32,14 @@ import java.awt.Color
 class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
 
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
+    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "SkyRainbow")
     private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
     private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
     private val tagColorModeValue = ListValue("Tag-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
-    private val tagColorRedValue = IntegerValue("Tag-R", 150, 0, 255)
-    private val tagColorGreenValue = IntegerValue("Tag-G", 150, 0, 255)
-    private val tagColorBlueValue = IntegerValue("Tag-B", 150, 0, 255)
+    private val tagColorRedValue = IntegerValue("Tag-R", 255, 0, 255)
+    private val tagColorGreenValue = IntegerValue("Tag-G", 255, 0, 255)
+    private val tagColorBlueValue = IntegerValue("Tag-B", 255, 0, 255)
     private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Rainbow")
     private val rectColorRedValue = IntegerValue("Rect-R", 255, 0, 255)
     private val rectColorGreenValue = IntegerValue("Rect-G", 255, 0, 255)

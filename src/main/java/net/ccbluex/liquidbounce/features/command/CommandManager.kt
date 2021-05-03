@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.commands.*
 import net.ccbluex.liquidbounce.features.command.shortcuts.Shortcut
 import net.ccbluex.liquidbounce.features.command.shortcuts.ShortcutParser
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -42,7 +41,8 @@ class CommandManager {
             ShortcutCommand::class.java,
             HideCommand::class.java,
             UsernameCommand::class.java,
-            ServerInfoCommand::class.java
+            ServerInfoCommand::class.java,
+            AutoDisableCommand::class.java
         )
     }
 

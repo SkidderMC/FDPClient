@@ -8,8 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.hud
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.gui.ScaledResolution
@@ -46,8 +45,16 @@ open class HUD : MinecraftInstance() {
          * Create default HUD
          */
         @JvmStatic
-        fun createDefault() = HUD()
-                .addElement(Text.defaultClient())
+        fun createDefault(): HUD {
+            val text1=Text(scale = 1.5F)
+            text1.displayString.set("F")
+            text1.rainbow.set(true)
+            val text2=Text(scale = 1.5F,x = 10.0+(Fonts.font40.getStringWidth("F")*1.5))
+            text2.displayString.set("ilho")
+
+            return HUD()
+                .addElement(text1)
+                .addElement(text2)
                 .addElement(KeyStrokes())
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())
@@ -55,6 +62,7 @@ open class HUD : MinecraftInstance() {
                 .addElement(Effects())
                 .addElement(Notifications())
                 .addElement(Inventory())
+        }
     }
 
     /**

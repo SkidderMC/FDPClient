@@ -10,6 +10,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.AutoDisableType;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
@@ -41,19 +42,20 @@ public class ModulesConfig extends FileConfig {
         if(jsonElement instanceof JsonNull)
             return;
 
-        final Iterator<Map.Entry<String, JsonElement>> entryIterator = jsonElement.getAsJsonObject().entrySet().iterator();
-        while(entryIterator.hasNext()) {
-            final Map.Entry<String, JsonElement> entry = entryIterator.next();
+        for (Map.Entry<String, JsonElement> entry : jsonElement.getAsJsonObject().entrySet()) {
             final Module module = LiquidBounce.moduleManager.getModule(entry.getKey());
 
-            if(module != null) {
+            if (module != null) {
                 final JsonObject jsonModule = (JsonObject) entry.getValue();
 
                 module.setState(jsonModule.get("State").getAsBoolean());
                 module.setKeyBind(jsonModule.get("KeyBind").getAsInt());
 
-                if(jsonModule.has("Array"))
+                if (jsonModule.has("Array"))
                     module.setArray(jsonModule.get("Array").getAsBoolean());
+
+                if (jsonModule.has("AutoDisable"))
+                    module.setAutoDisable(AutoDisableType.valueOf(jsonModule.get("AutoDisable").getAsString()));
             }
         }
     }
@@ -72,6 +74,7 @@ public class ModulesConfig extends FileConfig {
             jsonMod.addProperty("State", module.getState());
             jsonMod.addProperty("KeyBind", module.getKeyBind());
             jsonMod.addProperty("Array", module.getArray());
+            jsonMod.addProperty("AutoDisable",module.getAutoDisable().toString());
             jsonObject.add(module.getName(), jsonMod);
         }
 

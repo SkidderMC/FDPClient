@@ -27,6 +27,7 @@ public class HUD extends Module {
     public final BoolValue inventoryParticle = new BoolValue("InventoryParticle", false);
     public final BoolValue fontChatValue = new BoolValue("FontChat", false);
     public final BoolValue chatRectValue = new BoolValue("ChatRect", true);
+    public final BoolValue chatFilterValue = new BoolValue("ChatFilter", true);
 
     public HUD() {
         setState(true);

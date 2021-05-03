@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.ToggleSound
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
@@ -21,7 +21,6 @@ import org.lwjgl.input.Keyboard
 @SideOnly(Side.CLIENT)
 open class Module : MinecraftInstance(), Listenable {
     // Module information
-    // TODO: Remove ModuleInfo and change to constructor (#Kotlin)
     var name: String
     var description: String
     var category: ModuleCategory
@@ -40,6 +39,7 @@ open class Module : MinecraftInstance(), Listenable {
                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
         }
     private val canEnable: Boolean
+    var autoDisable: AutoDisableType
 
     var slideStep = 0F
 
@@ -52,6 +52,7 @@ open class Module : MinecraftInstance(), Listenable {
         keyBind = moduleInfo.keyBind
         array = moduleInfo.array
         canEnable = moduleInfo.canEnable
+        autoDisable = moduleInfo.autoDisable
     }
 
     // Current state of module

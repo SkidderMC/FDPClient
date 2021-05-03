@@ -27,7 +27,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashMap;
@@ -80,11 +79,23 @@ public abstract class MixinGuiNewChat {
     private int sameMessageAmount;
     private int line;
 
-    private long easeTime=System.currentTimeMillis();
+    private HUD hud;
     private final HashMap<String,String> stringCache=new HashMap<>();
+
+    private void checkHud(){
+        if(hud==null){
+            hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+        }
+    }
 
     @Overwrite
     public void printChatMessage(IChatComponent chatComponent) {
+        checkHud();
+        if(!hud.chatFilterValue.get()) {
+            printChatMessageWithOptionalDeletion(chatComponent, this.line);
+            return;
+        }
+
         String text=fixString(chatComponent.getFormattedText());
         if (text.equals(this.lastMessage)) {
             (Minecraft.getMinecraft()).ingameGUI.getChatGUI().deleteChatLine(this.line);
@@ -94,7 +105,6 @@ public abstract class MixinGuiNewChat {
         } else {
             this.sameMessageAmount = 1;
             this.lastMessage = text;
-            easeTime=System.currentTimeMillis();
         }
         this.line++;
         if (this.line > 256)
@@ -105,12 +115,8 @@ public abstract class MixinGuiNewChat {
 
     @Overwrite
     public void drawChat(int updateCounter) {
-        final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+        checkHud();
         boolean canFont=hud.getState() && hud.fontChatValue.get();
-
-        float pct=(System.currentTimeMillis()-easeTime)/300F;
-        if(pct>1){pct=1F;}
-        pct= (float) EaseUtils.easeOutCubic(pct);
 
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
             int i = this.getLineCount();
@@ -126,7 +132,7 @@ public abstract class MixinGuiNewChat {
                 float f1 = this.getChatScale();
                 int l = MathHelper.ceiling_float_int((float)this.getChatWidth() / f1);
                 GlStateManager.pushMatrix();
-                GlStateManager.translate(2.0F, 20.0F - (20F * pct) * f1, 0.0F);
+                GlStateManager.translate(2.0F, 20.0F, 0.0F);
                 GlStateManager.scale(f1, f1, 1.0F);
 
                 int i1;
@@ -206,8 +212,7 @@ public abstract class MixinGuiNewChat {
 
     @Inject(method = "getChatComponent", at = @At("HEAD"), cancellable = true)
     private void getChatComponent(int p_getChatComponent_1_, int p_getChatComponent_2_, final CallbackInfoReturnable<IChatComponent> callbackInfo) {
-        final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
-
+        checkHud();
         if(hud.getState() && hud.fontChatValue.get()) {
             if(!this.getChatOpen()) {
                 callbackInfo.setReturnValue(null);
