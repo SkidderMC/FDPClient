@@ -129,7 +129,6 @@ class ModuleManager : Listenable {
             MessageSpam::class.java,
             AntiStuck::class.java,
             AutoAdvertise::class.java,
-            NoUnicode::class.java,
             HudDesigner::class.java,
             InfinityAura::class.java,
             Regen::class.java,

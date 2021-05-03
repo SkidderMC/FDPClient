@@ -20,7 +20,6 @@ import org.lwjgl.input.Keyboard
 
 @SideOnly(Side.CLIENT)
 open class Module : MinecraftInstance(), Listenable {
-
     // Module information
     // TODO: Remove ModuleInfo and change to constructor (#Kotlin)
     var name: String
@@ -103,6 +102,8 @@ open class Module : MinecraftInstance(), Listenable {
 
     val colorlessTagName: String
         get() = "$name${if (tag == null) "" else " " + stripColor(tag)}"
+
+    var width=10
 
     /**
      * Toggle module

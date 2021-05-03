@@ -108,4 +108,7 @@ object ColorUtils {
         hsb[2] = brightness % 2.0f
         return Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]))
     }
+
+    @JvmStatic
+    fun antiColor(color: Color) = Color(255-color.red,255-color.green,255-color.blue,color.alpha)
 }

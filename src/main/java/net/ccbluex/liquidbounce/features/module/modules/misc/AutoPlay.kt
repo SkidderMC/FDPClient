@@ -43,9 +43,9 @@ class AutoPlay : Module(){
             val item=packet.func_149174_e() ?: return
             val windowId=packet.func_149175_c()
             val slot=packet.func_149173_d()
-            val name=item.unlocalizedName
+            val itemName=item.unlocalizedName
             //do check
-            if(clickState==0 && windowId==0 && slot==42 && name.contains("paper",ignoreCase = true) && item.displayName.contains("Jogar novamente",ignoreCase = true)){
+            if(clickState==0 && windowId==0 && slot==42 && itemName.contains("paper",ignoreCase = true) && item.displayName.contains("Jogar novamente",ignoreCase = true)){
                 LiquidBounce.hud.addNotification(
                     Notification(name,"Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO)
                 )
@@ -59,7 +59,7 @@ class AutoPlay : Module(){
                         clickState=2
                     }
                 },delayValue.get()*1000L)
-            }else if(clickState==2 && windowId!=0 && slot==11 && name.contains("enderPearl",ignoreCase = true)){
+            }else if(clickState==2 && windowId!=0 && slot==11 && itemName.contains("enderPearl",ignoreCase = true)){
                 Timer().schedule(object :TimerTask() {
                     override fun run() {
                         clicking=false

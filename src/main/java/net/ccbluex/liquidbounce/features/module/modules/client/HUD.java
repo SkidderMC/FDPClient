@@ -26,6 +26,7 @@ public class HUD extends Module {
     public final IntegerValue hotbarAlphaValue = new IntegerValue("HotbarAlpha",150,0,255);
     public final BoolValue inventoryParticle = new BoolValue("InventoryParticle", false);
     public final BoolValue fontChatValue = new BoolValue("FontChat", false);
+    public final BoolValue chatRectValue = new BoolValue("ChatRect", true);
 
     public HUD() {
         setState(true);

@@ -42,7 +42,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd")
         val HOUR_FORMAT = SimpleDateFormat("HH:mm")
 
-        val DECIMAL_FORMAT = DecimalFormat("0.00")
+        val DECIMAL_FORMAT = DecimalFormat("#.##")
 
         /**
          * Create default element

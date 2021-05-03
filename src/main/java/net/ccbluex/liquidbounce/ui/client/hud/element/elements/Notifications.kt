@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-
 /**
  * CustomHUD Notification element
  */

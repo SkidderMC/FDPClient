@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.utils;
 
 public final class MovementUtils extends MinecraftInstance {
-
     public static float getSpeed() {
         return (float) Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ);
     }

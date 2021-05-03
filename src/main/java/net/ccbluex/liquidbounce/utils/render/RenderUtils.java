@@ -810,8 +810,8 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
 
-    public static int skyRainbow(int var2, float bright, float st) {
+    public static Color skyRainbow(int var2, float bright, float st) {
         double v1 = Math.ceil(System.currentTimeMillis() + (var2 * 109L)) / 5;
-        return Color.getHSBColor((double) ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright).getRGB();
+        return Color.getHSBColor((double) ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright);
     }
 }
