@@ -133,7 +133,8 @@ class ModuleManager : Listenable {
             InfinityAura::class.java,
             Regen::class.java,
             HackerDetector::class.java,
-            LightningDetect::class.java
+            LightningDetect::class.java,
+            NoRotate::class.java
         )
 
         registerModule(Fucker)
