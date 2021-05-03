@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.notify.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.player.EntityPlayer
@@ -74,7 +74,7 @@ class AutoAbuse : Module() {
     fun onUpdate(event: UpdateEvent?) {
         if (target != null && target!!.isDead) {
             val name=target!!.name
-            LiquidBounce.hud.addNotification(Notification("§cKilled §a$name",NotifyType.INFO))
+            LiquidBounce.hud.addNotification(Notification("Killed","Killed $name.", NotifyType.INFO))
             when (modeValue.get().toLowerCase()) {
                 "clear" -> {
                     sendAbuseWords("L $name",name)

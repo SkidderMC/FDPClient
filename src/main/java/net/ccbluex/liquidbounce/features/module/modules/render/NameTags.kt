@@ -5,12 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
+import net.ccbluex.liquidbounce.features.module.modules.player.HackerDetector
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
@@ -35,6 +37,7 @@ class NameTags : Module() {
     private val clearNamesValue = BoolValue("ClearNames", false)
     private val fontValue = FontValue("Font", Fonts.font40)
     private val borderValue = BoolValue("Border", true)
+    private val hackerValue = BoolValue("Hacker", true)
     private val jelloValue = BoolValue("Jello", true)
     private val jelloColorValue = BoolValue("JelloHPColor", true)
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255)
@@ -44,13 +47,9 @@ class NameTags : Module() {
     fun onRender3D(event: Render3DEvent) {
         for(entity in mc.theWorld.loadedEntityList) {
             if(EntityUtils.isSelected(entity, false)) {
-                renderNameTag(
-                    entity as EntityLivingBase,
-                    if (clearNamesValue.get())
-                        entity.name
-                    else
-                        entity.getDisplayName().unformattedText
-                )
+                renderNameTag(entity as EntityLivingBase,
+                    if(hackerValue.get()&&(LiquidBounce.moduleManager.getModule(HackerDetector::class.java) as HackerDetector).isHacker(entity))
+                    { "§c" }else{ "" } + if (clearNamesValue.get()){ entity.name } else { entity.getDisplayName().unformattedText })
             }
         }
     }

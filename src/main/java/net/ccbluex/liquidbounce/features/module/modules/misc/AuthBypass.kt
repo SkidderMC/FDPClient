@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.notify.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
@@ -32,7 +32,7 @@ class AuthBypass : Module(){
                 Timer().schedule(object :TimerTask(){
                     override fun run() {
                         mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId,packet.func_149173_d(),0,0,item,1919))
-                        LiquidBounce.hud.addNotification(Notification("Authenticate Bypassed",NotifyType.OKAY))
+                        LiquidBounce.hud.addNotification(Notification(name,"Authenticate bypassed.", NotifyType.SUCCESS))
                     }
                 },delayValue.get().toLong())
             }

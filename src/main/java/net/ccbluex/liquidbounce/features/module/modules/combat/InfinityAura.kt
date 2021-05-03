@@ -31,7 +31,7 @@ class InfinityAura : Module() {
     private val distValue=IntegerValue("Distance",30,20,100)
     private val moveDistValue=FloatValue("MoveDist",1F,0.3F,5F)
     private val antiFlag=BoolValue("AntiFlag",true)
-    private val kickBypass=BoolValue("KickBypass",true)
+    private val noRegen=BoolValue("NoRegen",true)
 
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
@@ -101,26 +101,6 @@ class InfinityAura : Module() {
             }
             mc.thePlayer.swingItem()
             mc.playerController.attackEntity(mc.thePlayer,entity)
-
-            if(kickBypass.get()){
-                val vec3=if(path.size>0){path[path.size-1]}else{playerPos}
-                val ground=calculateGround(vec3.yCoord,getBB(vec3))
-
-                var yCoord = vec3.yCoord
-                while (yCoord > ground) {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec3.xCoord, yCoord, vec3.zCoord, true))
-                    if (yCoord - 8.0 < ground) break // Prevent next step
-                    yCoord -= 8.0
-                }
-                yCoord=ground
-                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec3.xCoord, ground, vec3.zCoord, true))
-                while (yCoord < ground) {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec3.xCoord, yCoord, vec3.zCoord, true))
-                    if (yCoord + 8.0 < ground) break // Prevent next step
-                    yCoord += 8.0
-                }
-                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec3.xCoord, vec3.yCoord, vec3.zCoord, true))
-            }
         }
         //come back
         val path= PathUtils.findBlinkPath(posX,posY,posZ,mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,distValue.get().toDouble())
@@ -172,8 +152,11 @@ class InfinityAura : Module() {
                 event.cancelEvent()
             }
         }
-        if(needAntiTP&&
-            (event.packet is C04PacketPlayerPosition||event.packet is C03PacketPlayer.C06PacketPlayerPosLook)){
+        val isMovePacket=(event.packet is C04PacketPlayerPosition||event.packet is C03PacketPlayer.C06PacketPlayerPosLook)
+        if(needAntiTP&&isMovePacket){
+            event.cancelEvent()
+        }
+        if(noRegen.get()&&event.packet is C03PacketPlayer&&!isMovePacket){
             event.cancelEvent()
         }
     }

@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.ui.client.hud
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.notify.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.notify.Notifications
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.gui.ScaledResolution
@@ -24,7 +24,6 @@ open class HUD : MinecraftInstance() {
 
     val elements = mutableListOf<Element>()
     val notifications = mutableListOf<Notification>()
-    val alerts = mutableListOf<Alert>()
 
     companion object {
 
@@ -38,7 +37,6 @@ open class HUD : MinecraftInstance() {
                 TabGUI::class.java,
                 Text::class.java,
                 ScoreboardElement::class.java,
-                Alerts::class.java,
                 KeyStrokes::class.java,
                 SpeedGraph::class.java,
                 Inventory::class.java
@@ -209,20 +207,4 @@ open class HUD : MinecraftInstance() {
      * Remove [notification]
      */
     fun removeNotification(notification: Notification) = notifications.remove(notification)
-
-    fun addAlert(alert: Alert) {
-        var hasAlert=false
-        for(element in elements) {
-            if(element is Alerts){
-                hasAlert=true
-            }
-        }
-        if(hasAlert) {
-            alerts.add(alert)
-        }else{
-            addNotification(alert.toNotify())
-        }
-    }
-
-    fun removeAlert(alert: Alert) = alerts.remove(alert)
 }

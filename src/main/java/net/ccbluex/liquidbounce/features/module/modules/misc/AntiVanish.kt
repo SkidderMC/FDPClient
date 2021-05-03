@@ -7,26 +7,26 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Alert
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S13PacketDestroyEntities
 
 @ModuleInfo(name = "AntiVanish", description = "Anti player vanish", category = ModuleCategory.MISC)
 class AntiVanish : Module() {
-    private var lastAlert=-1L
+    private var lastNotify=-1L
     private var vanishCount=0
 
     @EventTarget
     fun onWorld(event: WorldEvent){
-        val clonedList = mutableListOf<Alert>()
-        for(alert in LiquidBounce.hud.alerts){
-            if(alert.title.contains("vanished",ignoreCase = true)) {
-                clonedList.add(alert)
+        val clonedList = mutableListOf<Notification>()
+        for(notification in LiquidBounce.hud.notifications){
+            if(notification.title.contains("vanished",ignoreCase = true)) {
+                clonedList.add(notification)
             }
         }
         for(alert in clonedList){
-            LiquidBounce.hud.removeAlert(alert)
+            LiquidBounce.hud.removeNotification(alert)
         }
     }
 
@@ -42,17 +42,17 @@ class AntiVanish : Module() {
             }
 
             if(havePlayer){
-                if((System.currentTimeMillis()-lastAlert)>7000){
+                if((System.currentTimeMillis()-lastNotify)>7000){
                     vanishCount=0
-                    LiquidBounce.hud.addAlert(Alert("Vanished Warning","A player is vanished!", NotifyType.INFO,1500))
+                    LiquidBounce.hud.addNotification(Notification("Vanished Warning","A player is vanished!", NotifyType.INFO,1500))
                 }else{
                     vanishCount++
                 }
-                lastAlert=System.currentTimeMillis()
+                lastNotify=System.currentTimeMillis()
 
                 if(vanishCount>=3){
                     vanishCount=0
-                    LiquidBounce.hud.addAlert(Alert("Vanished Error","Something bad happened.", NotifyType.WARN,3000))
+                    LiquidBounce.hud.addNotification(Notification("Vanished Error","Something bad happened.", NotifyType.ERROR,3000))
                 }
             }
         }

@@ -46,7 +46,6 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tags = BoolValue("Tags", true)
     private val shadow = BoolValue("ShadowText", true)
-    private val jelloShadow = BoolValue("JelloShadow", false)
     private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
@@ -118,8 +117,6 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         val textSpacer = textHeight + space
         val saturation = saturationValue.get()
         val brightness = brightnessValue.get()
-        val jelloShadow=jelloShadow.get()
-        val shadowImage=LiquidBounce.iconManager.getIcon("shadow")
 
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
@@ -139,10 +136,6 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
                     val rectX=xPos - if (rectMode.equals("right", true)) 5 else 2
-                    if(jelloShadow) {
-                        RenderUtils.drawImage(shadowImage, rectX.toInt(), yPos.toInt()
-                            , abs(rectX).toInt(), textHeight.toInt())
-                    }
                     RenderUtils.drawRect(
                             rectX,
                             yPos,
@@ -225,10 +218,6 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             if (side.vertical == Vertical.DOWN) index + 1 else index
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
-                    if(jelloShadow) {
-                        RenderUtils.drawImage(shadowImage, 0, yPos.toInt()
-                            , (xPos + width + if (rectMode.equals("right", true)) 5 else 2).toInt(), textHeight.toInt())
-                    }
                     RenderUtils.drawRect(
                             0F,
                             yPos,

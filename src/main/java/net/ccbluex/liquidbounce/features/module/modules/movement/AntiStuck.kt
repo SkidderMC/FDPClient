@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Alert
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -55,7 +55,7 @@ class AntiStuck : Module() {
                 timer.reset()
                 flagTime=0
                 stuck=true
-                LiquidBounce.hud.addAlert(Alert("AntiStuck","Trying to unstuck you",NotifyType.OKAY,1500))
+                LiquidBounce.hud.addNotification(Notification(name,"Trying to unstuck you", NotifyType.SUCCESS,1500))
             }
             if(timer.hasTimePassed(1000)){
                 flagTime=0

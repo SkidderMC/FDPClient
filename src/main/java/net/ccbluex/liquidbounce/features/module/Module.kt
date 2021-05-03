@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.ToggleSound
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.notify.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
@@ -67,10 +67,10 @@ open class Module : MinecraftInstance(), Listenable {
             if (!LiquidBounce.isStarting) {
                 if(value){
                     ToggleSound.playSound(true)
-                    LiquidBounce.hud.addNotification(Notification("$name Enabled",NotifyType.OKAY))
+                    LiquidBounce.hud.addNotification(Notification(name,"Enabled $name", NotifyType.SUCCESS))
                 }else{
                     ToggleSound.playSound(false)
-                    LiquidBounce.hud.addNotification(Notification("$name Disabled",NotifyType.WARN))
+                    LiquidBounce.hud.addNotification(Notification(name,"Disabled $name", NotifyType.ERROR))
                 }
             }
 

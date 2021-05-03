@@ -2,9 +2,12 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -35,15 +38,28 @@ class HackerDetector : Module() {
     private val vlValue=IntegerValue("VL",300,100,500)
 
     private val datas=HashMap<EntityPlayer,HackerData>()
-    private val reportedPlayers=ArrayList<String>()
+    private val hackers=ArrayList<String>()
 
-//    @EventTarget
-//    fun onUpdate(event: UpdateEvent){
-//        //this takes a bit time so we do it async
-//        if(movementCheck.get()) {
-//            Thread { checkMove() }.start()
-//        }
-//    }
+    @EventTarget
+    fun onUpdate(event: UpdateEvent){
+        //this takes a bit time so we do it async
+        Thread { doGC() }.start()
+    }
+
+    private fun doGC(){
+        val needRemove=ArrayList<EntityPlayer>()
+        for((player,_) in datas){
+            if(player.isDead){
+                needRemove.add(player)
+            }
+        }
+        for(player in needRemove){
+            datas.remove(player)
+            if(debugMode.get()){
+                chat("[GC] REMOVE ${player.name}")
+            }
+        }
+    }
 
     @EventTarget
     fun onPacket(event: PacketEvent){
@@ -75,19 +91,21 @@ class HackerDetector : Module() {
 
     override fun onEnable() {
         datas.clear()
-        reportedPlayers.clear()
+        hackers.clear()
     }
 
-    //onupdate
-//    private fun checkMove(){
-//        for(entity in mc.theWorld.loadedEntityList){
-//            if(entity !is EntityPlayer) continue
-//            checkPlayer(entity)
-//        }
-//    }
+    @EventTarget
+    fun onWorld(event: WorldEvent){
+        datas.clear()
+    }
+
+    fun isHacker(entity: EntityLivingBase):Boolean {
+        if (entity !is EntityPlayer) return false
+        return hackers.contains(entity.name)
+    }
 
     private fun checkPlayer(player: EntityPlayer){
-        if(player.equals(mc.thePlayer)) return
+        if(player.equals(mc.thePlayer)||EntityUtils.isFriend(player)) return
         if(datas[player]==null) datas[player] = HackerData(player)
         val data=datas[player] ?: return
         data.update()
@@ -163,7 +181,7 @@ class HackerDetector : Module() {
         //speed
         val distanceXZ=abs(data.motionXZ)
         if(data.airTicks==0){ //onGround
-            var limit = 0.34
+            var limit = 0.37
             if(data.groundTicks < 5) limit += 0.1
             if(player.isBlocking) limit *= 0.45
             if(player.isSneaking) limit *= 0.68
@@ -175,11 +193,10 @@ class HackerDetector : Module() {
                 flag("speed",20,data,"GROUND SPEED(speed=$distanceXZ,limit=$limit)")
             }
         }else{
-
             val multiplier = 0.985
             var predict = 0.36 * multiplier.pow(data.airTicks + 1)
             if (data.airTicks >= 115)
-                predict = Math.max(0.08, predict);
+                predict = 0.08.coerceAtLeast(predict);
             var limit=0.05
             if(player.isPotionActive(Potion.moveSpeed)){
                 predict += player.getActivePotionEffect(Potion.moveSpeed).amplifier * 0.05
@@ -230,9 +247,9 @@ class HackerDetector : Module() {
 
             //autoreport only redesky
             val name=data.player.name
-            if(report.get()&&!reportedPlayers.contains(name)){
+            if(report.get()&&!hackers.contains(name)){
                 mc.thePlayer.sendChatMessage("/reportar $name")
-                reportedPlayers.add(name)
+                hackers.add(name)
             }
         }
     }
@@ -250,7 +267,7 @@ class HackerDetector : Module() {
 
         //multi attacker may cause false result
         if(attackerCount!=1) return
-        if(attacker!! == entity) return //im a hacker lol
+        if(attacker!! == entity||EntityUtils.isFriend(attacker)) return //i and my friend is hacker lol
         val data=datas[attacker] ?: return
 
         //reach check

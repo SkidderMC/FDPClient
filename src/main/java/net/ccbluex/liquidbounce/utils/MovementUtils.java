@@ -83,4 +83,12 @@ public final class MovementUtils extends MinecraftInstance {
 
         return Math.toRadians(rotationYaw);
     }
+
+    public static double getBlocksPerSecond() {
+        if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 1) {
+            return 0.0;
+        }
+        final double distance = mc.thePlayer.getDistance(mc.thePlayer.lastTickPosX, mc.thePlayer.lastTickPosY, mc.thePlayer.lastTickPosZ);
+        return distance * (20 * mc.timer.timerSpeed);
+    }
 }

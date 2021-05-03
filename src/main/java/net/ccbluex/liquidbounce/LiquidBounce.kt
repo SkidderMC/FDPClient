@@ -22,7 +22,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindMgr
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.other.IconManager
 import net.ccbluex.liquidbounce.ui.other.MusicManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
@@ -50,7 +49,6 @@ object LiquidBounce {
     lateinit var fileManager: FileManager
     lateinit var scriptManager: ScriptManager
     lateinit var musicManager: MusicManager
-    lateinit var iconManager: IconManager
     lateinit var combatManager: CombatManager
 
     // HUD & ClickGUI & KeybindMgr
@@ -111,9 +109,6 @@ object LiquidBounce {
 
         // Load client fonts
         Fonts.loadFonts()
-
-        // Load client icons
-        iconManager = IconManager()
 
         // Setup module manager and register modules
         moduleManager = ModuleManager()

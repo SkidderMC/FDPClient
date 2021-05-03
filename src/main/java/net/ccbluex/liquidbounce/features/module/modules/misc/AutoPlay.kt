@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.notify.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -46,7 +46,9 @@ class AutoPlay : Module(){
             val name=item.unlocalizedName
             //do check
             if(clickState==0 && windowId==0 && slot==42 && name.contains("paper",ignoreCase = true) && item.displayName.contains("Jogar novamente",ignoreCase = true)){
-                LiquidBounce.hud.addNotification(Notification("Sending you to next game in ${delayValue.get()}s...",NotifyType.INFO))
+                LiquidBounce.hud.addNotification(
+                    Notification(name,"Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO)
+                )
                 clickState=1
                 clicking=true
                 Timer().schedule(object :TimerTask(){
