@@ -30,7 +30,7 @@ class AutoAbuse : Module() {
             "Clear",
             "WithWords",
             "RawWords"
-        ), "WithWords"
+        ), "RawWords"
     )
     private val waterMarkValue = BoolValue("WaterMark", true)
 

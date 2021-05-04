@@ -47,6 +47,7 @@ class LongJump : Module() {
     private val rs3JumpTimeValue=IntegerValue("RedeSky3JumpTime",500,300,1500)
     private val rs3BoostValue=FloatValue("RedeSky3Boost",1F,0.3F,1.5F)
     private val rs3HeightValue=FloatValue("RedeSky3Height",1F,0.3F,1.5F)
+    private val rs3TimerValue = FloatValue("RedeSky3Timer",1F,0.1F,5F)
     private val autoJumpValue = BoolValue("AutoJump", true)
     private val autoCloseValue = BoolValue("AutoClose", true)
     private var jumped = false
@@ -65,7 +66,7 @@ class LongJump : Module() {
 
     override fun onDisable() {
         when(modeValue.get().toLowerCase()){
-            "redesky" -> {
+            "redesky","redesky3" -> {
                 mc.timer.timerSpeed = 1F
             }
             "redesky2" -> {
@@ -193,6 +194,9 @@ class LongJump : Module() {
                         if(!timer.hasTimePassed(rs3JumpTimeValue.get().toLong())){
                             mc.thePlayer.motionY+=rs3HeightValue.get()/10F
                             MovementUtils.move(rs3BoostValue.get()/10F)
+                            mc.timer.timerSpeed = rs3TimerValue.get()
+                        }else{
+                            mc.timer.timerSpeed = 1F
                         }
                     }
                 }

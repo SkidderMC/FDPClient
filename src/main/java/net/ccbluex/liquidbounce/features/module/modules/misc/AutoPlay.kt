@@ -47,7 +47,7 @@ class AutoPlay : Module(){
             //do check
             if(clickState==0 && windowId==0 && slot==42 && itemName.contains("paper",ignoreCase = true) && item.displayName.contains("Jogar novamente",ignoreCase = true)){
                 LiquidBounce.hud.addNotification(
-                    Notification(name,"Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO)
+                    Notification(name,"Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO,time=delayValue.get()*1000-500)
                 )
                 clickState=1
                 clicking=true

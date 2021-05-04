@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 
 class CombatManager : Listenable,MinecraftInstance() {
@@ -16,6 +17,8 @@ class CombatManager : Listenable,MinecraftInstance() {
     @EventTarget
     fun onUpdate(event: UpdateEvent){
         if(mc.thePlayer==null) return
+        MovementUtils.updateBlocksPerSecond()
+
         inCombat=false
 
         if(!lastAttackTimer.hasTimePassed(1500)){

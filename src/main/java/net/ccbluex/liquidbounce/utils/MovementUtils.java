@@ -83,11 +83,20 @@ public final class MovementUtils extends MinecraftInstance {
         return Math.toRadians(rotationYaw);
     }
 
-    public static double getBlocksPerSecond() {
+    private static double bps=0.0,lastX=0.0,lastY=0.0,lastZ=0.0;
+
+    public static void updateBlocksPerSecond() {
         if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 1) {
-            return 0.0;
+            bps=0.0;
         }
-        final double distance = mc.thePlayer.getDistance(mc.thePlayer.lastTickPosX, mc.thePlayer.lastTickPosY, mc.thePlayer.lastTickPosZ);
-        return distance * (20 * mc.timer.timerSpeed);
+        final double distance = mc.thePlayer.getDistance(lastX, lastY, lastZ);
+        lastX=mc.thePlayer.posX;
+        lastY=mc.thePlayer.posY;
+        lastZ=mc.thePlayer.posZ;
+        bps = distance * (20 * mc.timer.timerSpeed);
+    }
+
+    public static double getBlocksPerSecond(){
+        return bps;
     }
 }

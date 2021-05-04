@@ -32,7 +32,7 @@ class AuthBypass : Module(){
                 Timer().schedule(object :TimerTask(){
                     override fun run() {
                         mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId,packet.func_149173_d(),0,0,item,1919))
-                        LiquidBounce.hud.addNotification(Notification(name,"Authenticate bypassed.", NotifyType.SUCCESS))
+                        LiquidBounce.hud.addNotification(Notification(name,"Authenticate bypassed.", NotifyType.INFO))
                     }
                 },delayValue.get().toLong())
             }

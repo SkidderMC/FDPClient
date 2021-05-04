@@ -249,8 +249,8 @@ class HackerDetector : Module() {
             val name=data.player.name
             if(report.get()&&!hackers.contains(name)){
                 mc.thePlayer.sendChatMessage("/reportar $name")
-                hackers.add(name)
             }
+            hackers.add(name)
         }
     }
 
