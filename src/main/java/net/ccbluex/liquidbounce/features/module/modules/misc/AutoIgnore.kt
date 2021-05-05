@@ -1,10 +1,13 @@
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C01PacketChatMessage
@@ -52,7 +55,7 @@ class AutoIgnore : Module() {
 
                 if(chatVL[name]!!>vlValue.get()){
                     mc.thePlayer.sendChatMessage("/ignorar add $name")
-                    chat("$name ignored for spamming...")
+                    LiquidBounce.hud.addNotification(Notification(this.name,"$name ignored for spamming...",NotifyType.INFO,time = 1500))
                     blockedPlayer.add(name.toLowerCase())
                     event.cancelEvent()
                 }

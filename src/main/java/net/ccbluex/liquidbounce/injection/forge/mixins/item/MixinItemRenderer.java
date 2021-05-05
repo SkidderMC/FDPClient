@@ -242,6 +242,10 @@ public abstract class MixinItemRenderer {
                                     doBlockTransformations();
                                     break;
                                 }
+                                case "Rotate":{
+                                    rotateSword(f1);
+                                    break;
+                                }
                             }
                         }else{
                             this.transformFirstPersonItem(f + 0.1F, f1);
@@ -319,6 +323,26 @@ public abstract class MixinItemRenderer {
         GlStateManager.rotate(var12 * -40.0F, 1.0F, 0.0F, 0.0F);
         doItemRenderGLScale();
     }
+
+    private void rotateSword(float f1){
+        genCustom(0.0F, 0.0F);
+        doBlockTransformations();
+        GlStateManager.translate(-0.5F, 0.2F, 0.0F);
+        GlStateManager.rotate(MathHelper.sqrt_float(f1) * 10.0F * 40.0F, 1.0F, -0.0F, 2.0F);
+    }
+
+    private void genCustom(float p_178096_1_, float p_178096_2_) {
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        GlStateManager.translate(0.0F, p_178096_1_ * -0.6F, 0.0F);
+        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+        float var3 = MathHelper.sin(p_178096_2_ * p_178096_2_ * 3.1415927F);
+        float var4 = MathHelper.sin(MathHelper.sqrt_float(p_178096_2_) * 3.1415927F);
+        GlStateManager.rotate(var3 * -34.0F, 0.0F, 1.0F, 0.2F);
+        GlStateManager.rotate(var4 * -20.7F, 0.2F, 0.1F, 1.0F);
+        GlStateManager.rotate(var4 * -68.6F, 1.3F, 0.1F, 0.2F);
+        GlStateManager.scale(0.4F, 0.4F, 0.4F);
+    }
+
 
     private void jello(float var12) {
         doItemRenderGLTranslate();

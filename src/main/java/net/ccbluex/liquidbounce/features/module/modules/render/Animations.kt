@@ -14,7 +14,7 @@ class Animations : Module() {
         "Preset", arrayOf(
             "Akrien", "Avatar", "ETB", "Exhibition", "Push", "Reverse",
             "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX",
-            "Swank", "Jello", "None"
+            "Swank", "Jello", "None","Rotate"
         ),
         "SlideDown"
     )

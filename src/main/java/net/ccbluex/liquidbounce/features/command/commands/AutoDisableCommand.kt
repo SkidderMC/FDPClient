@@ -34,7 +34,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
             return
         }
 
-        chatSyntax("toggle <module> [on/off]")
+        chatSyntax("autodisable <module> [none/respawn/flag]")
     }
 
     override fun tabComplete(args: Array<String>): List<String> {
