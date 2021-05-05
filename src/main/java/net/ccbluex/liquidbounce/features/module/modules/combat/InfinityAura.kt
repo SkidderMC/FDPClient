@@ -11,9 +11,9 @@ import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.path.PathUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.FloatValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -25,12 +25,12 @@ import java.awt.Color
 
 @ModuleInfo(name = "InfinityAura", description = "lol", category = ModuleCategory.COMBAT)
 class InfinityAura : Module() {
-    private val targetsValue=IntegerValue("Targets",3,1,10)
-    private val cpsValue=IntegerValue("CPS",1,1,10)
-    private val distValue=IntegerValue("Distance",30,20,100)
-    private val moveDistValue=FloatValue("MoveDist",1F,0.3F,5F)
-    private val antiFlag=BoolValue("AntiFlag",true)
-    private val noRegen=BoolValue("NoRegen",true)
+    private val targetsValue= IntegerValue("Targets",3,1,10)
+    private val cpsValue= IntegerValue("CPS",1,1,10)
+    private val distValue= IntegerValue("Distance",30,20,100)
+    private val moveDistValue= FloatValue("MoveDist",1F,0.3F,5F)
+    private val antiFlag= BoolValue("AntiFlag",true)
+    private val noRegen= BoolValue("NoRegen",true)
 
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()

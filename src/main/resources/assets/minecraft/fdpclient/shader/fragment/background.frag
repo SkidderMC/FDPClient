@@ -50,8 +50,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
 	p += .2 * vec3(sin(iTime / 16.), sin(iTime / 12.),  sin(iTime / 128.));
 
 	float freqs[4];
-	// TODO: Add music support for liquidbounce
-	// https://github.com/CCBlueX/LiquidBounce-Issues/issues/3932
 	freqs[0] = 0.02;
 	freqs[1] = 0.07;
 	freqs[2] = 0.15;

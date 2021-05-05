@@ -69,8 +69,6 @@ object ColorUtils {
         return Color(currentColor.red / 255F * 1F, currentColor.green / 255f * 1F, currentColor.blue / 255F * 1F, currentColor.alpha / 255F)
     }
 
-    // TODO: Use kotlin optional argument feature
-
     @JvmStatic
     fun rainbow(offset: Long): Color {
         val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 10000000000F % 1, 1F, 1F))

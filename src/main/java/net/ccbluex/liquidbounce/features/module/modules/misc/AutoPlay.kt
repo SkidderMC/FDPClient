@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
@@ -22,8 +22,8 @@ import java.util.*
 @ModuleInfo(name = "AutoPlay", description = "Auto join another game(only redesky).", category = ModuleCategory.MISC)
 class AutoPlay : Module(){
     private var clickState=0
-    private val silentValue=BoolValue("Silent",true)
-    private val delayValue=IntegerValue("JoinDelay",3,0,7)
+    private val silentValue= BoolValue("Silent",true)
+    private val delayValue= IntegerValue("JoinDelay",3,0,7)
 
     private var clicking=false
 

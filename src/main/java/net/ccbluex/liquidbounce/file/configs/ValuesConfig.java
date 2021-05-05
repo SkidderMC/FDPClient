@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
-import net.ccbluex.liquidbounce.value.Value;
+import net.ccbluex.liquidbounce.features.Value;
 
 import java.io.*;
 import java.util.Iterator;

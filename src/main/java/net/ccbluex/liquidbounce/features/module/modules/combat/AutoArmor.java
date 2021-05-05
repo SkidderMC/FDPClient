@@ -16,8 +16,8 @@ import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.item.ArmorComparator;
 import net.ccbluex.liquidbounce.utils.item.ArmorPiece;
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
+import net.ccbluex.liquidbounce.features.BoolValue;
+import net.ccbluex.liquidbounce.features.IntegerValue;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+// TODO: convert to kotlin
 @ModuleInfo(name = "AutoArmor", description = "Automatically equips the best armor in your inventory.", category = ModuleCategory.COMBAT)
 public class AutoArmor extends Module {
 
@@ -141,5 +142,4 @@ public class AutoArmor extends Module {
 
         return false;
     }
-
 }

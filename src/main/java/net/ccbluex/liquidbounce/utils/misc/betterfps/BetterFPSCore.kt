@@ -14,16 +14,10 @@ class BetterFPSCore {
     var taylor: TaylorMath
 
     init {
-        instance = this
         libGDX = LibGDXMath()
         rivens_full = RivensFullMath()
         rivens_half = RivensHalfMath()
         rivens = RivensMath()
         taylor = TaylorMath()
-    }
-
-    companion object {
-        @JvmStatic
-        lateinit var instance: BetterFPSCore
     }
 }

@@ -15,9 +15,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
-import net.ccbluex.liquidbounce.value.ListValue;
+import net.ccbluex.liquidbounce.features.BoolValue;
+import net.ccbluex.liquidbounce.features.IntegerValue;
+import net.ccbluex.liquidbounce.features.ListValue;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,9 +31,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// TODO: convert to kotlin
 @ModuleInfo(name = "AntiBot", description = "Prevents KillAura from attacking AntiCheat bots.", category = ModuleCategory.MISC)
 public class AntiBot extends Module {
-
     private final BoolValue tabValue = new BoolValue("Tab", true);
     private final ListValue tabModeValue = new ListValue("TabMode", new String[] {"Equals", "Contains"}, "Contains");
     private final BoolValue entityIDValue = new BoolValue("EntityID", true);
@@ -225,5 +225,4 @@ public class AntiBot extends Module {
 
         return entity.getName().isEmpty() || entity.getName().equals(mc.thePlayer.getName());
     }
-
 }

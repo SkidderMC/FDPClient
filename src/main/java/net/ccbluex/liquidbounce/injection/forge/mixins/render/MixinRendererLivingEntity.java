@@ -92,24 +92,23 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 float gamma = mc.gameSettings.gammaSetting;
                 mc.gameSettings.gammaSetting = 100000F;
 
-                switch(esp.modeValue.get().toLowerCase()) {
-                    case "wireframe":
-                        GL11.glPushMatrix();
-                        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-                        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-                        GL11.glDisable(GL11.GL_TEXTURE_2D);
-                        GL11.glDisable(GL11.GL_LIGHTING);
-                        GL11.glDisable(GL11.GL_DEPTH_TEST);
-                        GL11.glEnable(GL11.GL_LINE_SMOOTH);
-                        GL11.glEnable(GL11.GL_BLEND);
-                        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                        RenderUtils.glColor(esp.getColor(entitylivingbaseIn));
-                        GL11.glLineWidth(esp.wireframeWidth.get());
-                        this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
-                        GL11.glPopAttrib();
-                        GL11.glPopMatrix();
-                        break;
+                if (esp.getModeValue().get().equalsIgnoreCase("wireframe")) {
+                    GL11.glPushMatrix();
+                    GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+                    GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    GL11.glDisable(GL11.GL_DEPTH_TEST);
+                    GL11.glEnable(GL11.GL_LINE_SMOOTH);
+                    GL11.glEnable(GL11.GL_BLEND);
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                    RenderUtils.glColor(esp.getColor(entitylivingbaseIn));
+                    GL11.glLineWidth(esp.getWireframeWidth().get());
+                    this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+                    GL11.glPopAttrib();
+                    GL11.glPopMatrix();
                 }
+
                 mc.gameSettings.fancyGraphics = fancyGraphics;
                 mc.gameSettings.gammaSetting = gamma;
             }

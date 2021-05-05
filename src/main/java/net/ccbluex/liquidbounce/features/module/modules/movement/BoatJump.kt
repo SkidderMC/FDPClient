@@ -6,9 +6,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.FloatValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.util.Vec3
@@ -17,10 +17,10 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "BoatJump", description = "Insane jump xdddd.", category = ModuleCategory.MOVEMENT)
 class BoatJump : Module() {
-    private val hBoost=FloatValue("HBoost",3.0F,0F,6.0F)
-    private val vBoost=FloatValue("VBoost",3.0F,0F,6.0F)
-    private val delay=IntegerValue("Delay",200,100,500)
-    private val autoHit=BoolValue("AutoHit",true)
+    private val hBoost= FloatValue("HBoost",3.0F,0F,6.0F)
+    private val vBoost= FloatValue("VBoost",3.0F,0F,6.0F)
+    private val delay= IntegerValue("Delay",200,100,500)
+    private val autoHit= BoolValue("AutoHit",true)
 
     private var jumpState=1
     private val timer=MSTimer()

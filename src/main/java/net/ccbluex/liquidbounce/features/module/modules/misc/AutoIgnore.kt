@@ -9,14 +9,14 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.minecraft.network.play.client.C01PacketChatMessage
 import net.minecraft.network.play.server.S02PacketChat
 
 @ModuleInfo(name = "AutoIgnore", description = "Auto ignore spammers(only redesky).", category = ModuleCategory.MISC)
 class AutoIgnore : Module() {
-    private val minDelayValue=IntegerValue("MinDelay",3000,1000,5000)
-    private val vlValue=IntegerValue("IgnoreVL",3,1,7)
+    private val minDelayValue= IntegerValue("MinDelay",3000,1000,5000)
+    private val vlValue= IntegerValue("IgnoreVL",3,1,7)
 
     private val chatTimes=HashMap<String,Long>()
     private val chatVL=HashMap<String,Float>()

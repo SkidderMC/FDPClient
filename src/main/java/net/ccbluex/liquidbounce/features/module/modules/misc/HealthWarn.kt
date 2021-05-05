@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 
 @ModuleInfo(name = "HealthWarn", description = "Show warning when you during low health.", category = ModuleCategory.MISC, array = false)
 class HealthWarn : Module() {

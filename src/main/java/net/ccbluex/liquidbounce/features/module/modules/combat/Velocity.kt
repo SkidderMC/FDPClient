@@ -16,9 +16,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.FloatValue
+import net.ccbluex.liquidbounce.features.ListValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.util.MathHelper
@@ -197,6 +197,7 @@ class Velocity : Module() {
 
         if (packet is S27PacketExplosion) {
             // TODO: Support velocity for explosions
+            // anti client crasher? lol
             event.cancelEvent()
         }
     }

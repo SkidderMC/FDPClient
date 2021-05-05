@@ -19,9 +19,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop3
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHopOld
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.FloatValue
+import net.ccbluex.liquidbounce.features.ListValue
 
 @ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT, autoDisable = AutoDisableType.FLAG)
 class Speed : Module() {
@@ -123,14 +123,14 @@ class Speed : Module() {
     }
 
     @EventTarget
-    fun onMove(event: MoveEvent?) {
+    fun onMove(event: MoveEvent) {
         if (mc.thePlayer.isSneaking) return
         val speedMode = mode
         speedMode?.onMove(event)
     }
 
     @EventTarget
-    fun onTick(event: TickEvent?) {
+    fun onTick(event: TickEvent) {
         if (mc.thePlayer.isSneaking) return
         val speedMode = mode
         speedMode?.onTick()

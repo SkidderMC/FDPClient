@@ -43,7 +43,7 @@ public class TransformerLoader implements IFMLLoadingPlugin {
      * main thread, to perform any additional setup this coremod may require. It will be
      * run <strong>prior</strong> to Minecraft starting, so it CANNOT operate on minecraft
      * itself. The game will deliberately crash if this code is detected to trigger a
-     * minecraft class loading (TODO: implement crash ;) )
+     * minecraft class loading
      */
     @Override
     public String getSetupClass() {

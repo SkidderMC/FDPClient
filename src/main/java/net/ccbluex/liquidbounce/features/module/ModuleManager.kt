@@ -199,12 +199,6 @@ class ModuleManager : Listenable {
     }
 
     /**
-     * Legacy stuff
-     *
-     * TODO: Remove later when everything is translated to Kotlin
-     */
-
-    /**
      * Get module by [moduleClass]
      */
     fun getModule(moduleClass: Class<*>) = moduleClassMap[moduleClass]

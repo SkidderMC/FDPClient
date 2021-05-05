@@ -107,5 +107,4 @@ public class ArmorComparator implements Comparator<ArmorPiece> {
         return sum;
 
     }
-
 }

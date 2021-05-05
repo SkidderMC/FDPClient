@@ -13,12 +13,13 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
-import net.ccbluex.liquidbounce.value.ListValue;
+import net.ccbluex.liquidbounce.features.ListValue;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.AxisAlignedBB;
 
+// TODO: convert to kotlin,add aacv4/phase mode
 @ModuleInfo(name = "NoFall", description = "Prevents you from taking fall damage.", category = ModuleCategory.PLAYER)
 public class NoFall extends Module {
 
@@ -46,27 +47,29 @@ public class NoFall extends Module {
             return;
 
         switch(modeValue.get().toLowerCase()) {
-            case "packet":
-                if(mc.thePlayer.fallDistance > 2F)
+            case "packet": {
+                if (mc.thePlayer.fallDistance > 2F)
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
                 break;
-            case "cubecraft":
-                if(mc.thePlayer.fallDistance > 2F) {
+            }
+            case "cubecraft": {
+                if (mc.thePlayer.fallDistance > 2F) {
                     mc.thePlayer.onGround = false;
                     mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(true));
                 }
                 break;
-            case "aac":
-                if(mc.thePlayer.fallDistance > 2F) {
+            }
+            case "aac": {
+                if (mc.thePlayer.fallDistance > 2F) {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
                     state = 2;
-                }else if(state == 2 && mc.thePlayer.fallDistance < 2) {
+                } else if (state == 2 && mc.thePlayer.fallDistance < 2) {
                     mc.thePlayer.motionY = 0.1D;
                     state = 3;
                     return;
                 }
 
-                switch(state) {
+                switch (state) {
                     case 3:
                         mc.thePlayer.motionY = 0.1D;
                         state = 4;
@@ -81,31 +84,35 @@ public class NoFall extends Module {
                         break;
                 }
                 break;
-            case "laac":
-                if(!jumped && mc.thePlayer.onGround && !mc.thePlayer.isOnLadder() && !mc.thePlayer.isInWater()
+            }
+            case "laac": {
+                if (!jumped && mc.thePlayer.onGround && !mc.thePlayer.isOnLadder() && !mc.thePlayer.isInWater()
                         && !mc.thePlayer.isInWeb)
                     mc.thePlayer.motionY = -6;
                 break;
-            case "aac3.3.11":
-                if(mc.thePlayer.fallDistance > 2) {
+            }
+            case "aac3.3.11": {
+                if (mc.thePlayer.fallDistance > 2) {
                     mc.thePlayer.motionX = mc.thePlayer.motionZ = 0;
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
                             mc.thePlayer.posY - 10E-4D, mc.thePlayer.posZ, mc.thePlayer.onGround));
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
                 }
                 break;
-            case "aac3.3.15":
-                if(mc.thePlayer.fallDistance > 2) {
-                    if(!mc.isIntegratedServerRunning())
+            }
+            case "aac3.3.15": {
+                if (mc.thePlayer.fallDistance > 2) {
+                    if (!mc.isIntegratedServerRunning())
                         mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
                                 Double.NaN, mc.thePlayer.posZ, false));
                     mc.thePlayer.fallDistance = -9999;
                 }
                 break;
-            case "spartan":
+            }
+            case "spartan": {
                 spartanTimer.update();
 
-                if(mc.thePlayer.fallDistance > 1.5 && spartanTimer.hasTimePassed(10)) {
+                if (mc.thePlayer.fallDistance > 1.5 && spartanTimer.hasTimePassed(10)) {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
                             mc.thePlayer.posY + 10, mc.thePlayer.posZ, true));
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
@@ -113,6 +120,7 @@ public class NoFall extends Module {
                     spartanTimer.reset();
                 }
                 break;
+            }
         }
     }
 

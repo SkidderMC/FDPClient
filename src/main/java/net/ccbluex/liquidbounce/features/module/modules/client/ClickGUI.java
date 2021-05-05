@@ -16,16 +16,17 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.LiquidBounceStyl
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.NullStyle;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.SlowlyStyle;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.FloatValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
-import net.ccbluex.liquidbounce.value.ListValue;
+import net.ccbluex.liquidbounce.features.BoolValue;
+import net.ccbluex.liquidbounce.features.FloatValue;
+import net.ccbluex.liquidbounce.features.IntegerValue;
+import net.ccbluex.liquidbounce.features.ListValue;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
+// TODO: Rewrite clickgui
 @ModuleInfo(name = "ClickGUI", description = "Opens the ClickGUI.", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUI extends Module {
     private final ListValue styleValue = new ListValue("Style", new String[] {"LiquidBounce", "Null", "Slowly"}, "Slowly") {

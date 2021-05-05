@@ -9,7 +9,6 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ChatLine;
@@ -91,7 +90,7 @@ public abstract class MixinGuiNewChat {
     @Overwrite
     public void printChatMessage(IChatComponent chatComponent) {
         checkHud();
-        if(!hud.chatFilterValue.get()) {
+        if(!hud.getChatCombineValue().get()) {
             printChatMessageWithOptionalDeletion(chatComponent, this.line);
             return;
         }
@@ -116,7 +115,7 @@ public abstract class MixinGuiNewChat {
     @Overwrite
     public void drawChat(int updateCounter) {
         checkHud();
-        boolean canFont=hud.getState() && hud.fontChatValue.get();
+        boolean canFont=hud.getState() && hud.getFontChatValue().get();
 
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
             int i = this.getLineCount();
@@ -158,7 +157,7 @@ public abstract class MixinGuiNewChat {
                             if (l1 > 3) {
                                 int i2 = 0;
                                 int j2 = -i1 * 9;
-                                if(hud.chatRectValue.get()) {
+                                if(hud.getChatRectValue().get()) {
                                     RenderUtils.drawRect(i2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
                                 }
                                 String s = fixString(chatline.getChatComponent().getFormattedText());
@@ -213,7 +212,7 @@ public abstract class MixinGuiNewChat {
     @Inject(method = "getChatComponent", at = @At("HEAD"), cancellable = true)
     private void getChatComponent(int p_getChatComponent_1_, int p_getChatComponent_2_, final CallbackInfoReturnable<IChatComponent> callbackInfo) {
         checkHud();
-        if(hud.getState() && hud.fontChatValue.get()) {
+        if(hud.getState() && hud.getFontChatValue().get()) {
             if(!this.getChatOpen()) {
                 callbackInfo.setReturnValue(null);
             }else{

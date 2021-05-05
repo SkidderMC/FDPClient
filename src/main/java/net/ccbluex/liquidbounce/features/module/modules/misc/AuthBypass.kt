@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
@@ -17,7 +17,7 @@ import java.util.*
 @ModuleInfo(name = "AuthBypass", description = "Bypass auth when join server(only redesky).", category = ModuleCategory.MISC)
 class AuthBypass : Module(){
     //redesky add a authbypass check :(
-    private val delayValue=IntegerValue("Delay",1500,100,5000)
+    private val delayValue= IntegerValue("Delay",1500,100,5000)
     private var windowId=0
 
     @EventTarget

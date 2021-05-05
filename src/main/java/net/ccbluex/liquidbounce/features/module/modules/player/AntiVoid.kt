@@ -8,18 +8,18 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.FloatValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "AntiVoid", description = "anti void", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val startFallDistValue=FloatValue("StartFallDistance",2F,0F,5F)
-    private val maxFallDistValue=IntegerValue("MaxFallDistance",10,5,20)
-    private val resetMotion=BoolValue("ResetMotion",false)
-    private val autoScaffold=BoolValue("AutoScaffold",true)
-    private val onlyOnce=BoolValue("OnlyOnce",true)
+    private val startFallDistValue= FloatValue("StartFallDistance",2F,0F,5F)
+    private val maxFallDistValue= IntegerValue("MaxFallDistance",10,5,20)
+    private val resetMotion= BoolValue("ResetMotion",false)
+    private val autoScaffold= BoolValue("AutoScaffold",true)
+    private val onlyOnce= BoolValue("OnlyOnce",true)
 
     private val packetCache=ArrayList<C03PacketPlayer>()
     private var blink=false

@@ -15,10 +15,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.FloatValue
+import net.ccbluex.liquidbounce.features.IntegerValue
+import net.ccbluex.liquidbounce.features.ListValue
 import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "LongJump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT, autoDisable = AutoDisableType.FLAG)
@@ -44,9 +44,9 @@ class LongJump : Module() {
     private val rs2MinYMotionValue = FloatValue("RedeSky2MinYMotion",0.04F,0.01F,0.20F)
     private val rs2ReduceYMotionValue = FloatValue("RedeSky2ReduceYMotion",0.15F,0.01F,0.20F)
     private val rs2YMotionReducerValue = BoolValue("RedeSky2YMotionReducer", true)
-    private val rs3JumpTimeValue=IntegerValue("RedeSky3JumpTime",500,300,1500)
-    private val rs3BoostValue=FloatValue("RedeSky3Boost",1F,0.3F,1.5F)
-    private val rs3HeightValue=FloatValue("RedeSky3Height",1F,0.3F,1.5F)
+    private val rs3JumpTimeValue= IntegerValue("RedeSky3JumpTime",500,300,1500)
+    private val rs3BoostValue= FloatValue("RedeSky3Boost",1F,0.3F,1.5F)
+    private val rs3HeightValue= FloatValue("RedeSky3Height",1F,0.3F,1.5F)
     private val rs3TimerValue = FloatValue("RedeSky3Timer",1F,0.1F,5F)
     private val autoJumpValue = BoolValue("AutoJump", true)
     private val autoCloseValue = BoolValue("AutoClose", true)

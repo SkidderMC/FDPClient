@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
@@ -21,8 +21,8 @@ class DamageParticle : Module() {
     private val healthData=HashMap<Int,Float>()
     private val particles=ArrayList<SingleParticle>()
 
-    private val aliveTicks=IntegerValue("AliveTicks",20,10,50)
-    private val sizeValue=IntegerValue("Size",3,1,7)
+    private val aliveTicks= IntegerValue("AliveTicks",20,10,50)
+    private val sizeValue= IntegerValue("Size",3,1,7)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){

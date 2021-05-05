@@ -17,10 +17,10 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.FloatValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
-import net.ccbluex.liquidbounce.value.ListValue;
+import net.ccbluex.liquidbounce.features.BoolValue;
+import net.ccbluex.liquidbounce.features.FloatValue;
+import net.ccbluex.liquidbounce.features.IntegerValue;
+import net.ccbluex.liquidbounce.features.ListValue;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -41,9 +41,9 @@ import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
+// TODO: convert to kotlin
 @ModuleInfo(name = "Scaffold", description = "Automatically places blocks beneath your feet.", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_I)
 public class Scaffold extends Module {
-
     /**
      * OPTIONS
      */
@@ -54,7 +54,7 @@ public class Scaffold extends Module {
 
     // Tower
     private final ListValue towerModeValue = new ListValue("TowerMode", new String[] {
-            "None", "Jump", "Motion", "ConstantMotion", "PlusMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4"
+            "None", "Jump", "Motion", "ConstantMotion", "PlusMotion", "StableMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4"
     }, "None");
     private final BoolValue stopWhenBlockAbove = new BoolValue("StopTowerWhenBlockAbove", true);
 
@@ -128,7 +128,8 @@ public class Scaffold extends Module {
     private final FloatValue jumpMotionValue = new FloatValue("TowerJumpMotion", 0.42F, 0.3681289F, 0.79F);
     private final IntegerValue jumpDelayValue = new IntegerValue("TowerJumpDelay", 0, 0, 20);
 
-    // PlusMotion
+    // Stable/PlusMotion
+    private final FloatValue stableMotionValue = new FloatValue("TowerStableMotion",0.42F,0.1F,1F);
     private final FloatValue plusMotionValue = new FloatValue("TowerPlusMotion", 0.1F, 0.01F, 0.2F);
     private final FloatValue plusMaxMotionValue = new FloatValue("TowerPlusMaxMotion", 0.8F, 0.1F, 2F);
 
@@ -330,27 +331,30 @@ public class Scaffold extends Module {
 
     private void move() {
         switch (towerModeValue.get().toLowerCase()) {
-            case "jump":
+            case "jump": {
                 if (mc.thePlayer.onGround && towerTimer.hasTimePassed(jumpDelayValue.get())) {
                     fakeJump();
                     mc.thePlayer.motionY = jumpMotionValue.get();
                     towerTimer.reset();
                 }
                 break;
-            case "motion":
+            }
+            case "motion": {
                 if (mc.thePlayer.onGround) {
                     fakeJump();
                     mc.thePlayer.motionY = 0.42D;
                 } else if (mc.thePlayer.motionY < 0.1D) mc.thePlayer.motionY = -0.3D;
                 break;
-            case "motiontp":
+            }
+            case "motiontp": {
                 if (mc.thePlayer.onGround) {
                     fakeJump();
                     mc.thePlayer.motionY = 0.42D;
                 } else if (mc.thePlayer.motionY < 0.23D)
                     mc.thePlayer.setPosition(mc.thePlayer.posX, (int) mc.thePlayer.posY, mc.thePlayer.posZ);
                 break;
-            case "packet":
+            }
+            case "packet": {
                 if (mc.thePlayer.onGround && towerTimer.hasTimePassed(2)) {
                     fakeJump();
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
@@ -361,7 +365,8 @@ public class Scaffold extends Module {
                     towerTimer.reset();
                 }
                 break;
-            case "teleport":
+            }
+            case "teleport": {
                 if (teleportNoMotionValue.get())
                     mc.thePlayer.motionY = 0;
 
@@ -371,13 +376,8 @@ public class Scaffold extends Module {
                     towerTimer.reset();
                 }
                 break;
-            case "plusmotion":
-                mc.thePlayer.motionY += plusMotionValue.get();
-                if(mc.thePlayer.motionY>=plusMaxMotionValue.get()){
-                    mc.thePlayer.motionY=plusMaxMotionValue.get();
-                }
-                break;
-            case "constantmotion":
+            }
+            case "constantmotion": {
                 if (mc.thePlayer.onGround) {
                     fakeJump();
                     jumpGround = mc.thePlayer.posY;
@@ -391,7 +391,19 @@ public class Scaffold extends Module {
                     jumpGround = mc.thePlayer.posY;
                 }
                 break;
-            case "aac3.3.9":
+            }
+            case "plusmotion": {
+                mc.thePlayer.motionY += plusMotionValue.get();
+                if (mc.thePlayer.motionY >= plusMaxMotionValue.get()) {
+                    mc.thePlayer.motionY = plusMaxMotionValue.get();
+                }
+                break;
+            }
+            case "stablemotion": {
+                mc.thePlayer.motionY = stableMotionValue.get();
+                break;
+            }
+            case "aac3.3.9": {
                 if (mc.thePlayer.onGround) {
                     fakeJump();
                     mc.thePlayer.motionY = 0.4001;
@@ -403,7 +415,8 @@ public class Scaffold extends Module {
                     mc.timer.timerSpeed = 1.6F;
                 }
                 break;
-            case "aac3.6.4":
+            }
+            case "aac3.6.4": {
                 if (mc.thePlayer.ticksExisted % 4 == 1) {
                     mc.thePlayer.motionY = 0.4195464;
                     mc.thePlayer.setPosition(mc.thePlayer.posX - 0.035, mc.thePlayer.posY, mc.thePlayer.posZ);
@@ -412,6 +425,7 @@ public class Scaffold extends Module {
                     mc.thePlayer.setPosition(mc.thePlayer.posX + 0.035, mc.thePlayer.posY, mc.thePlayer.posZ);
                 }
                 break;
+            }
         }
     }
 

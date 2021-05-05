@@ -11,13 +11,13 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 @ModuleInfo(name = "AntiStuck", description = "Unstuck you when you stuck.", category = ModuleCategory.MOVEMENT)
 class AntiStuck : Module() {
-    private val flagValue=IntegerValue("Flag",5,1,10)
+    private val flagValue= IntegerValue("Flag",5,1,10)
 
     private val timer=MSTimer()
     private var flagTime=0

@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -31,11 +31,11 @@ import kotlin.math.sqrt
 class HackerDetector : Module() {
     private val GRAVITY_FRICTION = 0.9800000190734863
 
-    private val combatCheck=BoolValue("Combat",true)
-    private val movementCheck=BoolValue("Movement",true)
-    private val debugMode=BoolValue("Debug",false)
-    private val report=BoolValue("AutoReport",true)
-    private val vlValue=IntegerValue("VL",300,100,500)
+    private val combatCheck= BoolValue("Combat",true)
+    private val movementCheck= BoolValue("Movement",true)
+    private val debugMode= BoolValue("Debug",false)
+    private val report= BoolValue("AutoReport",true)
+    private val vlValue= IntegerValue("VL",300,100,500)
 
     private val datas=HashMap<EntityPlayer,HackerData>()
     private val hackers=ArrayList<String>()

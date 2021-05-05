@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.features.BoolValue
 
 @ModuleInfo(name = "Target", description = "Target settings.", category = ModuleCategory.CLIENT, canEnable = false)
 class Target : Module() {
