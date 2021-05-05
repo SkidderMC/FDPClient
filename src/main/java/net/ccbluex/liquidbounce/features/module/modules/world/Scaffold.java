@@ -102,6 +102,8 @@ public class Scaffold extends Module {
 
     // Rotations
     private final ListValue rotationsValue = new ListValue("Rotations",new String[]{"None","Vanilla","AAC"},"AAC");
+    private final IntegerValue aacPitchValue = new IntegerValue("AACPitch",90,-90,90);
+    private final IntegerValue aacYawValue = new IntegerValue("AACYaw",0,0,90);
     private final BoolValue silentRotationValue = new BoolValue("SilentRotation", true);
     private final IntegerValue keepLengthValue = new IntegerValue("KeepRotationLength", 0, 0, 20);
     private final BoolValue keepRotationValue = new BoolValue("KeepRotation", false);
@@ -652,7 +654,7 @@ public class Scaffold extends Module {
 
             switch (rotationsValue.get().toLowerCase()){
                 case "aac":{
-                    rotation=new Rotation(mc.thePlayer.rotationYaw + ((mc.thePlayer.movementInput.moveForward > 0)?180:0), 86);
+                    rotation=new Rotation(mc.thePlayer.rotationYaw + ((mc.thePlayer.movementInput.moveForward > 0)?180:0) + aacYawValue.get(), aacPitchValue.get());
                     break;
                 }
                 case "vanilla":{

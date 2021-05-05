@@ -8,11 +8,12 @@ import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.minecraft.entity.EntityLivingBase
 
 class CombatManager : Listenable,MinecraftInstance() {
     var inCombat=false
     private val lastAttackTimer=MSTimer()
-    private val entityScanTimer=MSTimer()
+    val targets=ArrayList<EntityLivingBase>()
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
@@ -21,20 +22,21 @@ class CombatManager : Listenable,MinecraftInstance() {
 
         inCombat=false
 
-        if(!lastAttackTimer.hasTimePassed(1500)){
+        if(!lastAttackTimer.hasTimePassed(1000)){
             inCombat=true
             return
         }
 
-        if(entityScanTimer.hasTimePassed(500)) {
-            inCombat=false
-            for (entity in mc.theWorld.loadedEntityList) {
-                if (entity.getDistanceToEntity(mc.thePlayer) < 7 && EntityUtils.isSelected(entity, true)) {
-                    inCombat = true
-                    break
-                }
+        targets.clear()
+        for (entity in mc.theWorld.loadedEntityList) {
+            if (entity is EntityLivingBase
+                    && entity.getDistanceToEntity(mc.thePlayer) < 7 && EntityUtils.isSelected(entity, true)) {
+                inCombat = true
+                targets.add(entity)
+                break
             }
         }
+        targets.sortBy { mc.thePlayer.getDistanceToEntity(it) }
     }
 
     @EventTarget

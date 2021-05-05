@@ -27,18 +27,19 @@ open class HUD : MinecraftInstance() {
     companion object {
 
         val elements = arrayOf(
-                Armor::class.java,
-                Arraylist::class.java,
-                Effects::class.java,
-                Image::class.java,
-                Model::class.java,
-                Notifications::class.java,
-                TabGUI::class.java,
-                Text::class.java,
-                ScoreboardElement::class.java,
-                KeyStrokes::class.java,
-                SpeedGraph::class.java,
-                Inventory::class.java
+            Armor::class.java,
+            Arraylist::class.java,
+            Effects::class.java,
+            Image::class.java,
+            Model::class.java,
+            Notifications::class.java,
+            TabGUI::class.java,
+            Text::class.java,
+            ScoreboardElement::class.java,
+            KeyStrokes::class.java,
+            SpeedGraph::class.java,
+            Inventory::class.java,
+            Targets::class.java
         )
 
         /**
@@ -46,10 +47,10 @@ open class HUD : MinecraftInstance() {
          */
         @JvmStatic
         fun createDefault(): HUD {
-            val text1=Text(scale = 1.5F)
+            val text1=Text(scale = 1.5F,x=4.0,y=4.0)
             text1.displayString.set("F")
             text1.rainbow.set(true)
-            val text2=Text(scale = 1.5F,x = 10.0+(Fonts.font40.getStringWidth("F")*1.5))
+            val text2=Text(scale = 1.5F,x = 4+(Fonts.font40.getStringWidth("F")*1.5),y=4.0)
             text2.displayString.set("ilho")
 
             return HUD()
@@ -62,6 +63,7 @@ open class HUD : MinecraftInstance() {
                 .addElement(Effects())
                 .addElement(Notifications())
                 .addElement(Inventory())
+                .addElement(Targets())
         }
     }
 

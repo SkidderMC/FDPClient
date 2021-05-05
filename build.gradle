@@ -3,7 +3,6 @@ group = "me.method17"
 
 buildscript {
     repositories {
-        jcenter()
         mavenLocal()
         mavenCentral()
 
@@ -63,7 +62,6 @@ minecraft {
 repositories {
     mavenLocal()
     mavenCentral()
-    jcenter()
 
     maven { url 'https://jitpack.io' }
     maven { url 'https://repo.spongepowered.org/maven/' }
