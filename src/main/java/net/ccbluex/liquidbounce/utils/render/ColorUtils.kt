@@ -10,6 +10,7 @@ import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
+import kotlin.math.ceil
 
 object ColorUtils {
 
@@ -105,6 +106,13 @@ object ColorUtils {
         brightness = 0.5f + 0.5f * brightness
         hsb[2] = brightness % 2.0f
         return Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]))
+    }
+
+    @JvmStatic
+    fun fluxRainbow(delay: Int, timeOffset: Long, sa: Float): Color {
+        var rainbowState = ceil((System.currentTimeMillis() + timeOffset) / 8 + delay / 20.0)
+        rainbowState %= 360.0
+        return Color.getHSBColor((rainbowState / 360f).toFloat(), sa, 1f)
     }
 
     @JvmStatic

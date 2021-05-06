@@ -19,17 +19,28 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.AxisAlignedBB;
 
+import java.util.ArrayList;
+
 // TODO: convert to kotlin,add aacv4/phase mode
 @ModuleInfo(name = "NoFall", description = "Prevents you from taking fall damage.", category = ModuleCategory.PLAYER)
 public class NoFall extends Module {
 
-    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "AAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "Spartan", "CubeCraft", "Hypixel"}, "SpoofGround");
+    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "AAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "Spartan", "CubeCraft", "Hypixel"}, "SpoofGround");
 
     private int state;
     private boolean jumped;
     private final TickTimer spartanTimer = new TickTimer();
 
-    private int hypixel;
+    private boolean aac4Fakelag=false;
+    private boolean aac4PacketModify=false;
+    private final ArrayList<C03PacketPlayer> aac4Packets=new ArrayList<>();
+
+    @Override
+    public void onEnable(){
+        aac4Fakelag=false;
+        aac4PacketModify=false;
+        aac4Packets.clear();
+    }
 
     @EventTarget(ignoreCondition = true)
     public void onUpdate(UpdateEvent event) {
@@ -125,22 +136,69 @@ public class NoFall extends Module {
     }
 
     @EventTarget
+    public void onMotion(final MotionEvent event){
+        if(modeValue.get().equalsIgnoreCase("AACv4")&&event.isPre()){
+            if (!inVoid()) {
+                if (aac4Fakelag) {
+                    aac4Fakelag = false;
+                    if (aac4Packets.size() > 0) {
+                        for (C03PacketPlayer packet : aac4Packets) {
+                            mc.thePlayer.sendQueue.addToSendQueue(packet);
+                        }
+                        aac4Packets.clear();
+                    }
+                }
+                return;
+            }
+            if (mc.thePlayer.onGround && aac4Fakelag) {
+                aac4Fakelag = false;
+                if (aac4Packets.size() > 0) {
+                    for (C03PacketPlayer packet : aac4Packets) {
+                        mc.thePlayer.sendQueue.addToSendQueue(packet);
+                    }
+                    aac4Packets.clear();
+                }
+                return;
+            }
+            if (mc.thePlayer.fallDistance > 3 && aac4Fakelag) {
+                aac4PacketModify = true;
+                mc.thePlayer.fallDistance = 0;
+            }
+            if (inAir(4.0, 1.0)) {
+                return;
+            }
+            if (!aac4Fakelag) {
+                aac4Fakelag = true;
+            }
+        }
+    }
+
+    @EventTarget
     public void onPacket(final PacketEvent event) {
-        final Packet<?> packet = event.getPacket();
         final String mode = modeValue.get();
 
-        if (packet instanceof C03PacketPlayer) {
-            final C03PacketPlayer playerPacket = (C03PacketPlayer) packet;
+        if (event.getPacket() instanceof C03PacketPlayer) {
+            final C03PacketPlayer packet = (C03PacketPlayer) event.getPacket();
 
             if (mode.equalsIgnoreCase("SpoofGround") && mc.thePlayer.fallDistance>2.5)
-                playerPacket.onGround = true;
+                packet.onGround = true;
 
             if (mode.equalsIgnoreCase("NoGround"))
-                playerPacket.onGround = false;
+                packet.onGround = false;
 
             if (mode.equalsIgnoreCase("Hypixel")
                     && mc.thePlayer != null && mc.thePlayer.fallDistance > 1.5)
-                playerPacket.onGround = mc.thePlayer.ticksExisted % 2 == 0;
+                packet.onGround = mc.thePlayer.ticksExisted % 2 == 0;
+
+
+            if (mode.equalsIgnoreCase("AACv4")&&aac4Fakelag){
+                event.cancelEvent();
+                if (aac4PacketModify) {
+                    packet.onGround = true;
+                    aac4PacketModify = false;
+                }
+                aac4Packets.add(packet);
+            }
         }
     }
 
@@ -160,6 +218,31 @@ public class NoFall extends Module {
     @EventTarget(ignoreCondition = true)
     public void onJump(final JumpEvent event) {
         jumped = true;
+    }
+
+    private boolean inVoid(){
+        if (mc.thePlayer.posY < 0) {
+            return false;
+        }
+        for (int off = 0; off < mc.thePlayer.posY + 2; off += 2) {
+            AxisAlignedBB bb = new AxisAlignedBB(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.posX, off, mc.thePlayer.posZ);
+            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean inAir(final double height,final double plus){
+        if (mc.thePlayer.posY < 0)
+            return false;
+        for (int off = 0; off < height; off += plus) {
+            AxisAlignedBB bb = new AxisAlignedBB(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.posX, mc.thePlayer.posY - off, mc.thePlayer.posZ);
+            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

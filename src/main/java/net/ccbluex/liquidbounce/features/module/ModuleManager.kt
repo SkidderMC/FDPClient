@@ -136,7 +136,8 @@ class ModuleManager : Listenable {
             LightningDetect::class.java,
             NoRotate::class.java,
             AutoDisable::class.java,
-            Disabler::class.java
+            Disabler::class.java,
+            Ambience::class.java
         )
 
         registerModule(Fucker)

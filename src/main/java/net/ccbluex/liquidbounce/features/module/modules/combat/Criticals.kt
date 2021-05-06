@@ -31,11 +31,11 @@ class Criticals : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
     private val debugValue = BoolValue("DebugMessage", false)
+    private val rsNofallValue = BoolValue("RedeNofall",true)
 
     val msTimer = MSTimer()
 
-    private val rsGroundTimer = MSTimer()
-    private var rsCritChange = 0
+    private var rsCritStat = 0
     private var target = 0;
 
     override fun onEnable() {
@@ -138,22 +138,21 @@ class Criticals : Module() {
             when (modeValue.get().toLowerCase()) {
                 "noground" -> packet.onGround = false
                 "redeskysmartground" -> {
-                    if(rsGroundTimer.hasTimePassed(1000)){
-                        packet.onGround = LiquidBounce.combatManager.inCombat
-                        if(rsGroundTimer.hasTimePassed(1200))
-                            rsGroundTimer.reset()
-                    }else{
-                        packet.onGround = !LiquidBounce.combatManager.inCombat
+                    if(rsNofallValue.get()&&mc.thePlayer.fallDistance>0){
+                        packet.onGround=true
+                        return
                     }
-                    if(!packet.onGround && mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
-                        when(rsCritChange){
+
+                    if(mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
+                        packet.onGround=false
+                        when(rsCritStat){
                             0 -> packet.y += 0.00000000000003
                             1 -> packet.y += 0.00000000000001
                             2 -> packet.y += 0.000000000000008
                         }
-                        rsCritChange++
-                        if(rsCritChange == 3)
-                            rsCritChange = 0
+                        rsCritStat++
+                        if(rsCritStat == 3)
+                            rsCritStat = 0
                     }
                 }
             }

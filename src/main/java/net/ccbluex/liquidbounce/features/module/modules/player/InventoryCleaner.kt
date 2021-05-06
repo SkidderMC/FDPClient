@@ -170,13 +170,11 @@ class InventoryCleaner : Module() {
             } else if (itemStack.unlocalizedName == "item.compass") {
                 items(0, 45).none { (_, stack) -> itemStack != stack && stack.unlocalizedName == "item.compass" }
             } else item is ItemFood || itemStack.unlocalizedName == "item.arrow" ||
-                    item is ItemBlock && !itemStack.unlocalizedName.contains("flower") ||
-                    item is ItemBed || itemStack.unlocalizedName == "item.diamond" || itemStack.unlocalizedName == "item.ingotIron" ||
-                    item is ItemPotion || item is ItemEnderPearl || item is ItemEnchantedBook || item is ItemBucket || itemStack.unlocalizedName == "item.stick" || 
-                    ignoreVehiclesValue.get() && (item is ItemBoat || item is ItemMinecart)
+                    (item is ItemBlock && !InventoryUtils.isBlockListBlock(item)) ||
+                    item is ItemBed || item is ItemPotion || item is ItemEnderPearl ||
+                    item is ItemBucket || ignoreVehiclesValue.get() && (item is ItemBoat || item is ItemMinecart)
         } catch (ex: Exception) {
             ClientUtils.getLogger().error("(InventoryCleaner) Failed to check item: ${itemStack.unlocalizedName}.", ex)
-
             true
         }
     }
@@ -288,7 +286,7 @@ class InventoryCleaner : Module() {
                 mc.thePlayer.inventory.mainInventory.forEachIndexed { index, stack ->
                     val item = stack?.item
 
-                    if (item is ItemBlock && !InventoryUtils.BLOCK_BLACKLIST.contains(item.block) &&
+                    if (item is ItemBlock && !InventoryUtils.isBlockListBlock(item) &&
                             !type(index).equals("Block", ignoreCase = true)) {
                         val replaceCurr = slotStack == null || slotStack.item !is ItemBlock
 

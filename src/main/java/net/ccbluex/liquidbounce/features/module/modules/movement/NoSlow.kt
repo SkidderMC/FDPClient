@@ -48,15 +48,18 @@ class NoSlow : Module() {
     fun onMotion(event: MotionEvent) {
         val heldItem = mc.thePlayer.heldItem
         val killAura = LiquidBounce.moduleManager[KillAura::class.java] as KillAura
+
         if (heldItem == null || heldItem.item !is ItemSword || !MovementUtils.isMoving() || (!mc.thePlayer.isBlocking && !killAura.blockingStatus))
             return
-        if (this.packet.get() && packetTimer.hasTimePassed(packetDelayValue.get().toLong()))
-                if(event.isPre()){
-                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN))
-                }else{
-                    packetTimer.reset()
-                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))   
-                }
+
+        if (this.packet.get() && packetTimer.hasTimePassed(packetDelayValue.get().toLong())){
+            if(event.isPre()){
+                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN))
+            }else{
+                packetTimer.reset()
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+            }
+        }
     }
 
     @EventTarget

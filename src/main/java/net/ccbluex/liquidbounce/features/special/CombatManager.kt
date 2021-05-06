@@ -9,11 +9,12 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 
 class CombatManager : Listenable,MinecraftInstance() {
     var inCombat=false
     private val lastAttackTimer=MSTimer()
-    val targets=ArrayList<EntityLivingBase>()
+    var target: EntityLivingBase? = null
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
@@ -27,20 +28,22 @@ class CombatManager : Listenable,MinecraftInstance() {
             return
         }
 
-        targets.clear()
         for (entity in mc.theWorld.loadedEntityList) {
             if (entity is EntityLivingBase
                     && entity.getDistanceToEntity(mc.thePlayer) < 7 && EntityUtils.isSelected(entity, true)) {
                 inCombat = true
-                targets.add(entity)
                 break
             }
         }
-        targets.sortBy { mc.thePlayer.getDistanceToEntity(it) }
+        if(target!!.isDead || mc.thePlayer.getDistanceToEntity(target)>7)
+            target=null
     }
 
     @EventTarget
     fun onAttack(event: AttackEvent){
+        if(event.targetEntity is EntityLivingBase){
+            target=event.targetEntity
+        }
         lastAttackTimer.reset()
     }
 

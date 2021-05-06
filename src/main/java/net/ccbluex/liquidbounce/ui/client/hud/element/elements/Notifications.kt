@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.max
 
 /**
  * CustomHUD Notification element
@@ -138,7 +139,8 @@ class Notification(val title: String, val content: String, val type: NotifyType,
 //        GL11.glEnable(GL11.GL_SCISSOR_TEST)
 //        GL11.glScissor(width-(width*pct).toFloat(),0F, width.toFloat(),height.toFloat())
         RenderUtils.drawRect(0F,0F,width.toFloat(),height.toFloat(),Color(0,0,0,144))
-        RenderUtils.drawRect(0F,height-2F,width-width*((nowTime-displayTime)/(animeTime*2F+time)),height.toFloat(),type.renderColor)
+        RenderUtils.drawRect(0F,height-2F,
+            max(width-width*((nowTime-displayTime)/(animeTime*2F+time)),0F),height.toFloat(),type.renderColor)
         Fonts.font35.drawString(title,4F,4F,Color.WHITE.rgb)
         Fonts.font35.drawString(content,4F,17F,Color.WHITE.rgb)
 
