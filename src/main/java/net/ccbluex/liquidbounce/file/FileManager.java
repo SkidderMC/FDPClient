@@ -39,6 +39,7 @@ public class FileManager extends MinecraftInstance {
     public final FileConfig xrayConfig = new XRayConfig(new File(dir, "xray-blocks.json"));
     public final FileConfig hudConfig = new HudConfig(new File(dir, "hud.json"));
     public final FileConfig shortcutsConfig = new ShortcutsConfig(new File(dir, "shortcuts.json"));
+    public final FileConfig macrosConfig = new MacrosConfig(new File(dir,"macros.json"));
 
     public final File backgroundFile = new File(dir, "userbackground.png");
 

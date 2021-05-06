@@ -825,4 +825,41 @@ public final class RenderUtils extends MinecraftInstance {
         double v1 = Math.ceil(System.currentTimeMillis() + (var2 * 109L)) / 5;
         return Color.getHSBColor((double) ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright);
     }
+
+    public static void drawRect(final double x, final double y, final double x2, final double y2, final int color) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+
+        glColor(color);
+        glBegin(GL_QUADS);
+
+        glVertex2d(x2, y);
+        glVertex2d(x, y);
+        glVertex2d(x, y2);
+        glVertex2d(x2, y2);
+        glEnd();
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+    }
+
+    public static void startSmooth() {
+        GL11.glEnable(2848);
+        GL11.glEnable(2881);
+        GL11.glEnable(2832);
+        GL11.glEnable(3042);
+        GL11.glBlendFunc(770, 771);
+        GL11.glHint(3154, 4354);
+        GL11.glHint(3155, 4354);
+        GL11.glHint(3153, 4354);
+    }
+
+    public static void endSmooth() {
+        GL11.glDisable(2848);
+        GL11.glDisable(2881);
+        GL11.glEnable(2832);
+    }
 }

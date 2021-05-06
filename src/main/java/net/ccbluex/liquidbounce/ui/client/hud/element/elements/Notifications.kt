@@ -90,7 +90,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
                 nowY=realY
                 pct=1.0
             }else{
-                pct=EaseUtils.easeOutQuart(pct)
+                pct=EaseUtils.easeOutExpo(pct)
             }
             GL11.glTranslated(0.0,(realY-nowY)*pct,0.0)
         }else{
@@ -107,7 +107,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
                     animeXTime=nowTime
                     pct=1.0
                 }
-                pct=EaseUtils.easeOutQuart(pct)
+                pct=EaseUtils.easeOutExpo(pct)
             }
 
             FadeState.STAY -> {
@@ -124,7 +124,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
                     animeXTime=nowTime
                     pct=1.0
                 }
-                pct=1-EaseUtils.easeInQuart(pct)
+                pct=1-EaseUtils.easeInExpo(pct)
             }
 
             FadeState.END -> {

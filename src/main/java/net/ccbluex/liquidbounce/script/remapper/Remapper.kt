@@ -5,10 +5,8 @@
  */
 package net.ccbluex.liquidbounce.script.remapper
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.FileUtils
-import java.io.File
+import org.apache.commons.io.IOUtils
 
 /**
  * A srg remapper
@@ -16,10 +14,7 @@ import java.io.File
  * @author CCBlueX
  */
 object Remapper {
-
     private const val srgName = "mcp-stable_22.srg"
-    private val srgFile = File(LiquidBounce.fileManager.dir, srgName)
-
     private val fields : HashMap<String, HashMap<String, String>> = hashMapOf()
     private val methods : HashMap<String, HashMap<String, String>> = hashMapOf()
 
@@ -27,20 +22,14 @@ object Remapper {
      * Load srg
      */
     fun loadSrg() {
-        // Check if srg file is already unpacked
-        if(!srgFile.exists()) {
-            ClientUtils.getLogger().info("[Remapper] Unpacking $srgName.")
-            FileUtils.unpackFile(srgFile, srgName)
-        }
-
         // Load srg
         ClientUtils.getLogger().info("[Remapper] Loading srg...")
-        parseSrg()
+        parseSrg(IOUtils.readLines(Remapper::class.java.classLoader.getResourceAsStream(srgName)))
         ClientUtils.getLogger().info("[Remapper] Loaded srg.")
     }
 
-    private fun parseSrg() {
-        srgFile.readLines().forEach {
+    private fun parseSrg(srgData: List<String>) {
+        srgData.forEach {
             val args = it.split(" ")
 
             when {

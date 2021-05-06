@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.TickEvent;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.*;
@@ -82,6 +83,15 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         }
 
         return vecRotation;
+    }
+
+    /**
+     *
+     * @param entity
+     * @return
+     */
+    public static Rotation getRotationsEntity(EntityLivingBase entity) {
+        return RotationUtils.getRotations(entity.posX, entity.posY + entity.getEyeHeight() - 0.4, entity.posZ);
     }
 
     /**
@@ -361,32 +371,40 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         targetRotation = null;
     }
 
-    public static float[] getRotations(Entity ent) {
+    public static Rotation getRotations(Entity ent) {
         double x = ent.posX;
         double z = ent.posZ;
         double y = ent.posY + (double)(ent.getEyeHeight() / 2.0f);
         return RotationUtils.getRotationFromPosition(x, z, y);
     }
 
-    public static float[] getRotations(double posX, double posY, double posZ) {
+
+    /**
+     *
+     * @param posX
+     * @param posY
+     * @param posZ
+     * @return
+     */
+    public static Rotation getRotations(double posX, double posY, double posZ) {
         EntityPlayerSP player = RotationUtils.mc.thePlayer;
         double x = posX - player.posX;
         double y = posY - (player.posY + (double)player.getEyeHeight());
         double z = posZ - player.posZ;
         double dist = MathHelper.sqrt_double(x * x + z * z);
-        float yaw = (float)(Math.atan2(z, x) * 180.0 / Math.PI) - 90.0f;
-        float pitch = (float)(-(Math.atan2(y, dist) * 180.0 / Math.PI));
-        return new float[]{yaw, pitch};
+        float yaw = (float)(Math.atan2(z, x) * 180.0 / 3.141592653589793) - 90.0f;
+        float pitch = (float)(-(Math.atan2(y, dist) * 180.0 / 3.141592653589793));
+        return new Rotation(yaw,pitch);
     }
 
-    public static float[] getRotationFromPosition(double x, double z, double y) {
+    public static Rotation getRotationFromPosition(double x, double z, double y) {
         double xDiff = x - mc.thePlayer.posX;
         double zDiff = z - mc.thePlayer.posZ;
         double yDiff = y - mc.thePlayer.posY - 1.2;
         double dist = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff);
         float yaw = (float)(Math.atan2(zDiff, xDiff) * 180.0 / Math.PI) - 90.0f;
         float pitch = (float)(- Math.atan2(yDiff, dist) * 180.0 / Math.PI);
-        return new float[]{yaw, pitch};
+        return new Rotation(yaw,pitch);
     }
 
     /**

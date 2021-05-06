@@ -38,8 +38,8 @@ open class HUD : MinecraftInstance() {
             ScoreboardElement::class.java,
             KeyStrokes::class.java,
             SpeedGraph::class.java,
-            Inventory::class.java,
-            Targets::class.java
+            Inventory::class.java/*,
+            Targets::class.java*/
         )
 
         /**
@@ -63,7 +63,7 @@ open class HUD : MinecraftInstance() {
                 .addElement(Effects())
                 .addElement(Notifications())
                 .addElement(Inventory())
-                .addElement(Targets())
+//                .addElement(Targets())
         }
     }
 

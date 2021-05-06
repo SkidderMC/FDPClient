@@ -137,7 +137,8 @@ class ModuleManager : Listenable {
             NoRotate::class.java,
             AutoDisable::class.java,
             Disabler::class.java,
-            Ambience::class.java
+            Ambience::class.java,
+            TargetStrafe::class.java
         )
 
         registerModule(Fucker)
