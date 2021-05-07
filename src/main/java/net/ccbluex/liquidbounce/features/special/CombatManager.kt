@@ -35,13 +35,13 @@ class CombatManager : Listenable,MinecraftInstance() {
                 break
             }
         }
-        if(target!!.isDead || mc.thePlayer.getDistanceToEntity(target)>7 || lastAttackTimer.hasTimePassed(2000))
+        if(target!=null || target!!.isDead || mc.thePlayer.getDistanceToEntity(target)>7 || lastAttackTimer.hasTimePassed(2000))
             target=null
     }
 
     @EventTarget
     fun onAttack(event: AttackEvent){
-        if(event.targetEntity is EntityLivingBase){
+        if(event.targetEntity is EntityLivingBase && EntityUtils.isSelected(event.targetEntity,true)){
             target=event.targetEntity
         }
         lastAttackTimer.reset()

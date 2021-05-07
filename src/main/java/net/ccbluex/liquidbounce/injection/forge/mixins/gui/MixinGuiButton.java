@@ -75,8 +75,8 @@ public abstract class MixinGuiButton extends Gui {
             animation=0;
          }
       }
-      double percent=EaseUtils.easeOutSine(animation);
 
+      double percent = EaseUtils.easeInOutQuad(animation);
       RenderUtils.drawRect(this.xPosition,this.yPosition,this.xPosition + width,this.yPosition + height, new Color(31,31,31,150).getRGB());
       double half=this.width / 2.0;
       double center=this.xPosition + half;

@@ -42,7 +42,8 @@ class CommandManager {
             HideCommand::class.java,
             UsernameCommand::class.java,
             ServerInfoCommand::class.java,
-            AutoDisableCommand::class.java
+            AutoDisableCommand::class.java,
+            MacroCommand::class.java
         )
     }
 

@@ -28,6 +28,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
                 }
                 else -> module.autoDisable = AutoDisableType.NONE
             }
+            playEdit()
 
             chat("Set module §l${module.name}§r AutoDisable state to §l${module.autoDisable}§r.")
 

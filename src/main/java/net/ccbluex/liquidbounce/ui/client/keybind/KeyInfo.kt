@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
@@ -28,6 +29,7 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
     private val direction=posY>=100
 
     private var modules=ArrayList<Module>()
+    private var macros=ArrayList<Macro>()
     private var hasKeyBind=false
     private var stroll=0
     private var maxStroll=0
@@ -68,6 +70,20 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
             }
             yOffset+=20
         }
+        for (macro in macros){
+            if(yOffset>0&&(yOffset-20)<100) {
+                GL11.glPushMatrix()
+                GL11.glTranslatef(0F, yOffset, 0F)
+
+                Fonts.font40.drawString(macro.command, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
+                Fonts.font40.drawString(
+                    "-", baseTabWidth - 12F - Fonts.font40.getStringWidth("-"), fontHeight, Color.RED.rgb, false
+                )
+
+                GL11.glPopMatrix()
+            }
+            yOffset+=20
+        }
 
         //覆盖多出来的部分
         RenderUtils.drawRect(0F,0F,baseTabWidth.toFloat(),12F+Fonts.font40.height+10F,Color.WHITE.rgb)
@@ -93,9 +109,10 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
 
     fun update(){
         modules=LiquidBounce.moduleManager.getKeyBind(key) as ArrayList<Module>
-        hasKeyBind=modules.size>0
+        macros=LiquidBounce.macroManager.macros.filter { it.key==key } as ArrayList<Macro>
+        hasKeyBind=(modules.size+macros.size)>0
         stroll=0
-        maxStroll=modules.size*30
+        maxStroll=modules.size*30+macros.size*30
     }
 
     fun click(mouseX: Float, mouseY: Float){
@@ -121,6 +138,14 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
                     for(module in modules) {
                         if(scaledMouseY>(yOffset+5)&&scaledMouseY<(yOffset+15)){
                             module.keyBind=Keyboard.KEY_NONE
+                            update()
+                            break
+                        }
+                        yOffset+=20
+                    }
+                    for (macro in macros){
+                        if(scaledMouseY>(yOffset+5)&&scaledMouseY<(yOffset+15)){
+                            LiquidBounce.macroManager.macros.remove(macro)
                             update()
                             break
                         }

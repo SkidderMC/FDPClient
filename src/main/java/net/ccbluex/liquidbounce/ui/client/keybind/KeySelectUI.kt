@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.other.PopUI
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -25,19 +26,23 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select mod to bind") {
     override fun render(){
         //modules
         var yOffset=height-stroll+5F
-        for(module in modules){
-            if(yOffset>(height-singleHeight)&&(yOffset-singleHeight)<190) {
-                GL11.glPushMatrix()
-                GL11.glTranslatef(0F, yOffset, 0F)
+        if(str.startsWith(".")){
+            Fonts.font35.drawString("Press ENTER to add macro.",8F,singleHeight+yOffset,Color.BLACK.rgb,false)
+        }else{
+            for(module in modules){
+                if(yOffset>(height-singleHeight)&&(yOffset-singleHeight)<190) {
+                    GL11.glPushMatrix()
+                    GL11.glTranslatef(0F, yOffset, 0F)
 
-                val name=module.name
-                Fonts.font35.drawString(if(str.isNotEmpty()){
-                    "§0"+name.substring(0,str.length)+"§7"+name.substring(str.length,name.length)
-                }else{ "§0$name" },8F,singleHeight*0.5F,Color.BLACK.rgb,false)
+                    val name=module.name
+                    Fonts.font35.drawString(if(str.isNotEmpty()){
+                        "§0"+name.substring(0,str.length)+"§7"+name.substring(str.length,name.length)
+                    }else{ "§0$name" },8F,singleHeight*0.5F,Color.BLACK.rgb,false)
 
-                GL11.glPopMatrix()
+                    GL11.glPopMatrix()
+                }
+                yOffset+=singleHeight
             }
-            yOffset+=singleHeight
         }
         RenderUtils.drawRect(0F,8F+Fonts.font40.height,baseWidth.toFloat(),height+5F,Color.WHITE.rgb)
         RenderUtils.drawRect(0F,baseHeight-singleHeight,baseWidth.toFloat(),baseHeight.toFloat(),Color.WHITE.rgb)
@@ -56,8 +61,11 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select mod to bind") {
             }
             return
         }else if(keyCode == Keyboard.KEY_RETURN){
-            //backspace key
-            if(modules.isNotEmpty()) {
+            if(str.startsWith(".")){
+                LiquidBounce.macroManager.macros.add(Macro(info.key,str))
+                LiquidBounce.keyBindMgr.updateAllKeys()
+                close()
+            }else if(modules.isNotEmpty()) {
                 apply(modules[0])
             }
             return
