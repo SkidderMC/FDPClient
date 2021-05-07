@@ -23,7 +23,7 @@ public class MixinMathHelper {
 
     @Inject(method = "sin", at = @At("HEAD"), cancellable = true)
     private static void sin(float value, CallbackInfoReturnable<Float> callbackInfoReturnable){
-        if(!LiquidBounce.INSTANCE.getStartSUCCESS())
+        if(LiquidBounce.INSTANCE.isStarting())
             return;
 
         if(betterFPS==null) betterFPS= (BetterFPS) LiquidBounce.moduleManager.getModule(BetterFPS.class);
@@ -56,7 +56,7 @@ public class MixinMathHelper {
 
     @Inject(method = "cos", at = @At("HEAD"), cancellable = true)
     private static void cos(float value, CallbackInfoReturnable<Float> callbackInfoReturnable){
-        if(!LiquidBounce.INSTANCE.getStartSUCCESS())
+        if(LiquidBounce.INSTANCE.isStarting())
             return;
 
         if(betterFPS==null) betterFPS= (BetterFPS) LiquidBounce.moduleManager.getModule(BetterFPS.class);

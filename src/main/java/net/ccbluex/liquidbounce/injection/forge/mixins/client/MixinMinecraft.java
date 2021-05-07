@@ -81,6 +81,8 @@ public abstract class MixinMinecraft {
 
         if(displayHeight < 622)
             displayHeight = 622;
+
+        LiquidBounce.INSTANCE.initClient();
     }
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))

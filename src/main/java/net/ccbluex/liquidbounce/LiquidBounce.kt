@@ -9,7 +9,7 @@ import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
-import net.ccbluex.liquidbounce.features.macro.MacroManager
+import net.ccbluex.liquidbounce.features.special.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.CombatManager
@@ -40,8 +40,7 @@ object LiquidBounce {
     const val CLIENT_CREATOR = "Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
 
-    var isStarting = false
-    var startSUCCESS = false
+    var isStarting = true
 
     // Managers
     lateinit var moduleManager: ModuleManager
@@ -70,14 +69,12 @@ object LiquidBounce {
     // Better FPS
     lateinit var betterFPSCore: BetterFPSCore
 
-    /**
-     * Execute if client will be started
+    /***
+     * do things that need long time async
      */
-    fun startClient() {
+    fun initClient(){
         betterFPSCore = BetterFPSCore()
         isStarting = true
-
-        ClientUtils.getLogger().info("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
 
         // check update
         if(!IN_DEV) {
@@ -93,6 +90,13 @@ object LiquidBounce {
                 }
             }.start()
         }
+    }
+
+    /***
+     * Execute if client will be started
+     */
+    fun startClient() {
+        ClientUtils.getLogger().info("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
 
         // Create file manager
         fileManager = FileManager()
@@ -162,7 +166,6 @@ object LiquidBounce {
 
         // Set is starting status
         isStarting = false
-        startSUCCESS = true
     }
 
     /**

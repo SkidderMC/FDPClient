@@ -35,8 +35,12 @@ class CombatManager : Listenable,MinecraftInstance() {
                 break
             }
         }
-        if(target!=null || target!!.isDead || mc.thePlayer.getDistanceToEntity(target)>7 || lastAttackTimer.hasTimePassed(2000))
-            target=null
+
+        if(target!=null){
+            if(mc.thePlayer.getDistanceToEntity(target)>7||!inCombat||target!!.isDead){
+                target=null
+            }
+        }
     }
 
     @EventTarget

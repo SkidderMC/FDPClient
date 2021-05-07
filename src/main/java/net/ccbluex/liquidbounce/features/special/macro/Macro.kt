@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.macro
+package net.ccbluex.liquidbounce.features.special.macro
 
 import net.ccbluex.liquidbounce.LiquidBounce
 
