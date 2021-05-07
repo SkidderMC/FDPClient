@@ -116,6 +116,7 @@ public class Scaffold extends Module {
 
     // Game
     private final FloatValue timerValue = new FloatValue("Timer", 1F, 0.1F, 5F);
+    private final BoolValue moveTower = new BoolValue("MoveTower",false);
     private final FloatValue towerTimerValue = new FloatValue("TowerTimer", 1F, 0.1F, 5F);
     private final FloatValue speedModifierValue = new FloatValue("SpeedModifier", 1F, 0, 2F);
 
@@ -296,9 +297,9 @@ public class Scaffold extends Module {
 
         // Tower
         if (!(towerModeValue.get().equalsIgnoreCase("None")
-                || (!mc.gameSettings.keyBindJump.isKeyDown() || mc.gameSettings.keyBindLeft.isKeyDown()
+                || !mc.gameSettings.keyBindJump.isKeyDown() || ((mc.gameSettings.keyBindLeft.isKeyDown()
                 || mc.gameSettings.keyBindRight.isKeyDown() || mc.gameSettings.keyBindForward.isKeyDown()
-                || mc.gameSettings.keyBindBack.isKeyDown()))
+                || mc.gameSettings.keyBindBack.isKeyDown())&&!moveTower.get()))
                 && (!stopWhenBlockAbove.get() || BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX,
                 mc.thePlayer.posY + 2, mc.thePlayer.posZ)) instanceof BlockAir)){
             move();
@@ -668,8 +669,10 @@ public class Scaffold extends Module {
 
             switch (rotationsValue.get().toLowerCase()){
                 case "aac":{
-                    rotation=new Rotation(mc.thePlayer.rotationYaw + ((mc.thePlayer.movementInput.moveForward > 0)?180:0) + aacYawValue.get(), aacPitchValue.get());
-                    break;
+                    if(!towerStatus) {
+                        rotation = new Rotation(mc.thePlayer.rotationYaw + ((mc.thePlayer.movementInput.moveForward > 0) ? 180 : 0) + aacYawValue.get(), aacPitchValue.get());
+                        break;
+                    }
                 }
                 case "vanilla":{
                     rotation=placeRotation.getRotation();

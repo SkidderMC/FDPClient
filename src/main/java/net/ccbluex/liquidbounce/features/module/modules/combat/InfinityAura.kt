@@ -50,7 +50,7 @@ class InfinityAura : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent){
         if(needAntiTP&&lastPos!=null){
-            val path= PathUtils.findBlinkPath(lastPos!!.xCoord,lastPos!!.yCoord,lastPos!!.zCoord,moveDistValue.get().toDouble())
+            val path=PathUtils.findBlinkPath(lastPos!!.xCoord,lastPos!!.yCoord,lastPos!!.zCoord,moveDistValue.get().toDouble())
             path.forEach {
                 val f = mc.thePlayer.width / 2.0F;
                 val f1 = mc.thePlayer.height;
