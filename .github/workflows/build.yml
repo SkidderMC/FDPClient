@@ -32,9 +32,9 @@ jobs:
           job-id: jdk8
           arguments: build
           gradle-version: wrapper
-        - name: 'Upload Artifact'
-          uses: actions/upload-artifact@v2.2.3
-          with:
-            name: file
-            path: build/libs/FDPClient-v1.jar
-            retention-days: 30
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: file
+          path: build/libs/FDPClient-v1.jar
+          retention-days: 30
