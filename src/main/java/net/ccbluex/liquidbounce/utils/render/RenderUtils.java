@@ -12,10 +12,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
@@ -846,20 +843,29 @@ public final class RenderUtils extends MinecraftInstance {
         glDisable(GL_LINE_SMOOTH);
     }
 
-    public static void startSmooth() {
-        GL11.glEnable(2848);
-        GL11.glEnable(2881);
-        GL11.glEnable(2832);
-        GL11.glEnable(3042);
-        GL11.glBlendFunc(770, 771);
-        GL11.glHint(3154, 4354);
-        GL11.glHint(3155, 4354);
-        GL11.glHint(3153, 4354);
-    }
+    public static void drawEntityOnScreen(final int posX, final int posY, final int scale, final EntityLivingBase entity) {
+        GlStateManager.enableColorMaterial();
+        GlStateManager.pushMatrix();
 
-    public static void endSmooth() {
-        GL11.glDisable(2848);
-        GL11.glDisable(2881);
-        GL11.glEnable(2832);
+        GlStateManager.translate(posX, posY, 50.0);
+        GlStateManager.scale((-scale), scale, scale);
+        GlStateManager.rotate(180F, 0F, 0F, 1F);
+        GlStateManager.rotate(135F, 0F, 1F, 0F);
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.rotate(-135F, 0F, 1F, 0F);
+        GlStateManager.translate(0.0, 0.0, 0.0);
+
+        RenderManager rendermanager = mc.getRenderManager();
+        rendermanager.setPlayerViewY(180F);
+        rendermanager.setRenderShadow(false);
+        rendermanager.renderEntityWithPosYaw(entity, 0.0, 0.0, 0.0, 0F, 1F);
+        rendermanager.setRenderShadow(true);
+
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.disableTexture2D();
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 }

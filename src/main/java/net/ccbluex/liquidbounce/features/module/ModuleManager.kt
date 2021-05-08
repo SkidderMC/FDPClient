@@ -138,7 +138,8 @@ class ModuleManager : Listenable {
             AutoDisable::class.java,
             Disabler::class.java,
             Ambience::class.java,
-            TargetStrafe::class.java
+            TargetStrafe::class.java,
+            PrevFallPos::class.java
         )
 
         registerModule(Fucker)

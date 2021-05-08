@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.entity.EntityValidator
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -65,10 +64,18 @@ class TargetStrafe : Module() {
             target?:return
             GL11.glPushMatrix()
             GL11.glDisable(3553)
-            RenderUtils.startSmooth()
+            GL11.glEnable(2848)
+            GL11.glEnable(2881)
+            GL11.glEnable(2832)
+            GL11.glEnable(3042)
+            GL11.glBlendFunc(770, 771)
+            GL11.glHint(3154, 4354)
+            GL11.glHint(3155, 4354)
+            GL11.glHint(3153, 4354)
             GL11.glDisable(2929)
             GL11.glDepthMask(false)
             GL11.glLineWidth(1.0f)
+
             GL11.glBegin(3)
             val x = target.lastTickPosX + (target.posX - target.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
             val y = target.lastTickPosY + (target.posY - target.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
@@ -79,9 +86,12 @@ class TargetStrafe : Module() {
                 GL11.glVertex3d(x + radius.get() * cos(i * 6.283185307179586 / 45.0), y, z + radius.get() * sin(i * 6.283185307179586 / 45.0))
             }
             GL11.glEnd()
+
             GL11.glDepthMask(true)
             GL11.glEnable(2929)
-            RenderUtils.endSmooth()
+            GL11.glDisable(2848)
+            GL11.glDisable(2881)
+            GL11.glEnable(2832)
             GL11.glEnable(3553)
             GL11.glPopMatrix()
         }

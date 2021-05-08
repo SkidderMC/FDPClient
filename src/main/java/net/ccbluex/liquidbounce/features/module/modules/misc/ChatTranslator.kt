@@ -3,11 +3,11 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.features.ListValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.features.ListValue
 import net.minecraft.network.play.server.S02PacketChat
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients

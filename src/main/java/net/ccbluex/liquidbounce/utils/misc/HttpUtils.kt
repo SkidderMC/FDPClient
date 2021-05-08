@@ -6,8 +6,7 @@
 
 package net.ccbluex.liquidbounce.utils.misc
 
-import org.apache.commons.io.FileUtils
-import java.io.File
+import java.io.DataOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -22,14 +21,14 @@ import java.net.URL
  */
 object HttpUtils {
 
-    private const val DEFAULT_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0"
+    private const val DEFAULT_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36"
 
     init {
         HttpURLConnection.setFollowRedirects(true)
     }
 
-    private fun make(url: String, method: String,
-                     agent: String = DEFAULT_AGENT): HttpURLConnection {
+    fun make(url: String, method: String, data: String,
+             agent: String = DEFAULT_AGENT): HttpURLConnection {
         val httpConnection = URL(url).openConnection() as HttpURLConnection
 
         httpConnection.requestMethod = method
@@ -41,13 +40,19 @@ object HttpUtils {
         httpConnection.instanceFollowRedirects = true
         httpConnection.doOutput = true
 
+        if(data.isNotEmpty()){
+            val dataOutputStream = DataOutputStream(httpConnection.outputStream)
+            dataOutputStream.writeBytes(data)
+            dataOutputStream.flush()
+        }
+
         return httpConnection
     }
 
     @Throws(IOException::class)
-    fun request(url: String, method: String,
+    fun request(url: String, method: String, data: String="",
                 agent: String = DEFAULT_AGENT): String {
-        val connection = make(url, method, agent)
+        val connection = make(url, method, data, agent)
 
         return connection.inputStream.reader().readText()
     }
@@ -66,6 +71,5 @@ object HttpUtils {
 
     @Throws(IOException::class)
     @JvmStatic
-    fun download(url: String, file: File) = FileUtils.copyInputStreamToFile(make(url, "GET").inputStream, file)
-
+    fun post(url: String, data: String) = request(url, "POST", data=data)
 }

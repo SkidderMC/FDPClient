@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
 
 import java.io.*;
-import java.util.Iterator;
 import java.util.Map;
 
 public class ModulesConfig extends FileConfig {

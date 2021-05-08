@@ -9,23 +9,23 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.IntegerValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.features.BoolValue
-import net.ccbluex.liquidbounce.features.IntegerValue
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
 
 @ModuleInfo(name = "Breadcrumbs", description = "Leaves a trail behind you.", category = ModuleCategory.RENDER)
 class Breadcrumbs : Module() {
-    val colorRedValue = IntegerValue("R", 255, 0, 255)
-    val colorGreenValue = IntegerValue("G", 255, 0, 255)
-    val colorBlueValue = IntegerValue("B", 255, 0, 255)
-    val colorRainbow = BoolValue("Rainbow", false)
+    private val colorRedValue = IntegerValue("R", 255, 0, 255)
+    private val colorGreenValue = IntegerValue("G", 255, 0, 255)
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255)
+    private val colorRainbow = BoolValue("Rainbow", false)
     private val fade = BoolValue("Fade",true)
     private val fadeTime = IntegerValue("FadeTime",5,1,20)
 
@@ -33,9 +33,13 @@ class Breadcrumbs : Module() {
     private val loadTime=System.currentTimeMillis()
     private var head=0
 
+    fun getColor(): Color {
+        return if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+    }
+
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val color = if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+        val color = getColor()
         val fTime=fadeTime.get()*1000
         val fadeSec=(System.currentTimeMillis()-fTime-loadTime).toInt()
 

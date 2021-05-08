@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.render.Breadcrumbs
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -25,7 +24,6 @@ import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import org.lwjgl.opengl.GL11
-import java.awt.Color
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -105,9 +103,7 @@ class Blink : Module() {
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         val breadcrumbs = LiquidBounce.moduleManager.getModule(Breadcrumbs::class.java) as Breadcrumbs?
-        val color = if (breadcrumbs!!.colorRainbow.get()) rainbow() else Color(
-            breadcrumbs.colorRedValue.get(), breadcrumbs.colorGreenValue.get(), breadcrumbs.colorBlueValue.get()
-        )
+        val color = breadcrumbs!!.getColor()
         synchronized(positions) {
             GL11.glPushMatrix()
             GL11.glDisable(GL11.GL_TEXTURE_2D)

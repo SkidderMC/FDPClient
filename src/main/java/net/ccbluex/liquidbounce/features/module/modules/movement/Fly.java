@@ -6,6 +6,10 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement;
 
 import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.features.BoolValue;
+import net.ccbluex.liquidbounce.features.FloatValue;
+import net.ccbluex.liquidbounce.features.IntegerValue;
+import net.ccbluex.liquidbounce.features.ListValue;
 import net.ccbluex.liquidbounce.features.module.AutoDisableType;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
@@ -16,10 +20,6 @@ import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
-import net.ccbluex.liquidbounce.features.BoolValue;
-import net.ccbluex.liquidbounce.features.FloatValue;
-import net.ccbluex.liquidbounce.features.IntegerValue;
-import net.ccbluex.liquidbounce.features.ListValue;
 import net.minecraft.block.BlockAir;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C00PacketKeepAlive;

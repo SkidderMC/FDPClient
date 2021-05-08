@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.login.UserUtils.getUUID
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.minecraft.util.Session
-import java.lang.StringBuilder
 import java.net.Proxy
 import java.util.*
 import kotlin.math.roundToInt
