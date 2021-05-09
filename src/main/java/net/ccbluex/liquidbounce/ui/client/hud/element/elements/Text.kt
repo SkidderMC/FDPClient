@@ -49,7 +49,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
     val rainbow = BoolValue("Rainbow", false)
-    private val shadow = BoolValue("Shadow", true)
+    private val shadow = BoolValue("Shadow", false)
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)

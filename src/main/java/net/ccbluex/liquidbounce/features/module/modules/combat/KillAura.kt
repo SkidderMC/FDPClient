@@ -124,6 +124,7 @@ class KillAura : Module() {
     private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true)
     private val randomCenterValue = BoolValue("RandomCenter", true)
     private val outborderValue = BoolValue("Outborder", false)
+    private val hitableValue = BoolValue("AlwaysHitable",true)
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
@@ -679,6 +680,10 @@ class KillAura : Module() {
      * Check if enemy is hitable with current rotations
      */
     private fun updateHitable() {
+        if(hitableValue.get()){
+            hitable = true
+            return
+        }
         // Disable hitable check if turn speed is zero
         if(maxTurnSpeed.get() <= 0F) {
             hitable = true

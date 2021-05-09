@@ -5,12 +5,15 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
+import jdk.jfr.Percentage
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 
 object ColorUtils {
 
@@ -117,4 +120,15 @@ object ColorUtils {
 
     @JvmStatic
     fun antiColor(color: Color) = Color(255-color.red,255-color.green,255-color.blue,color.alpha)
+
+    @JvmStatic
+    fun healthColor(hp: Float,maxHP: Float):Color{
+        val pct=((hp/maxHP)*255F).toInt()
+        return Color(max(min(255-pct, 255),0), max(min(pct, 255),0), 0)
+    }
+
+    @JvmStatic
+    fun darker(color: Color,percentage: Float):Color{
+        return Color((color.red*percentage).toInt(),(color.green*percentage).toInt(),(color.blue*percentage).toInt(),(color.alpha*percentage).toInt())
+    }
 }
