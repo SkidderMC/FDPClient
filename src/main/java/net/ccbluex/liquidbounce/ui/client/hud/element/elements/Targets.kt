@@ -20,7 +20,7 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets", single = true)
 class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline"), "Novoline")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo"), "Novoline")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed",10,5,20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed",20,5,40)
@@ -88,14 +88,36 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
 
         when(modeValue.get().toLowerCase()){
             "novoline" -> {
-                return drawNovo(prevTarget!!,nowAnimHP)
+                drawNovo(prevTarget!!,nowAnimHP)
+            }
+            "astolfo" -> {
+                drawAstolfo(prevTarget!!,nowAnimHP)
             }
         }
 
-        return null
+        return getTBorder()
     }
 
-    private fun drawNovo(target: EntityLivingBase, nowAnimHP: Float):Border{
+    private fun drawAstolfo(target: EntityLivingBase, nowAnimHP: Float){
+        val font=fontValue.get()
+        val color=RenderUtils.skyRainbow(1,1F,0.9F,5.0)
+        val hpPct=nowAnimHP/target.maxHealth
+
+        RenderUtils.drawRect(0F,0F, 140F, 60F, Color(0,0,0,110).rgb)
+
+        // health rect
+        RenderUtils.drawRect(3F, 55F, 137F, 58F,ColorUtils.reAlpha(color,100).rgb)
+        RenderUtils.drawRect(3F,55F,3+(hpPct*134F),58F,color.rgb)
+        RenderUtils.drawEntityOnScreen(18,46,20,target)
+
+        font.drawStringWithShadow(target.name, 37F, 6F, -1)
+        GL11.glPushMatrix()
+        GL11.glScalef(2F,2F,2F)
+        font.drawString("${target.health.roundToInt()} ❤", 19,9, color.rgb)
+        GL11.glPopMatrix()
+    }
+
+    private fun drawNovo(target: EntityLivingBase, nowAnimHP: Float){
         val font=fontValue.get()
         val color=ColorUtils.healthColor(target.health,target.maxHealth)
         val darkColor=ColorUtils.darker(color,0.6F)
@@ -108,12 +130,12 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         RenderUtils.drawRect(33F, 18F, hpPos, 25F, color)
         font.drawString("❤", 33, 30, Color.RED.rgb)
         font.drawString(target.health.toString(), 43, 30, Color.WHITE.rgb)
-
-        return Border(0F,0F,140F,40F)
     }
+
     private fun getTBorder():Border?{
         return when(modeValue.get().toLowerCase()){
             "novoline" -> Border(0F,0F,140F,40F)
+            "astolfo" -> Border(0F,0F,140F,60F)
             else -> null
         }
     }

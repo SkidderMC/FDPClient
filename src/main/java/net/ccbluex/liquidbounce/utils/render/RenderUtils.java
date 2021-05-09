@@ -818,8 +818,8 @@ public final class RenderUtils extends MinecraftInstance {
             glDisable(cap);
     }
 
-    public static Color skyRainbow(int var2, float bright, float st) {
-        double v1 = Math.ceil(System.currentTimeMillis() + (var2 * 109L)) / 5;
+    public static Color skyRainbow(int var2, float bright, float st, double speed) {
+        double v1 = Math.ceil((System.currentTimeMillis()/speed) + (var2 * 109L)) / 5;
         return Color.getHSBColor((double) ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright);
     }
 
@@ -844,8 +844,8 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawEntityOnScreen(final int posX, final int posY, final int scale, final EntityLivingBase entity) {
-        GlStateManager.enableColorMaterial();
         GlStateManager.pushMatrix();
+        GlStateManager.enableColorMaterial();
 
         GlStateManager.translate(posX, posY, 50.0);
         GlStateManager.scale((-scale), scale, scale);
