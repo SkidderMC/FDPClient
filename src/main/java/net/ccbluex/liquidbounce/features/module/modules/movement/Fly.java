@@ -49,6 +49,9 @@ public class Fly extends Module {
             "RedeSkyCollide",
             "RedeSkySmooth",
 
+            // Mush
+            "MushBoost",
+
             // AAC
             "AAC1.9.10",
             "AAC3.0.5",
@@ -110,6 +113,8 @@ public class Fly extends Module {
     private final FloatValue mineplexSpeedValue = new FloatValue("MineplexSpeed", 1F, 0.5F, 10F);
     private final IntegerValue neruxVaceTicks = new IntegerValue("NeruxVace-Ticks", 6, 0, 20);
 
+    private final FloatValue msSpeedValue = new FloatValue("MushSpeed",3F,1F,5F);
+    private final IntegerValue msBoostDelay = new IntegerValue("MushBoostDelay", 10, 0, 20);
     // RedeSky Collide
     private final FloatValue rscSpeedValue = new FloatValue("RSCollideSpeed", 15.5F, 0F, 30F);
     private final FloatValue rscBoostValue = new FloatValue("RSCollideBoost", 0.3F, 0.0F, 1F);
@@ -150,6 +155,7 @@ public class Fly extends Module {
     private boolean wasDead;
 
     private final TickTimer hypixelTimer = new TickTimer();
+    private final MSTimer mushTimer = new MSTimer();
 
     private int boostHypixelState = 1;
     private double moveSpeed, lastDistance;
@@ -247,6 +253,16 @@ public class Fly extends Module {
                 lastDistance = 0D;
                 failedStart = false;
                 break;
+            case "mushboost":{
+                mushTimer.reset();
+                mc.thePlayer.setPosition(x,y+0.5,z);
+                for(int i = 0; i < 4; i++) {
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 1.01, z, false));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
+                }
+                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
+                break;
+            }
             case "redeskysmooth":{
                 mc.thePlayer.addVelocity(0, rssMotionValue.get(), 0);
                 break;
@@ -311,6 +327,27 @@ public class Fly extends Module {
                 MovementUtils.strafe(vanillaSpeed);
 
                 handleVanillaKickBypass();
+                break;
+            case "mushboost":
+                mc.thePlayer.motionX = 0;
+                mc.thePlayer.motionY = 0;
+                mc.thePlayer.motionZ = 0;
+                if(mc.gameSettings.keyBindForward.isKeyDown()) {
+                    MovementUtils.strafe(msSpeedValue.get());
+                }
+                if(msBoostDelay.get()!=0&&mushTimer.hasTimePassed(msBoostDelay.get()*300)){
+                    double x = mc.thePlayer.posX;
+                    double y = mc.thePlayer.posY;
+                    double z = mc.thePlayer.posZ;
+                    for(int i = 0; i < 4; i++) {
+                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.50, z, false));
+                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 1.00, z, false));
+                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
+                    }
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
+                    mushTimer.reset();
+                }
+                mc.thePlayer.motionY = 0;
                 break;
             case "smoothvanilla":
                 mc.thePlayer.capabilities.isFlying = true;
@@ -802,8 +839,8 @@ public class Fly extends Module {
 
         final String mode = modeValue.get();
 
-        if (event.getBlock() instanceof BlockAir && (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("RedeskyCollide") ||
-                mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") ||
+        if (event.getBlock() instanceof BlockAir && (mode.equalsIgnoreCase("Hypixel") ||
+                mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") || mode.equalsIgnoreCase("MushBoost") ||
                 (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null)) && event.getY() < mc.thePlayer.posY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, mc.thePlayer.posY, event.getZ() + 1));
     }
@@ -812,7 +849,7 @@ public class Fly extends Module {
     public void onJump(final JumpEvent e) {
         final String mode = modeValue.get();
 
-        if (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("BoostHypixel") ||
+        if (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("MushBoost") || mode.equalsIgnoreCase("BoostHypixel") ||
                 mode.equalsIgnoreCase("Rewinside") || (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null))
             e.cancelEvent();
     }

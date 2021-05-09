@@ -10,10 +10,8 @@ import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.ui.client.hud.Config;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class HudConfig extends FileConfig {
 
@@ -44,8 +42,8 @@ public class HudConfig extends FileConfig {
      */
     @Override
     protected void saveConfig() throws IOException {
-        final PrintWriter printWriter = new PrintWriter(new FileWriter(getFile()));
-        printWriter.println(new Config(LiquidBounce.hud).toJson());
-        printWriter.close();
+        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), StandardCharsets.UTF_8));
+        writer.write(new Config(LiquidBounce.hud).toJson());
+        writer.close();
     }
 }

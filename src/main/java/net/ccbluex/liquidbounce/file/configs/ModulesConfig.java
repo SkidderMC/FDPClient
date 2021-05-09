@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class ModulesConfig extends FileConfig {
@@ -77,8 +78,8 @@ public class ModulesConfig extends FileConfig {
             jsonObject.add(module.getName(), jsonMod);
         }
 
-        final PrintWriter printWriter = new PrintWriter(new FileWriter(getFile()));
-        printWriter.println(FileManager.PRETTY_GSON.toJson(jsonObject));
-        printWriter.close();
+        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), StandardCharsets.UTF_8));
+        writer.write(FileManager.PRETTY_GSON.toJson(jsonObject));
+        writer.close();
     }
 }

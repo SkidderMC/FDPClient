@@ -6,8 +6,10 @@
 package net.ccbluex.liquidbounce.file.configs;
 
 import net.ccbluex.liquidbounce.file.FileConfig;
+import net.ccbluex.liquidbounce.file.FileManager;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,10 +58,11 @@ public class FriendsConfig extends FileConfig {
      */
     @Override
     protected void saveConfig() throws IOException {
-        final PrintWriter printWriter = new PrintWriter(new FileWriter(getFile()));
+
+        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), StandardCharsets.UTF_8));
         for(final Friend friend : getFriends())
-            printWriter.append(friend.getPlayerName()).append(":").append(friend.getAlias()).append("\n");
-        printWriter.close();
+            writer.append(friend.getPlayerName()).append(":").append(friend.getAlias()).append("\n");
+        writer.close();
     }
 
     /**

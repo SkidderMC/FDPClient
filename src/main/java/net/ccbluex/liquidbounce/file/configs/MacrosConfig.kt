@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.features.special.macro.Macro
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager
 import java.io.*
+import java.nio.charset.StandardCharsets
 
 class MacrosConfig(file: File) : FileConfig(file) {
     override fun loadConfig() {
@@ -29,8 +30,8 @@ class MacrosConfig(file: File) : FileConfig(file) {
             jsonArray.add(macroJson)
         }
 
-        val printWriter = PrintWriter(FileWriter(file))
-        printWriter.println(FileManager.PRETTY_GSON.toJson(jsonArray))
-        printWriter.close()
+        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8))
+        writer.write(FileManager.PRETTY_GSON.toJson(jsonArray))
+        writer.close()
     }
 }

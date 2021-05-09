@@ -6,11 +6,14 @@
 package net.ccbluex.liquidbounce.file.configs;
 
 import com.google.gson.Gson;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
+import net.ccbluex.liquidbounce.ui.client.hud.Config;
 import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,8 +68,8 @@ public class AccountsConfig extends FileConfig {
         for(final MinecraftAccount minecraftAccount : altManagerMinecraftAccounts)
             accountList.add(minecraftAccount.getName() + ":" + (minecraftAccount.getPassword() == null ? "" : minecraftAccount.getPassword()) + ":" + (minecraftAccount.getAccountName() == null ? "" : minecraftAccount.getAccountName()));
 
-        final PrintWriter printWriter = new PrintWriter(new FileWriter(getFile()));
-        printWriter.println(FileManager.PRETTY_GSON.toJson(accountList));
-        printWriter.close();
+        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), StandardCharsets.UTF_8));
+        writer.write(FileManager.PRETTY_GSON.toJson(accountList));
+        writer.close();
     }
 }

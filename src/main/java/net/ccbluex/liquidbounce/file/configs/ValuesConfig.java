@@ -22,6 +22,7 @@ import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -158,8 +159,8 @@ public class ValuesConfig extends FileConfig {
             jsonObject.add(module.getName(), jsonModule);
         });
 
-        final PrintWriter printWriter = new PrintWriter(new FileWriter(getFile()));
-        printWriter.println(FileManager.PRETTY_GSON.toJson(jsonObject));
-        printWriter.close();
+        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), StandardCharsets.UTF_8));
+        writer.write(FileManager.PRETTY_GSON.toJson(jsonObject));
+        writer.close();
     }
 }

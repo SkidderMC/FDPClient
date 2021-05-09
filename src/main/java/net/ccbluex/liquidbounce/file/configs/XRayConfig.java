@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.block.Block;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class XRayConfig extends FileConfig {
 
@@ -81,8 +82,8 @@ public class XRayConfig extends FileConfig {
         for (final Block block : xRay.getXrayBlocks())
             jsonArray.add(FileManager.PRETTY_GSON.toJsonTree(Block.getIdFromBlock(block)));
 
-        final PrintWriter printWriter = new PrintWriter(new FileWriter(getFile()));
-        printWriter.println(FileManager.PRETTY_GSON.toJson(jsonArray));
-        printWriter.close();
+        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), StandardCharsets.UTF_8));
+        writer.write(FileManager.PRETTY_GSON.toJson(jsonArray));
+        writer.close();
     }
 }
