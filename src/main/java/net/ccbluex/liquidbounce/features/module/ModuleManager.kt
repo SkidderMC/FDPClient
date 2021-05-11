@@ -140,7 +140,11 @@ class ModuleManager : Listenable {
             Ambience::class.java,
             TargetStrafe::class.java,
             PrevFallPos::class.java,
-            KeepSword::class.java
+            KeepSword::class.java,
+            AutoClicker::class.java,
+            HitBox::class.java,
+            Reach::class.java,
+            Aimbot::class.java
         )
 
         registerModule(Fucker)

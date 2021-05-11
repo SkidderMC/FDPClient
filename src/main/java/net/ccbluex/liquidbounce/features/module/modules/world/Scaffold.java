@@ -103,6 +103,7 @@ public class Scaffold extends Module {
     // Rotations
     private final ListValue rotationsValue = new ListValue("Rotations",new String[]{"None","Vanilla","AAC"},"AAC");
     private final IntegerValue aacPitchValue = new IntegerValue("AACPitch",90,-90,90);
+    private final BoolValue aacSmartPitchValue = new BoolValue("AACSmartPitch",true);
     private final IntegerValue aacYawValue = new IntegerValue("AACYaw",0,0,90);
     private final BoolValue silentRotationValue = new BoolValue("SilentRotation", true);
     private final IntegerValue keepLengthValue = new IntegerValue("KeepRotationLength", 0, 0, 20);
@@ -180,8 +181,6 @@ public class Scaffold extends Module {
 
     // Down
     private boolean shouldGoDown = false;
-
-    private Rotation noRotation=new Rotation(0,0);
 
     private double jumpGround = 0;
     private boolean towerStatus=false;
@@ -665,12 +664,13 @@ public class Scaffold extends Module {
         if (placeRotation == null) return false;
 
         if ((!rotationsValue.get().equals("None"))) {
-            Rotation rotation=noRotation;
+            Rotation rotation=null;
 
             switch (rotationsValue.get().toLowerCase()){
                 case "aac":{
                     if(!towerStatus) {
-                        rotation = new Rotation(mc.thePlayer.rotationYaw + ((mc.thePlayer.movementInput.moveForward > 0) ? 180 : 0) + aacYawValue.get(), aacPitchValue.get());
+                        rotation = new Rotation(mc.thePlayer.rotationYaw + ((mc.thePlayer.movementInput.moveForward > 0) ? 180 : 0) + aacYawValue.get(),
+                                (aacSmartPitchValue.get())?placeRotation.getRotation().getPitch():aacPitchValue.get());
                         break;
                     }
                 }
@@ -680,11 +680,13 @@ public class Scaffold extends Module {
                 }
             }
 
-            if(silentRotationValue.get()) {
-                RotationUtils.setTargetRotation(rotation, keepLengthValue.get());
-            }else{
-                mc.thePlayer.rotationYaw=rotation.getYaw();
-                mc.thePlayer.rotationPitch=rotation.getPitch();
+            if(rotation!=null) {
+                if (silentRotationValue.get()) {
+                    RotationUtils.setTargetRotation(rotation, keepLengthValue.get());
+                } else {
+                    mc.thePlayer.rotationYaw = rotation.getYaw();
+                    mc.thePlayer.rotationPitch = rotation.getPitch();
+                }
             }
 
             lockRotation = rotation;

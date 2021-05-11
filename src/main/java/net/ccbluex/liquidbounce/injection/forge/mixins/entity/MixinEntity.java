@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
+import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -23,6 +24,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Random;
 import java.util.UUID;
@@ -189,5 +191,13 @@ public abstract class MixinEntity {
 
         if (strafeEvent.isCancelled())
             callbackInfo.cancel();
+    }
+
+    @Inject(method = "getCollisionBorderSize", at = @At("HEAD"), cancellable = true)
+    private void getCollisionBorderSize(final CallbackInfoReturnable<Float> callbackInfoReturnable) {
+        final HitBox hitBox = (HitBox) LiquidBounce.moduleManager.getModule(HitBox.class);
+
+        if (hitBox.getState())
+            callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());
     }
 }
