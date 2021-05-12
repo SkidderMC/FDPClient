@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "LongJump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT, autoDisable = AutoDisableType.FLAG)
@@ -50,6 +51,7 @@ class LongJump : Module() {
     private val rs3TimerValue = FloatValue("RedeSky3Timer",1F,0.1F,5F)
     private val autoJumpValue = BoolValue("AutoJump", true)
     private val autoCloseValue = BoolValue("AutoClose", true)
+    private val mushBoostValue = BoolValue("MushBoost", false)
     private var jumped = false
     private var hasJumped=false
     private var canBoost = false
@@ -246,6 +248,19 @@ class LongJump : Module() {
                         mc.thePlayer!!.onGround = false
                     }
                 }
+            }
+
+            if(mushBoostValue.get()){
+                val x = mc.thePlayer.posX
+                val y = mc.thePlayer.posY
+                val z = mc.thePlayer.posZ
+                for (i in 0..2) {
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 1.01, z, false))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
+                }
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.15, z, false))
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, true))
             }
         }
     }

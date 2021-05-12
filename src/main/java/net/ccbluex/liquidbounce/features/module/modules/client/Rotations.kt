@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.network.play.client.C03PacketPlayer
 
-@ModuleInfo(name = "Rotations", description = "Rotation settings.", category = ModuleCategory.CLIENT, canEnable = false, array = false)
+@ModuleInfo(name = "Rotations", description = "Rotation settings.", category = ModuleCategory.CLIENT, canEnable = false)
 object Rotations : Module() {
     val headValue = BoolValue("Head", true)
     val bodyValue = BoolValue("Body", true)

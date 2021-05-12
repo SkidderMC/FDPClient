@@ -868,4 +868,35 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.disableTexture2D();
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
+
+    public static void drawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
+        float f = (float) (col1 >> 24 & 255) / 255.0f;
+        float f1 = (float) (col1 >> 16 & 255) / 255.0f;
+        float f2 = (float) (col1 >> 8 & 255) / 255.0f;
+        float f3 = (float) (col1 & 255) / 255.0f;
+        float f4 = (float) (col2 >> 24 & 255) / 255.0f;
+        float f5 = (float) (col2 >> 16 & 255) / 255.0f;
+        float f6 = (float) (col2 >> 8 & 255) / 255.0f;
+        float f7 = (float) (col2 & 255) / 255.0f;
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848);
+        GL11.glShadeModel(7425);
+        GL11.glPushMatrix();
+        GL11.glBegin(7);
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glVertex2d(left, bottom);
+        GL11.glVertex2d(right, bottom);
+        GL11.glColor4f(f5, f6, f7, f4);
+        GL11.glVertex2d(right, top);
+        GL11.glVertex2d(left, top);
+        GL11.glEnd();
+        GL11.glPopMatrix();
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glDisable(2848);
+        GL11.glShadeModel(7424);
+        Gui.drawRect(0, 0, 0, 0, 0);
+    }
 }

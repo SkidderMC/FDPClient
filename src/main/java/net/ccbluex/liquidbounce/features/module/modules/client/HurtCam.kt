@@ -1,0 +1,75 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/Project-EZ4H/FDPClient/
+ */
+package net.ccbluex.liquidbounce.features.module.modules.client
+
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.features.BoolValue
+import net.ccbluex.liquidbounce.features.IntegerValue
+import net.ccbluex.liquidbounce.features.ListValue
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.minecraft.client.gui.ScaledResolution
+import java.awt.Color
+
+@ModuleInfo(name = "HurtCam", description = "Change hurt cam effect.", category = ModuleCategory.CLIENT,canEnable = false)
+class HurtCam : Module() {
+    val modeValue=ListValue("Mode", arrayOf("Vanilla","Cancel","FPS"),"Vanilla")
+    private val colorRedValue = IntegerValue("R", 255, 0, 255)
+    private val colorGreenValue = IntegerValue("G", 0, 0, 255)
+    private val colorBlueValue = IntegerValue("B", 0, 0, 255)
+    private val colorRainbow = BoolValue("Rainbow", false)
+    private val timeValue = IntegerValue("FPSTime", 1000, 0, 1500)
+    private val fpsHeightValue = IntegerValue("FPSHeight", 25, 10, 50)
+
+    private var hurt=0L
+    private var lastHurt=false
+
+    @EventTarget
+    fun onRender2d(event: Render2DEvent){
+        if(hurt==0L) return
+
+        val passedTime=System.currentTimeMillis()-hurt
+        if(passedTime>timeValue.get()){
+            hurt=0L
+            return
+        }
+
+        val color=getColor((((timeValue.get()-passedTime)/timeValue.get().toFloat())*255).toInt())
+        val color1=getColor(0)
+        val scaledResolution = ScaledResolution(mc)
+        val width = scaledResolution.scaledWidth_double
+        val height = scaledResolution.scaledHeight_double
+
+        RenderUtils.drawGradientSidewaysV(0.0, 0.0, width, fpsHeightValue.get().toDouble(),color1.rgb,color.rgb)
+        RenderUtils.drawGradientSidewaysV(0.0, height - fpsHeightValue.get(), width, height,color.rgb, color1.rgb)
+    }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent){
+        when(modeValue.get().toLowerCase()){
+            "fps" -> {
+                if(!lastHurt&&mc.thePlayer.hurtTime>0){
+                    if(hurt==0L){
+                        hurt=System.currentTimeMillis()
+                    }
+                }
+                lastHurt=mc.thePlayer.hurtTime>0
+            }
+        }
+    }
+
+    private fun getColor(alpha: Int):Color{
+        return if (colorRainbow.get()) ColorUtils.rainbow(alpha) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), alpha)
+    }
+
+    //always handle event
+    override fun handleEvents() = true
+}

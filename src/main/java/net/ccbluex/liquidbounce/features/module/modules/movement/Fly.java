@@ -167,6 +167,8 @@ public class Fly extends Module {
     private float freeHypixelYaw;
     private float freeHypixelPitch;
 
+    private boolean mushAfterJump=false;
+
     private int flyTick;
 
     @Override
@@ -255,12 +257,16 @@ public class Fly extends Module {
                 break;
             case "mushboost":{
                 mushTimer.reset();
-                mc.thePlayer.setPosition(x,y+0.5,z);
-                for(int i = 0; i < 4; i++) {
+                mc.thePlayer.setPosition(x,y+0.1,z);
+                mc.thePlayer.jump();
+                for(int i = 0; i < 3; ++i) {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 1.01, z, false));
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
                 }
+                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.15, z, false));
+                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
                 mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
+                mushAfterJump=false;
                 break;
             }
             case "redeskysmooth":{
@@ -329,6 +335,10 @@ public class Fly extends Module {
                 handleVanillaKickBypass();
                 break;
             case "mushboost":
+                if(!mushAfterJump){
+                    if(mc.thePlayer.onGround)mushAfterJump=true;
+                    return;
+                }
                 mc.thePlayer.motionX = 0;
                 mc.thePlayer.motionY = 0;
                 mc.thePlayer.motionZ = 0;
@@ -339,11 +349,12 @@ public class Fly extends Module {
                     double x = mc.thePlayer.posX;
                     double y = mc.thePlayer.posY;
                     double z = mc.thePlayer.posZ;
-                    for(int i = 0; i < 4; i++) {
-                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.50, z, false));
-                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 1.00, z, false));
+                    for(int i = 0; i < 3; ++i) {
+                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 1.01, z, false));
                         mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
                     }
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.15, z, false));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
                     mushTimer.reset();
                 }
