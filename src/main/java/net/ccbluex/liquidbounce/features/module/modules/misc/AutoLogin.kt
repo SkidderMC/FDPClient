@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.features.BoolValue
 import net.ccbluex.liquidbounce.features.IntegerValue
 import net.ccbluex.liquidbounce.features.TextValue
 import net.ccbluex.liquidbounce.features.module.Module
@@ -14,8 +15,12 @@ import java.util.*
 
 @ModuleInfo(name = "AutoLogin", description = "Automatic login into server.", category = ModuleCategory.MISC)
 class AutoLogin : Module() {
+    private val registerCommand=TextValue("Register","/register %p %p")
+    private val loginCommand=TextValue("Login","/login %p %p")
     private val passwordValue=TextValue("Password","password")
     private val delayValue=IntegerValue("Delay",1500,100,5000)
+    private val title=BoolValue("Title",true)
+    private val chat=BoolValue("Chat",true)
 
     private var logined=false
 
@@ -31,33 +36,25 @@ class AutoLogin : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         if(logined) return
-        val password=passwordValue.get()
         val packet=event.packet
 
-        if(packet is S45PacketTitle && packet.type==S45PacketTitle.Type.SUBTITLE){
-            val msg=packet.message.unformattedText
-            // redesky
-            if (msg.contains("/register", ignoreCase = true)) {
-                delayedMessage("/register $password $password")
-            } else if (msg.contains("/login", ignoreCase = true)) {
-                delayedMessage("/login $password")
-            }
+        if(title.get()&&packet is S45PacketTitle){
+            processMessage(packet.message.unformattedText)
         }
 
-        if(packet is S02PacketChat){
-            val msg=packet.chatComponent.unformattedText
-            // mush and some other server
-            if (msg.contains("/register", ignoreCase = true)) {
-                delayedMessage("/register $password $password")
-            } else if (msg.contains("/login", ignoreCase = true)) {
-                delayedMessage("/login $password")
-            }
-            // mcyc
-            if (msg.contains(".reg", ignoreCase = true)) {
-                delayedMessage(".reg $password $password")
-            } else if (msg.contains(".l", ignoreCase = true)) {
-                delayedMessage(".l $password")
-            }
+        if(chat.get()&&packet is S02PacketChat){
+            processMessage(packet.chatComponent.unformattedText)
+        }
+    }
+
+    private fun processMessage(msg: String){
+        val regCommand=registerCommand.get().split(" ")[0]
+        if(regCommand.isNotEmpty()&&msg.contains(regCommand,ignoreCase = true)){
+            delayedMessage(registerCommand.get().replace("%p",passwordValue.get()))
+        }
+        val logCommand=loginCommand.get().split(" ")[0]
+        if(logCommand.isNotEmpty()&&msg.contains(logCommand,ignoreCase = true)){
+            delayedMessage(loginCommand.get().replace("%p",passwordValue.get()))
         }
     }
 

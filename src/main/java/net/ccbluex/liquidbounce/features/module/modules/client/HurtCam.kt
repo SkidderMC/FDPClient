@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.BoolValue
 import net.ccbluex.liquidbounce.features.IntegerValue
 import net.ccbluex.liquidbounce.features.ListValue
@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.network.play.server.S19PacketEntityStatus
 import java.awt.Color
 
 @ModuleInfo(name = "HurtCam", description = "Change hurt cam effect.", category = ModuleCategory.CLIENT,canEnable = false)
@@ -30,7 +31,6 @@ class HurtCam : Module() {
     private val fpsHeightValue = IntegerValue("FPSHeight", 25, 10, 50)
 
     private var hurt=0L
-    private var lastHurt=false
 
     @EventTarget
     fun onRender2d(event: Render2DEvent){
@@ -53,15 +53,18 @@ class HurtCam : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent){
+    fun onPacket(event: PacketEvent){
+        val packet=event.packet
+
         when(modeValue.get().toLowerCase()){
             "fps" -> {
-                if(!lastHurt&&mc.thePlayer.hurtTime>0){
-                    if(hurt==0L){
-                        hurt=System.currentTimeMillis()
+                if(packet is S19PacketEntityStatus){
+                    if(packet.opCode.toInt()==2&&packet.getEntity(mc.theWorld).equals(mc.thePlayer)){
+                        if(hurt==0L){
+                            hurt=System.currentTimeMillis()
+                        }
                     }
                 }
-                lastHurt=mc.thePlayer.hurtTime>0
             }
         }
     }

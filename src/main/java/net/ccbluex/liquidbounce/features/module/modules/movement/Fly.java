@@ -24,6 +24,7 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
@@ -91,7 +92,8 @@ public class Fly extends Module {
             // Other
             "Jetpack",
             "KeepAlive",
-            "Flag"
+            "Flag",
+            "BlockWalk" //bypass horizon
     }, "Vanilla");
 
     private final FloatValue vanillaSpeedValue = new FloatValue("VanillaSpeed", 2F, 0F, 5F);
@@ -328,6 +330,13 @@ public class Fly extends Module {
         final float vanillaSpeed = vanillaSpeedValue.get();
 
         switch (modeValue.get().toLowerCase()) {
+            case "blockwalk":{
+                if(Math.random()>0.5){
+                    mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(new BlockPos(0,-1,0),
+                            0,mc.thePlayer.inventory.getCurrentItem(),0,0,0));
+                }
+                break;
+            }
             case "vanilla":
                 mc.thePlayer.capabilities.isFlying = false;
                 mc.thePlayer.motionY = 0;
@@ -857,7 +866,7 @@ public class Fly extends Module {
 
         final String mode = modeValue.get();
 
-        if (event.getBlock() instanceof BlockAir && (mode.equalsIgnoreCase("Hypixel") ||
+        if (event.getBlock() instanceof BlockAir && (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("BlockWalk") ||
                 mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") || mode.equalsIgnoreCase("MushBoost") ||
                 (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null)) && event.getY() < mc.thePlayer.posY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, mc.thePlayer.posY, event.getZ() + 1));
