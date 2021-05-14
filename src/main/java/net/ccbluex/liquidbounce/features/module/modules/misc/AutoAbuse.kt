@@ -80,7 +80,7 @@ class AutoAbuse : Module() {
                     sendAbuseWords("L $name",name)
                 }
                 "withwords" -> {
-                    sendAbuseWords("L $name " + abuseWords!![(Math.random() * abuseWords!!.size()).roundToInt()].asString,name)
+                    sendAbuseWords("L $name " + abuseWords!![(Math.random() * (abuseWords!!.size()-1)).roundToInt()].asString,name)
                 }
                 "rawwords" -> {
                     sendAbuseWords(abuseWords!![(Math.random() * abuseWords!!.size()).roundToInt()].asString,name)

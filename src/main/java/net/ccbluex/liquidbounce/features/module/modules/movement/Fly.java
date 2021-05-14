@@ -127,6 +127,7 @@ public class Fly extends Module {
     private final FloatValue rssDropoffValue = new FloatValue("RSSmoothDropoff", 1F, 0F, 5F);
     private final BoolValue rssDropoff = new BoolValue("RSSmoothDropoffA", true);
 
+    private final BoolValue motionResetValue = new BoolValue("MotionReset", false);
     // Visuals
     private final BoolValue markValue = new BoolValue("Mark", true);
 
@@ -314,6 +315,12 @@ public class Fly extends Module {
 
         mc.timer.timerSpeed = 1F;
         mc.thePlayer.speedInAir = 0.02F;
+
+        if(motionResetValue.get()){
+            mc.thePlayer.motionX=0;
+            mc.thePlayer.motionY=0;
+            mc.thePlayer.motionZ=0;
+        }
     }
 
     @EventTarget

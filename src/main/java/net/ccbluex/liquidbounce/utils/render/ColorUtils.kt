@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
-import jdk.jfr.Percentage
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*

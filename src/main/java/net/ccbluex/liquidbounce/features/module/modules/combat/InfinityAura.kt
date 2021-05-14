@@ -18,7 +18,6 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -36,6 +35,7 @@ class InfinityAura : Module() {
     private var points=ArrayList<Vec3>()
     private var needAntiTP=false
     private var lastPos:Vec3?=null
+    private var thread: Thread? = null
 
     private fun getDelay():Int{
         return 1000/cpsValue.get()
@@ -52,11 +52,9 @@ class InfinityAura : Module() {
         if(needAntiTP&&lastPos!=null){
             val path=PathUtils.findBlinkPath(lastPos!!.xCoord,lastPos!!.yCoord,lastPos!!.zCoord,moveDistValue.get().toDouble())
             path.forEach {
-                val f = mc.thePlayer.width / 2.0F;
-                val f1 = mc.thePlayer.height;
-                if(!mc.theWorld.checkBlockCollision(AxisAlignedBB(it.xCoord - f, it.yCoord, it.zCoord - f, it.xCoord + f, it.yCoord + f1, it.zCoord + f))){
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
-                }
+                val f = mc.thePlayer.width / 2.0F
+                val f1 = mc.thePlayer.height
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
             }
             mc.thePlayer.setPosition(lastPos!!.xCoord,lastPos!!.yCoord,lastPos!!.zCoord)
             needAntiTP=false
@@ -64,9 +62,21 @@ class InfinityAura : Module() {
         }
 
         if(!timer.hasTimePassed(getDelay().toLong())) return
-        timer.reset()
-        points.clear()
 
+        if(thread == null || !thread!!.isAlive) {
+            thread = Thread {
+                // do it async because a* pathfinding need some time
+                doTpAura()
+            }
+            points.clear()
+            timer.reset()
+            thread!!.start()
+        }else{
+            timer.reset()
+        }
+    }
+
+    private fun doTpAura(){
         val targets=ArrayList<EntityLivingBase>()
         for(entity in mc.theWorld.loadedEntityList){
             if(entity is EntityLivingBase&&EntityUtils.isSelected(entity,true)
@@ -78,68 +88,30 @@ class InfinityAura : Module() {
         targets.sortBy { mc.thePlayer.getDistanceToEntity(it) }
         var count=0
         val playerPos=Vec3(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
-        var posX=mc.thePlayer.posX
-        var posY=mc.thePlayer.posY
-        var posZ=mc.thePlayer.posZ
 
         points.add(playerPos)
         for(entity in targets){
             count++
             if(count>targetsValue.get()) break
 
-            val path=PathUtils.findBlinkPath(posX,posY,posZ,entity.posX,entity.posY,entity.posZ,distValue.get().toDouble())
-            posX=entity.posX
-            posY=entity.posY
-            posZ=entity.posZ
+            val path=PathUtils.findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,entity.posX,entity.posY,entity.posZ,distValue.get().toDouble())
 
             path.forEach {
-                if(!mc.theWorld.checkBlockCollision(getBB(it))){
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
-                    points.add(it)
-                }
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
+                points.add(it)
             }
+
             mc.thePlayer.swingItem()
             mc.playerController.attackEntity(mc.thePlayer,entity)
-        }
-        //come back
-        val path= PathUtils.findBlinkPath(posX,posY,posZ,mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,distValue.get().toDouble())
-        path.forEach {
-            if(!mc.theWorld.checkBlockCollision(getBB(it))){
+
+            for(i in path.size-1 downTo 0){
+                val it=path[i]
                 mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
                 points.add(it)
             }
         }
-        points.add(playerPos)
 
         lastPos=playerPos
-    }
-
-    private fun getBB(vec3: Vec3):AxisAlignedBB{
-        val f = mc.thePlayer.width / 2.0F
-        val f1 = mc.thePlayer.height
-        return AxisAlignedBB(vec3.xCoord - f, vec3.yCoord, vec3.zCoord - f, vec3.xCoord + f, vec3.yCoord + f1, vec3.zCoord + f)
-    }
-
-    private fun calculateGround(posY: Double,bb: AxisAlignedBB): Double {
-        var blockHeight = 1.0
-        var ground = posY
-        while (ground > 0.0) {
-            val customBox = AxisAlignedBB(
-                bb.maxX,
-                ground + blockHeight,
-                bb.maxZ,
-                bb.minX,
-                ground,
-                bb.minZ
-            )
-            if (mc.theWorld.checkBlockCollision(customBox)) {
-                if (blockHeight <= 0.05) return ground + blockHeight
-                ground += blockHeight
-                blockHeight = 0.05
-            }
-            ground -= blockHeight
-        }
-        return 0.0
     }
 
     @EventTarget

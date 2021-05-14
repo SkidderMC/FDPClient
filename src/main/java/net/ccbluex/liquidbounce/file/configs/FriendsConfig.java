@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.file.configs;
 
 import net.ccbluex.liquidbounce.file.FileConfig;
-import net.ccbluex.liquidbounce.file.FileManager;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
