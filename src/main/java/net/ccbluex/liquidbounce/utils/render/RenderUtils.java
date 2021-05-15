@@ -362,15 +362,27 @@ public final class RenderUtils extends MinecraftInstance {
         resetCaps();
     }
 
-    public static void drawAxisAlignedBB(final AxisAlignedBB axisAlignedBB, final Color color) {
+    public static void drawAxisAlignedBB(final AxisAlignedBB axisAlignedBB, final Color color, final boolean outline, final boolean box, final float outlineWidth) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
-        glLineWidth(2F);
+        glLineWidth(outlineWidth);
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_DEPTH_TEST);
         glDepthMask(false);
         glColor(color);
-        drawFilledBox(axisAlignedBB);
+
+        if (outline) {
+            glLineWidth(outlineWidth);
+            enableGlCap(GL_LINE_SMOOTH);
+            glColor(color.getRed(), color.getGreen(), color.getBlue(), 95);
+            drawSelectionBoundingBox(axisAlignedBB);
+        }
+
+        if(box) {
+            glColor(color.getRed(), color.getGreen(), color.getBlue(), outline ? 26 : 35);
+            drawFilledBox(axisAlignedBB);
+        }
+
         GlStateManager.resetColor();
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_DEPTH_TEST);
@@ -382,7 +394,7 @@ public final class RenderUtils extends MinecraftInstance {
         final RenderManager renderManager = mc.getRenderManager();
         final double renderY = y - renderManager.renderPosY;
 
-        drawAxisAlignedBB(new AxisAlignedBB(size, renderY + 0.02D, size, -size, renderY, -size), color);
+        drawAxisAlignedBB(new AxisAlignedBB(size, renderY + 0.02D, size, -size, renderY, -size), color,false,true,2F);
     }
 
     public static void drawPlatform(final Entity entity, final Color color) {
@@ -400,10 +412,8 @@ public final class RenderUtils extends MinecraftInstance {
                 .offset(-entity.posX, -entity.posY, -entity.posZ)
                 .offset(x, y, z);
 
-        drawAxisAlignedBB(
-                new AxisAlignedBB(axisAlignedBB.minX, axisAlignedBB.maxY + 0.2, axisAlignedBB.minZ, axisAlignedBB.maxX, axisAlignedBB.maxY + 0.26, axisAlignedBB.maxZ),
-                color
-        );
+        drawAxisAlignedBB(new AxisAlignedBB(axisAlignedBB.minX, axisAlignedBB.maxY + 0.2, axisAlignedBB.minZ, axisAlignedBB.maxX, axisAlignedBB.maxY + 0.26, axisAlignedBB.maxZ),
+                color,false,true,2F);
     }
 
     public static void drawFilledBox(final AxisAlignedBB axisAlignedBB) {

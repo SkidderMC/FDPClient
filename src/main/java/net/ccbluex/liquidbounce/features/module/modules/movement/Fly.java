@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.BoolValue;
 import net.ccbluex.liquidbounce.features.FloatValue;
@@ -26,6 +27,7 @@ import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
+import net.minecraft.network.play.server.S19PacketEntityStatus;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
@@ -130,8 +132,10 @@ public class Fly extends Module {
     private final BoolValue rssDropoff = new BoolValue("RSSmoothDropoffA", true);
 
     private final BoolValue motionResetValue = new BoolValue("MotionReset", false);
+
     // Visuals
     private final BoolValue markValue = new BoolValue("Mark", true);
+    private final BoolValue fakeBoostValue = new BoolValue("FakeBoost", true);
 
     private double startY;
     private final MSTimer flyTimer = new MSTimer();
@@ -178,6 +182,14 @@ public class Fly extends Module {
     public void onEnable() {
         if(mc.thePlayer == null)
             return;
+
+        if(mc.thePlayer.onGround&&fakeBoostValue.get()){
+            PacketEvent event=new PacketEvent(new S19PacketEntityStatus(mc.thePlayer,(byte) 2));
+            LiquidBounce.eventManager.callEvent(event);
+            if(!event.isCancelled()) {
+                mc.thePlayer.handleStatusUpdate((byte) 2);
+            }
+        }
 
         flyTimer.reset();
         flyTick=0;
@@ -866,7 +878,7 @@ public class Fly extends Module {
 
         final String mode = modeValue.get();
 
-        if (event.getBlock() instanceof BlockAir && (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("BlockWalk") ||
+        if (event.getBlock() instanceof BlockAir && (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("RedeSkyCollide") || mode.equalsIgnoreCase("BlockWalk") ||
                 mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") || mode.equalsIgnoreCase("MushBoost") ||
                 (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null)) && event.getY() < mc.thePlayer.posY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, mc.thePlayer.posY, event.getZ() + 1));

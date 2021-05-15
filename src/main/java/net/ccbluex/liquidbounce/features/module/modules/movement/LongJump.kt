@@ -67,10 +67,8 @@ class LongJump : Module() {
     }
 
     override fun onDisable() {
+        mc.timer.timerSpeed = 1F
         when(modeValue.get().toLowerCase()){
-            "redesky","redesky3" -> {
-                mc.timer.timerSpeed = 1F
-            }
             "redesky2" -> {
                 mc.thePlayer.speedInAir = 0.02F
             }

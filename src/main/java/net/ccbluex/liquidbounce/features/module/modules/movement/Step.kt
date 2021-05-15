@@ -30,7 +30,7 @@ class Step : Module() {
      */
 
     private val modeValue = ListValue("Mode", arrayOf(
-            "Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside"
+        "Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside"
     ), "NCP")
 
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
@@ -72,7 +72,7 @@ class Step : Module() {
             }
 
             mode.equals("laac", true) -> if (mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isOnLadder
-                    && !mc.thePlayer.isInWater && !mc.thePlayer.isInLava && !mc.thePlayer.isInWeb) {
+                && !mc.thePlayer.isInWater && !mc.thePlayer.isInLava && !mc.thePlayer.isInWeb) {
                 if (mc.thePlayer.onGround && timer.hasTimePassed(delayValue.get().toLong())) {
                     isStep = true
 
@@ -90,7 +90,7 @@ class Step : Module() {
                 isStep = false
 
             mode.equals("aac3.3.4", true) -> if (mc.thePlayer.isCollidedHorizontally
-                    && MovementUtils.isMoving()) {
+                && MovementUtils.isMoving()) {
                 if (mc.thePlayer.onGround && couldStep()) {
                     mc.thePlayer.motionX *= 1.26
                     mc.thePlayer.motionZ *= 1.26
@@ -159,10 +159,10 @@ class Step : Module() {
             val flyMode = fly.modeValue.get()
 
             if (flyMode.equals("Hypixel", ignoreCase = true) ||
-                    flyMode.equals("OtherHypixel", ignoreCase = true) ||
-                    flyMode.equals("LatestHypixel", ignoreCase = true) ||
-                    flyMode.equals("Rewinside", ignoreCase = true) ||
-                    flyMode.equals("Mineplex", ignoreCase = true) && mc.thePlayer.inventory.getCurrentItem() == null) {
+                flyMode.equals("OtherHypixel", ignoreCase = true) ||
+                flyMode.equals("LatestHypixel", ignoreCase = true) ||
+                flyMode.equals("Rewinside", ignoreCase = true) ||
+                flyMode.equals("Mineplex", ignoreCase = true) && mc.thePlayer.inventory.getCurrentItem() == null) {
                 event.stepHeight = 0F
                 return
             }
@@ -172,8 +172,8 @@ class Step : Module() {
 
         // Set step to default in some cases
         if (!mc.thePlayer.onGround || !timer.hasTimePassed(delayValue.get().toLong()) ||
-                mode.equals("Jump", ignoreCase = true) || mode.equals("MotionNCP", ignoreCase = true)
-                || mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true)) {
+            mode.equals("Jump", ignoreCase = true) || mode.equals("MotionNCP", ignoreCase = true)
+            || mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true)) {
             mc.thePlayer.stepHeight = 0.5F
             event.stepHeight = 0.5F
             return
@@ -207,9 +207,9 @@ class Step : Module() {
 
                     // Half legit step (1 packet missing) [COULD TRIGGER TOO MANY PACKETS]
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                            stepY + 0.41999998688698, stepZ, false))
+                        stepY + 0.41999998688698, stepZ, false))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                            stepY + 0.7531999805212, stepZ, false))
+                        stepY + 0.7531999805212, stepZ, false))
                     timer.reset()
                 }
 
@@ -219,11 +219,11 @@ class Step : Module() {
                     if (spartanSwitch) {
                         // Vanilla step (3 packets) [COULD TRIGGER TOO MANY PACKETS]
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                                stepY + 0.41999998688698, stepZ, false))
+                            stepY + 0.41999998688698, stepZ, false))
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                                stepY + 0.7531999805212, stepZ, false))
+                            stepY + 0.7531999805212, stepZ, false))
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                                stepY + 1.001335979112147, stepZ, false))
+                            stepY + 1.001335979112147, stepZ, false))
                     } else // Force step
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                             stepY + 0.6, stepZ, false))
@@ -240,11 +240,11 @@ class Step : Module() {
 
                     // Vanilla step (3 packets) [COULD TRIGGER TOO MANY PACKETS]
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                            stepY + 0.41999998688698, stepZ, false))
+                        stepY + 0.41999998688698, stepZ, false))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                            stepY + 0.7531999805212, stepZ, false))
+                        stepY + 0.7531999805212, stepZ, false))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                            stepY + 1.001335979112147, stepZ, false))
+                        stepY + 1.001335979112147, stepZ, false))
 
                     // Reset timer
                     timer.reset()
@@ -280,7 +280,7 @@ class Step : Module() {
         val z = cos(yaw) * 0.4
 
         return mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(x, 1.001335979112147, z))
-                .isEmpty()
+            .isEmpty()
     }
 
     override val tag: String

@@ -16,7 +16,7 @@ import java.util.*
 @ModuleInfo(name = "AutoLogin", description = "Automatic login into server.", category = ModuleCategory.MISC)
 class AutoLogin : Module() {
     private val registerCommand=TextValue("Register","/register %p %p")
-    private val loginCommand=TextValue("Login","/login %p %p")
+    private val loginCommand=TextValue("Login","/login %p")
     private val passwordValue=TextValue("Password","password")
     private val delayValue=IntegerValue("Delay",1500,100,5000)
     private val title=BoolValue("Title",true)
