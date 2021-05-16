@@ -67,6 +67,60 @@ object ColorUtils {
     }
 
     @JvmStatic
+    fun colorCode(code: String, alpha: Int=255): Color {
+        when(code.toLowerCase()){
+            "0" -> {
+                return Color(0,0,0,alpha)
+            }
+            "1" -> {
+                return Color(0,0,170,alpha)
+            }
+            "2" -> {
+                return Color(0,170,0,alpha)
+            }
+            "3" -> {
+                return Color(0,170,170,alpha)
+            }
+            "4" -> {
+                return Color(170,0,0,alpha)
+            }
+            "5" -> {
+                return Color(170,0,170,alpha)
+            }
+            "6" -> {
+                return Color(255,170,0,alpha)
+            }
+            "7" -> {
+                return Color(170,170,170,alpha)
+            }
+            "8" -> {
+                return Color(85,85,85,alpha)
+            }
+            "9" -> {
+                return Color(85,85,255,alpha)
+            }
+            "a" -> {
+                return Color(85,255,85,alpha)
+            }
+            "b" -> {
+                return Color(85,255,255,alpha)
+            }
+            "c" -> {
+                return Color(255,85,85,alpha)
+            }
+            "d" -> {
+                return Color(255,85,255,alpha)
+            }
+            "e" -> {
+                return Color(255,255,85,alpha)
+            }
+            else -> {
+                return Color(255,255,255,alpha)
+            }
+        }
+    }
+
+    @JvmStatic
     fun rainbow(): Color {
         val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + 400000L) / 10000000000F % 1, 1F, 1F))
         return Color(currentColor.red / 255F * 1F, currentColor.green / 255f * 1F, currentColor.blue / 255F * 1F, currentColor.alpha / 255F)
@@ -121,9 +175,9 @@ object ColorUtils {
     fun antiColor(color: Color) = Color(255-color.red,255-color.green,255-color.blue,color.alpha)
 
     @JvmStatic
-    fun healthColor(hp: Float,maxHP: Float):Color{
+    fun healthColor(hp: Float,maxHP: Float, alpha: Int=255):Color{
         val pct=((hp/maxHP)*255F).toInt()
-        return Color(max(min(255-pct, 255),0), max(min(pct, 255),0), 0)
+        return Color(max(min(255-pct, 255),0), max(min(pct, 255),0), 0, alpha)
     }
 
     @JvmStatic

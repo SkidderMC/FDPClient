@@ -7,24 +7,30 @@ package net.ccbluex.liquidbounce.features.module.modules.player;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.features.IntegerValue;
 import net.ccbluex.liquidbounce.features.ListValue;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
+import net.ccbluex.liquidbounce.utils.misc.FallingPlayer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
-// TODO: convert to kotlin
+// TODO: phase mode bypass matrix
 @ModuleInfo(name = "NoFall", description = "Prevents you from taking fall damage.", category = ModuleCategory.PLAYER)
 public class NoFall extends Module {
+    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "AAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "Spartan", "CubeCraft", "Hypixel", "Phase"}, "SpoofGround");
 
-    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "AAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "Spartan", "CubeCraft", "Hypixel"}, "SpoofGround");
+    private final IntegerValue phaseOffsetValue = new IntegerValue("PhaseOffset",1,0,5);
 
     private int state;
     private boolean jumped;
@@ -130,6 +136,25 @@ public class NoFall extends Module {
                     spartanTimer.reset();
                 }
                 break;
+            }
+            case "phase":{
+                if(mc.thePlayer.fallDistance > (3+phaseOffsetValue.get())){
+                    BlockPos fallPos=new FallingPlayer(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,mc.thePlayer.motionX,mc.thePlayer.motionY,mc.thePlayer.motionZ,mc.thePlayer.rotationYaw,mc.thePlayer.moveStrafing,mc.thePlayer.moveForward)
+                            .findCollision(5);
+                    if(fallPos==null)
+                        return;
+
+                    if((fallPos.getY()-(mc.thePlayer.motionY/20.0))<mc.thePlayer.posY){
+                        mc.timer.timerSpeed=0.05F;
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(fallPos.getX(),fallPos.getY(),fallPos.getZ(),true));
+                                mc.timer.timerSpeed=1F;
+                            }
+                        },100);
+                    }
+                }
             }
         }
     }

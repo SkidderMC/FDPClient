@@ -25,8 +25,7 @@ import org.lwjgl.input.Keyboard;
 // TODO: convert to kotlin
 @ModuleInfo(name = "LiquidWalk", description = "Allows you to walk on water.", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_J)
 public class LiquidWalk extends Module {
-
-    public final ListValue modeValue = new ListValue("Mode", new String[] {"Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "Spartan", "Dolphin"}, "NCP");
+    public final ListValue modeValue = new ListValue("Mode", new String[] {"Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "Spartan", "Dolphin", "Legit"}, "NCP");
     private final BoolValue noJumpValue = new BoolValue("NoJump", false);
 
     private final FloatValue aacFlyValue = new FloatValue("AACFlyMotion", 0.5F, 0.1F, 1F);
@@ -35,7 +34,7 @@ public class LiquidWalk extends Module {
 
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
-        if(mc.thePlayer == null || mc.thePlayer.isSneaking())
+        if(mc.thePlayer == null || mc.thePlayer.isSneaking() || !mc.thePlayer.isInWater())
             return;
 
         switch(modeValue.get().toLowerCase()) {
@@ -47,7 +46,7 @@ public class LiquidWalk extends Module {
             case "aac":
                 final BlockPos blockPos = mc.thePlayer.getPosition().down();
 
-                if(!mc.thePlayer.onGround && BlockUtils.getBlock(blockPos) == Blocks.water || mc.thePlayer.isInWater()) {
+                if(!mc.thePlayer.onGround && BlockUtils.getBlock(blockPos) == Blocks.water) {
                     if(!mc.thePlayer.isSprinting()) {
                         mc.thePlayer.motionX *= 0.99999;
                         mc.thePlayer.motionY *= 0.0;
@@ -74,41 +73,36 @@ public class LiquidWalk extends Module {
                     mc.thePlayer.onGround = false;
                 break;
             case "spartan":
-                if(mc.thePlayer.isInWater()) {
-                    if(mc.thePlayer.isCollidedHorizontally) {
-                        mc.thePlayer.motionY += 0.15;
-                        return;
-                    }
-
-                    final Block block = BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ));
-                    final Block blockUp = BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.1D, mc.thePlayer.posZ));
-
-                    if(blockUp instanceof BlockLiquid) {
-                        mc.thePlayer.motionY = 0.1D;
-                    }else if(block instanceof BlockLiquid) {
-                        mc.thePlayer.motionY = 0;
-                    }
-
-                    mc.thePlayer.onGround = true;
-                    mc.thePlayer.motionX *= 1.085;
-                    mc.thePlayer.motionZ *= 1.085;
+                if(mc.thePlayer.isCollidedHorizontally) {
+                    mc.thePlayer.motionY += 0.15;
+                    return;
                 }
+
+                final Block block = BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ));
+                final Block blockUp = BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.1D, mc.thePlayer.posZ));
+
+                if(blockUp instanceof BlockLiquid) {
+                    mc.thePlayer.motionY = 0.1D;
+                }else if(block instanceof BlockLiquid) {
+                    mc.thePlayer.motionY = 0;
+                }
+
+                mc.thePlayer.onGround = true;
+                mc.thePlayer.motionX *= 1.085;
+                mc.thePlayer.motionZ *= 1.085;
                 break;
             case "aac3.3.11":
-                if(mc.thePlayer.isInWater()) {
-                    mc.thePlayer.motionX *= 1.17D;
-                    mc.thePlayer.motionZ *= 1.17D;
+                mc.thePlayer.motionX *= 1.17D;
+                mc.thePlayer.motionZ *= 1.17D;
 
-                    if(mc.thePlayer.isCollidedHorizontally)
-                        mc.thePlayer.motionY = 0.24;
-                    else if(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.0D, mc.thePlayer.posZ)).getBlock() != Blocks.air)
-                        mc.thePlayer.motionY += 0.04D;
-                }
+                if(mc.thePlayer.isCollidedHorizontally)
+                    mc.thePlayer.motionY = 0.24;
+                else if(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.0D, mc.thePlayer.posZ)).getBlock() != Blocks.air)
+                    mc.thePlayer.motionY += 0.04D;
                 break;
 
             case "dolphin":
-                if(mc.thePlayer.isInWater())
-                    mc.thePlayer.motionY += 0.03999999910593033;
+                mc.thePlayer.motionY += 0.03999999910593033;
                 break;
 
         }
@@ -116,7 +110,7 @@ public class LiquidWalk extends Module {
 
     @EventTarget
     public void onMove(final MoveEvent event) {
-        if ("aacfly".equals(modeValue.get().toLowerCase()) && mc.thePlayer.isInWater()) {
+        if ("aacfly".equalsIgnoreCase(modeValue.get()) && mc.thePlayer.isInWater()) {
             event.setY(aacFlyValue.get());
             mc.thePlayer.motionY = aacFlyValue.get();
         }
