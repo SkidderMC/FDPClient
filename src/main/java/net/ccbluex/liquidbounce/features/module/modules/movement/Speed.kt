@@ -17,10 +17,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop2
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHop3
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.RedeSkyHopOld
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 @ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT, autoDisable = AutoDisableType.FLAG)
@@ -68,7 +65,8 @@ class Speed : Module() {
         RedeSkyHop(),
         RedeSkyHop2(),
         RedeSkyHop3(),
-        RedeSkyHopOld()
+        RedeSkyHopOld(),
+        RedeSkyGround()
     )
 
     @JvmField

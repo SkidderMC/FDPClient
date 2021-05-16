@@ -56,7 +56,9 @@ class EventManager : MinecraftInstance() {
             val legitSpoof=LiquidBounce.moduleManager[LegitSpoof::class.java] as LegitSpoof
             if(legitSpoof.state&&legitSpoof.render.get()){
                 if(event is Render2DEvent) {
-                    (LiquidBounce.moduleManager[HUD::class.java] as HUD).onRender2D(event)
+                    val hud=LiquidBounce.moduleManager[HUD::class.java] as HUD
+                    if(hud.state)
+                        hud.onRender2D(event)
                 }
                 return
             }
