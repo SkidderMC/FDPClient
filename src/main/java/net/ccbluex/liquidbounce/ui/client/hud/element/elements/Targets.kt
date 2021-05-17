@@ -4,23 +4,27 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.FontValue
 import net.ccbluex.liquidbounce.features.IntegerValue
 import net.ccbluex.liquidbounce.features.ListValue
+import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets", single = true)
 class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo"), "Novoline")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid"), "Novoline")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed",10,5,20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed",20,5,40)
@@ -32,15 +36,19 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
     private var changeTime=System.currentTimeMillis()
     private var displayPercent=0.0
     private var lastUpdate = System.currentTimeMillis()
+    private val decimalFormat = DecimalFormat("0.0")
 
     override fun drawElement(partialTicks: Float): Border? {
-        val target=LiquidBounce.combatManager.target
+        var target=LiquidBounce.combatManager.target
         val time=System.currentTimeMillis()
         val pct = (time - lastUpdate) / (switchAnimSpeedValue.get()*50.0)
         lastUpdate=System.currentTimeMillis()
 
-        if(target!=null){
-            prevTarget=target
+        if (mc.currentScreen is GuiHudDesigner) {
+            target=mc.thePlayer
+        }
+        if (target != null) {
+            prevTarget = target
         }
         prevTarget ?: return getTBorder()
 
@@ -87,12 +95,10 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         }
 
         when(modeValue.get().toLowerCase()){
-            "novoline" -> {
-                drawNovo(prevTarget!!,nowAnimHP)
-            }
-            "astolfo" -> {
-                drawAstolfo(prevTarget!!,nowAnimHP)
-            }
+            "novoline" -> drawNovo(prevTarget!!,nowAnimHP)
+            "astolfo" -> drawAstolfo(prevTarget!!,nowAnimHP)
+            "liquid" -> drawLiquid(prevTarget!!,nowAnimHP)
+//            "flux" -> drawFlux(prevTarget!!,nowAnimHP)
         }
 
         return getTBorder()
@@ -129,13 +135,67 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         RenderUtils.drawRect(hpPos, 18F, 33F + ((nowAnimHP / target.maxHealth * 10000).roundToInt() / 100), 25F, darkColor)
         RenderUtils.drawRect(33F, 18F, hpPos, 25F, color)
         font.drawString("❤", 33, 30, Color.RED.rgb)
-        font.drawString(target.health.toString(), 43, 30, Color.WHITE.rgb)
+        font.drawString(decimalFormat.format(target.health), 43, 30, Color.WHITE.rgb)
+    }
+
+    private fun drawLiquid(target: EntityLivingBase, easingHealth: Float){
+        val width = (38 + (target.name?.let(Fonts.font40::getStringWidth) ?: 0))
+            .coerceAtLeast(118)
+            .toFloat()
+        // Draw rect box
+        RenderUtils.drawBorderedRect(0F, 0F, width, 36F, 3F, Color.BLACK.rgb, Color.BLACK.rgb)
+
+        // Damage animation
+        if (easingHealth > target.health)
+            RenderUtils.drawRect(0F, 34F, (easingHealth / target.maxHealth) * width,
+                36F, Color(252, 185, 65).rgb)
+
+        // Health bar
+        RenderUtils.drawRect(0F, 34F, (target.health / target.maxHealth) * width,
+            36F, Color(252, 96, 66).rgb)
+
+        // Heal animation
+        if (easingHealth < target.health)
+            RenderUtils.drawRect((easingHealth / target.maxHealth) * width, 34F,
+                (target.health / target.maxHealth) * width, 36F, Color(44, 201, 144).rgb)
+
+
+        target.name.let { Fonts.font40.drawString(it, 36, 3, 0xffffff) }
+        Fonts.font35.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 36, 15, 0xffffff)
+
+        // Draw info
+        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
+        if (playerInfo != null) {
+            Fonts.font35.drawString("Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
+                36, 24, 0xffffff)
+
+            // Draw head
+            val locationSkin = playerInfo.locationSkin
+            drawHead(locationSkin, 2, 2, 30, 30)
+        }
+    }
+
+//    private fun drawFlux(target: EntityLivingBase, nowAnimHP: Float){
+//        val width = (38 + (target.name?.let(Fonts.font40::getStringWidth) ?: 0))
+//            .coerceAtLeast(80)
+//            .toFloat()
+//
+//    }
+
+    private fun drawHead(skin: ResourceLocation, x: Int, y: Int, width: Int, height: Int) {
+        GL11.glColor4f(1F, 1F, 1F, 1F)
+        mc.textureManager.bindTexture(skin)
+        RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
+            64F, 64F)
     }
 
     private fun getTBorder():Border?{
         return when(modeValue.get().toLowerCase()){
             "novoline" -> Border(0F,0F,140F,40F)
             "astolfo" -> Border(0F,0F,140F,60F)
+            "liquid" -> Border(0F,0F
+                ,(38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(),36F)
+//            "flux" -> Border(0F,0F,140F,60F)
             else -> null
         }
     }
