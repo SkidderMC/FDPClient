@@ -13,7 +13,10 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.minecraft.item.*
+import net.minecraft.item.ItemFood
+import net.minecraft.item.ItemSkull
+import net.minecraft.item.ItemStack
+import net.minecraft.item.ItemTool
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer

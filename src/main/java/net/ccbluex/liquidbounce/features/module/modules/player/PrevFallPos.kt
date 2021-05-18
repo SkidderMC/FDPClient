@@ -36,10 +36,14 @@ class PrevFallPos : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
-        pos = if(mc.thePlayer.fallDistance>fallDist.get()){
+        pos = if(!mc.thePlayer.onGround){
             val fallingPlayer=FallingPlayer(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,mc.thePlayer.motionX,mc.thePlayer.motionY,mc.thePlayer.motionZ,mc.thePlayer.rotationYaw,mc.thePlayer.moveStrafing,mc.thePlayer.moveForward)
-            val collLoc=fallingPlayer.findCollision(60) ?: return // null -> too far to calc or fall pos in void
-            collLoc
+            val collLoc=fallingPlayer.findCollision(60) ?: null // null -> too far to calc or fall pos in void
+            if(mc.thePlayer.getDistanceSqToCenter(collLoc)>fallDist.get()) {
+                collLoc
+            }else{
+                null
+            }
         }else{
             null
         }

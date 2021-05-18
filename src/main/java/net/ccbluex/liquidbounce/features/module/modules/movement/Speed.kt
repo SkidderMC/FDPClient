@@ -69,7 +69,6 @@ class Speed : Module() {
         RedeSkyGround()
     )
 
-    @JvmField
     val modeValue: ListValue = object : ListValue("Mode", modes, "NCPBHop") {
         override fun onChange(oldValue: String, newValue: String) {
             if (state) onDisable()
@@ -79,73 +78,58 @@ class Speed : Module() {
             if (state) onEnable()
         }
     }
-    @JvmField
+
     val customSpeedValue = FloatValue("CustomSpeed", 1.6f, 0.2f, 2f)
-    @JvmField
     val customYValue = FloatValue("CustomY", 0f, 0f, 4f)
-    @JvmField
     val customTimerValue = FloatValue("CustomTimer", 1f, 0.1f, 2f)
-    @JvmField
     val customStrafeValue = BoolValue("CustomStrafe", true)
-    @JvmField
     val resetXZValue = BoolValue("CustomResetXZ", false)
-    @JvmField
     val resetYValue = BoolValue("CustomResetY", false)
-    @JvmField
     val portMax = FloatValue("AAC-PortLength", 1F, 1F, 20F)
     val redeSkyHopGSpeed = FloatValue("RedeSkyHop-GSpeed", 0.3f, 0.1f, 0.7f)
     val redeSkyHeight = FloatValue("RedeSkyHeight", 0.45f, 0.30f, 0.55f)
     val redeSkyHopTimer = FloatValue("RedeSkyHop-Timer", 6f, 1.1f, 10f)
     val redeSkyHop3Speed = FloatValue("RedeSkyHop3-Speed", 0.07f, 0.01f, 0.1f)
-    @JvmField
     val aacGroundTimerValue = FloatValue("AACGround-Timer", 3f, 1.1f, 10f)
-    @JvmField
     val cubecraftPortLengthValue = FloatValue("CubeCraft-PortLength", 1f, 0.1f, 2f)
-    @JvmField
     val mineplexGroundSpeedValue = FloatValue("MineplexGround-Speed", 0.5f, 0.1f, 1f)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
         if (mc.thePlayer.isSneaking) return
         if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
-        val speedMode = mode
-        speedMode?.onUpdate()
+        mode?.onUpdate()
     }
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE) return
         if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
-        val speedMode = mode
-        speedMode?.onMotion()
+        mode?.onMotion()
     }
 
     @EventTarget
     fun onMove(event: MoveEvent) {
         if (mc.thePlayer.isSneaking) return
-        val speedMode = mode
-        speedMode?.onMove(event)
+        mode?.onMove(event)
     }
 
     @EventTarget
     fun onTick(event: TickEvent) {
         if (mc.thePlayer.isSneaking) return
-        val speedMode = mode
-        speedMode?.onTick()
+        mode?.onTick()
     }
 
     override fun onEnable() {
         if (mc.thePlayer == null) return
         mc.timer.timerSpeed = 1f
-        val speedMode = mode
-        speedMode?.onEnable()
+        mode?.onEnable()
     }
 
     override fun onDisable() {
         if (mc.thePlayer == null) return
         mc.timer.timerSpeed = 1f
-        val speedMode = mode
-        speedMode?.onDisable()
+        mode?.onDisable()
     }
 
     override val tag: String

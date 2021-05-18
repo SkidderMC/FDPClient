@@ -922,4 +922,11 @@ public final class RenderUtils extends MinecraftInstance {
         worldrenderer.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
         tessellator.draw();
     }
+
+    public static void drawHead(ResourceLocation skin, int x, int y, int width, int height) {
+        GL11.glColor4f(1F, 1F, 1F, 1F);
+        mc.getTextureManager().bindTexture(skin);
+        RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
+                64F, 64F);
+    }
 }

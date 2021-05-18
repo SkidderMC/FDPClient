@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.text.DecimalFormat
@@ -24,7 +23,7 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets", single = true)
 class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid"), "Novoline")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux"), "Novoline")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed",10,5,20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed",20,5,40)
@@ -98,7 +97,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             "novoline" -> drawNovo(prevTarget!!,nowAnimHP)
             "astolfo" -> drawAstolfo(prevTarget!!,nowAnimHP)
             "liquid" -> drawLiquid(prevTarget!!,nowAnimHP)
-//            "flux" -> drawFlux(prevTarget!!,nowAnimHP)
+            "flux" -> drawFlux(prevTarget!!,nowAnimHP)
         }
 
         return getTBorder()
@@ -139,7 +138,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
     }
 
     private fun drawLiquid(target: EntityLivingBase, easingHealth: Float){
-        val width = (38 + (target.name?.let(Fonts.font40::getStringWidth) ?: 0))
+        val width = (38 + target.name.let(Fonts.font40::getStringWidth))
             .coerceAtLeast(118)
             .toFloat()
         // Draw rect box
@@ -170,23 +169,37 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
                 36, 24, 0xffffff)
 
             // Draw head
-            val locationSkin = playerInfo.locationSkin
-            drawHead(locationSkin, 2, 2, 30, 30)
+            RenderUtils.drawHead(playerInfo.locationSkin, 2, 2, 30, 30)
         }
     }
 
-//    private fun drawFlux(target: EntityLivingBase, nowAnimHP: Float){
-//        val width = (38 + (target.name?.let(Fonts.font40::getStringWidth) ?: 0))
-//            .coerceAtLeast(80)
-//            .toFloat()
-//
-//    }
+    private fun drawFlux(target: EntityLivingBase, nowAnimHP: Float){
+        val width = (38 + target.name.let(Fonts.font40::getStringWidth))
+            .coerceAtLeast(70)
+            .toFloat()
 
-    private fun drawHead(skin: ResourceLocation, x: Int, y: Int, width: Int, height: Int) {
-        GL11.glColor4f(1F, 1F, 1F, 1F)
-        mc.textureManager.bindTexture(skin)
-        RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
-            64F, 64F)
+        // draw background
+        RenderUtils.drawRect(0F, 0F, width,34F,Color(40,40,40).rgb)
+        RenderUtils.drawRect(2F, 22F, width-2F, 24F, Color.BLACK.rgb)
+        RenderUtils.drawRect(2F, 28F, width-2F, 30F, Color.BLACK.rgb)
+
+        // draw bars
+        RenderUtils.drawRect(2F, 22F, 2+(nowAnimHP / target.maxHealth) * (width-4), 24F, Color(231,182,0).rgb)
+        RenderUtils.drawRect(2F, 22F, 2+(target.health / target.maxHealth) * (width-4), 24F, Color(0, 224, 84).rgb)
+        RenderUtils.drawRect(2F, 28F, 2+(target.totalArmorValue / 20F) * (width-4), 30F, Color(77, 128, 255).rgb)
+
+        // draw text
+        Fonts.font40.drawString(target.name,22,3,Color.WHITE.rgb)
+        GL11.glPushMatrix()
+        GL11.glScaled(0.7,0.7,0.7)
+        Fonts.font35.drawString("Health: ${decimalFormat.format(target.health)}",22/0.7F,(4+Fonts.font40.height)/0.7F,Color.WHITE.rgb)
+        GL11.glPopMatrix()
+
+        // Draw head
+        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
+        if (playerInfo != null) {
+            RenderUtils.drawHead(playerInfo.locationSkin, 2,2,16,16)
+        }
     }
 
     private fun getTBorder():Border?{
@@ -195,7 +208,9 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             "astolfo" -> Border(0F,0F,140F,60F)
             "liquid" -> Border(0F,0F
                 ,(38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(),36F)
-//            "flux" -> Border(0F,0F,140F,60F)
+            "flux" -> Border(0F,0F,(38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
+                .coerceAtLeast(70)
+                .toFloat(),34F)
             else -> null
         }
     }

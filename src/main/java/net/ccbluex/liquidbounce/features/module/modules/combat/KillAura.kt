@@ -79,12 +79,12 @@ class KillAura : Module() {
 
     // Range
     private val rangeValue = FloatValue("Range", 3.7f, 1f, 8f)
-    private val throughWallsRangeValue = FloatValue("ThroughWallsRange", 3f, 0f, 8f)
+    private val throughWallsRangeValue = FloatValue("ThroughWallsRange", 1.5f, 0f, 8f)
     private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f)
 
     // Modes
     private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Direction", "LivingTime"), "Distance")
-    private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
+    private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Single")
 
     // Bypass
     private val swingValue = BoolValue("Swing", true)
@@ -102,7 +102,7 @@ class KillAura : Module() {
     private val livingRaycastValue = BoolValue("LivingRayCast", true)
 
     // Bypass
-    private val aacValue = BoolValue("AAC", false)
+    private val aacValue = BoolValue("AAC", true)
 
     // Turn Speed
     private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f) {
@@ -120,9 +120,9 @@ class KillAura : Module() {
     }
 
     private val silentRotationValue = BoolValue("SilentRotation", true)
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient")
     private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true)
-    private val randomCenterValue = BoolValue("RandomCenter", true)
+    private val randomCenterValue = BoolValue("RandomCenter", false)
     private val outborderValue = BoolValue("Outborder", false)
     private val hitableValue = BoolValue("AlwaysHitable",true)
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
