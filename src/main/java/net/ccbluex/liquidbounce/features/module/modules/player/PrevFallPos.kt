@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.util.BlockPos
 import java.awt.Color
+import kotlin.math.abs
 
 // THANKS FUNC16 GIVE ME THIS IDEA!
 @ModuleInfo(name = "PrevFallPos", description = "Preview FallDown Pos", category = ModuleCategory.PLAYER)
@@ -39,7 +40,7 @@ class PrevFallPos : Module() {
         pos = if(!mc.thePlayer.onGround){
             val fallingPlayer=FallingPlayer(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,mc.thePlayer.motionX,mc.thePlayer.motionY,mc.thePlayer.motionZ,mc.thePlayer.rotationYaw,mc.thePlayer.moveStrafing,mc.thePlayer.moveForward)
             val collLoc=fallingPlayer.findCollision(60) ?: null // null -> too far to calc or fall pos in void
-            if(mc.thePlayer.getDistanceSqToCenter(collLoc)>fallDist.get()) {
+            if(abs((collLoc?.y ?: 0) - mc.thePlayer.posY) >fallDist.get()) {
                 collLoc
             }else{
                 null
