@@ -929,4 +929,29 @@ public final class RenderUtils extends MinecraftInstance {
         RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
                 64F, 64F);
     }
+
+    public static void drawColorRect(double left, double top, double right, double bottom, Color color1, Color color2, Color color3, Color color4) {
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848);
+        GL11.glShadeModel(7425);
+        GL11.glPushMatrix();
+        GL11.glBegin(7);
+        glColor(color2); //left-down
+        GL11.glVertex2d(left, bottom);
+        glColor(color3); //right-down
+        GL11.glVertex2d(right, bottom);
+        glColor(color4); //right-up
+        GL11.glVertex2d(right, top);
+        glColor(color1); //left-up
+        GL11.glVertex2d(left, top);
+        GL11.glEnd();
+        GL11.glPopMatrix();
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glDisable(2848);
+        GL11.glShadeModel(7424);
+        Gui.drawRect(0, 0, 0, 0, 0);
+    }
 }

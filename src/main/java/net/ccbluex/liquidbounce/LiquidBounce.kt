@@ -55,6 +55,7 @@ object LiquidBounce {
     // HUD & ClickGUI & KeybindMgr
     lateinit var hud: HUD
     lateinit var clickGui: ClickGui
+    lateinit var newClickGui: net.ccbluex.liquidbounce.ui.click.ClickGui
     lateinit var keyBindMgr: KeyBindMgr
 
     lateinit var metricsLite: MetricsLite
@@ -147,6 +148,7 @@ object LiquidBounce {
         // ClickGUI
         clickGui = ClickGui()
         fileManager.loadConfig(fileManager.clickGuiConfig)
+        newClickGui = net.ccbluex.liquidbounce.ui.click.ClickGui()
 
         // KeyBindManager
         keyBindMgr=KeyBindMgr()

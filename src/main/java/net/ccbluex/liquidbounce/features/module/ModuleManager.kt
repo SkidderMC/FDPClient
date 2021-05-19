@@ -145,7 +145,8 @@ class ModuleManager : Listenable {
             HitBox::class.java,
             Reach::class.java,
             Aimbot::class.java,
-            ServerCrasher::class.java
+            ServerCrasher::class.java,
+            NewClickGui::class.java
         )
 
         registerModule(Fucker)

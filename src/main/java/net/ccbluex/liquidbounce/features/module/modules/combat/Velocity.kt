@@ -19,9 +19,11 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.minecraft.entity.Entity
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.util.MathHelper
+import net.minecraft.world.Explosion
 
 @ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
@@ -196,9 +198,20 @@ class Velocity : Module() {
         }
 
         if (packet is S27PacketExplosion) {
-            // TODO: Support velocity for explosions
-            // anti client crasher? lol
             event.cancelEvent()
+            // particles
+            val explosion = Explosion(mc.theWorld, null, packet.x, packet.y, packet.z, packet.strength, packet.affectedBlockPositions)
+            explosion.doExplosionB(true)
+            // convert it to velocity packet
+            val velocityPacket=S12PacketEntityVelocity(mc.thePlayer.entityId,
+                mc.thePlayer.motionX+packet.func_149149_c(),
+                mc.thePlayer.motionY+packet.func_149144_d(),
+                mc.thePlayer.motionZ+packet.func_149147_e())
+            val packetEvent=PacketEvent(velocityPacket)
+            LiquidBounce.eventManager.callEvent(packetEvent)
+            if(!packetEvent.isCancelled){
+                mc.netHandler.handleEntityVelocity(velocityPacket)
+            }
         }
     }
 
