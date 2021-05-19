@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Target;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.features.special.AutoReconnect;
 import net.ccbluex.liquidbounce.features.special.ServerSpoof;
+import net.ccbluex.liquidbounce.features.special.proxy.ProxyManager;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
@@ -98,6 +99,14 @@ public class ValuesConfig extends FileConfig {
 
                 if (jsonValue.has("Particles"))
                     GuiBackground.Companion.setParticles(jsonValue.get("Particles").getAsBoolean());
+            } else if (entry.getKey().equalsIgnoreCase("Proxy")) {
+                JsonObject jsonValue = (JsonObject) entry.getValue();
+
+                if (jsonValue.has("Address"))
+                    ProxyManager.INSTANCE.setAddress(jsonValue.get("Address").getAsString());
+
+                if (jsonValue.has("Type"))
+                    ProxyManager.INSTANCE.setType(ProxyManager.Type.valueOf(jsonValue.get("Type").getAsString()));
             } else {
                 final Module module = LiquidBounce.moduleManager.getModule(entry.getKey());
 
@@ -152,6 +161,11 @@ public class ValuesConfig extends FileConfig {
         backgroundObject.addProperty("Enabled", GuiBackground.Companion.getEnabled());
         backgroundObject.addProperty("Particles", GuiBackground.Companion.getParticles());
         jsonObject.add("Background", backgroundObject);
+
+        final JsonObject proxyObject = new JsonObject();
+        proxyObject.addProperty("Address", ProxyManager.INSTANCE.getAddress());
+        proxyObject.addProperty("Type", ProxyManager.INSTANCE.getType().name());
+        jsonObject.add("Proxy", proxyObject);
 
         LiquidBounce.moduleManager.getModules().stream().filter(module -> !module.getValues().isEmpty()).forEach(module -> {
             final JsonObject jsonModule = new JsonObject();
