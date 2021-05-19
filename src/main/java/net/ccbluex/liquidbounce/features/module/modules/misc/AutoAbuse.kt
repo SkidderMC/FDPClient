@@ -21,8 +21,8 @@ import java.io.FileOutputStream
 import kotlin.math.roundToInt
 
 @ModuleInfo(name = "AutoAbuse", description = "Automatically abuse peoples you killed.", category = ModuleCategory.MISC)
-class AutoAbuse : Module() {
-    private var abuseWords: JsonArray? = null
+object AutoAbuse : Module() {
+    var abuseWords: JsonArray? = null
     private var target: EntityPlayer? = null
 
     val modeValue = ListValue(
@@ -63,6 +63,10 @@ class AutoAbuse : Module() {
     override val tag: String
         get() = modeValue.get()
 
+    fun getRandomOne():String{
+        return abuseWords!![(Math.random() * (abuseWords!!.size()-1)).roundToInt()].asString
+    }
+
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityPlayer) {
@@ -80,10 +84,10 @@ class AutoAbuse : Module() {
                     sendAbuseWords("L $name",name)
                 }
                 "withwords" -> {
-                    sendAbuseWords("L $name " + abuseWords!![(Math.random() * (abuseWords!!.size()-1)).roundToInt()].asString,name)
+                    sendAbuseWords("L $name " + getRandomOne(),name)
                 }
                 "rawwords" -> {
-                    sendAbuseWords(abuseWords!![(Math.random() * abuseWords!!.size()).roundToInt()].asString,name)
+                    sendAbuseWords(getRandomOne(),name)
                 }
             }
             target = null

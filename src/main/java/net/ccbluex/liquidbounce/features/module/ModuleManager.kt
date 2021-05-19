@@ -109,7 +109,6 @@ class ModuleManager : Listenable {
             NoJumpDelay::class.java,
             HUD::class.java,
             NoSlowBreak::class.java,
-            AutoAbuse::class.java,
             Gapple::class.java,
             HealthWarn::class.java,
             Animations::class.java,
@@ -153,6 +152,7 @@ class ModuleManager : Listenable {
         registerModule(ChestAura)
         registerModule(ToggleSound)
         registerModule(Rotations)
+        registerModule(AutoAbuse)
 
         ClientUtils.getLogger().info("[ModuleManager] Loaded ${modules.size} modules.")
     }
