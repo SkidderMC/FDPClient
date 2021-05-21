@@ -4,7 +4,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import org.lwjgl.input.Keyboard
 
 @ModuleInfo(name = "NewClickGui", description = "clickgui.", category = ModuleCategory.CLIENT, canEnable = false)
 class NewClickGui : Module() {

@@ -52,6 +52,7 @@
     "render.MixinTileEntityMobSpawnerRenderer",
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinVisGraph",
+    "render.MixinRenderItem",
     "resources.MixinSkinManager",
     "world.MixinWorld",
     "world.MixinWorldClient",

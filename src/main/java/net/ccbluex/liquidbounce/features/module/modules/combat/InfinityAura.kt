@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.path.PathUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -22,7 +21,6 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-
 
 @ModuleInfo(name = "InfinityAura", description = "lol", category = ModuleCategory.COMBAT)
 class InfinityAura : Module() {
