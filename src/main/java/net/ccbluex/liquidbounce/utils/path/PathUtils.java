@@ -28,33 +28,6 @@ public final class PathUtils extends MinecraftInstance {
     }
 
     public static List<Vec3> findBlinkPath(double curX, double curY, double curZ,final double tpX, final double tpY, final double tpZ, final double dashDistance) {
-//        final List<Vec3> positions = new ArrayList<>();
-//
-//        double distance = Math.abs(curX - tpX) + Math.abs(curY - tpY) + Math.abs(curZ - tpZ);
-//
-//        for (int count = 0; distance > 0.0D; count++) {
-//            distance = Math.abs(curX - tpX) + Math.abs(curY - tpY) + Math.abs(curZ - tpZ);
-//
-//            final double diffX = curX - tpX;
-//            final double diffY = curY - tpY;
-//            final double diffZ = curZ - tpZ;
-//
-//            final double minX = Math.min(Math.abs(diffX), dist);
-//            if (diffX < 0.0D) curX += minX;
-//            if (diffX > 0.0D) curX -= minX;
-//
-//            final double minY = Math.min(Math.abs(diffY), 0.25D);
-//            if (diffY < 0.0D) curY += minY;
-//            if (diffY > 0.0D) curY -= minY;
-//
-//            double minZ = Math.min(Math.abs(diffZ), dist);
-//            if (diffZ < 0.0D) curZ += minZ;
-//            if (diffZ > 0.0D) curZ -= minZ;
-//
-//            positions.add(new Vec3(curX, curY, curZ));
-//        }
-//
-//        return positions;
         Vec3 topFrom=new Vec3(curX,curY,curZ);
         Vec3 to=new Vec3(tpX,tpY,tpZ);
 
@@ -107,6 +80,7 @@ public final class PathUtils extends MinecraftInstance {
             lastLoc = pathElm;
             i++;
         }
+
         return path;
     }
 
