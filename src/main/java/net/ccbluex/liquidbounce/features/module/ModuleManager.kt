@@ -164,7 +164,10 @@ class ModuleManager : Listenable {
         modules += module
         moduleClassMap[module.javaClass] = module
 
-        generateCommand(module)
+        if(module.moduleCommand) {
+            generateCommand(module)
+        }
+
         LiquidBounce.eventManager.registerListener(module)
     }
 

@@ -43,7 +43,8 @@ class CommandManager {
             UsernameCommand::class.java,
             ServerInfoCommand::class.java,
             AutoDisableCommand::class.java,
-            MacroCommand::class.java
+            MacroCommand::class.java,
+            ClipCommand::class.java
         )
     }
 

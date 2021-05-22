@@ -40,6 +40,7 @@ open class Module : MinecraftInstance(), Listenable {
         }
     private val canEnable: Boolean
     var autoDisable: AutoDisableType
+    val moduleCommand: Boolean
 
     var slideStep = 0F
 
@@ -53,6 +54,7 @@ open class Module : MinecraftInstance(), Listenable {
         array = moduleInfo.array
         canEnable = moduleInfo.canEnable
         autoDisable = moduleInfo.autoDisable
+        moduleCommand = moduleInfo.moduleCommand
     }
 
     // Current state of module

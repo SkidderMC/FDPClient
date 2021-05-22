@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 
-@ModuleInfo(name = "XRay", description = "Allows you to see ores through walls.", category = ModuleCategory.RENDER, autoDisable = AutoDisableType.RESPAWN)
+@ModuleInfo(name = "XRay", description = "Allows you to see ores through walls.", category = ModuleCategory.RENDER, autoDisable = AutoDisableType.RESPAWN, moduleCommand = false)
 class XRay : Module() {
     val xrayBlocks = mutableListOf<Block>(
             Blocks.coal_ore,
