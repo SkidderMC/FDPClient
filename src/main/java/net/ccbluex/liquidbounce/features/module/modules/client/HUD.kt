@@ -25,6 +25,7 @@ class HUD : Module() {
     val fontChatValue = BoolValue("FontChat", false)
     val chatRectValue = BoolValue("ChatRect", true)
     val chatCombineValue = BoolValue("ChatCombine", true)
+    val chatAnimValue = BoolValue("ChatAnimation", true)
 
     @EventTarget
     fun onRender2D(event: Render2DEvent) {

@@ -9,6 +9,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ChatLine;
@@ -20,6 +21,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -154,17 +156,32 @@ public abstract class MixinGuiNewChat {
 
                             l1 = (int)((float)l1 * f);
                             ++j;
+
                             if (l1 > 3) {
+                                GL11.glPushMatrix();
+
                                 int i2 = 0;
                                 int j2 = -i1 * 9;
+
+                                if(hud.getChatAnimValue().get()) {
+                                    if (j1 <= 20) {
+                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(1 - (j1 / 20.0))), 0F, 0F);
+                                    }
+                                    if (j1 >= 180) {
+                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart((j1 - 180) / 20.0)), 0F, 0F);
+                                    }
+                                }
+
                                 if(hud.getChatRectValue().get()) {
                                     RenderUtils.drawRect(i2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
                                 }
                                 String s = fixString(chatline.getChatComponent().getFormattedText());
                                 GlStateManager.enableBlend();
-                                (canFont?Fonts.font40:this.mc.fontRendererObj).drawStringWithShadow(s, (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24));
+                                (canFont?Fonts.font40:this.mc.fontRendererObj).drawString(s, (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24), false);
                                 GlStateManager.disableAlpha();
                                 GlStateManager.disableBlend();
+
+                                GL11.glPopMatrix();
                             }
                         }
                     }
