@@ -4,7 +4,7 @@ import java.net.InetSocketAddress
 import java.net.Proxy
 
 object ProxyManager {
-    var address=""
+    var address="127.0.0.1:1919"
     var type=Type.DISABLE
 
     fun getProxy():Proxy {

@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.minecraft.entity.player.EntityPlayer
 import org.apache.commons.io.IOUtils
 import java.io.File
@@ -40,19 +41,17 @@ object AutoAbuse : Module() {
             val abuseFile=File(LiquidBounce.fileManager.dir, "abuse.json")
             if(!abuseFile.exists()){
                 val fos = FileOutputStream(abuseFile)
-                IOUtils.copy(
-                    AutoAbuse::class.java.classLoader.getResourceAsStream("abuse.json"),
-                    fos
-                )
+                IOUtils.copy(AutoAbuse::class.java.classLoader.getResourceAsStream("abuse.json"), fos)
                 fos.close()
             }
             //read it
             abuseWords = JsonParser().parse(IOUtils.toString(FileInputStream(abuseFile),"utf-8")).asJsonArray
-        } catch (e: Exception) {
+        } catch (e: Throwable) { // lmao gson when file not a json, it throws NoSuchMethodError
             e.printStackTrace()
             abuseWords = JsonArray()
-            abuseWords!!.add("Support ur local client!")
-            abuseWords!!.add("请支持国人的客户端!")
+            for(i in 0..50){
+                abuseWords!!.add("CHECKOUT! ABUSE.JSON IN YOUR CONFIG MAY BROKEN [${RandomUtils.nextInt(10,99)}]")
+            }
         }
     }
 

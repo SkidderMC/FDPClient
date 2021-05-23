@@ -18,7 +18,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange
 
 @ModuleInfo(name = "Gapple", description = "Eat Gapples.", category = ModuleCategory.PLAYER)
 class Gapple : Module() {
-    val modeValue = ListValue("Mode", arrayOf("Auto", "Once"), "Once")
+    val modeValue = ListValue("Mode", arrayOf("Auto", "Once", "Head"), "Once")
     // Auto Mode
     private val healthValue = FloatValue("Health", 10F, 1F, 20F)
     private val delayValue = IntegerValue("Delay", 150, 0, 1000)
@@ -38,6 +38,19 @@ class Gapple : Module() {
                 if (mc.thePlayer.health <= healthValue.get()){
                     doEat(false)
                     timer.reset()
+                }
+            }
+            "head" -> {
+                if (!timer.hasTimePassed(delayValue.get().toLong()))
+                    return
+                if (mc.thePlayer.health <= healthValue.get()){
+                    val headInHotbar = InventoryUtils.findItem(36, 45, Items.skull)
+                    if(headInHotbar != -1) {
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(headInHotbar - 36))
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                        timer.reset()
+                    }
                 }
             }
         }

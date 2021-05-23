@@ -163,7 +163,7 @@ public abstract class MixinGuiNewChat {
                                 int i2 = 0;
                                 int j2 = -i1 * 9;
 
-                                if(hud.getChatAnimValue().get()) {
+                                if(hud.getChatAnimValue().get()&&!flag) {
                                     if (j1 <= 20) {
                                         GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(1 - (j1 / 20.0))), 0F, 0F);
                                     }

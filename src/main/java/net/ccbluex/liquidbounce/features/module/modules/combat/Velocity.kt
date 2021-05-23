@@ -208,7 +208,7 @@ class Velocity : Module() {
                 mc.thePlayer.motionZ+packet.func_149147_e())
             val packetEvent=PacketEvent(velocityPacket)
             LiquidBounce.eventManager.callEvent(packetEvent)
-            if(!packetEvent.isCancelled){
+            if(!packetEvent.isCancelled) {
                 mc.netHandler.handleEntityVelocity(velocityPacket)
             }
         }
