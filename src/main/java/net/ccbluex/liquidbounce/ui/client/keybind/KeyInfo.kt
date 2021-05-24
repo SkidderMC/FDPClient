@@ -116,7 +116,7 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
     }
 
     fun click(mouseX: Float, mouseY: Float){
-        val keyBindMgr=LiquidBounce.keyBindMgr
+        val keyBindMgr=LiquidBounce.keyBindManager
 
         if(keyBindMgr.nowDisplayKey==null) {
             keyBindMgr.nowDisplayKey = this

@@ -18,12 +18,14 @@ import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.MetricsLite
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
+import net.ccbluex.liquidbounce.ui.click.ClickGuiManager
+import net.ccbluex.liquidbounce.ui.click.rainbow.RainbowGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
-import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindMgr
+import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.other.MusicManager
+import net.ccbluex.liquidbounce.ui.other.TipSoundManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -48,15 +50,15 @@ object LiquidBounce {
     lateinit var eventManager: EventManager
     lateinit var fileManager: FileManager
     lateinit var scriptManager: ScriptManager
-    lateinit var musicManager: MusicManager
+    lateinit var tipSoundManager: TipSoundManager
     lateinit var combatManager: CombatManager
     lateinit var macroManager: MacroManager
 
-    // HUD & ClickGUI & KeybindMgr
+    // HUD & ClickGUI & KeybindManager
     lateinit var hud: HUD
     lateinit var clickGui: ClickGui
-    lateinit var newClickGui: net.ccbluex.liquidbounce.ui.click.ClickGui
-    lateinit var keyBindMgr: KeyBindMgr
+    lateinit var keyBindManager: KeyBindManager
+    lateinit var clickGuiManager: ClickGuiManager
 
     lateinit var metricsLite: MetricsLite
 
@@ -114,6 +116,9 @@ object LiquidBounce {
         // Create command manager
         commandManager = CommandManager()
 
+        // ClickGui Manager
+        clickGuiManager = ClickGuiManager()
+
         macroManager = MacroManager()
         eventManager.registerListener(macroManager)
 
@@ -139,7 +144,7 @@ object LiquidBounce {
         // Register commands
         commandManager.registerCommands()
 
-        musicManager = MusicManager()
+        tipSoundManager = TipSoundManager()
 
         // Load configs
         fileManager.loadConfigs(fileManager.modulesConfig, fileManager.valuesConfig, fileManager.accountsConfig,
@@ -148,10 +153,12 @@ object LiquidBounce {
         // ClickGUI
         clickGui = ClickGui()
         fileManager.loadConfig(fileManager.clickGuiConfig)
-        newClickGui = net.ccbluex.liquidbounce.ui.click.ClickGui()
+
+        // Init All after load modules
+        clickGuiManager.initAll()
 
         // KeyBindManager
-        keyBindMgr=KeyBindMgr()
+        keyBindManager=KeyBindManager()
 
         // Set HUD
         hud = createDefault()

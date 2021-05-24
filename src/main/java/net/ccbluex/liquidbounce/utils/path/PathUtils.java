@@ -20,7 +20,7 @@ import java.util.List;
 
 public final class PathUtils extends MinecraftInstance {
     public static List<Vec3> findBlinkPath(final double tpX, final double tpY, final double tpZ){
-        return findBlinkPath(tpX, tpY, tpZ,1);
+        return findBlinkPath(tpX, tpY, tpZ,5);
     }
 
     public static List<Vec3> findBlinkPath(final double tpX, final double tpY, final double tpZ,final double dist){

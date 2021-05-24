@@ -63,7 +63,7 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select mod to bind") {
         }else if(keyCode == Keyboard.KEY_RETURN){
             if(str.startsWith(".")){
                 LiquidBounce.macroManager.macros.add(Macro(info.key,str))
-                LiquidBounce.keyBindMgr.updateAllKeys()
+                LiquidBounce.keyBindManager.updateAllKeys()
                 close()
             }else if(modules.isNotEmpty()) {
                 apply(modules[0])
@@ -100,12 +100,12 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select mod to bind") {
 
     private fun apply(module: Module){
         module.keyBind=info.key
-        LiquidBounce.keyBindMgr.updateAllKeys()
+        LiquidBounce.keyBindManager.updateAllKeys()
         close()
     }
 
     override fun close() {
-        LiquidBounce.keyBindMgr.popUI=null
+        LiquidBounce.keyBindManager.popUI=null
     }
 
     private fun update(){

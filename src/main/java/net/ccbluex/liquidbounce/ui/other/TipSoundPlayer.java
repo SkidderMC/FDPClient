@@ -3,10 +3,10 @@ package net.ccbluex.liquidbounce.ui.other;
 import javax.sound.sampled.*;
 import java.io.File;
 
-public class MusicPlayer {
+public class TipSoundPlayer {
     private final File file;
 
-    public MusicPlayer(File file){
+    public TipSoundPlayer(File file){
         this.file=file;
     }
 

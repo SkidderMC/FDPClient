@@ -75,7 +75,7 @@ class InfinityAura : Module() {
                 if(mc.gameSettings.keyBindAttack.isKeyDown&&(thread == null || !thread!!.isAlive)) {
                     thread = Thread {
                         // do it async because a* pathfinding need some time
-                        val entity=RaycastUtils.raycastEntity(distValue.get().toDouble()) { entity -> entity != null && EntityUtils.isSelected(entity, true) }
+                        val entity=RaycastUtils.raycastEntity(distValue.get().toDouble()) { entity -> entity != null && EntityUtils.isSelected(entity, true) } ?: return@Thread
                         if(mc.thePlayer.getDistanceToEntity(entity)<3)
                             return@Thread
 

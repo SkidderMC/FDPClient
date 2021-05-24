@@ -4,9 +4,9 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.FileUtils
 import java.io.File
 
-class MusicManager {
-    var enableSound : MusicPlayer
-    var disableSound : MusicPlayer
+class TipSoundManager {
+    var enableSound : TipSoundPlayer
+    var disableSound : TipSoundPlayer
 
     init {
         val enableSoundFile=File(LiquidBounce.fileManager.soundsDir,"enable.wav")
@@ -15,7 +15,7 @@ class MusicManager {
         FileUtils.unpackFile(enableSoundFile,"sounds/enable.wav")
         FileUtils.unpackFile(disableSoundFile,"sounds/disable.wav")
 
-        enableSound=MusicPlayer(enableSoundFile)
-        disableSound= MusicPlayer(disableSoundFile)
+        enableSound= TipSoundPlayer(enableSoundFile)
+        disableSound= TipSoundPlayer(disableSoundFile)
     }
 }

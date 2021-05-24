@@ -14,7 +14,7 @@ import java.awt.Color
  * @author liulihaocai
  * FDPClient
  */
-class KeyBindMgr : GuiScreen() {
+class KeyBindManager : GuiScreen() {
     private val baseHeight=205
     private val baseWidth=500
 

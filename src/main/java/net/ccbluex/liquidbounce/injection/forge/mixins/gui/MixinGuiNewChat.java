@@ -98,15 +98,16 @@ public abstract class MixinGuiNewChat {
         }
 
         String text=fixString(chatComponent.getFormattedText());
+
         if (text.equals(this.lastMessage)) {
             (Minecraft.getMinecraft()).ingameGUI.getChatGUI().deleteChatLine(this.line);
             this.sameMessageAmount++;
-            this.lastMessage = text;
             chatComponent.appendText(ChatFormatting.WHITE + " [" + "x" + this.sameMessageAmount + "]");
         } else {
             this.sameMessageAmount = 1;
-            this.lastMessage = text;
         }
+
+        this.lastMessage = text;
         this.line++;
         if (this.line > 256)
             this.line = 0;

@@ -20,9 +20,9 @@ object ToggleSound : Module() {
 
             "custom" -> {
                 if(enable){
-                    LiquidBounce.musicManager.enableSound.asyncPlay()
+                    LiquidBounce.tipSoundManager.enableSound.asyncPlay()
                 }else{
-                    LiquidBounce.musicManager.disableSound.asyncPlay()
+                    LiquidBounce.tipSoundManager.disableSound.asyncPlay()
                 }
             }
         }
