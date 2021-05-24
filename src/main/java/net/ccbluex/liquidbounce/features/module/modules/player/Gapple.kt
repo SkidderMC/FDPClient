@@ -18,7 +18,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange
 
 @ModuleInfo(name = "Gapple", description = "Eat Gapples.", category = ModuleCategory.PLAYER)
 class Gapple : Module() {
-    val modeValue = ListValue("Mode", arrayOf("Auto", "Once", "Head"), "Once")
+    val modeValue = ListValue("Mode", arrayOf("Auto", "Once", "Head"), "Auto")
     // Auto Mode
     private val healthValue = FloatValue("Health", 10F, 1F, 20F)
     private val delayValue = IntegerValue("Delay", 150, 0, 1000)
