@@ -213,5 +213,5 @@ class InfinityAura : Module() {
     }
 
     override val tag: String
-        get() = modeValue.name
+        get() = modeValue.get()
 }
