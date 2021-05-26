@@ -5,7 +5,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.IntegerValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -13,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemSkull
 import net.minecraft.item.ItemStack
@@ -32,7 +32,7 @@ import java.util.*
  */
 @ModuleInfo(name = "AuthBypass", description = "Bypass auth when join server.", category = ModuleCategory.MISC)
 class AuthBypass : Module(){
-    private val delayValue=IntegerValue("Delay",1500,100,5000)
+    private val delayValue= IntegerValue("Delay",1500,100,5000)
 
     private var skull:String?=null
     private var type="none"

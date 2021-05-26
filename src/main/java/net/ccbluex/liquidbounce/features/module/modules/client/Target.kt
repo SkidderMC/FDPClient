@@ -2,11 +2,11 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.WorldEvent
-import net.ccbluex.liquidbounce.features.BoolValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 
 @ModuleInfo(name = "Target", description = "Target settings.", category = ModuleCategory.CLIENT, canEnable = false)
 class Target : Module() {

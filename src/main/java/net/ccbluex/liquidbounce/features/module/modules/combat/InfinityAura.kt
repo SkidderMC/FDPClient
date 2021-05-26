@@ -4,18 +4,18 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.BoolValue
-import net.ccbluex.liquidbounce.features.FloatValue
-import net.ccbluex.liquidbounce.features.IntegerValue
-import net.ccbluex.liquidbounce.features.ListValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.utils.PathUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
-import net.ccbluex.liquidbounce.utils.path.PathUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -26,13 +26,13 @@ import java.awt.Color
 
 @ModuleInfo(name = "InfinityAura", description = "Become a pvp god.", category = ModuleCategory.COMBAT)
 class InfinityAura : Module() {
-    private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
-    private val targetsValue=IntegerValue("Targets",3,1,10)
-    private val cpsValue=IntegerValue("CPS",1,1,10)
-    private val distValue=IntegerValue("Distance",30,20,100)
-    private val moveDistValue=FloatValue("MoveDist",5F,2F,10F)
-    private val noRegen=BoolValue("NoRegen",true)
-    private val doSwing=BoolValue("Swing",true)
+    private val modeValue= ListValue("Mode", arrayOf("Aura","Click"),"Aura")
+    private val targetsValue= IntegerValue("Targets",3,1,10)
+    private val cpsValue= IntegerValue("CPS",1,1,10)
+    private val distValue= IntegerValue("Distance",30,20,100)
+    private val moveDistValue= FloatValue("MoveDist",5F,2F,10F)
+    private val noRegen= BoolValue("NoRegen",true)
+    private val doSwing= BoolValue("Swing",true)
 
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
@@ -112,7 +112,7 @@ class InfinityAura : Module() {
     }
 
     private fun hit(entity: EntityLivingBase){
-        val path=PathUtils.findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,entity.posX,entity.posY,entity.posZ,moveDistValue.get().toDouble())
+        val path= PathUtils.findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,entity.posX,entity.posY,entity.posZ,moveDistValue.get().toDouble())
 
         path.forEach {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))

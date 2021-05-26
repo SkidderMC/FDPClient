@@ -1,5 +1,4 @@
-package net.ccbluex.liquidbounce.utils.path;
-
+package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.minecraft.block.*;

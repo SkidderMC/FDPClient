@@ -6,10 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.world;
 
 import net.ccbluex.liquidbounce.event.*;
-import net.ccbluex.liquidbounce.features.BoolValue;
-import net.ccbluex.liquidbounce.features.FloatValue;
-import net.ccbluex.liquidbounce.features.IntegerValue;
-import net.ccbluex.liquidbounce.features.ListValue;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
@@ -21,6 +17,10 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils;
+import net.ccbluex.liquidbounce.value.BoolValue;
+import net.ccbluex.liquidbounce.value.FloatValue;
+import net.ccbluex.liquidbounce.value.IntegerValue;
+import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;

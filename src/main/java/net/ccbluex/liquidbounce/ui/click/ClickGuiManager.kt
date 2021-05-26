@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.ui.click
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.ListValue
 import net.ccbluex.liquidbounce.features.module.modules.client.NewClickGui
 import net.ccbluex.liquidbounce.ui.click.rainbow.RainbowGui
 import net.ccbluex.liquidbounce.utils.MinecraftInstance

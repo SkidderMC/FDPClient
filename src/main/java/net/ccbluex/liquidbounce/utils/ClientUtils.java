@@ -6,8 +6,6 @@
 package net.ccbluex.liquidbounce.utils;
 
 import com.google.gson.JsonObject;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.network.NetworkManager;
@@ -17,19 +15,14 @@ import net.minecraft.network.login.server.S01PacketEncryptionRequest;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
 import javax.crypto.SecretKey;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.Queue;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @SideOnly(Side.CLIENT)
 public final class ClientUtils extends MinecraftInstance {

@@ -8,21 +8,21 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.features.BoolValue
-import net.ccbluex.liquidbounce.features.IntegerValue
-import net.ccbluex.liquidbounce.features.ListValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import java.awt.Color
 
 @ModuleInfo(name = "HurtCam", description = "Change hurt cam effect.", category = ModuleCategory.CLIENT,canEnable = false)
 class HurtCam : Module() {
-    val modeValue=ListValue("Mode", arrayOf("Vanilla","Cancel","FPS"),"Vanilla")
+    val modeValue= ListValue("Mode", arrayOf("Vanilla","Cancel","FPS"),"Vanilla")
     private val colorRedValue = IntegerValue("R", 255, 0, 255)
     private val colorGreenValue = IntegerValue("G", 0, 0, 255)
     private val colorBlueValue = IntegerValue("B", 0, 0, 255)

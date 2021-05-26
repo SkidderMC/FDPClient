@@ -1,13 +1,13 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.*
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.modules.misc.NameProtect
 import net.ccbluex.liquidbounce.features.module.modules.misc.Spammer
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.get
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.translateAlternateColorCodes
+import net.ccbluex.liquidbounce.value.*
 import org.lwjgl.input.Keyboard
 
 /*

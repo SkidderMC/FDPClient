@@ -6,9 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.features.BoolValue
-import net.ccbluex.liquidbounce.features.FloatValue
-import net.ccbluex.liquidbounce.features.ListValue
 import net.ccbluex.liquidbounce.features.module.AutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -19,6 +16,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT, autoDisable = AutoDisableType.FLAG)
 class Speed : Module() {

@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.file.MetricsLite
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.click.ClickGuiManager
-import net.ccbluex.liquidbounce.ui.click.rainbow.RainbowGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
