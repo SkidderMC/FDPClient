@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.special.proxy.ProxyManager;
 import net.ccbluex.liquidbounce.features.special.proxy.ProxyOioChannelFactory;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -49,11 +50,13 @@ public abstract class MixinNetworkManager {
 
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
     private void send(Packet<?> packet, CallbackInfo callback) {
-        final PacketEvent event = new PacketEvent(packet);
-        LiquidBounce.eventManager.callEvent(event);
+        if(!ClientUtils.handlePacket(packet)){
+            final PacketEvent event = new PacketEvent(packet);
+            LiquidBounce.eventManager.callEvent(event);
 
-        if(event.isCancelled())
-            callback.cancel();
+            if(event.isCancelled())
+                callback.cancel();
+        }
     }
 
     @Overwrite

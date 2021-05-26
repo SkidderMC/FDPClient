@@ -4,9 +4,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.click.ClickGui
 import net.ccbluex.liquidbounce.ui.click.utils.ClickGuiUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import java.awt.Color
 
 // arrow 🢒
 class RainbowGui : ClickGui() {
@@ -16,17 +13,17 @@ class RainbowGui : ClickGui() {
     val clickLists = ArrayList<ClickList>()
 
     override fun load() {
-        var x=5
+        var y=5
         ModuleCategory.values().forEach {
-            val clickList=ClickList(it,x,5,LiquidBounce.moduleManager.modules.filter { module -> module.category==it })
+            val clickList=ClickList(it,5,y,LiquidBounce.moduleManager.modules.filter { module -> module.category==it })
 
             clickLists.add(clickList)
 
-            x+=110
+            y+=30
         }
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun render(width: Int, height: Int, mouseX: Int, mouseY: Int, partialTicks: Float) {
         var x = 0
         while (x < (width+50)) {
             var y = 0

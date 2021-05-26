@@ -15,6 +15,6 @@ object ClickGuiUtils {
     }
 
     fun getColor(x: Double, y: Double, alpha: Int): Color {
-        return ColorUtils.rainbow(((x+1)*(y+1)).toLong()*10000L,alpha)
+        return ColorUtils.rainbow((x+1).toLong()*5000000L,alpha)
     }
 }

@@ -93,7 +93,7 @@ public abstract class MixinGuiNewChat {
     public void printChatMessage(IChatComponent chatComponent) {
         checkHud();
         if(!hud.getChatCombineValue().get()) {
-            printChatMessageWithOptionalDeletion(chatComponent, this.line);
+            printChatMessageWithOptionalDeletion(chatComponent, 0);
             return;
         }
 
