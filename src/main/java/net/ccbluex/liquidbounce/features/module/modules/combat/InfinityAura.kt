@@ -26,13 +26,14 @@ import java.awt.Color
 
 @ModuleInfo(name = "InfinityAura", description = "Become a pvp god.", category = ModuleCategory.COMBAT)
 class InfinityAura : Module() {
-    private val modeValue= ListValue("Mode", arrayOf("Aura","Click"),"Aura")
-    private val targetsValue= IntegerValue("Targets",3,1,10)
-    private val cpsValue= IntegerValue("CPS",1,1,10)
-    private val distValue= IntegerValue("Distance",30,20,100)
-    private val moveDistValue= FloatValue("MoveDist",5F,2F,10F)
-    private val noRegen= BoolValue("NoRegen",true)
-    private val doSwing= BoolValue("Swing",true)
+    private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
+    private val targetsValue=IntegerValue("Targets",3,1,10)
+    private val cpsValue=IntegerValue("CPS",1,1,10)
+    private val distValue=IntegerValue("Distance",30,20,100)
+    private val moveDistValue=FloatValue("MoveDist",5F,2F,10F)
+    private val noRegen=BoolValue("NoRegen",true)
+    private val doSwing=BoolValue("Swing",true)
+    private val path=BoolValue("PathRender",true)
 
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
@@ -148,7 +149,7 @@ class InfinityAura : Module() {
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         synchronized(points) {
-            if(points.isEmpty()) return
+            if(points.isEmpty()||!path.get()) return
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ

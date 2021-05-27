@@ -61,8 +61,8 @@ var _ItemAdaptar = function () {
 
 var _AdaptedValue = function (value) {
 
-    this.FloatValue = Java.type("net.ccbluex.liquidbounce.features.FloatValue");
-    this.IntegerValue = Java.type("net.ccbluex.liquidbounce.features.IntegerValue");
+    this.FloatValue = Java.type("net.ccbluex.liquidbounce.value.FloatValue");
+    this.IntegerValue = Java.type("net.ccbluex.liquidbounce.value.IntegerValue");
     this.Float = Java.type("java.lang.Float");
     this.Integer = Java.type("java.lang.Integer");
 

@@ -121,8 +121,6 @@ public final class ClientUtils extends MinecraftInstance {
     public static boolean handlePacket(Packet packet){
         if(packets.contains(packet)){
             packets.remove(packet);
-            System.out.println("CONTAIN");
-            System.out.println(packet.getClass().getName());
             return true;
         }
         return false;

@@ -28,6 +28,10 @@ class HighJump : Module() {
     private val stableMotionValue = FloatValue("StableMotion", 0.42f, 0.1f, 1f)
     private var jumpY = 114514.0
 
+    override fun onEnable() {
+        jumpY = 114514.0
+    }
+
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (glassValue.get() && getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)) !is BlockPane) return
