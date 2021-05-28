@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.CombatManager
+import net.ccbluex.liquidbounce.features.special.PacketFixer
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.features.special.macro.MacroManager
 import net.ccbluex.liquidbounce.file.FileManager
@@ -171,6 +172,8 @@ object LiquidBounce {
 
         combatManager=CombatManager()
         eventManager.registerListener(combatManager)
+
+        eventManager.registerListener(PacketFixer())
 
         // Set is starting status
         isStarting = false

@@ -36,10 +36,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
-import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.MathHelper
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
@@ -94,6 +91,7 @@ class KillAura : Module() {
     private val autoBlockValue = BoolValue("AutoBlock", false)
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
     private val delayedBlockValue = BoolValue("DelayedBlock", true)
+    private val autoBlockFacing = BoolValue("AutoBlockFacing",true)
     private val blockRate = IntegerValue("BlockRate", 100, 1, 100)
 
     // Raycast
@@ -218,7 +216,7 @@ class KillAura : Module() {
             updateHitable()
 
             // AutoBlock
-            if (autoBlockValue.get() && delayedBlockValue.get() && canBlock)
+            if (autoBlockValue.get() && delayedBlockValue.get() && canBlock())
                 startBlocking(currentTarget!!, hitable)
 
             return
@@ -630,7 +628,7 @@ class KillAura : Module() {
         }
 
         // Start blocking after attack
-        if (mc.thePlayer.isBlocking || (autoBlockValue.get() && canBlock)) {
+        if (mc.thePlayer.isBlocking || (autoBlockValue.get() && canBlock())) {
             if (!(blockRate.get() > 0 && Random().nextInt(100) <= blockRate.get()))
                 return
 
@@ -748,8 +746,17 @@ class KillAura : Module() {
     /**
      * Check if player is able to block
      */
-    private val canBlock: Boolean
-        get() = mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
+    private fun canBlock(): Boolean {
+        return if(mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword){
+            if(autoBlockFacing.get()&&(target!!.getDistanceToEntityBox(mc.thePlayer)<maxRange)){
+                target!!.rayTrace(maxRange.toDouble(),1F).typeOfHit != MovingObjectPosition.MovingObjectType.MISS
+            }else{
+                true
+            }
+        }else{
+            false
+        }
+    }
 
     /**
      * Range

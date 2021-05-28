@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -24,8 +25,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "NoSlow", description = "Cancels slowness effects caused by soulsand and using items.",
-        category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "NoSlow", description = "Cancels slowness effects caused by soulsand and using items.", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
 
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -52,12 +52,12 @@ class NoSlow : Module() {
         if (heldItem == null || heldItem.item !is ItemSword || !MovementUtils.isMoving() || (!mc.thePlayer.isBlocking && !killAura.blockingStatus))
             return
 
-        if (this.packet.get() && packetTimer.hasTimePassed(packetDelayValue.get().toLong())){
+        if (packet.get() && packetTimer.hasTimePassed(packetDelayValue.get().toLong())){
             if(event.isPre()){
-                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN))
+                PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN))
             }else{
                 packetTimer.reset()
-                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+                PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
             }
         }
     }
@@ -69,6 +69,14 @@ class NoSlow : Module() {
         event.forward = getMultiplier(heldItem, true)
         event.strafe = getMultiplier(heldItem, false)
     }
+
+//    @EventTarget
+//    fun onPacket(event: PacketEvent){
+//        val packet=event.packet
+//        if (this.packet.get() && packet is C08PacketPlayerBlockPlacement){
+//            packetTimer.reset()
+//        }
+//    }
 
     private fun getMultiplier(item: Item?, isForward: Boolean) = when (item) {
         is ItemFood, is ItemPotion, is ItemBucketMilk -> {

@@ -22,6 +22,7 @@ class TargetStrafe : Module() {
     private val render = BoolValue("Render", true)
     private val space = BoolValue("HoldSpace", false)
     private val safewalk = BoolValue("SafeWalk", true)
+    private val onlySpeed = BoolValue("OnlySpeed", false)
     private val targetValidator: EntityValidator = EntityValidator()
     private var direction = -1
 
@@ -98,6 +99,6 @@ class TargetStrafe : Module() {
     }
 
     private fun canStrafe(target: EntityLivingBase?): Boolean {
-        return state && target != null && targetValidator.validate(target) && (!space.get() || mc.thePlayer.movementInput.jump)
+        return state && target != null && targetValidator.validate(target) && (!space.get() || mc.thePlayer.movementInput.jump) && (!onlySpeed.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state)
     }
 }

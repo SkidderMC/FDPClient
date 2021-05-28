@@ -7,9 +7,9 @@ import kotlin.math.sin
 class ClipCommand : Command("clip", emptyArray()) {
     override fun execute(args: Array<String>) {
         if (args.size > 2) {
-            val dist: Int
+            val dist: Double
             try {
-                dist = args[2].toInt()
+                dist = args[2].toDouble()
             } catch (e: NumberFormatException) {
                 chatSyntaxError()
                 return

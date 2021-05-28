@@ -38,19 +38,19 @@ class InventoryMove : Module() {
             if(rotateValue.get()){
                 if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
                     if (mc.thePlayer.rotationPitch > -90) {
-                        mc.thePlayer.rotationPitch -= 5;
+                        mc.thePlayer.rotationPitch -= 5
                     }
                 }
                 if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
                     if (mc.thePlayer.rotationPitch < 90) {
-                        mc.thePlayer.rotationPitch += 5;
+                        mc.thePlayer.rotationPitch += 5
                     }
                 }
                 if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-                    mc.thePlayer.rotationYaw -= 5;
+                    mc.thePlayer.rotationYaw -= 5
                 }
                 if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-                    mc.thePlayer.rotationYaw += 5;
+                    mc.thePlayer.rotationYaw += 5
                 }
             }
         }

@@ -184,7 +184,7 @@ public class Fly extends Module {
             return;
 
         if(mc.thePlayer.onGround&&fakeBoostValue.get()){
-            PacketEvent event=new PacketEvent(new S19PacketEntityStatus(mc.thePlayer,(byte) 2));
+            PacketEvent event=new PacketEvent(new S19PacketEntityStatus(mc.thePlayer,(byte) 2), PacketEvent.Type.RECEIVE);
             LiquidBounce.eventManager.callEvent(event);
             if(!event.isCancelled()) {
                 mc.thePlayer.handleStatusUpdate((byte) 2);

@@ -17,10 +17,10 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "BoatJump", description = "Insane jump xdddd.", category = ModuleCategory.MOVEMENT)
 class BoatJump : Module() {
-    private val hBoost= FloatValue("HBoost",3.0F,0F,6.0F)
-    private val vBoost= FloatValue("VBoost",3.0F,0F,6.0F)
-    private val delay= IntegerValue("Delay",200,100,500)
-    private val autoHit= BoolValue("AutoHit",true)
+    private val hBoost=FloatValue("HBoost",3.0F,0F,6.0F)
+    private val vBoost=FloatValue("VBoost",3.0F,0F,6.0F)
+    private val delay=IntegerValue("Delay",200,100,500)
+    private val autoHit=BoolValue("AutoHit",true)
 
     private var jumpState=1
     private val timer=MSTimer()

@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -31,8 +32,11 @@ class FreeCam : Module() {
     private var motionY=0.0
     private var motionZ=0.0
 
+    private var packetCount=0
+
     override fun onEnable() {
         if (mc.thePlayer == null) return
+
         if(motionValue.get()){
             motionX=mc.thePlayer.motionX
             motionY=mc.thePlayer.motionY
@@ -43,6 +47,7 @@ class FreeCam : Module() {
             motionZ=0.0
         }
 
+        packetCount=0
         fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
         fakePlayer!!.clonePlayer(mc.thePlayer, true)
         fakePlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
@@ -81,7 +86,13 @@ class FreeCam : Module() {
         val packet = event.packet
         if(c03SpoofValue.get()){
             if(packet is C03PacketPlayer.C04PacketPlayerPosition||packet is C03PacketPlayer.C05PacketPlayerLook||packet is C03PacketPlayer.C06PacketPlayerPosLook){
-                mc.netHandler.addToSendQueue(C03PacketPlayer(fakePlayer!!.onGround))
+                if(packetCount>20) {
+                    packetCount=0
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer!!.posX,fakePlayer!!.posY,fakePlayer!!.posZ,fakePlayer!!.rotationYaw,fakePlayer!!.rotationPitch,fakePlayer!!.onGround))
+                }else{
+                    packetCount++
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer(fakePlayer!!.onGround))
+                }
                 event.cancelEvent()
             }
         }else if(packet is C03PacketPlayer){

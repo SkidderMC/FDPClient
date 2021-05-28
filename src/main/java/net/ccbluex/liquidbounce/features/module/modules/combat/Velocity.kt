@@ -207,7 +207,7 @@ class Velocity : Module() {
                 mc.thePlayer.motionX+packet.func_149149_c(),
                 mc.thePlayer.motionY+packet.func_149144_d(),
                 mc.thePlayer.motionZ+packet.func_149147_e())
-            val packetEvent=PacketEvent(velocityPacket)
+            val packetEvent=PacketEvent(velocityPacket,PacketEvent.Type.RECEIVE)
             LiquidBounce.eventManager.callEvent(packetEvent)
             if(!packetEvent.isCancelled) {
                 PacketUtils.handlePacket(velocityPacket)
