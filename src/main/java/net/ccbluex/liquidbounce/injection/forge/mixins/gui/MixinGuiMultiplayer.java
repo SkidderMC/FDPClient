@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.ui.client.GuiAntiForge;
-import net.ccbluex.liquidbounce.ui.client.GuiProxySelect;
 import net.ccbluex.liquidbounce.ui.client.GuiServerSpoof;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMultiplayer;
@@ -23,7 +22,7 @@ public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
     private void initGui(CallbackInfo callbackInfo) {
         buttonList.add(new GuiButton(997, 5, 8, 98, 20, "AntiForge"));
         buttonList.add(new GuiButton(998, width - 104, 8, 98, 20, "ServerSpoof"));
-        buttonList.add(new GuiButton(999, width - 208, 8, 98, 20, "Proxy"));
+//        buttonList.add(new GuiButton(999, width - 208, 8, 98, 20, "Proxy"));
     }
 
     @Inject(method = "actionPerformed", at = @At("HEAD"))
@@ -35,9 +34,9 @@ public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
             case 998:
                 mc.displayGuiScreen(new GuiServerSpoof((GuiScreen) (Object) this));
                 break;
-            case 999:
-                mc.displayGuiScreen(new GuiProxySelect((GuiScreen) (Object) this));
-                break;
+//            case 999:
+//                mc.displayGuiScreen(new GuiProxySelect((GuiScreen) (Object) this));
+//                break;
         }
     }
 }

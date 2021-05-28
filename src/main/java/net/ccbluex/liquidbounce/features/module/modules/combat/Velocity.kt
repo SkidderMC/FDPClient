@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -209,7 +210,7 @@ class Velocity : Module() {
             val packetEvent=PacketEvent(velocityPacket)
             LiquidBounce.eventManager.callEvent(packetEvent)
             if(!packetEvent.isCancelled) {
-                mc.netHandler.handleEntityVelocity(velocityPacket)
+                PacketUtils.handlePacket(velocityPacket)
             }
         }
     }

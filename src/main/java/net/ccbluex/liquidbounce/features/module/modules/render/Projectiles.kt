@@ -122,7 +122,7 @@ class Projectiles : Module() {
         RenderUtils.disableGlCap(GL11.GL_DEPTH_TEST, GL11.GL_ALPHA_TEST, GL11.GL_TEXTURE_2D)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
-        RenderUtils.glColor(Color(0, 160, 255, 255))
+        RenderUtils.glColor(Color.WHITE)
         GL11.glLineWidth(2f)
 
         worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
@@ -214,8 +214,11 @@ class Projectiles : Module() {
             }
 
             // Check if hitting a entity
-            if (hitEntity)
-                RenderUtils.glColor(Color(255, 0, 0, 150))
+            if (hitEntity){
+                RenderUtils.glColor(Color(255,140,140))
+            }else{
+                RenderUtils.glColor(Color(140,255,140))
+            }
         }
 
         // Rendering hit cylinder

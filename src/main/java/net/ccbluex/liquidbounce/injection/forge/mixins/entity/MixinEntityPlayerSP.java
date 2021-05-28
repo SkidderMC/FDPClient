@@ -28,6 +28,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import net.minecraftforge.fml.relauncher.Side;
@@ -45,6 +46,9 @@ import java.util.List;
 @Mixin(EntityPlayerSP.class)
 @SideOnly(Side.CLIENT)
 public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
+
+    @Shadow
+    private boolean serverSneakState;
 
     @Shadow
     public boolean serverSprintState;
@@ -96,9 +100,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     public NetHandlerPlayClient sendQueue;
 
     @Shadow
-    private boolean serverSneakState;
-
-    @Shadow
     public abstract boolean isSneaking();
 
     @Shadow
@@ -129,6 +130,28 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     public void onUpdateWalkingPlayer() {
         try {
             LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.PRE));
+
+            boolean flag = this.isSprinting();
+            if (flag != this.serverSprintState) {
+                if (flag) {
+                    this.sendQueue.addToSendQueue(new C0BPacketEntityAction((EntityPlayerSP) (Object) this, C0BPacketEntityAction.Action.START_SPRINTING));
+                } else {
+                    this.sendQueue.addToSendQueue(new C0BPacketEntityAction((EntityPlayerSP) (Object) this, C0BPacketEntityAction.Action.STOP_SPRINTING));
+                }
+
+                this.serverSprintState = flag;
+            }
+
+            boolean flag1 = this.isSneaking();
+            if (flag1 != this.serverSneakState) {
+                if (flag1) {
+                    this.sendQueue.addToSendQueue(new C0BPacketEntityAction((EntityPlayerSP) (Object) this, C0BPacketEntityAction.Action.START_SNEAKING));
+                } else {
+                    this.sendQueue.addToSendQueue(new C0BPacketEntityAction((EntityPlayerSP) (Object) this, C0BPacketEntityAction.Action.STOP_SNEAKING));
+                }
+
+                this.serverSneakState = flag1;
+            }
 
             if (this.isCurrentViewEntity()) {
                 float yaw = rotationYaw;

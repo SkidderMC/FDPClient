@@ -10,7 +10,7 @@ class RainbowGui : ClickGui() {
     override val name: String
         get() = "Rainbow"
 
-    val clickLists = ArrayList<ClickList>()
+    private val clickLists = ArrayList<ClickList>()
 
     override fun load() {
         var y=5
