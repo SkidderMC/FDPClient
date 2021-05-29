@@ -905,7 +905,7 @@ public class Fly extends Module {
     private void handleVanillaKickBypass() {
         if(!vanillaKickBypassValue.get() || !groundTimer.hasTimePassed(1000)) return;
 
-        final double ground = calculateGround();
+        final double ground = MovementUtils.calculateGround();
 
         for(double posY = mc.thePlayer.posY; posY > ground; posY -= 8D) {
             mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, posY, mc.thePlayer.posZ, true));
@@ -925,26 +925,6 @@ public class Fly extends Module {
         mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
 
         groundTimer.reset();
-    }
-
-    // TODO: Make better and faster calculation lol
-    private double calculateGround() {
-        final AxisAlignedBB playerBoundingBox = mc.thePlayer.getEntityBoundingBox();
-        double blockHeight = 1D;
-
-        for(double ground = mc.thePlayer.posY; ground > 0D; ground -= blockHeight) {
-            final AxisAlignedBB customBox = new AxisAlignedBB(playerBoundingBox.maxX, ground + blockHeight, playerBoundingBox.maxZ, playerBoundingBox.minX, ground, playerBoundingBox.minZ);
-
-            if(mc.theWorld.checkBlockCollision(customBox)) {
-                if(blockHeight <= 0.05D)
-                    return ground + blockHeight;
-
-                ground += blockHeight;
-                blockHeight = 0.05D;
-            }
-        }
-
-        return 0F;
     }
 
     @Override

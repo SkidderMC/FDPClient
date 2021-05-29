@@ -24,4 +24,11 @@ class ClickList(val category: ModuleCategory, var x: Int, var y: Int, var module
 
         GL11.glPopMatrix()
     }
+
+    fun inTitleArea(mouseX: Int, mouseY: Int):Boolean {
+        if(mouseX>x&&mouseX<(x+100)&&mouseY>y&&mouseY<(y+20)){
+            return true
+        }
+        return false
+    }
 }

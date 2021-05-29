@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.event.MoveEvent;
+import net.minecraft.util.AxisAlignedBB;
 
 public final class MovementUtils extends MinecraftInstance {
     public static float getSpeed() {
@@ -130,5 +131,25 @@ public final class MovementUtils extends MinecraftInstance {
             moveEvent.setX((forward * moveSpeed * cos + strafe * moveSpeed * sin));
             moveEvent.setZ((forward * moveSpeed * sin - strafe * moveSpeed * cos));
         }
+    }
+
+    // TODO: Make better and faster calculation lol
+    public static double calculateGround() {
+        final AxisAlignedBB playerBoundingBox = mc.thePlayer.getEntityBoundingBox();
+        double blockHeight = 1D;
+
+        for(double ground = mc.thePlayer.posY; ground > 0D; ground -= blockHeight) {
+            final AxisAlignedBB customBox = new AxisAlignedBB(playerBoundingBox.maxX, ground + blockHeight, playerBoundingBox.maxZ, playerBoundingBox.minX, ground, playerBoundingBox.minZ);
+
+            if(mc.theWorld.checkBlockCollision(customBox)) {
+                if(blockHeight <= 0.05D)
+                    return ground + blockHeight;
+
+                ground += blockHeight;
+                blockHeight = 0.05D;
+            }
+        }
+
+        return 0F;
     }
 }
