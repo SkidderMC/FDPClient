@@ -91,7 +91,7 @@ class KillAura : Module() {
     private val autoBlockValue = BoolValue("AutoBlock", false)
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
     private val delayedBlockValue = BoolValue("DelayedBlock", true)
-    private val autoBlockFacing = BoolValue("AutoBlockFacing",true)
+    private val autoBlockFacing = BoolValue("AutoBlockFacing",false)
     private val blockRate = IntegerValue("BlockRate", 100, 1, 100)
 
     // Raycast

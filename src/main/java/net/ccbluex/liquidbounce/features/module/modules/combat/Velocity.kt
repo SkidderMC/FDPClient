@@ -22,7 +22,6 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
-import net.minecraft.util.MathHelper
 import net.minecraft.world.Explosion
 
 @ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
@@ -34,7 +33,7 @@ class Velocity : Module() {
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
     private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4",
-            "Reverse", "SmoothReverse", "Jump", "Glitch"), "Simple")
+            "Reverse", "SmoothReverse", "Jump", "Phase"), "Simple")
 
     // Reverse
     private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F)
@@ -43,6 +42,9 @@ class Velocity : Module() {
     // AAC Push
     private val aacPushXZReducerValue = FloatValue("AACPushXZReducer", 2F, 1F, 3F)
     private val aacPushYReducerValue = BoolValue("AACPushYReducer", true)
+
+    // phase
+    private val phaseHeightValue = FloatValue("PhaseHeight",0.5F,0F,1F)
 
     /**
      * VALUES
@@ -71,18 +73,6 @@ class Velocity : Module() {
         when (modeValue.get().toLowerCase()) {
             "jump" -> if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
                 mc.thePlayer.motionY = 0.42
-
-                val yaw = mc.thePlayer.rotationYaw * 0.017453292F
-                mc.thePlayer.motionX -= MathHelper.sin(yaw) * 0.2
-                mc.thePlayer.motionZ += MathHelper.cos(yaw) * 0.2
-            }
-
-            "glitch" -> {
-                mc.thePlayer.noClip = velocityInput
-                if (mc.thePlayer.hurtTime == 7)
-                    mc.thePlayer.motionY = 0.4
-
-                velocityInput = false
             }
 
             "reverse" -> {
@@ -187,12 +177,16 @@ class Velocity : Module() {
 
                 "aac", "reverse", "smoothreverse", "aaczero" -> velocityInput = true
 
-                "glitch" -> {
+                "phase" -> {
                     if (!mc.thePlayer.onGround)
                         return
 
                     velocityInput = true
+                    mc.thePlayer.setPositionAndUpdate(mc.thePlayer.posX,mc.thePlayer.posY-phaseHeightValue.get(),mc.thePlayer.posZ)
                     event.cancelEvent()
+                    packet.motionX = 0
+                    packet.motionY = 0
+                    packet.motionZ = 0
                 }
             }
         }

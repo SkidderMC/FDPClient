@@ -11,14 +11,14 @@ class RedeSkyGround : SpeedMode("RedeSkyGround") {
     override fun onMotion() {
         if(MovementUtils.isMoving()){
             if(stage){
-                mc.timer.timerSpeed=2F
-                if(timer.hasTimePassed(1000)){
+                mc.timer.timerSpeed=1.5F
+                if(timer.hasTimePassed(700)){
                     timer.reset()
                     stage=!stage
                 }
             }else{
-                mc.timer.timerSpeed=0.5F
-                if(timer.hasTimePassed(500)){
+                mc.timer.timerSpeed=0.8F
+                if(timer.hasTimePassed(400)){
                     timer.reset()
                     stage=!stage
                 }
