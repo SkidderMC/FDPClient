@@ -954,4 +954,10 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glShadeModel(7424);
         Gui.drawRect(0, 0, 0, 0, 0);
     }
+
+    private static final long startTime=System.currentTimeMillis();
+
+    public static Color arrayRainbow(int offset){
+        return new Color(Color.HSBtoRGB((float) ((double) ((System.currentTimeMillis()-startTime)/10000F)+ Math.sin((double) (((System.currentTimeMillis()-startTime)/100F)%50) + offset) / 50.0 * 1.6) % 1.0f, 0.5f, 1.0f));
+    }
 }

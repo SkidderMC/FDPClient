@@ -144,8 +144,9 @@ class ModuleManager : Listenable {
             Reach::class.java,
             Aimbot::class.java,
             ServerCrasher::class.java,
-            EnchantEffect::class.java
-//            NewClickGui::class.java
+            EnchantEffect::class.java,
+            AntiAim::class.java,
+            NewClickGui::class.java
         )
 
         registerModule(Fucker)

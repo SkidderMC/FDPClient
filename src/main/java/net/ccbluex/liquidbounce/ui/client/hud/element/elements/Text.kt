@@ -48,7 +48,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
-    val rainbow = BoolValue("Rainbow", false)
+    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "OtherRainbow", "SkyRainbow"), "Custom")
     private val shadow = BoolValue("Shadow", false)
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
@@ -56,6 +56,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
     private val rect = BoolValue("Rect", false)
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
+    private val rainbowSpeed = IntegerValue("RainbowSpeed",10,1,10)
     private var fontValue = FontValue("Font", Fonts.font40)
 
     private var editMode = false
@@ -140,7 +141,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
      * Draw element
      */
     override fun drawElement(partialTicks: Float): Border {
-        val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get()).rgb
+        val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
 
         val fontRenderer = fontValue.get()
 
@@ -151,12 +152,17 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
             RenderUtils.drawRect(-expand,-expand,fontRenderer.getStringWidth(displayText)+expand,fontRenderer.FONT_HEIGHT+expand,rectColor)
         }
 
-        fontRenderer.drawString(displayText, 0F, 0F, if (rainbow.get())
-            ColorUtils.rainbow(400000000L).rgb else color, shadow.get())
+        fontRenderer.drawString(displayText, 0F, 0F, when(colorModeValue.get().toLowerCase()){
+            "rainbow" -> ColorUtils.rainbow(400000000L).rgb
+            "skyrainbow" -> RenderUtils.skyRainbow(1, 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+            "otherrainbow" -> RenderUtils.arrayRainbow(rainbowSpeed.get()).rgb
+            "anotherrainbow" -> ColorUtils.fade(color,100,1).rgb
+            else -> color.rgb
+        }, shadow.get())
 
         if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40)
             fontRenderer.drawString("_", fontRenderer.getStringWidth(displayText) + 2F,
-                    0F, if (rainbow.get()) ColorUtils.rainbow(400000000L).rgb else color, shadow.get())
+                    0F, Color.WHITE.rgb, shadow.get())
 
         if (editMode && mc.currentScreen !is GuiHudDesigner) {
             editMode = false
