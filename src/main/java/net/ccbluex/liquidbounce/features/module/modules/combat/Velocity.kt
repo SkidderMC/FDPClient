@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.world.Explosion
@@ -33,7 +34,7 @@ class Velocity : Module() {
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
     private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4",
-            "Reverse", "SmoothReverse", "Jump", "Phase"), "Simple")
+            "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase"), "Simple")
 
     // Reverse
     private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F)
@@ -45,6 +46,7 @@ class Velocity : Module() {
 
     // phase
     private val phaseHeightValue = FloatValue("PhaseHeight",0.5F,0F,1F)
+    private val phaseOnlyGround = BoolValue("PhaseOnlyGround",true)
 
     /**
      * VALUES
@@ -178,11 +180,26 @@ class Velocity : Module() {
                 "aac", "reverse", "smoothreverse", "aaczero" -> velocityInput = true
 
                 "phase" -> {
-                    if (!mc.thePlayer.onGround)
+                    if (!mc.thePlayer.onGround&&phaseOnlyGround.get())
                         return
 
                     velocityInput = true
                     mc.thePlayer.setPositionAndUpdate(mc.thePlayer.posX,mc.thePlayer.posY-phaseHeightValue.get(),mc.thePlayer.posZ)
+                    event.cancelEvent()
+                    packet.motionX = 0
+                    packet.motionY = 0
+                    packet.motionZ = 0
+                }
+
+                "packetphase" -> {
+                    if (!mc.thePlayer.onGround&&phaseOnlyGround.get())
+                        return
+
+//                    chat("MOTX=${packet.motionX}, MOTZ=${packet.motionZ}")
+                    if(packet.motionX<500&&packet.motionY<500)
+                        return
+
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY-phaseHeightValue.get(),mc.thePlayer.posZ,false))
                     event.cancelEvent()
                     packet.motionX = 0
                     packet.motionY = 0

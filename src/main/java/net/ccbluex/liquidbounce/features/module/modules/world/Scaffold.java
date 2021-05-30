@@ -125,6 +125,7 @@ public class Scaffold extends Module {
     private final BoolValue sameYValue = new BoolValue("SameY", false);
     private final BoolValue safeWalkValue = new BoolValue("SafeWalk", true);
     private final BoolValue airSafeValue = new BoolValue("AirSafe", false);
+    private final BoolValue autoJumpValue = new BoolValue("AutoJump", false);
 
     // Jump mode
     private final FloatValue jumpMotionValue = new FloatValue("TowerJumpMotion", 0.42F, 0.3681289F, 0.79F);
@@ -185,6 +186,8 @@ public class Scaffold extends Module {
     private double jumpGround = 0;
     private boolean towerStatus=false;
 
+    private boolean canSameY=false;
+
     /**
      * Enable module
      */
@@ -203,6 +206,21 @@ public class Scaffold extends Module {
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
         mc.timer.timerSpeed = towerStatus?towerTimerValue.get():timerValue.get();
+
+        if(towerStatus){
+            canSameY=false;
+            launchY= (int) mc.thePlayer.posY;
+        }else if(sameYValue.get()){
+            canSameY=true;
+        }else if(autoJumpValue.get()){
+            canSameY=true;
+            if(mc.thePlayer.onGround){
+                mc.thePlayer.jump();
+                launchY= (int) mc.thePlayer.posY;
+            }
+        }
+
+        mc.thePlayer.setSprinting(sprintValue.get());
 
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && getBlocksAmount() > 1;
         if (shouldGoDown)
@@ -295,8 +313,7 @@ public class Scaffold extends Module {
         final EventState eventState = event.getEventState();
 
         // Tower
-        if (!(towerModeValue.get().equalsIgnoreCase("None")
-                || !mc.gameSettings.keyBindJump.isKeyDown() || ((mc.gameSettings.keyBindLeft.isKeyDown()
+        if (!(!mc.gameSettings.keyBindJump.isKeyDown() || ((mc.gameSettings.keyBindLeft.isKeyDown()
                 || mc.gameSettings.keyBindRight.isKeyDown() || mc.gameSettings.keyBindForward.isKeyDown()
                 || mc.gameSettings.keyBindBack.isKeyDown())&&!moveTower.get()))
                 && (!stopWhenBlockAbove.get() || BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX,
@@ -479,7 +496,7 @@ public class Scaffold extends Module {
             return;
         }
 
-        if (!delayTimer.hasTimePassed(delay) || (((!towerStatus)&&sameYValue.get()) && launchY - 1 != (int) targetPlace.getVec3().yCoord))
+        if (!delayTimer.hasTimePassed(delay) || (((!towerStatus)&&canSameY) && launchY - 1 != (int) targetPlace.getVec3().yCoord))
             return;
 
         int blockSlot = -1;

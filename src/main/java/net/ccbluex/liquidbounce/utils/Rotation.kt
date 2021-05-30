@@ -147,6 +147,10 @@ data class Rotation(var yaw: Float, var pitch: Float) {
             player.motionZ += calcForward * yawCos + calcStrafe * yawSin.toDouble()
         }
     }
+
+    override fun toString(): String {
+        return "Rotation(yaw=$yaw, pitch=$pitch)"
+    }
 }
 
 /**
