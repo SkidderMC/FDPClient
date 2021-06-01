@@ -4,6 +4,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.click.ClickGui
 import net.ccbluex.liquidbounce.ui.click.utils.ClickGuiUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 
 // arrow 🢒
 class RainbowGui : ClickGui() {
@@ -46,6 +47,8 @@ class RainbowGui : ClickGui() {
 
     override fun click(mouseX: Int, mouseY: Int) {
         clickedList?:return
+
+        clickedList!!.click(mouseX, mouseY)
     }
 
     override fun drag(moveX: Int, moveY: Int, mouseX: Int, mouseY: Int, startX: Int, startY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {

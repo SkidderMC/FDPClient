@@ -783,8 +783,12 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void makeScissorBox(final float x, final float y, final float x2, final float y2) {
+        makeScissorBox(x, y, x2, y2, 1);
+    }
+
+    public static void makeScissorBox(final float x, final float y, final float x2, final float y2, final float scaleOffset) {
         final ScaledResolution scaledResolution = new ScaledResolution(mc);
-        final int factor = scaledResolution.getScaleFactor();
+        final float factor = scaledResolution.getScaleFactor()*scaleOffset;
         glScissor((int) (x * factor), (int) ((scaledResolution.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
     }
 

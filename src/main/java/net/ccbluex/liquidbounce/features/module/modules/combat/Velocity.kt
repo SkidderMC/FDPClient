@@ -34,7 +34,7 @@ class Velocity : Module() {
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
     private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4",
-            "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase"), "Simple")
+            "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch"), "Simple")
 
     // Reverse
     private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F)
@@ -143,6 +143,15 @@ class Velocity : Module() {
                 }
             }
 
+            "glitch" -> {
+                mc.thePlayer.noClip = velocityInput
+
+                if (mc.thePlayer.hurtTime == 7)
+                    mc.thePlayer.motionY = 0.4
+
+                velocityInput = false
+            }
+
             "aaczero" -> if (mc.thePlayer.hurtTime > 0) {
                 if (!velocityInput || mc.thePlayer.onGround || mc.thePlayer.fallDistance > 2F)
                     return
@@ -204,6 +213,14 @@ class Velocity : Module() {
                     packet.motionX = 0
                     packet.motionY = 0
                     packet.motionZ = 0
+                }
+
+                "glitch" -> {
+                    if (!mc.thePlayer.onGround)
+                        return
+
+                    velocityInput = true
+                    event.cancelEvent()
                 }
             }
         }
