@@ -19,8 +19,8 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "AntiVoid", description = "anti void", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val moveValue=ListValue("Mode", arrayOf("Blink","TPBack","FlyFlag","GroundSpoof","PacketFlag"),"Blink")
-    private val fallModeValue=ListValue("FallCheckMode", arrayOf("GroundDist","PredictFall","FallDist"),"FallDist")
+    private val moveValue=ListValue("Move", arrayOf("Blink","TPBack","FlyFlag","GroundSpoof"),"Blink")
+    private val fallModeValue=ListValue("FallCheckMove", arrayOf("GroundDist","PredictFall","FallDist"),"FallDist")
     private val maxFallDistValue=FloatValue("MaxFallDistance",10F,5F,20F)
     private val resetMotion=BoolValue("ResetMotion",false)
     private val startFallDistValue=FloatValue("BlinkStartFallDistance",2F,0F,5F)
@@ -158,12 +158,6 @@ class AntiVoid : Module() {
             "groundspoof" -> {
                 if(canSpoof&&(packet is C03PacketPlayer)){
                     packet.onGround=true
-                }
-            }
-
-            "packetflag" -> {
-                if(mc.thePlayer.fallDistance>maxFallDistValue.get() && (packet is C03PacketPlayer)){
-                    packet.y=packet.y+11
                 }
             }
         }
