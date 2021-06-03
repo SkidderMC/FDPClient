@@ -1,11 +1,8 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
- */
+
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.SlowDownEvent
@@ -14,50 +11,120 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.item.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "NoSlow", description = "Cancels slowness effects caused by soulsand and using items.", category = ModuleCategory.MOVEMENT)
-class NoSlow : Module() {
 
+@ModuleInfo(name = "NoSlow", description = "Cancels slowness effects caused by soulsand and using items.",
+    category = ModuleCategory.MOVEMENT)
+class NoSlow : Module() {
+    private val Timer = MSTimer()
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
-
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeStrafeMultiplier = FloatValue("ConsumeStrafeMultiplier", 1.0F, 0.2F, 1.0F)
-
     private val bowForwardMultiplier = FloatValue("BowForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F)
-
-    private val packet = BoolValue("Packet", true)
-    private val packetDelayValue= IntegerValue("PacketDelay",100,0,300)
-    private val packetTimer=MSTimer()
-
+    private val customOnGround = BoolValue("CustomOnGround", false)
+    private val customDelayValue = IntegerValue("CustomDelay",60,10,200)
+    private val modeValue = ListValue("PacketMode", arrayOf("AntiCheat","Custom","WatchDog","NoCheatPlus","NoPacket","OldRedesky","AAC"), "AntiCheat")
     // Soulsand
     val soulsandValue = BoolValue("Soulsand", true)
+
+    private fun OnPre(event : MotionEvent): Boolean {
+        return event.eventState == EventState.PRE
+    }
+
+    private fun OnPost(event : MotionEvent): Boolean {
+        return event.eventState == EventState.POST
+    }
+
+    override fun onDisable() {
+        Timer.reset()
+    }
+
+    override val tag: String?
+        get() = modeValue.get()
+
+    private fun sendPacket(Event : MotionEvent,SendC07 : Boolean, SendC08 : Boolean,Delay : Boolean,DelayValue : Long,onGround : Boolean,WatchDog : Boolean = false) {
+        val digging = C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN)
+        val blockPlace = C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem())
+        val blockMent = C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f)
+        if(onGround && !mc.thePlayer.onGround) {
+            return
+        }
+        if(SendC07 && OnPre(Event)) {
+            if(Delay && Timer.hasTimePassed(DelayValue)) {
+                mc.netHandler.addToSendQueue(digging)
+            } else if(!Delay) {
+                mc.netHandler.addToSendQueue(digging)
+            }
+        }
+        if(SendC08 && OnPost(Event)) {
+            if(Delay && Timer.hasTimePassed(DelayValue) && !WatchDog) {
+                mc.netHandler.addToSendQueue(blockPlace)
+                Timer.reset()
+            } else if(!Delay && !WatchDog) {
+                mc.netHandler.addToSendQueue(blockPlace)
+            } else if(WatchDog) {
+                mc.netHandler.addToSendQueue(blockMent)
+            }
+        }
+    }
+
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
         val heldItem = mc.thePlayer.heldItem
-        val killAura = LiquidBounce.moduleManager[KillAura::class.java] as KillAura
-
-        if (heldItem == null || heldItem.item !is ItemSword || !MovementUtils.isMoving() || (!mc.thePlayer.isBlocking && !killAura.blockingStatus))
+        if (heldItem == null || heldItem.item !is ItemSword || !MovementUtils.isMoving()) {
             return
+        }
+        val killKillAura = LiquidBounce.moduleManager[KillAura::class.java] as KillAura
+        if (!mc.thePlayer.isBlocking && !killKillAura.blockingStatus) {
+            return
+        }
+        when(modeValue.get().toLowerCase()) {
+            "anticheat" , "OldRedesky" -> {
+                this.sendPacket(event,true,false,false,0,false,false)
+                if(mc.thePlayer.ticksExisted % 2 == 0) {
+                    this.sendPacket(event,false,true,false,0,false)
+                }
+//                if(mc.thePlayer.ticksExisted % 2 == 0) {
+//                    sendPacket(event, true, false, false, 5, false, false)
+//                } else {
+//                    sendPacket(event, false, false, false, 5, false, false)
+//                }
+            }
 
-        if (packet.get() && packetTimer.hasTimePassed(packetDelayValue.get().toLong())){
-            if(event.isPre()){
-                PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN))
-            }else{
-                packetTimer.reset()
-                PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+            "aac" -> {
+                if(mc.thePlayer.ticksExisted % 3 == 0) {
+                    sendPacket(event, true , false, false, 0, false)
+                } else {
+                    sendPacket(event, false , true, false, 0, false)
+                }
+            }
+            "custom" -> {
+                sendPacket(event,true,true,true,customDelayValue.get().toLong(),customOnGround.get())
+            }
+
+            "nocheatplus" -> {
+                sendPacket(event,true,true,false,0,false)
+            }
+
+            "WatchDog" -> {
+                if(mc.thePlayer.ticksExisted % 2 == 0) {
+                    sendPacket(event, true, false, false, 50, true)
+                } else {
+                    sendPacket(event, false, true, false, 0, true, true)
+                }
             }
         }
     }
@@ -69,14 +136,6 @@ class NoSlow : Module() {
         event.forward = getMultiplier(heldItem, true)
         event.strafe = getMultiplier(heldItem, false)
     }
-
-//    @EventTarget
-//    fun onPacket(event: PacketEvent){
-//        val packet=event.packet
-//        if (this.packet.get() && packet is C08PacketPlayerBlockPlacement){
-//            packetTimer.reset()
-//        }
-//    }
 
     private fun getMultiplier(item: Item?, isForward: Boolean) = when (item) {
         is ItemFood, is ItemPotion, is ItemBucketMilk -> {
@@ -90,4 +149,5 @@ class NoSlow : Module() {
         }
         else -> 0.2F
     }
+
 }
