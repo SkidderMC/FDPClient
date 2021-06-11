@@ -70,6 +70,7 @@ public class Fly extends Module {
             "Hypixel",
             "BoostHypixel",
             "FreeHypixel",
+            "HypixelNew",
 
             // Rewinside
             "Rewinside",
@@ -113,6 +114,7 @@ public class Fly extends Module {
     private final BoolValue hypixelBoost = new BoolValue("Hypixel-Boost", true);
     private final IntegerValue hypixelBoostDelay = new IntegerValue("Hypixel-BoostDelay", 1200, 0, 2000);
     private final FloatValue hypixelBoostTimer = new FloatValue("Hypixel-BoostTimer", 1F, 0F, 5F);
+    private final FloatValue hypixelSpeed = new FloatValue("HypixelNew-Speed",0.5F,0.3F,0.7F);
 
     private final FloatValue mineplexSpeedValue = new FloatValue("MineplexSpeed", 1F, 0.5F, 10F);
     private final IntegerValue neruxVaceTicks = new IntegerValue("NeruxVace-Ticks", 6, 0, 20);
@@ -162,7 +164,7 @@ public class Fly extends Module {
     private boolean wasDead;
 
     private final TickTimer hypixelTimer = new TickTimer();
-    private final MSTimer mushTimer = new MSTimer();
+    private final MSTimer theTimer = new MSTimer();
 
     private int boostHypixelState = 1;
     private double moveSpeed, lastDistance;
@@ -192,6 +194,7 @@ public class Fly extends Module {
         }
 
         flyTimer.reset();
+        theTimer.reset();
         flyTick=0;
 
         noPacketModify = true;
@@ -271,7 +274,7 @@ public class Fly extends Module {
                 failedStart = false;
                 break;
             case "mushboost":{
-                mushTimer.reset();
+                theTimer.reset();
                 mc.thePlayer.setPosition(x,y+0.1,z);
                 mc.thePlayer.jump();
                 for(int i = 0; i < 3; ++i) {
@@ -349,6 +352,21 @@ public class Fly extends Module {
                 }
                 break;
             }
+            case "hypixelnew":{
+                mc.timer.timerSpeed=0.7F;
+                mc.thePlayer.motionX=0;
+                mc.thePlayer.motionY=0;
+                mc.thePlayer.motionZ=0;
+                if(theTimer.hasTimePassed(1000)){
+                    // hclip LMFAO
+                    double yaw=Math.toRadians(mc.thePlayer.rotationYaw);
+                    double x = -Math.sin(yaw) * hypixelSpeed.get();
+                    double z = Math.cos(yaw) * hypixelSpeed.get();
+                    mc.thePlayer.setPosition(mc.thePlayer.posX + x, mc.thePlayer.posY, mc.thePlayer.posZ + z);
+                    theTimer.reset();
+                }
+                break;
+            }
             case "vanilla":
                 mc.thePlayer.capabilities.isFlying = false;
                 mc.thePlayer.motionY = 0;
@@ -373,7 +391,7 @@ public class Fly extends Module {
                 if(mc.gameSettings.keyBindForward.isKeyDown()) {
                     MovementUtils.strafe(msSpeedValue.get());
                 }
-                if(msBoostDelay.get()!=0&&mushTimer.hasTimePassed(msBoostDelay.get()*300)){
+                if(msBoostDelay.get()!=0&& theTimer.hasTimePassed(msBoostDelay.get()*300)){
                     double x = mc.thePlayer.posX;
                     double y = mc.thePlayer.posY;
                     double z = mc.thePlayer.posZ;
@@ -384,7 +402,7 @@ public class Fly extends Module {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.15, z, false));
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
-                    mushTimer.reset();
+                    theTimer.reset();
                 }
                 mc.thePlayer.motionY = 0;
                 break;
