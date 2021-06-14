@@ -251,12 +251,10 @@ class HackerDetector : Module() {
             }
             data.vl=-vlValue.get()
 
-            //autoreport only redesky
-            val name=data.player.name
-            if(report.get()&&!hackers.contains(name)){
-                mc.thePlayer.sendChatMessage("/reportar $name")
+            if(report.get()){
+                val autoReportModule=LiquidBounce.moduleManager.getModule(AutoReport::class.java) as AutoReport
+                autoReportModule.doReport(data.player)
             }
-            hackers.add(name)
         }
     }
 
