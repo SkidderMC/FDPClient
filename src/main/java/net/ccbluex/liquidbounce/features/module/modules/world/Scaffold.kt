@@ -46,12 +46,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 // TODO: convert to kotlin
-@ModuleInfo(
-    name = "Scaffold",
-    description = "Automatically places blocks beneath your feet.",
-    category = ModuleCategory.WORLD,
-    keyBind = Keyboard.KEY_I
-)
+@ModuleInfo(name = "Scaffold", description = "Automatically places blocks beneath your feet.", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_I)
 class Scaffold : Module() {
     // Mode
     val modeValue = ListValue("Mode", arrayOf("Normal", "Rewinside", "Expand"), "Normal")
@@ -95,9 +90,8 @@ class Scaffold : Module() {
     private val stayAutoBlock = BoolValue("StayAutoBlock", false)
 
     // Basic stuff
-    @JvmField
     val sprintValue = BoolValue("Sprint", true)
-    private val swingValue = BoolValue("Swing", true)
+    private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val searchValue = BoolValue("Search", true)
     private val downValue = BoolValue("Down", true)
     private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Post")
@@ -525,7 +519,13 @@ class Scaffold : Module() {
                 mc.thePlayer.motionX *= modifier.toDouble()
                 mc.thePlayer.motionZ *= modifier.toDouble()
             }
-            if (swingValue.get()) mc.thePlayer.swingItem() else mc.netHandler.addToSendQueue(C0APacketAnimation())
+
+            val swing=swingValue.get()
+            if(swing.equals("packet",true)){
+                mc.netHandler.addToSendQueue(C0APacketAnimation())
+            }else if(swing.equals("normal",true)){
+                mc.thePlayer.swingItem()
+            }
         }
         if (!stayAutoBlock.get() && blockSlot >= 0 && silentAutoBlock.get()) mc.netHandler.addToSendQueue(
             C09PacketHeldItemChange(

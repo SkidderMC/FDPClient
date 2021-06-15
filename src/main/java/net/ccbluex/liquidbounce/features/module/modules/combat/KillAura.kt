@@ -84,7 +84,7 @@ class KillAura : Module() {
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Single")
 
     // Bypass
-    private val swingValue = BoolValue("Swing", true)
+    private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val keepSprintValue = BoolValue("KeepSprint", true)
 
     // AutoBlock
@@ -462,8 +462,13 @@ class KillAura : Module() {
 
         // Check is not hitable or check failrate
         if (!hitable || failHit) {
-            if (swing && (fakeSwingValue.get() || failHit))
-                mc.thePlayer.swingItem()
+            if (!swing.equals("none",true) && (fakeSwingValue.get() || failHit)) {
+                if(swing.equals("packet",true)){
+                    mc.netHandler.addToSendQueue(C0APacketAnimation())
+                }else{
+                    mc.thePlayer.swingItem()
+                }
+            }
         } else {
             // Attack
             if (!multi) {
@@ -596,8 +601,13 @@ class KillAura : Module() {
         markTimer.reset()
 
         // Attack target
-        if (swingValue.get())
+        val swing=swingValue.get()
+        if(swing.equals("packet",true)){
+            mc.netHandler.addToSendQueue(C0APacketAnimation())
+        }else if(swing.equals("normal",true)){
             mc.thePlayer.swingItem()
+        }
+
         mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
         if (keepSprintValue.get()) {
