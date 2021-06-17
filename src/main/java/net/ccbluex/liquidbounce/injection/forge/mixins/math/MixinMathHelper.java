@@ -62,7 +62,7 @@ public class MixinMathHelper {
                 callbackInfoReturnable.setReturnValue((float) Math.sin(value));
                 break;
             }
-            case "1.16.5": {
+            case "1.16": {
                 callbackInfoReturnable.setReturnValue(SIN_TABLE[(int)(value * 10430.378F) & 65535]);
                 break;
             }
@@ -102,7 +102,7 @@ public class MixinMathHelper {
                 callbackInfoReturnable.setReturnValue((float) Math.cos(value));
                 break;
             }
-            case "1.16.5": {
+            case "1.16": {
                 callbackInfoReturnable.setReturnValue(SIN_TABLE[(int)(value * 10430.378F + 16384.0F));
                 break;
             }
