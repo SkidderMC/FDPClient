@@ -110,7 +110,7 @@ public class MixinMathHelper {
         }
     }
     
-    public static <T> T make(Supplier<T> supplier)
+    private static <T> T make(Supplier<T> supplier)
     {
         return supplier.get();
     }
