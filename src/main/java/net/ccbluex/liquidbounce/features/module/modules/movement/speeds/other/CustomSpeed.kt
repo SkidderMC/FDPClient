@@ -26,15 +26,15 @@ class CustomSpeed : SpeedMode("Custom") {
             }
         } else {
             mc.thePlayer.motionZ = 0.0
-            mc.thePlayer.motionX = mc.thePlayer.motionZ
+            mc.thePlayer.motionX = 0.0
         }
     }
 
     override fun onEnable() {
-        val speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed? ?: return
+        val speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
         if (speed.resetXZValue.get()) {
             mc.thePlayer.motionZ = 0.0
-            mc.thePlayer.motionX = mc.thePlayer.motionZ
+            mc.thePlayer.motionX = 0.0
         }
         if (speed.resetYValue.get()) mc.thePlayer.motionY = 0.0
         super.onEnable()
