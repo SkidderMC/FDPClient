@@ -103,7 +103,7 @@ public class MixinMathHelper {
                 break;
             }
             case "1.16": {
-                callbackInfoReturnable.setReturnValue(SIN_TABLE[(int)(value * 10430.378F + 16384.0F));
+                callbackInfoReturnable.setReturnValue(SIN_TABLE[(int)(value * 10430.378F + 16384.0F) & 65535]);
                 break;
             }
         }
