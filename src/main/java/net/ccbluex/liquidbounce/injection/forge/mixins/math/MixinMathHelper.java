@@ -110,8 +110,9 @@ public class MixinMathHelper {
         }
     }
     
-    private static <T> T make(Supplier<T> supplier)
+    private static <T> T make(T object, Consumer<T> consumer)
     {
-        return supplier.get();
+        consumer.accept(object);
+        return object;
     }
 }
