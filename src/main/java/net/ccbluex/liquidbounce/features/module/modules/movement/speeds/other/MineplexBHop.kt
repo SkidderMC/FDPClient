@@ -13,6 +13,12 @@ class MineplexBHop : SpeedMode("MineplexBHop") {
     }
 
     override fun onUpdate() {
+        if(!MovementUtils.isMoving()){
+            mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionZ = 0.0
+            return
+        }
+
         if(jumped) {
             if(mc.thePlayer.onGround) {
                 jumped=false
@@ -25,7 +31,7 @@ class MineplexBHop : SpeedMode("MineplexBHop") {
                 else -> 1f
             })
             boost++
-        }else if(mc.thePlayer.onGround&&MovementUtils.isMoving()){
+        }else if(mc.thePlayer.onGround){
             boost=0
             mc.thePlayer.jump()
             jumped=true
