@@ -160,11 +160,11 @@ public class NoFall extends Module {
             }
             case "verus":{
                 if(mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3) {
-                    mc.thePlayer.motionY = 0.0
-                    mc.thePlayer.fallDistance = 0.0
-                    mc.thePlayer.motionX *= 0.6
-                    mc.thePlayer.motionZ *= 0.6
-                    NeedSpoof = true
+                    mc.thePlayer.motionY = 0.0;
+                    mc.thePlayer.fallDistance = 0.0;
+                    mc.thePlayer.motionX *= 0.6;
+                    mc.thePlayer.motionZ *= 0.6;
+                    NeedSpoof = true;
                 }
             }
         }
@@ -236,8 +236,8 @@ public class NoFall extends Module {
             }
             
             if (mode.equalsIgnoreCase("Verus") && NeedSpoof) {
-                packet.onGround = true
-                NeedSpoof = false
+                packet.onGround = true;
+                NeedSpoof = false;
             }
         }
     }
