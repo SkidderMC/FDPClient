@@ -450,24 +450,24 @@ class Scaffold : Module() {
                     jumpGround = mc.thePlayer.posY
                     mc.thePlayer.motionY = 0.419975
                 }
-                mc.thePlayer.motionX = 0;
-                mc.thePlayer.motionZ = -0.00001;
-                mc.thePlayer.jumpMovementFactor = 0.000f;
-                mc.timer.timerSpeed = 0.60f;
+                mc.thePlayer.motionX = 0
+                mc.thePlayer.motionZ = -0.00001
+                mc.thePlayer.jumpMovementFactor = 0.000
+                mc.timer.timerSpeed = 0.60
                 if (mc.thePlayer.posY > jumpGround + 0.8) {
                     fakeJump()
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
                     mc.thePlayer.motionY = 0.42
                     jumpGround = mc.thePlayer.posY
-                    mc.timer.timerSpeed = 0.78f
+                    mc.timer.timerSpeed = 0.78
                 }
             }
             "aac4jump" -> {
-                mc.timer.timerSpeed = 0.97f;
+                mc.timer.timerSpeed = 0.97
                 if (mc.thePlayer.onGround) {
                     fakeJump()
-                    mc.thePlayer.motionY = 0.387565;
-                    mc.timer.timerSpeed = 1.25f
+                    mc.thePlayer.motionY = 0.387565
+                    mc.timer.timerSpeed = 1.25
                 }
             }
         }
