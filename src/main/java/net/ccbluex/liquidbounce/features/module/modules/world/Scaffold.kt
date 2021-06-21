@@ -217,7 +217,8 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        mc.timer.timerSpeed = if (towerStatus) towerTimerValue.get() else timerValue.get()
+        if(towerStatus && towerModeValue.get().toLowerCase()!="aac3.3.9" && towerModeValue.get().toLowerCase()!="aac4.4constant" && towerModeValue.get().toLowerCase()!="aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
+        if(!towerStatus) mc.timer.timerSpeed = timerValue.get()
         if (towerStatus) {
             canSameY = false
             launchY = mc.thePlayer.posY.toInt()
