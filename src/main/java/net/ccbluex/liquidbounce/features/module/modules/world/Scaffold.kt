@@ -64,7 +64,9 @@ class Scaffold : Module() {
             "Packet",
             "Teleport",
             "AAC3.3.9",
-            "AAC3.6.4"
+            "AAC3.6.4",
+            "AAC4.4Constant",
+            "AAC4Jump"
         ), "None"
     )
     private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
@@ -440,6 +442,32 @@ class Scaffold : Module() {
                 } else if (mc.thePlayer.ticksExisted % 4 == 0) {
                     mc.thePlayer.motionY = -0.5
                     mc.thePlayer.setPosition(mc.thePlayer.posX + 0.035, mc.thePlayer.posY, mc.thePlayer.posZ)
+                }
+            }
+            "aac4.4constant" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    jumpGround = mc.thePlayer.posY
+                    mc.thePlayer.motionY = 0.419975
+                }
+                mc.thePlayer.motionX = 0;
+                mc.thePlayer.motionZ = -0.00001;
+                mc.thePlayer.jumpMovementFactor = 0.000f;
+                mc.timer.timerSpeed = 0.60f;
+                if (mc.thePlayer.posY > jumpGround + 0.8) {
+                    fakeJump()
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+                    mc.thePlayer.motionY = 0.42
+                    jumpGround = mc.thePlayer.posY
+                    mc.timer.timerSpeed = 0.78f
+                }
+            }
+            "aac4jump" -> {
+                mc.timer.timerSpeed = 0.97f;
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    mc.thePlayer.motionY = 0.387565;
+                    mc.timer.timerSpeed = 1.25f
                 }
             }
         }
