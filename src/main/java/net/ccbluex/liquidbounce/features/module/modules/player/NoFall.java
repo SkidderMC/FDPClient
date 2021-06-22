@@ -195,7 +195,7 @@ public class NoFall extends Module {
                 }
                 return;
             }
-            if (mc.thePlayer.fallDistance > 3 && aac4Fakelag) {
+            if (mc.thePlayer.fallDistance > 2.5 && aac4Fakelag) {
                 aac4PacketModify = true;
                 mc.thePlayer.fallDistance = 0;
             }
