@@ -35,8 +35,7 @@ class Criticals : Module() {
 
     val msTimer = MSTimer()
 
-    private var rsCritStat = 0
-    private var target = 0;
+    private var target = 0
 
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
@@ -145,14 +144,6 @@ class Criticals : Module() {
 
                     if(mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
                         packet.onGround=false
-                        when(rsCritStat){
-                            0 -> packet.y += 0.00000000000003
-                            1 -> packet.y += 0.00000000000001
-                            2 -> packet.y += 0.000000000000008
-                        }
-                        rsCritStat++
-                        if(rsCritStat == 3)
-                            rsCritStat = 0
                     }
                 }
             }

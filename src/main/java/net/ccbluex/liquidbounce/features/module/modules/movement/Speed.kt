@@ -66,7 +66,9 @@ class Speed : Module() {
         RedeSkyHop2(),
         RedeSkyHop3(),
         RedeSkyHopOld(),
-        RedeSkyGround()
+        RedeSkyGround(),
+        Matrix(),
+        MineplexBHop()
     )
 
     val modeValue: ListValue = object : ListValue("Mode", modes, "NCPBHop") {

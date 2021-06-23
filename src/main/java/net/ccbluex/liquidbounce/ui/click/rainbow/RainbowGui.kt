@@ -4,7 +4,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.click.ClickGui
 import net.ccbluex.liquidbounce.ui.click.utils.ClickGuiUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 
 // arrow 🢒
 class RainbowGui : ClickGui() {

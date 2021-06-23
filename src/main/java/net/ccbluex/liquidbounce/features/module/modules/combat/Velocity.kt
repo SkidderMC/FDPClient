@@ -6,16 +6,14 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.JumpEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -23,7 +21,11 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
+import net.minecraft.util.BlockPos
+import net.minecraft.util.MathHelper
 import net.minecraft.world.Explosion
+import kotlin.math.cos
+import kotlin.math.sin
 
 @ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
@@ -34,7 +36,7 @@ class Velocity : Module() {
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
     private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4",
-            "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch"), "Simple")
+            "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch", "Legit"), "Simple")
 
     // Reverse
     private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F)
@@ -48,6 +50,10 @@ class Velocity : Module() {
     private val phaseHeightValue = FloatValue("PhaseHeight",0.5F,0F,1F)
     private val phaseOnlyGround = BoolValue("PhaseOnlyGround",true)
 
+    // legit
+    private val legitStrafeValue = BoolValue("LegitStrafe",false)
+    private val legitFaceValue = BoolValue("LegitFace",true)
+
     /**
      * VALUES
      */
@@ -59,6 +65,9 @@ class Velocity : Module() {
 
     // AACPush
     private var jump = false
+
+    // Legit
+    private var pos:BlockPos?=null
 
     override val tag: String
         get() = modeValue.get()
@@ -152,14 +161,17 @@ class Velocity : Module() {
                 velocityInput = false
             }
 
-            "aaczero" -> if (mc.thePlayer.hurtTime > 0) {
-                if (!velocityInput || mc.thePlayer.onGround || mc.thePlayer.fallDistance > 2F)
-                    return
+            "aaczero" -> {
+                if (mc.thePlayer.hurtTime > 0) {
+                    if (!velocityInput || mc.thePlayer.onGround || mc.thePlayer.fallDistance > 2F)
+                        return
 
-                mc.thePlayer.addVelocity(0.0, -1.0, 0.0)
-                mc.thePlayer.onGround = true
-            } else
-                velocityInput = false
+                    mc.thePlayer.addVelocity(0.0, -1.0, 0.0)
+                    mc.thePlayer.onGround = true
+                } else {
+                    velocityInput = false
+                }
+            }
         }
     }
 
@@ -222,6 +234,10 @@ class Velocity : Module() {
                     velocityInput = true
                     event.cancelEvent()
                 }
+
+                "legit" -> {
+                    pos= BlockPos(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
+                }
             }
         }
 
@@ -239,6 +255,51 @@ class Velocity : Module() {
             LiquidBounce.eventManager.callEvent(packetEvent)
             if(!packetEvent.isCancelled) {
                 PacketUtils.handlePacket(velocityPacket)
+            }
+        }
+    }
+
+    @EventTarget
+    fun onStrafe(event: StrafeEvent) {
+        when (modeValue.get().toLowerCase()) {
+            "legit" -> {
+                if(pos==null||mc.thePlayer.hurtTime<=0)
+                    return
+
+                val rot=RotationUtils.getRotations(pos!!.x.toDouble(),pos!!.y.toDouble(),pos!!.z.toDouble())
+                if(legitFaceValue.get()){
+                    RotationUtils.setTargetRotation(rot)
+                }
+                val yaw=rot.yaw
+                if(legitStrafeValue.get()){
+                    val speed=MovementUtils.getSpeed()
+                    val yaw1=Math.toRadians(yaw.toDouble())
+                    mc.thePlayer.motionX = -sin(yaw1) * speed
+                    mc.thePlayer.motionZ = cos(yaw1) * speed
+                }else{
+                    var strafe = event.strafe
+                    var forward = event.forward
+                    val friction = event.friction
+
+                    var f = strafe * strafe + forward * forward
+
+                    if (f >= 1.0E-4F) {
+                        f = MathHelper.sqrt_float(f)
+
+                        if (f < 1.0F)
+                            f = 1.0F
+
+                        f = friction / f
+                        strafe *= f
+                        forward *= f
+
+                        val yawSin = MathHelper.sin((yaw * Math.PI / 180F).toFloat())
+                        val yawCos = MathHelper.cos((yaw * Math.PI / 180F).toFloat())
+
+                        mc.thePlayer.motionX += strafe * yawCos - forward * yawSin
+                        mc.thePlayer.motionZ += forward * yawCos + strafe * yawSin
+                    }
+                }
             }
         }
     }

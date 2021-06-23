@@ -62,7 +62,7 @@ public class Fly extends Module {
             "AAC3.3.12",
             "AAC3.3.12-Glide",
             "AAC3.3.13",
-
+            "AAC4.X-Glide",
             // CubeCraft
             "CubeCraft",
 
@@ -70,6 +70,7 @@ public class Fly extends Module {
             "Hypixel",
             "BoostHypixel",
             "FreeHypixel",
+            "HypixelNew",
 
             // Rewinside
             "Rewinside",
@@ -113,6 +114,7 @@ public class Fly extends Module {
     private final BoolValue hypixelBoost = new BoolValue("Hypixel-Boost", true);
     private final IntegerValue hypixelBoostDelay = new IntegerValue("Hypixel-BoostDelay", 1200, 0, 2000);
     private final FloatValue hypixelBoostTimer = new FloatValue("Hypixel-BoostTimer", 1F, 0F, 5F);
+    private final FloatValue hypixelSpeed = new FloatValue("HypixelNew-Speed",0.5F,0.3F,0.7F);
 
     private final FloatValue mineplexSpeedValue = new FloatValue("MineplexSpeed", 1F, 0.5F, 10F);
     private final IntegerValue neruxVaceTicks = new IntegerValue("NeruxVace-Ticks", 6, 0, 20);
@@ -148,6 +150,7 @@ public class Fly extends Module {
 
     private int aac3delay;
     private int aac3glideDelay;
+    private int aac4glideDelay;
 
     private boolean noFlag;
 
@@ -162,7 +165,7 @@ public class Fly extends Module {
     private boolean wasDead;
 
     private final TickTimer hypixelTimer = new TickTimer();
-    private final MSTimer mushTimer = new MSTimer();
+    private final MSTimer theTimer = new MSTimer();
 
     private int boostHypixelState = 1;
     private double moveSpeed, lastDistance;
@@ -192,7 +195,9 @@ public class Fly extends Module {
         }
 
         flyTimer.reset();
+        theTimer.reset();
         flyTick=0;
+        aac4glideDelay=0;
 
         noPacketModify = true;
 
@@ -255,11 +260,10 @@ public class Fly extends Module {
 
                 double fallDistance = 3.0125; //add 0.0125 to ensure we get the fall dmg
                 while (fallDistance > 0) {
-                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0624986421, mc.thePlayer.posZ, false));
-                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0625      , mc.thePlayer.posZ, false));
-                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0624986421, mc.thePlayer.posZ, false));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.41999998688698, mc.thePlayer.posZ, false));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.7531999805212, mc.thePlayer.posZ, false));
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000013579, mc.thePlayer.posZ, false));
-                    fallDistance -= 0.0624986421;
+                    fallDistance -= 0.7531999805212;
                 }
                 mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
 
@@ -271,7 +275,7 @@ public class Fly extends Module {
                 failedStart = false;
                 break;
             case "mushboost":{
-                mushTimer.reset();
+                theTimer.reset();
                 mc.thePlayer.setPosition(x,y+0.1,z);
                 mc.thePlayer.jump();
                 for(int i = 0; i < 3; ++i) {
@@ -349,6 +353,21 @@ public class Fly extends Module {
                 }
                 break;
             }
+            case "hypixelnew":{
+                mc.timer.timerSpeed=0.7F;
+                mc.thePlayer.motionX=0;
+                mc.thePlayer.motionY=0;
+                mc.thePlayer.motionZ=0;
+                if(theTimer.hasTimePassed(1000)){
+                    // hclip LMFAO
+                    double yaw=Math.toRadians(mc.thePlayer.rotationYaw);
+                    double x = -Math.sin(yaw) * hypixelSpeed.get();
+                    double z = Math.cos(yaw) * hypixelSpeed.get();
+                    mc.thePlayer.setPosition(mc.thePlayer.posX + x, mc.thePlayer.posY, mc.thePlayer.posZ + z);
+                    theTimer.reset();
+                }
+                break;
+            }
             case "vanilla":
                 mc.thePlayer.capabilities.isFlying = false;
                 mc.thePlayer.motionY = 0;
@@ -373,7 +392,7 @@ public class Fly extends Module {
                 if(mc.gameSettings.keyBindForward.isKeyDown()) {
                     MovementUtils.strafe(msSpeedValue.get());
                 }
-                if(msBoostDelay.get()!=0&&mushTimer.hasTimePassed(msBoostDelay.get()*300)){
+                if(msBoostDelay.get()!=0&& theTimer.hasTimePassed(msBoostDelay.get()*300)){
                     double x = mc.thePlayer.posX;
                     double y = mc.thePlayer.posY;
                     double z = mc.thePlayer.posZ;
@@ -384,7 +403,7 @@ public class Fly extends Module {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.15, z, false));
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
-                    mushTimer.reset();
+                    theTimer.reset();
                 }
                 mc.thePlayer.motionY = 0;
                 break;
@@ -609,6 +628,24 @@ public class Fly extends Module {
                 if(aac3glideDelay >= 12 && !mc.thePlayer.onGround) {
                     aac3glideDelay = 0;
                     mc.thePlayer.motionY = .015;
+                }
+                break;
+            case "aac4.x-glide":
+                if(!mc.thePlayer.onGround && !mc.thePlayer.isCollided) {
+                    mc.timer.timerSpeed = 0.6F;
+                    if(mc.thePlayer.motionY<0 && aac4glideDelay>0) {
+                        aac4glideDelay--;
+                        mc.timer.timerSpeed = 0.95F;
+                    }else{
+                        aac4glideDelay=0;
+                        mc.thePlayer.motionY = mc.thePlayer.motionY/0.9800000190734863D;
+                        mc.thePlayer.motionY += 0.03D;
+                        mc.thePlayer.motionY *= 0.9800000190734863D;
+                        mc.thePlayer.jumpMovementFactor = 0.03625f;
+                    }
+                }else {
+                    mc.timer.timerSpeed = 1.0F;
+                    aac4glideDelay=2;
                 }
                 break;
             case "aac3.3.13":

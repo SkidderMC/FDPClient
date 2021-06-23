@@ -15,12 +15,20 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import java.util.function.Consumer;
 
 @Mixin(MathHelper.class)
 @SideOnly(Side.CLIENT)
 public class MixinMathHelper {
-    private static BetterFPS betterFPS=null;
-
+    private static BetterFPS betterFPS = null;
+    private static final float[] SIN_TABLE = make(new float[65536], (e) ->
+    {
+        for (int i = 0; i < e.length; ++i)
+        {
+            e[i] = (float) Math.sin(i * Math.PI * 2.0 / 65536.0);
+        }
+    });
+    
     @Inject(method = "sin", at = @At("HEAD"), cancellable = true)
     private static void sin(float value, CallbackInfoReturnable<Float> callbackInfoReturnable){
         if(LiquidBounce.INSTANCE.isStarting())
@@ -49,6 +57,14 @@ public class MixinMathHelper {
             }
             case "rivens": {
                 callbackInfoReturnable.setReturnValue(core.getRivens().sin(value));
+                break;
+            }
+            case "java": {
+                callbackInfoReturnable.setReturnValue((float) Math.sin(value));
+                break;
+            }
+            case "1.16": {
+                callbackInfoReturnable.setReturnValue(SIN_TABLE[(int)(value * 10430.378F) & 65535]);
                 break;
             }
         }
@@ -83,6 +99,20 @@ public class MixinMathHelper {
                 callbackInfoReturnable.setReturnValue(core.getRivens().cos(value));
                 break;
             }
+            case "java": {
+                callbackInfoReturnable.setReturnValue((float) Math.cos(value));
+                break;
+            }
+            case "1.16": {
+                callbackInfoReturnable.setReturnValue(SIN_TABLE[(int)(value * 10430.378F + 16384.0F) & 65535]);
+                break;
+            }
         }
+    }
+    
+    private static <T> T make(T object, Consumer<T> consumer)
+    {
+        consumer.accept(object);
+        return object;
     }
 }

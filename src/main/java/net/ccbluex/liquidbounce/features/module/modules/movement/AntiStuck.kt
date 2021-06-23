@@ -20,6 +20,7 @@ class AntiStuck : Module() {
     private val flagValue= IntegerValue("Flag",5,1,10)
 
     private val timer=MSTimer()
+    private val reduceTimer=MSTimer()
     private var flagTime=0
     private var stuck=false
 
@@ -27,6 +28,7 @@ class AntiStuck : Module() {
         stuck=false
         flagTime=0
         timer.reset()
+        reduceTimer.reset()
     }
 
     override fun onEnable() {
@@ -49,17 +51,19 @@ class AntiStuck : Module() {
                 flagTime=0
                 freeze.state=false
                 timer.reset()
+                reduceTimer.reset()
             }
         }else{
             if(flagTime>flagValue.get()){
                 timer.reset()
+                reduceTimer.reset()
                 flagTime=0
                 stuck=true
                 LiquidBounce.hud.addNotification(Notification(name,"Trying to unstuck you", NotifyType.INFO,1500))
             }
-            if(timer.hasTimePassed(1000)){
-                flagTime=0
-                timer.reset()
+            if(timer.hasTimePassed(1500) && reduceTimer.hasTimePassed(500) && flagTime>0){
+                flagTime -= 1;
+                reduceTimer.reset()
             }
         }
     }
@@ -70,6 +74,10 @@ class AntiStuck : Module() {
 
         if(packet is S08PacketPlayerPosLook){
             flagTime++
+            reduceTimer.reset()
+            if(!stuck) {
+                timer.reset()
+            }
         }
         if(stuck&&packet is C03PacketPlayer){
             event.cancelEvent()

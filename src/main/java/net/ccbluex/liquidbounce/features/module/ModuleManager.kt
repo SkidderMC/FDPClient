@@ -146,7 +146,9 @@ class ModuleManager : Listenable {
             ServerCrasher::class.java,
             EnchantEffect::class.java,
             AntiAim::class.java,
-            NewClickGui::class.java
+            NewClickGui::class.java,
+            SuperKnockback::class.java,
+            AutoReport::class.java
         )
 
         registerModule(Fucker)
