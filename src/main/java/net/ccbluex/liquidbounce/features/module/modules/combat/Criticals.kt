@@ -26,7 +26,7 @@ import net.minecraft.network.play.server.S0BPacketAnimation
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "Jump", "LowJump"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "Jump", "LowJump"), "packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
@@ -107,6 +107,17 @@ class Criticals : Module() {
                     mc.thePlayer.motionY = 0.1
                     mc.thePlayer.fallDistance = 0.1f
                     mc.thePlayer.onGround = false
+                }
+                
+                "fakecollide" -> {
+                    if(lookValue.get()){
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.20, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.121600000013, z, yaw, pitch, false))
+                    }else{
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.20, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.121600000013, z, false))
+                    }
+                    //mc.thePlayer.setPosition(x, y + 0.12160000001304075, z)
                 }
 
                 "tphop" -> {
