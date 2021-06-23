@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 @ModuleInfo(name = "NoWeb", description = "Prevents you from getting slowed down in webs.", category = ModuleCategory.MOVEMENT)
 class NoWeb : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("None", "AAC", "LAAC", "Rewi"), "None")
+    private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside", "AAC4", "OldMemetrix"), "None")
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -24,7 +24,7 @@ class NoWeb : Module() {
 
         when (modeValue.get().toLowerCase()) {
             "none" -> mc.thePlayer.isInWeb = false
-            "aac" -> {
+            "oldaac" -> {
                 mc.thePlayer.jumpMovementFactor = 0.59f
 
                 if (!mc.gameSettings.keyBindSneak.isKeyDown)
@@ -39,7 +39,26 @@ class NoWeb : Module() {
                 if (mc.thePlayer.onGround)
                     mc.thePlayer.jump()
             }
-            "rewi" -> {
+            "aac4" -> {
+                mc.timer.timerSpeed = 0.99F
+                mc.thePlayer.jumpMovementFactor = 0.02958f
+                mc.thePlayer.motionY -= 0.00775
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                    mc.thePlayer.motionY = 0.4050
+                    mc.timer.timerSpeed = 1.35F
+                }
+            }
+            "oldmemetrix" -> {
+                mc.thePlayer.jumpMovementFactor = 0.124133333f
+                mc.thePlayer.motionY = -0.0125
+                if (mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY = -0.1625
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                    mc.thePlayer.motionY = 0.2425
+                }
+            }
+            "rewinside" -> {
                 mc.thePlayer.jumpMovementFactor = 0.42f
 
                 if (mc.thePlayer.onGround)
