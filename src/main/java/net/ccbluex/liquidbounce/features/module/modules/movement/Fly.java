@@ -62,7 +62,7 @@ public class Fly extends Module {
             "AAC3.3.12",
             "AAC3.3.12-Glide",
             "AAC3.3.13",
-            "AAC4.X-Glide"
+            "AAC4.X-Glide",
             // CubeCraft
             "CubeCraft",
 
