@@ -22,11 +22,12 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S0BPacketAnimation
+import net.minecraft.stats.StatList
 
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "Jump", "LowJump"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump"), "packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
@@ -106,6 +107,27 @@ class Criticals : Module() {
                 "hop" -> {
                     mc.thePlayer.motionY = 0.1
                     mc.thePlayer.fallDistance = 0.1f
+                    mc.thePlayer.onGround = false
+                }
+                
+                "fakecollide" -> {
+                    mc.thePlayer.triggerAchievement(StatList.jumpStat)
+                    mc.thePlayer.motionX *= 0.94
+                    mc.thePlayer.motionZ *= 0.94
+                    if(lookValue.get()){
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.20, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.121600000013, z, yaw, pitch, false))
+                    }else{
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.20, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.121600000013, z, false))
+                    }
+                    //mc.thePlayer.setPosition(x, y + 0.12160000001304075, z)
+                }
+                
+                "tpcollide" -> {
+                    mc.thePlayer.triggerAchievement(StatList.jumpStat)
+                    mc.thePlayer.motionY = 0.0
+                    mc.thePlayer.setPosition(x, y + 0.2, z)
                     mc.thePlayer.onGround = false
                 }
 

@@ -64,7 +64,9 @@ class Scaffold : Module() {
             "Packet",
             "Teleport",
             "AAC3.3.9",
-            "AAC3.6.4"
+            "AAC3.6.4",
+            "AAC4.4Constant",
+            "AAC4Jump"
         ), "None"
     )
     private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
@@ -215,7 +217,8 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        mc.timer.timerSpeed = if (towerStatus) towerTimerValue.get() else timerValue.get()
+        if(towerStatus && towerModeValue.get().toLowerCase()!="aac3.3.9" && towerModeValue.get().toLowerCase()!="aac4.4constant" && towerModeValue.get().toLowerCase()!="aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
+        if(!towerStatus) mc.timer.timerSpeed = timerValue.get()
         if (towerStatus) {
             canSameY = false
             launchY = mc.thePlayer.posY.toInt()
@@ -440,6 +443,32 @@ class Scaffold : Module() {
                 } else if (mc.thePlayer.ticksExisted % 4 == 0) {
                     mc.thePlayer.motionY = -0.5
                     mc.thePlayer.setPosition(mc.thePlayer.posX + 0.035, mc.thePlayer.posY, mc.thePlayer.posZ)
+                }
+            }
+            "aac4.4constant" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    jumpGround = mc.thePlayer.posY
+                    mc.thePlayer.motionY = 0.42
+                }
+                mc.thePlayer.motionX = 0.0
+                mc.thePlayer.motionZ = -0.00000001
+                mc.thePlayer.jumpMovementFactor = 0.000F
+                mc.timer.timerSpeed = 0.60f
+                if (mc.thePlayer.posY > jumpGround + 0.99) {
+                    fakeJump()
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY-0.001335979112146, mc.thePlayer.posZ)
+                    mc.thePlayer.motionY = 0.42
+                    jumpGround = mc.thePlayer.posY
+                    mc.timer.timerSpeed = 0.75f
+                }
+            }
+            "aac4jump" -> {
+                mc.timer.timerSpeed = 0.97f
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    mc.thePlayer.motionY = 0.387565
+                    mc.timer.timerSpeed = 1.05f
                 }
             }
         }

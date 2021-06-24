@@ -62,7 +62,7 @@ public class Fly extends Module {
             "AAC3.3.12",
             "AAC3.3.12-Glide",
             "AAC3.3.13",
-
+            "AAC4.X-Glide",
             // CubeCraft
             "CubeCraft",
 
@@ -150,6 +150,7 @@ public class Fly extends Module {
 
     private int aac3delay;
     private int aac3glideDelay;
+    private int aac4glideDelay;
 
     private boolean noFlag;
 
@@ -196,6 +197,7 @@ public class Fly extends Module {
         flyTimer.reset();
         theTimer.reset();
         flyTick=0;
+        aac4glideDelay=0;
 
         noPacketModify = true;
 
@@ -626,6 +628,24 @@ public class Fly extends Module {
                 if(aac3glideDelay >= 12 && !mc.thePlayer.onGround) {
                     aac3glideDelay = 0;
                     mc.thePlayer.motionY = .015;
+                }
+                break;
+            case "aac4.x-glide":
+                if(!mc.thePlayer.onGround && !mc.thePlayer.isCollided) {
+                    mc.timer.timerSpeed = 0.6F;
+                    if(mc.thePlayer.motionY<0 && aac4glideDelay>0) {
+                        aac4glideDelay--;
+                        mc.timer.timerSpeed = 0.95F;
+                    }else{
+                        aac4glideDelay=0;
+                        mc.thePlayer.motionY = mc.thePlayer.motionY/0.9800000190734863D;
+                        mc.thePlayer.motionY += 0.03D;
+                        mc.thePlayer.motionY *= 0.9800000190734863D;
+                        mc.thePlayer.jumpMovementFactor = 0.03625f;
+                    }
+                }else {
+                    mc.timer.timerSpeed = 1.0F;
+                    aac4glideDelay=2;
                 }
                 break;
             case "aac3.3.13":
