@@ -38,8 +38,8 @@ class Criticals : Module() {
     val msTimer = MSTimer()
 
     private var target = 0
-    private MotionX = 0.00
-    private MotionZ = 0.00
+    private MotionX = 0.0000000000001
+    private MotionZ = 0.0000000000001
     
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
