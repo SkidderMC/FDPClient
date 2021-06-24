@@ -20,7 +20,7 @@ import net.minecraft.potion.Potion
 @ModuleInfo(name = "Regen", description = "Regenerates your health much faster.", category = ModuleCategory.PLAYER)
 class Regen : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Spartan"), "Vanilla")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan"), "Vanilla")
     private val healthValue = IntegerValue("Health", 18, 0, 20)
     private val foodValue = IntegerValue("Food", 18, 0, 20)
     private val speedValue = IntegerValue("Speed", 100, 1, 100)
@@ -46,8 +46,23 @@ class Regen : Module() {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                     }
                 }
+                
+                "newspartan" -> {
+                    if(mc.thePlayer.ticksExisted%4==0){
+                        mc.timer.timerSpeed = 0.95F
+                        resetTimer = true
+                        repeat(6) {
+                            mc.netHandler.addToSendQueue(C03PacketPlayer(true))
+                        }
+                    }else{
+                        mc.netHandler.addToSendQueue(C03PacketPlayer(false))
+                        mc.netHandler.addToSendQueue(C03PacketPlayer(true))
+                        mc.timer.timerSpeed = 1.1F
+                        resetTimer = true
+                    }
+                }
 
-                "spartan" -> {
+                "oldspartan" -> {
                     if (MovementUtils.isMoving() || !mc.thePlayer.onGround)
                         return
 
