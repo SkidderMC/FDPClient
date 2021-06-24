@@ -39,7 +39,7 @@ object LiquidBounce {
     const val CLIENT_NAME = "FDPClient"
     const val CLIENT_VERSION = "v1.2.3"
     const val IN_DEV = false
-    const val CLIENT_CREATOR = "Liulihaocai"
+    const val CLIENT_CREATOR = "CCBlueX & Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
 
     var isStarting = true
