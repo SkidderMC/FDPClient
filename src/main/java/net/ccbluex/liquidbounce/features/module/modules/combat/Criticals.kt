@@ -38,8 +38,8 @@ class Criticals : Module() {
     val msTimer = MSTimer()
 
     private var target = 0
-    private var MotionX = (0.00).toDouble()
-    private var MotionZ = (0.00).toDouble()
+    private Double MotionX
+    private Double MotionZ
     
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
@@ -66,8 +66,8 @@ class Criticals : Module() {
                 MotionX = mc.thePlayer.motionX
                 MotionZ = mc.thePlayer.motionZ
             }else{
-                MotionX = 0
-                MotionZ = 0
+                MotionX = 0.00
+                MotionZ = 0.00
             }
             when (modeValue.get().toLowerCase()) {
                 "packet" -> {
