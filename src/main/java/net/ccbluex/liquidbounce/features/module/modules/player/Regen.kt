@@ -20,7 +20,7 @@ import net.minecraft.potion.Potion
 @ModuleInfo(name = "Regen", description = "Regenerates your health much faster.", category = ModuleCategory.PLAYER)
 class Regen : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan"), "Vanilla")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan", "AAC4NoFire"), "Vanilla")
     private val healthValue = IntegerValue("Health", 18, 0, 20)
     private val foodValue = IntegerValue("Food", 18, 0, 20)
     private val speedValue = IntegerValue("Speed", 100, 1, 100)
@@ -46,19 +46,23 @@ class Regen : Module() {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                     }
                 }
-                
+                "aac4nofire" -> {
+                    if(mc.thePlayer.burning && mc.thePlayer.ticksExisted%5==0) {
+                        repeat(25) {
+                            mc.netHandler.addToSendQueue(C03PacketPlayer(true))
+                        }
+                    }
+                }
                 "newspartan" -> {
                     if(mc.thePlayer.ticksExisted%4==0){
                         mc.timer.timerSpeed = 0.95F
                         resetTimer = true
-                        repeat(6) {
+                        repeat(8) {
                             mc.netHandler.addToSendQueue(C03PacketPlayer(true))
                         }
                     }else{
                         mc.netHandler.addToSendQueue(C03PacketPlayer(false))
                         mc.netHandler.addToSendQueue(C03PacketPlayer(true))
-                        mc.timer.timerSpeed = 1.1F
-                        resetTimer = true
                     }
                 }
 
@@ -76,4 +80,8 @@ class Regen : Module() {
             }
         }
     }
+    
+    override val tag: String
+        get() = modeValue.get()
+        
 }
