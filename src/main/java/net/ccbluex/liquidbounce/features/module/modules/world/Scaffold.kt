@@ -491,9 +491,12 @@ class Scaffold : Module() {
             mc.thePlayer.posZ
         ) else BlockPos(
             mc.thePlayer.posX, mc.thePlayer.posY - 0.6, mc.thePlayer.posZ
-        ).down() else if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) BlockPos(
+        ).down() else if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5 && ((!canSameY && sameYValue.get()) || !sameYValue.get())) BlockPos(
             mc.thePlayer
-        ) else BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ).down()
+        ) else if(canSameY && sameYValue.get() && launchY<=mc.thePlayer.posY) BlockPos(
+            mc.thePlayer.posX, launchY-1.0, mc.thePlayer.posZ) else BlockPos(
+            mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ
+        ).down()
         if (!expand && (!isReplaceable(blockPosition) || search(blockPosition, !shouldGoDown))) return
         if (expand) {
             for (i in 0 until expandLengthValue.get()) {
