@@ -48,7 +48,7 @@ class Regen : Module() {
                 }
                 
                 "aac4nofire" -> {
-                    if(mc.thePlayer.burning && mc.thePlayer.ticksExisted%10==0) {
+                    if(mc.thePlayer.isBurning && mc.thePlayer.ticksExisted%10==0) {
                         repeat(35) {
                             mc.netHandler.addToSendQueue(C03PacketPlayer(true))
                         }
