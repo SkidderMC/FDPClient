@@ -46,6 +46,7 @@ class Regen : Module() {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                     }
                 }
+                
                 "aac4nofire" -> {
                     if(mc.thePlayer.burning && mc.thePlayer.ticksExisted%5==0) {
                         repeat(25) {
@@ -53,6 +54,7 @@ class Regen : Module() {
                         }
                     }
                 }
+                
                 "newspartan" -> {
                     if(mc.thePlayer.ticksExisted%4==0){
                         mc.timer.timerSpeed = 0.95F
@@ -80,8 +82,4 @@ class Regen : Module() {
             }
         }
     }
-    
-    override val tag: String
-        get() = modeValue.get()
-        
 }
