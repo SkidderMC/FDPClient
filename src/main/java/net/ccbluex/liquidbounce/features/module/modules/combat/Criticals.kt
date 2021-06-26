@@ -136,7 +136,8 @@ class Criticals : Module() {
                 
                 "tpcollide" -> {
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
-                    mc.thePlayer.motionY = 0.0
+                    mc.thePlayer.isAirBorne = true
+                    mc.thePlayer.motionY = -0.0784
                     mc.thePlayer.setPosition(x, y + 0.2, z)
                     mc.thePlayer.onGround = false
                 }
