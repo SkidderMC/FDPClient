@@ -226,11 +226,11 @@ class Scaffold : Module() {
             canSameY = true
         } else if (autoJumpValue.get()) {
             canSameY = true
-            if (mc.thePlayer.onGround) {
+            if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown) {
                 mc.thePlayer.jump()
                 launchY = mc.thePlayer.posY.toInt()
             }
-        }
+        }else canSameY = false
         mc.thePlayer.isSprinting = sprintValue.get()
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && blocksAmount > 1
         if (shouldGoDown) mc.gameSettings.keyBindSneak.pressed = false
@@ -330,7 +330,7 @@ class Scaffold : Module() {
                         towerStatus = true
                     } else towerStatus = false
                 }
-                "NoMove" -> {
+                "nomove" -> {
                     if(!(mc.gameSettings.keyBindLeft.isKeyDown
                     || mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindForward.isKeyDown
                     || mc.gameSettings.keyBindBack.isKeyDown) && mc.gameSettings.keyBindJump.isKeyDown) {
