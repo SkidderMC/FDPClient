@@ -230,7 +230,10 @@ class Scaffold : Module() {
                 mc.thePlayer.jump()
                 launchY = mc.thePlayer.posY.toInt()
             }
-        }else canSameY = false
+        }else {
+            canSameY = false
+            launchY = mc.thePlayer.posY.toInt()
+        }
         mc.thePlayer.isSprinting = sprintValue.get()
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && blocksAmount > 1
         if (shouldGoDown) mc.gameSettings.keyBindSneak.pressed = false
