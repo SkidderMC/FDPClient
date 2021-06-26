@@ -135,7 +135,7 @@ class Scaffold : Module() {
 
     // Game
     private val timerValue = FloatValue("Timer", 1f, 0.1f, 5f)
-    private val moveTower = BoolValue("MoveTower", false)
+    private val towerActiveValue = ListValue("TowerActive", arrayOf("Always", "PressSpace", "NoMove"), "PressSpace")
     private val towerTimerValue = FloatValue("TowerTimer", 1f, 0.1f, 5f)
     private val speedModifierValue = FloatValue("SpeedModifier", 1f, 0f, 2f)
 
@@ -309,25 +309,15 @@ class Scaffold : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         val eventState = event.eventState
-
+        towerStatus = false;
         // Tower
-        towerStatus =
-            if (!(!mc.gameSettings.keyBindJump.isKeyDown || (mc.gameSettings.keyBindLeft.isKeyDown
-                        || mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindForward.isKeyDown
-                        || mc.gameSettings.keyBindBack.isKeyDown) && !moveTower.get())
-                && (!stopWhenBlockAbove.get() || getBlock(
-                    BlockPos(
+        towerStatus = (!stopWhenBlockAbove.get() || getBlock(BlockPos(
                         mc.thePlayer.posX,
                         mc.thePlayer.posY + 2, mc.thePlayer.posZ
-                    )
-                ) is BlockAir)
-            ) {
-                move()
-                true
-            } else {
-                false
-            }
-
+                      )) is BlockAir)
+        if(towerStatus) {
+            //futher checks
+        }
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepRotationValue.get() && lockRotation != null && silentRotationValue.get()) {
             val limitedRotation =
