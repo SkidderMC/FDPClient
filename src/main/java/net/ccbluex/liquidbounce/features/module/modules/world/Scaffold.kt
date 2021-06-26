@@ -319,13 +319,27 @@ class Scaffold : Module() {
             //further checks
             when(towerActiveValue.get().toLowerCase()) {
                 "off" -> towerStatus = false
-                "always" -> if(mc.gameSettings.keyBindLeft.isKeyDown
-                        || mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindForward.isKeyDown
-                        || mc.gameSettings.keyBindBack.isKeyDown) {
-                    towerStatus = true
-                }else towerStatus = false
+                "always" -> { 
+                    if(mc.gameSettings.keyBindLeft.isKeyDown
+                    || mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindForward.isKeyDown
+                    || mc.gameSettings.keyBindBack.isKeyDown) {
+                        towerStatus = true
+                    } else towerStatus = false
+                }
+                "pressspace" -> { if(mc.gameSettings.keyBindJump.isKeyDown) {
+                        towerStatus = true
+                    } else towerStatus = false
+                }
+                "NoMove" -> {
+                    if(!(mc.gameSettings.keyBindLeft.isKeyDown
+                    || mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindForward.isKeyDown
+                    || mc.gameSettings.keyBindBack.isKeyDown) && mc.gameSettings.keyBindJump.isKeyDown) {
+                        towerStatus = true
+                    } else towerStatus = false
+                }
             }
         }
+        if(towerStatus) move()
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepRotationValue.get() && lockRotation != null && silentRotationValue.get()) {
             val limitedRotation =
