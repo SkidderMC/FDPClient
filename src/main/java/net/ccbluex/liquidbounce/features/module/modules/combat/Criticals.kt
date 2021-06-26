@@ -38,8 +38,6 @@ class Criticals : Module() {
     val msTimer = MSTimer()
 
     private var target = 0
-    private var MotionX = mc.thePlayer.motionX
-    private var MotionZ = mc.thePlayer.motionZ
     
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
@@ -62,6 +60,8 @@ class Criticals : Module() {
             val z = mc.thePlayer.posZ
             val yaw = mc.thePlayer.rotationYaw
             val pitch = mc.thePlayer.rotationPitch
+            var MotionX = mc.thePlayer.motionX
+            var MotionZ = mc.thePlayer.motionZ
             if(MovementUtils.isMoving()) {
                 MotionX = mc.thePlayer.motionX
                 MotionZ = mc.thePlayer.motionZ
