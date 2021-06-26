@@ -121,8 +121,6 @@ class Criticals : Module() {
                 
                 "fakecollide" -> {
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
-                    mc.thePlayer.motionX *= 0.94
-                    mc.thePlayer.motionZ *= 0.94
                     if(lookValue.get()){
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x+(MotionX/3), y + 0.20, z+(MotionZ/3), yaw, pitch, false))
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x+(MotionX/1.5), y + 0.121600000013, z+(MotionZ/1.5), yaw, pitch, false))
@@ -137,9 +135,8 @@ class Criticals : Module() {
                 "tpcollide" -> {
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
                     mc.thePlayer.isAirBorne = true
-                    mc.thePlayer.motionY = -0.0784
+                    mc.thePlayer.motionY = 0.0
                     mc.thePlayer.setPosition(x, y + 0.2, z)
-                    mc.thePlayer.onGround = false
                 }
 
                 "tphop" -> {
