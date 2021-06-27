@@ -218,6 +218,9 @@ class Scaffold : Module() {
             launchY = mc.thePlayer.posY.toInt()
         } else if (sameYValue.get()) {
             canSameY = true
+            if(autoJumpValue.get() && !mc.gameSettings.keyBindJump.isKeyDown && mc.thePlayer.onGround) {
+                mc.thePlayer.jump()
+            }
         } else if (autoJumpValue.get()) {
             canSameY = true
             if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown) {
