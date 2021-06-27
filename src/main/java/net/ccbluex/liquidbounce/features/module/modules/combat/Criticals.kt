@@ -23,6 +23,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S0BPacketAnimation
 import net.minecraft.stats.StatList
+import net.ccbluex.liquidbounce.utils.MovementUtils
 
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
@@ -37,7 +38,7 @@ class Criticals : Module() {
     val msTimer = MSTimer()
 
     private var target = 0
-
+    
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
             mc.thePlayer.jump()
@@ -59,7 +60,15 @@ class Criticals : Module() {
             val z = mc.thePlayer.posZ
             val yaw = mc.thePlayer.rotationYaw
             val pitch = mc.thePlayer.rotationPitch
-
+            var MotionX = mc.thePlayer.motionX
+            var MotionZ = mc.thePlayer.motionZ
+            if(MovementUtils.isMoving()) {
+                MotionX = mc.thePlayer.motionX
+                MotionZ = mc.thePlayer.motionZ
+            }else{
+                MotionX = 0.00
+                MotionZ = 0.00
+            }
             when (modeValue.get().toLowerCase()) {
                 "packet" -> {
                     if(lookValue.get()){
@@ -112,23 +121,22 @@ class Criticals : Module() {
                 
                 "fakecollide" -> {
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
-                    mc.thePlayer.motionX *= 0.94
-                    mc.thePlayer.motionZ *= 0.94
                     if(lookValue.get()){
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.20, z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.121600000013, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x+(MotionX/3), y + 0.20, z+(MotionZ/3), yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x+(MotionX/1.5), y + 0.121600000013, z+(MotionZ/1.5), yaw, pitch, false))
                     }else{
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.20, z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.121600000013, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x+(MotionX/3), y + 0.20, z+(MotionZ/3), false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x+(MotionX/1.5), y + 0.121600000013, z+(MotionZ/1.5), false))
                     }
                     //mc.thePlayer.setPosition(x, y + 0.12160000001304075, z)
+                    mc.thePlayer.onCriticalHit(entity)
                 }
                 
                 "tpcollide" -> {
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
+                    mc.thePlayer.isAirBorne = true
                     mc.thePlayer.motionY = 0.0
                     mc.thePlayer.setPosition(x, y + 0.2, z)
-                    mc.thePlayer.onGround = false
                 }
 
                 "tphop" -> {
