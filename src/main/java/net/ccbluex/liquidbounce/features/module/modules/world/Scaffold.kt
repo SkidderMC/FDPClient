@@ -87,9 +87,7 @@ class Scaffold : Module() {
     private val placeableDelay = BoolValue("PlaceableDelay", false)
 
     // AutoBlock
-    private val autoBlockValue = BoolValue("AutoBlock", true)
-    private val silentAutoBlock = BoolValue("SilentAutoBlock", true)
-    private val stayAutoBlock = BoolValue("StayAutoBlock", false)
+    private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "LiteSpoof")
 
     // Basic stuff
     val sprintValue = BoolValue("Sprint", true)
@@ -99,17 +97,15 @@ class Scaffold : Module() {
     private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Post")
 
     // Eagle
-    private val eagleValue = BoolValue("Eagle", false)
-    private val eagleSilentValue = BoolValue("EagleSilent", false)
+    private val eagleValue = ListValue("Eagle", arrayOf("Slient", "Normal", "OFF"), "OFF")
     private val blocksToEagleValue = IntegerValue("BlocksToEagle", 0, 0, 10)
-
+    
     // Expand
     private val expandLengthValue = IntegerValue("ExpandLength", 5, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "AACSmart"), "AAC")
     private val aacPitchValue = IntegerValue("AACPitch", 90, -90, 90)
-    private val aacSmartPitchValue = BoolValue("AACSmartPitch", true)
     private val aacYawValue = IntegerValue("AACYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true)
     private val minRotationSpeedValue:IntegerValue = object :IntegerValue("MinRotationSpeed", 180, 0, 180) {
@@ -128,8 +124,8 @@ class Scaffold : Module() {
     private val keepRotationValue = BoolValue("KeepRotation", false)
 
     // Zitter
-    private val zitterValue = BoolValue("Zitter", false)
-    private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth"), "Teleport")
+    //private val zitterValue = BoolValue("Zitter", false)
+    private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
     private val zitterSpeed = FloatValue("ZitterSpeed", 0.13f, 0.1f, 0.3f)
     private val zitterStrength = FloatValue("ZitterStrength", 0.072f, 0.05f, 0.2f)
 
@@ -247,7 +243,7 @@ class Scaffold : Module() {
             }
 
             // Smooth Zitter
-            if (zitterValue.get() && zitterModeValue.get().equals("smooth", ignoreCase = true)) {
+            if (zitterModeValue.get().equals("smooth", ignoreCase = true)) {
                 if (!GameSettings.isKeyDown(mc.gameSettings.keyBindRight)) mc.gameSettings.keyBindRight.pressed = false
                 if (!GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)) mc.gameSettings.keyBindLeft.pressed = false
                 if (zitterTimer.hasTimePassed(100)) {
@@ -264,7 +260,7 @@ class Scaffold : Module() {
             }
 
             // Eagle
-            if (eagleValue.get() && !shouldGoDown) {
+            if (!eagleValue.get().equals("off", ignoreCase = true) && !shouldGoDown) {
                 if (placedBlocksWithoutEagle >= blocksToEagleValue.get()) {
                     val shouldEagle = mc.theWorld.getBlockState(
                         BlockPos(
@@ -272,7 +268,7 @@ class Scaffold : Module() {
                             mc.thePlayer.posY - 1.0, mc.thePlayer.posZ
                         )
                     ).block === Blocks.air
-                    if (eagleSilentValue.get()) {
+                    if (eagleValue.get().equals("slient", ignoreCase = true)) {
                         if (eagleSneaking != shouldEagle) {
                             mc.netHandler.addToSendQueue(
                                 C0BPacketEntityAction(
@@ -288,7 +284,7 @@ class Scaffold : Module() {
             }
 
             // Zitter
-            if (zitterValue.get() && zitterModeValue.get().equals("teleport", ignoreCase = true)) {
+            if (zitterModeValue.get().equals("teleport", ignoreCase = true)) {
                 MovementUtils.strafe(zitterSpeed.get())
                 val yaw = Math.toRadians(mc.thePlayer.rotationYaw + if (zitterDirection) 90.0 else -90.0)
                 mc.thePlayer.motionX -= sin(yaw) * zitterStrength.get()
@@ -490,7 +486,7 @@ class Scaffold : Module() {
     }
 
     private fun update() {
-        if (if (autoBlockValue.get()) InventoryUtils.findAutoBlockBlock() == -1 else mc.thePlayer.heldItem == null ||
+        if (if (!autoBlockValue.get().equals("off", ignoreCase = true)) InventoryUtils.findAutoBlockBlock() == -1 else mc.thePlayer.heldItem == null ||
                     !(mc.thePlayer.heldItem.item is ItemBlock && !InventoryUtils.isBlockListBlock(mc.thePlayer.heldItem.item as ItemBlock))
         ) return
         findBlock(modeValue.get().equals("expand", ignoreCase = true))
@@ -544,10 +540,10 @@ class Scaffold : Module() {
                 mc.thePlayer.heldItem.item as ItemBlock
             ))
         ) {
-            if (!autoBlockValue.get()) return
+            if (autoBlockValue.get().equals("off", ignoreCase = true)) return
             blockSlot = InventoryUtils.findAutoBlockBlock()
             if (blockSlot == -1) return
-            if (silentAutoBlock.get()) {
+            if (autoBlockValue.get().equals("LiteSpoof", ignoreCase = true) || autoBlockValue.get().equals("Spoof", ignoreCase = true)) {
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(blockSlot - 36))
             } else {
                 mc.thePlayer.inventory.changeCurrentItem(blockSlot - 36)
@@ -574,7 +570,7 @@ class Scaffold : Module() {
                 mc.thePlayer.swingItem()
             }
         }
-        if (!stayAutoBlock.get() && blockSlot >= 0 && silentAutoBlock.get()) mc.netHandler.addToSendQueue(
+        if (autoBlockValue.get().equals("LiteSpoof", ignoreCase = true) && blockSlot >= 0) mc.netHandler.addToSendQueue(
             C09PacketHeldItemChange(
                 mc.thePlayer.inventory.currentItem
             )
@@ -722,11 +718,11 @@ class Scaffold : Module() {
         if (rotationsValue.get() != "None") {
             var rotation: Rotation? = null
             when (rotationsValue.get().toLowerCase()) {
-                "aac" -> {
+                "aac","aacsmart" -> {
                     if (!towerStatus) {
                         rotation = Rotation(
                             mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(),
-                            if (aacSmartPitchValue.get()) placeRotation.rotation.pitch else aacPitchValue.get()
+                            if (rotationsValue.get().toLowerCase()=="aacsmart") placeRotation.rotation.pitch else aacPitchValue.get()
                                 .toFloat()
                         )
                     }else{
