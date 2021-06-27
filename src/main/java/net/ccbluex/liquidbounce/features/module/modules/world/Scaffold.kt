@@ -120,8 +120,7 @@ class Scaffold : Module() {
             if (v > newValue) set(v)
         }
     }
-    private val keepLengthValue = IntegerValue("KeepRotationLength", 0, 0, 20)
-    private val keepRotationValue = BoolValue("KeepRotation", false)
+    private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20)
 
     // Zitter
     //private val zitterValue = BoolValue("Zitter", false)
@@ -137,8 +136,7 @@ class Scaffold : Module() {
 
     // Safety
     private val sameYValue = BoolValue("SameY", false)
-    private val safeWalkValue = BoolValue("SafeWalk", true)
-    private val airSafeValue = BoolValue("AirSafe", false)
+    private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "OFF")
     private val autoJumpValue = BoolValue("AutoJump", false)
 
     // Jump mode
@@ -340,7 +338,7 @@ class Scaffold : Module() {
         }
         if(towerStatus) move()
         // Lock Rotation
-        if (rotationsValue.get() != "None" && keepRotationValue.get() && lockRotation != null && silentRotationValue.get()) {
+        if (rotationsValue.get() != "None" && keepLengthValue.get()>0 && lockRotation != null && silentRotationValue.get()) {
             val limitedRotation =
                 RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation, getSpeed())
             RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
@@ -609,8 +607,8 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if (!safeWalkValue.get() || shouldGoDown) return
-        if (airSafeValue.get() || mc.thePlayer.onGround) event.isSafeWalk = true
+        if (safeWalkValue.get().equals("off", ignoreCase = true) || shouldGoDown) return
+        if (safeWalkValue.get().equals("air", ignoreCase = true) || mc.thePlayer.onGround) event.isSafeWalk = true
     }
 
     /**
