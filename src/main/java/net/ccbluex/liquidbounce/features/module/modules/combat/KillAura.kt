@@ -244,7 +244,7 @@ class KillAura : Module() {
 
         update()
 
-        if(strafeOnlyGroundValue.get()&&!mc.thePlayer.onGround)
+        if(strafeOnlyGroundValue.get()&&!mc.thePlayer.onGround || LiquidBounce.moduleManager[Scaffold::class.java]!!.state)
             return
 
         if (currentTarget != null && RotationUtils.targetRotation != null) {
