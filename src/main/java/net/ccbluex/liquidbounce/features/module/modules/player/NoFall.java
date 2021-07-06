@@ -60,6 +60,9 @@ public class NoFall extends Module {
         if (!getState() || LiquidBounce.moduleManager.getModule(FreeCam.class).getState())
             return;
 
+        if (mc.thePlayer.isSpectator() || mc.thePlayer.capabilities.allowFlying || mc.thePlayer.capabilities.disableDamage)
+            return;
+        
         if(BlockUtils.collideBlock(mc.thePlayer.getEntityBoundingBox(), block -> block instanceof BlockLiquid) ||
                 BlockUtils.collideBlock(new AxisAlignedBB(mc.thePlayer.getEntityBoundingBox().maxX, mc.thePlayer.getEntityBoundingBox().maxY, mc.thePlayer.getEntityBoundingBox().maxZ, mc.thePlayer.getEntityBoundingBox().minX, mc.thePlayer.getEntityBoundingBox().minY - 0.01D, mc.thePlayer.getEntityBoundingBox().minZ), block -> block instanceof BlockLiquid))
             return;
@@ -74,7 +77,7 @@ public class NoFall extends Module {
                 if(mc.thePlayer.onGround){
                     mc.thePlayer.fallDistance = 0.5F;
                 }
-                if(!mc.thePlayer.isSpectator() && !mc.thePlayer.capabilities.allowFlying && mc.thePlayer.fallDistance > 2) {
+                if(mc.thePlayer.fallDistance > 2) {
                     mc.thePlayer.onGround = false;
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
                 }
