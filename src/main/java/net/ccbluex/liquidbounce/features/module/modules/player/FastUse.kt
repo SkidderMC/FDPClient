@@ -45,8 +45,16 @@ class FastUse : Module() {
 
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
             when (modeValue.get().toLowerCase()) {
-                "instant" -> if (mc.thePlayer.itemInUseDuration > durationValue.get()) {
+                "delayedinstant" -> if (mc.thePlayer.itemInUseDuration > durationValue.get()) {
                     repeat(36-mc.thePlayer.itemInUseDuration) {
+                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    }
+
+                    mc.playerController.onStoppedUsingItem(mc.thePlayer)
+                }
+                
+                "instant" -> {
+                    repeat(35) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                     }
 
