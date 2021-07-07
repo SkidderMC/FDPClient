@@ -58,6 +58,8 @@ class Velocity : Module() {
     private val legitStrafeValue = BoolValue("LegitStrafe",false)
     private val legitFaceValue = BoolValue("LegitFace",true)
 
+    private val rspAlwaysValue = BoolValue("RedeSkyPacketAlwaysReduce",true)
+
     /**
      * VALUES
      */
@@ -250,12 +252,20 @@ class Velocity : Module() {
                     }
 
                     val target=LiquidBounce.combatManager.getNearByEntity(8f) ?: return
-                    mc.thePlayer.motionX=0.0
-                    mc.thePlayer.motionZ=0.0
-                    mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
-                    event.cancelEvent()
+                    if(rspAlwaysValue.get()){
+                        mc.thePlayer.motionX=0.0
+                        mc.thePlayer.motionZ=0.0
+                        mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
+                        event.cancelEvent()
+                    }
 
                     if(velocityCalcTimer.hasTimePassed(500)){
+                        if(!rspAlwaysValue.get()){
+                            mc.thePlayer.motionX=0.0
+                            mc.thePlayer.motionZ=0.0
+                            mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
+                            event.cancelEvent()
+                        }
                         val count=if(!velocityCalcTimer.hasTimePassed(800)){
                             7
                         }else if(!velocityCalcTimer.hasTimePassed(1200)){
