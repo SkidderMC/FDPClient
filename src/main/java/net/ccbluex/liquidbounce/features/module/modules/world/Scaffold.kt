@@ -571,11 +571,9 @@ class Scaffold : Module() {
                 mc.thePlayer.swingItem()
             }
         }
-        if (autoBlockValue.get().equals("LiteSpoof", ignoreCase = true) && blockSlot >= 0) mc.netHandler.addToSendQueue(
-            C09PacketHeldItemChange(
-                mc.thePlayer.inventory.currentItem
-            )
-        )
+
+        if (autoBlockValue.get().equals("LiteSpoof", ignoreCase = true) && blockSlot >= 0)
+            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
 
         // Reset
         targetPlace = null
@@ -588,18 +586,14 @@ class Scaffold : Module() {
         if (mc.thePlayer == null) return
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
             mc.gameSettings.keyBindSneak.pressed = false
-            if (eagleSneaking) mc.netHandler.addToSendQueue(
-                C0BPacketEntityAction(
-                    mc.thePlayer,
-                    C0BPacketEntityAction.Action.STOP_SNEAKING
-                )
-            )
+            if (eagleSneaking) mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
         }
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindRight)) mc.gameSettings.keyBindRight.pressed = false
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)) mc.gameSettings.keyBindLeft.pressed = false
         lockRotation = null
         mc.timer.timerSpeed = 1f
         shouldGoDown = false
+        RotationUtils.reset()
         if (slot != mc.thePlayer.inventory.currentItem) mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
     }
 

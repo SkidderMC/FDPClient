@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.block.BlockChest
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.server.S24PacketBlockAction
 import net.minecraft.util.BlockPos
@@ -42,6 +43,7 @@ object ChestAura : Module() {
     private val discoverDelayValue = IntegerValue("DiscoverDelayValue", 200, 50, 300)
     private val onlyOnGround = BoolValue("OnlyOnGround", true)
     private val notOpened = BoolValue("NotOpened", false)
+    private val doubleClick = BoolValue("DoubleClick", false) // this do redesky bypass
 
     private var currentBlock: BlockPos? = null
     private var underClick=false
@@ -110,6 +112,17 @@ object ChestAura : Module() {
 
                 clickedBlocks.add(currentBlock!!)
                 currentBlock = null
+
+                if(doubleClick.get()){
+                    val hitPos= currentBlock ?: return
+                    val hitVec=hitPos.getVec()
+                    val f = (hitVec.xCoord - hitPos.x.toDouble()).toFloat()
+                    val f1 = (hitVec.yCoord - hitPos.y.toDouble()).toFloat()
+                    val f2 = (hitVec.zCoord - hitPos.z.toDouble()).toFloat()
+                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(hitPos, EnumFacing.DOWN.index,
+                        mc.thePlayer.inventory.getCurrentItem(), f, f1, f2))
+                    mc.netHandler.addToSendQueue(C0APacketAnimation())
+                }
             }
         }catch (e: Exception){
             e.printStackTrace()
@@ -134,5 +147,6 @@ object ChestAura : Module() {
 
     override fun onDisable() {
         clickedBlocks.clear()
+        underClick=false
     }
 }
