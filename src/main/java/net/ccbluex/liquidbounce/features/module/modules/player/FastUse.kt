@@ -42,6 +42,7 @@ class FastUse : Module() {
             return
 
         val usingItem = mc.thePlayer.itemInUse.item
+        val delay = repeatValue.get()
 
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
             when (modeValue.get().toLowerCase()) {
