@@ -24,8 +24,6 @@ class FastUse : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay", "DelayedInstant"), "DelayedInstant")
     private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F)
     private val durationValue = IntegerValue("InstantDelay", 14, 0, 35)
-    //private val repeatValue = IntegerValue("RepeatTime", 35, 0, 100)
-    //#stucks code LMAO
     private val delayValue = IntegerValue("Delay", 0, 0, 300)
 
     private val msTimer = MSTimer()
@@ -42,7 +40,6 @@ class FastUse : Module() {
             return
 
         val usingItem = mc.thePlayer.itemInUse.item
-        val delay = repeatValue.get()
 
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
             when (modeValue.get().toLowerCase()) {
