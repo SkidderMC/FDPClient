@@ -17,10 +17,7 @@ import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.GL11
-import java.awt.Color
-import java.awt.Font
-import java.awt.Graphics2D
-import java.awt.RenderingHints
+import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
@@ -70,11 +67,17 @@ class AWTFontRenderer(val font: Font) {
     private var textureID = 0
     private var textureWidth = 0
     private var textureHeight = 0
+    private val fontMetrics: FontMetrics
 
     val height: Int
         get() = (fontHeight - 8) / 2
 
     init {
+        val graphics = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).graphics as Graphics2D
+        putHints(graphics)
+        graphics.font = font
+        fontMetrics=graphics.fontMetrics
+
         loadBitmap()
 
         activeFontRenderers.add(this)
@@ -188,7 +191,8 @@ class AWTFontRenderer(val font: Font) {
     }
 
     private fun loadBitmap(){
-        val cacheFontDir=File(LiquidBounce.fileManager.cacheDir,font.fontName.toLowerCase())
+        val cacheFontDir=File(LiquidBounce.fileManager.cacheDir
+            ,"${font.fontName.replace(" ","_").toLowerCase()}${if(font.isBold){"-bold"}else{""}}${if(font.isItalic){"-italic"}else{""}}-${font.size}")
         if(!cacheFontDir.exists()) cacheFontDir.mkdir()
         val jsonFile=File(cacheFontDir,"data.json")
         val imageFile=File(cacheFontDir,"image.png")
@@ -284,13 +288,6 @@ class AWTFontRenderer(val font: Font) {
      * @return image of the char
      */
     private fun drawCharToImage(ch: Char): BufferedImage {
-        val graphics2D = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).graphics as Graphics2D
-
-        graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        graphics2D.font = font
-
-        val fontMetrics = graphics2D.fontMetrics
-
         var charWidth = fontMetrics.charWidth(ch) + 8
         if (charWidth <= 0)
             charWidth = 7
@@ -301,12 +298,18 @@ class AWTFontRenderer(val font: Font) {
 
         val fontImage = BufferedImage(charWidth, charHeight, BufferedImage.TYPE_INT_ARGB)
         val graphics = fontImage.graphics as Graphics2D
-        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        putHints(graphics)
         graphics.font = font
         graphics.color = Color.WHITE
         graphics.drawString(ch.toString(), 3, 1 + fontMetrics.ascent)
 
         return fontImage
+    }
+
+    private fun putHints(graphics: Graphics2D){
+        graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
     }
 
     /**

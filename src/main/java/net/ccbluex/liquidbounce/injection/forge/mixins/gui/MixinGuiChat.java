@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiTextField;
@@ -48,10 +49,33 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
         yPosOfInputField = inputField.yPosition;
     }
 
-    @Inject(method = "keyTyped", at = @At("RETURN"))
-    private void updateLength(CallbackInfo callbackInfo) {
-        if (!inputField.getText().startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) return;
-        LiquidBounce.commandManager.autoComplete(inputField.getText());
+    /**
+     * only trust message in KeyTyped to anti some client click check (like old zqat.top)
+     */
+    @Inject(method = "keyTyped", at = @At("HEAD"), cancellable = true)
+    private void keyTyped(char typedChar, int keyCode, CallbackInfo callbackInfo) {
+        String text=inputField.getText();
+        if(text.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
+            if (keyCode == 28 || keyCode == 156) {
+                LiquidBounce.commandManager.executeCommands(text);
+                callbackInfo.cancel();
+                mc.ingameGUI.getChatGUI().addToSentMessages(text);
+                Minecraft.getMinecraft().displayGuiScreen(null);
+            }else{
+                LiquidBounce.commandManager.autoComplete(text);
+            }
+        }
+    }
+
+    /**
+     * bypass click command auth like kjy.pub
+     */
+    @Inject(method = "setText", at = @At("HEAD"), cancellable = true)
+    private void setText(String newChatText, boolean shouldOverwrite, CallbackInfo callbackInfo) {
+        if(shouldOverwrite&&newChatText.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))){
+            this.inputField.setText(LiquidBounce.commandManager.getPrefix()+"say "+newChatText);
+            callbackInfo.cancel();
+        }
     }
 
     @Inject(method = "updateScreen", at = @At("HEAD"))

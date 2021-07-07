@@ -125,16 +125,6 @@ public abstract class MixinGuiScreen {
             ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
     }
 
-    @Inject(method = "sendChatMessage(Ljava/lang/String;Z)V", at = @At("HEAD"), cancellable = true)
-    private void messageSend(String msg, boolean addToChat, final CallbackInfo callbackInfo) {
-        if (msg.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix())) && addToChat) {
-            this.mc.ingameGUI.getChatGUI().addToSentMessages(msg);
-
-            LiquidBounce.commandManager.executeCommands(msg);
-            callbackInfo.cancel();
-        }
-    }
-
     @Inject(method = "handleComponentHover", at = @At("HEAD"))
     private void handleHoverOverComponent(IChatComponent component, int x, int y, final CallbackInfo callbackInfo) {
         if (component == null || component.getChatStyle().getChatClickEvent() == null)

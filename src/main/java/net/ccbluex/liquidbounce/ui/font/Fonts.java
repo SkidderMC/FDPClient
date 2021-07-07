@@ -23,13 +23,13 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public class Fonts {
 
-    @FontDetails(fontName = "Small", fontSize = 35)
+    @FontDetails(fontName = "Small", fontSize = 35, fileName = "regular.ttf")
     public static GameFontRenderer font35;
 
-    @FontDetails(fontName = "Medium", fontSize = 40)
+    @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
     public static GameFontRenderer font40;
 
-    @FontDetails(fontName = "Bold", fontSize = 40)
+    @FontDetails(fontName = "Bold", fontSize = 40, fileName = "medium.ttf")
     public static GameFontRenderer fontBold40;
 
     @FontDetails(fontName = "Minecraft Font")
@@ -44,9 +44,19 @@ public class Fonts {
 
         initFonts();
 
-        font35 = new GameFontRenderer(getFont("regular.ttf", 35));
-        font40 = new GameFontRenderer(getFont("regular.ttf", 40));
-        fontBold40 = new GameFontRenderer(getFont("medium.ttf", 40));
+        for(final Field field : Fonts.class.getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                final FontDetails fontDetails = field.getAnnotation(FontDetails.class);
+
+                if(fontDetails!=null) {
+                    if(!fontDetails.fileName().isEmpty())
+                        field.set(null,new GameFontRenderer(getFont(fontDetails.fontName(), fontDetails.fontSize())));
+                }
+            }catch(final IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
 
         try {
             CUSTOM_FONT_RENDERERS.clear();
