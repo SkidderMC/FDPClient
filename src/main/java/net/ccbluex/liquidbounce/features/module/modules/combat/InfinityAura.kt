@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -24,7 +25,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-@ModuleInfo(name = "InfinityAura", description = "Become a pvp god.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "InfinityAura", description = "Become a pvp(hvh) god.", category = ModuleCategory.COMBAT)
 class InfinityAura : Module() {
     private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
     private val targetsValue=IntegerValue("Targets",3,1,10)
@@ -124,8 +125,13 @@ class InfinityAura : Module() {
 //            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
 //            points.add(it)
 
-        if(doSwing.get()) {
+        if(doSwing.get())
+        {
             mc.thePlayer.swingItem()
+        }
+        else
+        {
+            mc.netHandler.addToSendQueue(C0APacketAnimation())
         }
         mc.playerController.attackEntity(mc.thePlayer,entity)
 
