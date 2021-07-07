@@ -21,10 +21,11 @@ import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "FastUse", description = "Allows you to use items faster.", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay"), "Instant")
-    private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2F)
-    private val durationValue = IntegerValue("InstantMinUseDuration", 14, 0, 100)
-    private val repeatValue = IntegerValue("RepeatTime", 35, 0, 100)
+    private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay", "DelayedInstant"), "DelayedInstant")
+    private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F)
+    private val durationValue = IntegerValue("InstantDelay", 14, 0, 35)
+    //private val repeatValue = IntegerValue("RepeatTime", 35, 0, 100)
+    //#stucks code LMAO
     private val delayValue = IntegerValue("Delay", 0, 0, 300)
 
     private val msTimer = MSTimer()
@@ -45,8 +46,16 @@ class FastUse : Module() {
 
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
             when (modeValue.get().toLowerCase()) {
-                "instant" -> if (durationValue.get() <= 0 || mc.thePlayer.itemInUseDuration >= durationValue.get()) {
-                    repeat(delay) {
+                "delayedinstant" -> if (mc.thePlayer.itemInUseDuration > durationValue.get()) {
+                    repeat(36-mc.thePlayer.itemInUseDuration) {
+                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    }
+
+                    mc.playerController.onStoppedUsingItem(mc.thePlayer)
+                }
+                
+                "instant" -> {
+                    repeat(35) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                     }
 
