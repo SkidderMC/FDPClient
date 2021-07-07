@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -18,7 +19,10 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.util.BlockPos
@@ -35,7 +39,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4", "RedeSkyPacket",
             "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch", "Legit"), "Simple")
 
     // Reverse
@@ -58,6 +62,7 @@ class Velocity : Module() {
      * VALUES
      */
     private var velocityTimer = MSTimer()
+    private var velocityCalcTimer = MSTimer()
     private var velocityInput = false
 
     // SmoothReverse
@@ -237,6 +242,33 @@ class Velocity : Module() {
 
                 "legit" -> {
                     pos= BlockPos(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
+                }
+
+                "redeskypacket" -> {
+                    if(packet.getMotionY()<=0){ // ignore velocity caused by fire
+                        return
+                    }
+
+                    val target=LiquidBounce.combatManager.getNearByEntity(8f) ?: return
+                    mc.thePlayer.motionX=0.0
+                    mc.thePlayer.motionZ=0.0
+                    mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
+                    event.cancelEvent()
+
+                    if(velocityCalcTimer.hasTimePassed(500)){
+                        val count=if(!velocityCalcTimer.hasTimePassed(800)){
+                            7
+                        }else if(!velocityCalcTimer.hasTimePassed(1200)){
+                            10
+                        }else{
+                            25
+                        }
+                        for(i in 0..count){
+                            mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(target,C02PacketUseEntity.Action.ATTACK))
+                            mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
+                        }
+                        velocityCalcTimer.reset()
+                    }
                 }
             }
         }

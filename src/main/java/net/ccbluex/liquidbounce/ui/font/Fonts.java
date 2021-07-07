@@ -51,7 +51,7 @@ public class Fonts {
 
                 if(fontDetails!=null) {
                     if(!fontDetails.fileName().isEmpty())
-                        field.set(null,new GameFontRenderer(getFont(fontDetails.fontName(), fontDetails.fontSize())));
+                        field.set(null,new GameFontRenderer(getFont(fontDetails.fileName(), fontDetails.fontSize())));
                 }
             }catch(final IllegalAccessException e) {
                 e.printStackTrace();
