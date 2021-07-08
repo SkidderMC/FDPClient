@@ -71,8 +71,8 @@ public final class MovementUtils extends MinecraftInstance {
 
     public static double getDirection() {
         float rotationYaw = mc.thePlayer.rotationYaw;
-        if(TargetStrafe.canStrafe(CombatManager.target) && ModuleManager.getModule(TargetStrafe.class).getState())
-            return Math.toRadians(TargetStrafe.calucateYaw(CombatManager.target));
+        if(TargetStrafe.isCanStrafe(CombatManager.getTarget()) && ModuleManager.getModule(TargetStrafe.class).getState())
+            return Math.toRadians(TargetStrafe.calucateYaw(CombatManager.getTarget()));
         if(mc.thePlayer.moveForward < 0F)
             rotationYaw += 180F;
 
