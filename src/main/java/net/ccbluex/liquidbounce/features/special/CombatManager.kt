@@ -60,7 +60,11 @@ class CombatManager : Listenable,MinecraftInstance() {
             null
         }
     }
-
+    companion object{
+        public fun getTarget(): EntityLivingBase {
+            return target
+        }
+    }
     override fun handleEvents(): Boolean {
         return true
     }
