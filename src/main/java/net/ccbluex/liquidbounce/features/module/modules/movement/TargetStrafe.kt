@@ -18,7 +18,7 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "TargetStrafe", description = "Strafe around your target.", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
-    private val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
+    private val radius = FloatValue("Radius", 2.0f, 1.0f, 8.0f)
     private val render = BoolValue("Render", true)
     private val space = BoolValue("HoldSpace", false)
     private val safewalk = BoolValue("SafeWalk", true)
@@ -49,7 +49,8 @@ class TargetStrafe : Module() {
     fun strafe(event: MoveEvent) {
         val target = LiquidBounce.combatManager.target
         if (canStrafe(target))
-            MovementUtils.setSpeed(event, MovementUtils.getSpeed().toDouble(), RotationUtils.getRotationsEntity(target).yaw, direction.toDouble(), if (mc.thePlayer.getDistanceToEntity(target) <= radius.get()) 0.0 else 1.0)
+            MovementUtils.strafe(MovementUtils.getSpeed())
+        //    MovementUtils.setSpeed(event, MovementUtils.getSpeed().toDouble(), RotationUtils.getRotationsEntity(target).yaw, direction.toDouble(), if (mc.thePlayer.getDistanceToEntity(target) <= radius.get()) 0.0 else 1.0)
     }
 
     @EventTarget
@@ -99,7 +100,40 @@ class TargetStrafe : Module() {
         }
     }
 
-    private fun canStrafe(target: EntityLivingBase?): Boolean {
+    public fun canStrafe(target: EntityLivingBase?): Boolean {
         return state && target != null && targetValidator.validate(target) && (!space.get() || mc.thePlayer.movementInput.jump) && (!onlySpeed.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state)
     }
+    
+    public fun calucateYaw(target: EntityLivingBase?): Long {
+        val diffRange = radius.get() - mc.thePlayer.getDistanceToEntity(target)
+        var targetYaw = RotationUtils.getRotationsEntity(target).yaw
+        val moveSpeed = MovementUtils.getSpeed()
+        
+        if (diffRange>0)
+            if (diffRange-moveSpeed<0)
+                if (diffRange-0.47*moveSpeed<0)
+                    return targetYaw - 90 * direction + 180
+                else return targetYaw - 75 * direction + 180
+            else return targetYaw - 45 * direction + 180
+        else diffRange *= -1
+        
+        if (diffRange-moveSpeed<0)
+            if (diffRange-0.85*moveSpeed>0)
+                return targetYaw + 45 * direction
+            else if (diffRange-0.6*moveSpeed>0)
+                return targetYaw + 60 * direction
+            else if (diffRange-0.323*moveSpeed>0)
+                return targetYaw + 75 * direction
+            else return targetYaw + 90 * direction
+        else if (diffRange-2*moveSpeed>0)
+                return targetYaw
+            else if (diffRange-1.414*moveSpeed>0)
+                return targetYaw + 15 * direction
+            else if (diffRange-1.175*moveSpeed>0)
+                return targetYaw + 25 * direction
+            else if (diffRange-1.0323*moveSpeed>0)
+                return targetYaw + 35 * direction
+            else return targetYaw + 45 * direction
+    }
+    
 }
