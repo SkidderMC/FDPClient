@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT, autoDisable = AutoDisableType.FLAG)
@@ -84,7 +85,9 @@ class Speed : Module() {
     val customSpeedValue = FloatValue("CustomSpeed", 1.6f, 0.2f, 2f)
     val customYValue = FloatValue("CustomY", 0f, 0f, 4f)
     val customTimerValue = FloatValue("CustomTimer", 1f, 0.1f, 2f)
-    val customStrafeValue = BoolValue("CustomStrafe", true)
+    val customStrafeValue = ListValue("CustomStrafe", arrayOf("Strafe","Boost","Non-Strafe"),"Boost")
+    val customGroundStay = IntegerValue("CustomGroundStay",0,0,10)
+    val groundResetXZValue = BoolValue("CustomGroundResetXZ", false)
     val resetXZValue = BoolValue("CustomResetXZ", false)
     val resetYValue = BoolValue("CustomResetY", false)
     val portMax = FloatValue("AAC-PortLength", 1F, 1F, 20F)

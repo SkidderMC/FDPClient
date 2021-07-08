@@ -79,6 +79,9 @@ class AutoReport : Module() {
 
     private fun isTarget(entity: Entity):Boolean{
         if(entity is EntityPlayer){
+            if(entity == mc.thePlayer)
+                return false
+
             if (AntiBot.isBot(entity))
                 return false
 
