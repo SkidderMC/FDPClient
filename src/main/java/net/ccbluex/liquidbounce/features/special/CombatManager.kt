@@ -13,7 +13,7 @@ import net.minecraft.entity.EntityLivingBase
 class CombatManager : Listenable,MinecraftInstance() {
     var inCombat=false
     private val lastAttackTimer=MSTimer()
-    var target: EntityLivingBase? = null
+    public var target: EntityLivingBase? = null
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
@@ -62,7 +62,7 @@ class CombatManager : Listenable,MinecraftInstance() {
     }
     companion object{
         public fun getTarget(): EntityLivingBase {
-            return target
+            return CombatManager.target
         }
     }
     override fun handleEvents(): Boolean {
