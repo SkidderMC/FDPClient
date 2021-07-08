@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.event.MoveEvent;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe;
 import net.minecraft.util.AxisAlignedBB;
 
@@ -68,8 +69,8 @@ public final class MovementUtils extends MinecraftInstance {
 
     public static double getDirection() {
         float rotationYaw = mc.thePlayer.rotationYaw;
-        if(TargetStrafe.canStrafe() && LiquidBounce.moduleManager[TargetStrafe::class.java]!!.state)
-            return Math.toRadians(TargetStrafe.calucateYaw());
+        if(TargetStrafe.canStrafe(LiquidBounce.combatManager.target) && LiquidBounce.moduleManager[TargetStrafe::class.java]!!.state)
+            return Math.toRadians(TargetStrafe.calucateYaw(LiquidBounce.combatManager.target));
         if(mc.thePlayer.moveForward < 0F)
             rotationYaw += 180F;
 
