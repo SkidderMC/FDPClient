@@ -50,6 +50,17 @@ class CombatManager : Listenable,MinecraftInstance() {
         lastAttackTimer.reset()
     }
 
+    fun getNearByEntity(radius: Float):EntityLivingBase?{
+        return try {
+            mc.theWorld.loadedEntityList
+                .filter { mc.thePlayer.getDistanceToEntity(it)<radius&&EntityUtils.isSelected(it,true) }
+                .sortedBy { it.getDistanceToEntity(mc.thePlayer) }[0] as EntityLivingBase?
+        }catch (e: IndexOutOfBoundsException){
+            e.printStackTrace()
+            null
+        }
+    }
+
     override fun handleEvents(): Boolean {
         return true
     }

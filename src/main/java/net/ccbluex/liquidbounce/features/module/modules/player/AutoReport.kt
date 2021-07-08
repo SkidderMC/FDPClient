@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -17,6 +18,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.TextValue
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.network.play.server.S3FPacketCustomPayload
 
 @ModuleInfo(name = "AutoReport", description = "Auto report players", category = ModuleCategory.PLAYER)
 class AutoReport : Module() {
@@ -24,6 +26,7 @@ class AutoReport : Module() {
     private val commandValue=TextValue("Command","/reportar %name%")
     private val tipValue=BoolValue("Tip",true)
     private val allDelayValue=IntegerValue("AllDelay",500,0,1000)
+    private val blockBooksValue=BoolValue("BlockBooks",false) // 绕过Hypixel /report举报弹出书
 
     private val reported=mutableListOf<String>()
     private val delayTimer=MSTimer()
@@ -51,6 +54,12 @@ class AutoReport : Module() {
             }
             delayTimer.reset()
         }
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent){
+        if(blockBooksValue.get()&&event.packet is S3FPacketCustomPayload)
+            event.cancelEvent()
     }
 
     fun doReport(player: EntityPlayer):Boolean{

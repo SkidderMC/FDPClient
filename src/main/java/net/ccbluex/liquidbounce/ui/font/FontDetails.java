@@ -13,5 +13,7 @@ public @interface FontDetails {
 
     String fontName();
 
+    String fileName() default "";
+
     int fontSize() default -1;
 }

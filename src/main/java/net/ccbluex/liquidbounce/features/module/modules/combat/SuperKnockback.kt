@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C0BPacketEntityAction
 
@@ -15,13 +16,14 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val delayValue = IntegerValue("Delay",0,0,1000)
+    private val onlyMoveValue = BoolValue("OnlyMove", false)
 
     private val timer=MSTimer()
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
-            if (!timer.hasTimePassed(delayValue.get().toLong())||event.targetEntity.hurtTime > hurtTimeValue.get()||!MovementUtils.isMoving())
+            if (!timer.hasTimePassed(delayValue.get().toLong())||event.targetEntity.hurtTime > hurtTimeValue.get()||(!MovementUtils.isMoving() && onlyMoveValue.get()))
                 return
 
             if (mc.thePlayer.isSprinting)
