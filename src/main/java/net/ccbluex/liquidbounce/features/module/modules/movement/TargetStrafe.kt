@@ -105,7 +105,7 @@ class TargetStrafe : Module() {
     }
     
     public fun calucateYaw(target: EntityLivingBase?): Long {
-        val diffRange = radius.get() - mc.thePlayer.getDistanceToEntity(target)
+        var diffRange = radius.get() - mc.thePlayer.getDistanceToEntity(target)
         var targetYaw = RotationUtils.getRotationsEntity(target).yaw
         val moveSpeed = MovementUtils.getSpeed()
         
