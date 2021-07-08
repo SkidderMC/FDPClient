@@ -103,7 +103,10 @@ class TargetStrafe : Module() {
     public fun canStrafe(target: EntityLivingBase?): Boolean {
         return state && target != null && targetValidator.validate(target) && (!space.get() || mc.thePlayer.movementInput.jump) && (!onlySpeed.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state)
     }
-    
+    companion object{
+        public fun isCanStrafe(target: EntityLivingBase?): Boolean {
+        return state && target != null && targetValidator.validate(target) && (!space.get() || mc.thePlayer.movementInput.jump) && (!onlySpeed.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state)
+    }
     public fun calucateYaw(target: EntityLivingBase?): Long {
         var diffRange = radius.get() - mc.thePlayer.getDistanceToEntity(target)
         var targetYaw = RotationUtils.getRotationsEntity(target).yaw
@@ -134,6 +137,7 @@ class TargetStrafe : Module() {
             else if (diffRange-1.0323*moveSpeed>0)
                 return (targetYaw + 35 * direction).toLong()
             else return (targetYaw + 45 * direction).toLong()
+    }
     }
     
 }
