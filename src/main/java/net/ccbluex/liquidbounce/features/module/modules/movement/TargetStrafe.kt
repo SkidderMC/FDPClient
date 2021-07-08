@@ -112,28 +112,28 @@ class TargetStrafe : Module() {
         if (diffRange>0)
             if (diffRange-moveSpeed<0)
                 if (diffRange-0.47*moveSpeed<0)
-                    return targetYaw - 90 * direction + 180
-                else return targetYaw - 75 * direction + 180
-            else return targetYaw - 45 * direction + 180
+                    return (targetYaw - 90 * direction + 180).toLong()
+                else return (targetYaw - 75 * direction + 180).toLong()
+            else return (targetYaw - 45 * direction + 180).toLong()
         else diffRange *= -1
         
         if (diffRange-moveSpeed<0)
             if (diffRange-0.85*moveSpeed>0)
-                return targetYaw + 45 * direction
+                return (targetYaw + 45 * direction).toLong()
             else if (diffRange-0.6*moveSpeed>0)
-                return targetYaw + 60 * direction
+                return (targetYaw + 60 * direction).toLong()
             else if (diffRange-0.323*moveSpeed>0)
-                return targetYaw + 75 * direction
-            else return targetYaw + 90 * direction
+                return (targetYaw + 75 * direction).toLong()
+            else return (targetYaw + 90 * direction).toLong()
         else if (diffRange-2*moveSpeed>0)
-                return targetYaw
+                return (targetYaw).toLong()
             else if (diffRange-1.414*moveSpeed>0)
-                return targetYaw + 15 * direction
+                return (targetYaw + 15 * direction).toLong()
             else if (diffRange-1.175*moveSpeed>0)
-                return targetYaw + 25 * direction
+                return (targetYaw + 25 * direction).toLong()
             else if (diffRange-1.0323*moveSpeed>0)
-                return targetYaw + 35 * direction
-            else return targetYaw + 45 * direction
+                return (targetYaw + 35 * direction).toLong()
+            else return (targetYaw + 45 * direction).toLong()
     }
     
 }
