@@ -105,8 +105,8 @@ class Scaffold : Module() {
 
     // Rotations
     private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "AACSmart"), "AAC")
-    private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
-    private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
+    //private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
+    //private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val aacPitchValue = IntegerValue("AACPitch", 90, -90, 90)
     private val aacYawValue = IntegerValue("AACYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true)
@@ -123,8 +123,8 @@ class Scaffold : Module() {
         }
     }
     private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20)
-    private var tolleyStayTick = 0
-    private var lastTickOnGround = false
+    //private var tolleyStayTick = 0
+    //private var lastTickOnGround = false
     // Zitter
     //private val zitterValue = BoolValue("Zitter", false)
     private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
@@ -214,9 +214,9 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        if(!mc.thePlayer.onGround) tolleyStayTick=0
-            else tolleyStayTick++
-        if(tolleyStayTick>100) tolleyStayTick=100
+        //if(!mc.thePlayer.onGround) tolleyStayTick=0
+        //    else tolleyStayTick++
+        //if(tolleyStayTick>100) tolleyStayTick=100
         if(towerStatus && towerModeValue.get().toLowerCase()!="aac3.3.9" && towerModeValue.get().toLowerCase()!="aac4.4constant" && towerModeValue.get().toLowerCase()!="aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if(!towerStatus) mc.timer.timerSpeed = timerValue.get()
         if (towerStatus) {
@@ -595,7 +595,7 @@ class Scaffold : Module() {
      * Disable scaffold module
      */
     override fun onDisable() {
-        tolleyStayTick=999
+        //tolleyStayTick=999
         if (mc.thePlayer == null) return
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
             mc.gameSettings.keyBindSneak.pressed = false
@@ -742,7 +742,7 @@ class Scaffold : Module() {
                 }
             }
             if (rotation != null) {
-                if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || lastTickOnGround ||
+                /*if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || lastTickOnGround ||
                     (!mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(
                             -mc.thePlayer.motionX,
                             0.98*(mc.thePlayer.motionY-0.08),
@@ -752,7 +752,7 @@ class Scaffold : Module() {
                     rotation = Rotation(
                         mc.thePlayer.rotationYaw + tolleyYawValue.get(),
                         placeRotation.rotation.pitch
-                    )
+                    )*/
                 if (silentRotationValue.get()) {
                     val limitedRotation =
                         RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation, getSpeed())
