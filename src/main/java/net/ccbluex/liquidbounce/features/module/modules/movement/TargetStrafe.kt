@@ -111,9 +111,10 @@ class TargetStrafe : Module() {
         }
     @JvmStatic
     public fun calucateYaw(target: EntityLivingBase?): Long {
-        var diffRange = radius.get() - mc.thePlayer.getDistanceToEntity(target)
+        var diffRange = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.radius.get() - mc.thePlayer.getDistanceToEntity(target)
         var targetYaw = RotationUtils.getRotationsEntity(target).yaw
         val moveSpeed = MovementUtils.getSpeed()
+        var direction = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.direction
         
         if (diffRange>0)
             if (diffRange-moveSpeed<0)
