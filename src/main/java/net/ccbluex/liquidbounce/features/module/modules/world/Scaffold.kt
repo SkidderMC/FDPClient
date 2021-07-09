@@ -742,7 +742,7 @@ class Scaffold : Module() {
                 }
             }
             if (rotation != null) {
-                if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || lastTickOnGround==true
+                if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || lastTickOnGround ||
                     (!mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(
                             -mc.thePlayer.motionX,
                             0.98*(mc.thePlayer.motionY-0.08),
