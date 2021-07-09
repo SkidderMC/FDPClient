@@ -743,11 +743,11 @@ class Scaffold : Module() {
             if (rotation != null) {
                 if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || 
                     (!mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(
-                            0,
+                            0.00,
                             mc.thePlayer.motionY,
-                            0
+                            0.00
                             )).isEmpty() && mc.thePlayer.motionY<0)
-                  ) 
+                  ))
                     rotation = Rotation(
                         mc.thePlayer.rotationYaw + tolleyYawValue.get(),
                         placeRotation.rotation.pitch
