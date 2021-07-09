@@ -124,6 +124,7 @@ class Scaffold : Module() {
     }
     private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20)
     private var tolleyStayTick = 0
+    private var lastTickOnGround = false
     // Zitter
     //private val zitterValue = BoolValue("Zitter", false)
     private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
@@ -741,12 +742,12 @@ class Scaffold : Module() {
                 }
             }
             if (rotation != null) {
-                if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || 
+                if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || lastTickOnGround
                     (!mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(
-                            0.00,
-                            mc.thePlayer.motionY,
-                            0.00
-                            )).isEmpty() && mc.thePlayer.motionY<0)
+                            -mc.thePlayer.motionX,
+                            0.98*(mc.thePlayer.motionY-0.08),
+                            -mc.thePlayer.motionZ
+                            )).isEmpty() && mc.thePlayer.motionY<=0)
                   ))
                     rotation = Rotation(
                         mc.thePlayer.rotationYaw + tolleyYawValue.get(),
@@ -762,11 +763,7 @@ class Scaffold : Module() {
                 }
             }
             lockRotation = rotation
-            Chat.print(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(
-                            0.00,
-                            mc.thePlayer.motionY,
-                            0.00
-                            )).isEmpty());
+            lastTickOnGround=mc.thePlayer.onGround
         }
         targetPlace = placeRotation.placeInfo
         return true
