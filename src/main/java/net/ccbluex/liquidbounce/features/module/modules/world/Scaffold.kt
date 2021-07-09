@@ -123,7 +123,7 @@ class Scaffold : Module() {
         }
     }
     private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20)
-    private val tolleyStayTick = 0
+    private var tolleyStayTick = 0
     // Zitter
     //private val zitterValue = BoolValue("Zitter", false)
     private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
