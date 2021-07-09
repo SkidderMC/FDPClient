@@ -805,11 +805,11 @@ class Scaffold : Module() {
         return (Math.random() * (maxRotationSpeedValue.get() - minRotationSpeedValue.get()) + minRotationSpeedValue.get()).toFloat()
     }
     
-    //@EventTarget
-    //fun onJump(event: JumpEvent) {
-    //    if (towerStatus)
-    //        event.cancelEvent();
-    //}
+    @EventTarget
+    fun onJump(event: JumpEvent) {
+        if (towerStatus)
+            event.cancelEvent();
+    }
     
     override val tag: String
         get() = modeValue.get()
