@@ -763,7 +763,7 @@ class Scaffold : Module() {
                 }
             }
             lockRotation = rotation
-            lastTickOnGround=mc.thePlayer.onGround
+            //lastTickOnGround=mc.thePlayer.onGround
         }
         targetPlace = placeRotation.placeInfo
         return true
