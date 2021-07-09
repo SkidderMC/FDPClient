@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class CustomSpeed : SpeedMode("Custom") {
+    private var groundTick=0
+
     override fun onMotion() {
         if (MovementUtils.isMoving()) {
             val speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed? ?: return
@@ -18,11 +20,22 @@ class CustomSpeed : SpeedMode("Custom") {
 
             when {
                 mc.thePlayer.onGround -> {
-                    MovementUtils.strafe(speed.customSpeedValue.get())
-                    mc.thePlayer.motionY = speed.customYValue.get().toDouble()
+                    if(groundTick>=speed.customGroundStay.get()){
+                        MovementUtils.strafe(speed.customSpeedValue.get())
+                        mc.thePlayer.motionY = speed.customYValue.get().toDouble()
+                    }else if(speed.groundResetXZValue.get()){
+                        mc.thePlayer.motionX = 0.0
+                        mc.thePlayer.motionZ = 0.0
+                    }
+                    groundTick++
                 }
-                speed.customStrafeValue.get() -> MovementUtils.strafe(speed.customSpeedValue.get())
-                else -> MovementUtils.strafe()
+                else -> {
+                    groundTick=0
+                    when(speed.customStrafeValue.get().toLowerCase()){
+                        "strafe" -> MovementUtils.strafe(speed.customSpeedValue.get())
+                        "boost" -> MovementUtils.strafe()
+                    }
+                }
             }
         } else {
             mc.thePlayer.motionZ = 0.0
@@ -33,8 +46,8 @@ class CustomSpeed : SpeedMode("Custom") {
     override fun onEnable() {
         val speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
         if (speed.resetXZValue.get()) {
-            mc.thePlayer.motionZ = 0.0
             mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionZ = 0.0
         }
         if (speed.resetYValue.get()) mc.thePlayer.motionY = 0.0
         super.onEnable()
