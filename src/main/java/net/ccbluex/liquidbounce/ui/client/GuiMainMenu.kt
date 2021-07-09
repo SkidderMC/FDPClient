@@ -11,6 +11,12 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
 import java.awt.Color
+import java.io.UnsupportedEncodingException
+import java.lang.StringBuilder
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
+import kotlin.experimental.and
+import kotlin.experimental.or
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun initGui() {
@@ -45,6 +51,46 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         val str="§cWebsite: §fhttps://fdp.liulihaocai.pw/"
         Fonts.font40.drawString(str, (this.width - Fonts.font40.getStringWidth(str) - 3).toFloat(), (height - Fonts.font35.FONT_HEIGHT).toFloat(), 0xffffff, false)
         super.drawScreen(mouseX, mouseY, partialTicks)
+        var ULY = 2f
+        val UpdateLogs = arrayOf(
+            "FDPClient Discord: https://discord.gg/dJtjF7swH9", "",
+            "China QQ Group: 523201000", "",
+            "Github: https://github.com/Project-EZ4H/FDPClient", "", "",
+            "中国用户QQ群: 523201000", "",
+            "本水影完全免费开源，如果付费获得则代表你被圈了", "", "",
+            "Updated Logs:", "",
+            "===========================================", "",
+            "1.2.2:","",
+            "[+] Added liquidbounce and flux target hud ","",
+            "[+] Added new clickgui","",
+            "[+] Improved velocity","",
+            "[+] Added proxy manager","",
+            "[+] Improved spammer","",
+            "[-] Removed keep sword ","",
+            "[+] Added old hypixel, MC986 and Verus disablers ","",
+            "[+] Added enchant effect","",
+            "[+] Added clip command","",
+            "[+] Added chat animation","",
+            "[+] Added head mode to gapple","",
+            "[+] Added click mode to Infinite aura","",
+            "[+] Added clickgui manager","",
+            "[+] Added core.lib compatibility","",
+            "[+] Added speed only option to target strafe","",
+            "[+] Added fly flag, tp back, blink and ground spoof modes to antivoid","",
+            "[+] Added blink auto scaffold mode to antivoid","",
+            "[+] Bug fixes","",
+            "[+] Changed deafult settings","",
+            "[+] Other improvements","",
+            "===========================================", ""
+
+        )
+
+        for (ChangeLog in UpdateLogs) {
+            if (ChangeLog != null) {
+                Fonts.font35.drawStringWithShadow(ChangeLog, 2f, ULY, Color(255, 255, 255, 160).rgb)
+            }
+            ULY += 5f
+        }
     }
 
     override fun actionPerformed(button: GuiButton) {
