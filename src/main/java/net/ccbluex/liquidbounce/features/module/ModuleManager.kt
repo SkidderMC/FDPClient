@@ -149,7 +149,7 @@ class ModuleManager : Listenable {
             NewClickGui::class.java,
             SuperKnockback::class.java,
             AutoReport::class.java,
-            ModuleInfo::class.java
+            ModuleInfos::class.java
         )
 
         registerModule(Fucker)
