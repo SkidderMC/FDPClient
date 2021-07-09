@@ -16,12 +16,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
 
     fun getBaseMoveSpeed(): Double {
         var baseSpeed = 0.30
-        if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-           /* baseSpeed *= 1.0 + 0.2 * (mc.thePlayer.getActivePotionEffect(
-                Potion.moveSpeed
-            ).amplifier + 1) */
+        if (mc.thePlayer.isPotionActive(Potion.moveSpeed))
             MovementUtils.strafe(0.49F)
-        }
         return baseSpeed
     }
     fun getJumpEffect(): Int {
@@ -117,6 +113,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             stage = 0
         }
         ++stage
+
     }
 
     private fun getHypixelBest() {
