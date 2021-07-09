@@ -18,14 +18,14 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "TargetStrafe", description = "Strafe around your target.", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
-    private val radius = FloatValue("Radius", 2.0f, 1.0f, 8.0f)
+    public val radius = FloatValue("Radius", 2.0f, 1.0f, 8.0f)
     private val render = BoolValue("Render", true)
-    private val space = BoolValue("HoldSpace", false)
+    public val space = BoolValue("HoldSpace", false)
     private val safewalk = BoolValue("SafeWalk", true)
-    private val onlySpeed = BoolValue("OnlySpeed", false)
+    public val onlySpeed = BoolValue("OnlySpeed", false)
     private val targetValidator: EntityValidator = EntityValidator()
     public var direction = -1
-    public val target = LiquidBounce.combatManager.target
+
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
@@ -104,10 +104,13 @@ class TargetStrafe : Module() {
     public fun canStrafe(target: EntityLivingBase?): Boolean {
         return state && target != null && targetValidator.validate(target) && (!space.get() || mc.thePlayer.movementInput.jump) && (!onlySpeed.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state)
     }
+    public fun getTarget() {
+        return LiquidBounce.combatManager.target
+    }
     companion object{
         @JvmStatic
         public fun isCanStrafe(): Boolean {
-            return LiquidBounce.moduleManager[TargetStrafe::class.java]!!.canStrafe(LiquidBounce.moduleManager[TargetStrafe::class.java]!!.target)
+            return LiquidBounce.moduleManager[TargetStrafe::class.java]!!.canStrafe(LiquidBounce.moduleManager[TargetStrafe::class.java]!!.getTarget())
         }
     @JvmStatic
     public fun calucateYaw(target: EntityLivingBase?): Long {
