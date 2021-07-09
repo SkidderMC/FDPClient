@@ -762,6 +762,11 @@ class Scaffold : Module() {
                 }
             }
             lockRotation = rotation
+            Chat.print(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(
+                            0.00,
+                            mc.thePlayer.motionY,
+                            0.00
+                            )).isEmpty());
         }
         targetPlace = placeRotation.placeInfo
         return true
