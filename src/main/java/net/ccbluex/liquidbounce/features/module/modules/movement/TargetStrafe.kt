@@ -24,7 +24,8 @@ class TargetStrafe : Module() {
     private val safewalk = BoolValue("SafeWalk", true)
     private val onlySpeed = BoolValue("OnlySpeed", false)
     private val targetValidator: EntityValidator = EntityValidator()
-    private var direction = -1
+    public var direction = -1
+    public val target = LiquidBounce.combatManager.target
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
@@ -47,7 +48,7 @@ class TargetStrafe : Module() {
 
     @EventTarget
     fun strafe(event: MoveEvent) {
-        val target = LiquidBounce.combatManager.target
+        //val target = LiquidBounce.combatManager.target
         if (canStrafe(target))
             MovementUtils.strafe(MovementUtils.getSpeed())
         //    MovementUtils.setSpeed(event, MovementUtils.getSpeed().toDouble(), RotationUtils.getRotationsEntity(target).yaw, direction.toDouble(), if (mc.thePlayer.getDistanceToEntity(target) <= radius.get()) 0.0 else 1.0)
@@ -103,10 +104,10 @@ class TargetStrafe : Module() {
     public fun canStrafe(target: EntityLivingBase?): Boolean {
         return state && target != null && targetValidator.validate(target) && (!space.get() || mc.thePlayer.movementInput.jump) && (!onlySpeed.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state)
     }
-    //companion object{
+    companion object{
         @JvmStatic
-        public fun isCanStrafe(target: EntityLivingBase?): Boolean {
-            return state && target != null && targetValidator.validate(target) && (!space.get() || mc.thePlayer.movementInput.jump) && (!onlySpeed.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state)
+        public fun isCanStrafe(): Boolean {
+            return LiquidBounce.moduleManager[TargetStrafe::class.java]!!.canStrafe(LiquidBounce.moduleManager[TargetStrafe::class.java]!!.target)
         }
     @JvmStatic
     public fun calucateYaw(target: EntityLivingBase?): Long {
@@ -140,6 +141,6 @@ class TargetStrafe : Module() {
                 return (targetYaw + 35 * direction).toLong()
             else return (targetYaw + 45 * direction).toLong()
     }
-   // }
+   }
     
 }
