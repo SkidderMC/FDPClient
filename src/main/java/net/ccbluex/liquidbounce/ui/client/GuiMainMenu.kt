@@ -22,7 +22,7 @@ import kotlin.experimental.or
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun initGui() {
-        if((LiquidBounce.latestVersion.isNotEmpty()||LiquidBounce.latestVersion!=LiquidBounce.CLIENT_VERSION)&&!LiquidBounce.displayedUpdateScreen){
+        if(LiquidBounce.latestVersion.isNotEmpty()&&!LiquidBounce.displayedUpdateScreen){
             mc.displayGuiScreen(GuiUpdate())
             return
         }
@@ -48,7 +48,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         Gui.drawRect(width / 2 - 60, bHeight - 30, width / 2 + 60, bHeight + 174, Integer.MIN_VALUE)
 
         Fonts.font40.drawCenteredString(LiquidBounce.CLIENT_NAME,(width / 2).toFloat(), (bHeight - 20).toFloat(),Color.WHITE.rgb,false)
-        Fonts.font40.drawString(LiquidBounce.CLIENT_VERSION+if(LiquidBounce.latestVersion.isNotEmpty()||LiquidBounce.latestVersion!=LiquidBounce.CLIENT_VERSION){" §c-> §a"+LiquidBounce.latestVersion}else{""}
+        Fonts.font40.drawString(LiquidBounce.CLIENT_VERSION+if(LiquidBounce.latestVersion.isNotEmpty()){" §c-> §a"+LiquidBounce.latestVersion}else{""}
             , 3F, (height - Fonts.font35.FONT_HEIGHT).toFloat(), 0xffffff,  false)
         val str="§cWebsite: §fhttps://${LiquidBounce.website}/"
         Fonts.font40.drawString(str, (this.width - Fonts.font40.getStringWidth(str) - 3).toFloat(), (height - Fonts.font35.FONT_HEIGHT).toFloat(), 0xffffff, false)

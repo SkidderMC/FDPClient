@@ -97,6 +97,9 @@ object LiquidBounce {
                 latestVersion = jsonObj.get("version").asString
                 website = jsonObj.get("website").asString
                 updatelog = jsonObj.getAsJsonArray("updatelog")
+
+                if(latestVersion== CLIENT_VERSION)
+                    latestVersion = ""
             }.start()
         }
     }
