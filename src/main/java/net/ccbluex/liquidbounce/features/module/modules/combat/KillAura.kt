@@ -239,7 +239,7 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        if (rotationStrafeValue.get().equals("Off", true) && !mc.thePlayer.isRiding)
+        if (rotationStrafeValue.get().equals("Off", true) && !mc.thePlayer.isRiding || LiquidBounce.moduleManager[Scaffold::class.java]!!.state)
             return
 
         update()
