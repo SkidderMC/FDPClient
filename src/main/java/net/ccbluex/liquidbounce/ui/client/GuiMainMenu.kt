@@ -8,8 +8,10 @@ package net.ccbluex.liquidbounce.ui.client
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.io.UnsupportedEncodingException
 import java.lang.StringBuilder
@@ -20,7 +22,7 @@ import kotlin.experimental.or
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun initGui() {
-        if(LiquidBounce.latestVersion.isNotEmpty()&&!LiquidBounce.displayedUpdateScreen){
+        if((LiquidBounce.latestVersion.isNotEmpty()||LiquidBounce.latestVersion!=LiquidBounce.CLIENT_VERSION)&&!LiquidBounce.displayedUpdateScreen){
             mc.displayGuiScreen(GuiUpdate())
             return
         }
@@ -48,49 +50,28 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         Fonts.font40.drawCenteredString(LiquidBounce.CLIENT_NAME,(width / 2).toFloat(), (bHeight - 20).toFloat(),Color.WHITE.rgb,false)
         Fonts.font40.drawString(LiquidBounce.CLIENT_VERSION+if(LiquidBounce.latestVersion.isNotEmpty()){" §c-> §a"+LiquidBounce.latestVersion}else{""}
             , 3F, (height - Fonts.font35.FONT_HEIGHT).toFloat(), 0xffffff,  false)
-        val str="§cWebsite: §fhttps://fdp.liulihaocai.pw/"
+        val str="§cWebsite: §fhttps://${LiquidBounce.website}/"
         Fonts.font40.drawString(str, (this.width - Fonts.font40.getStringWidth(str) - 3).toFloat(), (height - Fonts.font35.FONT_HEIGHT).toFloat(), 0xffffff, false)
         super.drawScreen(mouseX, mouseY, partialTicks)
-        var ULY = 2f
-        val UpdateLogs = arrayOf(
-            "FDPClient Discord: https://discord.gg/dJtjF7swH9", "",
-            "China QQ Group: 523201000", "",
-            "Github: https://github.com/Project-EZ4H/FDPClient", "", "",
-            "中国用户QQ群: 523201000", "",
-            "本水影完全免费开源，如果付费获得则代表你被圈了", "", "",
-            "Updated Logs:", "",
-            "===========================================", "",
-            "1.2.2:","",
-            "[+] Added liquidbounce and flux target hud ","",
-            "[+] Added new clickgui","",
-            "[+] Improved velocity","",
-            "[+] Added proxy manager","",
-            "[+] Improved spammer","",
-            "[-] Removed keep sword ","",
-            "[+] Added old hypixel, MC986 and Verus disablers ","",
-            "[+] Added enchant effect","",
-            "[+] Added clip command","",
-            "[+] Added chat animation","",
-            "[+] Added head mode to gapple","",
-            "[+] Added click mode to Infinite aura","",
-            "[+] Added clickgui manager","",
-            "[+] Added core.lib compatibility","",
-            "[+] Added speed only option to target strafe","",
-            "[+] Added fly flag, tp back, blink and ground spoof modes to antivoid","",
-            "[+] Added blink auto scaffold mode to antivoid","",
-            "[+] Bug fixes","",
-            "[+] Changed deafult settings","",
-            "[+] Other improvements","",
-            "===========================================", ""
 
-        )
+        GL11.glPushMatrix()
+        GL11.glTranslatef(2f,2f,0f)
 
-        for (ChangeLog in UpdateLogs) {
-            if (ChangeLog != null) {
-                Fonts.font35.drawStringWithShadow(ChangeLog, 2f, ULY, Color(255, 255, 255, 160).rgb)
+        for (jsonElement in LiquidBounce.updatelog) {
+            try {
+                if(jsonElement.isJsonObject){
+                    val json=jsonElement.asJsonObject
+                    Fonts.font35.drawString(json.get("text").asString, 0f, 0f, ColorUtils.decodeColorJsonFormat(json.getAsJsonObject("color")).rgb)
+                }else{
+                    Fonts.font35.drawString(jsonElement.asString, 0f, 0f, Color(255, 255, 255, 160).rgb)
+                }
+                GL11.glTranslatef(0f,Fonts.font35.height+1f,0f)
+            }catch (e: UnsupportedOperationException){
+                // ignore
             }
-            ULY += 5f
         }
+
+        GL11.glPopMatrix()
     }
 
     override fun actionPerformed(button: GuiButton) {

@@ -5,7 +5,9 @@
  */
 package net.ccbluex.liquidbounce
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
@@ -64,6 +66,8 @@ object LiquidBounce {
 
     // Update information
     var latestVersion = ""
+    lateinit var updatelog: JsonArray
+    var website = "Fetching..."
     var displayedUpdateScreen=false
 
     // Menu Background
@@ -79,18 +83,20 @@ object LiquidBounce {
         betterFPSCore = BetterFPSCore()
         isStarting = true
 
+        updatelog=JsonArray()
+        updatelog.add(JsonPrimitive("Fetching..."))
+
         // check update
         if(!IN_DEV) {
             Thread {
                 val get = HttpUtils.get("https://fdp.liulihaocai.workers.dev/")
-                println(get)
+
                 val jsonObj = JsonParser()
                     .parse(get).asJsonObject
-                val version = jsonObj.get("version").asString
 
-                if (!version.equals(CLIENT_VERSION)) {
-                    latestVersion = version
-                }
+                latestVersion = jsonObj.get("version").asString
+                website = jsonObj.get("website").asString
+                updatelog = jsonObj.getAsJsonArray("updatelog")
             }.start()
         }
     }

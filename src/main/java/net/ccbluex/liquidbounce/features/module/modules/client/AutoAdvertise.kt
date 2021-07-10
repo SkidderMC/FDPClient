@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -24,7 +25,7 @@ class AutoAdvertise : Module() {
             override fun run() {
                 waiting=false
                 if(mc.thePlayer!=null){
-                    mc.thePlayer.sendChatMessage("["+ RandomUtils.randomString(3)+"] Try FDPClient! fdp.liulihaocai.pw ["+ RandomUtils.randomString(3)+"]")
+                    mc.thePlayer.sendChatMessage("["+ RandomUtils.randomString(3)+"] Try FDPClient! ${LiquidBounce.website} ["+ RandomUtils.randomString(3)+"]")
                 }
             }
         },2000L)

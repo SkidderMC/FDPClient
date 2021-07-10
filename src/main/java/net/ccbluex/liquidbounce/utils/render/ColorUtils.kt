@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
+import com.google.gson.JsonObject
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
@@ -183,5 +184,19 @@ object ColorUtils {
     @JvmStatic
     fun darker(color: Color,percentage: Float):Color{
         return Color((color.red*percentage).toInt(),(color.green*percentage).toInt(),(color.blue*percentage).toInt(),(color.alpha*percentage).toInt())
+    }
+
+    @JvmStatic
+    fun decodeColorJsonFormat(json: JsonObject):Color{
+        return reAlpha(if(json.has("rainbow")){
+            when(json.get("rainbow").asString.toLowerCase()){
+                "normal" -> rainbow(400000000L * if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1})
+                "sky" -> RenderUtils.skyRainbow(if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1},0.9f,1f,5.0)
+                "other" -> RenderUtils.arrayRainbow(if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1}+1)
+                else -> Color.WHITE
+            }
+        }else{
+            Color(json.get("red").asInt,json.get("green").asInt,json.get("blue").asInt)
+        },if(json.has("alpha")){json.get("alpha").asInt}else{160})
     }
 }
