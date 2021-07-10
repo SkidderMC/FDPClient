@@ -247,24 +247,27 @@ class Velocity : Module() {
                 }
 
                 "redeskypacket" -> {
-                    if(packet.getMotionY()<=0){ // ignore velocity caused by fire
-                        return
-                    }
+                    //if(packet.getMotionY()<=0){ // ignore velocity caused by fire
+                    //    return
+                    //}
 
                     val target=LiquidBounce.combatManager.getNearByEntity(8f) ?: return
                     if(rspAlwaysValue.get()){
                         mc.thePlayer.motionX=0.0
                         mc.thePlayer.motionZ=0.0
-                        mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
-                        event.cancelEvent()
+                        //mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
+                        packet.motionX = 0
+                        packet.motionZ = 0
+                        //event.cancelEvent() better stuff
                     }
 
                     if(velocityCalcTimer.hasTimePassed(500)){
                         if(!rspAlwaysValue.get()){
                             mc.thePlayer.motionX=0.0
                             mc.thePlayer.motionZ=0.0
-                            mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
-                            event.cancelEvent()
+                            //mc.thePlayer.motionY=(packet.motionY/8000f)*1.0
+                            packet.motionX = 0
+                            packet.motionZ = 0
                         }
                         val count=if(!velocityCalcTimer.hasTimePassed(800)){
                             7
