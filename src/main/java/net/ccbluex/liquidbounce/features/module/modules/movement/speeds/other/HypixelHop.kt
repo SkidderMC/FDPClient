@@ -17,7 +17,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
     fun getBaseMoveSpeed(): Double {
         var baseSpeed = 0.30
         if (mc.thePlayer.isPotionActive(Potion.moveSpeed))
-            MovementUtils.strafe(0.49F)
+            MovementUtils.strafe(0.52F)
         return baseSpeed
     }
     fun getJumpEffect(): Int {
@@ -70,6 +70,10 @@ class HypixelHop : SpeedMode("HypixelHop") {
         val xDist: Double = thePlayer.posX - thePlayer.prevPosX
         val zDist: Double = thePlayer.posZ - thePlayer.prevPosZ
         lastDist = Math.sqrt(xDist * xDist + zDist * zDist)
+
+        if(mc.thePlayer.onGround){
+            MovementUtils.strafe(0.49F)
+        }
     }
 
     override fun onUpdate() {
@@ -84,7 +88,10 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 speed = getBaseMoveSpeed()
                 return
             }
-
+            if(thePlayer.onGround && isMoving()){
+                mc.timer.timerSpeed = 5.0F
+            }
+            else{mc.timer.timerSpeed=1.1F}
             if (stage == 1 && thePlayer.onGround && isMoving())
                 stage += 1
 
