@@ -96,7 +96,9 @@ public class Fly extends Module {
             "Jetpack",
             "KeepAlive",
             "Flag",
-            "BlockWalk" //bypass horizon
+            "BlockWalk", //bypass horizon
+            "FakeGround"
+
     }, "Vanilla");
 
     private final FloatValue vanillaSpeedValue = new FloatValue("VanillaSpeed", 2F, 0F, 5F);
@@ -140,6 +142,7 @@ public class Fly extends Module {
     private final BoolValue fakeBoostValue = new BoolValue("FakeBoost", true);
 
     private double startY;
+    private double launchY;
     private final MSTimer flyTimer = new MSTimer();
 
     private final MSTimer groundTimer = new MSTimer();
@@ -185,7 +188,7 @@ public class Fly extends Module {
     public void onEnable() {
         if(mc.thePlayer == null)
             return;
-
+        launchY = mc.thePlayer.posY;
         if(mc.thePlayer.onGround&&fakeBoostValue.get()){
             PacketEvent event=new PacketEvent(new S19PacketEntityStatus(mc.thePlayer,(byte) 2), PacketEvent.Type.RECEIVE);
             LiquidBounce.eventManager.callEvent(event);
@@ -919,6 +922,8 @@ public class Fly extends Module {
                 mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") || mode.equalsIgnoreCase("MushBoost") ||
                 (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null)) && event.getY() < mc.thePlayer.posY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, mc.thePlayer.posY, event.getZ() + 1));
+        if(mode.equalsIgnoreCase("FakeGround") && event.getBlock() instanceof BlockAir && event.getY() < launchY)
+            event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, launchY, event.getZ() + 1));
     }
 
     @EventTarget
