@@ -14,7 +14,7 @@ import net.minecraft.network.play.server.S03PacketTimeUpdate
 @ModuleInfo(name = "Ambience", description = "Change the World Time.", category = ModuleCategory.WORLD)
 class Ambience : Module() {
     private val timeModeValue = ListValue("TimeMode", arrayOf("None","Normal", "Custom"), "Normal")
-    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None","Sunny","Rainy","Thunder"), "Normal")
+    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None","Sunny","Rainy","Thunder"), "None")
     private val customWorldTimeValue = IntegerValue("CustomTime", 1000, 0, 24000)
     private val changeWorldTimeSpeedValue = IntegerValue("ChangeWorldTimeSpeed", 150, 10, 500)
     private val weatherStrengthValue = FloatValue("WeatherStrength", 1f, 0f, 1f)
@@ -63,7 +63,4 @@ class Ambience : Module() {
         }
         // TODO: what is the change weather packet
     }
-
-    override val tag: String
-        get() = timeModeValue.get()
 }
