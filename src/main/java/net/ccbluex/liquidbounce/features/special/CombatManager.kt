@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.entity.EntityLivingBase
+import java.lang.IndexOutOfBoundsException
 
 class CombatManager : Listenable,MinecraftInstance() {
     var inCombat=false
@@ -55,8 +56,7 @@ class CombatManager : Listenable,MinecraftInstance() {
             mc.theWorld.loadedEntityList
                 .filter { mc.thePlayer.getDistanceToEntity(it)<radius&&EntityUtils.isSelected(it,true) }
                 .sortedBy { it.getDistanceToEntity(mc.thePlayer) }[0] as EntityLivingBase?
-        }catch (e: IndexOutOfBoundsException){
-            e.printStackTrace()
+        }catch (e: Exception){
             null
         }
     }

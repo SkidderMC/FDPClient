@@ -139,3 +139,11 @@ configurations {
 }
 
 build.dependsOn shadowJar
+
+//task copyFiles(type: Copy) {
+//    from 'build/libs'
+//    into 'run/mods'
+//    include '**/FDPClient-v1.jar'
+//}
+//
+//copyFiles

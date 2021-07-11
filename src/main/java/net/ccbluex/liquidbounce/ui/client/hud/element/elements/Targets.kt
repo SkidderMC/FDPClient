@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets", single = true)
 class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux"), "Novoline")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux","Fancy"), "Novoline")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed",10,5,20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed",20,5,40)
@@ -98,6 +98,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             "astolfo" -> drawAstolfo(prevTarget!!,nowAnimHP)
             "liquid" -> drawLiquid(prevTarget!!,nowAnimHP)
             "flux" -> drawFlux(prevTarget!!,nowAnimHP)
+            "fancy" -> drawFancy(prevTarget!!,nowAnimHP)
         }
 
         return getTBorder()
@@ -173,6 +174,24 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         }
     }
 
+    private fun drawFancy(target: EntityLivingBase, easingHealth: Float){
+        val width = (48 + 9 + target.name.let(Fonts.fontBold40::getStringWidth))
+            .coerceAtLeast(100)
+            .toFloat()
+
+        RenderUtils.drawRect(0f,0f,width,48+6f,Color(0,0,0,150))
+        RenderUtils.drawRect(0f,0f,width,2f,Color(56,245,200))
+
+        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
+        if (playerInfo != null) {
+            RenderUtils.drawHead(playerInfo.locationSkin, 2, 4, 48, 48)
+        }
+
+        GL11.glTranslatef(48+3+3f,7f,0f)
+
+        Fonts.fontBold40.drawString(target.name,0f,0f,Color.WHITE.rgb)
+    }
+
     private fun drawFlux(target: EntityLivingBase, nowAnimHP: Float){
         val width = (38 + target.name.let(Fonts.font40::getStringWidth))
             .coerceAtLeast(70)
@@ -211,6 +230,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             "flux" -> Border(0F,0F,(38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
                 .coerceAtLeast(70)
                 .toFloat(),34F)
+            "fancy" -> Border(0F,0F,140F,40F)
             else -> null
         }
     }

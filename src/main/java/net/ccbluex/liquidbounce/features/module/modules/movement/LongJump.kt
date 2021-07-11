@@ -24,7 +24,7 @@ import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "LongJump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT, autoDisable = AutoDisableType.FLAG)
 class LongJump : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSky", "RedeSky2", "RedeSky3"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC"), "NCP")
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
     //redesky
@@ -205,6 +205,14 @@ class LongJump : Module() {
                         }else{
                             mc.timer.timerSpeed = 1F
                         }
+                    }
+
+                    "blocksmc" -> {
+                        mc.thePlayer.jumpMovementFactor = 0.1f
+                        mc.thePlayer.motionY += 0.0132
+                        mc.thePlayer.jumpMovementFactor = 0.09f
+                        mc.timer.timerSpeed = 0.8f
+                        MovementUtils.strafe()
                     }
                 }
             }
