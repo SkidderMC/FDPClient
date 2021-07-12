@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.util.Vec3
@@ -17,8 +18,10 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "BoatJump", description = "Insane jump xdddd.", category = ModuleCategory.MOVEMENT)
 class BoatJump : Module() {
-    private val hBoost=FloatValue("HBoost",3.0F,0F,6.0F)
-    private val vBoost=FloatValue("VBoost",3.0F,0F,6.0F)
+    private val mode=ListValue("Mode", arrayOf("Boost","Launch"),"Boost")
+    private val hBoost=FloatValue("HBoost",3F,0F,6F)
+    private val vBoost=FloatValue("VBoost",3F,0F,6F)
+    private val launchRadius=FloatValue("LaunchRadius",4F,3F,10F)
     private val delay=IntegerValue("Delay",200,100,500)
     private val autoHit=BoolValue("AutoHit",true)
 
@@ -46,10 +49,31 @@ class BoatJump : Module() {
             mc.gameSettings.keyBindSneak.pressed=false
             val radiansYaw=mc.thePlayer.rotationYaw * Math.PI / 180
 
-            mc.thePlayer.motionX = hBoost.get() * -sin(radiansYaw)
-            mc.thePlayer.motionZ = hBoost.get() * cos(radiansYaw)
-            mc.thePlayer.motionY = vBoost.get().toDouble()
-            jumpState=1
+            when(mode.get().toLowerCase()){
+                "boost" -> {
+                    mc.thePlayer.motionX = hBoost.get() * -sin(radiansYaw)
+                    mc.thePlayer.motionZ = hBoost.get() * cos(radiansYaw)
+                    mc.thePlayer.motionY = vBoost.get().toDouble()
+                    jumpState=1
+                }
+
+                "launch" -> {
+                    mc.thePlayer.motionX += (hBoost.get()*0.1) * -sin(radiansYaw)
+                    mc.thePlayer.motionZ += (hBoost.get()*0.1) * cos(radiansYaw)
+                    mc.thePlayer.motionY += vBoost.get()*0.1
+
+                    var hasBoat=false
+                    for(entity in mc.theWorld.loadedEntityList){
+                        if(entity is EntityBoat&&mc.thePlayer.getDistanceToEntity(entity)<launchRadius.get()){
+                            hasBoat=true
+                            break
+                        }
+                    }
+                    if(!hasBoat)
+                        jumpState=1
+                }
+            }
+
             timer.reset()
             hitTimer.reset()
         }
