@@ -12,8 +12,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.IChatComponent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -27,7 +25,6 @@ import java.util.Comparator;
 import java.util.List;
 
 @Mixin(GuiChat.class)
-@SideOnly(Side.CLIENT)
 public abstract class MixinGuiChat extends MixinGuiScreen {
     @Shadow
     protected GuiTextField inputField;
@@ -56,6 +53,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     private void keyTyped(char typedChar, int keyCode, CallbackInfo callbackInfo) {
         String text=inputField.getText();
         if(text.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
+            this.inputField.setMaxStringLength(114514);
             if (keyCode == 28 || keyCode == 156) {
                 LiquidBounce.commandManager.executeCommands(text);
                 callbackInfo.cancel();
@@ -64,6 +62,8 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
             }else{
                 LiquidBounce.commandManager.autoComplete(text);
             }
+        }else{
+            this.inputField.setMaxStringLength(100);
         }
     }
 
@@ -73,6 +73,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     @Inject(method = "setText", at = @At("HEAD"), cancellable = true)
     private void setText(String newChatText, boolean shouldOverwrite, CallbackInfo callbackInfo) {
         if(shouldOverwrite&&newChatText.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))){
+            this.inputField.setMaxStringLength(114514);
             this.inputField.setText(LiquidBounce.commandManager.getPrefix()+"say "+newChatText);
             callbackInfo.cancel();
         }

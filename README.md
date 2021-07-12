@@ -4,7 +4,7 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/Project-EZ4H/FDPClient)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Project-EZ4H/FDPClient)
 ![GitHub lines of code](https://tokei.rs/b1/github/Project-EZ4H/FDPClient)
-
+![Minecraft](https://img.shields.io/badge/game-Minecraft-brightgreen)
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.
 
 Website: https://fdp.liulihaocai.pw/  
