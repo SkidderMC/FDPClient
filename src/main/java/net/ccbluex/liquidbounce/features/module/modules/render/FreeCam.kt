@@ -101,10 +101,12 @@ class FreeCam : Module() {
 
         if (packet is S08PacketPlayerPosLook) {
             fakePlayer!!.setPosition(packet.x,packet.y,packet.z)
-            //when teleport,motion reset
+            // when teleport,motion reset
             motionX=0.0
             motionY=0.0
             motionZ=0.0
+            // apply the flag to bypass some anticheat
+            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer!!.posX,fakePlayer!!.posY,fakePlayer!!.posZ,fakePlayer!!.rotationYaw,fakePlayer!!.rotationPitch,fakePlayer!!.onGround))
 
             event.cancelEvent()
         }

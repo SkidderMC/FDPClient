@@ -104,11 +104,9 @@ class Scaffold : Module() {
     private val expandLengthValue = IntegerValue("ExpandLength", 5, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "AACSmart"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC"), "AAC")
     //private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     //private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
-    private val aacPitchValue = IntegerValue("AACPitch", 90, -90, 90)
-    private val aacYawValue = IntegerValue("AACYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true)
     private val minRotationSpeedValue:IntegerValue = object :IntegerValue("MinRotationSpeed", 180, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -726,13 +724,9 @@ class Scaffold : Module() {
         if (rotationsValue.get() != "None") {
             var rotation: Rotation? = null
             when (rotationsValue.get().toLowerCase()) {
-                "aac","aacsmart" -> {
+                "aac" -> {
                     if (!towerStatus) {
-                        rotation = Rotation(
-                            mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(),
-                            if (rotationsValue.get().toLowerCase()=="aacsmart") placeRotation.rotation.pitch else aacPitchValue.get()
-                                .toFloat()
-                        )
+                        rotation = Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180), placeRotation.rotation.pitch)
                     }else{
                         rotation = placeRotation.rotation
                     }
