@@ -53,8 +53,7 @@ public abstract class MixinGuiScreen {
     protected FontRenderer fontRendererObj;
 
     @Shadow
-    public void updateScreen() {
-    }
+    public abstract void updateScreen();
 
     @Shadow
     public abstract void handleComponentHover(IChatComponent component, int x, int y);

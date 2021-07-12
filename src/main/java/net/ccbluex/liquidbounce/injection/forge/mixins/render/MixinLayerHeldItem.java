@@ -18,8 +18,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -28,7 +26,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.UUID;
 
 @Mixin(LayerHeldItem.class)
-@SideOnly(Side.CLIENT)
 public class MixinLayerHeldItem {
 
     @Shadow

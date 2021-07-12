@@ -9,18 +9,17 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.BetterFPS;
 import net.ccbluex.liquidbounce.utils.misc.betterfps.BetterFPSCore;
 import net.minecraft.util.MathHelper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
 import java.util.function.Consumer;
 
 @Mixin(MathHelper.class)
-@SideOnly(Side.CLIENT)
 public class MixinMathHelper {
     private static BetterFPS betterFPS = null;
+
     private static final float[] SIN_TABLE = make(new float[65536], (e) ->
     {
         for (int i = 0; i < e.length; ++i)
@@ -110,8 +109,7 @@ public class MixinMathHelper {
         }
     }
     
-    private static <T> T make(T object, Consumer<T> consumer)
-    {
+    private static <T> T make(T object, Consumer<T> consumer) {
         consumer.accept(object);
         return object;
     }

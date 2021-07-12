@@ -14,8 +14,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.network.NetworkManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Mixin(GuiConnecting.class)
-@SideOnly(Side.CLIENT)
 public abstract class MixinGuiConnecting extends GuiScreen {
 
     @Shadow

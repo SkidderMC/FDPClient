@@ -7,8 +7,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityParticleEmitter;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 
 @Mixin(EffectRenderer.class)
-@SideOnly(Side.CLIENT)
 public abstract class MixinEffectRenderer {
 
     @Shadow

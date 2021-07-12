@@ -7,17 +7,13 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.awt.*;
 
-
 @Mixin(GuiButton.class)
-@SideOnly(Side.CLIENT)
 public abstract class MixinGuiButton extends Gui {
    @Shadow
    public int xPosition;
@@ -38,6 +34,9 @@ public abstract class MixinGuiButton extends Gui {
    public boolean enabled;
 
    @Shadow
+   public boolean visible;
+
+   @Shadow
    protected abstract void mouseDragged(Minecraft mc, int mouseX, int mouseY);
 
    @Shadow
@@ -48,6 +47,9 @@ public abstract class MixinGuiButton extends Gui {
 
    @Overwrite
    public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+      if(!visible)
+         return;
+
       this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
       this.mouseDragged(mc, mouseX, mouseY);
       long time=System.currentTimeMillis();

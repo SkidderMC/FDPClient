@@ -13,12 +13,6 @@ import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.io.UnsupportedEncodingException
-import java.lang.StringBuilder
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-import kotlin.experimental.and
-import kotlin.experimental.or
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun initGui() {

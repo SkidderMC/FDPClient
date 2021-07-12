@@ -46,8 +46,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     protected boolean isJumping;
 
     @Shadow
-    public void onLivingUpdate() {
-    }
+    public void onLivingUpdate() {}
 
     @Shadow
     protected abstract void updateFallState(double y, boolean onGroundIn, Block blockIn, BlockPos pos);
@@ -77,8 +76,8 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
         if(this.isSprinting()) {
             float f = this.rotationYaw * 0.017453292F;
-            this.motionX -= (double) (MathHelper.sin(f) * 0.2F);
-            this.motionZ += (double) (MathHelper.cos(f) * 0.2F);
+            this.motionX -= MathHelper.sin(f) * 0.2F;
+            this.motionZ += MathHelper.cos(f) * 0.2F;
         }
 
         this.isAirBorne = true;
