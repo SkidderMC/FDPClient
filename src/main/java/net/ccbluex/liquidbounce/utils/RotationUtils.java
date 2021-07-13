@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Listenable;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.TickEvent;
+import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 @SideOnly(Side.CLIENT)
@@ -252,6 +254,12 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                 currentRotation.getPitch() + (pitchDifference > turnSpeed ? turnSpeed : Math.max(pitchDifference, -turnSpeed)
         ));
     }
+
+    // TODO: HERE
+//    @NotNull
+//    public static Rotation limitAngleChangeHumanizing(){
+//
+//    }
 
     /**
      * Calculate difference between two angle points

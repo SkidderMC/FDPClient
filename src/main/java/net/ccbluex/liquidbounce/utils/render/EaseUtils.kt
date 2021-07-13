@@ -1,5 +1,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
+import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.value.ListValue
 import kotlin.math.*
 
 /***
@@ -197,5 +199,70 @@ object EaseUtils {
     fun easeInOutBounce(x: Double): Double {
         return if(x < 0.5){(1 - easeOutBounce(1 - 2 * x)) / 2}
         else{(1 + easeOutBounce(2 * x - 1)) / 2};
+    }
+
+    enum class EnumEasingType {
+        NONE,
+        SINE,
+        QUAD,
+        CUBIC,
+        QUART,
+        QUINT,
+        EXPO,
+        CIRC,
+        BACK,
+        ELASTIC,
+        BOUNCE;
+
+        fun toFriendlyName():String{
+            val name=toString()
+
+            return name.substring(0,1).toUpperCase()+name.substring(1,name.length).toLowerCase()
+        }
+    }
+
+    @JvmStatic
+    fun apply(type: EnumEasingType,order: EnumEasingOrder,value: Double):Double{
+        if(type==EnumEasingType.NONE)
+            return value
+
+        val methodName="ease${order.methodName}${type.toFriendlyName()}"
+
+        for(method in this.javaClass.declaredMethods){
+            if(method.name.equals(methodName)){
+                return method.invoke(this,value) as Double
+            }
+        }
+
+        ClientUtils.getLogger().warn("Cannot found easing method: $methodName")
+        return value
+    }
+
+    @JvmStatic
+    fun getEnumEasingList(name: String):ListValue{
+        val arr=mutableListOf<String>()
+
+        for(it in EnumEasingType.values()){
+            arr.add(it.toFriendlyName())
+        }
+
+        return ListValue(name,arr.toTypedArray(),arr[0])
+    }
+
+    enum class EnumEasingOrder(val methodName: String) {
+        FAST_AT_START("Out"),
+        FAST_AT_END("In"),
+        FAST_AT_START_AND_END("InOut")
+    }
+
+    @JvmStatic
+    fun getEnumEasingOrderList(name: String):ListValue{
+        val arr=mutableListOf<String>()
+
+        for(it in EnumEasingOrder.values()){
+            arr.add(it.toString())
+        }
+
+        return ListValue(name,arr.toTypedArray(),arr[0])
     }
 }
