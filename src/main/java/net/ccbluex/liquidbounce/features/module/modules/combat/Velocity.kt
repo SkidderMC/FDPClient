@@ -58,7 +58,7 @@ class Velocity : Module() {
     private val legitFaceValue = BoolValue("LegitFace",true)
 
     private val rspAlwaysValue = BoolValue("RedeSkyPacketAlwaysReduce",true)
-    private val rspDengerValue = BoolValue("RedeSkyPacketOnlyDenger",false)
+    private val rspDengerValue = BoolValue("RedeSkyPacketOnlyDanger",false)
 
     /**
      * VALUES
@@ -253,7 +253,7 @@ class Velocity : Module() {
 
                     if(rspDengerValue.get()){
                         val pos=FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.motionX/8000.0, packet.motionY/8000.0, packet.motionZ/8000.0, 0f,0f,0f).findCollision(60)
-                        if(pos==null||pos.y<(mc.thePlayer.posY-7))
+                        if(pos!=null && pos.y>(mc.thePlayer.posY-7))
                             return
                     }
 
