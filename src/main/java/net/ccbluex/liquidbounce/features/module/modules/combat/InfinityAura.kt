@@ -31,35 +31,25 @@ class InfinityAura : Module() {
     private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
     private val targetsValue=IntegerValue("Targets",3,1,10)
     private val cpsValue=IntegerValue("CPS",1,1,20)
-    private val distValue=IntegerValue("Distance",30,20,100,200)
-    private val moveDistValue=FloatValue("MoveDist",5F,2F,10F,15F)
+    private val distValue=IntegerValue("Distance",30,20,200)
+    private val moveDistValue=FloatValue("MoveDist",5F,2F,15F)
     private val noRegen=BoolValue("NoRegen",true)
     private val doSwing=BoolValue("Swing",true)
     private val path=BoolValue("PathRender",true)
     private val Timer=BoolValue("Timer",true)
-    private val speedValue = FloatValue("Speed", 2F, 0.1F, 10F)
+    private val speedValue = FloatValue("TimerSpeed", 2F, 0.1F, 10F)
     private val onMoveValue = BoolValue("OnMove", true)
 
- override fun onDisable() {
+    override fun onDisable() {
         if (mc.thePlayer == null)
             return
 
         mc.timer.timerSpeed = 1F
     }
-
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        if(MovementUtils.isMoving() || !onMoveValue.get()) {
-            mc.timer.timerSpeed = speedValue.get()
-            return
-        }
-
-        mc.timer.timerSpeed = 1F
-    }
-}    
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
     private var thread: Thread? = null
+    private var wasTimer = false
 
     private fun getDelay():Int{
         return 1000/cpsValue.get()
@@ -77,6 +67,13 @@ class InfinityAura : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
+        if(MovementUtils.isMoving() || !onMoveValue.get()) {
+            mc.timer.timerSpeed = speedValue.get()
+        }else if(wasTimer) {
+            wasTimer = false
+            mc.timer.timerSpeed = 1F
+        }
+        
         if(!timer.hasTimePassed(getDelay().toLong())) return
 
         when(modeValue.get().toLowerCase()){
