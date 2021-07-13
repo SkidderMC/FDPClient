@@ -63,12 +63,14 @@ class InfinityAura : Module() {
     override fun onDisable() {
         timer.reset()
         points.clear()
+        wasTimer = false
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
         if(MovementUtils.isMoving() || !onMoveValue.get()) {
             mc.timer.timerSpeed = speedValue.get()
+            wasTimer = true
         }else if(wasTimer) {
             wasTimer = false
             mc.timer.timerSpeed = 1F
