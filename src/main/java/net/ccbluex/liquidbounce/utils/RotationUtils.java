@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Listenable;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.TickEvent;
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -255,9 +256,10 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         ));
     }
 
-    // TODO: HERE
 //    @NotNull
-//    public static Rotation limitAngleChangeHumanizing(){
+//    public static Rotation limitAngleChangeHumanizing(final Rotation currentRotation, final Rotation targetRotation, final float turnSpeed) {
+//        float yawDiff = ((float) Rotations.INSTANCE.apply(1-(getAngleDifference(targetRotation.getYaw(), currentRotation.getYaw())/180d)))*180f;
+//        final float pitchDifference = getAngleDifference(targetRotation.getPitch(), currentRotation.getPitch());
 //
 //    }
 

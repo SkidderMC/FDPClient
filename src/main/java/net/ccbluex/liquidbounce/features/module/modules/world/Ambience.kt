@@ -10,8 +10,9 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.server.S03PacketTimeUpdate
+import net.minecraft.network.play.server.S2BPacketChangeGameState
 
-@ModuleInfo(name = "Ambience", description = "Change the World Time.", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "Ambience", description = "Change the world environment.", category = ModuleCategory.WORLD)
 class Ambience : Module() {
     private val timeModeValue = ListValue("TimeMode", arrayOf("None","Normal", "Custom"), "Normal")
     private val weatherModeValue = ListValue("WeatherMode", arrayOf("None","Sunny","Rainy","Thunder"), "None")
@@ -58,9 +59,15 @@ class Ambience : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent){
-        if(!timeModeValue.get().equals("none",true)&&event.packet is S03PacketTimeUpdate){
+        val packet=event.packet
+
+        if(!timeModeValue.get().equals("none",true)&&packet is S03PacketTimeUpdate){
             event.cancelEvent()
         }
-        // TODO: what is the change weather packet
+
+        if(!weatherModeValue.get().equals("none",true)&&packet is S2BPacketChangeGameState){
+            if(packet.gameState in 7..8) // change weather packet
+                event.cancelEvent()
+        }
     }
 }
