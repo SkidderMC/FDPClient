@@ -23,7 +23,7 @@ import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "LongJump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT, autoDisable = AutoDisableType.FLAG)
 class LongJump : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC", "BlocksMC2", "HYT4v4", "Custom"), "NCP")
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
     //redesky
@@ -56,7 +56,10 @@ class LongJump : Module() {
     private var teleported = false
     private var canMineplexBoost = false
     private var timer=MSTimer()
-
+    //Custom
+    private val customLongValue=FloatValue("CustomLong",1F,0.5F,10F)
+    private val customHeightValue=FloatValue("CustomHeight",1F,0F,3F)
+    private val customTimerValue=FloatValue("CustomTimer",1F,0.1F,3F)
     var airTicks=0
 
     override fun onEnable() {
@@ -212,6 +215,24 @@ class LongJump : Module() {
                         mc.thePlayer.jumpMovementFactor = 0.09f
                         mc.timer.timerSpeed = 0.8f
                         MovementUtils.strafe()
+                    }
+
+                    "blocksmc2" -> {
+                        mc.thePlayer.motionY += 0.01554
+                        MovementUtils.strafe(MovementUtils.getSpeed() * 1.114514f)
+                        mc.timer.timerSpeed = 0.917555f
+                    }
+
+                    "hyt4v4" -> {
+                        mc.thePlayer.motionY += 0.031470000997
+                        MovementUtils.strafe(MovementUtils.getSpeed() * 1.0114514f)
+                        mc.timer.timerSpeed = 1.0114514f
+                    }
+
+                    "custom" -> {
+                        mc.thePlayer.motionY += customHeightValue.get()/2F
+                        MovementUtils.strafe(customLongValue.get()/2F)
+                        mc.timer.timerSpeed = customTimerValue.get()
                     }
                 }
             }

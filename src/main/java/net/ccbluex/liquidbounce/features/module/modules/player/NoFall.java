@@ -28,7 +28,7 @@ import java.util.TimerTask;
 // TODO: phase mode bypass matrix
 @ModuleInfo(name = "NoFall", description = "Prevents you from taking fall damage.", category = ModuleCategory.PLAYER)
 public class NoFall extends Module {
-    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "Spartan", "CubeCraft", "Hypixel", "Phase", "Verus", "HypixelNew"}, "SpoofGround");
+    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "Spartan", "CubeCraft", "Hypixel", "Phase", "Verus", "HypixelNew", "HypixelAnother"}, "SpoofGround");
 
     private final IntegerValue phaseOffsetValue = new IntegerValue("PhaseOffset",1,0,5);
 
@@ -79,6 +79,13 @@ public class NoFall extends Module {
                 }
                 if(mc.thePlayer.fallDistance > 2) {
                     mc.thePlayer.onGround = false;
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
+                }
+                break;
+            }
+            case "hypixelanother":{
+                if(mc.thePlayer.fallDistance> 2.74) {
+                    mc.thePlayer.onGround=false;
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
                 }
                 break;

@@ -5,6 +5,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.play.client.C01PacketChatMessage
+import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.server.S09PacketHeldItemChange
 
@@ -22,8 +23,9 @@ class PacketFixer : Listenable,MinecraftInstance() {
             serversideSlot=packet.slotId
         }else if(packet is S09PacketHeldItemChange){
             serversideSlot=packet.heldItemHotbarIndex
-        }else if(packet is C01PacketChatMessage){
-            println(event.type)
+        }else if(packet is C02PacketUseEntity){
+            if(packet.getEntityFromWorld(mc.theWorld).equals(mc.thePlayer))
+                event.cancelEvent()
         }
     }
 

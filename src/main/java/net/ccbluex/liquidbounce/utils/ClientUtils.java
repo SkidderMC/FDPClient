@@ -44,7 +44,7 @@ public final class ClientUtils extends MinecraftInstance {
     }
 
     public static void setTitle(){
-        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_VERSION + " | " + LiquidBounce.MINECRAFT_VERSION + (LiquidBounce.IN_DEV ? " | DEVELOPMENT BUILD" : ""));
+        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_VERSION + " | Mc " + LiquidBounce.MINECRAFT_VERSION);
     }
 
     public static void disableFastRender() {
