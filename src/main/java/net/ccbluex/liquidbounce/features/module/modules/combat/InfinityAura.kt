@@ -68,6 +68,7 @@ class InfinityAura : Module() {
             wasTimer = false
             mc.timer.timerSpeed = 1F
         }
+        if(!timer.hasTimePassed(getDelay().toLong())) return
         when(modeValue.get().toLowerCase()){
             "aura" -> {
                 if(thread == null || !thread!!.isAlive) {
