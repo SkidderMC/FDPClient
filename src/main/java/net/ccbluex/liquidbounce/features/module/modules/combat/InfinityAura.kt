@@ -30,14 +30,11 @@ class InfinityAura : Module() {
     private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
     private val targetsValue=IntegerValue("Targets",3,1,10)
     private val cpsValue=IntegerValue("CPS",1,1,10)
-    private val distValue=IntegerValue("Distance",30,20,200)
-    private val moveDistValue=FloatValue("MoveDist",5F,2F,15F)
+    private val distValue=IntegerValue("Distance",30,20,100)
+    private val moveDistValue=FloatValue("MoveDist",5F,2F,10F)
     private val noRegen=BoolValue("NoRegen",true)
     private val doSwing=BoolValue("Swing",true)
     private val path=BoolValue("PathRender",true)
-    private val Timer=BoolValue("Timer",true)
-    private val speedValue = FloatValue("TimerSpeed", 2F, 0.1F, 10F)
-    private val onMoveValue = BoolValue("OnMove", true)
 
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
@@ -55,17 +52,11 @@ class InfinityAura : Module() {
     override fun onDisable() {
         timer.reset()
         points.clear()
-        wasTimer = false
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
-        if(MovementUtils.isMoving() || !onMoveValue.get()) {
-            mc.timer.timerSpeed = speedValue.get()
-            wasTimer = true
-        }else if(wasTimer) {
-            wasTimer = false
-            mc.timer.timerSpeed = 1F
+        if(!timer.hasTimePassed(getDelay().toLong())) return
 
         when(modeValue.get().toLowerCase()){
             "aura" -> {
