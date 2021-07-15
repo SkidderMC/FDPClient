@@ -7,7 +7,6 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PathUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
@@ -18,9 +17,9 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
@@ -30,7 +29,7 @@ import java.awt.Color
 class InfinityAura : Module() {
     private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
     private val targetsValue=IntegerValue("Targets",3,1,10)
-    private val cpsValue=IntegerValue("CPS",1,1,20)
+    private val cpsValue=IntegerValue("CPS",1,1,10)
     private val distValue=IntegerValue("Distance",30,20,200)
     private val moveDistValue=FloatValue("MoveDist",5F,2F,15F)
     private val noRegen=BoolValue("NoRegen",true)
@@ -40,16 +39,9 @@ class InfinityAura : Module() {
     private val speedValue = FloatValue("TimerSpeed", 2F, 0.1F, 10F)
     private val onMoveValue = BoolValue("OnMove", true)
 
-    override fun onDisable() {
-        if (mc.thePlayer == null)
-            return
-
-        mc.timer.timerSpeed = 1F
-    }
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
     private var thread: Thread? = null
-    private var wasTimer = false
 
     private fun getDelay():Int{
         return 1000/cpsValue.get()
@@ -74,9 +66,6 @@ class InfinityAura : Module() {
         }else if(wasTimer) {
             wasTimer = false
             mc.timer.timerSpeed = 1F
-        }
-        
-        if(!timer.hasTimePassed(getDelay().toLong())) return
 
         when(modeValue.get().toLowerCase()){
             "aura" -> {
