@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PathUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -37,7 +38,7 @@ class InfinityAura : Module() {
     private val path=BoolValue("PathRender",true)
     private val Timer=BoolValue("Timer",true)
     private val speedValue = FloatValue("TimerSpeed", 2F, 0.1F, 10F)
-    private val onMoveValue = BoolValue("OnMove", true)
+    private val onMoveValue = BoolValue("TimerOnMove", true)
 
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
@@ -66,7 +67,7 @@ class InfinityAura : Module() {
         }else if(wasTimer) {
             wasTimer = false
             mc.timer.timerSpeed = 1F
-
+        }
         when(modeValue.get().toLowerCase()){
             "aura" -> {
                 if(thread == null || !thread!!.isAlive) {
