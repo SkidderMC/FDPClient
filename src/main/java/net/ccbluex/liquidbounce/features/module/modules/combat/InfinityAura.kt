@@ -43,6 +43,7 @@ class InfinityAura : Module() {
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
     private var thread: Thread? = null
+    private var wasTimer = false
 
     private fun getDelay():Int{
         return 1000/cpsValue.get()
