@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTriAngle
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
@@ -23,7 +24,7 @@ import kotlin.math.*
 
 @ModuleInfo(name = "PointerESP", description = "Show the pointers around your crossing.", category = ModuleCategory.RENDER)
 class PointerESP : Module() {
-    private val solidValue = BoolValue("Solid", false)
+    private val modeValue = ListValue("Mode", arrayOf("Solid","Line"),"Solid")
     private val redValue = IntegerValue("Red",140,0,255)
     private val greenValue = IntegerValue("Green",140,0,255)
     private val blueValue = IntegerValue("Blue",255,0,255)
@@ -59,13 +60,17 @@ class PointerESP : Module() {
                     GlStateManager.translate(x, y, 0.0)
                     GlStateManager.rotate(angle, 0F, 0F, 1F)
                     GlStateManager.scale(1.5, 1.0, 1.0)
-                    if (solidValue.get()){
-                        drawTriAngle(0F, 0F, 2.2F, 3F, color)
-                        drawTriAngle(0F, 0F, 1.5F, 3F, color)
-                        drawTriAngle(0F, 0F, 1.0F, 3F, color)
-                        drawTriAngle(0F, 0F, 0.5F, 3F, color)
-                    } else 
-                        drawTriAngle(0F, 0F, 2.2F, 3F, color)
+                    when(modeValue.get().toLowerCase()){
+                        "solid" -> {
+                            drawTriAngle(0F, 0F, 2.2F, 3F, color)
+                            drawTriAngle(0F, 0F, 1.5F, 3F, color)
+                            drawTriAngle(0F, 0F, 1.0F, 3F, color)
+                            drawTriAngle(0F, 0F, 0.5F, 3F, color)
+                        }
+                        "line" -> {
+                            drawTriAngle(0F, 0F, 2.2F, 3F, color)
+                        }
+                    }
                     GlStateManager.popMatrix()
                 }
             }

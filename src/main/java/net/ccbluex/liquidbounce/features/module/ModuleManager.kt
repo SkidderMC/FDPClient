@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.features.module.modules.player.*
 import net.ccbluex.liquidbounce.features.module.modules.render.*
 import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.features.module.modules.world.Timer
-import net.ccbluex.liquidbounce.modules.render.PointerESP
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.util.*
 
