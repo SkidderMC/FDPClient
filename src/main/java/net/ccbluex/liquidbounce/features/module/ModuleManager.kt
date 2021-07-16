@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.*
 import net.ccbluex.liquidbounce.features.module.modules.render.*
 import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.features.module.modules.world.Timer
+import net.ccbluex.liquidbounce.modules.render.PointerESP
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.util.*
 
@@ -149,7 +150,8 @@ class ModuleManager : Listenable {
             NewClickGui::class.java,
             SuperKnockback::class.java,
             AutoReport::class.java,
-            AntiFireBall::class.java
+            AntiFireBall::class.java,
+            PointerESP::class.java
         )
 
         registerModule(Fucker)
