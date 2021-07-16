@@ -98,6 +98,15 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     }
 
     /**
+     *
+     * @param entity
+     * @return
+     */
+    public static Rotation getRotationsNonLivingEntity(Entity entity) {
+        return RotationUtils.getRotations(entity.posX, entity.posY + (entity.getEntityBoundingBox().maxY-entity.getEntityBoundingBox().minY)*0.5, entity.posZ);
+    }
+
+    /**
      * Face target with bow
      *
      * @param target your enemy

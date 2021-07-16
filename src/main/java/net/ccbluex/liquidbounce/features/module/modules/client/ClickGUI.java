@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.LiquidBounceStyle;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.NullStyle;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.SlowlyStyle;
@@ -29,7 +30,7 @@ import java.awt.*;
 // TODO: Rewrite clickgui
 @ModuleInfo(name = "ClickGUI", description = "Opens the ClickGUI.", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUI extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[] {"LiquidBounce", "Null", "Slowly"}, "Slowly") {
+    private final ListValue styleValue = new ListValue("Style", new String[] {"LiquidBounce", "Null", "Slowly", "Black"}, "Slowly") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -65,6 +66,9 @@ public class ClickGUI extends Module {
                 break;
             case "slowly":
                 LiquidBounce.clickGui.style = new SlowlyStyle();
+                break;
+            case "black":
+                LiquidBounce.clickGui.style = new BlackStyle();
                 break;
         }
     }

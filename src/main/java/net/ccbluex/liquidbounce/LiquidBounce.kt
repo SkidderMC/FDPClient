@@ -39,8 +39,7 @@ object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
-    const val CLIENT_VERSION = "v1.2.3"
-    const val IN_DEV = false
+    const val CLIENT_VERSION = "v1.2.4"
     const val CLIENT_CREATOR = "CCBlueX & Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
 
@@ -67,7 +66,7 @@ object LiquidBounce {
     // Update information
     var latestVersion = ""
     lateinit var updatelog: JsonArray
-    var website = "Fetching..."
+    var website = "null"
     var displayedUpdateScreen=false
 
     // Menu Background
@@ -84,24 +83,21 @@ object LiquidBounce {
         isStarting = true
 
         updatelog=JsonArray()
-        updatelog.add(JsonPrimitive("Fetching..."))
 
         // check update
-        if(!IN_DEV) {
-            Thread {
-                val get = HttpUtils.get("https://fdp.liulihaocai.workers.dev/")
+        Thread {
+            val get = HttpUtils.get("https://fdp.liulihaocai.workers.dev/")
 
-                val jsonObj = JsonParser()
-                    .parse(get).asJsonObject
+            val jsonObj = JsonParser()
+                .parse(get).asJsonObject
 
-                latestVersion = jsonObj.get("version").asString
-                website = jsonObj.get("website").asString
-                updatelog = jsonObj.getAsJsonArray("updatelog")
+            latestVersion = jsonObj.get("version").asString
+            website = jsonObj.get("website").asString
+            updatelog = jsonObj.getAsJsonArray("updatelog")
 
-                if(latestVersion== CLIENT_VERSION)
-                    latestVersion = ""
-            }.start()
-        }
+            if(latestVersion== CLIENT_VERSION)
+                latestVersion = ""
+        }.start()
     }
 
     /***

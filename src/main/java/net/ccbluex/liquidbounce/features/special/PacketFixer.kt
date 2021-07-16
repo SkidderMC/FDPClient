@@ -24,7 +24,7 @@ class PacketFixer : Listenable,MinecraftInstance() {
         }else if(packet is S09PacketHeldItemChange){
             serversideSlot=packet.heldItemHotbarIndex
         }else if(packet is C02PacketUseEntity){
-            if(packet.getEntityFromWorld(mc.theWorld).equals(mc.thePlayer))
+            if(mc.thePlayer.equals(packet.getEntityFromWorld(mc.theWorld)))
                 event.cancelEvent()
         }
     }

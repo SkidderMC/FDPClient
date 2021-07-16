@@ -148,7 +148,8 @@ class ModuleManager : Listenable {
             AntiAim::class.java,
             NewClickGui::class.java,
             SuperKnockback::class.java,
-            AutoReport::class.java
+            AutoReport::class.java,
+            AntiFireBall::class.java
         )
 
         registerModule(Fucker)
