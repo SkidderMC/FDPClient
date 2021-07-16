@@ -2,13 +2,13 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.AutoDisableType
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 
 class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
     private val modes=ArrayList<String>()
 
     init {
-        for(type in AutoDisableType.values()){
+        for(type in EnumAutoDisableType.values()){
             modes.add(type.toString().toLowerCase())
         }
     }
@@ -24,9 +24,9 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
 
             when(args[2].toUpperCase()){
                 "RESPAWN","FLAG" -> {
-                    module.autoDisable = AutoDisableType.valueOf(args[2].toUpperCase())
+                    module.autoDisable = EnumAutoDisableType.valueOf(args[2].toUpperCase())
                 }
-                else -> module.autoDisable = AutoDisableType.NONE
+                else -> module.autoDisable = EnumAutoDisableType.NONE
             }
             playEdit()
 

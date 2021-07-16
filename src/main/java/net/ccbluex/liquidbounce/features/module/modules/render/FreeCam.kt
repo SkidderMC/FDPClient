@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.AutoDisableType
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -20,7 +20,7 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-@ModuleInfo(name = "FreeCam", description = "Allows you to move out of your body.", category = ModuleCategory.RENDER, autoDisable = AutoDisableType.RESPAWN)
+@ModuleInfo(name = "FreeCam", description = "Allows you to move out of your body.", category = ModuleCategory.RENDER, autoDisable = EnumAutoDisableType.RESPAWN)
 class FreeCam : Module() {
     private val speedValue = FloatValue("Speed", 0.8f, 0.1f, 2f)
     private val flyValue = BoolValue("Fly", true)

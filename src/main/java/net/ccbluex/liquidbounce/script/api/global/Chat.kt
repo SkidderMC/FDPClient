@@ -21,4 +21,10 @@ object Chat {
     fun print(message : String) {
         ClientUtils.displayChatMessage(message)
     }
+
+    @Suppress("unused")
+    @JvmStatic
+    fun alert(message : String) {
+        ClientUtils.displayAlert(message)
+    }
 }

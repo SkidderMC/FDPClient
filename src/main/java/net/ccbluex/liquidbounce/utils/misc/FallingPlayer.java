@@ -23,8 +23,14 @@ public class FallingPlayer extends MinecraftInstance {
 
     private float strafe;
     private float forward;
+    private float jumpMovementFactor;
 
-    public FallingPlayer(double x, double y, double z, double motionX, double motionY, double motionZ, float yaw, float strafe, float forward) {
+    // support old codes
+    public FallingPlayer(double x, double y, double z, double motionX, double motionY, double motionZ, float yaw, float strafe, float forward){
+        this(x, y, z, motionX, motionY, motionZ, yaw, strafe, forward, mc.thePlayer.jumpMovementFactor);
+    }
+
+    public FallingPlayer(double x, double y, double z, double motionX, double motionY, double motionZ, float yaw, float strafe, float forward, float jumpMovementFactor) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -34,6 +40,7 @@ public class FallingPlayer extends MinecraftInstance {
         this.yaw = yaw;
         this.strafe = strafe;
         this.forward = forward;
+        this.jumpMovementFactor = jumpMovementFactor;
     }
 
     private void calculateForTick() {
@@ -49,7 +56,7 @@ public class FallingPlayer extends MinecraftInstance {
                 v = 1.0F;
             }
 
-            v = mc.thePlayer.jumpMovementFactor / v;
+            v = jumpMovementFactor / v;
             strafe = strafe * v;
             forward = forward * v;
             float f1 = MathHelper.sin(yaw * (float) Math.PI / 180.0F);

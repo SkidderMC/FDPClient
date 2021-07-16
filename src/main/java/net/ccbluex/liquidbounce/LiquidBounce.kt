@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
-import com.google.gson.JsonPrimitive
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager

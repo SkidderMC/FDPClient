@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -23,12 +24,11 @@ import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S0BPacketAnimation
 import net.minecraft.stats.StatList
-import net.ccbluex.liquidbounce.utils.MovementUtils
 
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "Hypixel", "Hypixel2", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Mineplex", "More", "Tryminemora"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "Hypixel", "Hypixel2", "Hypixel3", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Mineplex", "More", "Tryminemora"), "packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
@@ -117,6 +117,20 @@ class Criticals : Module() {
                     }else{
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.05250000001304, z, false))
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00150000001304, z, false))
+                    }
+                }
+
+                "hypixel3" -> {
+                    if(lookValue.get()){
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.045, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0010000275, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0436f, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0010000275, z, yaw, pitch, false))
+                    }else{
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.045, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0010000275, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0436, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0010000275, z, false))
                     }
                 }
 

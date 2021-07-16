@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
-import net.ccbluex.liquidbounce.features.module.AutoDisableType
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -18,7 +18,7 @@ class AutoDisable : Module() {
     fun onWorld(event: WorldEvent){
         LiquidBounce.moduleManager.modules
             .forEach { module ->
-                if(module.state&&module.autoDisable==AutoDisableType.RESPAWN){
+                if(module.state&&module.autoDisable==EnumAutoDisableType.RESPAWN){
                     module.state=false
                     LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to respawn.",NotifyType.WARNING,2000))
                 }
@@ -30,7 +30,7 @@ class AutoDisable : Module() {
         if(event.packet is S08PacketPlayerPosLook){
             LiquidBounce.moduleManager.modules
                 .forEach { module ->
-                    if(module.state&&module.autoDisable==AutoDisableType.FLAG){
+                    if(module.state&&module.autoDisable==EnumAutoDisableType.FLAG){
                         module.state=false
                         LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to flag.",NotifyType.WARNING,2000))
                     }

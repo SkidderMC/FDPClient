@@ -14,11 +14,8 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.Value
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.input.Keyboard
 
-@SideOnly(Side.CLIENT)
 open class Module : MinecraftInstance(), Listenable {
     // Module information
     var name: String
@@ -39,7 +36,7 @@ open class Module : MinecraftInstance(), Listenable {
                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
         }
     private val canEnable: Boolean
-    var autoDisable: AutoDisableType
+    var autoDisable: EnumAutoDisableType
     val moduleCommand: Boolean
 
     var slideStep = 0F

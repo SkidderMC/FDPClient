@@ -7,14 +7,14 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.AutoDisableType
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 
-@ModuleInfo(name = "XRay", description = "Allows you to see ores through walls.", category = ModuleCategory.RENDER, autoDisable = AutoDisableType.RESPAWN, moduleCommand = false)
+@ModuleInfo(name = "XRay", description = "Allows you to see ores through walls.", category = ModuleCategory.RENDER, autoDisable = EnumAutoDisableType.RESPAWN, moduleCommand = false)
 class XRay : Module() {
     val xrayBlocks = mutableListOf<Block>(
             Blocks.coal_ore,

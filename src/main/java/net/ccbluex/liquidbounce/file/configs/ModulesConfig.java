@@ -10,7 +10,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.AutoDisableType;
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
@@ -55,7 +55,7 @@ public class ModulesConfig extends FileConfig {
                     module.setArray(jsonModule.get("Array").getAsBoolean());
 
                 if (jsonModule.has("AutoDisable"))
-                    module.setAutoDisable(AutoDisableType.valueOf(jsonModule.get("AutoDisable").getAsString()));
+                    module.setAutoDisable(EnumAutoDisableType.valueOf(jsonModule.get("AutoDisable").getAsString()));
             }
         }
     }
