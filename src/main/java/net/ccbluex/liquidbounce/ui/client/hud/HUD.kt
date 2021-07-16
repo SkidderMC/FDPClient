@@ -39,7 +39,8 @@ open class HUD : MinecraftInstance() {
             KeyStrokes::class.java,
             SpeedGraph::class.java,
             Inventory::class.java,
-            Targets::class.java
+            Targets::class.java,
+            ModuleInfos::class.java
         )
 
         /**
