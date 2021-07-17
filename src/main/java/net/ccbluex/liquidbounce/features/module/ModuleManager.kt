@@ -9,7 +9,10 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import org.lwjgl.input.Keyboard
 import org.reflections.Reflections
 import java.util.*
 
@@ -17,6 +20,8 @@ class ModuleManager : Listenable {
 
     val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
+
+    var pendingBindModule: Module?=null
 
     init {
         LiquidBounce.eventManager.registerListener(this)
@@ -111,7 +116,16 @@ class ModuleManager : Listenable {
      * Handle incoming key presses
      */
     @EventTarget
-    private fun onKey(event: KeyEvent) = modules.filter { it.keyBind == event.key }.forEach { it.toggle() }
+    private fun onKey(event: KeyEvent){
+        if(pendingBindModule==null) {
+            modules.filter { it.keyBind == event.key }.forEach { it.toggle() }
+        }else{
+            pendingBindModule!!.keyBind=event.key
+            ClientUtils.displayAlert("Bound module §a§l${pendingBindModule!!.name}§3 to key §a§l${Keyboard.getKeyName(event.key)}§3.")
+            LiquidBounce.hud.addNotification(Notification("KeyBind","Bound ${pendingBindModule!!.name} to ${Keyboard.getKeyName(event.key)}.", NotifyType.INFO))
+            pendingBindModule=null
+        }
+    }
 
     override fun handleEvents() = true
 }

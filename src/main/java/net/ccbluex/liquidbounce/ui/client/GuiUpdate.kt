@@ -26,7 +26,7 @@ class GuiUpdate() : GuiScreen() {
         drawBackground(0)
 
         drawCenteredString(Fonts.font35, "FDP Client ${LiquidBounce.latestVersion} got released!", width / 2, height / 8 + 80, 0xffffff)
-        drawCenteredString(Fonts.font35, "Press \"Download\" button to download the latest version!", width / 2, height / 8 + 80 + Fonts.font35.FONT_HEIGHT, 0xffffff)
+        drawCenteredString(Fonts.font35, LiquidBounce.updateMessage, width / 2, height / 8 + 80 + Fonts.font35.FONT_HEIGHT, 0xffffff)
 
         super.drawScreen(mouseX, mouseY, partialTicks)
 
@@ -38,7 +38,7 @@ class GuiUpdate() : GuiScreen() {
     override fun actionPerformed(button: GuiButton) {
         when (button.id) {
             1 -> closeGui()
-            2 -> MiscUtils.showURL("https://fdp.liulihaocai.pw")
+            2 -> MiscUtils.showURL("https://${LiquidBounce.website}")
         }
     }
 

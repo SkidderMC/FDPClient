@@ -40,7 +40,7 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "FDPClient"
     const val COLORED_NAME = "§c§lFDP§6§lClient"
-    const val CLIENT_VERSION = "v1.2.4"
+    const val CLIENT_VERSION = "v1.3.0"
     const val CLIENT_CREATOR = "CCBlueX & Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
 
@@ -70,6 +70,7 @@ object LiquidBounce {
     var latestVersion = ""
     lateinit var updatelog: JsonArray
     var website = "null"
+    var updateMessage="Press \"Download\" button to download the latest version!"
     var displayedUpdateScreen=false
 
     // Menu Background
@@ -97,6 +98,8 @@ object LiquidBounce {
             latestVersion = jsonObj.get("version").asString
             website = jsonObj.get("website").asString
             updatelog = jsonObj.getAsJsonArray("updatelog")
+            if(jsonObj.has("updatemsg"))
+                updateMessage=jsonObj.get("updatemsg").asString
 
             if(latestVersion== CLIENT_VERSION)
                 latestVersion = ""
