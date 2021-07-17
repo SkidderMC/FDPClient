@@ -195,16 +195,33 @@ class ConfigManager {
         if(oldSettingDir.exists()){
             oldSettingDir.listFiles().forEach {
                 if(it.isFile){
+                    val name=nowConfig
                     ClientUtils.logWarn("Converting legacy setting \"${it.name}\"")
-                    load(it.name,false)
+                    load("default",false)
+                    nowConfig=it.name
+                    configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
                     executeScript(String(Files.readAllBytes(it.toPath())))
                     save(false,true)
+                    // set data back
+                    nowConfig=name
+                    configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
+                    saveConfigSet()
                 }
-                it.delete()
+                if(!LiquidBounce.fileManager.legacySettingsDir.exists())
+                    LiquidBounce.fileManager.legacySettingsDir.mkdir()
+
+                it.renameTo(File(LiquidBounce.fileManager.legacySettingsDir,it.name))
             }
             oldSettingDir.delete()
         }
     }
+
+//    fun toLegacy(name: String){
+//        if(!LiquidBounce.fileManager.legacySettingsDir.exists())
+//            LiquidBounce.fileManager.legacySettingsDir.mkdir()
+//
+//        val jsonObject=JsonParser().parse()
+//    }
 
     /**
      * Register [section]

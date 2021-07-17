@@ -37,9 +37,9 @@ class Spammer : Module() {
         }
     }
 
-    private val modeValue = ListValue("Mode", arrayOf("Abuse","Single"),"Single")
+    private val modeValue = ListValue("Mode", arrayOf("Single","Abuse","OrderAbuse"),"Single")
     private val messageValue = TextValue("Message", "Buy %r Minecraft %r Legit %r and %r stop %r using %r cracked %r servers %r%r")
-    private val randomValue = BoolValue("RandomAbuse",true)
+    private val abuseMessageValue = TextValue("AbuseMessage", "[%s] %w [%s]")
 
     private val msTimer = MSTimer()
     private var delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
@@ -54,15 +54,14 @@ class Spammer : Module() {
         if (msTimer.hasTimePassed(delay)) {
             mc.thePlayer.sendChatMessage(when(modeValue.get().toLowerCase()){
                 "abuse" -> {
-                    replace(if(randomValue.get()){
-                        AutoAbuse.getRandomOne()
-                    }else{
-                        lastIndex++
-                        if(lastIndex>(AutoAbuse.abuseWords!!.size()-1)){
-                            lastIndex=0
-                        }
-                        AutoAbuse.abuseWords!![lastIndex].asString
-                    })
+                    replaceAbuse(AutoAbuse.getRandomOne())
+                }
+                "orderabuse" -> {
+                    lastIndex++
+                    if(lastIndex>=(AutoAbuse.abuseWords!!.size()-1)){
+                        lastIndex=0
+                    }
+                    replaceAbuse(AutoAbuse.abuseWords!![lastIndex].asString)
                 }
                 else -> replace(messageValue.get())
             })
@@ -71,8 +70,13 @@ class Spammer : Module() {
         }
     }
 
+    private fun replaceAbuse(str: String): String {
+        return replace(abuseMessageValue.get().replace("%w",str))
+    }
+
     private fun replace(str: String): String {
         return str.replace("%r", RandomUtils.nextInt(0, 99).toString())
+                    .replace("%s",RandomUtils.randomString(3))
                     .replace("%c", RandomUtils.randomString(1))
                     .replace("%name%",if(LiquidBounce.combatManager.target!=null){ LiquidBounce.combatManager.target!!.name }else{ "You" })
     }

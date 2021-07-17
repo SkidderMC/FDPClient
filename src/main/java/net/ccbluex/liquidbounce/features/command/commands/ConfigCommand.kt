@@ -39,10 +39,12 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 "delete" -> {
                     if(args.size>2){
                         val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
-                        if(file.exists())
+                        if(file.exists()) {
+                            file.delete()
                             chat("Successfully deleted config ${args[2]}")
-                        else
+                        }else {
                             chat("Config ${args[2]} not exist")
+                        }
                     }else{
                         chatSyntax("${args[1]} <configName>")
                     }
@@ -74,15 +76,55 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                     LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig,false)
                     chat("Reloaded config ${LiquidBounce.configManager.nowConfig}")
                 }
+
+                "rename" -> {
+                    if(args.size>3){
+                        val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
+                        val newFile=File(LiquidBounce.fileManager.configsDir,"${args[3]}.json")
+                        if(file.exists()&&!newFile.exists()) {
+                            file.renameTo(newFile)
+                            chat("Renamed config ${args[2]} to ${args[3]}")
+                        }else if(!file.exists()) {
+                            chat("Config ${args[2]} not exist")
+                        }else if(newFile.exists()){
+                            chat("Config ${args[3]} already exists")
+                        }
+                        if(LiquidBounce.configManager.nowConfig.equals(args[2],true)){
+                            LiquidBounce.configManager.load(args[3],false)
+                            LiquidBounce.configManager.saveConfigSet()
+                        }
+                    }else{
+                        chatSyntax("${args[1]} <configName> <newName>")
+                    }
+                }
+
+//                "tolegacy" -> {
+//                    if(args.size>2){
+//                        val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
+//                        if(file.exists()) {
+//                            if(LiquidBounce.configManager.nowConfig.equals(args[2],true)){
+//                                LiquidBounce.configManager.save(true,true)
+//                            }
+//                            LiquidBounce.configManager.toLegacy(args[2])
+//                            chat("Successfully converted config ${args[2]}")
+//                        }else {
+//                            chat("Config ${args[2]} not exist")
+//                        }
+//                    }else{
+//                        chatSyntax("${args[1]} <configName>")
+//                    }
+//                }
             }
         }else{
             chatSyntax(arrayOf("create <configName>",
                 "load <configName>",
                 "forceload <configName>",
                 "delete <configName>",
+                "rename <configName> <newName>",
                 "reload",
                 "list",
-                "save"))
+                "save"/*,
+                "toLegacy <configName>"*/))
         }
     }
 
@@ -90,9 +132,9 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
         if (args.isEmpty()) return emptyList()
 
         return when (args.size) {
-            1 -> listOf("create", "load", "forceload", "delete", "reload", "list", "save").filter { it.startsWith(args[0], true) }
+            1 -> listOf("create", "load", "forceload", "delete", "rename", "reload", "list", "save"/*, "toLegacy"*/).filter { it.startsWith(args[0], true) }
             2 -> when (args[0].toLowerCase()) {
-                    "delete", "load", "forceload" -> {
+                    "delete", "load", "forceload", "rename" -> {
                         (LiquidBounce.fileManager.configsDir.listFiles() ?: return emptyList())
                             .filter { it.isFile }
                             .map {

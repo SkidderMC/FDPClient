@@ -36,6 +36,10 @@ object AutoAbuse : Module() {
     private val waterMarkValue = BoolValue("WaterMark", true)
 
     init {
+        loadFile()
+    }
+
+    fun loadFile(){
         try {
             //check file exists
             val abuseFile=File(LiquidBounce.fileManager.dir, "abuse.json")
@@ -63,7 +67,7 @@ object AutoAbuse : Module() {
         get() = modeValue.get()
 
     fun getRandomOne():String{
-        return abuseWords!![(Math.random() * (abuseWords!!.size()-1)).roundToInt()].asString
+        return abuseWords!![RandomUtils.nextInt(0, abuseWords!!.size()-1)].asString
     }
 
     @EventTarget
