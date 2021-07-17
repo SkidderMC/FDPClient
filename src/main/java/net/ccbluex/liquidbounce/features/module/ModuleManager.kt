@@ -55,7 +55,16 @@ class ModuleManager : Listenable {
         try {
             registerModule(moduleClass.newInstance())
         } catch (e: Throwable) {
-            ClientUtils.getLogger().error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
+            try {
+                moduleClass.declaredFields.forEach {
+                    if(it.name.equals("INSTANCE")){
+                        registerModule(it.get(null) as Module)
+                        return@forEach
+                    }
+                }
+            }catch (e: Throwable){
+                ClientUtils.getLogger().error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
+            }
         }
     }
 

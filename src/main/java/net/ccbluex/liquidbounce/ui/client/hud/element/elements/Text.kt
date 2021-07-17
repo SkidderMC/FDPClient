@@ -94,7 +94,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         return when (str) {
             "username" -> mc.getSession().username
             "clientName" -> LiquidBounce.CLIENT_NAME
-            "clientVersion" -> "b${LiquidBounce.CLIENT_VERSION}"
+            "clientVersion" -> LiquidBounce.CLIENT_VERSION
             "clientCreator" -> LiquidBounce.CLIENT_CREATOR
             "fps" -> Minecraft.getDebugFPS().toString()
             "date" -> DATE_FORMAT.format(System.currentTimeMillis())

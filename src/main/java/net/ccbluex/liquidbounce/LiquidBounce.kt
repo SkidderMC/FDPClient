@@ -45,6 +45,7 @@ object LiquidBounce {
     const val MINECRAFT_VERSION = "1.8.9"
 
     var isStarting = true
+    var isLoadingConfig = true
 
     // Managers
     lateinit var moduleManager: ModuleManager
@@ -185,6 +186,7 @@ object LiquidBounce {
 
         // Set is starting status
         isStarting = false
+        isLoadingConfig=false
     }
 
     /**

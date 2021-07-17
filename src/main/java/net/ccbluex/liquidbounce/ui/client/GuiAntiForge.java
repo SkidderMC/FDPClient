@@ -68,7 +68,7 @@ public class GuiAntiForge extends GuiScreen {
 
         updateButtonStat();
         if(button.id!=0) {
-            LiquidBounce.configManager.save(true);
+            LiquidBounce.configManager.save(true,false);
         }
     }
 

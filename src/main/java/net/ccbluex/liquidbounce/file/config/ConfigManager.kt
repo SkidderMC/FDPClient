@@ -29,8 +29,9 @@ class ConfigManager {
     }
 
     fun load(name: String,save: Boolean=true){
+        LiquidBounce.isLoadingConfig=true
         if(save&&nowConfig!=name)
-            save() // 保存老配置
+            save(forceSave = true) // 保存老配置
 
         nowConfig=name
         configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
@@ -46,14 +47,19 @@ class ConfigManager {
         }
 
         if(!configFile.exists())
-            save()
+            save(forceSave = true)
 
-        saveConfigSet()
+        if(save)
+            saveConfigSet()
 
         ClientUtils.logInfo("Config $nowConfig.json loaded.")
+        LiquidBounce.isLoadingConfig=false
     }
 
-    fun save(saveConfigSet: Boolean = true){
+    fun save(saveConfigSet: Boolean = true, forceSave : Boolean = false){
+        if(LiquidBounce.isLoadingConfig&&!forceSave)
+            return
+
         val config=JsonObject()
 
         for (section in sections){
@@ -101,10 +107,11 @@ class ConfigManager {
             if(File(LiquidBounce.fileManager.configsDir,"$nowConfig.json").exists()){
                 nowConfig="legacy"
                 configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
-                save()
+                save(forceSave = true)
             }else{
-                save()
+                save(forceSave = true)
             }
+            ClientUtils.logWarn("Converted legacy config")
         }
 
         fun executeScript(script: String) {
@@ -188,9 +195,10 @@ class ConfigManager {
         if(oldSettingDir.exists()){
             oldSettingDir.listFiles().forEach {
                 if(it.isFile){
+                    ClientUtils.logWarn("Converting legacy setting \"${it.name}\"")
                     load(it.name,false)
                     executeScript(String(Files.readAllBytes(it.toPath())))
-                    save(false)
+                    save(false,true)
                 }
                 it.delete()
             }
