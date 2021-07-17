@@ -23,15 +23,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
 public class LiquidBounceStyle extends Style {
 
     private boolean mouseDown;

@@ -13,8 +13,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.TextureUtil
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.GL11
 import java.awt.*
@@ -27,7 +25,6 @@ import javax.imageio.ImageIO
 /**
  * Generate new bitmap based font renderer
  */
-@SideOnly(Side.CLIENT)
 class AWTFontRenderer(val font: Font) {
 
     companion object {

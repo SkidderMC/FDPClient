@@ -12,13 +12,10 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraftforge.fml.relauncher.Side
-import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11
 import kotlin.math.max
 import kotlin.math.min
 
-@SideOnly(Side.CLIENT)
 open class HUD : MinecraftInstance() {
 
     val elements = mutableListOf<Element>()

@@ -15,13 +15,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.*;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-@SideOnly(Side.CLIENT)
 public final class RotationUtils extends MinecraftInstance implements Listenable {
 
     private static Random random = new Random();

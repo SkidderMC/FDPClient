@@ -21,8 +21,6 @@ import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.IChatComponent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,7 +32,6 @@ import java.util.Collections;
 import java.util.List;
 
 @Mixin(GuiScreen.class)
-@SideOnly(Side.CLIENT)
 public abstract class MixinGuiScreen {
 
     @Shadow

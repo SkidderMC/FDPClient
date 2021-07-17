@@ -13,10 +13,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.C17PacketCustomPayload;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
 public class AntiForge extends MinecraftInstance implements Listenable {
 
     public static boolean enabled = true;
