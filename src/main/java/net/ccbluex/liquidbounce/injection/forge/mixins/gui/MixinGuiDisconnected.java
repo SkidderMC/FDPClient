@@ -77,7 +77,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
             case 5:
                 AntiForge.enabled = !AntiForge.enabled;
                 forgeBypassButton.displayString = "Bypass AntiForge: " + (AntiForge.enabled ? "On" : "Off");
-                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig);
+                LiquidBounce.configManager.save(true);
                 break;
         }
     }

@@ -129,9 +129,8 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
                 LiquidBounce.scriptManager.loadScripts()
                 LiquidBounce.scriptManager.enableScripts()
                 Fonts.loadFonts()
-                LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.modulesConfig)
+                LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig,false)
                 LiquidBounce.isStarting = false
-                LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.valuesConfig)
                 LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.accountsConfig)
                 LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.friendsConfig)
                 LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.xrayConfig)

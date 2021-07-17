@@ -31,10 +31,7 @@ class ReloadCommand : Command("reload", arrayOf("configreload")) {
         chat("§c§lReloading fonts...")
         Fonts.loadFonts()
         chat("§c§lReloading modules...")
-        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.modulesConfig)
-        LiquidBounce.isStarting = false
-        chat("§c§lReloading values...")
-        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.valuesConfig)
+        LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig,false)
         chat("§c§lReloading accounts...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.accountsConfig)
         chat("§c§lReloading friends...")

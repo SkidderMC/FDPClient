@@ -9,17 +9,8 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.features.module.modules.client.*
-import net.ccbluex.liquidbounce.features.module.modules.client.Target
-import net.ccbluex.liquidbounce.features.module.modules.combat.*
-import net.ccbluex.liquidbounce.features.module.modules.exploit.*
-import net.ccbluex.liquidbounce.features.module.modules.misc.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.*
-import net.ccbluex.liquidbounce.features.module.modules.player.*
-import net.ccbluex.liquidbounce.features.module.modules.render.*
-import net.ccbluex.liquidbounce.features.module.modules.world.*
-import net.ccbluex.liquidbounce.features.module.modules.world.Timer
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import org.reflections.Reflections
 import java.util.*
 
 class ModuleManager : Listenable {
@@ -37,127 +28,8 @@ class ModuleManager : Listenable {
     fun registerModules() {
         ClientUtils.getLogger().info("[ModuleManager] Loading modules...")
 
-        registerModules(
-            AutoArmor::class.java,
-            AutoBow::class.java,
-            AutoPot::class.java,
-            AutoSoup::class.java,
-            AutoWeapon::class.java,
-            BowAimbot::class.java,
-            Criticals::class.java,
-            KillAura::class.java,
-            Velocity::class.java,
-            Fly::class.java,
-            ClickGUI::class.java,
-            HighJump::class.java,
-            InventoryMove::class.java,
-            NoSlow::class.java,
-            LiquidWalk::class.java,
-            SafeWalk::class.java,
-            Strafe::class.java,
-            Sprint::class.java,
-            Teams::class.java,
-            NoRotateSet::class.java,
-            AntiBot::class.java,
-            ChestStealer::class.java,
-            Scaffold::class.java,
-            FastBreak::class.java,
-            FastPlace::class.java,
-            ESP::class.java,
-            Speed::class.java,
-            Tracers::class.java,
-            NameTags::class.java,
-            FastUse::class.java,
-            Teleport::class.java,
-            ItemESP::class.java,
-            StorageESP::class.java,
-            Projectiles::class.java,
-            BetterFPS::class.java,
-            PingSpoof::class.java,
-            Step::class.java,
-            AutoTool::class.java,
-            NoWeb::class.java,
-            Spammer::class.java,
-            NoFall::class.java,
-            Blink::class.java,
-            NameProtect::class.java,
-            HurtCam::class.java,
-            MidClick::class.java,
-            XRay::class.java,
-            Timer::class.java,
-            GhostHand::class.java,
-            AutoBreak::class.java,
-            FreeCam::class.java,
-            Eagle::class.java,
-            Plugins::class.java,
-            LongJump::class.java,
-            Parkour::class.java,
-            NoBob::class.java,
-            BlockOverlay::class.java,
-            BlockESP::class.java,
-            Chams::class.java,
-            Clip::class.java,
-            Phase::class.java,
-            NoFOV::class.java,
-            InventoryCleaner::class.java,
-            TrueSight::class.java,
-            AntiBlind::class.java,
-            Breadcrumbs::class.java,
-            CameraClip::class.java,
-            Kick::class.java,
-            Freeze::class.java,
-            NoJumpDelay::class.java,
-            HUD::class.java,
-            NoSlowBreak::class.java,
-            Gapple::class.java,
-            HealthWarn::class.java,
-            Animations::class.java,
-            AuthBypass::class.java,
-            AutoPlay::class.java,
-            ChatBypass::class.java,
-            AntiVoid::class.java,
-            AntiVanish::class.java,
-            Target::class.java,
-            KeyBindManager::class.java,
-            AutoLogin::class.java,
-            ChatTranslator::class.java,
-            AutoIgnore::class.java,
-            BoatJump::class.java,
-            DamageParticle::class.java,
-            LegitSpoof::class.java,
-            MessageSpam::class.java,
-            AntiStuck::class.java,
-            AutoAdvertise::class.java,
-            HudDesigner::class.java,
-            InfinityAura::class.java,
-            Regen::class.java,
-            HackerDetector::class.java,
-            LightningDetect::class.java,
-            NoRotate::class.java,
-            AutoDisable::class.java,
-            Disabler::class.java,
-            Ambience::class.java,
-            TargetStrafe::class.java,
-            PrevFallPos::class.java,
-            AutoClicker::class.java,
-            HitBox::class.java,
-            Reach::class.java,
-            Aimbot::class.java,
-            ServerCrasher::class.java,
-            EnchantEffect::class.java,
-            AntiAim::class.java,
-            NewClickGui::class.java,
-            SuperKnockback::class.java,
-            AutoReport::class.java,
-            AntiFireBall::class.java,
-            PointerESP::class.java
-        )
-
-        registerModule(Fucker)
-        registerModule(ChestAura)
-        registerModule(ToggleSound)
-        registerModule(Rotations)
-        registerModule(AutoAbuse)
+        Reflections("${this.javaClass.`package`.name}.modules")
+            .getSubTypesOf(Module::class.java).forEach(this::registerModule)
 
         ClientUtils.getLogger().info("[ModuleManager] Loaded ${modules.size} modules.")
     }
@@ -185,14 +57,6 @@ class ModuleManager : Listenable {
         } catch (e: Throwable) {
             ClientUtils.getLogger().error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
         }
-    }
-
-    /**
-     * Register a list of modules
-     */
-    @SafeVarargs
-    fun registerModules(vararg modules: Class<out Module>) {
-        modules.forEach(this::registerModule)
     }
 
     /**

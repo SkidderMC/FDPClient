@@ -26,23 +26,23 @@ open class Module : MinecraftInstance(), Listenable {
             field = keyBind
 
             if (!LiquidBounce.isStarting)
-                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
+                LiquidBounce.configManager.smartSave()
         }
     var array = true
         set(array) {
             field = array
 
             if (!LiquidBounce.isStarting)
-                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
+                LiquidBounce.configManager.smartSave()
         }
     private val canEnable: Boolean
     var autoDisable: EnumAutoDisableType
     val moduleCommand: Boolean
+    val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
 
     var slideStep = 0F
 
     init {
-        val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
 
         name = moduleInfo.name
         description = moduleInfo.description
@@ -55,7 +55,7 @@ open class Module : MinecraftInstance(), Listenable {
     }
 
     // Current state of module
-    var state = false
+    var state = moduleInfo.defaultOn
         set(value) {
             if (field == value) return
 
@@ -85,7 +85,7 @@ open class Module : MinecraftInstance(), Listenable {
             }
 
             // Save module state
-            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
+            LiquidBounce.configManager.smartSave()
         }
 
 

@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.potion.Potion
 
-@ModuleInfo(name = "Sprint", description = "Automatically sprints all the time.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "Sprint", description = "Automatically sprints all the time.", category = ModuleCategory.MOVEMENT, defaultOn = true)
 class Sprint : Module() {
     val allDirectionsValue = BoolValue("AllDirections", true)
     private val allDirectionsRotateValue = BoolValue("AllDirectionsRotate", true)

@@ -60,7 +60,7 @@ class MacroCommand : Command("macro", arrayOf("m")) {
     }
 
     private fun save(){
-        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.macrosConfig)
+        LiquidBounce.configManager.smartSave()
         playEdit()
     }
 }

@@ -115,8 +115,7 @@ class KeyBindManager : GuiScreen() {
 
     override fun onGuiClosed() {
         //save keybind data
-        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
-        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.macrosConfig)
+        LiquidBounce.configManager.save()
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {

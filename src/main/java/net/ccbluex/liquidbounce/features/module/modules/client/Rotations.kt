@@ -22,27 +22,23 @@ object Rotations : Module() {
     val headValue = BoolValue("Head", true)
     val bodyValue = BoolValue("Body", true)
     val fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
-    val rotationHumanizeType=EaseUtils.getEnumEasingList("HumanizeType")
-    val rotationHumanizeOrder=EaseUtils.getEnumEasingOrderList("HumanizeOrder")
+//    val rotationHumanizeType=EaseUtils.getEnumEasingList("HumanizeType")
+//    val rotationHumanizeOrder=EaseUtils.getEnumEasingOrderList("HumanizeOrder")
     val nanValue = BoolValue("NaNCheck", true)
 
     private var playerYaw: Float? = null
 
-    override fun onEnable() {
-        println(apply(0.7))
-    }
-
-    fun apply(value: Double):Double{
-        return EaseUtils.apply(toEnumType(), toEnumOrder(),value)
-    }
-
-    fun toEnumType():EaseUtils.EnumEasingType{
-        return EaseUtils.EnumEasingType.valueOf(rotationHumanizeType.get().toUpperCase())
-    }
-
-    fun toEnumOrder():EaseUtils.EnumEasingOrder{
-        return EaseUtils.EnumEasingOrder.valueOf(rotationHumanizeOrder.get().toUpperCase())
-    }
+//    fun apply(value: Double):Double{
+//        return EaseUtils.apply(toEnumType(), toEnumOrder(),value)
+//    }
+//
+//    fun toEnumType():EaseUtils.EnumEasingType{
+//        return EaseUtils.EnumEasingType.valueOf(rotationHumanizeType.get().toUpperCase())
+//    }
+//
+//    fun toEnumOrder():EaseUtils.EnumEasingOrder{
+//        return EaseUtils.EnumEasingOrder.valueOf(rotationHumanizeOrder.get().toUpperCase())
+//    }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {

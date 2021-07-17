@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.features.special.macro.MacroManager
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.MetricsLite
+import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.click.ClickGuiManager
@@ -38,6 +39,7 @@ object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
+    const val COLORED_NAME = "§c§lFDP§6§lClient"
     const val CLIENT_VERSION = "v1.2.4"
     const val CLIENT_CREATOR = "CCBlueX & Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
@@ -53,6 +55,7 @@ object LiquidBounce {
     lateinit var tipSoundManager: TipSoundManager
     lateinit var combatManager: CombatManager
     lateinit var macroManager: MacroManager
+    lateinit var configManager: ConfigManager
 
     // HUD & ClickGUI & KeybindManager
     lateinit var hud: HUD
@@ -107,6 +110,7 @@ object LiquidBounce {
 
         // Create file manager
         fileManager = FileManager()
+        configManager = ConfigManager()
 
         // Crate event manager
         eventManager = EventManager()
@@ -151,12 +155,12 @@ object LiquidBounce {
         tipSoundManager = TipSoundManager()
 
         // Load configs
-        fileManager.loadConfigs(fileManager.modulesConfig, fileManager.valuesConfig, fileManager.accountsConfig,
-                fileManager.friendsConfig, fileManager.xrayConfig, fileManager.shortcutsConfig, fileManager.macrosConfig)
+        configManager.loadLegacySupport()
+        configManager.loadConfigSet()
 
         // ClickGUI
         clickGui = ClickGui()
-        fileManager.loadConfig(fileManager.clickGuiConfig)
+        fileManager.loadConfigs(fileManager.clickGuiConfig, fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig)
 
         // Init All after load modules
         clickGuiManager.initAll()
@@ -191,6 +195,7 @@ object LiquidBounce {
         eventManager.callEvent(ClientShutdownEvent())
 
         // Save all available configs
+        configManager.save()
         fileManager.saveAllConfigs()
     }
 

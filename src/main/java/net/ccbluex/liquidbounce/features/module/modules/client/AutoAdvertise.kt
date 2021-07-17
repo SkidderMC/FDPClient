@@ -9,12 +9,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import java.util.*
 
-@ModuleInfo(name = "AutoAdvertise", description = "Can u keep enable this?We need ur support thx", category = ModuleCategory.CLIENT, array = false)
+@ModuleInfo(name = "AutoAdvertise", description = "Can u keep enable this?We need ur support thx", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 class AutoAdvertise : Module() {
-    init {
-        state=true
-    }
-
     var waiting=false
 
     @EventTarget

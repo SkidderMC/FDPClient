@@ -1,18 +1,16 @@
-package net.ccbluex.liquidbounce.file.configs
+package net.ccbluex.liquidbounce.file.config.sections
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.special.macro.Macro
-import net.ccbluex.liquidbounce.file.FileConfig
-import net.ccbluex.liquidbounce.file.FileManager
-import java.io.*
-import java.nio.charset.StandardCharsets
+import net.ccbluex.liquidbounce.file.config.ConfigSection
 
-class MacrosConfig(file: File) : FileConfig(file) {
-    override fun loadConfig() {
-        val jsonArray = JsonParser().parse(BufferedReader(FileReader(file))).asJsonArray
+class MacrosSection : ConfigSection("macros") {
+    override fun load(json: JsonObject) {
+        LiquidBounce.macroManager.macros.clear()
+
+        val jsonArray=json.getAsJsonArray("macros") ?: return
 
         for(jsonElement in jsonArray){
             val macroJson=jsonElement.asJsonObject
@@ -20,7 +18,7 @@ class MacrosConfig(file: File) : FileConfig(file) {
         }
     }
 
-    override fun saveConfig() {
+    override fun save(): JsonObject {
         val jsonArray = JsonArray()
 
         for(macro in LiquidBounce.macroManager.macros){
@@ -30,8 +28,8 @@ class MacrosConfig(file: File) : FileConfig(file) {
             jsonArray.add(macroJson)
         }
 
-        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8))
-        writer.write(FileManager.PRETTY_GSON.toJson(jsonArray))
-        writer.close()
+        val json=JsonObject()
+        json.add("macros",jsonArray)
+        return json
     }
 }

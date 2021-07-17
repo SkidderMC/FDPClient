@@ -40,6 +40,22 @@ public final class ClientUtils extends MinecraftInstance {
         return logger;
     }
 
+    public static void logInfo(String msg){
+        logger.info(msg);
+    }
+
+    public static void logWarn(String msg){
+        logger.warn(msg);
+    }
+
+    public static void logError(String msg){
+        logger.error(msg);
+    }
+
+    public static void logDebug(String msg){
+        logger.debug(msg);
+    }
+
     public static void setTitle(){
         Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_VERSION + " | Mc " + LiquidBounce.MINECRAFT_VERSION);
     }
@@ -61,7 +77,7 @@ public final class ClientUtils extends MinecraftInstance {
     }
 
     public static void displayAlert(final String message){
-        displayChatMessage("§8[§c§lFDP§6§lClient§8] §f"+message);
+        displayChatMessage("§8["+LiquidBounce.COLORED_NAME+"§8] §f"+message);
     }
 
     public static void displayChatMessage(final String message) {

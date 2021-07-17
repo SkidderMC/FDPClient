@@ -122,9 +122,8 @@ class ScriptManagerCommand : Command("scriptmanager", arrayOf("scripts")) {
                             LiquidBounce.moduleManager.generateCommand(module)
                         LiquidBounce.scriptManager.loadScripts()
                         LiquidBounce.scriptManager.enableScripts()
-                        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.modulesConfig)
+                        LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig,false)
                         LiquidBounce.isStarting = false
-                        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.valuesConfig)
                         LiquidBounce.clickGui = ClickGui()
                         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.clickGuiConfig)
                         chat("Successfully reloaded all scripts.")

@@ -1,0 +1,216 @@
+package net.ccbluex.liquidbounce.file.config
+
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.file.FileManager
+import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.utils.misc.HttpUtils
+import net.ccbluex.liquidbounce.utils.misc.StringUtils
+import net.ccbluex.liquidbounce.value.*
+import org.lwjgl.input.Keyboard
+import org.reflections.Reflections
+import java.io.*
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+
+class ConfigManager {
+    private val configSetFile=File(LiquidBounce.fileManager.dir, "config-settings.json")
+
+    private val sections=mutableListOf<ConfigSection>()
+
+    var nowConfig="default"
+    var configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
+
+    init {
+        Reflections("${this.javaClass.`package`.name}.sections")
+            .getSubTypesOf(ConfigSection::class.java).forEach(this::registerSection)
+    }
+
+    fun load(name: String,save: Boolean=true){
+        if(save&&nowConfig!=name)
+            save() // 保存老配置
+
+        nowConfig=name
+        configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
+
+        val json=if(configFile.exists()){
+            JsonParser().parse(BufferedReader(FileReader(configFile))).asJsonObject
+        }else{
+            JsonObject() // 这样方便一点,虽然效率会低
+        }
+
+        for (section in sections){
+            section.load(if(json.has(section.sectionName)){ json.getAsJsonObject(section.sectionName) }else{ JsonObject() })
+        }
+
+        if(!configFile.exists())
+            save()
+
+        saveConfigSet()
+
+        ClientUtils.logInfo("Config $nowConfig.json loaded.")
+    }
+
+    fun save(saveConfigSet: Boolean = true){
+        val config=JsonObject()
+
+        for (section in sections){
+            config.add(section.sectionName,section.save())
+        }
+
+        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(configFile), StandardCharsets.UTF_8))
+        writer.write(FileManager.PRETTY_GSON.toJson(config))
+        writer.close()
+
+        if(saveConfigSet) {
+            saveConfigSet()
+        }
+
+        ClientUtils.logInfo("Config $nowConfig.json saved.")
+    }
+
+    fun smartSave(){
+        // TODO: Save smartly to save disk I/O
+        save()
+    }
+
+    fun loadConfigSet(){
+        val configSet=if(configSetFile.exists()){ JsonParser().parse(BufferedReader(FileReader(configSetFile))).asJsonObject }else{ JsonObject() }
+
+        load(if(configSet.has("file")){
+            configSet.get("file").asString
+        }else{
+            "default"
+        },false)
+    }
+
+    fun saveConfigSet(){
+        val configSet=JsonObject()
+
+        configSet.addProperty("file",nowConfig)
+
+        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(configSetFile), StandardCharsets.UTF_8))
+        writer.write(FileManager.PRETTY_GSON.toJson(configSet))
+        writer.close()
+    }
+
+    fun loadLegacySupport(){
+        if(LiquidBounce.fileManager.loadLegacy()){
+            if(File(LiquidBounce.fileManager.configsDir,"$nowConfig.json").exists()){
+                nowConfig="legacy"
+                configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
+                save()
+            }else{
+                save()
+            }
+        }
+
+        fun executeScript(script: String) {
+            script.lines().filter { it.isNotEmpty() && !it.startsWith('#') }.forEachIndexed { _, s ->
+                val args = s.split(" ").toTypedArray()
+
+                if (args.size <= 1) {
+                    return@forEachIndexed
+                }
+
+                when (args[0]) {
+                    "load" -> {
+                        val url = StringUtils.toCompleteString(args, 1)
+
+                        try {
+                            executeScript(HttpUtils.get(url))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    "targetPlayer", "targetPlayers" -> {
+                        EntityUtils.targetPlayer = args[1].equals("true", ignoreCase = true)
+                    }
+
+                    "targetMobs" -> {
+                        EntityUtils.targetMobs = args[1].equals("true", ignoreCase = true)
+                    }
+
+                    "targetAnimals" -> {
+                        EntityUtils.targetAnimals = args[1].equals("true", ignoreCase = true)
+                    }
+
+                    "targetInvisible" -> {
+                        EntityUtils.targetInvisible = args[1].equals("true", ignoreCase = true)
+                    }
+
+                    "targetDead" -> {
+                        EntityUtils.targetDead = args[1].equals("true", ignoreCase = true)
+                    }
+
+                    else -> {
+                        if (args.size != 3) {
+                            return@forEachIndexed
+                        }
+
+                        val moduleName = args[0]
+                        val valueName = args[1]
+                        val value = args[2]
+                        val module = LiquidBounce.moduleManager.getModule(moduleName) ?: return@forEachIndexed
+
+                        if (valueName.equals("toggle", ignoreCase = true)) {
+                            module.state = value.equals("true", ignoreCase = true)
+                            return@forEachIndexed
+                        }
+
+                        if (valueName.equals("bind", ignoreCase = true)) {
+                            module.keyBind = Keyboard.getKeyIndex(value)
+                            return@forEachIndexed
+                        }
+
+                        val moduleValue = module.getValue(valueName) ?: return@forEachIndexed
+
+                        try {
+                            when (moduleValue) {
+                                is BoolValue -> moduleValue.changeValue(value.toBoolean())
+                                is FloatValue -> moduleValue.changeValue(value.toFloat())
+                                is IntegerValue -> moduleValue.changeValue(value.toInt())
+                                is TextValue -> moduleValue.changeValue(value)
+                                is ListValue -> moduleValue.changeValue(value)
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            }
+        }
+
+        val oldSettingDir=File(LiquidBounce.fileManager.dir,"settings")
+        if(oldSettingDir.exists()){
+            oldSettingDir.listFiles().forEach {
+                if(it.isFile){
+                    load(it.name,false)
+                    executeScript(String(Files.readAllBytes(it.toPath())))
+                    save(false)
+                }
+                it.delete()
+            }
+            oldSettingDir.delete()
+        }
+    }
+
+    /**
+     * Register [section]
+     */
+    fun registerSection(section: ConfigSection) = sections.add(section)
+
+    /**
+     * Register [sectionClass]
+     */
+    private fun registerSection(sectionClass: Class<out ConfigSection>) {
+        try {
+            registerSection(sectionClass.newInstance())
+        } catch (e: Throwable) {
+            ClientUtils.getLogger().error("Failed to load config section: ${sectionClass.name} (${e.javaClass.name}: ${e.message})")
+        }
+    }
+}

@@ -70,7 +70,7 @@ public class GuiServerSpoof extends GuiScreen {
         }
 
         updateButtonStat();
-        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig);
+        LiquidBounce.configManager.save(true);
     }
 
     @Override

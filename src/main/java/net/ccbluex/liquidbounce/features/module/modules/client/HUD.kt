@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 
-@ModuleInfo(name = "HUD", description = "Toggles visibility of the HUD.", category = ModuleCategory.CLIENT, array = false)
+@ModuleInfo(name = "HUD", description = "Toggles visibility of the HUD.", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 class HUD : Module() {
     val betterHotbarValue = BoolValue("BetterHotbar", true)
     val hotbarAlphaValue = IntegerValue("HotbarAlpha", 150, 0, 255)
@@ -41,9 +41,5 @@ class HUD : Module() {
     @EventTarget
     fun onKey(event: KeyEvent) {
         LiquidBounce.hud.handleKey('a', event.key)
-    }
-
-    init {
-        state = true
     }
 }

@@ -10,6 +10,8 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
 abstract class Value<T>(val name: String, protected var value: T) {
+    val default=value
+
     fun set(newValue: T) {
         if (newValue == value) return
 
@@ -19,13 +21,17 @@ abstract class Value<T>(val name: String, protected var value: T) {
             onChange(oldValue, newValue)
             changeValue(newValue)
             onChanged(oldValue, newValue)
-            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig)
+            LiquidBounce.configManager.smartSave()
         } catch (e: Exception) {
             ClientUtils.getLogger().error("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
         }
     }
 
     fun get() = value
+
+    fun setDefault(){
+        value=default
+    }
 
     open fun changeValue(value: T) {
         this.value = value

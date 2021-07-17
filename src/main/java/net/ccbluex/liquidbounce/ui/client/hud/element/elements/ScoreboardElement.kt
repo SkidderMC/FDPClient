@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -52,7 +53,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
 
     private val shadowValue = BoolValue("Shadow", false)
-    private val serverValue = BoolValue("ServerIp", true)
+    private val serverValue = ListValue("ServerIp", arrayOf("None","ClientName","Website"),"Website")
     private val noPointValue = BoolValue("NoPoints", false)
     private val fontValue = FontValue("Font", Fonts.minecraftFont)
 
@@ -120,17 +121,22 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
 
             GlStateManager.resetColor()
 
-            if(serverValue.get()){
-                val lowerName=name.toLowerCase();
+            var listColor=textColor
+            if(!serverValue.get().equals("none",true)){
                 for(domain in allowedDomains){
-                    if(lowerName.contains(domain)){
-                        name="§c§lFDP§6§lClient"
+                    if(name.contains(domain,true)){
+                        name=when(serverValue.get()){
+                            "clientname" -> LiquidBounce.COLORED_NAME
+                            "website" -> LiquidBounce.website
+                            else -> "null"
+                        }
+                        listColor=ColorUtils.rainbow().rgb
                         break;
                     }
                 }
             }
 
-            fontRenderer.drawString(name, l1.toFloat(), height.toFloat(), textColor, shadowValue.get())
+            fontRenderer.drawString(name, l1.toFloat(), height.toFloat(), listColor, shadowValue.get())
             if(!noPointValue.get()) {
                 fontRenderer.drawString(
                     scorePoints,

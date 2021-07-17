@@ -5,11 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.command
 
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.command.commands.*
-import net.ccbluex.liquidbounce.features.command.shortcuts.Shortcut
-import net.ccbluex.liquidbounce.features.command.shortcuts.ShortcutParser
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import org.reflections.Reflections
 
 class CommandManager {
     val commands = mutableListOf<Command>()
@@ -21,33 +18,8 @@ class CommandManager {
      * Register all default commands
      */
     fun registerCommands() {
-        registerCommands(
-            BindCommand::class.java,
-            HelpCommand::class.java,
-            SayCommand::class.java,
-            FriendCommand::class.java,
-            LocalAutoSettingsCommand::class.java,
-            ToggleCommand::class.java,
-            TargetCommand::class.java,
-            BindsCommand::class.java,
-            PingCommand::class.java,
-            ReloadCommand::class.java,
-            ScriptManagerCommand::class.java,
-            RemoteViewCommand::class.java,
-            PrefixCommand::class.java,
-            ShortcutCommand::class.java,
-            HideCommand::class.java,
-            UsernameCommand::class.java,
-            ServerInfoCommand::class.java,
-            AutoDisableCommand::class.java,
-            MacroCommand::class.java,
-            ClipCommand::class.java
-        )
-    }
-
-    @SafeVarargs
-    fun registerCommands(vararg commands: Class<out Command>) {
-        commands.forEach { registerCommand(it.newInstance()) }
+        Reflections("${this.javaClass.`package`.name}.commands")
+            .getSubTypesOf(Command::class.java).forEach(this::registerCommand)
     }
 
     /**
@@ -137,28 +109,17 @@ class CommandManager {
      */
     fun registerCommand(command: Command) = commands.add(command)
 
-    fun registerShortcut(name: String, script: String) {
-        if (getCommand(name) == null) {
-            registerCommand(Shortcut(name, ShortcutParser.parse(script).map {
-                val command = getCommand(it[0]) ?: throw IllegalArgumentException("Command ${it[0]} not found!")
 
-                Pair(command, it.toTypedArray())
-            }))
 
-            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.shortcutsConfig)
-        } else {
-            throw IllegalArgumentException("Command already exists!")
+    /**
+     * Register [commandClass]
+     */
+    private fun registerCommand(commandClass: Class<out Command>) {
+        try {
+            registerCommand(commandClass.newInstance())
+        } catch (e: Throwable) {
+            ClientUtils.getLogger().error("Failed to load command: ${commandClass.name} (${e.javaClass.name}: ${e.message})")
         }
-    }
-
-    fun unregisterShortcut(name: String): Boolean {
-        val removed = commands.removeIf {
-            it is Shortcut && it.command.equals(name, ignoreCase = true)
-        }
-
-        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.shortcutsConfig)
-
-        return removed
     }
 
     /**
