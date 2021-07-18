@@ -32,6 +32,8 @@ jobs:
           java-version: 1.8
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+      - name: Put version info
+        run: echo "{{ github.event.head_commit.id }}" > src/main/resources/FDP_GIT_COMMIT_ID
       - name: Build
         run: ./gradlew build
       - name: 'Upload Artifact'

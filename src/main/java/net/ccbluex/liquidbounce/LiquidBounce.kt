@@ -34,16 +34,19 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.betterfps.BetterFPSCore
 import net.minecraft.util.ResourceLocation
+import org.apache.commons.io.IOUtils
 
 object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
     const val COLORED_NAME = "§c§lFDP§6§lClient"
-    const val CLIENT_VERSION = "v1.3.0"
+    @JvmField
+    val CLIENT_VERSION: String
     const val CLIENT_CREATOR = "CCBlueX & Liulihaocai"
     const val MINECRAFT_VERSION = "1.8.9"
 
+    val enableUpdateAlert: Boolean
     var isStarting = true
     var isLoadingConfig = true
 
@@ -79,6 +82,17 @@ object LiquidBounce {
     // Better FPS
     lateinit var betterFPSCore: BetterFPSCore
 
+    init {
+        val commitId=LiquidBounce::class.java.classLoader.getResourceAsStream("FDP_GIT_COMMIT_ID")
+        CLIENT_VERSION=if (commitId==null){
+            "v1.3.0"
+        }else{
+            val str=IOUtils.toString(commitId,"utf-8").replace("\n","")
+            "git-"+(str.substring(0, 7.coerceAtMost(str.length)))
+        }
+        enableUpdateAlert=commitId==null
+    }
+
     /***
      * do things that need long time async
      */
@@ -101,7 +115,7 @@ object LiquidBounce {
             if(jsonObj.has("updatemsg"))
                 updateMessage=jsonObj.get("updatemsg").asString
 
-            if(latestVersion== CLIENT_VERSION)
+            if(latestVersion== CLIENT_VERSION || !enableUpdateAlert)
                 latestVersion = ""
         }.start()
     }
