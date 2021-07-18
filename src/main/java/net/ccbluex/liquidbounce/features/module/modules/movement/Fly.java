@@ -412,6 +412,7 @@ public class Fly extends Module {
                 break;
             case "smoothvanilla":
                 mc.thePlayer.capabilities.isFlying = true;
+                mc.thePlayer.capabilities.setFlySpeed(vanillaSpeed*0.05f);
 
                 handleVanillaKickBypass();
                 break;

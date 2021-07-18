@@ -149,6 +149,7 @@ class KillAura : Module() {
     private val fakeSwingValue = BoolValue("FakeSwing", true)
     private val noInventoryAttackValue = BoolValue("NoInvAttack", false)
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500)
+    private val switchChangeValue = IntegerValue("SwitchChangeAtkTimes", 1, 1, 7)
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50)
 
     // Visuals
@@ -171,6 +172,7 @@ class KillAura : Module() {
     private val attackTimer = MSTimer()
     private var attackDelay = 0L
     private var clicks = 0
+    private var switchCount = 0
 
     // Container Delay
     private var containerOpen = -1L
@@ -198,6 +200,7 @@ class KillAura : Module() {
         prevTargetEntities.clear()
         attackTimer.reset()
         clicks = 0
+        switchCount = 0
 
         stopBlocking()
     }
@@ -492,7 +495,15 @@ class KillAura : Module() {
                 }
             }
 
-            prevTargetEntities.add(if (aacValue.get()) target!!.entityId else currentTarget!!.entityId)
+            if(targetModeValue.get().equals("Switch", true)){
+                switchCount++
+                if(switchCount>=switchChangeValue.get()){
+                    switchCount=0
+                    prevTargetEntities.add(if (aacValue.get()) target!!.entityId else currentTarget!!.entityId)
+                }
+            }else{
+                prevTargetEntities.add(if (aacValue.get()) target!!.entityId else currentTarget!!.entityId)
+            }
 
             if (target == currentTarget)
                 target = null
@@ -592,7 +603,6 @@ class KillAura : Module() {
     private fun attackEntity(entity: EntityLivingBase) {
         // Stop blocking
         if (!autoBlockPacketValue.get().equals("Vanilla",true)&&(mc.thePlayer.isBlocking || blockingStatus)) {
-            chat("UNBLOCK")
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
         }
@@ -734,7 +744,6 @@ class KillAura : Module() {
 
         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
         blockingStatus = true
-        chat("BLOCK")
     }
 
 

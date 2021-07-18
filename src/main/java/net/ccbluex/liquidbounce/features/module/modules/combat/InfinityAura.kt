@@ -30,7 +30,7 @@ class InfinityAura : Module() {
     private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
     private val targetsValue=IntegerValue("Targets",3,1,10)
     private val cpsValue=IntegerValue("CPS",1,1,10)
-    private val distValue=IntegerValue("Distance",30,20,200)
+    private val distValue=IntegerValue("Distance",30,20,100)
     private val moveDistValue=FloatValue("MoveDist",5F,2F,15F)
     private val noRegen=BoolValue("NoRegen",true)
     private val doSwing=BoolValue("Swing",true)
