@@ -3,12 +3,14 @@ package net.ccbluex.liquidbounce.file.config
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.misc.AutoAbuse
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.value.*
+import org.apache.commons.io.IOUtils
 import org.lwjgl.input.Keyboard
 import org.reflections.Reflections
 import java.io.*
@@ -37,7 +39,7 @@ class ConfigManager {
         configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
 
         val json=if(configFile.exists()){
-            JsonParser().parse(BufferedReader(FileReader(configFile))).asJsonObject
+            JsonParser().parse(IOUtils.toString(FileInputStream(configFile),"utf-8")).asJsonObject
         }else{
             JsonObject() // 这样方便一点,虽然效率会低
         }
@@ -83,7 +85,7 @@ class ConfigManager {
     }
 
     fun loadConfigSet(){
-        val configSet=if(configSetFile.exists()){ JsonParser().parse(BufferedReader(FileReader(configSetFile))).asJsonObject }else{ JsonObject() }
+        val configSet=if(configSetFile.exists()){ JsonParser().parse(IOUtils.toString(FileInputStream(configSetFile),"utf-8")).asJsonObject }else{ JsonObject() }
 
         load(if(configSet.has("file")){
             configSet.get("file").asString

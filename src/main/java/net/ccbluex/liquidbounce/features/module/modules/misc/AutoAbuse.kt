@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -9,6 +10,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -16,9 +18,8 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.player.EntityPlayer
 import org.apache.commons.io.IOUtils
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import java.io.*
+import java.nio.charset.StandardCharsets
 import kotlin.math.roundToInt
 
 @ModuleInfo(name = "AutoAbuse", description = "Automatically abuse peoples you killed.", category = ModuleCategory.MISC)
@@ -34,28 +35,40 @@ object AutoAbuse : Module() {
         ), "RawWords"
     )
     private val waterMarkValue = BoolValue("WaterMark", true)
+    val abuseFile=File(LiquidBounce.fileManager.dir, "abuse.json")
 
     init {
         loadFile()
     }
 
     fun loadFile(){
+        fun convertJson(){
+            abuseWords = JsonArray()
+            IOUtils.toString(FileInputStream(abuseFile),"utf-8").split("\n")
+                .filter { it.isNotBlank() }.map{ JsonPrimitive(it) }.forEach(abuseWords!!::add)
+            val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(abuseFile), StandardCharsets.UTF_8))
+            writer.write(FileManager.PRETTY_GSON.toJson(abuseWords))
+            writer.close()
+        }
+
         try {
             //check file exists
-            val abuseFile=File(LiquidBounce.fileManager.dir, "abuse.json")
             if(!abuseFile.exists()){
                 val fos = FileOutputStream(abuseFile)
                 IOUtils.copy(AutoAbuse::class.java.classLoader.getResourceAsStream("abuse.json"), fos)
                 fos.close()
             }
             //read it
-            abuseWords = JsonParser().parse(IOUtils.toString(FileInputStream(abuseFile),"utf-8")).asJsonArray
-        } catch (e: Throwable) { // lmao gson when file not a json, it throws NoSuchMethodError
-            e.printStackTrace()
-            abuseWords = JsonArray()
-            for(i in 0..50){
-                abuseWords!!.add("CHECKOUT! ABUSE.JSON IN YOUR CONFIG MAY BROKEN [${RandomUtils.nextInt(10,99)}]")
+            val json=JsonParser().parse(IOUtils.toString(FileInputStream(abuseFile),"utf-8"))
+            if(json.isJsonArray){
+                abuseWords = json.asJsonArray
+            }else{
+                // not jsonArray convert it to jsonarray
+                convertJson()
             }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            convertJson()
         }
     }
 

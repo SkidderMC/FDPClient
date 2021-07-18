@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
+import org.reflections.Reflections
 import kotlin.math.max
 import kotlin.math.min
 
@@ -23,22 +24,8 @@ open class HUD : MinecraftInstance() {
 
     companion object {
 
-        val elements = arrayOf(
-            Armor::class.java,
-            Arraylist::class.java,
-            Effects::class.java,
-            Image::class.java,
-            Model::class.java,
-            Notifications::class.java,
-            TabGUI::class.java,
-            Text::class.java,
-            ScoreboardElement::class.java,
-            KeyStrokes::class.java,
-            SpeedGraph::class.java,
-            Inventory::class.java,
-            Targets::class.java,
-            ModuleInfos::class.java
-        )
+        val elements = Reflections("${HUD::class.java.`package`.name}.element.elements")
+            .getSubTypesOf(Element::class.java).toTypedArray()
 
         /**
          * Create default HUD

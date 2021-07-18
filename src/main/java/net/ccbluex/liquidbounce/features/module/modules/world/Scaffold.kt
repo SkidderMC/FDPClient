@@ -226,7 +226,7 @@ class Scaffold : Module() {
             }
         } else if (autoJumpValue.get()) {
             canSameY = true
-            if (mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown) {
+            if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
                 mc.thePlayer.jump()
                 launchY = mc.thePlayer.posY.toInt()
             }
@@ -509,7 +509,7 @@ class Scaffold : Module() {
             mc.thePlayer.posX, mc.thePlayer.posY - 0.6, mc.thePlayer.posZ
         ).down() else if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5 && ((!canSameY && sameYValue.get()) || !sameYValue.get())) BlockPos(
             mc.thePlayer
-        ) else if(canSameY && sameYValue.get() && launchY<=mc.thePlayer.posY) BlockPos(
+        ) else if(canSameY && launchY<=mc.thePlayer.posY) BlockPos(
             mc.thePlayer.posX, launchY-1.0, mc.thePlayer.posZ) else BlockPos(
             mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ
         ).down()

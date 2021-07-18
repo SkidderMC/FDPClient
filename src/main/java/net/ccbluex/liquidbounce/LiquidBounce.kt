@@ -24,7 +24,6 @@ import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.click.ClickGuiManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
-import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.other.TipSoundManager
@@ -187,7 +186,7 @@ object LiquidBounce {
         keyBindManager=KeyBindManager()
 
         // Set HUD
-        hud = createDefault()
+        hud = HUD.createDefault()
         fileManager.loadConfig(fileManager.hudConfig)
 
         // Disable optifine fastrender
