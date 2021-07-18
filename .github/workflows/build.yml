@@ -36,7 +36,7 @@ jobs:
         run: echo "${{ github.event.head_commit.id }}" > src/main/resources/FDP_GIT_COMMIT_ID
       - name: Build
         run: ./gradlew build
-      - name: 'Upload Artifact'
+      - name: Upload artifact
         uses: actions/upload-artifact@v2.2.3
         with:
           name: FDPClient-v1.jar
