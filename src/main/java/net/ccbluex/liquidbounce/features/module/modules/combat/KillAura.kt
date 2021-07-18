@@ -89,7 +89,8 @@ class KillAura : Module() {
     private val keepSprintValue = BoolValue("KeepSprint", true)
 
     // AutoBlock
-    private val autoBlockValue = BoolValue("AutoBlock", false)
+    private val autoBlockValue = ListValue("AutoBlock", arrayOf("AllTime","Range","Off"),"Off")
+    private val autoBlockRangeValue = FloatValue("AutoBlockRange", 2.5f, 0f, 8f)
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
     private val delayedBlockValue = BoolValue("DelayedBlock", true)
     private val autoBlockFacing = BoolValue("AutoBlockFacing",false)
@@ -217,7 +218,7 @@ class KillAura : Module() {
             updateHitable()
 
             // AutoBlock
-            if (autoBlockValue.get() && delayedBlockValue.get() && canBlock())
+            if (!autoBlockValue.get().equals("off",true) && delayedBlockValue.get() && canBlock())
                 startBlocking(currentTarget!!, hitable)
 
             return
@@ -639,7 +640,7 @@ class KillAura : Module() {
         }
 
         // Start blocking after attack
-        if (mc.thePlayer.isBlocking || (autoBlockValue.get() && canBlock())) {
+        if (mc.thePlayer.isBlocking || (!autoBlockValue.get().equals("off",true) && canBlock())) {
             if (!(blockRate.get() > 0 && Random().nextInt(100) <= blockRate.get()))
                 return
 
@@ -720,6 +721,9 @@ class KillAura : Module() {
      * Start blocking
      */
     private fun startBlocking(interactEntity: Entity, interact: Boolean) {
+        if(autoBlockValue.get().equals("range",true) && mc.thePlayer.getDistanceToEntityBox(interactEntity)>autoBlockRangeValue.get())
+            return
+
         if (interact) {
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, interactEntity.positionVector))
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
