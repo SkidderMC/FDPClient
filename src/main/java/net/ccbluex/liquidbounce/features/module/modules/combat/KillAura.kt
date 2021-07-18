@@ -91,8 +91,8 @@ class KillAura : Module() {
     // AutoBlock
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("AllTime","Range","Off"),"Off")
     private val autoBlockRangeValue = FloatValue("AutoBlockRange", 2.5f, 0f, 8f)
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("Simple","AfterTick","Vanilla"),"Simple")
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
-    private val delayedBlockValue = BoolValue("DelayedBlock", true)
     private val autoBlockFacing = BoolValue("AutoBlockFacing",false)
     private val blockRate = IntegerValue("BlockRate", 100, 1, 100)
 
@@ -218,8 +218,8 @@ class KillAura : Module() {
             updateHitable()
 
             // AutoBlock
-            if (!autoBlockValue.get().equals("off",true) && delayedBlockValue.get() && canBlock())
-                startBlocking(currentTarget!!, hitable)
+            if (!autoBlockValue.get().equals("off",true) && autoBlockPacketValue.get().equals("AfterTick",true) && canBlock())
+                startBlocking(currentTarget!!, interactAutoBlockValue.get())
 
             return
         }
@@ -591,9 +591,9 @@ class KillAura : Module() {
      */
     private fun attackEntity(entity: EntityLivingBase) {
         // Stop blocking
-        if (mc.thePlayer.isBlocking || blockingStatus) {
-            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
-                BlockPos.ORIGIN, EnumFacing.DOWN))
+        if (!autoBlockPacketValue.get().equals("Vanilla",true)&&(mc.thePlayer.isBlocking || blockingStatus)) {
+            chat("UNBLOCK")
+            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
         }
 
@@ -641,10 +641,10 @@ class KillAura : Module() {
 
         // Start blocking after attack
         if (mc.thePlayer.isBlocking || (!autoBlockValue.get().equals("off",true) && canBlock())) {
-            if (!(blockRate.get() > 0 && Random().nextInt(100) <= blockRate.get()))
+            if(autoBlockPacketValue.get().equals("AfterTick",true))
                 return
 
-            if (delayedBlockValue.get())
+            if (!(blockRate.get() > 0 && Random().nextInt(100) <= blockRate.get()))
                 return
 
             startBlocking(entity, interactAutoBlockValue.get())
@@ -724,6 +724,9 @@ class KillAura : Module() {
         if(autoBlockValue.get().equals("range",true) && mc.thePlayer.getDistanceToEntityBox(interactEntity)>autoBlockRangeValue.get())
             return
 
+        if(blockingStatus)
+            return
+
         if (interact) {
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, interactEntity.positionVector))
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
@@ -731,6 +734,7 @@ class KillAura : Module() {
 
         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
         blockingStatus = true
+        chat("BLOCK")
     }
 
 
