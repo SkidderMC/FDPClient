@@ -25,12 +25,14 @@ class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
     private val height = IntegerValue("Height", 50, 30, 150)
     private val width = IntegerValue("Width", 150, 100, 300)
     private val thickness = FloatValue("Thickness", 2F, 1F, 3F)
+    private val smoothness = FloatValue("Smoothness", 0.5F, 0F, 1F)
     private val colorRedValue = IntegerValue("R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("G", 111, 0, 255)
     private val colorBlueValue = IntegerValue("B", 255, 0, 255)
 
     private val speedList = ArrayList<Double>()
-    private var lastTick = -1;
+    private var lastTick = -1
+    private var lastSpeed = 0.01
 
     override fun drawElement(partialTicks: Float): Border {
         val width = width.get()
@@ -43,7 +45,8 @@ class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
             var speed = sqrt((z2 - z1) * (z2 - z1) + (x2 - x1) * (x2 - x1))
             if (speed < 0)
                 speed = -speed
-
+            speed = (lastSpeed + speed) * smoothness.get() + speed * (1-smoothness.get())
+            lastSpeed = speed
             speedList.add(speed)
             while (speedList.size > width) {
                 speedList.removeAt(0)
