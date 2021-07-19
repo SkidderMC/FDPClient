@@ -123,7 +123,8 @@ object LiquidBounce {
      * Execute if client will be started
      */
     fun startClient() {
-        ClientUtils.getLogger().info("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
+        ClientUtils.logInfo("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
+        val startTime=System.currentTimeMillis()
 
         // Create file manager
         fileManager = FileManager()
@@ -203,6 +204,8 @@ object LiquidBounce {
         // Set is starting status
         isStarting = false
         isLoadingConfig=false
+
+        ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started in ${(System.currentTimeMillis()-startTime)}ms!")
     }
 
     /**
@@ -213,7 +216,7 @@ object LiquidBounce {
         eventManager.callEvent(ClientShutdownEvent())
 
         // Save all available configs
-        configManager.save()
+        configManager.save(true,true)
         fileManager.saveAllConfigs()
     }
 

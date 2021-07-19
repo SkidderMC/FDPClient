@@ -33,7 +33,7 @@ class ConfigManager {
     fun load(name: String,save: Boolean=true){
         LiquidBounce.isLoadingConfig=true
         if(save&&nowConfig!=name)
-            save(forceSave = true) // 保存老配置
+            save(true,true) // 保存老配置
 
         nowConfig=name
         configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")

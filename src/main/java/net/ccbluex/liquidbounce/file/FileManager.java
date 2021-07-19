@@ -221,112 +221,124 @@ public class FileManager extends MinecraftInstance {
         if(modulesFile.exists()){
             modified=true;
 
-            final JsonElement jsonElement = new JsonParser().parse(new BufferedReader(new FileReader(modulesFile)));
+            try {
+                final JsonElement jsonElement = new JsonParser().parse(new BufferedReader(new FileReader(modulesFile)));
 
-            for (Map.Entry<String, JsonElement> entry : jsonElement.getAsJsonObject().entrySet()) {
-                final Module module = LiquidBounce.moduleManager.getModule(entry.getKey());
+                for (Map.Entry<String, JsonElement> entry : jsonElement.getAsJsonObject().entrySet()) {
+                    final Module module = LiquidBounce.moduleManager.getModule(entry.getKey());
 
-                if (module != null) {
-                    final JsonObject jsonModule = (JsonObject) entry.getValue();
+                    if (module != null) {
+                        final JsonObject jsonModule = (JsonObject) entry.getValue();
 
-                    module.setState(jsonModule.get("State").getAsBoolean());
-                    module.setKeyBind(jsonModule.get("KeyBind").getAsInt());
+                        module.setState(jsonModule.get("State").getAsBoolean());
+                        module.setKeyBind(jsonModule.get("KeyBind").getAsInt());
 
-                    if (jsonModule.has("Array"))
-                        module.setArray(jsonModule.get("Array").getAsBoolean());
+                        if (jsonModule.has("Array"))
+                            module.setArray(jsonModule.get("Array").getAsBoolean());
 
-                    if (jsonModule.has("AutoDisable"))
-                        module.setAutoDisable(EnumAutoDisableType.valueOf(jsonModule.get("AutoDisable").getAsString()));
+                        if (jsonModule.has("AutoDisable"))
+                            module.setAutoDisable(EnumAutoDisableType.valueOf(jsonModule.get("AutoDisable").getAsString()));
+                    }
                 }
+            } catch (Throwable t){
+                t.printStackTrace();
             }
 
-            modulesFile.delete();
+            ClientUtils.logInfo("Deleted Legacy config "+modulesFile.getName()+" "+modulesFile.delete());
         }
 
         File valuesFile=new File(dir, "values.json");
         if(valuesFile.exists()){
             modified=true;
 
-            final JsonObject jsonObject = new JsonParser().parse(new BufferedReader(new FileReader(valuesFile))).getAsJsonObject();
+            try {
+                final JsonObject jsonObject = new JsonParser().parse(new BufferedReader(new FileReader(valuesFile))).getAsJsonObject();
 
-            final Iterator<Map.Entry<String, JsonElement>> iterator = jsonObject.entrySet().iterator();
-            while(iterator.hasNext()) {
-                final Map.Entry<String, JsonElement> entry = iterator.next();
+                final Iterator<Map.Entry<String, JsonElement>> iterator = jsonObject.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    final Map.Entry<String, JsonElement> entry = iterator.next();
 
-                if (entry.getKey().equalsIgnoreCase("CommandPrefix")) {
-                    LiquidBounce.commandManager.setPrefix(entry.getValue().getAsCharacter());
-                } else if (entry.getKey().equalsIgnoreCase("Target")) {
-                    JsonObject jsonValue = (JsonObject) entry.getValue();
+                    if (entry.getKey().equalsIgnoreCase("CommandPrefix")) {
+                        LiquidBounce.commandManager.setPrefix(entry.getValue().getAsCharacter());
+                    } else if (entry.getKey().equalsIgnoreCase("Target")) {
+                        JsonObject jsonValue = (JsonObject) entry.getValue();
 
-                    if (jsonValue.has("Player"))
-                        EntityUtils.targetPlayer = jsonValue.get("Player").getAsBoolean();
-                    if (jsonValue.has("Animal"))
-                        EntityUtils.targetAnimals = jsonValue.get("Animal").getAsBoolean();
-                    if (jsonValue.has("Mob"))
-                        EntityUtils.targetMobs = jsonValue.get("Mob").getAsBoolean();
-                    if (jsonValue.has("Invisible"))
-                        EntityUtils.targetInvisible = jsonValue.get("Invisible").getAsBoolean();
-                    if (jsonValue.has("Dead"))
-                        EntityUtils.targetDead = jsonValue.get("Dead").getAsBoolean();
-                } else if (entry.getKey().equalsIgnoreCase("features")) {
-                    JsonObject jsonValue = (JsonObject) entry.getValue();
+                        if (jsonValue.has("Player"))
+                            EntityUtils.targetPlayer = jsonValue.get("Player").getAsBoolean();
+                        if (jsonValue.has("Animal"))
+                            EntityUtils.targetAnimals = jsonValue.get("Animal").getAsBoolean();
+                        if (jsonValue.has("Mob"))
+                            EntityUtils.targetMobs = jsonValue.get("Mob").getAsBoolean();
+                        if (jsonValue.has("Invisible"))
+                            EntityUtils.targetInvisible = jsonValue.get("Invisible").getAsBoolean();
+                        if (jsonValue.has("Dead"))
+                            EntityUtils.targetDead = jsonValue.get("Dead").getAsBoolean();
+                    } else if (entry.getKey().equalsIgnoreCase("features")) {
+                        JsonObject jsonValue = (JsonObject) entry.getValue();
 
-                    if (jsonValue.has("AntiForge"))
-                        AntiForge.enabled = jsonValue.get("AntiForge").getAsBoolean();
-                    if (jsonValue.has("AntiForgeFML"))
-                        AntiForge.blockFML = jsonValue.get("AntiForgeFML").getAsBoolean();
-                    if (jsonValue.has("AntiForgeProxy"))
-                        AntiForge.blockProxyPacket = jsonValue.get("AntiForgeProxy").getAsBoolean();
-                    if (jsonValue.has("AntiForgePayloads"))
-                        AntiForge.blockPayloadPackets = jsonValue.get("AntiForgePayloads").getAsBoolean();
-                    if (jsonValue.has("AutoReconnectDelay"))
-                        AutoReconnect.INSTANCE.setDelay(jsonValue.get("AutoReconnectDelay").getAsInt());
-                } else if (entry.getKey().equalsIgnoreCase("ServerSpoof")) {
-                    JsonObject jsonValue = (JsonObject) entry.getValue();
+                        if (jsonValue.has("AntiForge"))
+                            AntiForge.enabled = jsonValue.get("AntiForge").getAsBoolean();
+                        if (jsonValue.has("AntiForgeFML"))
+                            AntiForge.blockFML = jsonValue.get("AntiForgeFML").getAsBoolean();
+                        if (jsonValue.has("AntiForgeProxy"))
+                            AntiForge.blockProxyPacket = jsonValue.get("AntiForgeProxy").getAsBoolean();
+                        if (jsonValue.has("AntiForgePayloads"))
+                            AntiForge.blockPayloadPackets = jsonValue.get("AntiForgePayloads").getAsBoolean();
+                        if (jsonValue.has("AutoReconnectDelay"))
+                            AutoReconnect.INSTANCE.setDelay(jsonValue.get("AutoReconnectDelay").getAsInt());
+                    } else if (entry.getKey().equalsIgnoreCase("ServerSpoof")) {
+                        JsonObject jsonValue = (JsonObject) entry.getValue();
 
-                    if (jsonValue.has("Enabled"))
-                        ServerSpoof.enable=jsonValue.get("Enabled").getAsBoolean();
-                    if (jsonValue.has("ServerAddress"))
-                        ServerSpoof.address =jsonValue.get("ServerAddress").getAsString();
-                } else if (entry.getKey().equalsIgnoreCase("Background")) {
-                    JsonObject jsonValue = (JsonObject) entry.getValue();
+                        if (jsonValue.has("Enabled"))
+                            ServerSpoof.enable = jsonValue.get("Enabled").getAsBoolean();
+                        if (jsonValue.has("ServerAddress"))
+                            ServerSpoof.address = jsonValue.get("ServerAddress").getAsString();
+                    } else if (entry.getKey().equalsIgnoreCase("Background")) {
+                        JsonObject jsonValue = (JsonObject) entry.getValue();
 
-                    if (jsonValue.has("Enabled"))
-                        GuiBackground.Companion.setEnabled(jsonValue.get("Enabled").getAsBoolean());
+                        if (jsonValue.has("Enabled"))
+                            GuiBackground.Companion.setEnabled(jsonValue.get("Enabled").getAsBoolean());
 
-                    if (jsonValue.has("Particles"))
-                        GuiBackground.Companion.setParticles(jsonValue.get("Particles").getAsBoolean());
-                } else {
-                    final Module module = LiquidBounce.moduleManager.getModule(entry.getKey());
+                        if (jsonValue.has("Particles"))
+                            GuiBackground.Companion.setParticles(jsonValue.get("Particles").getAsBoolean());
+                    } else {
+                        final Module module = LiquidBounce.moduleManager.getModule(entry.getKey());
 
-                    if(module != null) {
-                        final JsonObject jsonModule = (JsonObject) entry.getValue();
+                        if (module != null) {
+                            final JsonObject jsonModule = (JsonObject) entry.getValue();
 
-                        for(final Value moduleValue : module.getValues()) {
-                            final JsonElement element = jsonModule.get(moduleValue.getName());
+                            for (final Value moduleValue : module.getValues()) {
+                                final JsonElement element = jsonModule.get(moduleValue.getName());
 
-                            if(element != null) moduleValue.fromJson(element);
+                                if (element != null) moduleValue.fromJson(element);
+                            }
                         }
                     }
                 }
+            } catch (Throwable t){
+                t.printStackTrace();
             }
 
-            valuesFile.delete();
+            ClientUtils.logInfo("Deleted Legacy config "+valuesFile.getName()+" "+valuesFile.delete());
         }
 
         File macrosFile=new File(dir,"macros.json");
         if(macrosFile.exists()) {
             modified = true;
 
-            final JsonArray jsonArray = new JsonParser().parse(new BufferedReader(new FileReader(macrosFile))).getAsJsonArray();
+            try {
+                final JsonArray jsonArray = new JsonParser().parse(new BufferedReader(new FileReader(macrosFile))).getAsJsonArray();
 
-            for(JsonElement jsonElement:jsonArray){
-                JsonObject macroJson=jsonElement.getAsJsonObject();
-                LiquidBounce.macroManager.getMacros()
-                        .add(new Macro(macroJson.get("key").getAsInt(),macroJson.get("command").getAsString()));
+                for (JsonElement jsonElement : jsonArray) {
+                    JsonObject macroJson = jsonElement.getAsJsonObject();
+                    LiquidBounce.macroManager.getMacros()
+                            .add(new Macro(macroJson.get("key").getAsInt(), macroJson.get("command").getAsString()));
+                }
+            } catch (Throwable t){
+                t.printStackTrace();
             }
 
-            macrosFile.delete();
+            ClientUtils.logInfo("Deleted Legacy config "+macrosFile.getName()+" "+macrosFile.delete());
         }
 
 

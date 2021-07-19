@@ -74,7 +74,6 @@ dependencies {
 
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.12'
     compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.3.61'
-//    compile 'com.google.code.gson:gson:2.8.5'
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
 }
@@ -108,8 +107,7 @@ jar {
             'FMLCorePluginContainsFMLMod': 'net.ccbluex.liquidbounce.injection.forge.MixinLoader',
             'FMLCorePlugin': 'net.ccbluex.liquidbounce.injection.forge.TransformerLoader',
             'FMLAT': 'liquidbounce_at.cfg',
-            'Manifest-Version': 1.0,
-            'Main-Class': 'net.ccbluex.liquidbounce.LiquidBounceKt'
+            'Manifest-Version': 1.0
     )
 }
 
@@ -142,11 +140,3 @@ configurations {
 }
 
 build.dependsOn shadowJar
-
-//task copyFiles(type: Copy) {
-//    from 'build/libs'
-//    into 'run/mods'
-//    include '**/FDPClient-v1.jar'
-//}
-//
-//copyFiles
