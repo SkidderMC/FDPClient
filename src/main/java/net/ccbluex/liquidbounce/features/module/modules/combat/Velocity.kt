@@ -276,9 +276,9 @@ class Velocity : Module() {
                             packet.motionZ = 0
                         }
                         val count=if(!velocityCalcTimer.hasTimePassed(800)){
-                            7
+                            8
                         }else if(!velocityCalcTimer.hasTimePassed(1200)){
-                            10
+                            12
                         }else{
                             25
                         }
@@ -287,6 +287,13 @@ class Velocity : Module() {
                             mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
                         }
                         velocityCalcTimer.reset()
+                    } else {
+                        packet.motionX = (packet.motionX * 0.6).toInt()
+                        packet.motionZ = (packet.motionZ * 0.6).toInt()
+                        for(i in 0..4){
+                            mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(target,C02PacketUseEntity.Action.ATTACK))
+                            mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
+                        }
                     }
                 }
             }
