@@ -104,6 +104,7 @@ class Scaffold : Module() {
 
     // Rotations
     private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC"), "AAC")
+    private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90)
     //private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     //private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true)
@@ -720,7 +721,7 @@ class Scaffold : Module() {
             when (rotationsValue.get().toLowerCase()) {
                 "aac" -> {
                     if (!towerStatus) {
-                        rotation = Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180), placeRotation.rotation.pitch)
+                        rotation = Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
                     }else{
                         rotation = placeRotation.rotation
                     }
