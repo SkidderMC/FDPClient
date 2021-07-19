@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -27,9 +28,11 @@ import java.awt.Color
 
 @ModuleInfo(name = "BlockOverlay", description = "Allows you to change the design of the block overlay.", category = ModuleCategory.RENDER)
 class BlockOverlay : Module() {
-    private val colorRedValue = IntegerValue("R", 68, 0, 255)
-    private val colorGreenValue = IntegerValue("G", 117, 0, 255)
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255)
+    private val colorRedValue = IntegerValue("Red", 68, 0, 255)
+    private val colorGreenValue = IntegerValue("Green", 117, 0, 255)
+    private val colorBlueValue = IntegerValue("Blue", 255, 0, 255)
+    private val colorAlphaValue = IntegerValue("Alpha", 100, 0, 255)
+    private val colorWidthValue = FloatValue("LineWidth", 2.0, 0.0, 10.0)
     private val colorRainbow = BoolValue("Rainbow", false)
     val infoValue = BoolValue("Info", false)
 
@@ -48,13 +51,13 @@ class BlockOverlay : Module() {
         val blockPos = currentBlock ?: return
         val block = mc.theWorld.getBlockState(blockPos).block ?: return
         val partialTicks = event.partialTicks
-        val color = if (colorRainbow.get()) rainbow(0.4F) else Color(colorRedValue.get(),
-                colorGreenValue.get(), colorBlueValue.get(), (0.4F * 255).toInt())
+        val color = if (colorRainbow.get()) rainbow(colorAlphaValue.get()/255) else Color(colorRedValue.get(),
+                colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
 
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
         RenderUtils.glColor(color)
-        GL11.glLineWidth(2F)
+        GL11.glLineWidth(colorWidthValue.get())
         GlStateManager.disableTexture2D()
         GlStateManager.depthMask(false)
 
