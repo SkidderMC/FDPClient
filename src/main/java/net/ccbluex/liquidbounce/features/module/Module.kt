@@ -132,6 +132,11 @@ open class Module : MinecraftInstance(), Listenable {
     open fun onDisable() {}
 
     /**
+     * Called when module initialized
+     */
+    open fun onInitialize() {}
+
+    /**
      * Get module by [valueName]
      */
     open fun getValue(valueName: String) = javaClass.declaredFields.map { valueField ->

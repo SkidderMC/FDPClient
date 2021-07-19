@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-//import net.ccbluex.liquidbounce.utils.render.GLUtils
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MoveEvent
@@ -20,29 +19,35 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
-
 @ModuleInfo(name = "TargetStrafe", description = "TargetStrafe", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
 
-    private val GodmodValue = BoolValue("Godmod", false)
+    private val godMode = BoolValue("GodMode", false)
     private val render = BoolValue("Render", true)
     private val radiusValue = FloatValue("radius", 0.5f, 0.1f, 5.0f)
     private val modeValue = ListValue("KeyMode", arrayOf("Jump", "None"), "None")
     private val radiusMode = ListValue("radiusMode", arrayOf("TrueRadius", "Simple"), "Simple")
-    private val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
-    private val speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
-    private val fly = LiquidBounce.moduleManager.getModule(Fly::class.java) as Fly
+    private lateinit var killAura: KillAura
+    private lateinit var speed: Speed
+    private lateinit var fly: Fly
 
     var consts = 0
     var lastDist = 0.0
+
+    override fun onInitialize() {
+        killAura=LiquidBounce.moduleManager.getModule(KillAura::class.java)
+        speed=LiquidBounce.moduleManager.getModule(Speed::class.java)
+        fly=LiquidBounce.moduleManager.getModule(Fly::class.java)
+    }
 
     fun onMove(event: MoveEvent) {
         val xDist = event.x
         val zDist = event.z
         lastDist = Math.sqrt(xDist * xDist + zDist * zDist)
     }
+
     @EventTarget
-    fun movestrafe(event: MoveEvent) {
+    fun moveStrafe(event: MoveEvent) {
         onMove(event)
 
         if (!isVoid(0, 0) && canStrafe) {
@@ -50,7 +55,7 @@ class TargetStrafe : Module() {
             setSpeed(event, lastDist, strafe.yaw, radiusValue.get(), 1.0)
         }
 
-        if (!GodmodValue.get())
+        if (!godMode.get())
             return
         else {
             if (canStrafe) {

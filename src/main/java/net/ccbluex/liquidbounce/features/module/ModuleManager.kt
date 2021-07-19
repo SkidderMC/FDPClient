@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import org.lwjgl.input.Keyboard
 import org.reflections.Reflections
 import java.util.*
+import java.util.function.Predicate
 
 class ModuleManager : Listenable {
 
@@ -35,6 +36,8 @@ class ModuleManager : Listenable {
 
         Reflections("${this.javaClass.`package`.name}.modules")
             .getSubTypesOf(Module::class.java).forEach(this::registerModule)
+
+        modules.forEach{ it.onInitialize() }
 
         ClientUtils.getLogger().info("[ModuleManager] Loaded ${modules.size} modules.")
     }
@@ -59,17 +62,16 @@ class ModuleManager : Listenable {
     private fun registerModule(moduleClass: Class<out Module>) {
         try {
             registerModule(moduleClass.newInstance())
-        } catch (e: Throwable) {
-            try {
-                moduleClass.declaredFields.forEach {
-                    if(it.name.equals("INSTANCE")){
-                        registerModule(it.get(null) as Module)
-                        return@forEach
-                    }
+        } catch (e: IllegalAccessException) {
+            // this module is a kotlin object
+            moduleClass.declaredFields.forEach {
+                if(it.name.equals("INSTANCE")){
+                    registerModule(it.get(null) as Module)
+                    return@forEach
                 }
-            }catch (e: Throwable){
-                ClientUtils.getLogger().error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
             }
+        } catch (e: Throwable){
+            ClientUtils.getLogger().error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
         }
     }
 
@@ -97,9 +99,11 @@ class ModuleManager : Listenable {
     /**
      * Get module by [moduleClass]
      */
-    fun getModule(moduleClass: Class<*>) = moduleClassMap[moduleClass]
+    fun <T : Module> getModule(moduleClass: Class<T>): T {
+        return moduleClassMap[moduleClass] as T
+    }
 
-    operator fun get(clazz: Class<*>) = getModule(clazz)
+    operator fun <T : Module> get(clazz: Class<T>) = getModule(clazz)
 
     /**
      * Get module by [moduleName]
