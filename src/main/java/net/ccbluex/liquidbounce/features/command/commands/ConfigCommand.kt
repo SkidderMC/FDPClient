@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import java.io.File
+import java.nio.file.Files
 
 class ConfigCommand : Command("config", arrayOf("cfg")) {
     override fun execute(args: Array<String>) {
@@ -106,6 +107,23 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                     chat("Current config is ${LiquidBounce.configManager.nowConfig}")
                 }
 
+                "copy" -> {
+                    if(args.size>3){
+                        val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
+                        val newFile=File(LiquidBounce.fileManager.configsDir,"${args[3]}.json")
+                        if(file.exists()&&!newFile.exists()) {
+                            Files.copy(file.toPath(),newFile.toPath())
+                            chat("Copied config ${args[2]} to ${args[3]}")
+                        }else if(!file.exists()) {
+                            chat("Config ${args[2]} not exist")
+                        }else if(newFile.exists()){
+                            chat("Config ${args[3]} already exists")
+                        }
+                    }else{
+                        chatSyntax("${args[1]} <configName> <newName>")
+                    }
+                }
+
 //                "tolegacy" -> {
 //                    if(args.size>2){
 //                        val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
@@ -125,6 +143,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
             }
         }else{
             chatSyntax(arrayOf("current",
+                "copy <configName> <newName>",
                 "create <configName>",
                 "load <configName>",
                 "forceload <configName>",
@@ -141,9 +160,9 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
         if (args.isEmpty()) return emptyList()
 
         return when (args.size) {
-            1 -> listOf("current", "create", "load", "forceload", "delete", "rename", "reload", "list", "save"/*, "toLegacy"*/).filter { it.startsWith(args[0], true) }
+            1 -> listOf("current", "copy", "create", "load", "forceload", "delete", "rename", "reload", "list", "save"/*, "toLegacy"*/).filter { it.startsWith(args[0], true) }
             2 -> when (args[0].toLowerCase()) {
-                    "delete", "load", "forceload", "rename" -> {
+                    "delete", "load", "forceload", "rename", "copy" -> {
                         (LiquidBounce.fileManager.configsDir.listFiles() ?: return emptyList())
                             .filter { it.isFile }
                             .map {
