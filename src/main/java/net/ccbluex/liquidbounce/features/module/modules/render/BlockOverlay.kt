@@ -32,7 +32,7 @@ class BlockOverlay : Module() {
     private val colorGreenValue = IntegerValue("Green", 117, 0, 255)
     private val colorBlueValue = IntegerValue("Blue", 255, 0, 255)
     private val colorAlphaValue = IntegerValue("Alpha", 100, 0, 255)
-    private val colorWidthValue = FloatValue("LineWidth", 2.0, 0.0, 10.0)
+    private val colorWidthValue = FloatValue("LineWidth", 2.0F, 0.0F, 10.0F)
     private val colorRainbow = BoolValue("Rainbow", false)
     val infoValue = BoolValue("Info", false)
 
