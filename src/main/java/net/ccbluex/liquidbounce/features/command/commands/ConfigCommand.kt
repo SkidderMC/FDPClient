@@ -63,8 +63,12 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
 
                     chat("Configs(${list.size}):")
 
-                    for (file in list)
-                        chat("> $file")
+                    for (file in list) {
+                        if(file.equals(LiquidBounce.configManager.nowConfig))
+                            chat("-> §a§l$file")
+                        else
+                            chat("> $file")
+                    }
                 }
 
                 "save" -> {
@@ -98,6 +102,10 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                     }
                 }
 
+                "current" -> {
+                    chat("Current config is ${LiquidBounce.configManager.nowConfig}")
+                }
+
 //                "tolegacy" -> {
 //                    if(args.size>2){
 //                        val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
@@ -116,7 +124,8 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
 //                }
             }
         }else{
-            chatSyntax(arrayOf("create <configName>",
+            chatSyntax(arrayOf("current",
+                "create <configName>",
                 "load <configName>",
                 "forceload <configName>",
                 "delete <configName>",
@@ -132,7 +141,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
         if (args.isEmpty()) return emptyList()
 
         return when (args.size) {
-            1 -> listOf("create", "load", "forceload", "delete", "rename", "reload", "list", "save"/*, "toLegacy"*/).filter { it.startsWith(args[0], true) }
+            1 -> listOf("current", "create", "load", "forceload", "delete", "rename", "reload", "list", "save"/*, "toLegacy"*/).filter { it.startsWith(args[0], true) }
             2 -> when (args[0].toLowerCase()) {
                     "delete", "load", "forceload", "rename" -> {
                         (LiquidBounce.fileManager.configsDir.listFiles() ?: return emptyList())
