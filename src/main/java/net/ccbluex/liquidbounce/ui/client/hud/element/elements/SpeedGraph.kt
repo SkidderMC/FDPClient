@@ -45,7 +45,7 @@ class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
             var speed = sqrt((z2 - z1) * (z2 - z1) + (x2 - x1) * (x2 - x1))
             if (speed < 0)
                 speed = -speed
-            speed = (lastSpeed + speed) * smoothness.get() * 0.5 + speed * (1-smoothness.get())
+            speed = (lastSpeed * 0.7 + speed * 0.3) * smoothness.get() * 0.5 + speed * (1-smoothness.get())
             lastSpeed = speed
             speedList.add(speed)
             while (speedList.size > width) {
