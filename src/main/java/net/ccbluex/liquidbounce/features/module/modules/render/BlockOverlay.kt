@@ -51,13 +51,13 @@ class BlockOverlay : Module() {
         val blockPos = currentBlock ?: return
         val block = mc.theWorld.getBlockState(blockPos).block ?: return
         val partialTicks = event.partialTicks
-        val color = if (colorRainbow.get()) rainbow(colorAlphaValue.get()/255) else Color(colorRedValue.get(),
-                colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
+        val color = if (colorRainbow.get()) rainbow((colorAlphaValue.get()/255).toFloat()) else Color(colorRedValue.get(),
+                colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get().toInt())
 
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
         RenderUtils.glColor(color)
-        GL11.glLineWidth(colorWidthValue.get())
+        GL11.glLineWidth(colorWidthValue.get().toFloat())
         GlStateManager.disableTexture2D()
         GlStateManager.depthMask(false)
 
