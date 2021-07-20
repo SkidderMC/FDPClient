@@ -20,7 +20,6 @@ import net.minecraft.entity.player.EntityPlayer
 import org.apache.commons.io.IOUtils
 import java.io.*
 import java.nio.charset.StandardCharsets
-import kotlin.math.roundToInt
 
 @ModuleInfo(name = "AutoAbuse", description = "Automatically abuse peoples you killed.", category = ModuleCategory.MISC)
 object AutoAbuse : Module() {

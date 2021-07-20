@@ -178,7 +178,7 @@ public class Fly extends Module {
     private final TickTimer freeHypixelTimer = new TickTimer();
     private float freeHypixelYaw;
     private float freeHypixelPitch;
-    private boolean verusFirstBoost=false;
+    private int verusBoostTimes=0;
 
     private int flyTick;
 
@@ -195,7 +195,7 @@ public class Fly extends Module {
             }
         }
 
-        verusFirstBoost=true;
+        verusBoostTimes=0;
         flyTimer.reset();
         flyTick=0;
         aac4glideDelay=0;
@@ -373,7 +373,7 @@ public class Fly extends Module {
                 if(mc.thePlayer.onGround&&!MovementUtils.isMoving())
                     break;
 
-                if(theTimer.hasTimePassed(verusFirstBoost?500:1300)){
+                if(theTimer.hasTimePassed(verusBoostTimes<2?500:1300)){
                     double x = mc.thePlayer.posX;
                     double y = mc.thePlayer.posY;
                     double z = mc.thePlayer.posZ;
@@ -381,7 +381,7 @@ public class Fly extends Module {
                     PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
                     PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
                     theTimer.reset();
-                    verusFirstBoost=false;
+                    verusBoostTimes++;
                 }
 
                 mc.thePlayer.capabilities.isFlying = false;

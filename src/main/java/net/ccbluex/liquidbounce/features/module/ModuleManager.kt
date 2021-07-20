@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import org.lwjgl.input.Keyboard
 import org.reflections.Reflections
 import java.util.*
-import java.util.function.Predicate
 
 class ModuleManager : Listenable {
 
