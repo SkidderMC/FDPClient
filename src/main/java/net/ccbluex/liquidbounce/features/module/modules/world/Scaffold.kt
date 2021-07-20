@@ -731,8 +731,8 @@ class Scaffold : Module() {
                     rotation = placeRotation.rotation
                 }
                 "fdp" -> {
-                    val jujuetaowacongwozuoqi = placeRotation.rotation.yaw
-                    var caluyaw = ((jujuetaowacongwozuoqi/45).roundToInt() * 45).roundToInt()
+                    var jujuetaowacongwozuoqi = placeRotation.rotation.yaw
+                    var caluyaw = (java.lang.Math.round(jujuetaowacongwozuoqi/45) * 45).toInt()
                     rotation = Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
             }
