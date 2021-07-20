@@ -731,8 +731,8 @@ class Scaffold : Module() {
                     rotation = placeRotation.rotation
                 }
                 "fdp" -> {
-                    var jujuetaowacongwozuoqi = placeRotation.rotation.yaw
-                    var caluyaw = (java.lang.Math.round(jujuetaowacongwozuoqi/45) * 45).toInt()
+                    var caluyaw = (java.lang.Math.round(placeRotation.rotation.yaw/45) * 45).toFloat()
+                    //Co丶Dynamic : Wo Shi Sha Bi
                     rotation = Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
             }
