@@ -34,6 +34,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C0BPacketEntityAction
@@ -140,6 +141,21 @@ class Scaffold : Module() {
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "OFF")
     private val autoJumpValue = BoolValue("AutoJump", false)
 
+    // Extra click
+    private val extraClickValue = ListValue("ExtraClick", arrayOf("EmptyC08", "AfterPlace"/*, "RayCast"*/, "OFF"), "OFF")
+    private val extraClickMaxDelayValue: IntegerValue = object : IntegerValue("ExtraClickMaxDelay", 100, 20, 300) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val i = extraClickMinDelayValue.get()
+            if (i > newValue) set(i)
+        }
+    }
+    private val extraClickMinDelayValue: IntegerValue = object : IntegerValue("ExtraClickMinDelay", 50, 20, 300) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val i = extraClickMaxDelayValue.get()
+            if (i < newValue) set(i)
+        }
+    }
+
     // Jump mode
     private val jumpMotionValue = FloatValue("TowerJumpMotion", 0.42f, 0.3681289f, 0.79f)
     private val jumpDelayValue = IntegerValue("TowerJumpDelay", 0, 0, 20)
@@ -184,8 +200,10 @@ class Scaffold : Module() {
     // Delay
     private val delayTimer = MSTimer()
     private val zitterTimer = MSTimer()
+    private val clickTimer = MSTimer()
     private val towerTimer = TickTimer()
     private var delay: Long = 0
+    private var clickDelay: Long = 0
 
     // Eagle
     private var placedBlocksWithoutEagle = 0
@@ -196,6 +214,7 @@ class Scaffold : Module() {
     private var jumpGround = 0.0
     private var towerStatus = false
     private var canSameY = false
+    private var lastPlaceBlock: BlockPos?=null
 
     /**
      * Enable module
@@ -203,6 +222,7 @@ class Scaffold : Module() {
     override fun onEnable() {
         if (mc.thePlayer == null) return
         launchY = mc.thePlayer.posY.toInt()
+        clickDelay=TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get())
     }
 
     /**
@@ -211,7 +231,7 @@ class Scaffold : Module() {
      * @param event
      */
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(event: UpdateEvent) {
         //if(!mc.thePlayer.onGround) tolleyStayTick=0
         //    else tolleyStayTick++
         //if(tolleyStayTick>100) tolleyStayTick=100
@@ -235,6 +255,24 @@ class Scaffold : Module() {
             canSameY = false
             launchY = mc.thePlayer.posY.toInt()
         }
+
+        if(clickTimer.hasTimePassed(clickDelay)){
+            when(extraClickValue.get().toLowerCase()){
+                "emptyc08" -> {
+                    val packet=C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot))
+                    if(clickDelay<35){
+                        PacketUtils.sendPacketNoEvent(packet)
+                    }
+                    if(clickDelay<50){
+                        PacketUtils.sendPacketNoEvent(packet)
+                    }
+                    PacketUtils.sendPacketNoEvent(packet)
+                }
+            }
+            clickDelay=TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get())
+            clickTimer.reset()
+        }
+
         mc.thePlayer.isSprinting = sprintValue.get()
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && blocksAmount > 1
         if (shouldGoDown) mc.gameSettings.keyBindSneak.pressed = false
@@ -542,10 +580,7 @@ class Scaffold : Module() {
         if (!delayTimer.hasTimePassed(delay) || !towerStatus && canSameY && launchY - 1 != targetPlace!!.vec3.yCoord.toInt()) return
         var blockSlot = -1
         var itemStack = mc.thePlayer.heldItem
-        if (mc.thePlayer.heldItem == null || !(mc.thePlayer.heldItem.item is ItemBlock && !InventoryUtils.isBlockListBlock(
-                mc.thePlayer.heldItem.item as ItemBlock
-            ))
-        ) {
+        if (mc.thePlayer.heldItem == null || !(mc.thePlayer.heldItem.item is ItemBlock && !InventoryUtils.isBlockListBlock(mc.thePlayer.heldItem.item as ItemBlock))) {
             if (autoBlockValue.get().equals("off", ignoreCase = true)) return
             blockSlot = InventoryUtils.findAutoBlockBlock()
             if (blockSlot == -1) return
@@ -556,11 +591,7 @@ class Scaffold : Module() {
             }
             itemStack = mc.thePlayer.inventoryContainer.getSlot(blockSlot).stack
         }
-        if (mc.playerController.onPlayerRightClick(
-                mc.thePlayer, mc.theWorld, itemStack, targetPlace!!.blockPos,
-                targetPlace!!.enumFacing, targetPlace!!.vec3
-            )
-        ) {
+        if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, itemStack, targetPlace!!.blockPos, targetPlace!!.enumFacing, targetPlace!!.vec3)) {
             delayTimer.reset()
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             if (mc.thePlayer.onGround) {
@@ -574,6 +605,22 @@ class Scaffold : Module() {
                 mc.netHandler.addToSendQueue(C0APacketAnimation())
             }else if(swing.equals("normal",true)){
                 mc.thePlayer.swingItem()
+            }
+
+            lastPlaceBlock=targetPlace!!.blockPos.add(targetPlace!!.enumFacing.directionVec)
+            when(extraClickValue.get().toLowerCase()){
+                "afterplace" -> {
+                    // fake click
+                    val p_onPlayerRightClick_4_=targetPlace!!.blockPos
+                    val p_onPlayerRightClick_6_=targetPlace!!.vec3
+                    val f = (p_onPlayerRightClick_6_.xCoord - p_onPlayerRightClick_4_.x.toDouble()).toFloat()
+                    val f1 = (p_onPlayerRightClick_6_.yCoord - p_onPlayerRightClick_4_.y.toDouble()).toFloat()
+                    val f2 = (p_onPlayerRightClick_6_.zCoord - p_onPlayerRightClick_4_.z.toDouble()).toFloat()
+                    val c08=C08PacketPlayerBlockPlacement(targetPlace!!.blockPos, targetPlace!!.enumFacing.index, itemStack, f, f1, f2)
+                    repeat((1000f/TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get()).coerceAtLeast(30)).toInt()+1){
+                        PacketUtils.sendPacketNoEvent(c08)
+                    }
+                }
             }
         }
 
@@ -782,9 +829,17 @@ class Scaffold : Module() {
         val slot = InventoryUtils.findAutoBlockBlock()
         var stack: ItemStack? = barrier
         if (slot != -1) {
-            stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
-            if (stack == null) {
-                stack = barrier
+            if(mc.thePlayer.inventory.getCurrentItem()!=null) {
+                val handItem = mc.thePlayer.inventory.getCurrentItem().item
+                if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
+                    stack = mc.thePlayer.inventory.getCurrentItem()
+                }
+            }
+            if(stack==barrier) {
+                stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
+                if (stack == null) {
+                    stack = barrier
+                }
             }
         }
         RenderHelper.enableGUIStandardItemLighting()
@@ -811,10 +866,5 @@ class Scaffold : Module() {
     override val tag: String
         get() = modeValue.get()
 
-    companion object {
-        /**
-         * OPTIONS
-         */
-        private val barrier = ItemStack(Item.getItemById(166), 0, 0)
-    }
+    private val barrier = ItemStack(Item.getItemById(166), 0, 0)
 }

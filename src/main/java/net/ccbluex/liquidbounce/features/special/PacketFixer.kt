@@ -5,6 +5,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.play.client.C02PacketUseEntity
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.server.S09PacketHeldItemChange
 
@@ -25,6 +26,9 @@ class PacketFixer : Listenable,MinecraftInstance() {
         }else if(packet is C02PacketUseEntity){
             if(mc.thePlayer.equals(packet.getEntityFromWorld(mc.theWorld)))
                 event.cancelEvent()
+        }else if(packet is C08PacketPlayerBlockPlacement){
+            // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
+            packet.stack=mc.thePlayer.inventory.getStackInSlot(serversideSlot)
         }
     }
 
