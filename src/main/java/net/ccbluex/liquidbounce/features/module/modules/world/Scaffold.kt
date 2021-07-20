@@ -45,6 +45,7 @@ import java.awt.Color
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.roundToInt
 
 @ModuleInfo(name = "Scaffold", description = "Automatically places blocks beneath your feet.", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_I)
 class Scaffold : Module() {
@@ -104,7 +105,7 @@ class Scaffold : Module() {
     private val expandLengthValue = IntegerValue("ExpandLength", 5, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90)
     //private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     //private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
@@ -775,6 +776,11 @@ class Scaffold : Module() {
                 }
                 "vanilla" -> {
                     rotation = placeRotation.rotation
+                }
+                "test" -> {
+                    var caluyaw = (java.lang.Math.round((placeRotation.rotation.yaw * 0.75 + ((if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + mc.thePlayer.rotationYaw) * 0.25) / 45) * 45).toFloat()
+                    //Co丶Dynamic : Wo Shi Sha Bi
+                    rotation = Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
             }
             if (rotation != null) {
