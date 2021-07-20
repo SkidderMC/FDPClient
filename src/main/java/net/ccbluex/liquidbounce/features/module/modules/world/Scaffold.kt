@@ -104,7 +104,7 @@ class Scaffold : Module() {
     private val expandLengthValue = IntegerValue("ExpandLength", 5, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "FDP"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90)
     //private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     //private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
@@ -730,8 +730,8 @@ class Scaffold : Module() {
                 "vanilla" -> {
                     rotation = placeRotation.rotation
                 }
-                "fdp" -> {
-                    var caluyaw = (java.lang.Math.round(placeRotation.rotation.yaw/45) * 45).toFloat()
+                "test" -> {
+                    var caluyaw = (java.lang.Math.round((placeRotation.rotation.yaw * 0.75 + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) * 0.25)/45) * 45).toFloat()
                     //Co丶Dynamic : Wo Shi Sha Bi
                     rotation = Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
