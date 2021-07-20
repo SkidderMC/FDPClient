@@ -44,6 +44,7 @@ import java.awt.Color
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.roundToInt
 
 @ModuleInfo(name = "Scaffold", description = "Automatically places blocks beneath your feet.", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_I)
 class Scaffold : Module() {
@@ -103,7 +104,7 @@ class Scaffold : Module() {
     private val expandLengthValue = IntegerValue("ExpandLength", 5, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "FDP"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90)
     //private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     //private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
@@ -728,6 +729,9 @@ class Scaffold : Module() {
                 }
                 "vanilla" -> {
                     rotation = placeRotation.rotation
+                }
+                "fdp" -> {
+                    rotation = Rotation(((placeRotation.rotation.yaw/45).roundToInt() * 45).roundToInt(), placeRotation.rotation.pitch)
                 }
             }
             if (rotation != null) {
