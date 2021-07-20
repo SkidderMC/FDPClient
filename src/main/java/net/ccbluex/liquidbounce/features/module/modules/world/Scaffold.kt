@@ -731,7 +731,7 @@ class Scaffold : Module() {
                     rotation = placeRotation.rotation
                 }
                 "fdp" -> {
-                    rotation = Rotation(((placeRotation.rotation.yaw/45).roundToInt() * 45).roundToInt(), placeRotation.rotation.pitch)
+                    rotation = Rotation((placeRotation.rotation.yaw/45).toInt() * 45, placeRotation.rotation.pitch)
                 }
             }
             if (rotation != null) {
