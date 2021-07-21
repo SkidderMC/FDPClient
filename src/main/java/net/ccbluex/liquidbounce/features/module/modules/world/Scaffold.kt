@@ -862,14 +862,15 @@ class Scaffold : Module() {
         return (Math.random() * (maxRotationSpeedValue.get() - minRotationSpeedValue.get()) + minRotationSpeedValue.get()).toFloat()
     }
     
-    fun roundYaw(var rYaw: Float):Float{
-        while(rYaw>=180) {
-            rYaw -= 360
+    fun roundYaw(rYaw: Float):Float{
+        var lrYaw = rYaw
+        while(lrYaw>=180) {
+            lrYaw -= 360
         }
-        while(rYaw<-180) {
-            rYaw += 360
+        while(lrYaw<-180) {
+            lrYaw += 360
         }
-        return rYaw
+        return lrYaw
     }
     
     @EventTarget
