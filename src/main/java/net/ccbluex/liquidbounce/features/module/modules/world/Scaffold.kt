@@ -48,28 +48,6 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "Scaffold", description = "Automatically places blocks beneath your feet.", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_I)
 class Scaffold : Module() {
-    // Mode
-    val modeValue = ListValue("Mode", arrayOf("Normal", "Rewinside", "Expand"), "Normal")
-
-    // Tower
-    private val towerModeValue = ListValue(
-        "TowerMode", arrayOf(
-            "None",
-            "Jump",
-            "Motion",
-            "ConstantMotion",
-            "PlusMotion",
-            "StableMotion",
-            "MotionTP",
-            "Packet",
-            "Teleport",
-            "AAC3.3.9",
-            "AAC3.6.4",
-            "AAC4.4Constant",
-            "AAC4Jump"
-        ), "None"
-    )
-    private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
 
     // Delay
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 0, 0, 1000) {
@@ -124,6 +102,7 @@ class Scaffold : Module() {
     private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20)
     //private var tolleyStayTick = 0
     //private var lastTickOnGround = false
+
     // Zitter
     //private val zitterValue = BoolValue("Zitter", false)
     private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
@@ -132,9 +111,29 @@ class Scaffold : Module() {
 
     // Game
     private val timerValue = FloatValue("Timer", 1f, 0.1f, 5f)
+    private val speedModifierValue = FloatValue("SpeedModifier", 1f, 0f, 2f)
+
+    // Tower
+    private val towerModeValue = ListValue(
+        "TowerMode", arrayOf(
+            "None",
+            "Jump",
+            "Motion",
+            "ConstantMotion",
+            "PlusMotion",
+            "StableMotion",
+            "MotionTP",
+            "Packet",
+            "Teleport",
+            "AAC3.3.9",
+            "AAC3.6.4",
+            "AAC4.4Constant",
+            "AAC4Jump"
+        ), "None"
+    )
+    private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
     private val towerActiveValue = ListValue("TowerActivation", arrayOf("Always", "PressSpace", "NoMove", "OFF"), "PressSpace")
     private val towerTimerValue = FloatValue("TowerTimer", 1f, 0.1f, 5f)
-    private val speedModifierValue = FloatValue("SpeedModifier", 1f, 0f, 2f)
 
     // Safety
     private val sameYValue = BoolValue("SameY", false)
@@ -215,6 +214,7 @@ class Scaffold : Module() {
     private var towerStatus = false
     private var canSameY = false
     private var lastPlaceBlock: BlockPos?=null
+    private var afterPlaceC08:C08PacketPlayerBlockPlacement?=null
 
     /**
      * Enable module
@@ -268,6 +268,21 @@ class Scaffold : Module() {
                     }
                     PacketUtils.sendPacketNoEvent(packet)
                 }
+                "afterplace" -> {
+                    if(afterPlaceC08!=null){
+                        if(mc.thePlayer.getDistanceSqToCenter(lastPlaceBlock)<10){
+                            if(clickDelay<35){
+                                PacketUtils.sendPacketNoEvent(afterPlaceC08!!)
+                            }
+                            if(clickDelay<50){
+                                PacketUtils.sendPacketNoEvent(afterPlaceC08!!)
+                            }
+                            PacketUtils.sendPacketNoEvent(afterPlaceC08!!)
+                        }else{
+                            afterPlaceC08=null
+                        }
+                    }
+                }
             }
             clickDelay=TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get())
             clickTimer.reset()
@@ -277,14 +292,6 @@ class Scaffold : Module() {
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && blocksAmount > 1
         if (shouldGoDown) mc.gameSettings.keyBindSneak.pressed = false
         if (mc.thePlayer.onGround) {
-            val mode = modeValue.get()
-
-            // Rewinside scaffold mode
-            if (mode.equals("Rewinside", ignoreCase = true)) {
-                MovementUtils.strafe(0.2f)
-                mc.thePlayer.motionY = 0.0
-            }
-
             // Smooth Zitter
             if (zitterModeValue.get().equals("smooth", ignoreCase = true)) {
                 if (!GameSettings.isKeyDown(mc.gameSettings.keyBindRight)) mc.gameSettings.keyBindRight.pressed = false
@@ -533,7 +540,7 @@ class Scaffold : Module() {
         if (if (!autoBlockValue.get().equals("off", ignoreCase = true)) InventoryUtils.findAutoBlockBlock() == -1 else mc.thePlayer.heldItem == null ||
                     !(mc.thePlayer.heldItem.item is ItemBlock && !InventoryUtils.isBlockListBlock(mc.thePlayer.heldItem.item as ItemBlock))
         ) return
-        findBlock(modeValue.get().equals("expand", ignoreCase = true))
+        findBlock(expandLengthValue.get()>1)
     }
 
     /**
@@ -616,10 +623,7 @@ class Scaffold : Module() {
                     val f = (p_onPlayerRightClick_6_.xCoord - p_onPlayerRightClick_4_.x.toDouble()).toFloat()
                     val f1 = (p_onPlayerRightClick_6_.yCoord - p_onPlayerRightClick_4_.y.toDouble()).toFloat()
                     val f2 = (p_onPlayerRightClick_6_.zCoord - p_onPlayerRightClick_4_.z.toDouble()).toFloat()
-                    val c08=C08PacketPlayerBlockPlacement(targetPlace!!.blockPos, targetPlace!!.enumFacing.index, itemStack, f, f1, f2)
-                    repeat((1000f/TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get()).coerceAtLeast(30)).toInt()+1){
-                        PacketUtils.sendPacketNoEvent(c08)
-                    }
+                    afterPlaceC08=C08PacketPlayerBlockPlacement(targetPlace!!.blockPos, targetPlace!!.enumFacing.index, itemStack, f, f1, f2)
                 }
             }
         }
@@ -681,7 +685,7 @@ class Scaffold : Module() {
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
         if (!markValue.get()) return
-        for (i in 0 until if (modeValue.get().equals("Expand", ignoreCase = true)) expandLengthValue.get() + 1 else 2) {
+        for (i in 0 until (expandLengthValue.get() + 1)) {
             val blockPos = BlockPos(
                 mc.thePlayer.posX + if (mc.thePlayer.horizontalFacing == EnumFacing.WEST) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.EAST) i else 0,
                 mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5){ 0.0 } else{ 1.0 }) - (if (shouldGoDown){ 1.0 }else{ 0.0 }),
@@ -883,7 +887,7 @@ class Scaffold : Module() {
     }
     
     override val tag: String
-        get() = modeValue.get()
+        get() = if(towerStatus){ "Tower" }else{ "Normal" }
 
     private val barrier = ItemStack(Item.getItemById(166), 0, 0)
 }
