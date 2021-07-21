@@ -782,7 +782,7 @@ class Scaffold : Module() {
                     rotation = Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
                 "test2" -> {
-                    rotation = Rotation((MovementUtils.getDirection() + 135).toFloat(), placeRotation.rotation.pitch)
+                    rotation = Rotation(((MovementUtils.getDirection() * 180f / Math.PI).toFloat() + 135).toFloat(), placeRotation.rotation.pitch)
                 }
             }
             if (rotation != null) {
