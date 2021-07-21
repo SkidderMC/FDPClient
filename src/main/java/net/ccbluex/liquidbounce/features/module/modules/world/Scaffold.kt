@@ -777,7 +777,7 @@ class Scaffold : Module() {
                     rotation = placeRotation.rotation
                 }
                 "test" -> {
-                    var caluyaw = (java.lang.Math.round((placeRotation.rotation.yaw * 0.75 + ((if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + mc.thePlayer.rotationYaw) * 0.25) / 45) * 45).toFloat()
+                    var caluyaw = (java.lang.Math.round((roundYaw(placeRotation.rotation.yaw) * 0.75 + roundYaw((if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + mc.thePlayer.rotationYaw) * 0.25) / 45) * 45).toFloat()
                     //Co丶Dynamic : Wo Shi Sha Bi
                     rotation = Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
@@ -860,6 +860,16 @@ class Scaffold : Module() {
 
     fun getSpeed():Float{
         return (Math.random() * (maxRotationSpeedValue.get() - minRotationSpeedValue.get()) + minRotationSpeedValue.get()).toFloat()
+    }
+    
+    fun roundYaw(var rYaw: Float):Float{
+        while(rYaw>=180) {
+            rYaw -= 360
+        }
+        while(rYaw<-180) {
+            rYaw += 360
+        }
+        return rYaw
     }
     
     @EventTarget
