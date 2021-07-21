@@ -42,7 +42,7 @@ object LiquidBounce {
     const val COLORED_NAME = "§c§lFDP§6§lClient"
     @JvmField
     val CLIENT_VERSION: String
-    const val CLIENT_CREATOR = "CCBlueX & Liulihaocai"
+    const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val MINECRAFT_VERSION = "1.8.9"
 
     val enableUpdateAlert: Boolean

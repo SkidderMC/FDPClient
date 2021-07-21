@@ -41,7 +41,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
                 .filter { it.startsWith(args[0], true) }
                 .toList()
 
-            2 -> modes.filter { it.startsWith(args[0], true) }
+            2 -> modes.filter { it.startsWith(args[1], true) }
 
             else -> emptyList()
         }

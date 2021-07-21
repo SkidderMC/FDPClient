@@ -1,14 +1,13 @@
 # FDPClient
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient?ref=badge_shield)
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/w/Project-EZ4H/FDPClient)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Project-EZ4H/FDPClient)
-![GitHub lines of code](https://tokei.rs/b1/github/Project-EZ4H/FDPClient)
-![Minecraft](https://img.shields.io/badge/game-Minecraft-brightgreen)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/UnlegitMC/FDPClient)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/UnlegitMC/FDPClient)
+![GitHub lines of code](https://tokei.rs/b1/github/UnlegitMC/FDPClient)
+![Minecraft](https://img.shields.io/badge/game-Minecraft-brightgreen)  
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.
 
 Website: https://fdp.liulihaocai.pw/  
-Latest: [github-actions](./actions)  
+Latest: [github-actions](htpps://github.com/UnlegitMC/FDPClient/actions)  
 Discord: https://discord.gg/dJtjF7swH9
 
 ## Issues
@@ -31,12 +30,9 @@ this project entirely or partially for free and even commercially. However, plea
 
 Do the above and share your source code with everyone; just like we do.
 
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FProject-EZ4H%2FFDPClient?ref=badge_large)
-
 ## Setting up a Workspace
 FDPClient uses gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
-1. Clone the repository using `git clone https://github.com/Project-EZ4H/FDPClient.git`. 
+1. Clone the repository using `git clone https://github.com/UnlegitMC/FDPClient.git`. 
 2. CD into the local repository folder.
 3. Depending on which IDE you are using execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
