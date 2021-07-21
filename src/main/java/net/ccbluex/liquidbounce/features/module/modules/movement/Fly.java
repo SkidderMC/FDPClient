@@ -137,7 +137,7 @@ public class Fly extends Module {
     private final BoolValue motionResetValue = new BoolValue("MotionReset", false);
 
     // Visuals
-    private final BoolValue markValue = new BoolValue("Mark", true);
+    private final BoolValue markValue = new ListValue("Mark", , new String[]{"Up", "Down", "Off"}, "Up");
     private final BoolValue fakeBoostValue = new BoolValue("FakeBoost", true);
 
     private double startY;
@@ -767,12 +767,12 @@ public class Fly extends Module {
     public void onRender3D(final Render3DEvent event) {
         final String mode = modeValue.get();
 
-        if (!markValue.get() || mode.equalsIgnoreCase("Vanilla") || mode.equalsIgnoreCase("SmoothVanilla"))
+        if (markValue.get().equalsIgnoreCase("Off") || mode.equalsIgnoreCase("Vanilla") || mode.equalsIgnoreCase("SmoothVanilla"))
             return;
 
-        double y = startY + 2D;
+        double y = markValue.get().equalsIgnoreCase("Up") ? startY + 2D : startY;
 
-        RenderUtils.drawPlatform(y, mc.thePlayer.getEntityBoundingBox().maxY < y ? new Color(0, 255, 0, 90) : new Color(255, 0, 0, 90), 1);
+        RenderUtils.drawPlatform(y, (mc.thePlayer.getEntityBoundingBox().maxY < (startY + 2D)) ? new Color(0, 255, 0, 90) : new Color(255, 0, 0, 90), 1);
 
         switch (mode.toLowerCase()) {
             case "aac1.9.10":
