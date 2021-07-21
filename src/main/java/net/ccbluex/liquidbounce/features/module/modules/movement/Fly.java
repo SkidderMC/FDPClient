@@ -137,7 +137,7 @@ public class Fly extends Module {
     private final BoolValue motionResetValue = new BoolValue("MotionReset", false);
 
     // Visuals
-    private final BoolValue markValue = new ListValue("Mark", new String[]{"Up", "Down", "Off"}, "Up");
+    private final ListValue markValue = new ListValue("Mark", new String[]{"Up", "Down", "Off"}, "Up");
     private final BoolValue fakeBoostValue = new BoolValue("FakeBoost", true);
 
     private double startY;
