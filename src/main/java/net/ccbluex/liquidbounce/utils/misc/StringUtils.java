@@ -14,6 +14,12 @@ public final class StringUtils {
         return String.join(" ", Arrays.copyOfRange(args, start, args.length));
     }
 
+    public static String toCompleteString(final String[] args, final int start, final String join) {
+        if(args.length <= start) return "";
+
+        return String.join(join, Arrays.copyOfRange(args, start, args.length));
+    }
+
     public static String replace(final String string, final String searchChars, String replaceChars) {
         if(string.isEmpty() || searchChars.isEmpty() || searchChars.equals(replaceChars))
             return string;

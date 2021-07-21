@@ -16,5 +16,6 @@ annotation class ModuleInfo(val name: String, val description: String, val categ
 enum class EnumAutoDisableType {
     NONE,
     RESPAWN,
-    FLAG
+    FLAG,
+    GAME_END
 }

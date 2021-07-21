@@ -3,15 +3,10 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
+import net.ccbluex.liquidbounce.utils.misc.StringUtils
 
 class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
-    private val modes=ArrayList<String>()
-
-    init {
-        for(type in EnumAutoDisableType.values()){
-            modes.add(type.toString().toLowerCase())
-        }
-    }
+    private val modes=EnumAutoDisableType.values().map { it.name.toLowerCase() }.toTypedArray()
 
     override fun execute(args: Array<String>) {
         if (args.size > 2) {
@@ -22,11 +17,10 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
                 return
             }
 
-            when(args[2].toUpperCase()){
-                "RESPAWN","FLAG" -> {
-                    module.autoDisable = EnumAutoDisableType.valueOf(args[2].toUpperCase())
-                }
-                else -> module.autoDisable = EnumAutoDisableType.NONE
+            try{
+                module.autoDisable = EnumAutoDisableType.valueOf(args[2].toUpperCase())
+            }catch (e: IllegalArgumentException){
+                module.autoDisable = EnumAutoDisableType.NONE
             }
             playEdit()
 
@@ -35,7 +29,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
             return
         }
 
-        chatSyntax("autodisable <module> [none/respawn/flag]")
+        chatSyntax("autodisable <module> [${StringUtils.toCompleteString(modes,0,",")}]")
     }
 
     override fun tabComplete(args: Array<String>): List<String> {

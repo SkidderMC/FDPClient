@@ -7,6 +7,7 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.client.AutoDisable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -46,19 +47,20 @@ class AutoPlay : Module(){
             val itemName=item.unlocalizedName
             //do check
             if(clickState==0 && windowId==0 && slot==42 && itemName.contains("paper",ignoreCase = true) && item.displayName.contains("Jogar novamente",ignoreCase = true)){
-                LiquidBounce.hud.addNotification(
-                    Notification(name,"Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO,time=delayValue.get()*1000-500)
-                )
-                clickState=1
-                clicking=true
-                Timer().schedule(object :TimerTask(){
-                    override fun run() {
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(6))
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                        clickState=2
-                    }
-                },delayValue.get()*1000L)
+                AutoDisable.handleGameEnd()
+                if(state){
+                    clickState=1
+                    clicking=true
+                    Timer().schedule(object :TimerTask(){
+                        override fun run() {
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(6))
+                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                            clickState=2
+                        }
+                    },delayValue.get()*1000L)
+                    LiquidBounce.hud.addNotification(Notification(name,"Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO,time=delayValue.get()*1000-500))
+                }
             }else if(clickState==2 && windowId!=0 && slot==11 && itemName.contains("enderPearl",ignoreCase = true)){
                 Timer().schedule(object :TimerTask() {
                     override fun run() {
@@ -79,4 +81,6 @@ class AutoPlay : Module(){
         clicking=false
         clickState=0
     }
+
+    override fun handleEvents() = true
 }

@@ -14,15 +14,14 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S2FPacketSetSlot
 
 @ModuleInfo(name = "AutoDisable", description = "Auto disable modules.", category = ModuleCategory.CLIENT, defaultOn = true)
-class AutoDisable : Module() {
+object AutoDisable : Module() {
     @EventTarget
     fun onWorld(event: WorldEvent){
         LiquidBounce.moduleManager.modules
+            .filter { it.state&&it.autoDisable==EnumAutoDisableType.RESPAWN }
             .forEach { module ->
-                if(module.state&&module.autoDisable==EnumAutoDisableType.RESPAWN){
-                    module.state=false
-                    LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to respawn.",NotifyType.WARNING,2000))
-                }
+                module.state=false
+                LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to respawn.",NotifyType.WARNING,2000))
             }
     }
 
@@ -30,27 +29,20 @@ class AutoDisable : Module() {
     fun onPacket(event: PacketEvent){
         if(event.packet is S08PacketPlayerPosLook){
             LiquidBounce.moduleManager.modules
+                .filter { it.state&&it.autoDisable==EnumAutoDisableType.FLAG }
                 .forEach { module ->
-                    if(module.state&&module.autoDisable==EnumAutoDisableType.FLAG){
-                        module.state=false
-                        LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to flag.",NotifyType.WARNING,2000))
-                    }
+                    module.state=false
+                    LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to flag.",NotifyType.WARNING,2000))
                 }
         }
-        val packet = event.packet
-        if (packet is S2FPacketSetSlot) {
-            val slot = packet.func_149173_d()
-            val item=packet.func_149174_e() ?: return
-            val itemName = item.unlocalizedName
-            if (slot == 42 && itemName.contains("paper", ignoreCase = true) && item.displayName.contains("Jogar novamente", ignoreCase = true)) {
-                LiquidBounce.moduleManager.modules
-                        .forEach { module ->
-                            if(module.state&&module.autoDisable==EnumAutoDisableType.RESPAWN){
-                                module.state=false
-                                LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to game end.",NotifyType.WARNING,2000))
-                            }
-                        }
+    }
+
+    fun handleGameEnd(){
+        LiquidBounce.moduleManager.modules
+            .filter { it.state&&it.autoDisable==EnumAutoDisableType.GAME_END }
+            .forEach { module ->
+                module.state=false
+                LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to game end.",NotifyType.WARNING,2000))
             }
-        }
     }
 }
