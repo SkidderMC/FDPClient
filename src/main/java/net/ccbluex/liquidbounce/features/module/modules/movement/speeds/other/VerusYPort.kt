@@ -4,18 +4,18 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class VerusYPort : SpeedMode("VerusYPort") {
-	override fun onUpdate() {
-		if (mc.thePlayer!!.isInWater) return
-
-		if (MovementUtils.isMoving() && mc.thePlayer!!.onGround) {
-			mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ)
-			mc.thePlayer.motionY = 0.0
-			MovementUtils.strafe(0.6075f)
-		}else if(MovementUtils.isMoving()){
-			MovementUtils.strafe()
-		} else {
-			mc.thePlayer.motionZ = 0.0
-			mc.thePlayer.motionX = 0.0
-		}
-	}
+	override onMove(event: MoveEvent) {
+       		if (!mc.thePlayer.isInWeb && !mc.thePlayer.isInLava() && !mc.thePlayer.isInWater() && !mc.thePlayer.isOnLadder() && mc.thePlayer.ridingEntity == null) {
+            		if (MovementUtils.isMoving()) {
+                		mc.gameSettings.keyBindJump.pressed = false
+                		if (mc.thePlayer.onGround) {
+                    			mc.thePlayer.jump()
+                    			mc.thePlayer.motionY = 0.0
+                    			MovementUtils.strafe(0.61F)
+                    			event.setY(0.41999998688698)
+                		}
+                		MovementUtils.strafe()
+            		}
+        	}
+    	}
 }
