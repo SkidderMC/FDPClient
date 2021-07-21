@@ -766,11 +766,12 @@ public class Fly extends Module {
     @EventTarget
     public void onRender3D(final Render3DEvent event) {
         final String mode = modeValue.get();
+        final String mark = markValue.get();
 
-        if (markValue.get().equalsIgnoreCase("Off") || mode.equalsIgnoreCase("Vanilla") || mode.equalsIgnoreCase("SmoothVanilla"))
+        if (mark.equalsIgnoreCase("Off") || mode.equalsIgnoreCase("Vanilla") || mode.equalsIgnoreCase("SmoothVanilla"))
             return;
 
-        double y = markValue.get().equalsIgnoreCase("Up") ? startY + 2D : startY;
+        double y = mark.equalsIgnoreCase("Up") ? startY + 2D : startY;
 
         RenderUtils.drawPlatform(y, (mc.thePlayer.getEntityBoundingBox().maxY < (startY + 2D)) ? new Color(0, 255, 0, 90) : new Color(255, 0, 0, 90), 1);
 
