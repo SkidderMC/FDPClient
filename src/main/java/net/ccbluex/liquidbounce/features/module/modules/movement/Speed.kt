@@ -69,6 +69,7 @@ class Speed : Module() {
         RedeSkyHopOld(),
         RedeSkyGround(),
         Matrix(),
+        VerusYPort(),
         MineplexBHop()
     )
 
