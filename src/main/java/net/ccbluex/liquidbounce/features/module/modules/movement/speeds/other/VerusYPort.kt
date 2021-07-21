@@ -13,7 +13,7 @@ class VerusYPort : SpeedMode("VerusYPort") {
                     			mc.thePlayer.jump()
                     			mc.thePlayer.motionY = 0.0
                     			MovementUtils.strafe(0.61F)
-                    			event.setY(0.41999998688698)
+                    			event.y = 0.41999998688698
                 		}
                 		MovementUtils.strafe()
             		}
