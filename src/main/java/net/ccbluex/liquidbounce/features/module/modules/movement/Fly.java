@@ -209,6 +209,12 @@ public class Fly extends Module {
         final String mode = modeValue.get();
 
         switch(mode.toLowerCase()) {
+            case "verus":
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y+3.35, z, false));
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
+                mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ);
+                break;
             case "ncp":
                 if(!mc.thePlayer.onGround)
                     break;
@@ -377,9 +383,9 @@ public class Fly extends Module {
                     double x = mc.thePlayer.posX;
                     double y = mc.thePlayer.posY;
                     double z = mc.thePlayer.posZ;
-                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y+3.35, z, false));
-                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
-                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y+3.35, z, false));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
                     theTimer.reset();
                     verusBoostTimes++;
                 }
