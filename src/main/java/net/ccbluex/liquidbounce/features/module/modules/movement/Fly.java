@@ -178,7 +178,7 @@ public class Fly extends Module {
     private final TickTimer freeHypixelTimer = new TickTimer();
     private float freeHypixelYaw;
     private float freeHypixelPitch;
-    private int verusBoostTimes=0;
+    private boolean verusFlyable=false;
 
     private int flyTick;
 
@@ -195,7 +195,6 @@ public class Fly extends Module {
             }
         }
 
-        verusBoostTimes=0;
         flyTimer.reset();
         flyTick=0;
         aac4glideDelay=0;
@@ -210,10 +209,11 @@ public class Fly extends Module {
 
         switch(mode.toLowerCase()) {
             case "verus":
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y+3.35, z, false));
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
-                mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ);
+                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y+3.35, z, false));
+                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
+                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
+                MovementUtils.strafe(vanillaSpeedValue.get());
+                verusFlyable=true;
                 break;
             case "ncp":
                 if(!mc.thePlayer.onGround)
@@ -376,36 +376,13 @@ public class Fly extends Module {
                 handleVanillaKickBypass();
                 break;
             case "verus":
-                if(mc.thePlayer.onGround&&!MovementUtils.isMoving())
-                    break;
-
-                if(theTimer.hasTimePassed(verusBoostTimes<2?500:1300)){
-                    double x = mc.thePlayer.posX;
-                    double y = mc.thePlayer.posY;
-                    double z = mc.thePlayer.posZ;
-                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y+3.35, z, false));
-                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
-                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
-                    theTimer.reset();
-                    verusBoostTimes++;
+                if(verusFlyable){
+                    mc.thePlayer.motionY=0;
+                    MovementUtils.strafe();
+                    if(MovementUtils.getSpeed()<0.28){
+                        verusFlyable=false;
+                    }
                 }
-
-                mc.thePlayer.capabilities.isFlying = false;
-                mc.thePlayer.motionY = 0;
-                mc.thePlayer.motionX = 0;
-                mc.thePlayer.motionZ = 0;
-                if(mc.gameSettings.keyBindJump.isKeyDown() && mineplexTimer.hasTimePassed(300)) {
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3, mc.thePlayer.posZ);
-                    mineplexTimer.reset();
-                }
-
-                if(mc.thePlayer.isSneaking() && mineplexTimer.hasTimePassed(300)) {
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 3, mc.thePlayer.posZ);
-                    mineplexTimer.reset();
-                }
-                MovementUtils.strafe(vanillaSpeed);
-
-                mc.timer.timerSpeed=0.5f;
                 break;
             case "smoothvanilla":
                 mc.thePlayer.capabilities.isFlying = true;
@@ -797,7 +774,7 @@ public class Fly extends Module {
 
             final String mode = modeValue.get();
 
-            if (mode.equalsIgnoreCase("NCP") || mode.equalsIgnoreCase("Rewinside") ||
+            if (mode.equalsIgnoreCase("NCP") || mode.equalsIgnoreCase("Rewinside") || (mode.equalsIgnoreCase("Verus")&&verusFlyable) ||
                     (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null))
                 packetPlayer.onGround = true;
 
@@ -921,7 +898,8 @@ public class Fly extends Module {
                 mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") ||
                 (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null)) && event.getY() < mc.thePlayer.posY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, mc.thePlayer.posY, event.getZ() + 1));
-        if(mode.equalsIgnoreCase("FakeGround") && event.getBlock() instanceof BlockAir && event.getY() < launchY)
+        if((mode.equalsIgnoreCase("FakeGround") || mode.equalsIgnoreCase("Verus"))
+                && event.getBlock() instanceof BlockAir && event.getY() < launchY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, launchY, event.getZ() + 1));
     }
 

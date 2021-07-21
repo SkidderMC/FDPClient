@@ -22,6 +22,7 @@
     "gui.MixinGuiConnecting",
     "gui.MixinGuiContainer",
     "gui.MixinGuiDisconnected",
+    "gui.MixinGuiGameOver",
     "gui.MixinGuiInGame",
     "gui.MixinGuiIngameMenu",
     "gui.MixinGuiMultiplayer",
@@ -30,6 +31,7 @@
     "gui.MixinGuiSpectator",
     "item.MixinItemRenderer",
     "item.MixinItemStack",
+    "math.MixinMathHelper",
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "network.MixinNetworkPlayerInfo",
@@ -42,13 +44,12 @@
     "render.MixinRender",
     "render.MixinRenderEntityItem",
     "render.MixinRendererLivingEntity",
+    "render.MixinRenderItem",
     "render.MixinTileEntityChestRenderer",
     "render.MixinTileEntityItemStackRenderer",
     "render.MixinTileEntityMobSpawnerRenderer",
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinVisGraph",
-    "render.MixinRenderItem",
-    "world.MixinWorldClient",
-    "math.MixinMathHelper"
+    "world.MixinWorldClient"
   ]
 }
