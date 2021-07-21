@@ -864,10 +864,10 @@ class Scaffold : Module() {
     
     fun roundYaw(rYaw: Float):Float{
         var lrYaw = rYaw
-        while(lrYaw>=180) {
+        while(lrYaw>360) {
             lrYaw -= 360
         }
-        while(lrYaw<-180) {
+        while(lrYaw<-360) {
             lrYaw += 360
         }
         return lrYaw
