@@ -138,7 +138,7 @@ class Scaffold : Module() {
     private val sameYValue = BoolValue("SameY", false)
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "OFF")
     private val autoJumpValue = BoolValue("AutoJump", false)
-    private val hitableCheck = BoolValue("HitableCheck", true)
+    private val hitableCheck = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple")
 
     // Extra click
     private val extraClickValue = ListValue("ExtraClick", arrayOf("EmptyC08", "AfterPlace", "RayTrace", "OFF"), "OFF")
@@ -597,10 +597,19 @@ class Scaffold : Module() {
         if (!delayTimer.hasTimePassed(delay) || !towerStatus && canSameY && launchY - 1 != targetPlace!!.vec3.yCoord.toInt())
             return
 
-        if(hitableCheck.get()&&!rotationsValue.get().equals("None",true)){
+        if(!rotationsValue.get().equals("None",true)){
             val rayTraceInfo=mc.thePlayer.rayTraceWithServerSideRotation(5.0)
-           if(!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)){
-                return
+            when(hitableCheck.get().toLowerCase()){
+                "simple" -> {
+                    if(!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)){
+                        return
+                    }
+                }
+                "strict" -> {
+                    if(!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)||rayTraceInfo.sideHit!=targetPlace!!.enumFacing){
+                        return
+                    }
+                }
             }
         }
 
