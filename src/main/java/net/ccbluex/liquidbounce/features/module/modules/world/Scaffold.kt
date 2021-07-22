@@ -609,7 +609,7 @@ class Scaffold : Module() {
             itemStack = mc.thePlayer.inventoryContainer.getSlot(blockSlot).stack
         }
         if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, itemStack, targetPlace!!.blockPos, targetPlace!!.enumFacing, targetPlace!!.vec3)) {
-            delayTimer.reset()
+            //delayTimer.reset()
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             if (mc.thePlayer.onGround) {
                 val modifier = speedModifierValue.get()
