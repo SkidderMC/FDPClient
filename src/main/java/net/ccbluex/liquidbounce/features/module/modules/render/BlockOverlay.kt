@@ -51,7 +51,7 @@ class BlockOverlay : Module() {
         val blockPos = currentBlock ?: return
         val block = mc.theWorld.getBlockState(blockPos).block ?: return
         val partialTicks = event.partialTicks
-        val color = if (colorRainbow.get()) ColorUtils.rainbow(colorAlphaValue.get()) else Color(colorRedValue.get(),
+        val color = if (colorRainbow.get()) ColorUtils.rainbow(400000L, colorAlphaValue.get()) else Color(colorRedValue.get(),
                 colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get().toInt())
 
         GlStateManager.enableBlend()
