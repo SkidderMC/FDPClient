@@ -280,13 +280,18 @@ class Scaffold : Module() {
                     }
                 }
                 "raytrace" -> {
-                    // TODO: Raytrace only send c08 at can't place block
                     val rayTraceInfo=mc.thePlayer.rayTraceWithServerSideRotation(5.0)
                     if(BlockUtils.getBlock(rayTraceInfo.blockPos)!=Blocks.air){
                         val blockPos=rayTraceInfo.blockPos
                         val hitVec=rayTraceInfo.hitVec
-                        sendPacket(C08PacketPlayerBlockPlacement(blockPos,rayTraceInfo.sideHit.index,mc.thePlayer.inventoryContainer.getSlot(slot+36).stack
-                            ,(hitVec.xCoord - blockPos.x.toDouble()).toFloat(),(hitVec.yCoord - blockPos.y.toDouble()).toFloat(),(hitVec.zCoord - blockPos.z.toDouble()).toFloat()))
+                        val directionVec=rayTraceInfo.sideHit.directionVec
+                        val targetPos=rayTraceInfo.blockPos.add(directionVec.x,directionVec.y,directionVec.z)
+                        if(mc.thePlayer.entityBoundingBox.intersectsWith(Blocks.stone.getSelectedBoundingBox(mc.theWorld,targetPos))){
+                            sendPacket(C08PacketPlayerBlockPlacement(blockPos,rayTraceInfo.sideHit.index,mc.thePlayer.inventory.getStackInSlot(slot)
+                                ,(hitVec.xCoord - blockPos.x.toDouble()).toFloat(),(hitVec.yCoord - blockPos.y.toDouble()).toFloat(),(hitVec.zCoord - blockPos.z.toDouble()).toFloat()))
+                        }else{
+                            sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
+                        }
                     }
                 }
             }
@@ -326,12 +331,7 @@ class Scaffold : Module() {
                     ).block === Blocks.air
                     if (eagleValue.get().equals("slient", ignoreCase = true)) {
                         if (eagleSneaking != shouldEagle) {
-                            mc.netHandler.addToSendQueue(
-                                C0BPacketEntityAction(
-                                    mc.thePlayer,
-                                    if (shouldEagle) C0BPacketEntityAction.Action.START_SNEAKING else C0BPacketEntityAction.Action.STOP_SNEAKING
-                                )
-                            )
+                            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, if (shouldEagle) C0BPacketEntityAction.Action.START_SNEAKING else C0BPacketEntityAction.Action.STOP_SNEAKING))
                         }
                         eagleSneaking = shouldEagle
                     } else mc.gameSettings.keyBindSneak.pressed = shouldEagle
@@ -622,7 +622,7 @@ class Scaffold : Module() {
             if (autoBlockValue.get().equals("LiteSpoof", ignoreCase = true) || autoBlockValue.get().equals("Spoof", ignoreCase = true)) {
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(blockSlot - 36))
             } else {
-                mc.thePlayer.inventory.changeCurrentItem(blockSlot - 36)
+                mc.thePlayer.inventory.currentItem = blockSlot-36
             }
             itemStack = mc.thePlayer.inventoryContainer.getSlot(blockSlot).stack
         }
