@@ -62,7 +62,7 @@ class Scaffold : Module() {
             if (i < newValue) set(i)
         }
     }
-    private val placeableDelay = BoolValue("PlaceableDelay", false)
+    private val placeableDelay = ListValue("PlaceableDelay", arrayOf("Normal", "Smart", "Off"), "Normal")
 
     // AutoBlock
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "LiteSpoof")
@@ -203,6 +203,7 @@ class Scaffold : Module() {
     private val towerTimer = TickTimer()
     private var delay: Long = 0
     private var clickDelay: Long = 0
+    private var lastPlace = 0
 
     // Eagle
     private var placedBlocksWithoutEagle = 0
@@ -222,6 +223,7 @@ class Scaffold : Module() {
     override fun onEnable() {
         if (mc.thePlayer == null) return
         launchY = mc.thePlayer.posY.toInt()
+        lastPlace=2
         clickDelay=TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get())
     }
 
@@ -398,7 +400,11 @@ class Scaffold : Module() {
         if (event.isPre()) update()
 
         // Reset placeable delay
-        if (targetPlace == null && placeableDelay.get()) delayTimer.reset()
+        if (targetPlace == null && !placeableDelay.get().equals("off", ignoreCase = true)) {
+            if(placeableDelay.get().equals("Smart", ignoreCase = true)) {
+                if(lastPlace==0) delayTimer.reset()
+            }else delayTimer.reset()
+        }
     }
 
     private fun fakeJump() {
@@ -581,7 +587,11 @@ class Scaffold : Module() {
      */
     private fun place() {
         if (targetPlace == null) {
-            if (placeableDelay.get()) delayTimer.reset()
+            if (!placeableDelay.get().equals("Off", ignoreCase = true)) {
+                if(lastPlace==0 && placeableDelay.get().equals("Smart", ignoreCase = true)) delayTimer.reset()
+                if(placeableDelay.get().equals("Normal", ignoreCase = true)) delayTimer.reset()
+                if(lastPlace>0) lastPlace--
+            }
             return
         }
         if (!delayTimer.hasTimePassed(delay) || !towerStatus && canSameY && launchY - 1 != targetPlace!!.vec3.yCoord.toInt()) return
@@ -613,7 +623,7 @@ class Scaffold : Module() {
             }else if(swing.equals("normal",true)){
                 mc.thePlayer.swingItem()
             }
-
+            lastPlace=2
             lastPlaceBlock=targetPlace!!.blockPos.add(targetPlace!!.enumFacing.directionVec)
             when(extraClickValue.get().toLowerCase()){
                 "afterplace" -> {
