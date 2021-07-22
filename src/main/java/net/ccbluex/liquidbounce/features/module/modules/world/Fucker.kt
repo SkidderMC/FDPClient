@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isFullBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
 import net.ccbluex.liquidbounce.utils.extensions.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.getEyeVec3
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.*
@@ -226,8 +227,7 @@ object Fucker : Module() {
     private fun isHitable(blockPos: BlockPos): Boolean {
         return when (throughWallsValue.get().toLowerCase()) {
             "raycast" -> {
-                val eyesPos = Vec3(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY +
-                        mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ)
+                val eyesPos = mc.thePlayer.getEyeVec3()
                 val movingObjectPosition = mc.theWorld.rayTraceBlocks(eyesPos,
                         Vec3(blockPos.x + 0.5, blockPos.y + 0.5, blockPos.z + 0.5), false,
                         true, false)

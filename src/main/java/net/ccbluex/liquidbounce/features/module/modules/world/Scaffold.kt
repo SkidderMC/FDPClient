@@ -11,11 +11,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.canBeClicked
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.isReplaceable
+import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.get
+import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TickTimer
@@ -139,9 +138,10 @@ class Scaffold : Module() {
     private val sameYValue = BoolValue("SameY", false)
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "OFF")
     private val autoJumpValue = BoolValue("AutoJump", false)
+    private val hitableCheck = BoolValue("HitableCheck", true)
 
     // Extra click
-    private val extraClickValue = ListValue("ExtraClick", arrayOf("EmptyC08", "AfterPlace"/*, "RayCast"*/, "OFF"), "OFF")
+    private val extraClickValue = ListValue("ExtraClick", arrayOf("EmptyC08", "AfterPlace", "RayTrace", "OFF"), "OFF")
     private val extraClickMaxDelayValue: IntegerValue = object : IntegerValue("ExtraClickMaxDelay", 100, 20, 300) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = extraClickMinDelayValue.get()
@@ -259,30 +259,34 @@ class Scaffold : Module() {
         }
 
         if(clickTimer.hasTimePassed(clickDelay)){
-            when(extraClickValue.get().toLowerCase()){
-                "emptyc08" -> {
-                    val packet=C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot))
-                    if(clickDelay<35){
-                        PacketUtils.sendPacketNoEvent(packet)
-                    }
-                    if(clickDelay<50){
-                        PacketUtils.sendPacketNoEvent(packet)
-                    }
-                    PacketUtils.sendPacketNoEvent(packet)
+            fun sendPacket(c08: C08PacketPlayerBlockPlacement){
+                if(clickDelay<35){
+                    PacketUtils.sendPacketNoEvent(c08)
                 }
+                if(clickDelay<50){
+                    PacketUtils.sendPacketNoEvent(c08)
+                }
+                PacketUtils.sendPacketNoEvent(c08)
+            }
+            when(extraClickValue.get().toLowerCase()){
+                "emptyc08" -> sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
                 "afterplace" -> {
                     if(afterPlaceC08!=null){
                         if(mc.thePlayer.getDistanceSqToCenter(lastPlaceBlock)<10){
-                            if(clickDelay<35){
-                                PacketUtils.sendPacketNoEvent(afterPlaceC08!!)
-                            }
-                            if(clickDelay<50){
-                                PacketUtils.sendPacketNoEvent(afterPlaceC08!!)
-                            }
-                            PacketUtils.sendPacketNoEvent(afterPlaceC08!!)
+                            sendPacket(afterPlaceC08!!)
                         }else{
                             afterPlaceC08=null
                         }
+                    }
+                }
+                "raytrace" -> {
+                    // TODO: Raytrace only send c08 at can't place block
+                    val rayTraceInfo=mc.thePlayer.rayTraceWithServerSideRotation(5.0)
+                    if(BlockUtils.getBlock(rayTraceInfo.blockPos)!=Blocks.air){
+                        val blockPos=rayTraceInfo.blockPos
+                        val hitVec=rayTraceInfo.hitVec
+                        sendPacket(C08PacketPlayerBlockPlacement(blockPos,rayTraceInfo.sideHit.index,mc.thePlayer.inventoryContainer.getSlot(slot+36).stack
+                            ,(hitVec.xCoord - blockPos.x.toDouble()).toFloat(),(hitVec.yCoord - blockPos.y.toDouble()).toFloat(),(hitVec.zCoord - blockPos.z.toDouble()).toFloat()))
                     }
                 }
             }
@@ -362,10 +366,7 @@ class Scaffold : Module() {
         val eventState = event.eventState
         towerStatus = false;
         // Tower
-        towerStatus = (!stopWhenBlockAbove.get() || getBlock(BlockPos(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY + 2, mc.thePlayer.posZ
-                      )) is BlockAir)
+        towerStatus = (!stopWhenBlockAbove.get() || BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 2, mc.thePlayer.posZ)) is BlockAir)
         if(towerStatus) {
             //further checks
             when(towerActiveValue.get().toLowerCase()) {
@@ -388,16 +389,15 @@ class Scaffold : Module() {
         if(towerStatus) move()
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepLengthValue.get()>0 && lockRotation != null && silentRotationValue.get()) {
-            val limitedRotation =
-                RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation, getSpeed())
+            val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation, getSpeed())
             RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
         }
 
-        // Place block
-        if (placeModeValue.get().equals(eventState.stateName, ignoreCase = true)) place()
-
         // Update and search for new block
         if (event.isPre()) update()
+
+        // Place block
+        if (placeModeValue.get().equals(eventState.stateName, ignoreCase = true)) place()
 
         // Reset placeable delay
         if (targetPlace == null && !placeableDelay.get().equals("off", ignoreCase = true)) {
@@ -565,7 +565,7 @@ class Scaffold : Module() {
             mc.thePlayer.posX, launchY-1.0, mc.thePlayer.posZ) else BlockPos(
             mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ
         ).down()
-        if (!expand && (!isReplaceable(blockPosition) || search(blockPosition, !shouldGoDown))) return
+        if (!expand && (!BlockUtils.isReplaceable(blockPosition) || search(blockPosition, !shouldGoDown))) return
         if (expand) {
             for (i in 0 until expandLengthValue.get()) {
                 if (search(
@@ -594,7 +594,16 @@ class Scaffold : Module() {
             }
             return
         }
-        if (!delayTimer.hasTimePassed(delay) || !towerStatus && canSameY && launchY - 1 != targetPlace!!.vec3.yCoord.toInt()) return
+        if (!delayTimer.hasTimePassed(delay) || !towerStatus && canSameY && launchY - 1 != targetPlace!!.vec3.yCoord.toInt())
+            return
+
+        if(hitableCheck.get()&&!rotationsValue.get().equals("None",true)){
+            val rayTraceInfo=mc.thePlayer.rayTraceWithServerSideRotation(5.0)
+           if(!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)){
+                return
+            }
+        }
+
         var blockSlot = -1
         var itemStack = mc.thePlayer.heldItem
         if (mc.thePlayer.heldItem == null || !(mc.thePlayer.heldItem.item is ItemBlock && !InventoryUtils.isBlockListBlock(mc.thePlayer.heldItem.item as ItemBlock))) {
@@ -628,12 +637,10 @@ class Scaffold : Module() {
             when(extraClickValue.get().toLowerCase()){
                 "afterplace" -> {
                     // fake click
-                    val p_onPlayerRightClick_4_=targetPlace!!.blockPos
-                    val p_onPlayerRightClick_6_=targetPlace!!.vec3
-                    val f = (p_onPlayerRightClick_6_.xCoord - p_onPlayerRightClick_4_.x.toDouble()).toFloat()
-                    val f1 = (p_onPlayerRightClick_6_.yCoord - p_onPlayerRightClick_4_.y.toDouble()).toFloat()
-                    val f2 = (p_onPlayerRightClick_6_.zCoord - p_onPlayerRightClick_4_.z.toDouble()).toFloat()
-                    afterPlaceC08=C08PacketPlayerBlockPlacement(targetPlace!!.blockPos, targetPlace!!.enumFacing.index, itemStack, f, f1, f2)
+                    val blockPos=targetPlace!!.blockPos
+                    val hitVec=targetPlace!!.vec3
+                    afterPlaceC08=C08PacketPlayerBlockPlacement(targetPlace!!.blockPos, targetPlace!!.enumFacing.index, itemStack
+                        , (hitVec.xCoord - blockPos.x.toDouble()).toFloat(), (hitVec.yCoord - blockPos.y.toDouble()).toFloat(), (hitVec.zCoord - blockPos.z.toDouble()).toFloat())
                 }
             }
         }
@@ -702,7 +709,7 @@ class Scaffold : Module() {
                 mc.thePlayer.posZ + if (mc.thePlayer.horizontalFacing == EnumFacing.NORTH) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.SOUTH) i else 0
             )
             val placeInfo = get(blockPos)
-            if (isReplaceable(blockPos) && placeInfo != null) {
+            if (BlockUtils.isReplaceable(blockPos) && placeInfo != null) {
                 RenderUtils.drawBlockBox(blockPos, Color(68, 117, 255, 100), false, true, 1f)
                 break
             }
@@ -717,7 +724,7 @@ class Scaffold : Module() {
      * @return
      */
     private fun search(blockPosition: BlockPos, checks: Boolean): Boolean {
-        if (!isReplaceable(blockPosition)) return false
+        if (!BlockUtils.isReplaceable(blockPosition)) return false
         val eyesPos = Vec3(
             mc.thePlayer.posX,
             mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight(),
@@ -726,7 +733,7 @@ class Scaffold : Module() {
         var placeRotation: PlaceRotation? = null
         for (side in EnumFacing.values()) {
             val neighbor = blockPosition.offset(side)
-            if (!canBeClicked(neighbor)) continue
+            if (!BlockUtils.canBeClicked(neighbor)) continue
             val dirVec = Vec3(side.directionVec)
             var xSearch = 0.1
             while (xSearch < 0.9) {
