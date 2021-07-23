@@ -166,6 +166,7 @@ public class Fly extends Module {
     private final MSTimer mineplexTimer = new MSTimer();
 
     private boolean wasDead;
+    private boolean enabledVerus=false;
 
     private final TickTimer hypixelTimer = new TickTimer();
     private final MSTimer theTimer = new MSTimer();
@@ -217,8 +218,8 @@ public class Fly extends Module {
                 mc.thePlayer.motionY=0;
                 mc.thePlayer.motionZ=0;
                 mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ);
-                launchY+=0.42;
                 verusFlyable=true;
+                enabledVerus=true;
                 break;
             case "verus2":
                 mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y+1.1, z, false));
@@ -398,23 +399,27 @@ public class Fly extends Module {
             case "verus1":
                 if(flyTimer.hasTimePassed(3000)) verusFlyable=false;
                 if(verusFlyable&&flyTimer.hasTimePassed(100)){
-                    mc.thePlayer.motionY=0.0;
                     MovementUtils.strafe(1.5F);
+                    if(enabledVerus){
+                        launchY+=0.42;
+                        enabledVerus=false;
+                        mc.thePlayer.motionY=0.0;
+                    };
                 }else if(!flyTimer.hasTimePassed(100)) {
-                    mc.thePlayer.motionX = 0;
-                    mc.thePlayer.motionZ = 0;
+                    mc.thePlayer.motionX = 0.0;
+                    mc.thePlayer.motionY = 0.0;
+                    mc.thePlayer.motionZ = 0.0;
                 };
                 break;
             case "verus2":
                 if(verusFlyable){
-                    mc.thePlayer.motionY=0.0;
                     MovementUtils.strafe(2F);
                     if(mc.gameSettings.keyBindJump.isKeyDown()&&flyTimer.hasTimePassed(500)) {
-                        mc.thePlayer.motionY+=0.5;
+                        mc.thePlayer.setPosition(mc.thePlayer.posX , mc.thePlayer.posY+0.5 , mc.thePlayer.posZ);
                         launchY+=0.5;
                         flyTimer.reset();
                     }else if(mc.gameSettings.keyBindSneak.isKeyDown()&&flyTimer.hasTimePassed(500)) {
-                        mc.thePlayer.motionY-=0.5;
+                        mc.thePlayer.setPosition(mc.thePlayer.posX , mc.thePlayer.posY-0.5 , mc.thePlayer.posZ);
                         launchY-=0.5;
                         flyTimer.reset();
                     }
