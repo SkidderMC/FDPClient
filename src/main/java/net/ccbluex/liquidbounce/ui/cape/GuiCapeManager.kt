@@ -6,7 +6,9 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.gui.GuiGameOver
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -41,7 +43,7 @@ object GuiCapeManager : GuiScreen() {
 
         // add capes from files
         for(file in LiquidBounce.fileManager.capesDir.listFiles()){
-            if(file.isFile){
+            if(file.isFile&&!file.name.equals(jsonFile.name)){
                 try {
                     val args=file.name.split(".").toTypedArray()
                     capeList.add(loadCapeFromFile(java.lang.String.join(".", *args.copyOfRange(0, args.size - 1)),file))
@@ -88,9 +90,8 @@ object GuiCapeManager : GuiScreen() {
     }
 
     // render
-
     override fun initGui() {
-        this.buttonList.add(GuiButton(0, (width/2)-70, (height*0.9).toInt(), 140, 20, "Quit"))
+        this.buttonList.add(GuiButton(0, 0, 0, Fonts.font40.getStringWidth("< QUIT")+10, 20, "< QUIT"))
         this.buttonList.add(GuiButton(1, (width*0.3).toInt(), (height*0.5).toInt(), Fonts.font40.getStringWidth("<-")+10, 20, "<-"))
         this.buttonList.add(GuiButton(2, (width*0.7).toInt(), (height*0.5).toInt(), Fonts.font40.getStringWidth("->")+10, 20, "->"))
     }
@@ -148,6 +149,11 @@ object GuiCapeManager : GuiScreen() {
         val rotationPitch = mc.thePlayer.rotationPitch
         val prevRotationYawHead = mc.thePlayer.prevRotationYawHead
         val rotationYawHead = mc.thePlayer.rotationYawHead
+        val armor0=mc.thePlayer.inventory.armorInventory[0]
+        val armor1=mc.thePlayer.inventory.armorInventory[1]
+        val armor2=mc.thePlayer.inventory.armorInventory[2]
+        val armor3=mc.thePlayer.inventory.armorInventory[3]
+        val current=mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem]
 
         GlStateManager.rotate(135F, 0F, 1F, 0F)
         RenderHelper.enableStandardItemLighting()
@@ -159,6 +165,11 @@ object GuiCapeManager : GuiScreen() {
         mc.thePlayer.rotationPitch = 0f
         mc.thePlayer.rotationYawHead = mc.thePlayer.rotationYaw
         mc.thePlayer.prevRotationYawHead = mc.thePlayer.rotationYaw
+        mc.thePlayer.inventory.armorInventory[0]=null
+        mc.thePlayer.inventory.armorInventory[1]=null
+        mc.thePlayer.inventory.armorInventory[2]=null
+        mc.thePlayer.inventory.armorInventory[3]=null
+        mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem]=null
 
         GlStateManager.translate(0F, 0F, 0F)
 
@@ -173,6 +184,11 @@ object GuiCapeManager : GuiScreen() {
         mc.thePlayer.rotationPitch = rotationPitch
         mc.thePlayer.prevRotationYawHead = prevRotationYawHead
         mc.thePlayer.rotationYawHead = rotationYawHead
+        mc.thePlayer.inventory.armorInventory[0]=armor0
+        mc.thePlayer.inventory.armorInventory[1]=armor1
+        mc.thePlayer.inventory.armorInventory[2]=armor2
+        mc.thePlayer.inventory.armorInventory[3]=armor3
+        mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem]=current
 
         GlStateManager.popMatrix()
         RenderHelper.disableStandardItemLighting()
