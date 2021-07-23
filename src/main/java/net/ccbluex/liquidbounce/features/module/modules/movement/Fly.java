@@ -414,11 +414,11 @@ public class Fly extends Module {
             case "verus2":
                 if(verusFlyable){
                     MovementUtils.strafe(2F);
-                    if(mc.gameSettings.keyBindJump.isKeyDown()&&flyTimer.hasTimePassed(500)) {
+                    if(mc.gameSettings.keyBindJump.isKeyDown()&&flyTimer.hasTimePassed(250)) {
                         mc.thePlayer.setPosition(mc.thePlayer.posX , mc.thePlayer.posY+0.5 , mc.thePlayer.posZ);
                         launchY+=0.5;
                         flyTimer.reset();
-                    }else if(mc.gameSettings.keyBindSneak.isKeyDown()&&flyTimer.hasTimePassed(500)) {
+                    }else if(mc.gameSettings.keyBindSneak.isKeyDown()&&flyTimer.hasTimePassed(250)) {
                         mc.thePlayer.setPosition(mc.thePlayer.posX , mc.thePlayer.posY-0.5 , mc.thePlayer.posZ);
                         launchY-=0.5;
                         flyTimer.reset();
