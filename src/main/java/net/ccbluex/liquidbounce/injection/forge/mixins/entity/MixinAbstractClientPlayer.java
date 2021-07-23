@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.misc.NameProtect;
 import net.ccbluex.liquidbounce.features.module.modules.render.NoFOV;
+import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -22,6 +23,12 @@ import java.util.Objects;
 
 @Mixin(AbstractClientPlayer.class)
 public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
+
+    @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
+    private void getCape(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
+        if(GuiCapeManager.INSTANCE.getNowCape()!=null)
+            callbackInfoReturnable.setReturnValue(GuiCapeManager.INSTANCE.getNowCape().getResource());
+    }
 
     @Inject(method = "getFovModifier", at = @At("HEAD"), cancellable = true)
     private void getFovModifier(CallbackInfoReturnable<Float> callbackInfoReturnable) {

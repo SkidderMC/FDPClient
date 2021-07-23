@@ -37,6 +37,7 @@ public class FileManager extends MinecraftInstance {
     public final File configsDir = new File(dir, "configs");
     public final File soundsDir = new File(dir, "sounds");
     public final File legacySettingsDir = new File(dir, "legacy-settings");
+    public final File capesDir = new File(dir, "capes");
 
     public final FileConfig clickGuiConfig = new ClickGuiConfig(new File(dir, "clickgui.json"));
     public final AccountsConfig accountsConfig = new AccountsConfig(new File(dir, "accounts.json"));
@@ -45,8 +46,6 @@ public class FileManager extends MinecraftInstance {
     public final FileConfig hudConfig = new HudConfig(new File(dir, "hud.json"));
 
     public final File backgroundFile = new File(dir, "userbackground.png");
-
-    public boolean firstStart = false;
 
     public static final Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -63,10 +62,8 @@ public class FileManager extends MinecraftInstance {
      * Setup folder
      */
     public void setupFolder() {
-        if(!dir.exists()) {
+        if(!dir.exists())
             dir.mkdir();
-            firstStart = true;
-        }
 
         if(!fontsDir.exists())
             fontsDir.mkdir();
@@ -74,13 +71,14 @@ public class FileManager extends MinecraftInstance {
         if(!configsDir.exists())
             configsDir.mkdir();
 
-        if(!soundsDir.exists()){
+        if(!soundsDir.exists())
             soundsDir.mkdir();
-        }
 
-        if(!cacheDir.exists()){
+        if(!capesDir.exists())
+            capesDir.mkdir();
+
+        if(!cacheDir.exists())
             cacheDir.mkdirs();
-        }
     }
 
     /**

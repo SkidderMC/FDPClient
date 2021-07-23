@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.modules.misc.AutoAbuse
+import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.font.Fonts
 
@@ -35,6 +36,7 @@ class ReloadCommand : Command("reload", arrayOf("configreload")) {
         chat("§c§lReloading modules...")
         LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig,false)
         AutoAbuse.loadFile()
+        GuiCapeManager.load()
         chat("§c§lReloading accounts...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.accountsConfig)
         chat("§c§lReloading friends...")

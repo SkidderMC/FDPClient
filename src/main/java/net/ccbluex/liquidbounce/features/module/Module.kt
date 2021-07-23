@@ -36,7 +36,7 @@ open class Module : MinecraftInstance(), Listenable {
             if (!LiquidBounce.isStarting)
                 LiquidBounce.configManager.smartSave()
         }
-    private val canEnable: Boolean
+    val canEnable: Boolean
     var autoDisable: EnumAutoDisableType
     val moduleCommand: Boolean
     val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
@@ -54,7 +54,6 @@ open class Module : MinecraftInstance(), Listenable {
                     sb.append(char)
                 }
                 field=sb.toString()
-                println(field)
             }
             return field
         }

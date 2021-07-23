@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.file.MetricsLite
 import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
+import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.click.ClickGuiManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
@@ -201,6 +202,8 @@ object LiquidBounce {
 
         eventManager.registerListener(PacketFixer())
 
+        GuiCapeManager.load()
+
         // Set is starting status
         isStarting = false
         isLoadingConfig=false
@@ -216,8 +219,8 @@ object LiquidBounce {
         eventManager.callEvent(ClientShutdownEvent())
 
         // Save all available configs
+        GuiCapeManager.save()
         configManager.save(true,true)
         fileManager.saveAllConfigs()
     }
-
 }

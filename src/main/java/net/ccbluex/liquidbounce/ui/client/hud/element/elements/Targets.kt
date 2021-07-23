@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -114,6 +115,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         // health rect
         RenderUtils.drawRect(3F, 55F, 137F, 58F,ColorUtils.reAlpha(color,100).rgb)
         RenderUtils.drawRect(3F,55F,3+(hpPct*134F),58F,color.rgb)
+        GlStateManager.resetColor()
         RenderUtils.drawEntityOnScreen(18,46,20,target)
 
         font.drawStringWithShadow(target.name, 37F, 6F, -1)

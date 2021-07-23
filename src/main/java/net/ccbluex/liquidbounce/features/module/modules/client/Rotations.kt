@@ -47,8 +47,6 @@ object Rotations : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        val thePlayer = mc.thePlayer ?: return
-
         val packet = event.packet
 
         if (packet is C03PacketPlayer.C06PacketPlayerPosLook || packet is C03PacketPlayer.C05PacketPlayerLook) {
@@ -56,14 +54,14 @@ object Rotations : Module() {
 
             playerYaw = packetPlayer.yaw
             if (bodyValue.get())
-                thePlayer.renderYawOffset = packetPlayer.yaw
+                mc.thePlayer.renderYawOffset = packetPlayer.yaw
             if (headValue.get())
-                thePlayer.rotationYawHead = packetPlayer.yaw
+                mc.thePlayer.rotationYawHead = packetPlayer.yaw
         } else {
             if (playerYaw != null && bodyValue.get())
-                thePlayer.renderYawOffset = playerYaw!!
+                mc.thePlayer.renderYawOffset = playerYaw!!
             if (headValue.get())
-                thePlayer.rotationYawHead = thePlayer.renderYawOffset
+                mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset
         }
     }
 
