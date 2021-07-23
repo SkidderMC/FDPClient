@@ -26,6 +26,9 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getCape(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
+        if(!getUniqueID().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()))
+            return;
+
         if(GuiCapeManager.INSTANCE.getNowCape()!=null)
             callbackInfoReturnable.setReturnValue(GuiCapeManager.INSTANCE.getNowCape().getResource());
     }
