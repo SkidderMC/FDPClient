@@ -399,7 +399,7 @@ public class Fly extends Module {
                 if(flyTimer.hasTimePassed(3000)) verusFlyable=false;
                 if(verusFlyable&&flyTimer.hasTimePassed(100)){
                     mc.thePlayer.motionY=0.0;
-                    MovementUtils.strafe(1.5);
+                    MovementUtils.strafe(1.5F);
                 }else if(!flyTimer.hasTimePassed(100)) {
                     mc.thePlayer.motionX = 0;
                     mc.thePlayer.motionZ = 0;
@@ -408,7 +408,7 @@ public class Fly extends Module {
             case "verus2":
                 if(verusFlyable){
                     mc.thePlayer.motionY=0.0;
-                    MovementUtils.strafe(2);
+                    MovementUtils.strafe(2F);
                     if(mc.gameSettings.keyBindJump.isKeyDown()&&flyTimer.hasTimePassed(500)) {
                         mc.thePlayer.motionY+=0.5;
                         launchY+=0.5;
