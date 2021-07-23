@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.item.EntityBoat
 import net.minecraft.network.play.client.C02PacketUseEntity
+import net.minecraft.network.play.client.C0CPacketInput
 import net.minecraft.util.Vec3
 import kotlin.math.cos
 import kotlin.math.sin
@@ -43,10 +44,9 @@ class BoatJump : Module() {
             }
             if(timer.hasTimePassed(delay.get().toLong())){
                 jumpState=2
-                mc.gameSettings.keyBindSneak.pressed=true
+                mc.netHandler.addToSendQueue(C0CPacketInput(mc.thePlayer.moveStrafing,mc.thePlayer.moveForward,false,true))
             }
         }else if(jumpState==2&&!mc.thePlayer.isRiding){
-            mc.gameSettings.keyBindSneak.pressed=false
             val radiansYaw=mc.thePlayer.rotationYaw * Math.PI / 180
 
             when(mode.get().toLowerCase()){

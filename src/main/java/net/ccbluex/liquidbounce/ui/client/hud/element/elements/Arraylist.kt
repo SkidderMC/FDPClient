@@ -49,6 +49,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tags = BoolValue("Tags", true)
     private val shadow = BoolValue("ShadowText", false)
+    private val split = BoolValue("SplitName", false)
     private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "SkyRainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
@@ -76,10 +77,12 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         // Slide animation - update every render
         val delta = RenderUtils.deltaTime
 
+        fun getModuleName(module: Module) = if(split.get()){ module.splicedName }else{ module.name }
+
         for (module in LiquidBounce.moduleManager.modules) {
             if (!module.array || (!module.state && module.slide == 0F)) continue
 
-            var displayString = module.name+if(module.tag!=null){if(tags.get()){" "+module.tag}else{""}}else{""}
+            var displayString = getModuleName(module)+if(module.tag!=null){if(tags.get()){" "+module.tag}else{""}}else{""}
 
             if(upperCaseValue.get()) displayString=displayString.toUpperCase()
 
@@ -143,7 +146,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                         }
                     )
 
-                    val mName=if(upperCaseValue.get()){module.name.toUpperCase()}else{module.name}
+                    val mName=if(upperCaseValue.get()){getModuleName(module).toUpperCase()}else{getModuleName(module)}
                     val mTag=if(module.tag!=null){" "+if(upperCaseValue.get()){module.tag!!.toUpperCase()}else{module.tag}}else{""}
                     fontRenderer.drawString(mName, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY,
                         when(colorMode.toLowerCase()) {
@@ -222,7 +225,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                         }
                     )
 
-                    val mName=if(upperCaseValue.get()){module.name.toUpperCase()}else{module.name}
+                    val mName=if(upperCaseValue.get()){getModuleName(module).toUpperCase()}else{getModuleName(module)}
                     val mTag=if(module.tag!=null){" "+if(upperCaseValue.get()){module.tag!!.toUpperCase()}else{module.tag}}else{""}
                     fontRenderer.drawString(mName, xPos, yPos + textY, when(colorMode.toLowerCase()) {
                         "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb

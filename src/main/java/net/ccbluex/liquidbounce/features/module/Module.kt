@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
+import java.lang.StringBuilder
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
@@ -39,11 +40,28 @@ open class Module : MinecraftInstance(), Listenable {
     var autoDisable: EnumAutoDisableType
     val moduleCommand: Boolean
     val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
+    var splicedName=""
+        get() {
+            if(field.isEmpty()){
+                // TODO: Use Regex to split it
+                val sb=StringBuilder()
+                val arr=name.toCharArray()
+                for(i in arr.indices){
+                    val char=arr[i]
+                    if(i!=0&&!Character.isLowerCase(char)&&Character.isLowerCase(arr[i-1])){
+                        sb.append(' ')
+                    }
+                    sb.append(char)
+                }
+                field=sb.toString()
+                println(field)
+            }
+            return field
+        }
 
     var slideStep = 0F
 
     init {
-
         name = moduleInfo.name
         description = moduleInfo.description
         category = moduleInfo.category
