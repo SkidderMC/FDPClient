@@ -56,6 +56,7 @@ public class Fly extends Module {
             // Verus
             "Verus1",
             "Verus2",
+            "Verus3",
 
             // AAC
             "AAC1.9.10",
@@ -424,6 +425,13 @@ public class Fly extends Module {
                         flyTimer.reset();
                     }
                 };
+                break;
+             case "verus3":
+                mc.gameSettings.keyBindJump.pressed=false;
+                if(mc.thePlayer.onGround&&MovementUtils.isMoving()) {
+                    mc.thePlayer.jump();
+                    MovementUtils.strafe(0.48F);
+                }else MovementUtils.strafe();
                 break;
             case "smoothvanilla":
                 mc.thePlayer.capabilities.isFlying = true;
@@ -939,7 +947,7 @@ public class Fly extends Module {
                 mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") ||
                 (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null)) && event.getY() < mc.thePlayer.posY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, mc.thePlayer.posY, event.getZ() + 1));
-        if((mode.equalsIgnoreCase("FakeGround") || mode.equalsIgnoreCase("Verus1") || mode.equalsIgnoreCase("Verus2"))
+        if((mode.equalsIgnoreCase("FakeGround") || mode.equalsIgnoreCase("Verus1") || mode.equalsIgnoreCase("Verus3") || mode.equalsIgnoreCase("Verus2"))
                 && event.getBlock() instanceof BlockAir && event.getY() <= launchY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, launchY, event.getZ() + 1));
     }
