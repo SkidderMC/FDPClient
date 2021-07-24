@@ -78,10 +78,11 @@ class KillAura : Module() {
     // Range
     val rangeValue = FloatValue("Range", 3.7f, 1f, 8f)
     private val throughWallsRangeValue = FloatValue("ThroughWallsRange", 1.5f, 0f, 8f)
+    private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 10f)
     private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f)
 
     // Modes
-    private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Direction", "LivingTime"), "Distance")
+    private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Direction", "LivingTime", "Armor"), "Distance")
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Single")
 
     // Bypass
@@ -91,7 +92,7 @@ class KillAura : Module() {
     // AutoBlock
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("AllTime","Range","Off"),"Off")
     private val autoBlockRangeValue = FloatValue("AutoBlockRange", 2.5f, 0f, 8f)
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("Simple","AfterTick","Vanilla"),"Simple")
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"),"AfterTick")
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
     private val autoBlockFacing = BoolValue("AutoBlockFacing",false)
     private val blockRate = IntegerValue("BlockRate", 100, 1, 100)
@@ -167,6 +168,7 @@ class KillAura : Module() {
     private var currentTarget: EntityLivingBase? = null
     private var hitable = false
     private val prevTargetEntities = mutableListOf<Int>()
+    private val discoveredTargets = mutableListOf<EntityLivingBase>()
 
     // Attack delay
     private val attackTimer = MSTimer()
@@ -214,15 +216,18 @@ class KillAura : Module() {
             return
 
         if (!event.isPre()) {
+            // AutoBlock
+            if (!autoBlockValue.get().equals("off",true) && discoveredTargets.isNotEmpty() && autoBlockPacketValue.get().equals("AfterTick",true) && canBlock()) {
+                val target=discoveredTargets[0]
+                if(mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get())
+                    startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target)<maxRange))
+            }
+            
             target ?: return
             currentTarget ?: return
 
             // Update hitable
             updateHitable()
-
-            // AutoBlock
-            if (!autoBlockValue.get().equals("off",true) && autoBlockPacketValue.get().equals("AfterTick",true) && canBlock())
-                startBlocking(currentTarget!!, interactAutoBlockValue.get())
 
             return
         }
@@ -251,7 +256,7 @@ class KillAura : Module() {
         if(strafeOnlyGroundValue.get()&&!mc.thePlayer.onGround || LiquidBounce.moduleManager[Scaffold::class.java]!!.state)
             return
 
-        if (currentTarget != null && RotationUtils.targetRotation != null) {
+        if (discoveredTargets.isNotEmpty() && RotationUtils.targetRotation != null) {
             when (rotationStrafeValue.get().toLowerCase()) {
                 "strict" -> {
                     val (yaw) = RotationUtils.targetRotation ?: return
@@ -527,7 +532,7 @@ class KillAura : Module() {
         val switchMode = targetModeValue.get().equals("Switch", ignoreCase = true)
 
         // Find possible targets
-        val targets = mutableListOf<EntityLivingBase>()
+        discoveredTargets.clear()
 
         for (entity in mc.theWorld.loadedEntityList) {
             if (entity !is EntityLivingBase || !isEnemy(entity) || (switchMode && prevTargetEntities.contains(entity.entityId)))
@@ -536,12 +541,12 @@ class KillAura : Module() {
             val distance = mc.thePlayer.getDistanceToEntityBox(entity)
             val entityFov = RotationUtils.getRotationDifference(entity)
 
-            if (distance <= maxRange && (fov == 180F || entityFov <= fov) && entity.hurtTime <= hurtTime)
-                targets.add(entity)
+            if (distance <= discoverRangeValue.get() && (fov == 180F || entityFov <= fov) && entity.hurtTime <= hurtTime)
+                discoveredTargets.add(entity)
         }
 
         // Cleanup last targets when no targets found and try again
-        if (targets.isEmpty()) {
+        if (discoveredTargets.isEmpty()) {
             if (prevTargetEntities.isNotEmpty()) {
                 prevTargetEntities.clear()
                 updateTarget()
@@ -552,20 +557,23 @@ class KillAura : Module() {
 
         // Sort targets by priority
         when (priorityValue.get().toLowerCase()) {
-            "distance" -> targets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) } // Sort by distance
-            "health" -> targets.sortBy { it.health } // Sort by health
-            "direction" -> targets.sortBy { RotationUtils.getRotationDifference(it) } // Sort by FOV
-            "livingtime" -> targets.sortBy { -it.ticksExisted } // Sort by existence
+            "distance" -> discoveredTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) } // Sort by distance
+            "health" -> discoveredTargets.sortBy { it.health } // Sort by health
+            "direction" -> discoveredTargets.sortBy { RotationUtils.getRotationDifference(it) } // Sort by FOV
+            "livingtime" -> discoveredTargets.sortBy { -it.ticksExisted } // Sort by existence
+            "armor" -> discoveredTargets.sortBy { it.totalArmorValue } // Sort by armor
         }
 
         // Find best target
-        for (entity in targets) {
+        for (entity in discoveredTargets) {
             // Update rotations to current target
             if (!updateRotations(entity)) // when failed then try another target
                 continue
 
             // Set target to current entity
-            target = entity
+            if(mc.thePlayer.getDistanceToEntityBox(entity) < maxRange)
+                target = entity
+            
             return
         }
     }
