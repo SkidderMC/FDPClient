@@ -545,7 +545,7 @@ class KillAura : Module() {
                 if (canBlock() && distance > rangeValue.get()) mc.thePlayer.setItemInUse(mc.thePlayer.inventory.getCurrentItem(), 51213)
             }
         }
-        if (!blocked) {
+        if (!blocked && mc.gameSettings.keyBindUseItem.pressed) {
             mc.playerController.onStoppedUsingItem(mc.thePlayer)
         }
         // Cleanup last targets when no targets found and try again
