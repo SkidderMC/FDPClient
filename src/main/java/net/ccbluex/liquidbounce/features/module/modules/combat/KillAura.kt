@@ -528,7 +528,6 @@ class KillAura : Module() {
 
         // Find possible targets
         val targets = mutableListOf<EntityLivingBase>()
-        var blocked = false
 
         for (entity in mc.theWorld.loadedEntityList) {
             if (entity !is EntityLivingBase || !isEnemy(entity) || (switchMode && prevTargetEntities.contains(entity.entityId)))
@@ -539,15 +538,8 @@ class KillAura : Module() {
 
             if (distance <= maxRange && (fov == 180F || entityFov <= fov) && entity.hurtTime <= hurtTime)
                 targets.add(entity)
+        }
 
-            if (distance <= autoBlockRangeValue.get() && autoBlockValue.get().equals("range",true)) {
-                blocked = true
-                if (canBlock() && distance > rangeValue.get()) mc.thePlayer.setItemInUse(mc.thePlayer.inventory.getCurrentItem(), 51213)
-            }
-        }
-        if (!blocked && !mc.gameSettings.keyBindUseItem.pressed) {
-            mc.playerController.onStoppedUsingItem(mc.thePlayer)
-        }
         // Cleanup last targets when no targets found and try again
         if (targets.isEmpty()) {
             if (prevTargetEntities.isNotEmpty()) {
@@ -610,7 +602,7 @@ class KillAura : Module() {
      */
     private fun attackEntity(entity: EntityLivingBase) {
         // Stop blocking
-        if (!autoBlockPacketValue.get().equals("Vanilla",true)&& blockingStatus) {
+        if (!autoBlockPacketValue.get().equals("Vanilla",true)&&(mc.thePlayer.isBlocking || blockingStatus)) {
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
         }
@@ -742,9 +734,6 @@ class KillAura : Module() {
         if(autoBlockValue.get().equals("range",true) && mc.thePlayer.getDistanceToEntityBox(interactEntity)>autoBlockRangeValue.get())
             return
 
-        if(autoBlockValue.get().equals("alltime",true) && mc.thePlayer.getDistanceToEntityBox(interactEntity)>rangeValue.get())
-            return
-
         if(blockingStatus)
             return
 
@@ -752,9 +741,9 @@ class KillAura : Module() {
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, interactEntity.positionVector))
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
         }
+
         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
         blockingStatus = true
-
     }
 
 
