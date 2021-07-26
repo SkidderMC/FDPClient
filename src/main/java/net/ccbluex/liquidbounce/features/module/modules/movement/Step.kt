@@ -60,7 +60,7 @@ class Step : Module() {
 
         // Change step height back to default (0.5 is default)
         mc.thePlayer.stepHeight = 0.6F
-        if(wasTimer) mc.timer.timerSpeed = 1.0
+        if(wasTimer) mc.timer.timerSpeed = 1.0F
         wasTimer=false
     }
 
