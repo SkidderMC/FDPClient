@@ -66,11 +66,10 @@ class Step : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(modeValue.get().equals("AAC4.4.0", ignoreCase = true) && !(mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
-            mc.thePlayer.stepHeight = 0.0F
+            mc.thePlayer.stepHeight = 0.6F
             //chat("cancelStepA"+lastTickOnGround+mc.thePlayer.isCollidedHorizontally+mc.thePlayer.onGround)
-            return
         }else if(modeValue.get().equals("AAC4.4.0", ignoreCase = true)) mc.thePlayer.stepHeight = 2.0F
-        chat("WTF?"+wasTimer)
+        //chat("WTF?"+wasTimer)
         if(wasTimer) {
             wasTimer = false
             mc.thePlayer.motionX *= 0.92
@@ -269,7 +268,7 @@ class Step : Module() {
                     fakeJump()
                     when {
                         rstepHeight>1.0-0.015625 && rstepHeight<1.0+0.015625 -> {
-                            mc.timer.timerSpeed = 0.37F
+                            mc.timer.timerSpeed = 0.44F
                             wasTimer = true
                             mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                 stepY + 0.4, stepZ, false))
@@ -281,7 +280,7 @@ class Step : Module() {
                                 stepY + 1.0, stepZ, true))
                         }
                         rstepHeight>1.5-0.015625 && rstepHeight<1.5+0.015625 -> {
-                            mc.timer.timerSpeed = 0.28F
+                            mc.timer.timerSpeed = 0.36F
                             wasTimer = true
                             mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                 stepY + 0.42, stepZ, false))
@@ -297,7 +296,7 @@ class Step : Module() {
                                 stepY + 1.50, stepZ, true))
                         }
                         rstepHeight>2.0-0.015625 && rstepHeight<2.0+0.015625 -> {
-                            mc.timer.timerSpeed = 0.2F
+                            mc.timer.timerSpeed = 0.28F
                             wasTimer = true
                             mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                 stepY + 0.45, stepZ, false))
