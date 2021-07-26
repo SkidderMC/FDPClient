@@ -31,7 +31,7 @@ class Step : Module() {
      */
 
     private val modeValue = ListValue("Mode", arrayOf(
-        "Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside"
+        "Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC4.4.0", "Spartan", "Rewinside"
     ), "NCP")
 
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
@@ -50,6 +50,8 @@ class Step : Module() {
     private var ncpNextStep = 0
     private var spartanSwitch = false
     private var isAACStep = false
+    private var lastTickOnGround = false
+    private var wasTimer = false
 
     private val timer = MSTimer()
 
@@ -57,11 +59,22 @@ class Step : Module() {
         mc.thePlayer ?: return
 
         // Change step height back to default (0.5 is default)
-        mc.thePlayer.stepHeight = 0.5F
+        mc.thePlayer.stepHeight = 0.6F
+        if(wasTimer) mc.timer.timerSpeed = 1.0
+        wasTimer=false
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if(wasTimer) {
+            wasTimer = false
+            if(mc.timer.timerSpeed==0.2) {
+                mc.thePlayer.motionX *= 0.9
+                mc.thePlayer.motionZ *= 0.9
+            }
+            mc.timer.timerSpeed = 1.0
+        }
+        lastTickOnGround=mc.thePlayer.onGround
         val mode = modeValue.get()
 
         // Motion steps
@@ -147,13 +160,25 @@ class Step : Module() {
     @EventTarget
     fun onStep(event: StepEvent) {
         mc.thePlayer ?: return
-
+        if(mode.equals("AAC4.4.0", ignoreCase = true) && (!lastTickOnGround||!mc.thePlayer.isCollidedHorizontally||!mc.thePlayer.onGround)) {
+            event.stepHeight = 0F
+            return
+        }
         // Phase should disable step
         if (LiquidBounce.moduleManager[Phase::class.java]!!.state) {
             event.stepHeight = 0F
             return
         }
-
+        if(mode.equals("AAC4.4.0", ignoreCase = true)) {
+            if(event.stepHeight<=0.6F) return
+            when(event.stepHeight) {
+                0.6F, 1.0F, 1.5F, 2.0F -> break
+                else -> {
+                    event.stepHeight=0F
+                    return
+                }
+            }
+        }
         // Some fly modes should disable step
         val fly = LiquidBounce.moduleManager[Fly::class.java] as Fly
         if (fly.state) {
@@ -174,19 +199,24 @@ class Step : Module() {
         // Set step to default in some cases
         if (!mc.thePlayer.onGround || !timer.hasTimePassed(delayValue.get().toLong()) ||
             mode.equals("Jump", ignoreCase = true) || mode.equals("MotionNCP", ignoreCase = true)
-            || mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true)) {
-            mc.thePlayer.stepHeight = 0.5F
-            event.stepHeight = 0.5F
+            || mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true)
+            || mode.equals("AAC4.4.0", ignoreCase = true)) {
+            mc.thePlayer.stepHeight = 0.6F
+            event.stepHeight = 0.6F
             return
         }
 
         // Set step height
         val height = heightValue.get()
-        mc.thePlayer.stepHeight = height
-        event.stepHeight = height
+        if(mode.equals("AAC4.4.0", ignoreCase = true)) {
+            mc.thePlayer.stepHeight = 2.0F
+        }else {
+            mc.thePlayer.stepHeight = height
+            event.stepHeight = height
+        }
 
         // Detect possible step
-        if (event.stepHeight > 0.5F) {
+        if (event.stepHeight > 0.6F) {
             isStep = true
             stepX = mc.thePlayer.posX
             stepY = mc.thePlayer.posY
@@ -199,11 +229,11 @@ class Step : Module() {
         if (mc.thePlayer == null || !isStep) // Check if step
             return
 
-        if (mc.thePlayer.entityBoundingBox.minY - stepY > 0.5) { // Check if full block step
+        if (mc.thePlayer.entityBoundingBox.minY - stepY > 0.6) { // Check if full block step
             val mode = modeValue.get()
 
             when {
-                mode.equals("NCP", ignoreCase = true) || mode.equals("AAC", ignoreCase = true) -> {
+                mode.equals("NCP", ignoreCase = true) || mode.equals("OldAAC", ignoreCase = true) -> {
                     fakeJump()
 
                     // Half legit step (1 packet missing) [COULD TRIGGER TOO MANY PACKETS]
@@ -235,7 +265,66 @@ class Step : Module() {
                     // Reset timer
                     timer.reset()
                 }
-
+                
+                mode.equals("AAC4.4.0", ignoreCase = true) -> {
+                    fakeJump()
+                    when(mc.thePlayer.entityBoundingBox.minY - stepY) {
+                        1.0 -> {
+                            mc.timer.timerSpeed = 0.37
+                            wasTimer = true
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 0.4, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 0.7, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 0.9, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.0, stepZ, true))
+                        }
+                        1.5 -> {
+                            mc.timer.timerSpeed = 0.28
+                            wasTimer = true
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 0.42, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 0.7718, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.0556, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.2714, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.412, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.50, stepZ, true))
+                        }
+                        2.0 -> {
+                            mc.timer.timerSpeed = 0.2
+                            wasTimer = true
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 0.45, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 0.84375, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.18125, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.4625, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.6875, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.85625, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                stepY + 1.96875, stepZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX+mc.thePlayer.motionX*0.5,
+                                stepY + 2.0000, stepZ+mc.thePlayer.motionZ*0.5, true))
+                        }
+                    }
+                    /*  
+                    
+                        AAC4 Step Code By Co丶Dynamic
+                        NO SKIDDER PLEASE
+                        
+                    */  
+                }
                 mode.equals("Rewinside", ignoreCase = true) -> {
                     fakeJump()
 
