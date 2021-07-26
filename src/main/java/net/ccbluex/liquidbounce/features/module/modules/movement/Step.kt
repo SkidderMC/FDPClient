@@ -161,7 +161,7 @@ class Step : Module() {
     fun onStep(event: StepEvent) {
         val mode = modeValue.get()
         mc.thePlayer ?: return
-        if(mode.equals("AAC4.4.0", ignoreCase = true) && (!lastTickOnGround||!mc.thePlayer.isCollidedHorizontally||!mc.thePlayer.onGround)) {
+        if(mode.equals("AAC4.4.0", ignoreCase = true) && !(lastTickOnGround&&mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
             event.stepHeight = 0F
             return
         }
@@ -198,8 +198,7 @@ class Step : Module() {
         // Set step to default in some cases
         if (!mc.thePlayer.onGround || !timer.hasTimePassed(delayValue.get().toLong()) ||
             mode.equals("Jump", ignoreCase = true) || mode.equals("MotionNCP", ignoreCase = true)
-            || mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true)
-            || mode.equals("AAC4.4.0", ignoreCase = true)) {
+            || mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true)) {
             mc.thePlayer.stepHeight = 0.6F
             event.stepHeight = 0.6F
             return
