@@ -51,7 +51,7 @@ class Step : Module() {
     private var spartanSwitch = false
     private var isAACStep = false
     private var lastTickOnGround = false //WTF Why it will automatically reset to false
-    private var wasTimer = false
+    var wasTimer = false
 
     private val timer = MSTimer()
 
