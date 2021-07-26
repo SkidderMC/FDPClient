@@ -68,9 +68,9 @@ class Step : Module() {
         if(modeValue.get().equals("AAC4.4.0", ignoreCase = true) && !(mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
             mc.thePlayer.stepHeight = 0.0F
             //chat("cancelStepA"+lastTickOnGround+mc.thePlayer.isCollidedHorizontally+mc.thePlayer.onGround)
-            return
+            //return
         }else if(modeValue.get().equals("AAC4.4.0", ignoreCase = true)) mc.thePlayer.stepHeight = 2.0F
-        chat("WTF?"+wasTimer)
+        //chat("WTF?"+wasTimer)
         if(wasTimer) {
             wasTimer = false
             mc.thePlayer.motionX *= 0.92
