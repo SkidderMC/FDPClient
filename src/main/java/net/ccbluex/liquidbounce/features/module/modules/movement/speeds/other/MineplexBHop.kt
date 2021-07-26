@@ -27,7 +27,7 @@ class MineplexBHop : SpeedMode("MineplexBHop") {
                 return
             }
             MovementUtils.strafe(MovementUtils.getSpeed() * when(boost){
-                0 -> 1.75f
+                0 -> 1.725f
                 else -> 1f
             })
             boost++
@@ -40,10 +40,10 @@ class MineplexBHop : SpeedMode("MineplexBHop") {
         if(mc.thePlayer.fallDistance>1.5){
             mc.thePlayer.jumpMovementFactor = 0.01f
         }else if(mc.thePlayer.fallDistance>0){
-            mc.thePlayer.jumpMovementFactor = 0.035f
+            mc.thePlayer.jumpMovementFactor = 0.0325f
             mc.thePlayer.motionY += 0.02
         }else{
-            mc.thePlayer.jumpMovementFactor = 0.025f
+            mc.thePlayer.jumpMovementFactor = 0.0225f
         }
     }
 }
