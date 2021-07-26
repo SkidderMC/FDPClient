@@ -28,7 +28,7 @@ import net.minecraft.stats.StatList
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "Hypixel", "Hypixel2", "Hypixel3", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Mineplex", "More", "Tryminemora", "HYT"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "Hypixel", "Hypixel2", "Hypixel3", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Mineplex", "More", "Tryminemora"), "packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
@@ -166,20 +166,6 @@ class Criticals : Module() {
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0010999999940395355, z, false))
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00150000001304, z, false))
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0012016413, z, false))
-                    }
-                }
-
-                "HYT" -> {
-                    if(lookValue.get()){
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.042487 z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0104649713461000007 z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0014749900000101 z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0000007451816400000 z, yaw, pitch, false))
-                    }else{
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.042487 z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0104649713461000007 z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0014749900000101 z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0000007451816400000 z, false))
                     }
                 }
 
