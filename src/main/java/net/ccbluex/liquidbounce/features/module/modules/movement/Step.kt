@@ -50,7 +50,6 @@ class Step : Module() {
     private var ncpNextStep = 0
     private var spartanSwitch = false
     private var isAACStep = false
-    private var lastTickOnGround = false //WTF Why it will automatically reset to false
     var wasTimer = false
 
     private val timer = MSTimer()
@@ -69,16 +68,15 @@ class Step : Module() {
         if(modeValue.get().equals("AAC4.4.0", ignoreCase = true) && !(mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
             mc.thePlayer.stepHeight = 0.0F
             //chat("cancelStepA"+lastTickOnGround+mc.thePlayer.isCollidedHorizontally+mc.thePlayer.onGround)
-            return
+            //return
         }else if(modeValue.get().equals("AAC4.4.0", ignoreCase = true)) mc.thePlayer.stepHeight = 2.0F
-        if(mc.timer.timerSpeed == 0.2F || mc.timer.timerSpeed == 0.37F || mc.timer.timerSpeed == 0.28F) {
-            if(mc.timer.timerSpeed == 0.2F) {
-                mc.thePlayer.motionX *= 0.88
-                mc.thePlayer.motionZ *= 0.88
-            }
+        //chat("WTF?"+wasTimer)
+        if(wasTimer) {
+            wasTimer = false
+            mc.thePlayer.motionX *= 0.92
+            mc.thePlayer.motionZ *= 0.92
             mc.timer.timerSpeed = 1.0F
         }
-        lastTickOnGround=mc.thePlayer.onGround
         val mode = modeValue.get()
 
         // Motion steps
