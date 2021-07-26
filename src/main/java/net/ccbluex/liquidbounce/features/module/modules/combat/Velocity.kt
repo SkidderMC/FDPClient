@@ -38,7 +38,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4", "RedeSkyPacket",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4", "RedeSkyPacket", "RedeskyTest",
             "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch", "Legit"), "Simple")
 
     // Reverse
@@ -75,6 +75,8 @@ class Velocity : Module() {
 
     // Legit
     private var pos:BlockPos?=null
+    
+    private var redeCount = 24
 
     override val tag: String
         get() = modeValue.get()
@@ -85,6 +87,7 @@ class Velocity : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if(redeCount<24) redeCount++
         if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb)
             return
 
@@ -244,6 +247,23 @@ class Velocity : Module() {
 
                 "legit" -> {
                     pos=BlockPos(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
+                }
+                
+                "redeskytest" -> {
+                    if(packet.getMotionX()==0&&packet.getMotionZ()==0){ // ignore horizonal velocity
+                        return
+                    }
+                    
+                    val target=LiquidBounce.combatManager.getNearByEntity((LiquidBounce.moduleManager.get(KillAura::class.java) as KillAura).rangeValue.get()+1) ?: return
+                    mc.thePlayer.motionX=0.0
+                    mc.thePlayer.motionZ=0.0
+                    packet.motionX = 0
+                    packet.motionZ = 0
+                    for(i in 0..redeCount){
+                        mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(target,C02PacketUseEntity.Action.ATTACK))
+                        mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
+                    }
+                    if(redeCount>12) redeCount -= 5
                 }
 
                 "redeskypacket" -> {
