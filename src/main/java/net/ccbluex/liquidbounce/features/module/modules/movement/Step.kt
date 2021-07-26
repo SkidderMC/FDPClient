@@ -66,8 +66,7 @@ class Step : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        val mode = modeValue.get()
-        if(mode.equals("AAC4.4.0", ignoreCase = true) && !(lastTickOnGround&&mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
+        if(modeValue.get().equals("AAC4.4.0", ignoreCase = true) && !(lastTickOnGround&&mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
             mc.thePlayer.stepHeight = 0.0F
             //chat("cancelStepA")
             return
