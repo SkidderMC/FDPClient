@@ -23,18 +23,14 @@ import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
 class Speed : Module() {
-    private val speedModes = arrayOf( // NCP
-        NCPBHop(),
-        NCPFHop(),
-        SNCPBHop(),
-        NCPHop(),
-        YPort(),
-        YPort2(),
-        NCPYPort(),
-        Boost(),
-        Frame(),
-        MiJump(),
-        OnGround(),  // AAC
+    private val RedeskyModes = arrayOf(
+        RedeSkyHop(),
+        RedeSkyHop2(),
+        RedeSkyHop3(),
+        RedeSkyHopOld(),
+        RedeSkyGround()
+    )
+    private val AACmodes = arrayOf(
         AACBHop(),
         AAC2BHop(),
         AAC3BHop(),
@@ -52,24 +48,42 @@ class Speed : Module() {
         AACYPort(),
         AACYPort2(),
         AACPort(),
-        OldAACBHop(),  // Spartan
-        SpartanYPort(),  // Spectre
+        OldAACBHop()
+    )
+
+    private val NCPCModes = arrayOf(
+        NCPBHop(),
+        NCPFHop(),
+        SNCPBHop(),
+        NCPHop(),
+        YPort(),
+        YPort2(),
+        NCPYPort(),
+        Boost(),
+        Frame(),
+        MiJump(),
+        OnGround()
+    )
+
+    private val SpectreModes = arrayOf(
+        SpartanYPort(),
         SpectreLowHop(),
         SpectreBHop(),
-        SpectreOnGround(),
-        TeleportCubeCraft(),  // Server
+        SpectreOnGround()
+    )
+
+    private val ServersModes = arrayOf(
+        TeleportCubeCraft(),
         HiveHop(),
         HypixelHop(),
-        RedeSkyHop(),  // RedeSky
-        RedeSkyHop2(),
-        RedeSkyHop3(),
-        SlowHop(),  // Other
-        CustomSpeed(),
-        RedeSkyHopOld(),
-        RedeSkyGround(),
         Matrix(),
         VerusYPort(),
-        MineplexBHop(),
+        MineplexBHop()
+    )
+
+    private val OtherModes = arrayOf(
+        SlowHop(),
+        CustomSpeed(),
         Autojump()
     )
 
@@ -143,14 +157,24 @@ class Speed : Module() {
     private val mode: SpeedMode?
         get() {
             val mode = modeValue.get()
-            for (speedMode in speedModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
+            for (speedMode in RedeskyModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
+            for (speedMode in AACmodes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
+            for (speedMode in NCPCModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
+            for (speedMode in SpectreModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
+            for (speedMode in ServersModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
+            for (speedMode in OtherModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
             return null
         }
 
     private val modes: Array<String>
         get() {
             val list: MutableList<String> = ArrayList()
-            for (speedMode in speedModes) list.add(speedMode.modeName)
+            for (speedMode in RedeskyModes) list.add(speedMode.modeName)
+            for (speedMode in AACmodes) list.add(speedMode.modeName)
+            for (speedMode in NCPCModes) list.add(speedMode.modeName)
+            for (speedMode in SpectreModes) list.add(speedMode.modeName)
+            for (speedMode in ServersModes) list.add(speedMode.modeName)
+            for (speedMode in OtherModes) list.add(speedMode.modeName)
             return list.toTypedArray()
         }
 }
