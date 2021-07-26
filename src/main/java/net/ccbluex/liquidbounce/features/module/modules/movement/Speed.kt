@@ -60,17 +60,17 @@ class Speed : Module() {
         TeleportCubeCraft(),  // Server
         HiveHop(),
         HypixelHop(),
-        MineplexGround(),  // Other
-        SlowHop(),
-        CustomSpeed(),  // RedeSky
-        RedeSkyHop(),
+        RedeSkyHop(),  // RedeSky
         RedeSkyHop2(),
         RedeSkyHop3(),
+        SlowHop(),  // Other
+        CustomSpeed(),
         RedeSkyHopOld(),
         RedeSkyGround(),
         Matrix(),
         VerusYPort(),
-        MineplexBHop()
+        MineplexBHop(),
+        Autojump()
     )
 
     val modeValue: ListValue = object : ListValue("Mode", modes, "NCPBHop") {
@@ -98,7 +98,6 @@ class Speed : Module() {
     val redeSkyHop3Speed = FloatValue("RedeSkyHop3-Speed", 0.07f, 0.01f, 0.1f)
     val aacGroundTimerValue = FloatValue("AACGround-Timer", 3f, 1.1f, 10f)
     val cubecraftPortLengthValue = FloatValue("CubeCraft-PortLength", 1f, 0.1f, 2f)
-    val mineplexGroundSpeedValue = FloatValue("MineplexGround-Speed", 0.5f, 0.1f, 1f)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
