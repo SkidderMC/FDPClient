@@ -161,8 +161,10 @@ class Step : Module() {
     fun onStep(event: StepEvent) {
         val mode = modeValue.get()
         mc.thePlayer ?: return
+        chat("onStep")
         if(mode.equals("AAC4.4.0", ignoreCase = true) && !(lastTickOnGround&&mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
             event.stepHeight = 0F
+            chat("cancelStepA")
             return
         }
         // Phase should disable step
@@ -176,6 +178,7 @@ class Step : Module() {
                 (event.stepHeight>1.0-0.015625 && event.stepHeight<1.0+0.015625)||
                 (event.stepHeight>1.5-0.015625 && event.stepHeight<1.5+0.015625)||
                 (event.stepHeight>2.0-0.015625 && event.stepHeight<2.0+0.015625))) {
+                chat("cancelStepB"+event.stepHeigh)
                 event.stepHeight=0F
                 return
             }
@@ -208,6 +211,7 @@ class Step : Module() {
         val height = heightValue.get()
         if(mode.equals("AAC4.4.0", ignoreCase = true)) {
             mc.thePlayer.stepHeight = 2.0F
+            chat("setStepHeight")
         }else {
             mc.thePlayer.stepHeight = height
             event.stepHeight = height
@@ -266,6 +270,7 @@ class Step : Module() {
                 
                 mode.equals("AAC4.4.0", ignoreCase = true) -> {
                     val rstepHeight = mc.thePlayer.entityBoundingBox.minY - stepY
+                    chat("onStepConfirm"+rstepHeight)
                     fakeJump()
                     when {
                         rstepHeight>1.0-0.015625 && rstepHeight<1.0+0.015625 -> {
