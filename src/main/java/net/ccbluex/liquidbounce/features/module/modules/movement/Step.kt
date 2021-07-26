@@ -71,11 +71,10 @@ class Step : Module() {
             //chat("cancelStepA"+lastTickOnGround+mc.thePlayer.isCollidedHorizontally+mc.thePlayer.onGround)
             return
         }else if(modeValue.get().equals("AAC4.4.0", ignoreCase = true)) mc.thePlayer.stepHeight = 2.0F
-        if(wasTimer) {
-            wasTimer = false
-            if(mc.timer.timerSpeed==0.2F) {
-                mc.thePlayer.motionX *= 0.9
-                mc.thePlayer.motionZ *= 0.9
+        if(mc.timer.timerSpeed == 0.2F || mc.timer.timerSpeed == 0.37F || mc.timer.timerSpeed == 0.28F) {
+            if(mc.timer.timerSpeed == 0.2F) {
+                mc.thePlayer.motionX *= 0.88
+                mc.thePlayer.motionZ *= 0.88
             }
             mc.timer.timerSpeed = 1.0F
         }
