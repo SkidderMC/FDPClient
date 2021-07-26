@@ -50,8 +50,8 @@ class Step : Module() {
     private var ncpNextStep = 0
     private var spartanSwitch = false
     private var isAACStep = false
-    private var lastTickOnGround = false
-    private var wasTimer = false
+    private var lastTickOnGround = false //WTF Why it will automatically reset to false
+    var wasTimer = false
 
     private val timer = MSTimer()
 
@@ -66,16 +66,15 @@ class Step : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if(modeValue.get().equals("AAC4.4.0", ignoreCase = true) && !(lastTickOnGround&&mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
+        if(modeValue.get().equals("AAC4.4.0", ignoreCase = true) && !(mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
             mc.thePlayer.stepHeight = 0.0F
-            chat("cancelStepA")
+            //chat("cancelStepA"+lastTickOnGround+mc.thePlayer.isCollidedHorizontally+mc.thePlayer.onGround)
             return
         }else if(modeValue.get().equals("AAC4.4.0", ignoreCase = true)) mc.thePlayer.stepHeight = 2.0F
-        if(wasTimer) {
-            wasTimer = false
-            if(mc.timer.timerSpeed==0.2F) {
-                mc.thePlayer.motionX *= 0.9
-                mc.thePlayer.motionZ *= 0.9
+        if(mc.timer.timerSpeed == 0.2F || mc.timer.timerSpeed == 0.37F || mc.timer.timerSpeed == 0.28F) {
+            if(mc.timer.timerSpeed == 0.2F) {
+                mc.thePlayer.motionX *= 0.88
+                mc.thePlayer.motionZ *= 0.88
             }
             mc.timer.timerSpeed = 1.0F
         }
@@ -177,7 +176,7 @@ class Step : Module() {
                 (event.stepHeight>1.0-0.015625 && event.stepHeight<1.0+0.015625)||
                 (event.stepHeight>1.5-0.015625 && event.stepHeight<1.5+0.015625)||
                 (event.stepHeight>2.0-0.015625 && event.stepHeight<2.0+0.015625))) {
-                chat("cancelStepB"+event.stepHeight)
+                //chat("cancelStepB"+event.stepHeight)
                 event.stepHeight=0F
                 return
             }
@@ -209,7 +208,7 @@ class Step : Module() {
         // Set step height
         val height = heightValue.get()
         if(mode.equals("AAC4.4.0", ignoreCase = true)) {
-            chat("setStepHeight")
+            //chat("setStepHeight")
         }else {
             mc.thePlayer.stepHeight = height
             event.stepHeight = height
@@ -268,7 +267,7 @@ class Step : Module() {
                 
                 mode.equals("AAC4.4.0", ignoreCase = true) -> {
                     val rstepHeight = mc.thePlayer.entityBoundingBox.minY - stepY
-                    chat("onStepConfirm"+rstepHeight)
+                    //chat("onStepConfirm"+rstepHeight)
                     fakeJump()
                     when {
                         rstepHeight>1.0-0.015625 && rstepHeight<1.0+0.015625 -> {
