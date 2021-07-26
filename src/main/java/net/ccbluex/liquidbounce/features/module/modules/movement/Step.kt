@@ -178,7 +178,7 @@ class Step : Module() {
                 (event.stepHeight>1.0-0.015625 && event.stepHeight<1.0+0.015625)||
                 (event.stepHeight>1.5-0.015625 && event.stepHeight<1.5+0.015625)||
                 (event.stepHeight>2.0-0.015625 && event.stepHeight<2.0+0.015625))) {
-                chat("cancelStepB"+event.stepHeigh)
+                chat("cancelStepB"+event.stepHeight)
                 event.stepHeight=0F
                 return
             }
