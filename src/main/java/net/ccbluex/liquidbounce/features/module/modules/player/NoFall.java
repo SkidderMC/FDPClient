@@ -28,7 +28,7 @@ import java.util.TimerTask;
 // TODO: phase mode bypass matrix
 @ModuleInfo(name = "NoFall", description = "Prevents you from taking fall damage.", category = ModuleCategory.PLAYER)
 public class NoFall extends Module {
-    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "Spartan", "CubeCraft", "Hypixel", "Phase", "Verus", "HypixelNew", "HypixelAnother"}, "SpoofGround");
+    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "Phase", "Verus", "HypixelNew", "HypixelAnother"}, "SpoofGround");
 
     private final IntegerValue phaseOffsetValue = new IntegerValue("PhaseOffset",1,0,5);
 
@@ -38,6 +38,8 @@ public class NoFall extends Module {
 
     private boolean aac4Fakelag=false;
     private boolean aac4PacketModify=false;
+    private boolean aac5doFlag=false;
+    private final TickTimer aac5Timer = new TickTimer();
     private final ArrayList<C03PacketPlayer> aac4Packets=new ArrayList<>();
 
     private boolean NeedSpoof=false;
@@ -47,6 +49,7 @@ public class NoFall extends Module {
         aac4PacketModify=false;
         aac4Packets.clear();
         NeedSpoof=false;
+        aac5doFlag=false;
     }
 
     @EventTarget(ignoreCondition = true)
@@ -156,6 +159,21 @@ public class NoFall extends Module {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
                             mc.thePlayer.posY - 10, mc.thePlayer.posZ, true));
                     spartanTimer.reset();
+                }
+                break;
+            }
+            case "aac5.0.14": {
+                if(!mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0, mc.thePlayer.motionY*1.01, 0))
+                    .isEmpty() && mc.thePlayer.fallDistance>3 && !mc.thePlayer.onGround) {
+                    aac5doFlag=true;
+                    aac5Timer.reset();
+                }
+                if(aac5doFlag) {
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+                            mc.thePlayer.posY + 0.5, mc.thePlayer.posZ, true));
+                }
+                if(aac5Timer.hasTimePassed(2000)) {
+                    aac5doFlag=false;
                 }
                 break;
             }
