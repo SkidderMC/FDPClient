@@ -72,58 +72,62 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if(!mc.thePlayer.isUsingItem)
+        if (!MovementUtils.isMoving())
             return
-        
-        when(modeValue.get().toLowerCase()) {
-            "aacv5" -> {
-                if (event.isPre()) {
-                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+
+        val heldItem = mc.thePlayer.heldItem
+        if(mc.thePlayer.isUsingItem && heldItem != null && heldItem.item !is ItemSword){
+            when(modeValue.get().toLowerCase()) {
+                "aacv5" -> {
+                    if (event.isPre()) {
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+                    }
                 }
             }
-        }
-        val heldItem = mc.thePlayer.heldItem
-        if (heldItem == null || heldItem.item !is ItemSword || !MovementUtils.isMoving()) {
-            return
-        }
-        val killKillAura = LiquidBounce.moduleManager[KillAura::class.java] as KillAura
-        if (!mc.thePlayer.isBlocking && !killKillAura.blockingStatus) {
-            return
-        }
-        when(modeValue.get().toLowerCase()) {
-            "anticheat" -> {
-                this.sendPacket(event,true,false,false,0,false,false)
-                if(mc.thePlayer.ticksExisted % 2 == 0) {
-                    this.sendPacket(event,false,true,false,0,false)
-                }
+        }else{
+            val killAura = LiquidBounce.moduleManager[KillAura::class.java] as KillAura
+            if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
+                return
+            }
+            when(modeValue.get().toLowerCase()) {
+                "anticheat" -> {
+                    this.sendPacket(event,true,false,false,0,false,false)
+                    if(mc.thePlayer.ticksExisted % 2 == 0) {
+                        this.sendPacket(event,false,true,false,0,false)
+                    }
 //                if(mc.thePlayer.ticksExisted % 2 == 0) {
 //                    sendPacket(event, true, false, false, 5, false, false)
 //                } else {
 //                    sendPacket(event, false, false, false, 5, false, false)
 //                }
-            }
-
-            "aac" -> {
-                if(mc.thePlayer.ticksExisted % 3 == 0) {
-                    sendPacket(event, true , false, false, 0, false)
-                } else {
-                    sendPacket(event, false , true, false, 0, false)
                 }
-            }
 
-            "custom" -> {
-                sendPacket(event,true,true,true,customDelayValue.get().toLong(),customOnGround.get())
-            }
+                "aac" -> {
+                    if(mc.thePlayer.ticksExisted % 3 == 0) {
+                        sendPacket(event, true , false, false, 0, false)
+                    } else {
+                        sendPacket(event, false , true, false, 0, false)
+                    }
+                }
 
-            "nocheatplus" -> {
-                sendPacket(event,true,true,false,0,false)
-            }
+                "custom" -> {
+                    sendPacket(event,true,true,true,customDelayValue.get().toLong(),customOnGround.get())
+                }
 
-            "watchdog" -> {
-                if(mc.thePlayer.ticksExisted % 2 == 0) {
-                    sendPacket(event, true, false, false, 50, true)
-                } else {
-                    sendPacket(event, false, true, false, 0, true, true)
+                "nocheatplus" -> {
+                    sendPacket(event,true,true,false,0,false)
+                }
+
+                "watchdog" -> {
+                    if(mc.thePlayer.ticksExisted % 2 == 0) {
+                        sendPacket(event, true, false, false, 50, true)
+                    } else {
+                        sendPacket(event, false, true, false, 0, true, true)
+                    }
+                }
+
+                "aacv5" -> {
+                    sendPacket(event,true,true,true,200,false)
                 }
             }
         }

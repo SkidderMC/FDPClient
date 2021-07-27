@@ -217,7 +217,7 @@ class KillAura : Module() {
 
         if (!event.isPre()) {
             // AutoBlock
-            if (!autoBlockValue.get().equals("off",true) && discoveredTargets.isNotEmpty() && autoBlockPacketValue.get().equals("AfterTick",true) && canBlock()) {
+            if (!autoBlockValue.get().equals("off",true) && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.get().equals("AfterAttack",true)||discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)>maxRange }.isNotEmpty()) && canBlock()) {
                 val target=discoveredTargets[0]
                 if(mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get())
                     startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target)<maxRange))
@@ -462,7 +462,6 @@ class KillAura : Module() {
         // Settings
         val failRate = failRateValue.get()
         val swing = swingValue.get()
-        val multi = targetModeValue.get().equals("Multi", ignoreCase = true)
         val openInventory = aacValue.get() && mc.currentScreen is GuiInventory
         val failHit = failRate > 0 && Random().nextInt(100) <= failRate
 
@@ -481,22 +480,12 @@ class KillAura : Module() {
             }
         } else {
             // Attack
-            if (!multi) {
+            if (!targetModeValue.get().equals("Multi", ignoreCase = true)) {
                 attackEntity(currentTarget!!)
             } else {
-                var targets = 0
-
-                for (entity in mc.theWorld.loadedEntityList) {
-                    val distance = mc.thePlayer.getDistanceToEntityBox(entity)
-
-                    if (entity is EntityLivingBase && isEnemy(entity) && distance <= getRange(entity)) {
+                discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < getRange(it)  }.forEachIndexed { index, entity ->
+                    if(limitedMultiTargetsValue.get()==0 || index<limitedMultiTargetsValue.get())
                         attackEntity(entity)
-
-                        targets += 1
-
-                        if (limitedMultiTargetsValue.get() != 0 && limitedMultiTargetsValue.get() <= targets)
-                            break
-                    }
                 }
             }
 

@@ -22,6 +22,7 @@ import org.reflections.Reflections
 class Speed : Module() {
     val modes=Reflections("${this.javaClass.`package`.name}.speeds")
         .getSubTypesOf(SpeedMode::class.java).map { it.newInstance() as SpeedMode }
+        .sortedBy { it.modeName }
 
     val mode: SpeedMode
         get() = modes.filter { it.modeName.equals(modeValue.get(),true) }.get(0)
