@@ -185,8 +185,9 @@ public class NoFall extends Module {
                 }
                 if(aac5Check && mc.thePlayer.fallDistance>3.125 && !mc.thePlayer.onGround) {
                     aac5doFlag=true;
+                    aac5Timer.reset();
                 }else {
-                    aac5doFlag=false;
+                    if(aac5Timer.hasTimePassed(800)) aac5doFlag=false;
                 }
                 if(aac5doFlag) {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
