@@ -11,83 +11,22 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import org.reflections.Reflections
 
 @ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
 class Speed : Module() {
-    private val RedeskyModes = arrayOf(
-        RedeSkyHop(),
-        RedeSkyHop2(),
-        RedeSkyHop3(),
-        RedeSkyHopOld(),
-        RedeSkyGround()
-    )
-    private val AACmodes = arrayOf(
-        AACBHop(),
-        AAC2BHop(),
-        AAC3BHop(),
-        AAC4BHop(),
-        AAC5BHop(),
-        AAC6BHop(),
-        AAC7BHop(),
-        AACHop3313(),
-        AACHop350(),
-        AACLowHop(),
-        AACLowHop2(),
-        AACLowHop3(),
-        AACGround(),
-        AACGround2(),
-        AACYPort(),
-        AACYPort2(),
-        AACPort(),
-        OldAACBHop()
-    )
+    val modes=Reflections("${this.javaClass.`package`.name}.speeds")
+        .getSubTypesOf(SpeedMode::class.java).map { it.newInstance() as SpeedMode }
 
-    private val NCPCModes = arrayOf(
-        NCPBHop(),
-        NCPFHop(),
-        SNCPBHop(),
-        NCPHop(),
-        YPort(),
-        YPort2(),
-        NCPYPort(),
-        Boost(),
-        Frame(),
-        MiJump(),
-        OnGround()
-    )
+    val mode: SpeedMode
+        get() = modes.filter { it.modeName.equals(modeValue.get(),true) }.get(0)
 
-    private val SpectreModes = arrayOf(
-        SpartanYPort(),
-        SpectreLowHop(),
-        SpectreBHop(),
-        SpectreOnGround()
-    )
-
-    private val ServersModes = arrayOf(
-        TeleportCubeCraft(),
-        HiveHop(),
-        HypixelHop(),
-        Matrix(),
-        VerusYPort(),
-        MineplexBHop()
-    )
-
-    private val OtherModes = arrayOf(
-        SlowHop(),
-        CustomSpeed(),
-        Autojump()
-    )
-
-    val modeValue: ListValue = object : ListValue("Mode", modes, "NCPBHop") {
+    val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "NCPBHop") {
         override fun onChange(oldValue: String, newValue: String) {
             if (state) onDisable()
         }
@@ -117,64 +56,40 @@ class Speed : Module() {
     fun onUpdate(event: UpdateEvent?) {
         if (mc.thePlayer.isSneaking) return
         if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
-        mode?.onUpdate()
+        mode.onUpdate()
     }
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE) return
         if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
-        mode?.onMotion()
+        mode.onMotion()
     }
 
     @EventTarget
     fun onMove(event: MoveEvent) {
         if (mc.thePlayer.isSneaking) return
-        mode?.onMove(event)
+        mode.onMove(event)
     }
 
     @EventTarget
     fun onTick(event: TickEvent) {
         if (mc.thePlayer.isSneaking) return
-        mode?.onTick()
+        mode.onTick()
     }
 
     override fun onEnable() {
         if (mc.thePlayer == null) return
         mc.timer.timerSpeed = 1f
-        mode?.onEnable()
+        mode.onEnable()
     }
 
     override fun onDisable() {
         if (mc.thePlayer == null) return
         mc.timer.timerSpeed = 1f
-        mode?.onDisable()
+        mode.onDisable()
     }
 
     override val tag: String
         get() = modeValue.get()
-
-    private val mode: SpeedMode?
-        get() {
-            val mode = modeValue.get()
-            for (speedMode in RedeskyModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
-            for (speedMode in AACmodes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
-            for (speedMode in NCPCModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
-            for (speedMode in SpectreModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
-            for (speedMode in ServersModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
-            for (speedMode in OtherModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
-            return null
-        }
-
-    private val modes: Array<String>
-        get() {
-            val list: MutableList<String> = ArrayList()
-            for (speedMode in RedeskyModes) list.add(speedMode.modeName)
-            for (speedMode in AACmodes) list.add(speedMode.modeName)
-            for (speedMode in NCPCModes) list.add(speedMode.modeName)
-            for (speedMode in SpectreModes) list.add(speedMode.modeName)
-            for (speedMode in ServersModes) list.add(speedMode.modeName)
-            for (speedMode in OtherModes) list.add(speedMode.modeName)
-            return list.toTypedArray()
-        }
 }
