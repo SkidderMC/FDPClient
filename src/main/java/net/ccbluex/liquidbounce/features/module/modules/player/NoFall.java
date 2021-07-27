@@ -42,7 +42,7 @@ public class NoFall extends Module {
     private boolean aac4PacketModify=false;
     private boolean aac5doFlag=false;
     private boolean aac5Check=false;
-    private final TickTimer aac5Timer = new TickTimer();
+    private int aac5Timer=0;
     private final ArrayList<C03PacketPlayer> aac4Packets=new ArrayList<>();
 
     private boolean NeedSpoof=false;
@@ -54,6 +54,7 @@ public class NoFall extends Module {
         aac4Packets.clear();
         NeedSpoof=false;
         aac5doFlag=false;
+        aac5Timer=0;
     }
 
     @EventTarget(ignoreCondition = true)
@@ -183,11 +184,15 @@ public class NoFall extends Module {
                     mc.thePlayer.fallDistance=-5;
                     aac5Check=false;
                 }
+                if(aac5Timer>0) {
+                    aac5Timer -= 1;
+                }
                 if(aac5Check && mc.thePlayer.fallDistance>3.125 && !mc.thePlayer.onGround) {
                     aac5doFlag=true;
-                    aac5Timer.reset();
+                    aac5Timer = 10;
+                    chat("test");
                 }else {
-                    if(aac5Timer.hasTimePassed(800)) aac5doFlag=false;
+                    if(aac5Timer<2) aac5doFlag=false;
                 }
                 if(aac5doFlag) {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
