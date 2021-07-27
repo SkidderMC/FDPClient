@@ -179,7 +179,7 @@ object LiquidBounce {
 
         // ClickGUI
         clickGui = ClickGui()
-        fileManager.loadConfigs(fileManager.clickGuiConfig, fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig)
+        fileManager.loadConfigs(fileManager.clickGuiConfig, fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig)
 
         // Init All after load modules
         clickGuiManager.initAll()

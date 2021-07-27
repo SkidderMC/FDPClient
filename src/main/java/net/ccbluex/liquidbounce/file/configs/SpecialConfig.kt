@@ -1,15 +1,21 @@
-package net.ccbluex.liquidbounce.file.config.sections
+package net.ccbluex.liquidbounce.file.configs
 
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.AutoReconnect
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
-import net.ccbluex.liquidbounce.file.config.ConfigSection
+import net.ccbluex.liquidbounce.file.FileConfig
+import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
+import java.io.*
+import java.nio.charset.StandardCharsets
 
-class SpecialSection : ConfigSection("special") {
-    override fun load(json: JsonObject) {
+class SpecialConfig(file: File) : FileConfig(file) {
+    override fun loadConfig() {
+        val json=JsonParser().parse(BufferedReader(FileReader(file))).asJsonObject
+
         LiquidBounce.commandManager.prefix='.'
         AutoReconnect.delay=5000
         AntiForge.enabled=true
@@ -57,29 +63,31 @@ class SpecialSection : ConfigSection("special") {
         }
     }
 
-    override fun save(): JsonObject {
+    override fun saveConfig() {
         val json=JsonObject()
 
         json.addProperty("prefix",LiquidBounce.commandManager.prefix)
-        json.addProperty("auto-reconnect",AutoReconnect.delay)
+        json.addProperty("auto-reconnect", AutoReconnect.delay)
 
-        val antiForgeJson=JsonObject()
-        antiForgeJson.addProperty("enable",AntiForge.enabled)
-        antiForgeJson.addProperty("block-fml",AntiForge.blockFML)
-        antiForgeJson.addProperty("block-proxy",AntiForge.blockProxyPacket)
-        antiForgeJson.addProperty("block-payload",AntiForge.blockPayloadPackets)
+        val antiForgeJson= JsonObject()
+        antiForgeJson.addProperty("enable", AntiForge.enabled)
+        antiForgeJson.addProperty("block-fml", AntiForge.blockFML)
+        antiForgeJson.addProperty("block-proxy", AntiForge.blockProxyPacket)
+        antiForgeJson.addProperty("block-payload", AntiForge.blockPayloadPackets)
         json.add("anti-forge",antiForgeJson)
 
-        val serverSpoofJson=JsonObject()
-        serverSpoofJson.addProperty("enable",ServerSpoof.enable)
-        serverSpoofJson.addProperty("address",ServerSpoof.address)
+        val serverSpoofJson= JsonObject()
+        serverSpoofJson.addProperty("enable", ServerSpoof.enable)
+        serverSpoofJson.addProperty("address", ServerSpoof.address)
         json.add("serverspoof",serverSpoofJson)
 
-        val backgroundJson=JsonObject()
-        backgroundJson.addProperty("enable",GuiBackground.enabled)
-        backgroundJson.addProperty("particles",GuiBackground.particles)
+        val backgroundJson= JsonObject()
+        backgroundJson.addProperty("enable", GuiBackground.enabled)
+        backgroundJson.addProperty("particles", GuiBackground.particles)
         json.add("background",backgroundJson)
 
-        return json
+        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8))
+        writer.write(FileManager.PRETTY_GSON.toJson(json))
+        writer.close()
     }
 }

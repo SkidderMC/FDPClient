@@ -71,6 +71,8 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
             }
             0 -> mc.displayGuiScreen(prevGui)
         }
+
+        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

@@ -36,12 +36,7 @@ public class XRayConfig extends FileConfig {
      */
     @Override
     protected void loadConfig() throws IOException {
-        final XRay xRay = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
-
-        if(xRay == null) {
-            ClientUtils.getLogger().error("[FileManager] Failed to find xray module.");
-            return;
-        }
+        final XRay xRay = LiquidBounce.moduleManager.getModule(XRay.class);
 
         final JsonArray jsonArray = new JsonParser().parse(new BufferedReader(new FileReader(getFile()))).getAsJsonArray();
 
@@ -70,12 +65,7 @@ public class XRayConfig extends FileConfig {
      */
     @Override
     protected void saveConfig() throws IOException {
-        final XRay xRay = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
-
-        if(xRay == null) {
-            ClientUtils.getLogger().error("[FileManager] Failed to find xray module.");
-            return;
-        }
+        final XRay xRay = LiquidBounce.moduleManager.getModule(XRay.class);
 
         final JsonArray jsonArray = new JsonArray();
 
