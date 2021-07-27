@@ -90,7 +90,7 @@ class KillAura : Module() {
     private val keepSprintValue = BoolValue("KeepSprint", true)
 
     // AutoBlock
-    private val autoBlockValue = ListValue("AutoBlock", arrayOf("AllTime","Range","Off"),"Off")
+    private val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Off"),"Off")
     private val autoBlockRangeValue = FloatValue("AutoBlockRange", 2.5f, 0f, 8f)
     private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"),"AfterTick")
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
@@ -302,7 +302,7 @@ class KillAura : Module() {
         // Update target
         updateTarget()
 
-        if (target == null) {
+        if (discoveredTargets.isEmpty()) {
             stopBlocking()
             return
         }
