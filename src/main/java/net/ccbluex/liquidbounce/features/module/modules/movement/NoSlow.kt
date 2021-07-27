@@ -32,7 +32,7 @@ class NoSlow : Module() {
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val customOnGround = BoolValue("CustomOnGround", false)
     private val customDelayValue = IntegerValue("CustomDelay",60,10,200)
-    private val modeValue = ListValue("PacketMode", arrayOf("AntiCheat","Custom","WatchDog","NoCheatPlus","NoPacket","AAC"), "AntiCheat")
+    private val modeValue = ListValue("PacketMode", arrayOf("AntiCheat","Custom","WatchDog","NoCheatPlus","NoPacket","AAC","AACv5"), "AntiCheat")
     // Soulsand
     val soulsandValue = BoolValue("Soulsand", true)
 
@@ -72,6 +72,16 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        if(!mc.thePlayer.isUsingItem)
+            return
+        
+        when(modeValue.get().toLowerCase()) {
+            "aacv5" -> {
+                if (event.isPre()) {
+                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+                }
+            }
+        }
         val heldItem = mc.thePlayer.heldItem
         if (heldItem == null || heldItem.item !is ItemSword || !MovementUtils.isMoving()) {
             return
