@@ -54,7 +54,7 @@ object AutoAbuse : Module() {
             //check file exists
             if(!abuseFile.exists()){
                 val fos = FileOutputStream(abuseFile)
-                IOUtils.copy(AutoAbuse::class.java.classLoader.getResourceAsStream("abuse.json"), fos)
+                IOUtils.copy(AutoAbuse::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/abuse.json"), fos)
                 fos.close()
             }
             //read it

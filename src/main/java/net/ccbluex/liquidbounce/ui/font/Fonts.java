@@ -92,15 +92,15 @@ public class Fonts {
 
     private static void initFonts() {
         try {
-            initSingleFont("regular.ttf");
-            initSingleFont("medium.ttf");
+            initSingleFont("regular.ttf","assets/minecraft/fdpclient/font/regular.ttf");
+            initSingleFont("medium.ttf","assets/minecraft/fdpclient/font/medium.ttf");
         }catch(IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void initSingleFont(String name) throws IOException {
-        FileUtils.unpackFile(new File(LiquidBounce.fileManager.fontsDir, name),name);
+    private static void initSingleFont(String name, String resourcePath) throws IOException {
+        FileUtils.unpackFile(new File(LiquidBounce.fileManager.fontsDir, name), resourcePath);
     }
 
     public static FontRenderer getFontRenderer(final String name, final int size) {

@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.network.play.server.S2FPacketSetSlot
 
 @ModuleInfo(name = "AutoDisable", description = "Auto disable modules.", category = ModuleCategory.CLIENT, defaultOn = true)
 object AutoDisable : Module() {

@@ -41,10 +41,13 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "FDPClient"
     const val COLORED_NAME = "§c§lFDP§6§lClient"
-    @JvmField
-    val CLIENT_VERSION: String
+    const val CLIENT_REAL_VERSION = "v1.3.1"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val MINECRAFT_VERSION = "1.8.9"
+
+    // 自动读取客户端版本
+    @JvmField
+    val CLIENT_VERSION: String
 
     val enableUpdateAlert: Boolean
     var isStarting = true
@@ -85,7 +88,7 @@ object LiquidBounce {
     init {
         val commitId=LiquidBounce::class.java.classLoader.getResourceAsStream("FDP_GIT_COMMIT_ID")
         CLIENT_VERSION=if (commitId==null){
-            "v1.3.0"
+            CLIENT_REAL_VERSION
         }else{
             val str=IOUtils.toString(commitId,"utf-8").replace("\n","")
             "git-"+(str.substring(0, 7.coerceAtMost(str.length)))

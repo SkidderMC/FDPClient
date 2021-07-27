@@ -6,9 +6,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.gui.GuiGameOver
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -23,8 +21,8 @@ import javax.imageio.ImageIO
 object GuiCapeManager : GuiScreen() {
     val jsonFile=File(LiquidBounce.fileManager.capesDir,"cape.json")
 
-    val FDP_CAPE_1=loadCapeFromResource("FDP Cape 1","cape/cape1.png")
-    val FDP_CAPE_2=loadCapeFromResource("FDP Cape 2","cape/cape2.png")
+    val FDP_CAPE_1=loadCapeFromResource("FDP Cape 1","assets/minecraft/fdpclient/cape/cape1.png")
+    val FDP_CAPE_2=loadCapeFromResource("FDP Cape 2","assets/minecraft/fdpclient/cape/cape2.png")
 
     var nowCape:Cape?=FDP_CAPE_1
     val capeList=mutableListOf<Cape>()

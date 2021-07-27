@@ -9,14 +9,9 @@ import com.google.gson.*;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType;
 import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.special.AntiForge;
-import net.ccbluex.liquidbounce.features.special.AutoReconnect;
-import net.ccbluex.liquidbounce.features.special.ServerSpoof;
 import net.ccbluex.liquidbounce.features.special.macro.Macro;
 import net.ccbluex.liquidbounce.file.configs.*;
-import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.value.Value;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -26,7 +21,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.Map;
 
 public class FileManager extends MinecraftInstance {

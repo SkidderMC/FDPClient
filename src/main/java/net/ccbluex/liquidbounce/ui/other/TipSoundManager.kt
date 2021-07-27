@@ -12,10 +12,12 @@ class TipSoundManager {
         val enableSoundFile=File(LiquidBounce.fileManager.soundsDir,"enable.wav")
         val disableSoundFile=File(LiquidBounce.fileManager.soundsDir,"disable.wav")
 
-        FileUtils.unpackFile(enableSoundFile,"sounds/enable.wav")
-        FileUtils.unpackFile(disableSoundFile,"sounds/disable.wav")
+        if(!enableSoundFile.exists())
+            FileUtils.unpackFile(enableSoundFile,"assets/minecraft/fdpclient/sound/enable.wav")
+        if(!disableSoundFile.exists())
+            FileUtils.unpackFile(disableSoundFile,"assets/minecraft/fdpclient/sound/disable.wav")
 
-        enableSound= TipSoundPlayer(enableSoundFile)
-        disableSound= TipSoundPlayer(disableSoundFile)
+        enableSound=TipSoundPlayer(enableSoundFile)
+        disableSound=TipSoundPlayer(disableSoundFile)
     }
 }

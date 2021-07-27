@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
-import java.lang.StringBuilder
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
