@@ -174,7 +174,7 @@ public class NoFall extends Module {
                     final Block block = BlockUtils.getBlock(blockPos);
                     final AxisAlignedBB axisAlignedBB = block.getCollisionBoundingBox(mc.theWorld, blockPos, BlockUtils.getState(blockPos));
                     if(axisAlignedBB != null) {
-                        offsetYs=999.9;
+                        offsetYs = -999.9;
                         aac5Check=true;
                     }
                     offsetYs -= 0.5;
