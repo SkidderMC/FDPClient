@@ -16,6 +16,8 @@ import net.ccbluex.liquidbounce.utils.misc.FallingPlayer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.AxisAlignedBB;
@@ -39,6 +41,7 @@ public class NoFall extends Module {
     private boolean aac4Fakelag=false;
     private boolean aac4PacketModify=false;
     private boolean aac5doFlag=false;
+    private boolean aac5Check=false;
     private final TickTimer aac5Timer = new TickTimer();
     private final ArrayList<C03PacketPlayer> aac4Packets=new ArrayList<>();
 
@@ -46,6 +49,7 @@ public class NoFall extends Module {
     @Override
     public void onEnable(){
         aac4Fakelag=false;
+        aac5Check=false;
         aac4PacketModify=false;
         aac4Packets.clear();
         NeedSpoof=false;
@@ -163,8 +167,19 @@ public class NoFall extends Module {
                 break;
             }
             case "aac5.0.14": {
-                if(!mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0, mc.thePlayer.motionY*1.01, 0))
-                    .isEmpty() && mc.thePlayer.fallDistance>3 && !mc.thePlayer.onGround) {
+                double offsetYs = 0.0;
+                aac5Check=false;
+                while (mc.thePlayer.motionY-0.5 < offsetYs) {
+                    final BlockPos blockPos = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + offsetYs, mc.thePlayer.posZ);
+                    final Block block = BlockUtils.getBlock(blockPos);
+                    final AxisAlignedBB axisAlignedBB = block.getCollisionBoundingBox(mc.theWorld, blockPos, BlockUtils.getState(blockPos));
+                    if(axisAlignedBB != null) {
+                        offsetYs=999.9;
+                        aac5Check=true;
+                    }
+                    offsetYs -= 0.5;
+                }
+                if(aac5Check && mc.thePlayer.fallDistance>3 && !mc.thePlayer.onGround) {
                     aac5doFlag=true;
                     aac5Timer.reset();
                 }
@@ -172,7 +187,7 @@ public class NoFall extends Module {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
                             mc.thePlayer.posY + 0.5, mc.thePlayer.posZ, true));
                 }
-                if(aac5Timer.hasTimePassed(2000)) {
+                if(aac5Timer.hasTimePassed(4000)) {
                     aac5doFlag=false;
                 }
                 break;
