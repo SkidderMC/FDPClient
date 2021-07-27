@@ -113,15 +113,15 @@ class Criticals : Module() {
                 
                 "oldhyt" -> {
                     if(lookValue.get()){
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.042487 z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0104649713461000007 z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0014749900000101 z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0000007451816400000 z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.042487, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0104649713461000007, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0014749900000101, z, yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0000007451816400000, z, yaw, pitch, false))
                     }else{
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.042487 z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0104649713461000007 z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0014749900000101 z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0000007451816400000 z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.042487, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0104649713461000007, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0014749900000101, z, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0000007451816400000, z, false))
                     }
                 }
 
