@@ -170,7 +170,7 @@ public class NoFall extends Module {
             case "aac5.0.14": {
                 double offsetYs = 0.0;
                 aac5Check=false;
-                while (mc.thePlayer.motionY-0.5 < offsetYs) {
+                while (mc.thePlayer.motionY-1.5 < offsetYs) {
                     final BlockPos blockPos = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + offsetYs, mc.thePlayer.posZ);
                     final Block block = BlockUtils.getBlock(blockPos);
                     final AxisAlignedBB axisAlignedBB = block.getCollisionBoundingBox(mc.theWorld, blockPos, BlockUtils.getState(blockPos));
@@ -189,8 +189,8 @@ public class NoFall extends Module {
                 }
                 if(aac5Check && mc.thePlayer.fallDistance>3.125 && !mc.thePlayer.onGround) {
                     aac5doFlag=true;
-                    aac5Timer = 10;
-                    chat("test");
+                    aac5Timer = 30;
+                    //chat("test");
                 }else {
                     if(aac5Timer<2) aac5doFlag=false;
                 }
