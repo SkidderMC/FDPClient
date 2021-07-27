@@ -28,7 +28,7 @@ import net.minecraft.stats.StatList
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "Hypixel", "Hypixel2", "Hypixel3", "OldHYT", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Hover1", "Hover2", "Mineplex", "More", "TestMinemora"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "Hypixel", "Hypixel2", "Hypixel3", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Mineplex", "More", "Tryminemora"), "packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
@@ -38,11 +38,10 @@ class Criticals : Module() {
     val msTimer = MSTimer()
 
     private var target = 0
-    var jState = 0
+
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
             mc.thePlayer.jump()
-        jState = 0
     }
 
     @EventTarget
@@ -110,20 +109,6 @@ class Criticals : Module() {
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0011, z, false))
                     }
                 }
-                
-                "oldhyt" -> {
-                    if(lookValue.get()){
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.042487, z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0104649713461000007, z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0014749900000101, z, yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0000007451816400000, z, yaw, pitch, false))
-                    }else{
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.042487, z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0104649713461000007, z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0014749900000101, z, false))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0000007451816400000, z, false))
-                    }
-                }
 
                 "hypixel2" -> {
                     if(lookValue.get()){
@@ -170,7 +155,7 @@ class Criticals : Module() {
                 }
 
                 // Minemora criticals to try
-                "testminemora" -> {
+                "tryminemora" -> {
                     if(lookValue.get()){
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0114514, z, yaw, pitch, false))
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0010999999940395355, z, yaw, pitch, false))
@@ -251,41 +236,6 @@ class Criticals : Module() {
         if (packet is C03PacketPlayer){
             when (modeValue.get().toLowerCase()) {
                 "noground" -> packet.onGround = false
-                "hover1" -> {
-                    if(mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
-                        packet.onGround=false
-                        jState++
-                        when(jState) {
-                            0 -> {}
-                            1 -> packet.y += 0.001335979112147
-                            2 -> packet.y += 0.0000000131132
-                            3 -> packet.y += 0.0000000194788
-                            4 -> packet.y += 0.00000000001304
-                            5 -> {
-                                packet.onGround=true
-                                jState = 0
-                            }
-                            else -> jState = 0
-                        }
-                    }
-                }
-                "hover2" -> {
-                    if(mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
-                        packet.onGround=false
-                        jState++
-                        when(jState) {
-                            0 -> {}
-                            1 -> packet.y += 0.00000000000667547
-                            2 -> packet.y += 0.00000000000045413
-                            3 -> packet.y += 0.000000000000036
-                            4 -> {
-                                packet.onGround=true
-                                jState = 0
-                            }
-                            else -> jState = 0
-                        }
-                    }
-                }
                 "redeskysmartground" -> {
                     if(rsNofallValue.get()&&mc.thePlayer.fallDistance>0){
                         packet.onGround=true
