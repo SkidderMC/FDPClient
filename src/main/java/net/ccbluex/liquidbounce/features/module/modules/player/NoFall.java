@@ -179,6 +179,9 @@ public class NoFall extends Module {
                     }
                     offsetYs -= 0.5;
                 }
+                if(mc.thePlayer.onGround) {
+                    mc.thePlayer.fallDistance=0;
+                }
                 if(aac5Check && mc.thePlayer.fallDistance>3 && !mc.thePlayer.onGround) {
                     aac5doFlag=true;
                     aac5Timer.reset();
@@ -187,7 +190,7 @@ public class NoFall extends Module {
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
                             mc.thePlayer.posY + 0.5, mc.thePlayer.posZ, true));
                 }
-                if(aac5Timer.hasTimePassed(4000)) {
+                if(aac5Timer.hasTimePassed(1500)) {
                     aac5doFlag=false;
                 }
                 break;
