@@ -26,7 +26,7 @@ public class Fonts {
     @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
     public static GameFontRenderer font40;
 
-    @FontDetails(fontName = "Bold", fontSize = 40, fileName = "medium.ttf")
+    @FontDetails(fontName = "Huge", fontSize = 40, fileName = "regular.ttf")
     public static GameFontRenderer fontBold40;
 
     @FontDetails(fontName = "Minecraft Font")
@@ -93,14 +93,15 @@ public class Fonts {
     private static void initFonts() {
         try {
             initSingleFont("regular.ttf","assets/minecraft/fdpclient/font/regular.ttf");
-            initSingleFont("medium.ttf","assets/minecraft/fdpclient/font/medium.ttf");
         }catch(IOException e) {
             e.printStackTrace();
         }
     }
 
     private static void initSingleFont(String name, String resourcePath) throws IOException {
-        FileUtils.unpackFile(new File(LiquidBounce.fileManager.fontsDir, name), resourcePath);
+        File file=new File(LiquidBounce.fileManager.fontsDir, name);
+        if(!file.exists())
+            FileUtils.unpackFile(file, resourcePath);
     }
 
     public static FontRenderer getFontRenderer(final String name, final int size) {
