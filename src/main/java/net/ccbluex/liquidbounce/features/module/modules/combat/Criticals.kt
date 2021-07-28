@@ -28,7 +28,7 @@ import net.minecraft.stats.StatList
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "Hypixel", "Hypixel2", "Hypixel3", "OldHYT", "AACPacket", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Hover1", "Hover2", "Mineplex", "More", "TestMinemora"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "Hypixel", "Hypixel2", "Hypixel3", "AACPacket", "AAC4Hover1", "AAC4Hover2", "AAC4.3.11OldHYT", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Hover1", "Hover2", "Mineplex", "More", "TestMinemora"), "packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
@@ -39,6 +39,7 @@ class Criticals : Module() {
 
     private var target = 0
     var jState = 0
+    var aacLastState = false
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
             mc.thePlayer.jump()
@@ -111,7 +112,7 @@ class Criticals : Module() {
                     }
                 }
                 
-                "oldhyt" -> {
+                "aac4.3.11oldhyt" -> {
                     if(lookValue.get()){
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.042487, z, yaw, pitch, false))
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.0104649713461000007, z, yaw, pitch, false))
@@ -268,6 +269,32 @@ class Criticals : Module() {
                             else -> jState = 0
                         }
                     }
+                }
+                "aac4hover1" -> {
+                    if(mc.thePlayer.onGround && !aacLastState) {
+                        packet.onGround = mc.thePlayer.onGround
+                        aacLastState = mc.thePlayer.onGround
+                        return
+                    }
+                    aacLastState = mc.thePlayer.onGround
+                    packet.y += 0.001335979112147
+                    if(mc.thePlayer.onGround) packet.onGround = false
+                }
+                "aac4hover2" -> {
+                    if(mc.thePlayer.onGround && !aacLastState) {
+                        packet.onGround = mc.thePlayer.onGround
+                        aacLastState = mc.thePlayer.onGround
+                        return
+                    }
+                    aacLastState = mc.thePlayer.onGround
+                    jState++
+                    if(jState % 25 !=0) {
+                        packet.y += 0.000000000000036
+                    } else {
+                        if(mc.thePlayer.onGround) packet.onGround = true
+                        return
+                    }
+                    if(mc.thePlayer.onGround) packet.onGround = false
                 }
                 "hover2" -> {
                     if(mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
