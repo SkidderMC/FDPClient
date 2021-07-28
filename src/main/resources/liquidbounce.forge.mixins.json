@@ -8,6 +8,7 @@
     "block.MixinBlockAnvil",
     "block.MixinBlockModelRenderer",
     "block.MixinBlockSoulSand",
+    "client.MixinLanguageManager",
     "client.MixinMinecraft",
     "client.MixinResourcePackRepository",
     "entity.MixinAbstractClientPlayer",

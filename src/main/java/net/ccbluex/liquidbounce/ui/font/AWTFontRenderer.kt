@@ -137,11 +137,7 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
         if (charWidth <= 0)
             charWidth = 7
 
-        var charHeight = fontMetrics.height + 3
-        if (charHeight <= 0)
-            charHeight = font.size
-
-        val fontImage = BufferedImage(charWidth, charHeight, BufferedImage.TYPE_INT_ARGB)
+        val fontImage = BufferedImage(charWidth, fontHeight, BufferedImage.TYPE_INT_ARGB)
         val graphics = fontImage.graphics as Graphics2D
         putHints(graphics)
         graphics.font = font

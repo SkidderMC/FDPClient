@@ -81,7 +81,6 @@ public abstract class MixinGuiNewChat {
     private int line;
 
     private HUD hud;
-    private final HashMap<String,String> stringCache=new HashMap<>();
 
     private void checkHud(){
         if(hud==null){
@@ -117,6 +116,22 @@ public abstract class MixinGuiNewChat {
 
         printChatMessageWithOptionalDeletion(chatComponent, this.line);
     }
+
+    private String fixString(String str){
+        str=str.replaceAll("\uF8FF","");//remove air chars
+
+        StringBuilder sb=new StringBuilder();
+        for(char c:str.toCharArray()){
+            if((int) c >(33+65248)&& (int) c <(128+65248)){
+                sb.append(Character.toChars((int) c - 65248));
+            }else{
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
+    }
+
 
     /**
      * @author Liuli
@@ -182,9 +197,8 @@ public abstract class MixinGuiNewChat {
                                 if(hud.getChatRectValue().get()) {
                                     RenderUtils.drawRect(i2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
                                 }
-                                String s = fixString(chatline.getChatComponent().getFormattedText());
                                 GlStateManager.enableBlend();
-                                (canFont?Fonts.font40:this.mc.fontRendererObj).drawString(s, (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24), false);
+                                (canFont?Fonts.font40:this.mc.fontRendererObj).drawString(chatline.getChatComponent().getFormattedText(), (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24), false);
                                 GlStateManager.disableAlpha();
                                 GlStateManager.disableBlend();
 
@@ -212,25 +226,6 @@ public abstract class MixinGuiNewChat {
                 GlStateManager.popMatrix();
             }
         }
-    }
-
-    private String fixString(String str){
-        if(stringCache.containsKey(str)) return stringCache.get(str);
-
-        str=str.replaceAll("\uF8FF","");//remove air chars
-
-        StringBuilder sb=new StringBuilder();
-        for(char c:str.toCharArray()){
-            if((int) c >(33+65248)&& (int) c <(128+65248)){
-                sb.append(Character.toChars((int) c - 65248));
-            }else{
-                sb.append(c);
-            }
-        }
-        String result=sb.toString();
-        stringCache.put(str,result);
-
-        return result;
     }
 
     @Inject(method = "getChatComponent", at = @At("HEAD"), cancellable = true)

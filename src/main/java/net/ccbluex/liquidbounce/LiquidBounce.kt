@@ -27,12 +27,14 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.other.TipSoundManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.betterfps.BetterFPSCore
+import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
 
@@ -129,6 +131,9 @@ object LiquidBounce {
     fun startClient() {
         ClientUtils.logInfo("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
         val startTime=System.currentTimeMillis()
+
+        // Load language
+        LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
 
         // Create file manager
         fileManager = FileManager()
