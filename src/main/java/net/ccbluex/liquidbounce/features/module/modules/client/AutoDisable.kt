@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-@ModuleInfo(name = "AutoDisable", description = "Auto disable modules.", category = ModuleCategory.CLIENT, defaultOn = true)
+@ModuleInfo(name = "AutoDisable", description = "Automatically disables modules.", category = ModuleCategory.CLIENT, defaultOn = true)
 object AutoDisable : Module() {
     @EventTarget
     fun onWorld(event: WorldEvent){
@@ -31,7 +31,7 @@ object AutoDisable : Module() {
                 .filter { it.state&&it.autoDisable==EnumAutoDisableType.FLAG }
                 .forEach { module ->
                     module.state=false
-                    LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to flag.",NotifyType.WARNING,2000))
+                    LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to flags.",NotifyType.WARNING,2000))
                 }
         }
     }
