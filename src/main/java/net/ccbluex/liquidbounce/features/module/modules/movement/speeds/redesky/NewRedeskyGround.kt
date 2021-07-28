@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 
-class NewRedeSkyGround : SpeedMode("NewRedeSkyGround") {
+class NewRedeskyGround : SpeedMode("NewRedeskyGround") {
     private val timer=MSTimer()
     private var stage=false
 
