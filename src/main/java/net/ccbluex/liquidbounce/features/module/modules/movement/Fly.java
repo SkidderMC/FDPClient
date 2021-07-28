@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement;
 
@@ -53,7 +53,7 @@ public class Fly extends Module {
             "RedeSkySmooth",
 
             // Verus
-            "Verus1",
+            "Verus",
             "Verus2",
             "Verus3",
 
@@ -139,7 +139,7 @@ public class Fly extends Module {
 
     // Visuals
     private final ListValue markValue = new ListValue("Mark", new String[]{"Up", "Down", "Off"}, "Up");
-    private final BoolValue fakeBoostValue = new BoolValue("FakeBoost", true);
+    private final BoolValue fakeDamageValue = new BoolValue("FakeDamage", true);
 
     private double startY;
     private double launchY;
@@ -189,7 +189,7 @@ public class Fly extends Module {
         if(mc.thePlayer == null)
             return;
         launchY = mc.thePlayer.posY;
-        if(mc.thePlayer.onGround&&fakeBoostValue.get()){
+        if(mc.thePlayer.onGround&&fakeDamageValue.get()){
             PacketEvent event=new PacketEvent(new S19PacketEntityStatus(mc.thePlayer,(byte) 2), PacketEvent.Type.RECEIVE);
             LiquidBounce.eventManager.callEvent(event);
             if(!event.isCancelled()) {
@@ -210,7 +210,7 @@ public class Fly extends Module {
         final String mode = modeValue.get();
 
         switch(mode.toLowerCase()) {
-            case "verus1":
+            case "verus":
                 mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y+3.35, z, false));
                 mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false));
                 mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true));
