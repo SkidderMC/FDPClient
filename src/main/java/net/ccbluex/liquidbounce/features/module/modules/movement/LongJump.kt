@@ -222,6 +222,12 @@ class LongJump : Module() {
                         MovementUtils.strafe(MovementUtils.getSpeed() * 1.114514f)
                         mc.timer.timerSpeed = 0.917555f
                     }
+                    
+                    "RedeSkyTest" -> {
+                        mc.thePlayer.motionY = 0.42
+                        MovementUtils.strafe(MovementUtils.getSpeed() * 1.12f)
+                        mc.timer.timerSpeed = 0.8f
+                    }
 
                     "hyt4v4" -> {
                         mc.thePlayer.motionY += 0.031470000997
