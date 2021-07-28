@@ -27,7 +27,7 @@ import net.minecraft.util.MathHelper
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback taken.", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
 
     /**
@@ -35,7 +35,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4", "RedeSkyPacket", "RedeskyTest",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4", "Redesky", "RedeskyTest",
             "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch", "Legit"), "Simple")
 
     // Reverse
@@ -54,8 +54,8 @@ class Velocity : Module() {
     private val legitStrafeValue = BoolValue("LegitStrafe",false)
     private val legitFaceValue = BoolValue("LegitFace",true)
 
-    private val rspAlwaysValue = BoolValue("RedeSkyPacketAlwaysReduce",true)
-    private val rspDengerValue = BoolValue("RedeSkyPacketOnlyDanger",false)
+    private val rspAlwaysValue = BoolValue("RedeskyAlwaysReduce",true)
+    private val rspDengerValue = BoolValue("RedeskyOnlyDanger",false)
 
     /**
      * VALUES
@@ -263,7 +263,7 @@ class Velocity : Module() {
                     if(redeCount>12) redeCount -= 5
                 }
 
-                "redeskypacket" -> {
+                "redesky" -> {
                     if(packet.getMotionX()==0&&packet.getMotionZ()==0){ // ignore horizonal velocity
                         return
                     }
