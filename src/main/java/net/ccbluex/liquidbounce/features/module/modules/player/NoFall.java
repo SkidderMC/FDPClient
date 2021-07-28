@@ -181,7 +181,7 @@ public class NoFall extends Module {
                     offsetYs -= 0.5;
                 }
                 if(mc.thePlayer.onGround) {
-                    mc.thePlayer.fallDistance=-5;
+                    mc.thePlayer.fallDistance=-2;
                     aac5Check=false;
                 }
                 if(aac5Timer>0) {
