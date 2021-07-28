@@ -7,7 +7,6 @@ import java.util.regex.Pattern
 object LanguageManager {
     val key="%"
     val defaultLocale="en_us"
-    val localeList=arrayOf("en_us", "zh_cn")
 
     private var language=Language(defaultLocale)
 
@@ -39,7 +38,7 @@ object LanguageManager {
     fun switchLanguage(languageStr: String){
         val languageCode=languageStr.toLowerCase()
 
-        if(!localeList.contains(languageCode)) {
+        if(LanguageManager::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/locale/$languageCode.lang")==null) {
             ClientUtils.logWarn("Language $languageCode not exist!")
             language=Language(defaultLocale)
             return

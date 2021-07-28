@@ -140,10 +140,10 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
             String[] latestAutoComplete = LiquidBounce.commandManager.getLatestAutoComplete();
             String[] textArray = inputField.getText().split(" ");
             String text=textArray[textArray.length - 1];
-            Object[] result=Arrays.stream(latestAutoComplete).filter((str) -> str.startsWith(text)).toArray();
+            Object[] result=Arrays.stream(latestAutoComplete).filter((str) -> str.toLowerCase().startsWith(text.toLowerCase())).toArray();
             String resultText="";
             if(result.length>0)
-                resultText=((String)result[0]).replace(text,"");
+                resultText=((String)result[0]).substring(Math.min(((String)result[0]).length(),text.length()));
 
             mc.fontRendererObj.drawStringWithShadow(resultText, inputField.xPosition + mc.fontRendererObj.getStringWidth(inputField.getText()), inputField.yPosition, new Color(165, 165, 165).getRGB());
         }
