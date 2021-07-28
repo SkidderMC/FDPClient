@@ -30,13 +30,13 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-@ModuleInfo(name = "InfinityAura", description = "Become a pvp(hvh) god.", category = ModuleCategory.COMBAT)
-class InfinityAura : Module() {
+@ModuleInfo(name = "InfiniteAura", description = "Hit enemies from far away.", category = ModuleCategory.COMBAT)
+class InfiniteAura : Module() {
     private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
     private val targetsValue=IntegerValue("Targets",3,1,10)
     private val cpsValue=IntegerValue("CPS",1,1,10)
     private val distValue=IntegerValue("Distance",30,20,100)
-    private val moveDistValue=FloatValue("MoveDist",5F,2F,15F)
+    private val moveDistanceValue=FloatValue("MoveDistance",5F,2F,15F)
     private val noRegen=BoolValue("NoRegen",true)
     private val doSwing=BoolValue("Swing",true)
     private val path=BoolValue("PathRender",true)
