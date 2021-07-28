@@ -85,10 +85,13 @@ public abstract class MixinGuiNewChat {
 
     private void checkHud(){
         if(hud==null){
-            hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+            hud = LiquidBounce.moduleManager.getModule(HUD.class);
         }
     }
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     public void printChatMessage(IChatComponent chatComponent) {
         checkHud();
@@ -115,6 +118,9 @@ public abstract class MixinGuiNewChat {
         printChatMessageWithOptionalDeletion(chatComponent, this.line);
     }
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     public void drawChat(int updateCounter) {
         checkHud();

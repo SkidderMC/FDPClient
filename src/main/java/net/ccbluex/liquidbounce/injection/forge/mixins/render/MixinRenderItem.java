@@ -31,7 +31,7 @@ public abstract class MixinRenderItem {
 
     @Inject(method = "renderEffect", at = @At("HEAD"))
     private void renderEffect(IBakedModel model, CallbackInfo callbackInfo) {
-        EnchantEffect enchantEffect = (EnchantEffect) LiquidBounce.moduleManager.getModule(EnchantEffect.class);
+        EnchantEffect enchantEffect = LiquidBounce.moduleManager.getModule(EnchantEffect.class);
         int color=enchantEffect.getColor().getRGB();
 
         GlStateManager.depthMask(false);

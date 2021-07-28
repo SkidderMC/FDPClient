@@ -33,7 +33,7 @@ public class MixinMathHelper {
         if(LiquidBounce.INSTANCE.isStarting())
             return;
 
-        if(betterFPS==null) betterFPS= (BetterFPS) LiquidBounce.moduleManager.getModule(BetterFPS.class);
+        if(betterFPS==null) betterFPS= LiquidBounce.moduleManager.getModule(BetterFPS.class);
 
         BetterFPSCore core = LiquidBounce.betterFPSCore;
 
@@ -74,7 +74,7 @@ public class MixinMathHelper {
         if(LiquidBounce.INSTANCE.isStarting())
             return;
 
-        if(betterFPS==null) betterFPS= (BetterFPS) LiquidBounce.moduleManager.getModule(BetterFPS.class);
+        if(betterFPS==null) betterFPS= LiquidBounce.moduleManager.getModule(BetterFPS.class);
 
         BetterFPSCore core = LiquidBounce.betterFPSCore;
         switch (betterFPS.getCosMode().get().toLowerCase()){

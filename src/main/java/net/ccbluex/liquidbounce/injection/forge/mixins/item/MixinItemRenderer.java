@@ -78,6 +78,9 @@ public abstract class MixinItemRenderer {
 
     private Animations animations;
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     private void transformFirstPersonItem(float equipProgress, float swingProgress) {
         doItemRenderGLTranslate();
@@ -91,10 +94,13 @@ public abstract class MixinItemRenderer {
         doItemRenderGLScale();
     }
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
         if(animations==null){
-            animations = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
+            animations = LiquidBounce.moduleManager.getModule(Animations.class);
         }
 
         float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
@@ -109,7 +115,7 @@ public abstract class MixinItemRenderer {
         GlStateManager.pushMatrix();
 
         if(this.itemToRender != null) {
-            final KillAura killAura = (KillAura) LiquidBounce.moduleManager.getModule(KillAura.class);
+            final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
 
             if(this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
@@ -398,9 +404,12 @@ public abstract class MixinItemRenderer {
         doItemRenderGLScale();
     }
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     private void renderFireInFirstPerson(float partialTicks) {
-        final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
+        final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();

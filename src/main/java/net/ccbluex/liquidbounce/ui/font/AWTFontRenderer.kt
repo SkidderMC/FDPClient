@@ -86,8 +86,8 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
      * Draw char from texture to display
      *
      * @param char target font char to render
-     * @param x        target positon x to render
-     * @param y        target potion y to render
+     * @param x        target position x to render
+     * @param y        target position y to render
      */
     private fun drawChar(char: Char, x: Float, y: Float): Int {
         val fontChar=chars[char] ?: loadChar(char)

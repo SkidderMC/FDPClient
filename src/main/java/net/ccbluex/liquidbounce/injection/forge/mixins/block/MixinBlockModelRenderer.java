@@ -23,7 +23,7 @@ public class MixinBlockModelRenderer {
 
     @Inject(method = "renderModelAmbientOcclusion", at = @At("HEAD"), cancellable = true)
     private void renderModelAmbientOcclusion(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSide, final CallbackInfoReturnable<Boolean> booleanCallbackInfoReturnable) {
-        final XRay xray = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
+        final XRay xray = LiquidBounce.moduleManager.getModule(XRay.class);
 
         if (xray.getState() && !xray.getXrayBlocks().contains(blockIn))
             booleanCallbackInfoReturnable.setReturnValue(false);
@@ -31,7 +31,7 @@ public class MixinBlockModelRenderer {
 
     @Inject(method = "renderModelStandard", at = @At("HEAD"), cancellable = true)
     private void renderModelStandard(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides, final CallbackInfoReturnable<Boolean> booleanCallbackInfoReturnable) {
-        final XRay xray = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
+        final XRay xray = LiquidBounce.moduleManager.getModule(XRay.class);
 
         if (xray.getState() && !xray.getXrayBlocks().contains(blockIn))
             booleanCallbackInfoReturnable.setReturnValue(false);

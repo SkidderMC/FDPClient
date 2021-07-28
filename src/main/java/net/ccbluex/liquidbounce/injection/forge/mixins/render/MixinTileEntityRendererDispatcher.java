@@ -19,7 +19,7 @@ public class MixinTileEntityRendererDispatcher {
 
     @Inject(method = "renderTileEntity", at = @At("HEAD"), cancellable = true)
     private void renderTileEntity(TileEntity tileentityIn, float partialTicks, int destroyStage, final CallbackInfo callbackInfo) {
-        final XRay xray = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
+        final XRay xray = LiquidBounce.moduleManager.getModule(XRay.class);
 
         if (xray.getState() && !xray.getXrayBlocks().contains(tileentityIn.getBlockType()))
             callbackInfo.cancel();

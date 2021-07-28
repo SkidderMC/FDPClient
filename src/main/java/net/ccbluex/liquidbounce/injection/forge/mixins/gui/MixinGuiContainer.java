@@ -36,16 +36,16 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo){
-        ChestStealer chestStealer=(ChestStealer) LiquidBounce.moduleManager.getModule(ChestStealer.class);
+        ChestStealer chestStealer=LiquidBounce.moduleManager.getModule(ChestStealer.class);
         try {
             Minecraft mc=Minecraft.getMinecraft();
             GuiScreen guiScreen=mc.currentScreen;
-            if(chestStealer.getState()&&chestStealer.getSilenceValue().get()&&guiScreen instanceof GuiChest){
+            if(chestStealer.getState()&&chestStealer.getSilentTitleValue().get()&&guiScreen instanceof GuiChest){
                 //mouse focus
                 mc.setIngameFocus();
                 mc.currentScreen=guiScreen;
                 //hide GUI
-                if(chestStealer.getSilenceTitleValue().get()) {
+                if(chestStealer.getSilentTitleValue().get()) {
                     String tipString = "STEALING CHEST";
                     mc.fontRendererObj.drawString(tipString,
                             (width / 2) - (mc.fontRendererObj.getStringWidth(tipString) / 2),
@@ -55,8 +55,8 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
             }else{
                 mc.currentScreen.drawWorldBackground(0);
 
-                Animations animations = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
-                if(animations != null && animations.getState()) {
+                Animations animations = LiquidBounce.moduleManager.getModule(Animations.class);
+                if(animations.getState()) {
                     float pct = Math.max(animations.getTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((float)animations.getTimeValue().get());
                     if (pct != 0) {
                         GL11.glPushMatrix();
