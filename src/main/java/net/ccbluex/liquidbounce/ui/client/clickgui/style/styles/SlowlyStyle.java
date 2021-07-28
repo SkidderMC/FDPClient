@@ -112,12 +112,6 @@ public class SlowlyStyle extends Style {
 
                 moduleElement.slowlySettingsYPos = moduleElement.getY() + 6;
                 for (final Value value : moduleValues) {
-                    boolean isNumber = value.get() instanceof Number;
-
-                    if (isNumber) {
-                        AWTFontRenderer.Companion.setAssumeNonVolatile(false);
-                    }
-
                     if (value instanceof BoolValue) {
                         final String text = value.getName();
                         final float textWidth = Fonts.font35.getStringWidth(text);
@@ -278,10 +272,6 @@ public class SlowlyStyle extends Style {
                         GlStateManager.resetColor();
                         Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 4, 0xffffff);
                         moduleElement.slowlySettingsYPos += 12;
-                    }
-
-                    if (isNumber) {
-                        AWTFontRenderer.Companion.setAssumeNonVolatile(true);
                     }
                 }
 

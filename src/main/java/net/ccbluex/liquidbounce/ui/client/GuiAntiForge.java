@@ -75,7 +75,7 @@ public class GuiAntiForge extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawBackground(0);
-        Fonts.fontBold40.drawCenteredString("AntiForge", (int) (width / 2F), (int) (height / 8F + 5F), 4673984, true);
+        Fonts.font40.drawCenteredString("AntiForge", (int) (width / 2F), (int) (height / 8F + 5F), 4673984, true);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

@@ -177,7 +177,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
     }
 
     private fun drawFancy(target: EntityLivingBase, easingHealth: Float){
-        val width = (48 + 9 + target.name.let(Fonts.fontBold40::getStringWidth))
+        val width = (48 + 9 + target.name.let(Fonts.font40::getStringWidth))
             .coerceAtLeast(100)
             .toFloat()
 
@@ -191,7 +191,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
 
         GL11.glTranslatef(48+3+3f,7f,0f)
 
-        Fonts.fontBold40.drawString(target.name,0f,0f,Color.WHITE.rgb)
+        Fonts.font40.drawString(target.name,0f,0f,Color.WHITE.rgb)
     }
 
     private fun drawFlux(target: EntityLivingBase, nowAnimHP: Float){

@@ -89,9 +89,6 @@ class NameTags : Module() {
         enableGlCap(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-
-        AWTFontRenderer.assumeNonVolatile = true
-
         // Draw nametag
         when(modeValue.get().toLowerCase()) {
             "simple" -> {
@@ -122,21 +119,11 @@ class NameTags : Module() {
                 glScalef(-scale, -scale, scale)
                 val width = fontRenderer.getStringWidth(text) / 2
                 if (borderValue.get())
-                    drawBorderedRect(
-                        -width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F, 2F,
-                        Color(255, 255, 255, 90).rgb, Integer.MIN_VALUE
-                    )
+                    drawBorderedRect(-width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F, 2F, Color(255, 255, 255, 90).rgb, Integer.MIN_VALUE)
                 else
-                    drawRect(
-                        -width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F,
-                        Integer.MIN_VALUE
-                    )
-                fontRenderer.drawString(
-                    text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F,
-                    0xFFFFFF, true
-                )
+                    drawRect(-width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F, Integer.MIN_VALUE)
 
-                AWTFontRenderer.assumeNonVolatile = false
+                fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, true)
 
                 if (armorValue.get() && entity is EntityPlayer) {
                     for (index in 0..4) {

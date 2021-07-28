@@ -25,8 +25,6 @@ object Rotations : Module() {
 //    val rotationHumanizeOrder=EaseUtils.getEnumEasingOrderList("HumanizeOrder")
     val nanValue = BoolValue("NaNCheck", true)
 
-    private var playerYaw: Float? = null
-
 //    fun apply(value: Double):Double{
 //        return EaseUtils.apply(toEnumType(), toEnumOrder(),value)
 //    }
@@ -41,27 +39,15 @@ object Rotations : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (RotationUtils.serverRotation != null && !bodyValue.get() && headValue.get())
-            mc.thePlayer?.rotationYawHead = RotationUtils.serverRotation.yaw
-    }
-
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val packet = event.packet
-
-        if (packet is C03PacketPlayer.C06PacketPlayerPosLook || packet is C03PacketPlayer.C05PacketPlayerLook) {
-            val packetPlayer = packet as C03PacketPlayer
-
-            playerYaw = packetPlayer.yaw
-            if (bodyValue.get())
-                mc.thePlayer.renderYawOffset = packetPlayer.yaw
-            if (headValue.get())
-                mc.thePlayer.rotationYawHead = packetPlayer.yaw
-        } else {
-            if (playerYaw != null && bodyValue.get())
-                mc.thePlayer.renderYawOffset = playerYaw!!
-            if (headValue.get())
-                mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset
+        if (RotationUtils.serverRotation != null) {
+            if (bodyValue.get()) {
+                mc.thePlayer.prevRenderYawOffset = RotationUtils.serverRotation.yaw
+                mc.thePlayer.renderYawOffset = RotationUtils.serverRotation.yaw
+            }
+            if (headValue.get()) {
+                mc.thePlayer.prevRotationYawHead = RotationUtils.serverRotation.yaw
+                mc.thePlayer.rotationYawHead = RotationUtils.serverRotation.yaw
+            }
         }
     }
 

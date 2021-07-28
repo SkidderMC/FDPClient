@@ -123,7 +123,7 @@ object GuiCapeManager : GuiScreen() {
         GL11.glPushMatrix()
         Fonts.font40.drawCenteredString(if(nowCape==null){ "§cNONE" }else{ "§a${nowCape!!.name}" },width*0.50f,height*0.23f, -1, false)
         GL11.glScalef(2f,2f,2f)
-        Fonts.fontBold40.drawCenteredString("Cape Manager",width*0.25f,height*0.03f, -1, false)
+        Fonts.font40.drawCenteredString("Cape Manager",width*0.25f,height*0.03f, -1, false)
         GL11.glPopMatrix()
 
         // draw buttons

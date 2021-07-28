@@ -24,7 +24,7 @@ class ClickList(val category: ModuleCategory, var x: Int, var y: Int, var module
         }
 
         ClickGuiUtils.rainbowRect(0.0,0.0,100.0,20.0,255)
-        Fonts.fontBold40.drawString(category.displayName,6F,10F-(Fonts.fontBold40.height*0.5F), Color.WHITE.rgb)
+        Fonts.font40.drawString(category.displayName,6F,10F-(Fonts.font40.height*0.5F), Color.WHITE.rgb)
 
         if(toggle||toggleing) {
             ClickGuiUtils.borderRect(0.0, 20.0, 100.0, 300.0)

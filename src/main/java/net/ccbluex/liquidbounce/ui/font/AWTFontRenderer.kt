@@ -19,19 +19,7 @@ import javax.imageio.ImageIO
 /**
  * Generate new bitmap based font renderer
  */
-class AWTFontRenderer(val font: Font, val initialize: Boolean = true) {
-
-    companion object {
-        var assumeNonVolatile: Boolean = false
-        val activeFontRenderers: ArrayList<AWTFontRenderer> = ArrayList()
-
-        private var gcTicks: Int = 0
-        private const val GC_TICKS = 600 // Start garbage collection every 600 frames
-        private const val CACHED_FONT_REMOVAL_TIME = 30000 // Remove cached texts after 30s of not being used
-
-        fun garbageCollectionTick() {
-        }
-    }
+class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
 
     private val fontHeight: Int
 
@@ -60,8 +48,6 @@ class AWTFontRenderer(val font: Font, val initialize: Boolean = true) {
             prepareCharImages('a','z')
             prepareCharImages('A','Z')
         }
-
-        activeFontRenderers.add(this)
     }
 
     /**

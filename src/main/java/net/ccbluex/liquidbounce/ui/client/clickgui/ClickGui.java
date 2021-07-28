@@ -56,9 +56,6 @@ public class ClickGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        // Enable DisplayList optimization
-        AWTFontRenderer.Companion.setAssumeNonVolatile(true);
-
         final double scale = ((ClickGUI) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUI.class))).scaleValue.get();
 
         mouseX /= scale;
@@ -98,8 +95,6 @@ public class ClickGui extends GuiScreen {
         GlStateManager.disableLighting();
         RenderHelper.disableStandardItemLighting();
         GlStateManager.scale(1, 1, 1);
-
-        AWTFontRenderer.Companion.setAssumeNonVolatile(false);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

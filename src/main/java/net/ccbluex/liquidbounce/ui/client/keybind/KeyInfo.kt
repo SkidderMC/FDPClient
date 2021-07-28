@@ -40,7 +40,7 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
 
         RenderUtils.drawRect(0F,0F,width,height,keyColor)
         RenderUtils.drawRect(0F,height*0.9F,width,height,shadowColor)
-        (if(hasKeyBind){Fonts.fontBold40}else{Fonts.font40})
+        (if(hasKeyBind){Fonts.font40}else{Fonts.font40})
             .drawCenteredString(keyName,width*0.5F,height*0.9F*0.5F-(Fonts.font35.FONT_HEIGHT*0.5F)+3F
             ,if(hasKeyBind){usedColor}else{unusedColor},false)
 

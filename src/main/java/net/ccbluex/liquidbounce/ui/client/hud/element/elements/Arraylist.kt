@@ -72,8 +72,6 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     override fun drawElement(partialTicks: Float): Border? {
         val fontRenderer = fontValue.get()
 
-        AWTFontRenderer.assumeNonVolatile = true
-
         // Slide animation - update every render
         val delta = RenderUtils.deltaTime
 
@@ -296,7 +294,6 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
             return Border(0F, 0F, x2 - 7F, y2 - if(side.vertical == Vertical.DOWN) 1F else 0F)
         }
 
-        AWTFontRenderer.assumeNonVolatile = false
         GlStateManager.resetColor()
         return null
     }

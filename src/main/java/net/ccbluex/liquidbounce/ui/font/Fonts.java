@@ -26,8 +26,8 @@ public class Fonts {
     @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
     public static GameFontRenderer font40;
 
-    @FontDetails(fontName = "Huge", fontSize = 40, fileName = "regular.ttf")
-    public static GameFontRenderer fontBold40;
+//    @FontDetails(fontName = "Huge", fontSize = 60, fileName = "regular.ttf")
+//    public static GameFontRenderer font60;
 
     @FontDetails(fontName = "Minecraft Font")
     public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;

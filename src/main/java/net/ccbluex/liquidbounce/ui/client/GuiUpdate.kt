@@ -32,7 +32,7 @@ class GuiUpdate() : GuiScreen() {
 
         // Title
         GL11.glScalef(2F, 2F, 2F)
-        drawCenteredString(Fonts.fontBold40, "Update available!", width / 2 / 2, height / 8 / 2 + 20, Color(255, 0, 0).rgb)
+        drawCenteredString(Fonts.font40, "Update available!", width / 2 / 2, height / 8 / 2 + 20, Color(255, 0, 0).rgb)
     }
 
     override fun actionPerformed(button: GuiButton) {

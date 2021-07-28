@@ -75,12 +75,6 @@ public class LiquidBounceStyle extends Style {
             if(moduleElement.isShowSettings()) {
                 int yPos = moduleElement.getY() + 4;
                 for(final Value value : moduleValues) {
-                    boolean isNumber = value.get() instanceof Number;
-
-                    if (isNumber) {
-                        AWTFontRenderer.Companion.setAssumeNonVolatile(false);
-                    }
-
                     if (value instanceof BoolValue) {
                         final String text = value.getName();
                         final float textWidth = Fonts.font35.getStringWidth(text);
@@ -270,10 +264,6 @@ public class LiquidBounceStyle extends Style {
                         GlStateManager.resetColor();
                         Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
                         yPos += 12;
-                    }
-
-                    if (isNumber) {
-                        AWTFontRenderer.Companion.setAssumeNonVolatile(true);
                     }
                 }
 
