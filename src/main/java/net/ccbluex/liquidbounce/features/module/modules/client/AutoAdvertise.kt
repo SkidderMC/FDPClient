@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/UnlegitMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -9,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import java.util.*
 
-@ModuleInfo(name = "AutoAdvertise", description = "Can u keep enable this?We need ur support thx", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
+@ModuleInfo(name = "AutoAdvertise", description = "Keep this on, we need your support.", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 class AutoAdvertise : Module() {
     var waiting=false
 
