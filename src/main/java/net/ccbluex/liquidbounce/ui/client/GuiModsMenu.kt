@@ -14,9 +14,9 @@ import org.lwjgl.input.Keyboard
 class GuiModsMenu(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun initGui() {
-        buttonList.add(GuiButton(0, width / 2 - 100, height / 4 + 48, "Forge Mods"))
-        buttonList.add(GuiButton(1, width / 2 - 100, height / 4 + 48 + 25, "Scripts"))
-        buttonList.add(GuiButton(2, width / 2 - 100, height / 4 + 48 + 50, "Back"))
+        buttonList.add(GuiButton(0, width / 2 - 100, height / 4 + 48, "%ui.forgeMods%"))
+        buttonList.add(GuiButton(1, width / 2 - 100, height / 4 + 48 + 25, "%ui.scripts%"))
+        buttonList.add(GuiButton(2, width / 2 - 100, height / 4 + 48 + 50, "%ui.back%"))
     }
 
     override fun actionPerformed(button: GuiButton) {
@@ -30,7 +30,7 @@ class GuiModsMenu(private val prevGui: GuiScreen) : GuiScreen() {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
 
-        Fonts.font40.drawCenteredString("Mods", this.width / 2F, height / 8F + 5F, 4673984, true)
+        Fonts.font40.drawCenteredString("%ui.mods%", this.width / 2F, height / 8F + 5F, 4673984, true)
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

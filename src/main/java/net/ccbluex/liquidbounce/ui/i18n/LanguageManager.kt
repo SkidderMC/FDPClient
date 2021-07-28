@@ -6,10 +6,10 @@ import java.util.regex.Pattern
 
 object LanguageManager {
     val key="%"
-    val defaultLocale="en_US"
-    val localeList=arrayOf("en_US", "zh_CN")
+    val defaultLocale="en_us"
+    val localeList=arrayOf("en_us", "zh_cn")
 
-    private var language=Language(defaultLocale, defaultLocale)
+    private var language=Language(defaultLocale)
 
     // regex is slow, so we need to cache match results
     private val pattern=Pattern.compile("$key[A-Za-z0-9\u002E]*$key")
@@ -36,11 +36,16 @@ object LanguageManager {
         return language.get(key)
     }
 
-    fun switchLanguage(languageCode: String){
-        if(!localeList.contains(languageCode))
+    fun switchLanguage(languageStr: String){
+        val languageCode=languageStr.toLowerCase()
+
+        if(!localeList.contains(languageCode)) {
             ClientUtils.logWarn("Language $languageCode not exist!")
+            language=Language(defaultLocale)
+            return
+        }
 
         ClientUtils.logInfo("Loading language $languageCode")
-        language= Language(languageCode, defaultLocale)
+        language=Language(languageCode, defaultLocale)
     }
 }

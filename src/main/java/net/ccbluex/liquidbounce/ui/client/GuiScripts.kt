@@ -33,7 +33,7 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
         list.elementClicked(-1, false, 0, 0)
 
         val j = 22
-        this.buttonList.add(GuiButton(0, width - 80, height - 65, 70, 20, "Back"))
+        this.buttonList.add(GuiButton(0, width - 80, height - 65, 70, 20, "%ui.back%"))
         this.buttonList.add(GuiButton(1, width - 80, j + 24, 70, 20, "Import"))
         this.buttonList.add(GuiButton(2, width - 80, j + 24 * 2, 70, 20, "Delete"))
         this.buttonList.add(GuiButton(3, width - 80, j + 24 * 3, 70, 20, "Reload"))
@@ -47,7 +47,7 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
 
         list.drawScreen(mouseX, mouseY, partialTicks)
 
-        drawCenteredString(Fonts.font40, "§9§lScripts", width / 2, 28, 0xffffff)
+        drawCenteredString(Fonts.font40, "§9§l%ui.scripts%", width / 2, 28, 0xffffff)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 

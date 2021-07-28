@@ -8,6 +8,8 @@ class Language(val locale: String, private val defaultLocale: String) {
 
     private val translateMap=HashMap<String, String>()
 
+    constructor(defaultLocale: String) : this(defaultLocale, defaultLocale)
+
     init {
         if(defaultLocale != locale)
             read(defaultLocale)
