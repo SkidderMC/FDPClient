@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
-class Autojump : SpeedMode("Autojump") {
+class Legit : SpeedMode("Legit") {
     override fun onMotion() {
         if (mc.thePlayer.isInWater) return
         if (MovementUtils.isMoving()) {

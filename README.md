@@ -11,7 +11,7 @@ Latest: [github-actions](htpps://github.com/UnlegitMC/FDPClient/actions)
 Discord: https://discord.gg/dJtjF7swH9
 
 ## Issues
-If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/Project-EZ4H/FDPClient/issues).
+If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/UnlegitMC/FDPClient/issues).
 
 ## License
 This project is subject to the [GNU General Public License v3.0](LICENSE). This does only apply for source code located directly in this clean repository. During the development and compilation process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL license.

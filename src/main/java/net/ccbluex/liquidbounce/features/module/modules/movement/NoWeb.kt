@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 @ModuleInfo(name = "NoWeb", description = "Prevents you from getting slowed down in webs.", category = ModuleCategory.MOVEMENT)
 class NoWeb : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside", "AAC4", "OldMemetrix"), "None")
+    private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside", "AAC4", "OldMatrix"), "None")
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -49,7 +49,7 @@ class NoWeb : Module() {
                     mc.timer.timerSpeed = 1.35F
                 }
             }
-            "oldmemetrix" -> {
+            "oldmatrix" -> {
                 mc.thePlayer.jumpMovementFactor = 0.124133333f
                 mc.thePlayer.motionY = -0.0125
                 if (mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY = -0.1625

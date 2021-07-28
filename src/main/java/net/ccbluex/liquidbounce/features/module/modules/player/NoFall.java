@@ -101,7 +101,7 @@ public class NoFall extends Module {
             case "cubecraft": {
                 if (mc.thePlayer.fallDistance > 2F) {
                     mc.thePlayer.onGround = false;
-                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(true));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
                 }
                 break;
             }

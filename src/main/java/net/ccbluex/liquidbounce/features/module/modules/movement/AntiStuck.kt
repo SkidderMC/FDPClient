@@ -15,13 +15,13 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-@ModuleInfo(name = "AntiStuck", description = "Unstuck you when you stuck.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "AntiStuck", description = "Unstucks you when you are stuck.", category = ModuleCategory.MOVEMENT)
 class AntiStuck : Module() {
-    private val flagValue= IntegerValue("Flag",5,1,10)
+    private val flagsValue= IntegerValue("Flags",5,1,10)
 
     private val timer=MSTimer()
     private val reduceTimer=MSTimer()
-    private var flagTime=0
+    private var flagsTime=0
     private var stuck=false
 
     private fun reset(){
@@ -48,21 +48,21 @@ class AntiStuck : Module() {
 
             if(timer.hasTimePassed(1500)){
                 stuck=false
-                flagTime=0
+                flagsTime=0
                 freeze.state=false
                 timer.reset()
                 reduceTimer.reset()
             }
         }else{
-            if(flagTime>flagValue.get()){
+            if(flagsTime>flagsValue.get()){
                 timer.reset()
                 reduceTimer.reset()
-                flagTime=0
+                flagsTime=0
                 stuck=true
                 LiquidBounce.hud.addNotification(Notification(name,"Trying to unstuck you", NotifyType.INFO,1500))
             }
             if(timer.hasTimePassed(1500) && reduceTimer.hasTimePassed(500) && flagTime>0){
-                flagTime -= 1;
+                flagsTime -= 1;
                 reduceTimer.reset()
             }
         }
@@ -73,7 +73,7 @@ class AntiStuck : Module() {
         val packet=event.packet
 
         if(packet is S08PacketPlayerPosLook){
-            flagTime++
+            flagsTime++
             reduceTimer.reset()
             if(!stuck) {
                 timer.reset()

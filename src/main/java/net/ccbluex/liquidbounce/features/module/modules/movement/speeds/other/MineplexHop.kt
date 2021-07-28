@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
-class MineplexBHop : SpeedMode("MineplexBHop") {
+class MineplexHop : SpeedMode("MineplexHop") {
     private var boost = 0
     private var jumped=false
 
