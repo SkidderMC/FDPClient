@@ -189,7 +189,7 @@ public class NoFall extends Module {
                 }
                 if(aac5Check && mc.thePlayer.fallDistance>3.125 && !mc.thePlayer.onGround) {
                     aac5doFlag=true;
-                    aac5Timer = 30;
+                    aac5Timer = 16;
                     //chat("test");
                 }else {
                     if(aac5Timer<2) aac5doFlag=false;
