@@ -852,9 +852,8 @@ class Scaffold : Module() {
             var amount = 0
             for (i in 36..44) {
                 val itemStack = mc.thePlayer.inventoryContainer.getSlot(i).stack
-                if (itemStack != null && itemStack.item is ItemBlock
-                    && !InventoryUtils.BLOCK_BLACKLIST.contains((itemStack.item as ItemBlock).getBlock())
-                ) amount += itemStack.stackSize
+                if (itemStack.item is ItemBlock && InventoryUtils.canPlaceBlock((itemStack.item as ItemBlock).block))
+                    amount += itemStack.stackSize
             }
             return amount
         }
@@ -882,11 +881,7 @@ class Scaffold : Module() {
             }
         }
         RenderHelper.enableGUIStandardItemLighting()
-        mc.renderItem.renderItemIntoGUI(
-            stack,
-            width / 2 - Fonts.font40.getStringWidth(info),
-            (height * 0.6 - Fonts.font40.FONT_HEIGHT * 0.5).toInt()
-        )
+        mc.renderItem.renderItemIntoGUI(stack, width / 2 - Fonts.font40.getStringWidth(info), (height * 0.6 - Fonts.font40.FONT_HEIGHT * 0.5).toInt())
         RenderHelper.disableStandardItemLighting()
         Fonts.font40.drawCenteredString(info, width / 2f, height * 0.6f, Color.WHITE.rgb, false)
         GlStateManager.popMatrix()
