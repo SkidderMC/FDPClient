@@ -36,9 +36,9 @@ class Spammer : Module() {
         }
     }
 
-    private val modeValue = ListValue("Mode", arrayOf("Single","Abuse","OrderAbuse"),"Single")
+    private val modeValue = ListValue("Mode", arrayOf("Single","Insult","OrderInsult"),"Single")
     private val messageValue = TextValue("Message", "Buy %r Minecraft %r Legit %r and %r stop %r using %r cracked %r servers %r%r")
-    private val abuseMessageValue = TextValue("AbuseMessage", "[%s] %w [%s]")
+    private val insultMessageValue = TextValue("InsultMessage", "[%s] %w [%s]")
 
     private val msTimer = MSTimer()
     private var delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
@@ -52,15 +52,15 @@ class Spammer : Module() {
     fun onUpdate(event: UpdateEvent) {
         if (msTimer.hasTimePassed(delay)) {
             mc.thePlayer.sendChatMessage(when(modeValue.get().toLowerCase()){
-                "abuse" -> {
-                    replaceAbuse(AutoAbuse.getRandomOne())
+                "insult" -> {
+                    replaceAbuse(KillInsults.getRandomOne())
                 }
-                "orderabuse" -> {
+                "orderinsult" -> {
                     lastIndex++
-                    if(lastIndex>=(AutoAbuse.abuseWords!!.size()-1)){
+                    if(lastIndex>=(KillInsults.abuseWords!!.size()-1)){
                         lastIndex=0
                     }
-                    replaceAbuse(AutoAbuse.abuseWords!![lastIndex].asString)
+                    replaceAbuse(KillInsults.abuseWords!![lastIndex].asString)
                 }
                 else -> replace(messageValue.get())
             })
@@ -70,7 +70,7 @@ class Spammer : Module() {
     }
 
     private fun replaceAbuse(str: String): String {
-        return replace(abuseMessageValue.get().replace("%w",str))
+        return replace(insultMessageValue.get().replace("%w",str))
     }
 
     private fun replace(str: String): String {

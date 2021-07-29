@@ -185,10 +185,10 @@ module.AuthBypass.name=AuthBypass
 module.AuthBypass.description=Bypass auth when join server.
 module.AuthBypass.value.Delay.name=Delay
 
-module.AutoAbuse.name=AutoAbuse
-module.AutoAbuse.description=Automatically abuse peoples you killed.
-module.AutoAbuse.value.Mode.name=Mode
-module.AutoAbuse.value.WaterMark.name=WaterMark
+module.KillInsults.name=KillInsults
+module.KillInsults.description=Automatically insult peoples you killed.
+module.KillInsults.value.Mode.name=Mode
+module.KillInsults.value.WaterMark.name=WaterMark
 
 module.AutoAdvertise.name=AutoAdvertise
 module.AutoAdvertise.description=Keep this on, we need your support.

@@ -21,8 +21,8 @@ import org.apache.commons.io.IOUtils
 import java.io.*
 import java.nio.charset.StandardCharsets
 
-@ModuleInfo(name = "AutoAbuse", category = ModuleCategory.MISC)
-object AutoAbuse : Module() {
+@ModuleInfo(name = "KillInsults", category = ModuleCategory.MISC)
+object KillInsults : Module() {
     var abuseWords: JsonArray? = null
     private var target: EntityPlayer? = null
 
@@ -34,7 +34,7 @@ object AutoAbuse : Module() {
         ), "RawWords"
     )
     private val waterMarkValue = BoolValue("WaterMark", true)
-    val abuseFile=File(LiquidBounce.fileManager.dir, "abuse.json")
+    val abuseFile=File(LiquidBounce.fileManager.dir, "insult.json")
 
     init {
         loadFile()
@@ -54,7 +54,7 @@ object AutoAbuse : Module() {
             //check file exists
             if(!abuseFile.exists()){
                 val fos = FileOutputStream(abuseFile)
-                IOUtils.copy(AutoAbuse::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/abuse.json"), fos)
+                IOUtils.copy(KillInsults::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/insult.json"), fos)
                 fos.close()
             }
             //read it
