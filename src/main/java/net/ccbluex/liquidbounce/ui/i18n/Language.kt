@@ -20,7 +20,7 @@ class Language(val locale: String, private val defaultLocale: String) {
     private fun read(locale: String){
         val prop=Properties()
 
-        prop.load(InputStreamReader(LanguageManager::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/locale/$locale.lang")))
+        prop.load(InputStreamReader(LanguageManager::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/locale/$locale.lang"),Charsets.UTF_8))
 
         for((key, value) in prop.entries){
             if(key is String&&value is String)
