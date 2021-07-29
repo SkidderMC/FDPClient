@@ -43,7 +43,7 @@ ui.scripts.error.extension.title=Wrong file extension.
 ui.scripts.error.extension.message=The file extension has to be .js or .zip
 
 ui.keybind.title=KeyBind Manager
-ui.keybind.select=Select mod to bind
+ui.keybind.select=Select a module to bind
 ui.keybind.addMacro=Press ENTER to add macro.
 ui.keybind.add=+ Add
 ui.keybind.key=%s Key
@@ -82,6 +82,7 @@ ui.alt.alreadyAdded=The account has already been added.
 ui.alt.notWorking=The account doesn't work.
 ui.alt.checking=Checking...
 
+notify.module.title=Module
 notify.module.enable=Enabled %s
 notify.module.disable=Disabled %s
 
@@ -174,8 +175,8 @@ module.AntiVanish.description=Anti player vanish
 
 module.AntiVoid.name=AntiVoid
 module.AntiVoid.description=Avoiding you from falling into void
-module.AntiVoid.value.Move.name=Move
-module.AntiVoid.value.FallCheckMove.name=FallCheckMove
+module.AntiVoid.value.Mode.name=Mode
+module.AntiVoid.value.FallCheckMode.name=FallCheckMode
 module.AntiVoid.value.MaxFallDistance.name=MaxFallDistance
 module.AntiVoid.value.ResetMotion.name=ResetMotion
 module.AntiVoid.value.BlinkStartFallDistance.name=BlinkStartFallDistance
@@ -719,11 +720,11 @@ module.LongJump.value.RedeSky3JumpTime.name=RedeSky3JumpTime
 module.LongJump.value.RedeSky3Boost.name=RedeSky3Boost
 module.LongJump.value.RedeSky3Height.name=RedeSky3Height
 module.LongJump.value.RedeSky3Timer.name=RedeSky3Timer
-module.LongJump.value.AutoJump.name=AutoJump
-module.LongJump.value.AutoClose.name=AutoClose
 module.LongJump.value.CustomLong.name=CustomLong
 module.LongJump.value.CustomHeight.name=CustomHeight
 module.LongJump.value.CustomTimer.name=CustomTimer
+module.LongJump.value.AutoJump.name=AutoJump
+module.LongJump.value.AutoClose.name=AutoClose
 
 module.MessageSpam.name=MessageSpam
 module.MessageSpam.description=Spam messages(only redesky)
@@ -769,10 +770,6 @@ module.NoFall.value.PhaseOffset.name=PhaseOffset
 
 module.NoJumpDelay.name=NoJumpDelay
 module.NoJumpDelay.description=Removes delay between jumps
-
-module.NoRotate.name=NoRotate
-module.NoRotate.description=Disable silent rotations
-module.NoRotate.value.Legit.name=Legit
 
 module.NoRotateSet.name=NoRotateSet
 module.NoRotateSet.description=Prevents the server from rotating your head
@@ -927,7 +924,7 @@ module.Spammer.value.MaxDelay.name=MaxDelay
 module.Spammer.value.MinDelay.name=MinDelay
 module.Spammer.value.Mode.name=Mode
 module.Spammer.value.Message.name=Message
-module.Spammer.value.AbuseMessage.name=AbuseMessage
+module.Spammer.value.InsultMessage.name=InsultMessage
 
 module.Speed.name=Speed
 module.Speed.description=Allows you to move faster

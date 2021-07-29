@@ -26,7 +26,7 @@ class LongJump : Module() {
     private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC", "BlocksMC2", "HYT4v4", "Custom"), "NCP")
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
-    //redesky
+    // redesky
     private val rsJumpMovementValue = FloatValue("RedeSkyJumpMovement",0.13F,0.05F,0.25F)
     private val rsMotionYValue = FloatValue("RedeSkyMotionY",0.81F,0.05F,1F)
     private val rsMoveReducerValue = BoolValue("RedeSkyMovementReducer", true)
@@ -35,7 +35,7 @@ class LongJump : Module() {
     private val rsReduceYMotionValue = FloatValue("RedeSkyReduceYMotion",0.15F,0.01F,0.20F)
     private val rsUseTimerValue = BoolValue("RedeSkyTimer", true)
     private val rsTimerValue = FloatValue("RedeSkyTimer",0.30F,0.1F,1F)
-    //redesky2
+    // redesky2
     private val rs2AirSpeedValue = FloatValue("RedeSky2AirSpeed",0.1F,0.05F,0.25F)
     private val rs2MinAirSpeedValue = FloatValue("RedeSky2MinAirSpeed",0.08F,0.05F,0.25F)
     private val rs2ReduceAirSpeedValue = FloatValue("RedeSky2ReduceAirSpeed",0.16F,0.05F,0.25F)
@@ -48,6 +48,11 @@ class LongJump : Module() {
     private val rs3BoostValue= FloatValue("RedeSky3Boost",1F,0.3F,1.5F)
     private val rs3HeightValue= FloatValue("RedeSky3Height",1F,0.3F,1.5F)
     private val rs3TimerValue = FloatValue("RedeSky3Timer",1F,0.1F,5F)
+    // Custom
+    private val customLongValue=FloatValue("CustomLong",1F,0.5F,10F)
+    private val customHeightValue=FloatValue("CustomHeight",1F,0F,3F)
+    private val customTimerValue=FloatValue("CustomTimer",1F,0.1F,3F)
+    // settings
     private val autoJumpValue = BoolValue("AutoJump", true)
     private val autoCloseValue = BoolValue("AutoClose", true)
     private var jumped = false
@@ -56,10 +61,6 @@ class LongJump : Module() {
     private var teleported = false
     private var canMineplexBoost = false
     private var timer=MSTimer()
-    //Custom
-    private val customLongValue=FloatValue("CustomLong",1F,0.5F,10F)
-    private val customHeightValue=FloatValue("CustomHeight",1F,0F,3F)
-    private val customTimerValue=FloatValue("CustomTimer",1F,0.1F,3F)
     var airTicks=0
 
     override fun onEnable() {

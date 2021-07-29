@@ -86,7 +86,7 @@ public class GuiDirectLogin extends GuiScreen {
                 loginButton.enabled = clipboardLoginButton.enabled = false;
 
                 new Thread(() -> {
-                    status = "§a%ui.alt.LoggingIn%";
+                    status = "§a%ui.alt.loggingIn%";
 
                     if (password.getText().isEmpty())
                         status = GuiAltManager.login(new MinecraftAccount(ColorUtils.translateAlternateColorCodes(username.getText())));

@@ -98,10 +98,10 @@ open class Module : MinecraftInstance(), Listenable {
             if (!LiquidBounce.isStarting) {
                 if(value){
                     ToggleSound.playSound(true)
-                    LiquidBounce.hud.addNotification(Notification(name,LanguageManager.getAndFormat("notify.module.enable",name), NotifyType.SUCCESS))
+                    LiquidBounce.hud.addNotification(Notification("%notify.module.title%",LanguageManager.getAndFormat("notify.module.enable",localizedName), NotifyType.SUCCESS))
                 }else{
                     ToggleSound.playSound(false)
-                    LiquidBounce.hud.addNotification(Notification(name,LanguageManager.getAndFormat("notify.module.disable",name), NotifyType.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("%notify.module.title%",LanguageManager.getAndFormat("notify.module.disable",localizedName), NotifyType.ERROR))
                 }
             }
 
