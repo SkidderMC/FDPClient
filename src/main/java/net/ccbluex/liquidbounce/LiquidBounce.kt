@@ -22,7 +22,6 @@ import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
-import net.ccbluex.liquidbounce.ui.click.ClickGuiManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
@@ -70,7 +69,6 @@ object LiquidBounce {
     lateinit var hud: HUD
     lateinit var clickGui: ClickGui
     lateinit var keyBindManager: KeyBindManager
-    lateinit var clickGuiManager: ClickGuiManager
 
     lateinit var metricsLite: MetricsLite
 
@@ -151,9 +149,6 @@ object LiquidBounce {
         // Create command manager
         commandManager = CommandManager()
 
-        // ClickGui Manager
-        clickGuiManager = ClickGuiManager()
-
         macroManager = MacroManager()
         eventManager.registerListener(macroManager)
 
@@ -188,9 +183,6 @@ object LiquidBounce {
         // ClickGUI
         clickGui = ClickGui()
         fileManager.loadConfigs(fileManager.clickGuiConfig, fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig)
-
-        // Init All after load modules
-        clickGuiManager.initAll()
 
         // KeyBindManager
         keyBindManager=KeyBindManager()

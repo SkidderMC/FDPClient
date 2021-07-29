@@ -24,7 +24,7 @@ import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import java.awt.Color
 
-@ModuleInfo(name = "Projectiles", description = "Allows you to see where arrows will land.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "Projectiles", category = ModuleCategory.RENDER)
 class Projectiles : Module() {
     private val dynamicBowPower = BoolValue("DynamicBowPower", true)
     

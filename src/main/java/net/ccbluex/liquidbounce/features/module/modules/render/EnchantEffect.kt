@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import java.awt.Color
 
-@ModuleInfo(name = "EnchantEffect", description = "Change Enchant Effect Color", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "EnchantEffect", category = ModuleCategory.RENDER)
 class EnchantEffect : Module() {
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 0, 0, 255)

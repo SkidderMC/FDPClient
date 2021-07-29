@@ -18,7 +18,7 @@ import java.awt.Color
 import kotlin.math.abs
 
 // THANKS FUNC16 GIVE ME THIS IDEA!
-@ModuleInfo(name = "PrevFallPos", description = "Preview FallDown Pos", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "PrevFallPos", category = ModuleCategory.PLAYER)
 class PrevFallPos : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
     private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f)

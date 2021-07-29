@@ -30,7 +30,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 // TODO: Timer check
-@ModuleInfo(name = "HackerDetector", description = "Detect SIGMA Hackers.", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "HackerDetector", category = ModuleCategory.PLAYER)
 class HackerDetector : Module() {
     private val GRAVITY_FRICTION = 0.9800000190734863
 

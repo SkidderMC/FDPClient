@@ -46,11 +46,11 @@ public class ClickGuiConfig extends FileConfig {
         final JsonObject jsonObject = (JsonObject) jsonElement;
 
         for (final Panel panel : LiquidBounce.clickGui.panels) {
-            if(!jsonObject.has(panel.getName()))
+            if(!jsonObject.has(panel.getCategory().getConfigName()))
                 continue;
 
             try {
-                final JsonObject panelObject = jsonObject.getAsJsonObject(panel.getName());
+                final JsonObject panelObject = jsonObject.getAsJsonObject(panel.getCategory().getConfigName());
 
                 panel.setOpen(panelObject.get("open").getAsBoolean());
                 panel.setVisible(panelObject.get("visible").getAsBoolean());
@@ -71,11 +71,11 @@ public class ClickGuiConfig extends FileConfig {
 
                         moduleElement.setShowSettings(elementObject.get("Settings").getAsBoolean());
                     }catch(final Exception e) {
-                        ClientUtils.getLogger().error("Error while loading clickgui module element with the name '" + moduleElement.getModule().getName() + "' (Panel Name: " + panel.getName() + ").", e);
+                        ClientUtils.getLogger().error("Error while loading clickgui module element with the name '" + moduleElement.getModule().getName() + "' (Panel Name: " + panel.getCategory().getConfigName() + ").", e);
                     }
                 }
             }catch(final Exception e) {
-                ClientUtils.getLogger().error("Error while loading clickgui panel with the name '" + panel.getName() + "'.", e);
+                ClientUtils.getLogger().error("Error while loading clickgui panel with the name '" + panel.getCategory().getConfigName() + "'.", e);
             }
         }
     }
@@ -110,7 +110,7 @@ public class ClickGuiConfig extends FileConfig {
                 panelObject.add(moduleElement.getModule().getName(), elementObject);
             }
 
-            jsonObject.add(panel.getName(), panelObject);
+            jsonObject.add(panel.getCategory().getConfigName(), panelObject);
         }
 
         Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), StandardCharsets.UTF_8));

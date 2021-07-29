@@ -46,8 +46,7 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
-@ModuleInfo(name = "KillAura", description = "Automatically attacks targets around you.",
-    category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
+@ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
 
     /**
@@ -310,7 +309,7 @@ class KillAura : Module() {
         // Target
         currentTarget = target
 
-        if (!targetModeValue.get().equals("Switch", ignoreCase = true) && isEnemy(currentTarget))
+        if (!targetModeValue.get().equals("Switch", ignoreCase = true) && EntityUtils.isSelected(currentTarget, true))
             target = currentTarget
     }
 
@@ -524,7 +523,7 @@ class KillAura : Module() {
         discoveredTargets.clear()
 
         for (entity in mc.theWorld.loadedEntityList) {
-            if (entity !is EntityLivingBase || !isEnemy(entity) || (switchMode && prevTargetEntities.contains(entity.entityId)))
+            if (entity !is EntityLivingBase || !EntityUtils.isSelected(entity, true) || (switchMode && prevTargetEntities.contains(entity.entityId)))
                 continue
 
             val distance = mc.thePlayer.getDistanceToEntityBox(entity)
@@ -565,33 +564,6 @@ class KillAura : Module() {
             
             return
         }
-    }
-
-    /**
-     * Check if [entity] is selected as enemy with current target options and other modules
-     */
-    private fun isEnemy(entity: Entity?): Boolean {
-        if (entity is EntityLivingBase && (EntityUtils.targetDead || isAlive(entity)) && entity != mc.thePlayer) {
-            if (!EntityUtils.targetInvisible && entity.isInvisible())
-                return false
-
-            if (EntityUtils.targetPlayer && entity is EntityPlayer) {
-                if (entity.isSpectator || AntiBot.isBot(entity))
-                    return false
-
-                if (EntityUtils.isFriend(entity))
-                    return false
-
-                val teams = LiquidBounce.moduleManager[Teams::class.java] as Teams
-
-                return !teams.state || !teams.isInYourTeam(entity)
-            }
-
-            return EntityUtils.targetMobs && EntityUtils.isMob(entity) || EntityUtils.targetAnimals &&
-                    EntityUtils.isAnimal(entity)
-        }
-
-        return false
     }
 
     /**
@@ -712,7 +684,7 @@ class KillAura : Module() {
         if (raycastValue.get()) {
             val raycastedEntity = RaycastUtils.raycastEntity(reach) {
                 (!livingRaycastValue.get() || it is EntityLivingBase && it !is EntityArmorStand) &&
-                        (isEnemy(it) || raycastIgnoredValue.get() || aacValue.get() && mc.theWorld.getEntitiesWithinAABBExcludingEntity(it, it.entityBoundingBox).isNotEmpty())
+                        (EntityUtils.isSelected(it, true) || raycastIgnoredValue.get() || aacValue.get() && mc.theWorld.getEntitiesWithinAABBExcludingEntity(it, it.entityBoundingBox).isNotEmpty())
             }
 
             if (raycastValue.get() && raycastedEntity is EntityLivingBase

@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
 
-@ModuleInfo(name = "Breadcrumbs", description = "Leaves a trail behind you.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "Breadcrumbs", category = ModuleCategory.RENDER)
 class Breadcrumbs : Module() {
     private val colorRedValue = IntegerValue("R", 255, 0, 255)
     private val colorGreenValue = IntegerValue("G", 255, 0, 255)

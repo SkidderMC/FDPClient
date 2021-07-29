@@ -23,7 +23,7 @@ import net.minecraft.util.BlockPos;
 import org.lwjgl.input.Keyboard;
 
 // TODO: convert to kotlin
-@ModuleInfo(name = "LiquidWalk", description = "Allows you to walk on water.", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_J)
+@ModuleInfo(name = "LiquidWalk", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_J)
 public class LiquidWalk extends Module {
     public final ListValue modeValue = new ListValue("Mode", new String[] {"Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "Spartan", "Dolphin", "Legit"}, "NCP");
     private final BoolValue noJumpValue = new BoolValue("NoJump", false);

@@ -22,8 +22,7 @@ import net.minecraft.util.MathHelper
 import kotlin.math.cos
 import kotlin.math.sin
 
-// TODO: add stable motion mode to bypass redesky
-@ModuleInfo(name = "Step", description = "Allows you to step up blocks.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "Step", category = ModuleCategory.MOVEMENT)
 class Step : Module() {
 
     /**

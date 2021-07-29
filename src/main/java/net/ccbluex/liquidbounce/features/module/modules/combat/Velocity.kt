@@ -27,7 +27,7 @@ import net.minecraft.util.MathHelper
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback taken.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "Velocity", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
 
     /**

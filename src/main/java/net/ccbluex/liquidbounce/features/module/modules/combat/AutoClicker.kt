@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.settings.KeyBinding
 import kotlin.random.Random
 
-@ModuleInfo(name = "AutoClicker", description = "Constantly clicks when holding down a mouse button.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "AutoClicker", category = ModuleCategory.COMBAT)
 class AutoClicker : Module() {
     private val maxCPSValue: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 20) {
 

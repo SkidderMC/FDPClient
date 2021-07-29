@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S1DPacketEntityEffect
 
-@ModuleInfo(name = "AntiVanish", description = "Anti player vanish", category = ModuleCategory.MISC)
+@ModuleInfo(name = "AntiVanish", category = ModuleCategory.MISC)
 class AntiVanish : Module() {
     private var lastNotify=-1L
 

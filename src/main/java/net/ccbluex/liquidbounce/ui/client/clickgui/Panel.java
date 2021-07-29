@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.Element;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
@@ -20,6 +21,7 @@ import java.util.Objects;
 public abstract class Panel extends MinecraftInstance {
 
     private final String name;
+    private final ModuleCategory category;
     public int x;
     public int y;
     public int x2;
@@ -38,8 +40,9 @@ public abstract class Panel extends MinecraftInstance {
 
     private float fade;
 
-    public Panel(String name, int x, int y, int width, int height, boolean open) {
+    public Panel(String name, ModuleCategory category, int x, int y, int width, int height, boolean open) {
         this.name = name;
+        this.category = category;
         this.elements = new ArrayList<>();
         this.scrollbar = false;
         this.x = x;
@@ -58,7 +61,7 @@ public abstract class Panel extends MinecraftInstance {
         if(!visible)
             return;
 
-        final int maxElements = ((ClickGUI) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUI.class))).maxElementsValue.get();
+        final int maxElements = LiquidBounce.moduleManager.getModule(ClickGUI.class).maxElementsValue.get();
 
         // Drag
         if(drag) {
@@ -123,7 +126,7 @@ public abstract class Panel extends MinecraftInstance {
     }
 
     public boolean handleScroll(int mouseX, int mouseY, int wheel) {
-        final int maxElements = ((ClickGUI) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUI.class))).maxElementsValue.get();
+        final int maxElements = LiquidBounce.moduleManager.getModule(ClickGUI.class).maxElementsValue.get();
 
         if(mouseX >= getX() && mouseX <= getX() + 100 && mouseY >= getY() && mouseY <= getY() + 19 + elementsHeight) {
             if(wheel < 0 && scroll < elements.size() - maxElements) {
@@ -218,11 +221,15 @@ public abstract class Panel extends MinecraftInstance {
         return dragged;
     }
 
+    public ModuleCategory getCategory() {
+        return category;
+    }
+
     private int getElementsHeight() {
         int height = 0;
         int count = 0;
         for(final Element element : elements) {
-            if (count >= ((ClickGUI) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUI.class))).maxElementsValue.get())
+            if (count >= LiquidBounce.moduleManager.getModule(ClickGUI.class).maxElementsValue.get())
                 continue;
             height += element.getHeight() + 1;
             ++count;

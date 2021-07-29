@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import java.util.*
 
-@ModuleInfo(name = "AutoAdvertise", description = "Keep this on, we need your support.", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
+@ModuleInfo(name = "AutoAdvertise", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 class AutoAdvertise : Module() {
     var waiting=false
 

@@ -21,7 +21,7 @@ import org.apache.commons.io.IOUtils
 import java.io.*
 import java.nio.charset.StandardCharsets
 
-@ModuleInfo(name = "AutoAbuse", description = "Automatically abuse peoples you killed.", category = ModuleCategory.MISC)
+@ModuleInfo(name = "AutoAbuse", category = ModuleCategory.MISC)
 object AutoAbuse : Module() {
     var abuseWords: JsonArray? = null
     private var target: EntityPlayer? = null

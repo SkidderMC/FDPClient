@@ -20,7 +20,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-@ModuleInfo(name = "Tracers", description = "Draws a line to targets around you.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "Tracers", category = ModuleCategory.RENDER)
 class Tracers : Module() {
     private val thicknessValue = FloatValue("Thickness", 2F, 1F, 5F)
     private val distanceColorValue = BoolValue("DistanceColor", false)

@@ -22,7 +22,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemBow
 import java.awt.Color
 
-@ModuleInfo(name = "BowAimbot", description = "Automatically aims at players when using a bow.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "BowAimbot", category = ModuleCategory.COMBAT)
 class BowAimbot : Module() {
 
     private val silentValue = BoolValue("Silent", true)

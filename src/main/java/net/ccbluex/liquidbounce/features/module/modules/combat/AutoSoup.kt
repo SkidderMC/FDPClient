@@ -22,7 +22,7 @@ import net.minecraft.network.play.client.*
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "AutoSoup", description = "Makes you automatically eat soup whenever your health is low.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "AutoSoup", category = ModuleCategory.COMBAT)
 class AutoSoup : Module() {
 
     private val healthValue = FloatValue("Health", 15f, 0f, 20f)

@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.util.ResourceLocation
 
-@ModuleInfo(name = "ToggleSound", description = "Play a sound when you toggle modules", category = ModuleCategory.CLIENT, canEnable = false)
+@ModuleInfo(name = "ToggleSound", category = ModuleCategory.CLIENT, canEnable = false)
 object ToggleSound : Module() {
     private val moveValue = ListValue("Mode", arrayOf("None","Click","Custom"),"Click")
 

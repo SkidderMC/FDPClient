@@ -22,7 +22,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import java.awt.Color
 
-@ModuleInfo(name = "BlockESP", description = "Allows you to see a selected block through walls.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "BlockESP", category = ModuleCategory.RENDER)
 class BlockESP : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "2D"), "Box")
     private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f)

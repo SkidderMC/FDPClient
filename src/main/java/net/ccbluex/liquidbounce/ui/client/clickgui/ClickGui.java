@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.elements.Element;
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.Style;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.SlowlyStyle;
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -40,7 +39,7 @@ public class ClickGui extends GuiScreen {
 
         int yPos = 5;
         for (final ModuleCategory category : ModuleCategory.values()) {
-            panels.add(new Panel(category.getDisplayName(), 100, yPos, width, height, false) {
+            panels.add(new Panel(category.getDisplayName(), category, 100, yPos, width, height, false) {
 
                 @Override
                 public void setupItems() {
@@ -56,7 +55,7 @@ public class ClickGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        final double scale = ((ClickGUI) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUI.class))).scaleValue.get();
+        final double scale = LiquidBounce.moduleManager.getModule(ClickGUI.class).scaleValue.get();
 
         mouseX /= scale;
         mouseY /= scale;

@@ -17,7 +17,7 @@ import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "AntiVoid", description = "anti void", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
     private val moveValue=ListValue("Move", arrayOf("Blink","TPBack","FlyFlag","GroundSpoof"),"Blink")
     private val fallModeValue=ListValue("FallCheckMove", arrayOf("GroundDist","PredictFall","FallDist"),"FallDist")

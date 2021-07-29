@@ -20,7 +20,7 @@ import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import java.util.*
 
-@ModuleInfo(name = "AutoPlay", description = "Auto join another game(only redesky).", category = ModuleCategory.MISC)
+@ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
 class AutoPlay : Module(){
     private var clickState=0
     private val silentValue= BoolValue("Silent",true)

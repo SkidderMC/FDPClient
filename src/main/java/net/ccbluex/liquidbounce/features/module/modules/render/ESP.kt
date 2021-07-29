@@ -32,7 +32,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
 
-@ModuleInfo(name = "ESP", description = "Allows you to see targets through walls.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "ESP", category = ModuleCategory.RENDER)
 class ESP : Module() {
     val modeValue = ListValue(
         "Mode",

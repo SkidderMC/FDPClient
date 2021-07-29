@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
-@ModuleInfo(name = "NoRotate", description = "Disable silent rotation", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "NoRotate", category = ModuleCategory.PLAYER)
 class NoRotate : Module() {
     private val legit= BoolValue("Legit",false)
 

@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockPane
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "HighJump", description = "Allows you to jump higher.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "HighJump", category = ModuleCategory.MOVEMENT)
 class HighJump : Module() {
     private val heightValue = FloatValue("Height", 2f, 1.1f, 7f)
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "StableMotion", "Damage", "AACv3", "DAC", "Mineplex"), "Vanilla")

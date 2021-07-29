@@ -37,7 +37,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 // TODO: convert to kotlin
-@ModuleInfo(name = "Fly", description = "Allows you to fly in survival mode.", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_F, autoDisable = EnumAutoDisableType.FLAG)
+@ModuleInfo(name = "Fly", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_F, autoDisable = EnumAutoDisableType.FLAG)
 public class Fly extends Module {
 
     public final ListValue modeValue = new ListValue("Mode", new String[]{

@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
 
-@ModuleInfo(name = "AutoBreak", description = "Automatically breaks the block you are looking at.", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "AutoBreak", category = ModuleCategory.WORLD)
 class AutoBreak : Module() {
 
     @EventTarget

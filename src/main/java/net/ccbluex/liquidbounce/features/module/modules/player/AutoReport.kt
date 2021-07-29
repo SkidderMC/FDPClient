@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S3FPacketCustomPayload
 
-@ModuleInfo(name = "AutoReport", description = "Auto report players", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "AutoReport", category = ModuleCategory.PLAYER)
 class AutoReport : Module() {
     private val modeValue=ListValue("Mode", arrayOf("Hit","All"),"Hit")
     private val commandValue=TextValue("Command","/reportar %name%")

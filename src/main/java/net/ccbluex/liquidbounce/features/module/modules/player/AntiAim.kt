@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 
-@ModuleInfo(name = "AntiAim", description = "anti aim like cs:go", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "AntiAim", category = ModuleCategory.PLAYER)
 class AntiAim : Module() {
     private val yawMode=ListValue("YawMove", arrayOf("Jitter","Spin"),"Spin")
     private val pitchMode=ListValue("PitchMode", arrayOf("Down","Up","Jitter"),"Down")

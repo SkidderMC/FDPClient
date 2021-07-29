@@ -75,7 +75,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         // Slide animation - update every render
         val delta = RenderUtils.deltaTime
 
-        fun getModuleName(module: Module) = if(split.get()){ module.splicedName }else{ module.name }
+        fun getModuleName(module: Module) = if(split.get()){ module.splicedName }else{ module.localizedName }
 
         for (module in LiquidBounce.moduleManager.modules) {
             if (!module.array || (!module.state && module.slide == 0F)) continue

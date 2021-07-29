@@ -34,7 +34,7 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select mod to bind") {
                     GL11.glPushMatrix()
                     GL11.glTranslatef(0F, yOffset, 0F)
 
-                    val name=module.name
+                    val name=module.localizedName
                     Fonts.font35.drawString(if(str.isNotEmpty()){
                         "§0"+name.substring(0,str.length)+"§7"+name.substring(str.length,name.length)
                     }else{ "§0$name" },8F,singleHeight*0.5F,Color.BLACK.rgb,false)

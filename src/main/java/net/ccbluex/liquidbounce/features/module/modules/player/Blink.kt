@@ -27,7 +27,7 @@ import org.lwjgl.opengl.GL11
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 
-@ModuleInfo(name = "Blink", description = "Suspends all movement packets.", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "Blink", category = ModuleCategory.PLAYER)
 class Blink : Module() {
     private val packets = LinkedBlockingQueue<Packet<*>>()
     private var fakePlayer: EntityOtherPlayerMP? = null

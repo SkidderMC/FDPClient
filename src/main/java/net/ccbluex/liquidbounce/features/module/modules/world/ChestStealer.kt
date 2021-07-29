@@ -27,7 +27,7 @@ import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
 import kotlin.random.Random
 
-@ModuleInfo(name = "ChestStealer", description = "Automatically steals all items from a chest.", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "ChestStealer", category = ModuleCategory.WORLD)
 class ChestStealer : Module() {
     /**
      * OPTIONS

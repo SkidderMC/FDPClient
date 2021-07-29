@@ -22,7 +22,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "PointerESP", description = "Show the pointers around your crossing.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "PointerESP", category = ModuleCategory.RENDER)
 class PointerESP : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Solid","Line"),"Solid")
     private val redValue = IntegerValue("Red",140,0,255)

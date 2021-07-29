@@ -20,7 +20,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import java.awt.Color
 
-@ModuleInfo(name = "HurtCam", description = "Change hurt cam effect.", category = ModuleCategory.CLIENT,canEnable = false)
+@ModuleInfo(name = "HurtCam", category = ModuleCategory.CLIENT,canEnable = false)
 class HurtCam : Module() {
     val modeValue= ListValue("Mode", arrayOf("Vanilla","Cancel","FPS"),"Vanilla")
     private val colorRedValue = IntegerValue("R", 255, 0, 255)

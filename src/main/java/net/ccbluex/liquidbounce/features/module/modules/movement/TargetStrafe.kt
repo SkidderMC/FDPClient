@@ -19,7 +19,7 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "TargetStrafe", description = "TargetStrafe", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "TargetStrafe", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
 
     private val godMode = BoolValue("GodMode", false)

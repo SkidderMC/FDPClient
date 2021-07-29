@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.ListValue
 
-@ModuleInfo(name = "BetterFPS", description = "Make math calc faster.", category = ModuleCategory.CLIENT, array = false, canEnable = false)
+@ModuleInfo(name = "BetterFPS", category = ModuleCategory.CLIENT, array = false, canEnable = false)
 class BetterFPS : Module() {
     val sinMode = ListValue("SinMode", arrayOf("Vanilla", "Taylor", "LibGDX", "RivensFull", "RivensHalf", "Rivens", "Java", "1.16"), "Vanilla")
     val cosMode = ListValue("CosMode", arrayOf("Vanilla", "Taylor", "LibGDX", "RivensFull", "RivensHalf", "Rivens", "Java", "1.16"), "Vanilla")

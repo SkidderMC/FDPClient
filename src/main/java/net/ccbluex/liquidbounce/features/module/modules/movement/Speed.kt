@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import org.reflections.Reflections
 
-@ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
+@ModuleInfo(name = "Speed", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
 class Speed : Module() {
     val modes=Reflections("${this.javaClass.`package`.name}.speeds")
         .getSubTypesOf(SpeedMode::class.java).map { it.newInstance() as SpeedMode }

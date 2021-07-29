@@ -24,7 +24,7 @@ import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.projectile.EntityArrow
 import java.awt.Color
 
-@ModuleInfo(name = "ItemESP", description = "Allows you to see items through walls.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "ItemESP", category = ModuleCategory.RENDER)
 class ItemESP : Module() {
     private val modeValue =
         ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "ShaderOutline", "ShaderGlow"), "Box")

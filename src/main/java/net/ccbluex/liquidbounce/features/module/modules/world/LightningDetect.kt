@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 
-@ModuleInfo(name = "LightningDetect", description = "Check lightning spawn at.", category = ModuleCategory.WORLD, array = false)
+@ModuleInfo(name = "LightningDetect", category = ModuleCategory.WORLD, array = false)
 class LightningDetect : Module() {
     init {
         state=true

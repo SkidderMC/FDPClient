@@ -25,7 +25,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S0BPacketAnimation
 import net.minecraft.stats.StatList
 
-@ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
     val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "Hypixel", "Hypixel2", "Hypixel3", "AACPacket", "AAC4Hover1", "AAC4Hover2", "AAC4.3.11OldHYT", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Hover1", "Hover2", "Mineplex", "More", "TestMinemora"), "packet")

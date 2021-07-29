@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 
-@ModuleInfo(name = "AntiBlind", description = "Cancels blindness effects.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "AntiBlind", category = ModuleCategory.RENDER)
 class AntiBlind : Module() {
     val confusionEffect = BoolValue("Confusion", true)
     val pumpkinEffect = BoolValue("Pumpkin", true)

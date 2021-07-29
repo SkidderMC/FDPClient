@@ -18,7 +18,7 @@ import net.minecraft.entity.projectile.EntityFireball
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation
 
-@ModuleInfo(name = "AntiFireBall", description = "Auto hit the fireball entity to let it back.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "AntiFireBall", category = ModuleCategory.COMBAT)
 class AntiFireBall : Module() {
     private val timer = MSTimer()
 

@@ -18,7 +18,7 @@ import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C16PacketClientStatus
 import org.lwjgl.input.Keyboard
 
-@ModuleInfo(name = "InventoryMove", description = "Allows you to walk while an inventory is opened.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "InventoryMove", category = ModuleCategory.MOVEMENT)
 class InventoryMove : Module() {
 
     private val noDetectableValue = BoolValue("NoDetectable", false)

@@ -17,7 +17,7 @@ import net.minecraft.util.Vec3
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "BoatJump", description = "Insane jump xdddd.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "BoatJump", category = ModuleCategory.MOVEMENT)
 class BoatJump : Module() {
     private val mode=ListValue("Mode", arrayOf("Boost","Launch"),"Boost")
     private val hBoost=FloatValue("HBoost",3F,0F,6F)

@@ -13,7 +13,7 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S45PacketTitle
 import java.util.*
 
-@ModuleInfo(name = "AutoLogin", description = "Automatic login into server.", category = ModuleCategory.MISC)
+@ModuleInfo(name = "AutoLogin", category = ModuleCategory.MISC)
 class AutoLogin : Module() {
     private val registerCommand= TextValue("Register","/register %p %p")
     private val loginCommand= TextValue("Login","/login %p")

@@ -31,7 +31,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.util.*
 
-@ModuleInfo(name = "ChestAura", description = "Automatically opens chests around you.", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "ChestAura", category = ModuleCategory.WORLD)
 object ChestAura : Module() {
 
     private val rangeValue = FloatValue("Range", 5F, 1F, 6F)

@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 // TODO: convert to kotlin
-@ModuleInfo(name = "AntiBot", description = "Prevents KillAura from attacking AntiCheat bots.", category = ModuleCategory.MISC)
+@ModuleInfo(name = "AntiBot", category = ModuleCategory.MISC)
 public class AntiBot extends Module {
     private final BoolValue tabValue = new BoolValue("Tab", true);
     private final ListValue tabModeValue = new ListValue("TabMode", new String[] {"Equals", "Contains"}, "Contains");

@@ -25,7 +25,7 @@ public class ModuleElement extends ButtonElement {
     public ModuleElement(final Module module) {
         super(null);
 
-        this.displayName = module.getName();
+        this.displayName = module.getLocalizedName();
         this.module = module;
     }
 

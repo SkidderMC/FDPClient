@@ -30,7 +30,7 @@ import java.util.*
  * @author liulihaocai
  * FILHO DA PUTA CLIENT
  */
-@ModuleInfo(name = "AuthBypass", description = "Bypass auth when join server.", category = ModuleCategory.MISC)
+@ModuleInfo(name = "AuthBypass", category = ModuleCategory.MISC)
 class AuthBypass : Module(){
     private val delayValue= IntegerValue("Delay",1500,100,5000)
 

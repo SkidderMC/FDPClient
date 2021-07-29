@@ -13,7 +13,7 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 
-@ModuleInfo(name = "ChatTranslator", description = "Translate words in chat.", category = ModuleCategory.MISC)
+@ModuleInfo(name = "ChatTranslator", category = ModuleCategory.MISC)
 class ChatTranslator : Module() {
     private val client = HttpClients.createDefault()
     private val cache=HashMap<String,String>()

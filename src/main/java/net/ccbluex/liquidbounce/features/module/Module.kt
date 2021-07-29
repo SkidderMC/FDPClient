@@ -5,20 +5,27 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
+import com.google.common.io.Files
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.ToggleSound
+import net.ccbluex.liquidbounce.script.api.ScriptModule
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
+import java.io.File
+import java.io.FileReader
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
     var name: String
+    var localizedName=""
+        get()=field.ifEmpty { name }
     var description: String
     var category: ModuleCategory
     var keyBind = Keyboard.CHAR_NONE
@@ -61,13 +68,16 @@ open class Module : MinecraftInstance(), Listenable {
 
     init {
         name = moduleInfo.name
-        description = moduleInfo.description
+        description = "%module.$name.description%"
         category = moduleInfo.category
         keyBind = moduleInfo.keyBind
         array = moduleInfo.array
         canEnable = moduleInfo.canEnable
         autoDisable = moduleInfo.autoDisable
         moduleCommand = moduleInfo.moduleCommand
+        if(this !is ScriptModule){
+            localizedName="%module.$name.name%"
+        }
     }
 
     // Current state of module
@@ -82,10 +92,10 @@ open class Module : MinecraftInstance(), Listenable {
             if (!LiquidBounce.isStarting) {
                 if(value){
                     ToggleSound.playSound(true)
-                    LiquidBounce.hud.addNotification(Notification(name,"Enabled $name", NotifyType.SUCCESS))
+                    LiquidBounce.hud.addNotification(Notification(name,LanguageManager.getAndFormat("notify.module.enable",name), NotifyType.SUCCESS))
                 }else{
                     ToggleSound.playSound(false)
-                    LiquidBounce.hud.addNotification(Notification(name,"Disabled $name", NotifyType.ERROR))
+                    LiquidBounce.hud.addNotification(Notification(name,LanguageManager.getAndFormat("notify.module.disable",name), NotifyType.ERROR))
                 }
             }
 
