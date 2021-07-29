@@ -5,8 +5,8 @@ ui.background=背景
 ui.website=官网
 ui.forgeMods=Forge模组
 ui.scripts=脚本
-ui.serverSpoof=服务器欺骗
-ui.antiForge=反Forge
+ui.serverSpoof=服务器伪装
+ui.antiForge=反Forge检测
 ui.reconnect=重新连接
 
 ui.back=返回
@@ -20,14 +20,14 @@ ui.background.particles=粒子
 ui.background.change=更换背景图
 ui.background.reset=重置背景图
 
-ui.chest.stealing=偷取箱子中...
+ui.chest.stealing=自动拾箱中...
 
-ui.gameover.close=关闭这个界面
+ui.gameover.close=关闭此界面
 
-ui.disconnect.randomAlt=随机正版
-ui.disconnect.randomOffline=随机离线
+ui.disconnect.randomAlt=随机正版账号
+ui.disconnect.randomOffline=随机离线账号
 
-ui.update.available=更新可用！
+ui.update.available=有可用更新！
 ui.update.released=FDP Client %s 发布了!
 ui.update.dismiss=忽略
 ui.update.download=下载
@@ -39,8 +39,8 @@ ui.scripts.reload=重载
 ui.scripts.folder=打开文件夹
 ui.scripts.docs=文档
 ui.scripts.find=寻找脚本
-ui.scripts.error.extension.title=错误文件后缀名
-ui.scripts.error.extension.message=文件后缀名需要为 .js 或 .zip
+ui.scripts.error.extension.title=错误的文件后缀名
+ui.scripts.error.extension.message=文件的后缀名需要为 .js 或 .zip
 
 ui.keybind.title=按键绑定管理
 ui.keybind.select=选择一个模块绑定
@@ -52,7 +52,7 @@ ui.keybind.search=搜索...
 ui.alt.idle=等待...
 ui.alt.nameChanged=§c你的名字现在是§8%s§c了
 ui.alt.wrongPassword=错误的密码
-ui.alt.noContact=无法链接验证服务器
+ui.alt.noContact=无法链接至验证服务器
 ui.alt.invalidData=错误的用户名/密码
 ui.alt.migrated=帐号已被迁移
 ui.alt.login=登录
@@ -168,7 +168,7 @@ module.AntiFireBall.description=自动将火球打回去
 module.AntiFireBall.value.Swing.name=挥手
 module.AntiFireBall.value.Rotation.name=转头
 
-module.AntiStuck.name=防卡
+module.AntiStuck.name=防卡回弹
 module.AntiStuck.description=自动帮你解除卡住的状态
 module.AntiStuck.value.Flags.name=拉回次数
 
@@ -184,7 +184,7 @@ module.AntiVoid.value.ResetMotion.name=重置移动
 module.AntiVoid.value.BlinkStartFallDistance.name=眨眼开始掉落距离
 module.AntiVoid.value.BlinkAutoScaffold.name=眨眼自动开搭路
 
-module.AuthBypass.name=验证绕过
+module.AuthBypass.name=绕过验证
 module.AuthBypass.description=自动绕过服务器的假人验证
 module.AuthBypass.value.Delay.name=延时
 
@@ -196,7 +196,7 @@ module.KillInsults.value.WaterMark.name=客户端标记
 module.AutoAdvertise.name=自动广告
 module.AutoAdvertise.description=保持这个开启，我们需要你的帮助！
 
-module.AutoArmor.name=自动盔甲
+module.AutoArmor.name=自动穿甲
 module.AutoArmor.description=自动为你穿盔甲
 module.AutoArmor.value.MaxDelay.name=最大延时
 module.AutoArmor.value.MinDelay.name=最小延时
@@ -374,7 +374,7 @@ module.ChestAura.value.OnlyOnGround.name=仅在地面时
 module.ChestAura.value.NotOpened.name=未被开启过
 module.ChestAura.value.DoubleClick.name=双击
 
-module.ChestStealer.name=箱子小偷
+module.ChestStealer.name=自动拾箱
 module.ChestStealer.description=自动从箱子偷取物品
 module.ChestStealer.value.MaxDelay.name=最大延时
 module.ChestStealer.value.MinDelay.name=最小延时
@@ -406,7 +406,7 @@ module.Clip.value.Mode.name=模式
 module.Clip.value.Horizontal.name=横向
 module.Clip.value.Vertical.name=垂直
 
-module.Criticals.name=暴击
+module.Criticals.name=刀刀暴击
 module.Criticals.description=自动打暴击
 module.Criticals.value.Mode.name=模式
 module.Criticals.value.Delay.name=延时
@@ -584,7 +584,7 @@ module.HurtCam.value.Rainbow.name=彩虹
 module.HurtCam.value.FPSTime.name=FPS模式时间
 module.HurtCam.value.FPSHeight.name=FPS模式高度
 
-module.InfiniteAura.name=无限光环
+module.InfiniteAura.name=百米大刀
 module.InfiniteAura.description=从远处殴打目标
 module.InfiniteAura.value.Mode.name=模式
 module.InfiniteAura.value.Targets.name=目标数
@@ -595,7 +595,7 @@ module.InfiniteAura.value.NoRegen.name=无回血
 module.InfiniteAura.value.Swing.name=挥手
 module.InfiniteAura.value.PathRender.name=渲染路径
 
-module.InventoryCleaner.name=物品栏清理
+module.InventoryCleaner.name=物品栏整理
 module.InventoryCleaner.description=自动扔掉物品栏中的垃圾并整理物品栏
 module.InventoryCleaner.value.MaxDelay.name=最大延时
 module.InventoryCleaner.value.MinDelay.name=最小延时
@@ -684,7 +684,7 @@ module.KillAura.value.LimitedMultiTargets.name=限制多目标模式目标数
 module.KillAura.value.Mark.name=标记
 module.KillAura.value.FakeSharp.name=假锋利
 
-module.LegitSpoof.name=绿色玩家欺骗
+module.LegitSpoof.name=绿色玩家伪装
 module.LegitSpoof.description=纪狗？不，我是绿色玩家
 module.LegitSpoof.value.Render.name=无渲染
 module.LegitSpoof.value.Title.name=原版标题
@@ -692,7 +692,7 @@ module.LegitSpoof.value.Title.name=原版标题
 module.LightningDetect.name=雷击检测
 module.LightningDetect.description=检测雷击位置
 
-module.LiquidWalk.name=液体行走
+module.LiquidWalk.name=水上行走
 module.LiquidWalk.description=让你在液体上行走
 module.LiquidWalk.value.Mode.name=模式
 module.LiquidWalk.value.NoJump.name=无跳跃
@@ -773,7 +773,7 @@ module.NoFall.value.PhaseOffset.name=穿墙弥补
 module.NoJumpDelay.name=无跳跃延时
 module.NoJumpDelay.description=移除跳跃延时
 
-module.NoRotateSet.name=无转头设置
+module.NoRotateSet.name=无视角重置
 module.NoRotateSet.description=防止服务器设置头部方向
 module.NoRotateSet.value.Confirm.name=接受
 module.NoRotateSet.value.ConfirmIllegalRotation.name=接受不正常转头
@@ -792,23 +792,23 @@ module.NoSlow.value.CustomDelay.name=自定义延时
 module.NoSlow.value.PacketMode.name=发包模式
 module.NoSlow.value.Soulsand.name=灵魂沙
 
-module.NoSlowBreak.name=无速度打断
+module.NoSlowBreak.name=挖掘不减速
 module.NoSlowBreak.description=防止速度被打断
 module.NoSlowBreak.value.Air.name=空气
 module.NoSlowBreak.value.Water.name=水中
 
-module.NoWeb.name=无蜘蛛网
+module.NoWeb.name=无蜘蛛网减速
 module.NoWeb.description=防止你在蜘蛛网中减速
 module.NoWeb.value.Mode.name=模式
 
-module.Parkour.name=跑酷
+module.Parkour.name=跑酷辅助
 module.Parkour.description=自动在方块边界跳跃
 
 module.Phase.name=穿墙
 module.Phase.description=让你能够在方块中行走
 module.Phase.value.Mode.name=模式
 
-module.PingSpoof.name=延时欺骗
+module.PingSpoof.name=虚假延迟
 module.PingSpoof.description=对服务器欺骗你的延时
 module.PingSpoof.value.MaxDelay.name=最大延时
 module.PingSpoof.value.MinDelay.name=最小延时
@@ -825,7 +825,7 @@ module.PointerESP.value.Green.name=绿
 module.PointerESP.value.Blue.name=蓝
 module.PointerESP.value.Alpha.name=透明度
 
-module.PrevFallPos.name=预测掉落点
+module.PrevFallPos.name=预测摔落点
 module.PrevFallPos.description=让你提前知道玩家的掉落点
 module.PrevFallPos.value.Mode.name=模式
 module.PrevFallPos.value.Outline-Width.name=边框-宽度
@@ -836,7 +836,7 @@ module.PrevFallPos.value.B.name=蓝
 module.PrevFallPos.value.A.name=透明度
 module.PrevFallPos.value.Rainbow.name=彩虹
 
-module.Projectiles.name=抛射物
+module.Projectiles.name=抛射物轨迹
 module.Projectiles.description=让你查看抛射物落点
 module.Projectiles.value.DynamicBowPower.name=动态弓蓄力
 
@@ -845,7 +845,7 @@ module.Reach.description=增加手的长度
 module.Reach.value.CombatReach.name=战斗手长
 module.Reach.value.BuildReach.name=建造手长
 
-module.Regen.name=回血
+module.Regen.name=高速回血
 module.Regen.description=大大提升你的回血速度
 module.Regen.value.Mode.name=模式
 module.Regen.value.Health.name=血量
@@ -928,7 +928,7 @@ module.Spammer.value.Mode.name=模式
 module.Spammer.value.Message.name=消息
 module.Spammer.value.InsultMessage.name=骂人消息
 
-module.Speed.name=加速
+module.Speed.name=速度
 module.Speed.description=让你移动更快
 module.Speed.value.Mode.name=模式
 module.Speed.value.CustomSpeed.name=CustomSpeed
