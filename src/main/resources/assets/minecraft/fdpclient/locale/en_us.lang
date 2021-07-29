@@ -95,7 +95,7 @@ module.category.misc=Misc
 module.category.exploit=Exploit
 
 module.Aimbot.name=Aimbot
-module.Aimbot.description=Automatically faces selected entities around you.
+module.Aimbot.description=Automatically faces selected entities around you
 module.Aimbot.value.Range.name=Range
 module.Aimbot.value.TurnSpeed.name=TurnSpeed
 module.Aimbot.value.FOV.name=FOV
@@ -105,7 +105,7 @@ module.Aimbot.value.OnClick.name=OnClick
 module.Aimbot.value.Jitter.name=Jitter
 
 module.Ambience.name=Ambience
-module.Ambience.description=Change the world environment.
+module.Ambience.description=Change the world environment
 module.Ambience.value.TimeMode.name=TimeMode
 module.Ambience.value.WeatherMode.name=WeatherMode
 module.Ambience.value.CustomTime.name=CustomTime
@@ -127,20 +127,20 @@ module.Animations.value.ItemScale.name=ItemScale
 module.Animations.value.SwingAnim.name=SwingAnim
 
 module.AntiAim.name=AntiAim
-module.AntiAim.description=anti aim like cs:go
+module.AntiAim.description=Anti aiming like CS:GO
 module.AntiAim.value.YawMove.name=YawMove
 module.AntiAim.value.PitchMode.name=PitchMode
 module.AntiAim.value.SlientRotate.name=SlientRotate
 
 module.AntiBlind.name=AntiBlind
-module.AntiBlind.description=Cancels blindness effects.
+module.AntiBlind.description=Cancels blindness effects
 module.AntiBlind.value.Confusion.name=Confusion
 module.AntiBlind.value.Pumpkin.name=Pumpkin
 module.AntiBlind.value.Fire.name=Fire
 module.AntiBlind.value.Bright.name=Bright
 
 module.AntiBot.name=AntiBot
-module.AntiBot.description=Prevents KillAura from attacking AntiCheat bots.
+module.AntiBot.description=Prevents KillAura from attacking AntiCheat bots
 module.AntiBot.value.Tab.name=Tab
 module.AntiBot.value.TabMode.name=TabMode
 module.AntiBot.value.EntityID.name=EntityID
@@ -161,19 +161,19 @@ module.AntiBot.value.DuplicateInWorld.name=DuplicateInWorld
 module.AntiBot.value.DuplicateInTab.name=DuplicateInTab
 
 module.AntiFireBall.name=AntiFireBall
-module.AntiFireBall.description=Auto hit the fireball entity to let it back.
+module.AntiFireBall.description=Hit the fireball automatically entity to let it back
 module.AntiFireBall.value.Swing.name=Swing
 module.AntiFireBall.value.Rotation.name=Rotation
 
 module.AntiStuck.name=AntiStuck
-module.AntiStuck.description=Unstucks you when you are stuck.
+module.AntiStuck.description=Unstucks you when you are stuck
 module.AntiStuck.value.Flags.name=Flags
 
 module.AntiVanish.name=AntiVanish
 module.AntiVanish.description=Anti player vanish
 
 module.AntiVoid.name=AntiVoid
-module.AntiVoid.description=anti void
+module.AntiVoid.description=Avoiding you from falling into void
 module.AntiVoid.value.Move.name=Move
 module.AntiVoid.value.FallCheckMove.name=FallCheckMove
 module.AntiVoid.value.MaxFallDistance.name=MaxFallDistance
@@ -182,19 +182,19 @@ module.AntiVoid.value.BlinkStartFallDistance.name=BlinkStartFallDistance
 module.AntiVoid.value.BlinkAutoScaffold.name=BlinkAutoScaffold
 
 module.AuthBypass.name=AuthBypass
-module.AuthBypass.description=Bypass auth when join server.
+module.AuthBypass.description=Bypass bot authenticate when join server
 module.AuthBypass.value.Delay.name=Delay
 
 module.KillInsults.name=KillInsults
-module.KillInsults.description=Automatically insult peoples you killed.
+module.KillInsults.description=Automatically insult peoples you killed
 module.KillInsults.value.Mode.name=Mode
 module.KillInsults.value.WaterMark.name=WaterMark
 
 module.AutoAdvertise.name=AutoAdvertise
-module.AutoAdvertise.description=Keep this on, we need your support.
+module.AutoAdvertise.description=Keep this on, we need your support
 
 module.AutoArmor.name=AutoArmor
-module.AutoArmor.description=Automatically equips the best armor in your inventory.
+module.AutoArmor.description=Automatically equips the best armor in your inventory
 module.AutoArmor.value.MaxDelay.name=MaxDelay
 module.AutoArmor.value.MinDelay.name=MinDelay
 module.AutoArmor.value.InvOpen.name=InvOpen
@@ -204,14 +204,11 @@ module.AutoArmor.value.ItemDelay.name=ItemDelay
 module.AutoArmor.value.Hotbar.name=Hotbar
 
 module.AutoBow.name=AutoBow
-module.AutoBow.description=Automatically shoots an arrow whenever your bow is fully loaded.
+module.AutoBow.description=Automatically shoots an arrow whenever your bow is fully loaded
 module.AutoBow.value.WaitForBowAimbot.name=WaitForBowAimbot
 
-module.AutoBreak.name=AutoBreak
-module.AutoBreak.description=Automatically breaks the block you are looking at.
-
 module.AutoClicker.name=AutoClicker
-module.AutoClicker.description=Constantly clicks when holding down a mouse button.
+module.AutoClicker.description=Constantly clicks when holding down a mouse button
 module.AutoClicker.value.MaxCPS.name=MaxCPS
 module.AutoClicker.value.MinCPS.name=MinCPS
 module.AutoClicker.value.Right.name=Right
@@ -219,15 +216,15 @@ module.AutoClicker.value.Left.name=Left
 module.AutoClicker.value.Jitter.name=Jitter
 
 module.AutoDisable.name=AutoDisable
-module.AutoDisable.description=Automatically disables modules.
+module.AutoDisable.description=Automatically disables modules
 
 module.AutoIgnore.name=AutoIgnore
-module.AutoIgnore.description=Auto ignore spammers(only redesky).
+module.AutoIgnore.description=Auto ignore spammers(only redesky)
 module.AutoIgnore.value.MinDelay.name=MinDelay
 module.AutoIgnore.value.IgnoreVL.name=IgnoreVL
 
 module.AutoLogin.name=AutoLogin
-module.AutoLogin.description=Automatic login into server.
+module.AutoLogin.description=Automatic makes you login into server
 module.AutoLogin.value.Register.name=Register
 module.AutoLogin.value.Login.name=Login
 module.AutoLogin.value.Password.name=Password
@@ -236,12 +233,12 @@ module.AutoLogin.value.Title.name=Title
 module.AutoLogin.value.Chat.name=Chat
 
 module.AutoPlay.name=AutoPlay
-module.AutoPlay.description=Auto join another game(only redesky).
+module.AutoPlay.description=Auto join another game when game end(only redesky)
 module.AutoPlay.value.Silent.name=Silent
 module.AutoPlay.value.JoinDelay.name=JoinDelay
 
 module.AutoPot.name=AutoPot
-module.AutoPot.description=Automatically throws healing potions.
+module.AutoPot.description=Automatically throw potions
 module.AutoPot.value.Health.name=Health
 module.AutoPot.value.Delay.name=Delay
 module.AutoPot.value.ThrowTick.name=ThrowTick
@@ -261,7 +258,7 @@ module.AutoReport.value.AllDelay.name=AllDelay
 module.AutoReport.value.BlockBooks.name=BlockBooks
 
 module.AutoSoup.name=AutoSoup
-module.AutoSoup.description=Makes you automatically eat soup whenever your health is low.
+module.AutoSoup.description=Makes you automatically eat soup whenever your health is low
 module.AutoSoup.value.Health.name=Health
 module.AutoSoup.value.Delay.name=Delay
 module.AutoSoup.value.OpenInv.name=OpenInv
@@ -269,28 +266,28 @@ module.AutoSoup.value.SimulateInventory.name=SimulateInventory
 module.AutoSoup.value.Bowl.name=Bowl
 
 module.AutoTool.name=AutoTool
-module.AutoTool.description=Automatically selects the best tool in your inventory to mine a block.
+module.AutoTool.description=Automatically selects the best tool in your inventory to mine a block
 
 module.AutoWeapon.name=AutoWeapon
-module.AutoWeapon.description=Automatically selects the best weapon in your hotbar.
+module.AutoWeapon.description=Automatically selects the best weapon in your hotbar
 module.AutoWeapon.value.SpoofItem.name=SpoofItem
 module.AutoWeapon.value.SpoofTicks.name=SpoofTicks
 
 module.BetterFPS.name=BetterFPS
-module.BetterFPS.description=Make math calc faster.
+module.BetterFPS.description=Make math calculate faster
 module.BetterFPS.value.SinMode.name=SinMode
 module.BetterFPS.value.CosMode.name=CosMode
 
 module.BetterFont.name=BetterFont
-module.BetterFont.description=Make FontRenderer better.
+module.BetterFont.description=Make FontRenderer better
 
 module.Blink.name=Blink
-module.Blink.description=Suspends all movement packets.
+module.Blink.description=Suspends all movement packets
 module.Blink.value.Pulse.name=Pulse
 module.Blink.value.PulseDelay.name=PulseDelay
 
 module.BlockESP.name=BlockESP
-module.BlockESP.description=Allows you to see a selected block through walls.
+module.BlockESP.description=Allows you to see a selected block through walls
 module.BlockESP.value.Mode.name=Mode
 module.BlockESP.value.Outline-Width.name=Outline-Width
 module.BlockESP.value.Block.name=Block
@@ -301,7 +298,7 @@ module.BlockESP.value.B.name=B
 module.BlockESP.value.Rainbow.name=Rainbow
 
 module.BlockOverlay.name=BlockOverlay
-module.BlockOverlay.description=Allows you to change the design of the block overlay.
+module.BlockOverlay.description=Allows you to change the design of the block overlay
 module.BlockOverlay.value.Red.name=Red
 module.BlockOverlay.value.Green.name=Green
 module.BlockOverlay.value.Blue.name=Blue
@@ -311,7 +308,7 @@ module.BlockOverlay.value.Rainbow.name=Rainbow
 module.BlockOverlay.value.Info.name=Info
 
 module.BoatJump.name=BoatJump
-module.BoatJump.description=Insane jump xdddd.
+module.BoatJump.description=Allows you jump longer with a boat
 module.BoatJump.value.Mode.name=Mode
 module.BoatJump.value.HBoost.name=HBoost
 module.BoatJump.value.VBoost.name=VBoost
@@ -320,7 +317,7 @@ module.BoatJump.value.Delay.name=Delay
 module.BoatJump.value.AutoHit.name=AutoHit
 
 module.BowAimbot.name=BowAimbot
-module.BowAimbot.description=Automatically aims at players when using a bow.
+module.BowAimbot.description=Automatically aims at players when using a bow
 module.BowAimbot.value.Silent.name=Silent
 module.BowAimbot.value.Predict.name=Predict
 module.BowAimbot.value.ThroughWalls.name=ThroughWalls
@@ -329,7 +326,7 @@ module.BowAimbot.value.Priority.name=Priority
 module.BowAimbot.value.Mark.name=Mark
 
 module.Breadcrumbs.name=Breadcrumbs
-module.Breadcrumbs.description=Leaves a trail behind you.
+module.Breadcrumbs.description=Leaves a trail behind you
 module.Breadcrumbs.value.R.name=R
 module.Breadcrumbs.value.G.name=G
 module.Breadcrumbs.value.B.name=B
@@ -338,13 +335,13 @@ module.Breadcrumbs.value.Fade.name=Fade
 module.Breadcrumbs.value.FadeTime.name=FadeTime
 
 module.CameraClip.name=CameraClip
-module.CameraClip.description=Allows you to see through walls in third person view.
+module.CameraClip.description=Allows you to see through walls in third person view
 
 module.CapeManager.name=CapeManager
-module.CapeManager.description=Manage your capes.
+module.CapeManager.description=Manage your capes
 
 module.Chams.name=Chams
-module.Chams.description=Allows you to see targets through blocks.
+module.Chams.description=Allows you to see targets through blocks
 module.Chams.value.Targets.name=Targets
 module.Chams.value.Chests.name=Chests
 module.Chams.value.Items.name=Items
@@ -357,12 +354,12 @@ module.ChatBypass.value.MinUnicode.name=MinUnicode
 module.ChatBypass.value.MaxUnicode.name=MaxUnicode
 
 module.ChatTranslator.name=ChatTranslator
-module.ChatTranslator.description=Translate words in chat.
+module.ChatTranslator.description=Translate words in chat
 module.ChatTranslator.value.Language.name=Language
 module.ChatTranslator.value.API.name=API
 
 module.ChestAura.name=ChestAura
-module.ChestAura.description=Automatically opens chests around you.
+module.ChestAura.description=Automatically opens chests around you
 module.ChestAura.value.Range.name=Range
 module.ChestAura.value.Delay.name=Delay
 module.ChestAura.value.ThroughWalls.name=ThroughWalls
@@ -375,7 +372,7 @@ module.ChestAura.value.NotOpened.name=NotOpened
 module.ChestAura.value.DoubleClick.name=DoubleClick
 
 module.ChestStealer.name=ChestStealer
-module.ChestStealer.description=Automatically steals all items from a chest.
+module.ChestStealer.description=Automatically steals all items from a chest
 module.ChestStealer.value.MaxDelay.name=MaxDelay
 module.ChestStealer.value.MinDelay.name=MinDelay
 module.ChestStealer.value.ChestOpenDelay.name=ChestOpenDelay
@@ -391,7 +388,7 @@ module.ChestStealer.value.CloseOnFull.name=CloseOnFull
 module.ChestStealer.value.ChestTitle.name=ChestTitle
 
 module.ClickGUI.name=ClickGUI
-module.ClickGUI.description=Opens the ClickGUI.
+module.ClickGUI.description=Opens the ClickGUI
 module.ClickGUI.value.Style.name=Style
 module.ClickGUI.value.Scale.name=Scale
 module.ClickGUI.value.MaxElements.name=MaxElements
@@ -401,13 +398,13 @@ module.ClickGUI.value.B.name=B
 module.ClickGUI.value.Rainbow.name=Rainbow
 
 module.Clip.name=Clip
-module.Clip.description=Allows you to clip through blocks.
+module.Clip.description=Allows you to clip through blocks
 module.Clip.value.Mode.name=Mode
 module.Clip.value.Horizontal.name=Horizontal
 module.Clip.value.Vertical.name=Vertical
 
 module.Criticals.name=Criticals
-module.Criticals.description=Automatically deals critical hits.
+module.Criticals.description=Automatically deals critical hits
 module.Criticals.value.Mode.name=Mode
 module.Criticals.value.Delay.name=Delay
 module.Criticals.value.HurtTime.name=HurtTime
@@ -416,7 +413,7 @@ module.Criticals.value.DebugMessage.name=DebugMessage
 module.Criticals.value.RedeNofall.name=RedeNofall
 
 module.DamageParticle.name=DamageParticle
-module.DamageParticle.description=Allows you to see targets damage.
+module.DamageParticle.description=Allows you to see targets damage
 module.DamageParticle.value.AliveTicks.name=AliveTicks
 module.DamageParticle.value.Size.name=Size
 
@@ -433,7 +430,7 @@ module.Disabler.value.LagDelay.name=LagDelay
 module.Disabler.value.LagDuration.name=LagDuration
 
 module.ESP.name=ESP
-module.ESP.description=Allows you to see targets through walls.
+module.ESP.description=Allows you to see targets through walls
 module.ESP.value.Mode.name=Mode
 module.ESP.value.Outline-Width.name=Outline-Width
 module.ESP.value.WireFrame-Width.name=WireFrame-Width
@@ -447,7 +444,7 @@ module.ESP.value.Rainbow.name=Rainbow
 module.ESP.value.Team.name=Team
 
 module.Eagle.name=Eagle
-module.Eagle.description=Makes you eagle (aka. FastBridge).
+module.Eagle.description=Makes you eagle (aka. FastBridge)
 
 module.EnchantEffect.name=EnchantEffect
 module.EnchantEffect.description=Change Enchant Effect Color
@@ -457,22 +454,22 @@ module.EnchantEffect.value.Blue.name=Blue
 module.EnchantEffect.value.Mode.name=Mode
 
 module.FastBreak.name=FastBreak
-module.FastBreak.description=Allows you to break blocks faster.
+module.FastBreak.description=Allows you to break blocks faster
 module.FastBreak.value.BreakDamage.name=BreakDamage
 
 module.FastPlace.name=FastPlace
-module.FastPlace.description=Allows you to place blocks faster.
+module.FastPlace.description=Allows you to place blocks faster
 module.FastPlace.value.Speed.name=Speed
 
 module.FastUse.name=FastUse
-module.FastUse.description=Allows you to use items faster.
+module.FastUse.description=Allows you to use items faster
 module.FastUse.value.Mode.name=Mode
 module.FastUse.value.Timer.name=Timer
 module.FastUse.value.InstantDelay.name=InstantDelay
 module.FastUse.value.Delay.name=Delay
 
 module.Fly.name=Fly
-module.Fly.description=Allows you to fly in survival mode.
+module.Fly.description=Allows you to fly in survival mode
 module.Fly.value.Mode.name=Mode
 module.Fly.value.VanillaSpeed.name=VanillaSpeed
 module.Fly.value.VanillaKickBypass.name=VanillaKickBypass
@@ -502,7 +499,7 @@ module.Fly.value.Mark.name=Mark
 module.Fly.value.FakeDamage.name=FakeDamage
 
 module.FreeCam.name=FreeCam
-module.FreeCam.description=Allows you to move out of your body.
+module.FreeCam.description=Allows you to move out of your body
 module.FreeCam.value.Speed.name=Speed
 module.FreeCam.value.Fly.name=Fly
 module.FreeCam.value.NoClip.name=NoClip
@@ -510,10 +507,10 @@ module.FreeCam.value.RecordMotion.name=RecordMotion
 module.FreeCam.value.C03Spoof.name=C03Spoof
 
 module.Freeze.name=Freeze
-module.Freeze.description=Allows you to stay stuck in mid air.
+module.Freeze.description=Allows you to stay stuck in mid air
 
 module.Fucker.name=Fucker
-module.Fucker.description=Destroys selected blocks around you.
+module.Fucker.description=Destroys selected blocks around you
 module.Fucker.value.Block.name=Block
 module.Fucker.value.Swing.name=Swing
 module.Fucker.value.ThroughWalls.name=ThroughWalls
@@ -526,19 +523,19 @@ module.Fucker.value.Surroundings.name=Surroundings
 module.Fucker.value.NoHit.name=NoHit
 
 module.Gapple.name=Gapple
-module.Gapple.description=Eat Gapples.
+module.Gapple.description=Eat Gapples
 module.Gapple.value.Mode.name=Mode
 module.Gapple.value.Health.name=Health
 module.Gapple.value.Delay.name=Delay
 module.Gapple.value.NoAbsorption.name=NoAbsorption
 
 module.GhostHand.name=GhostHand
-module.GhostHand.description=Allows you to inetract with selected blocks through walls.
+module.GhostHand.description=Allows you to inetract with selected blocks through walls
 module.GhostHand.value.Block.name=Block
 module.GhostHand.value.Radius.name=Radius
 
 module.HUD.name=HUD
-module.HUD.description=Toggles visibility of the HUD.
+module.HUD.description=Toggles visibility of the HUD
 module.HUD.value.BetterHotbar.name=BetterHotbar
 module.HUD.value.HotbarAlpha.name=HotbarAlpha
 module.HUD.value.InventoryParticle.name=InventoryParticle
@@ -548,7 +545,7 @@ module.HUD.value.ChatCombine.name=ChatCombine
 module.HUD.value.ChatAnimation.name=ChatAnimation
 
 module.HackerDetector.name=HackerDetector
-module.HackerDetector.description=Detect SIGMA Hackers.
+module.HackerDetector.description=Detect SIGMA Hackers
 module.HackerDetector.value.Combat.name=Combat
 module.HackerDetector.value.Movement.name=Movement
 module.HackerDetector.value.Debug.name=Debug
@@ -557,25 +554,25 @@ module.HackerDetector.value.AutoReport.name=AutoReport
 module.HackerDetector.value.VL.name=VL
 
 module.HealthWarn.name=HealthWarn
-module.HealthWarn.description=Show warning when you during low health.
+module.HealthWarn.description=Show warning when you during low health
 module.HealthWarn.value.Health.name=Health
 
 module.HighJump.name=HighJump
-module.HighJump.description=Allows you to jump higher.
+module.HighJump.description=Allows you to jump higher
 module.HighJump.value.Height.name=Height
 module.HighJump.value.Mode.name=Mode
 module.HighJump.value.OnlyGlassPane.name=OnlyGlassPane
 module.HighJump.value.StableMotion.name=StableMotion
 
 module.HitBox.name=HitBox
-module.HitBox.description=Makes hitboxes of targets bigger.
+module.HitBox.description=Makes hitboxes of targets bigger
 module.HitBox.value.Size.name=Size
 
 module.HudDesigner.name=HudDesigner
-module.HudDesigner.description=Opens the HudDesigner.
+module.HudDesigner.description=Opens the HudDesigner
 
 module.HurtCam.name=HurtCam
-module.HurtCam.description=Change hurt cam effect.
+module.HurtCam.description=Changes the hurt cam effect
 module.HurtCam.value.Mode.name=Mode
 module.HurtCam.value.R.name=R
 module.HurtCam.value.G.name=G
@@ -585,7 +582,7 @@ module.HurtCam.value.FPSTime.name=FPSTime
 module.HurtCam.value.FPSHeight.name=FPSHeight
 
 module.InfiniteAura.name=InfiniteAura
-module.InfiniteAura.description=Hit enemies from far away.
+module.InfiniteAura.description=Hit enemies from far away
 module.InfiniteAura.value.Mode.name=Mode
 module.InfiniteAura.value.Targets.name=Targets
 module.InfiniteAura.value.CPS.name=CPS
@@ -596,7 +593,7 @@ module.InfiniteAura.value.Swing.name=Swing
 module.InfiniteAura.value.PathRender.name=PathRender
 
 module.InventoryCleaner.name=InventoryCleaner
-module.InventoryCleaner.description=Automatically throws away useless items.
+module.InventoryCleaner.description=Automatically throws away useless items and sort your inventory
 module.InventoryCleaner.value.MaxDelay.name=MaxDelay
 module.InventoryCleaner.value.MinDelay.name=MinDelay
 module.InventoryCleaner.value.InvOpen.name=InvOpen
@@ -618,14 +615,14 @@ module.InventoryCleaner.value.SortSlot-8.name=SortSlot-8
 module.InventoryCleaner.value.SortSlot-9.name=SortSlot-9
 
 module.InventoryMove.name=InventoryMove
-module.InventoryMove.description=Allows you to walk while an inventory is opened.
+module.InventoryMove.description=Allows you to walk while an inventory is opened
 module.InventoryMove.value.NoDetectable.name=NoDetectable
 module.InventoryMove.value.Bypass.name=Bypass
 module.InventoryMove.value.Rotate.name=Rotate
 module.InventoryMove.value.NoMoveClicks.name=NoMoveClicks
 
 module.ItemESP.name=ItemESP
-module.ItemESP.description=Allows you to see items through walls.
+module.ItemESP.description=Allows you to see items through walls
 module.ItemESP.value.Mode.name=Mode
 module.ItemESP.value.Outline-Width.name=Outline-Width
 module.ItemESP.value.R.name=R
@@ -634,14 +631,14 @@ module.ItemESP.value.B.name=B
 module.ItemESP.value.Rainbow.name=Rainbow
 
 module.KeyBindManager.name=KeyBindManager
-module.KeyBindManager.description=Opens the KeyBindManager.
+module.KeyBindManager.description=Opens the KeyBindManager
 
 module.Kick.name=Kick
-module.Kick.description=Allows you to kick yourself from a server.
+module.Kick.description=Allows you to kick yourself from a server
 module.Kick.value.Mode.name=Mode
 
 module.KillAura.name=KillAura
-module.KillAura.description=Automatically attacks targets around you.
+module.KillAura.description=Automatically attacks targets around you
 module.KillAura.value.MaxCPS.name=MaxCPS
 module.KillAura.value.MinCPS.name=MinCPS
 module.KillAura.value.HurtTime.name=HurtTime
@@ -685,21 +682,21 @@ module.KillAura.value.Mark.name=Mark
 module.KillAura.value.FakeSharp.name=FakeSharp
 
 module.LegitSpoof.name=LegitSpoof
-module.LegitSpoof.description=Hack? No im legit.
+module.LegitSpoof.description=Hack? No im legit
 module.LegitSpoof.value.Render.name=Render
 module.LegitSpoof.value.Title.name=Title
 
 module.LightningDetect.name=LightningDetect
-module.LightningDetect.description=Check lightning spawn at.
+module.LightningDetect.description=Check lightning spawn at
 
 module.LiquidWalk.name=LiquidWalk
-module.LiquidWalk.description=Allows you to walk on water.
+module.LiquidWalk.description=Allows you to walk on water
 module.LiquidWalk.value.Mode.name=Mode
 module.LiquidWalk.value.NoJump.name=NoJump
 module.LiquidWalk.value.AACFlyMotion.name=AACFlyMotion
 
 module.LongJump.name=LongJump
-module.LongJump.description=Allows you to jump further.
+module.LongJump.description=Allows you to jump further
 module.LongJump.value.Mode.name=Mode
 module.LongJump.value.NCPBoost.name=NCPBoost
 module.LongJump.value.RedeSkyJumpMovement.name=RedeSkyJumpMovement
@@ -737,14 +734,14 @@ module.MidClick.name=MidClick
 module.MidClick.description=Allows you to add a player as a friend by right clicking him.
 
 module.NameProtect.name=NameProtect
-module.NameProtect.description=Changes playernames clientside.
+module.NameProtect.description=Changes playernames clientside
 module.NameProtect.value.AllPlayers.name=AllPlayers
 module.NameProtect.value.SkinProtect.name=SkinProtect
 module.NameProtect.value.FakeName.name=FakeName
 module.NameProtect.value.PlayerName.name=PlayerName
 
 module.NameTags.name=NameTags
-module.NameTags.description=Changes the scale of the nametags so you can always read them.
+module.NameTags.description=Changes the scale of the nametags so you can always read them
 module.NameTags.value.Mode.name=Mode
 module.NameTags.value.Health.name=Health
 module.NameTags.value.Ping.name=Ping
@@ -759,32 +756,32 @@ module.NameTags.value.JelloAlpha.name=JelloAlpha
 module.NameTags.value.Scale.name=Scale
 
 module.NoBob.name=NoBob
-module.NoBob.description=Disables the view bobbing effect.
+module.NoBob.description=Disables the view bobbing effect
 
 module.NoFOV.name=NoFOV
-module.NoFOV.description=Disables FOV changes caused by speed effect, etc.
+module.NoFOV.description=Disables FOV changes caused by speed effect, etc
 module.NoFOV.value.FOV.name=FOV
 
 module.NoFall.name=NoFall
-module.NoFall.description=Prevents you from taking fall damage.
+module.NoFall.description=Prevents you from taking fall damage
 module.NoFall.value.Mode.name=Mode
 module.NoFall.value.PhaseOffset.name=PhaseOffset
 
 module.NoJumpDelay.name=NoJumpDelay
-module.NoJumpDelay.description=Removes delay between jumps.
+module.NoJumpDelay.description=Removes delay between jumps
 
 module.NoRotate.name=NoRotate
-module.NoRotate.description=Disable silent rotation
+module.NoRotate.description=Disable silent rotations
 module.NoRotate.value.Legit.name=Legit
 
 module.NoRotateSet.name=NoRotateSet
-module.NoRotateSet.description=Prevents the server from rotating your head.
+module.NoRotateSet.description=Prevents the server from rotating your head
 module.NoRotateSet.value.Confirm.name=Confirm
 module.NoRotateSet.value.ConfirmIllegalRotation.name=ConfirmIllegalRotation
 module.NoRotateSet.value.NoZero.name=NoZero
 
 module.NoSlow.name=NoSlow
-module.NoSlow.description=Cancels slowness effects caused by soulsand and using items.
+module.NoSlow.description=Cancels slowness effects caused by soulsand and using items
 module.NoSlow.value.BlockForwardMultiplier.name=BlockForwardMultiplier
 module.NoSlow.value.BlockStrafeMultiplier.name=BlockStrafeMultiplier
 module.NoSlow.value.ConsumeForwardMultiplier.name=ConsumeForwardMultiplier
@@ -797,32 +794,32 @@ module.NoSlow.value.PacketMode.name=PacketMode
 module.NoSlow.value.Soulsand.name=Soulsand
 
 module.NoSlowBreak.name=NoSlowBreak
-module.NoSlowBreak.description=Automatically adjusts breaking speed when using modules that influence it.
+module.NoSlowBreak.description=Automatically adjusts breaking speed when using modules that influence it
 module.NoSlowBreak.value.Air.name=Air
 module.NoSlowBreak.value.Water.name=Water
 
 module.NoWeb.name=NoWeb
-module.NoWeb.description=Prevents you from getting slowed down in webs.
+module.NoWeb.description=Prevents you from getting slowed down in webs
 module.NoWeb.value.Mode.name=Mode
 
 module.Parkour.name=Parkour
-module.Parkour.description=Automatically jumps when reaching the edge of a block.
+module.Parkour.description=Automatically jumps when reaching the edge of a block
 
 module.Phase.name=Phase
-module.Phase.description=Allows you to walk through blocks.
+module.Phase.description=Allows you to walk through blocks
 module.Phase.value.Mode.name=Mode
 
 module.PingSpoof.name=PingSpoof
-module.PingSpoof.description=Spoofs your ping to a given value.
+module.PingSpoof.description=Spoofs your ping to a given value
 module.PingSpoof.value.MaxDelay.name=MaxDelay
 module.PingSpoof.value.MinDelay.name=MinDelay
 module.PingSpoof.value.Cancel.name=Cancel
 
 module.Plugins.name=Plugins
-module.Plugins.description=Allows you to see which plugins the server is using.
+module.Plugins.description=Allows you to see which plugins the server is using
 
 module.PointerESP.name=PointerESP
-module.PointerESP.description=Show the pointers around your crossing.
+module.PointerESP.description=Show the pointers around your crossing
 module.PointerESP.value.Mode.name=Mode
 module.PointerESP.value.Red.name=Red
 module.PointerESP.value.Green.name=Green
@@ -830,7 +827,7 @@ module.PointerESP.value.Blue.name=Blue
 module.PointerESP.value.Alpha.name=Alpha
 
 module.PrevFallPos.name=PrevFallPos
-module.PrevFallPos.description=Preview FallDown Pos
+module.PrevFallPos.description=Preview your falldown position
 module.PrevFallPos.value.Mode.name=Mode
 module.PrevFallPos.value.Outline-Width.name=Outline-Width
 module.PrevFallPos.value.FallDist.name=FallDist
@@ -841,16 +838,16 @@ module.PrevFallPos.value.A.name=A
 module.PrevFallPos.value.Rainbow.name=Rainbow
 
 module.Projectiles.name=Projectiles
-module.Projectiles.description=Allows you to see where arrows will land.
+module.Projectiles.description=Allows you to see where arrows will land
 module.Projectiles.value.DynamicBowPower.name=DynamicBowPower
 
 module.Reach.name=Reach
-module.Reach.description=Increases your reach.
+module.Reach.description=Increases your reach
 module.Reach.value.CombatReach.name=CombatReach
 module.Reach.value.BuildReach.name=BuildReach
 
 module.Regen.name=Regen
-module.Regen.description=Regenerates your health much faster.
+module.Regen.description=Regenerates your health much faster
 module.Regen.value.Mode.name=Mode
 module.Regen.value.Health.name=Health
 module.Regen.value.Food.name=Food
@@ -859,19 +856,19 @@ module.Regen.value.NoAir.name=NoAir
 module.Regen.value.PotionEffect.name=PotionEffect
 
 module.Rotations.name=Rotations
-module.Rotations.description=Rotation settings.
+module.Rotations.description=Rotation settings
 module.Rotations.value.Head.name=Head
 module.Rotations.value.Body.name=Body
 module.Rotations.value.SensitivityFixed.name=SensitivityFixed
 module.Rotations.value.NaNCheck.name=NaNCheck
 
 module.SafeWalk.name=SafeWalk
-module.SafeWalk.description=Prevents you from falling down as if you were sneaking.
+module.SafeWalk.description=Prevents you from falling down as if you were sneaking
 module.SafeWalk.value.AirSafe.name=AirSafe
 module.SafeWalk.value.OnlyPredictVoid.name=OnlyPredictVoid
 
 module.Scaffold.name=Scaffold
-module.Scaffold.description=Automatically places blocks beneath your feet.
+module.Scaffold.description=Automatically places blocks beneath your feet
 module.Scaffold.value.MaxDelay.name=MaxDelay
 module.Scaffold.value.MinDelay.name=MinDelay
 module.Scaffold.value.PlaceableDelay.name=PlaceableDelay
@@ -921,11 +918,11 @@ module.Scaffold.value.Counter.name=Counter
 module.Scaffold.value.Mark.name=Mark
 
 module.ServerCrasher.name=ServerCrasher
-module.ServerCrasher.description=Allows you to crash certain server.
+module.ServerCrasher.description=Allows you to crash certain server
 module.ServerCrasher.value.Mode.name=Mode
 
 module.Spammer.name=Spammer
-module.Spammer.description=Spams the chat with a given message.
+module.Spammer.description=Spams the chat with a given message
 module.Spammer.value.MaxDelay.name=MaxDelay
 module.Spammer.value.MinDelay.name=MinDelay
 module.Spammer.value.Mode.name=Mode
@@ -933,7 +930,7 @@ module.Spammer.value.Message.name=Message
 module.Spammer.value.AbuseMessage.name=AbuseMessage
 
 module.Speed.name=Speed
-module.Speed.description=Allows you to move faster.
+module.Speed.description=Allows you to move faster
 module.Speed.value.Mode.name=Mode
 module.Speed.value.CustomSpeed.name=CustomSpeed
 module.Speed.value.CustomLaunchSpeed.name=CustomLaunchSpeed
@@ -956,7 +953,7 @@ module.Speed.value.AACGround-Timer.name=AACGround-Timer
 module.Speed.value.CubeCraft-PortLength.name=CubeCraft-PortLength
 
 module.Sprint.name=Sprint
-module.Sprint.description=Automatically sprints all the time.
+module.Sprint.description=Automatically sprints all the time
 module.Sprint.value.AllDirections.name=AllDirections
 module.Sprint.value.AllDirectionsRotate.name=AllDirectionsRotate
 module.Sprint.value.Blindness.name=Blindness
@@ -965,14 +962,14 @@ module.Sprint.value.CheckServerSide.name=CheckServerSide
 module.Sprint.value.CheckServerSideOnlyGround.name=CheckServerSideOnlyGround
 
 module.Step.name=Step
-module.Step.description=Allows you to step up blocks.
+module.Step.description=Allows you to step up blocks
 module.Step.value.Mode.name=Mode
 module.Step.value.Height.name=Height
 module.Step.value.JumpHeight.name=JumpHeight
 module.Step.value.Delay.name=Delay
 
 module.StorageESP.name=StorageESP
-module.StorageESP.description=Allows you to see chests, dispensers, etc. through walls.
+module.StorageESP.description=Allows you to see chests, dispensers, etc. through walls
 module.StorageESP.value.Mode.name=Mode
 module.StorageESP.value.Outline-Width.name=Outline-Width
 module.StorageESP.value.Chest.name=Chest
@@ -982,16 +979,16 @@ module.StorageESP.value.Dispenser.name=Dispenser
 module.StorageESP.value.Hopper.name=Hopper
 
 module.Strafe.name=Strafe
-module.Strafe.description=Allows you to freely move in mid air.
+module.Strafe.description=Allows you to freely move in mid air
 
 module.SuperKnockback.name=SuperKnockback
-module.SuperKnockback.description=Increases knockback dealt to other entities.
+module.SuperKnockback.description=Increases knockback dealt to other entities
 module.SuperKnockback.value.HurtTime.name=HurtTime
 module.SuperKnockback.value.Delay.name=Delay
 module.SuperKnockback.value.OnlyMove.name=OnlyMove
 
 module.Target.name=Target
-module.Target.description=Target settings.
+module.Target.description=Target settings
 module.Target.value.Player.name=Player
 module.Target.value.Animal.name=Animal
 module.Target.value.Mob.name=Mob
@@ -1007,20 +1004,20 @@ module.TargetStrafe.value.KeyMode.name=KeyMode
 module.TargetStrafe.value.radiusMode.name=radiusMode
 
 module.Teams.name=Teams
-module.Teams.description=Prevents Killaura from attacking team mates.
+module.Teams.description=Prevents Killaura from attacking team mates
 module.Teams.value.ScoreboardTeam.name=ScoreboardTeam
 module.Teams.value.Color.name=Color
 module.Teams.value.GommeSW.name=GommeSW
 module.Teams.value.ArmorColor.name=ArmorColor
 
 module.Teleport.name=Teleport
-module.Teleport.description=Allows you to teleport around.
+module.Teleport.description=Allows you to teleport around
 module.Teleport.value.IgnoreNoCollision.name=IgnoreNoCollision
 module.Teleport.value.Mode.name=Mode
 module.Teleport.value.Button.name=Button
 
 module.Timer.name=Timer
-module.Timer.description=Changes the speed of the entire game.
+module.Timer.description=Changes the speed of the entire game
 module.Timer.value.Speed.name=Speed
 module.Timer.value.OnMove.name=OnMove
 
@@ -1029,17 +1026,17 @@ module.ToggleSound.description=Play a sound when you toggle modules
 module.ToggleSound.value.Mode.name=Mode
 
 module.Tracers.name=Tracers
-module.Tracers.description=Draws a line to targets around you.
+module.Tracers.description=Draws a line to targets around you
 module.Tracers.value.Thickness.name=Thickness
 module.Tracers.value.DistanceColor.name=DistanceColor
 
 module.TrueSight.name=TrueSight
-module.TrueSight.description=Allows you to see invisible entities and barriers.
+module.TrueSight.description=Allows you to see invisible entities and barriers
 module.TrueSight.value.Barriers.name=Barriers
 module.TrueSight.value.Entities.name=Entities
 
 module.Velocity.name=Velocity
-module.Velocity.description=Allows you to modify the amount of knockback taken.
+module.Velocity.description=Allows you to modify the amount of knockback taken
 module.Velocity.value.Horizontal.name=Horizontal
 module.Velocity.value.Vertical.name=Vertical
 module.Velocity.value.Mode.name=Mode
@@ -1055,4 +1052,4 @@ module.Velocity.value.RedeskyAlwaysReduce.name=RedeskyAlwaysReduce
 module.Velocity.value.RedeskyOnlyDanger.name=RedeskyOnlyDanger
 
 module.XRay.name=XRay
-module.XRay.description=Allows you to see ores through walls.
+module.XRay.description=Allows you to see selected blocks through walls
