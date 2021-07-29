@@ -82,6 +82,8 @@ ui.alt.alreadyAdded=这个帐号已经存在于列表中了
 ui.alt.notWorking=帐号登录失败
 ui.alt.checking=验证中...
 
+ui.scaffold.blocks=剩余方块 > %d
+
 notify.module.title=模块
 notify.module.enable=开启模块 %s
 notify.module.disable=关闭模块 %s
@@ -282,7 +284,7 @@ module.BetterFPS.value.CosMode.name=余弦模式
 module.BetterFont.name=更好的字体
 module.BetterFont.description=使字体更好
 
-module.Blink.name=眨眼
+module.Blink.name=闪现
 module.Blink.description=暂停发包
 module.Blink.value.Pulse.name=脉冲
 module.Blink.value.PulseDelay.name=脉冲延时
@@ -398,7 +400,7 @@ module.ClickGUI.value.G.name=绿
 module.ClickGUI.value.B.name=蓝
 module.ClickGUI.value.Rainbow.name=彩虹
 
-module.Clip.name=闪现
+module.Clip.name=瞬移
 module.Clip.description=允许你闪现过方块
 module.Clip.value.Mode.name=模式
 module.Clip.value.Horizontal.name=横向
@@ -444,7 +446,7 @@ module.ESP.value.B.name=蓝
 module.ESP.value.Rainbow.name=彩虹
 module.ESP.value.Team.name=队伍颜色
 
-module.Eagle.name=老鹰
+module.Eagle.name=自动蹲起搭
 module.Eagle.description=让你在方块边缘自动蹲下
 
 module.EnchantEffect.name=附魔效果

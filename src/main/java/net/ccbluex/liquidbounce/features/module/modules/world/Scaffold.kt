@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
@@ -860,7 +861,7 @@ class Scaffold : Module() {
 
     fun drawTip() {
         GlStateManager.pushMatrix()
-        val info = "Blocks > $blocksAmount"
+        val info = LanguageManager.getAndFormat("ui.scaffold.blocks",blocksAmount)
         val scaledResolution = ScaledResolution(mc)
         val width = scaledResolution.scaledWidth
         val height = scaledResolution.scaledHeight

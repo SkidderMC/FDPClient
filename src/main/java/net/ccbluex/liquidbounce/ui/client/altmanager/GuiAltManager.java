@@ -150,7 +150,7 @@ public class GuiAltManager extends GuiScreen {
 
                     final Thread thread = new Thread(() -> {
                         final MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.get(altsList.getSelectedSlot());
-                        status = "§aLogging in...";
+                        status = "§a%ui.alt.loggingIn%";
                         status = login(minecraftAccount);
 
                         loginButton.enabled = randomAltButton.enabled = true;

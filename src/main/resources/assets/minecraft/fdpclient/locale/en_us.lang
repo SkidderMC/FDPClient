@@ -82,6 +82,8 @@ ui.alt.alreadyAdded=The account has already been added.
 ui.alt.notWorking=The account doesn't work.
 ui.alt.checking=Checking...
 
+ui.scaffold.blocks=Blocks > %d
+
 notify.module.title=Module
 notify.module.enable=Enabled %s
 notify.module.disable=Disabled %s
