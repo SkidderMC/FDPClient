@@ -822,7 +822,8 @@ public class Fly extends Module {
 
             final String mode = modeValue.get();
 
-            if (mode.equalsIgnoreCase("NCP") || mode.equalsIgnoreCase("Rewinside") || (mode.equalsIgnoreCase("Verus")&&verusFlyable) ||
+            if (mode.equalsIgnoreCase("NCP") || mode.equalsIgnoreCase("Rewinside") || mode.equalsIgnoreCase("Verus") ||
+                mode.equalsIgnoreCase("Verus2") || mode.equalsIgnoreCase("Verus3") ||
                     (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null))
                 packetPlayer.onGround = true;
 
@@ -946,7 +947,7 @@ public class Fly extends Module {
                 mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") ||
                 (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null)) && event.getY() < mc.thePlayer.posY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, mc.thePlayer.posY, event.getZ() + 1));
-        if((mode.equalsIgnoreCase("FakeGround") || mode.equalsIgnoreCase("Verus1") || mode.equalsIgnoreCase("Verus3") || mode.equalsIgnoreCase("Verus2"))
+        if((mode.equalsIgnoreCase("FakeGround") || mode.equalsIgnoreCase("Verus") || mode.equalsIgnoreCase("Verus3") || mode.equalsIgnoreCase("Verus2"))
                 && event.getBlock() instanceof BlockAir && event.getY() <= launchY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, launchY, event.getZ() + 1));
     }
