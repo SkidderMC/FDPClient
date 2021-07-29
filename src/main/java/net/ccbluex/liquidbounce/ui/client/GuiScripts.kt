@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.minecraft.client.gui.GuiButton
@@ -20,7 +21,6 @@ import java.awt.Color
 import java.awt.Desktop
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
 import java.util.zip.ZipFile
 
 class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
@@ -34,12 +34,12 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
 
         val j = 22
         this.buttonList.add(GuiButton(0, width - 80, height - 65, 70, 20, "%ui.back%"))
-        this.buttonList.add(GuiButton(1, width - 80, j + 24, 70, 20, "Import"))
-        this.buttonList.add(GuiButton(2, width - 80, j + 24 * 2, 70, 20, "Delete"))
-        this.buttonList.add(GuiButton(3, width - 80, j + 24 * 3, 70, 20, "Reload"))
-        this.buttonList.add(GuiButton(4, width - 80, j + 24 * 4, 70, 20, "Folder"))
-        this.buttonList.add(GuiButton(5, width - 80, j + 24 * 5, 70, 20, "Docs"))
-        this.buttonList.add(GuiButton(6, width - 80, j + 24 * 6, 70, 20, "Find Scripts"))
+        this.buttonList.add(GuiButton(1, width - 80, j + 24, 70, 20, "%ui.scripts.import%"))
+        this.buttonList.add(GuiButton(2, width - 80, j + 24 * 2, 70, 20, "%ui.scripts.delete%"))
+        this.buttonList.add(GuiButton(3, width - 80, j + 24 * 3, 70, 20, "%ui.scripts.reload%"))
+        this.buttonList.add(GuiButton(4, width - 80, j + 24 * 4, 70, 20, "%ui.scripts.folder%"))
+        this.buttonList.add(GuiButton(5, width - 80, j + 24 * 5, 70, 20, "%ui.scripts.docs%"))
+        this.buttonList.add(GuiButton(6, width - 80, j + 24 * 6, 70, 20, "%ui.scripts.find%"))
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -98,7 +98,7 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
                     return
                 }
 
-                MiscUtils.showErrorPopup("Wrong file extension.", "The file extension has to be .js or .zip")
+                MiscUtils.showErrorPopup(LanguageManager.get("ui.scripts.error.extension.title"), LanguageManager.get("ui.scripts.error.extension.message"))
             } catch (t: Throwable) {
                 ClientUtils.getLogger().error("Something went wrong while importing a script.", t)
                 MiscUtils.showErrorPopup(t.javaClass.name, t.message)
@@ -148,11 +148,11 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
                 MiscUtils.showErrorPopup(t.javaClass.name, t.message)
             }
             5 -> try {
-                Desktop.getDesktop().browse(URL("https://liquidbounce.net/docs/ScriptAPI/Getting%20Started").toURI())
+                MiscUtils.showURL("https://liquidbounce.net/docs/ScriptAPI/Getting%20Started")
             } catch (ignored: Exception) { }
 
             6 -> try {
-                Desktop.getDesktop().browse(URL("https://forum.ccbluex.net/viewforum.php?id=16").toURI())
+                MiscUtils.showURL("https://forums.ccbluex.net/category/9/scripts")
             } catch (ignored: Exception) { }
         }
     }
@@ -189,7 +189,7 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
         override fun drawSlot(id: Int, x: Int, y: Int, var4: Int, var5: Int, var6: Int) {
             val script = LiquidBounce.scriptManager.scripts[id]
             drawCenteredString(Fonts.font40, "§9" + script.scriptName + " §7v" + script.scriptVersion, width / 2, y + 2, Color.LIGHT_GRAY.rgb)
-            drawCenteredString(Fonts.font40, "by §c" + script.scriptAuthors.joinToString(", "), width / 2, y + 15, Color.LIGHT_GRAY.rgb)
+            drawCenteredString(Fonts.font40, LanguageManager.getAndFormat("ui.scripts.by","§c${script.scriptAuthors.joinToString(", ")}"), width / 2, y + 15, Color.LIGHT_GRAY.rgb)
         }
 
         override fun drawBackground() { }

@@ -45,13 +45,13 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
         reconnectTimer = 0;
         final ServerData server=ServerUtils.serverData;
         infoStr="§fPlaying on: "+mc.session.getUsername()+" | "+server.serverIP;
-        buttonList.add(reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "Reconnect"));
+        buttonList.add(reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "%ui.reconnect%"));
 
         this.drawReconnectDelaySlider();
 
-        buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "Random alt"));
-        buttonList.add(new GuiButton(4, this.width / 2 + 2, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "Random username"));
-        buttonList.add(forgeBypassButton = new GuiButton(5, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 66, "Bypass AntiForge: " + (AntiForge.enabled ? "On" : "Off")));
+        buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "%ui.disconnect.randomAlt%"));
+        buttonList.add(new GuiButton(4, this.width / 2 + 2, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "%ui.disconnect.randomOffline%"));
+        buttonList.add(forgeBypassButton = new GuiButton(5, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 66, "%ui.antiForge%: " + (AntiForge.enabled ? "%ui.on%" : "%ui.off%")));
 
         updateSliderText();
     }
@@ -76,7 +76,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 break;
             case 5:
                 AntiForge.enabled = !AntiForge.enabled;
-                forgeBypassButton.displayString = "Bypass AntiForge: " + (AntiForge.enabled ? "On" : "Off");
+                forgeBypassButton.displayString = "%ui.antiForge%: " + (AntiForge.enabled ? "%ui.on%" : "%ui.off%");
                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig);
                 break;
         }

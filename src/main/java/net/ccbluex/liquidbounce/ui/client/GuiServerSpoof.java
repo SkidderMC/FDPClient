@@ -27,7 +27,7 @@ public class GuiServerSpoof extends GuiScreen {
         Keyboard.enableRepeatEvents(true);
         stat=new GuiButton(2, width / 2 - 100, height / 4 + 96, "STATUS");
         buttonList.add(stat);
-        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, "Back"));
+        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, "%ui.back%"));
 
         textField = new GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20);
         textField.setFocused(true);
@@ -38,7 +38,7 @@ public class GuiServerSpoof extends GuiScreen {
     }
 
     private void updateButtonStat(){
-        stat.displayString="Status: "+(ServerSpoof.enable?"§aOn":"§cOff");
+        stat.displayString="%ui.status%: "+(ServerSpoof.enable?"§a%ui.on%":"§c%ui.off%");
     }
 
     @Override
@@ -46,11 +46,11 @@ public class GuiServerSpoof extends GuiScreen {
         drawBackground(0);
         Gui.drawRect(30, 30, width - 30, height - 30, Integer.MIN_VALUE);
 
-        drawCenteredString(Fonts.font40, "Server Spoof", width / 2, 34, 0xffffff);
+        drawCenteredString(Fonts.font40, "%ui.serverSpoof%", width / 2, 34, 0xffffff);
 
         textField.drawTextBox();
         if(textField.getText().isEmpty() && !textField.isFocused())
-            drawString(Fonts.font40, "§7Server Address", width / 2 - 100, 66, 0xffffff);
+            drawString(Fonts.font40, "§7%ui.serverSpoof.address%", width / 2 - 100, 66, 0xffffff);
 
         super.drawScreen(mouseX,mouseY,partialTicks);
     }

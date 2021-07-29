@@ -1,2 +1,43 @@
 # Translated by Liuli
 ui.altmanager=账号管理
+ui.mods=模组管理
+ui.background=背景
+ui.website=官网
+ui.forgeMods=Forge模组
+ui.scripts=脚本
+ui.serverSpoof=服务器欺骗
+ui.antiForge=反Forge
+ui.reconnect=重新连接
+
+ui.back=返回
+ui.status=状态
+ui.on=开
+ui.off=关
+
+ui.serverSpoof.address=服务器地址
+
+ui.background.particles=粒子
+ui.background.change=更换背景图
+ui.background.reset=重置背景图
+
+ui.chest.stealing=偷取箱子中...
+
+ui.gameover.close=关闭这个界面
+
+ui.disconnect.randomAlt=随机正版
+ui.disconnect.randomOffline=随机盗版
+
+ui.update.available=更新可用！
+ui.update.released=FDP Client %s 发布了!
+ui.update.dismiss=忽略
+ui.update.download=下载
+
+ui.scripts.by=作者 %s
+ui.scripts.import=导入
+ui.scripts.delete=删除
+ui.scripts.reload=重载
+ui.scripts.folder=打开文件夹
+ui.scripts.docs=文档
+ui.scripts.find=寻找脚本
+ui.scripts.error.extension.title=错误文件后缀名
+ui.scripts.error.extension.message=文件后缀名需要为 .js 或 .zip

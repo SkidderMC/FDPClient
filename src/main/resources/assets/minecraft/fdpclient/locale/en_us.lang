@@ -5,4 +5,39 @@ ui.background=Background
 ui.website=Website
 ui.forgeMods=Forge Mods
 ui.scripts=Scripts
+ui.serverSpoof=ServerSpoof
+ui.antiForge=AntiForge
+ui.reconnect=Reconnect
+
 ui.back=Back
+ui.status=Status
+ui.on=On
+ui.off=Off
+
+ui.serverSpoof.address=Server Address
+
+ui.background.particles=Particles
+ui.background.change=Change wallpaper
+ui.background.reset=Reset wallpaper
+
+ui.chest.stealing=Stealing Chest
+
+ui.gameover.close=Hide This Screen
+
+ui.disconnect.randomAlt=Random Alt
+ui.disconnect.randomOffline=Random Offline
+
+ui.update.available=Update available!
+ui.update.released=FDP Client %s got released!
+ui.update.dismiss=Dismiss
+ui.update.download=Download
+
+ui.scripts.by=by %s
+ui.scripts.import=Import
+ui.scripts.delete=Delete
+ui.scripts.reload=Reload
+ui.scripts.folder=Open Folder
+ui.scripts.docs=Docs
+ui.scripts.find=Find Scripts
+ui.scripts.error.extension.title=Wrong file extension.
+ui.scripts.error.extension.message=The file extension has to be .js or .zip

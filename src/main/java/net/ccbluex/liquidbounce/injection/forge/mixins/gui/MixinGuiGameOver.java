@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiGameOver extends MixinGuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
-        buttonList.add(new GuiButton(114514, width-100, height-20, 100, 20, "Hide This Screen"));
+        buttonList.add(new GuiButton(114514, width-100, height-20, 100, 20, "%ui.gameover.close%"));
     }
 
     @Inject(method = "actionPerformed", at = @At("HEAD"))

@@ -46,7 +46,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                 mc.currentScreen=guiScreen;
                 //hide GUI
                 if(chestStealer.getSilentTitleValue().get()) {
-                    String tipString = "STEALING CHEST";
+                    String tipString = "%ui.chest.stealing%";
                     mc.fontRendererObj.drawString(tipString,
                             (width / 2) - (mc.fontRendererObj.getStringWidth(tipString) / 2),
                             (height / 2) + 30, 0xffffffff);

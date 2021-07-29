@@ -34,16 +34,16 @@ public class GuiAntiForge extends GuiScreen {
         buttonList.add(proxyButton = new GuiButton(3, width / 2 - 100, height / 4 + 50 + 25 * 2, "Button"));
         buttonList.add(payloadButton = new GuiButton(4, width / 2 - 100, height / 4 + 50 + 25 * 3, "Button"));
 
-        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 55 + 25 * 4 + 5, "Back"));
+        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 55 + 25 * 4 + 5, "%ui.back%"));
 
         updateButtonStat();
     }
 
     private void updateButtonStat(){
-        enabledButton.displayString="Enabled: "+(AntiForge.enabled?"§aOn":"§cOff");
-        fmlButton.displayString="FML Brand: "+(AntiForge.blockFML?"§aOn":"§cOff");
-        proxyButton.displayString="FML Proxy Packets: "+(AntiForge.blockProxyPacket?"§aOn":"§cOff");
-        payloadButton.displayString="Payload Packets: "+(AntiForge.blockPayloadPackets?"§aOn":"§cOff");
+        enabledButton.displayString="%ui.status%: "+(AntiForge.enabled?"§a%ui.on%":"§c%ui.off%");
+        fmlButton.displayString="FML Brand: "+(AntiForge.blockFML?"§a%ui.on%":"§c%ui.off%");
+        proxyButton.displayString="FML Proxy Packets: "+(AntiForge.blockProxyPacket?"§a%ui.on%":"§c%ui.off%");
+        payloadButton.displayString="Payload Packets: "+(AntiForge.blockPayloadPackets?"§a%ui.on%":"§c%ui.off%");
     }
 
     @Override
@@ -75,7 +75,7 @@ public class GuiAntiForge extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawBackground(0);
-        Fonts.font40.drawCenteredString("AntiForge", (int) (width / 2F), (int) (height / 8F + 5F), 4673984, true);
+        Fonts.font40.drawCenteredString("%ui.antiForge%", (int) (width / 2F), (int) (height / 8F + 5F), 4673984, true);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

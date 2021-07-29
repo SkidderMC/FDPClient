@@ -35,6 +35,10 @@ object LanguageManager {
         return language.get(key)
     }
 
+    fun getAndFormat(key: String, vararg args: Any?):String{
+        return String.format(get(key),*args)
+    }
+
     fun switchLanguage(languageStr: String){
         val languageCode=languageStr.toLowerCase()
 
