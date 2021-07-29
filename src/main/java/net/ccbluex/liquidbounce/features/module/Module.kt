@@ -75,8 +75,14 @@ open class Module : MinecraftInstance(), Listenable {
         canEnable = moduleInfo.canEnable
         autoDisable = moduleInfo.autoDisable
         moduleCommand = moduleInfo.moduleCommand
+    }
+
+    fun loadLocale(){
         if(this !is ScriptModule){
             localizedName="%module.$name.name%"
+            values.forEach {
+                it.localedName="%module.$name.value.${it.name}.name%"
+            }
         }
     }
 

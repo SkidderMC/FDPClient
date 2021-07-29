@@ -38,6 +38,8 @@ class ModuleManager : Listenable {
 
         modules.forEach{ it.onInitialize() }
 
+        modules.forEach { it.loadLocale() }
+
         ClientUtils.getLogger().info("[ModuleManager] Loaded ${modules.size} modules.")
     }
 

@@ -72,7 +72,7 @@ public class NullStyle extends Style {
                 int yPos = moduleElement.getY() + 4;
                 for(final Value value : moduleValues) {
                     if(value instanceof BoolValue) {
-                        String text = value.getName();
+                        String text = value.getLocaledName();
                         float textWidth = Fonts.minecraftFont.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)
@@ -95,7 +95,7 @@ public class NullStyle extends Style {
                     }else if(value instanceof ListValue) {
                         ListValue listValue = (ListValue) value;
 
-                        String text = value.getName();
+                        String text = value.getLocaledName();
                         float textWidth = Fonts.minecraftFont.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 16)
@@ -139,7 +139,7 @@ public class NullStyle extends Style {
                         }
                     }else if(value instanceof FloatValue) {
                         FloatValue floatValue = (FloatValue) value;
-                        String text = value.getName() + "§f: §c" + round(floatValue.get());
+                        String text = value.getLocaledName() + "§f: §c" + round(floatValue.get());
                         float textWidth = Fonts.minecraftFont.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)
@@ -162,7 +162,7 @@ public class NullStyle extends Style {
                         yPos += 22;
                     }else if(value instanceof IntegerValue) {
                         IntegerValue integerValue = (IntegerValue) value;
-                        String text = value.getName() + "§f: §c" + (value instanceof BlockValue ? BlockUtils.getBlockName(integerValue.get()) + " (" + integerValue.get() + ")" : integerValue.get());
+                        String text = value.getLocaledName() + "§f: §c" + (value instanceof BlockValue ? BlockUtils.getBlockName(integerValue.get()) + " (" + integerValue.get() + ")" : integerValue.get());
                         float textWidth = Fonts.minecraftFont.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)
@@ -250,7 +250,7 @@ public class NullStyle extends Style {
 
                         yPos += 11;
                     }else{
-                        String text = value.getName() + "§f: §c" + value.get();
+                        String text = value.getLocaledName() + "§f: §c" + value.get();
                         float textWidth = Fonts.minecraftFont.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)

@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 
 abstract class Value<T>(val name: String, protected var value: T) {
     val default=value
+    var localedName=""
+        get() = field.ifEmpty { name }
 
     fun set(newValue: T) {
         if (newValue == value) return

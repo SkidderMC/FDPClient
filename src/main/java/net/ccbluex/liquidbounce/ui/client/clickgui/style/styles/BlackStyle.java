@@ -82,7 +82,7 @@ public class BlackStyle extends Style {
                 moduleElement.slowlySettingsYPos = moduleElement.getY() + 6;
                 for(final Value value : moduleValues) {
                     if(value instanceof BoolValue) {
-                        final String text = value.getName();
+                        final String text = value.getLocaledName();
                         final float textWidth = Fonts.font35.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)
@@ -100,7 +100,7 @@ public class BlackStyle extends Style {
                     }else if(value instanceof ListValue) {
                         final ListValue listValue = (ListValue) value;
 
-                        final String text = value.getName();
+                        final String text = value.getLocaledName();
                         final float textWidth = Fonts.font35.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 16)
@@ -139,7 +139,7 @@ public class BlackStyle extends Style {
                         }
                     }else if(value instanceof FloatValue) {
                         final FloatValue floatValue = (FloatValue) value;
-                        final String text = value.getName() + "§f: " + round(floatValue.get());
+                        final String text = value.getLocaledName() + "§f: " + round(floatValue.get());
                         final float textWidth = Fonts.font35.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)
@@ -154,7 +154,7 @@ public class BlackStyle extends Style {
                         moduleElement.slowlySettingsYPos += 19;
                     }else if(value instanceof IntegerValue) {
                         final IntegerValue integerValue = (IntegerValue) value;
-                        final String text = value.getName() + "§f: " + (value instanceof BlockValue ? BlockUtils.getBlockName(integerValue.get()) + " (" + integerValue.get() + ")" : integerValue.get());
+                        final String text = value.getLocaledName() + "§f: " + (value instanceof BlockValue ? BlockUtils.getBlockName(integerValue.get()) + " (" + integerValue.get() + ")" : integerValue.get());
                         final float textWidth = Fonts.font35.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)
@@ -232,7 +232,7 @@ public class BlackStyle extends Style {
 
                         moduleElement.slowlySettingsYPos += 11;
                     }else{
-                        final String text = value.getName() + "§f: " + value.get();
+                        final String text = value.getLocaledName() + "§f: " + value.get();
                         final float textWidth = Fonts.font35.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)

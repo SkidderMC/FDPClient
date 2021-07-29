@@ -32,7 +32,7 @@ public class GuiDirectLogin extends GuiScreen {
     private GuiTextField username;
     private GuiPasswordField password;
 
-    private String status = "§7Idle...";
+    private String status = "§7%ui.alt.idle%";
 
     public GuiDirectLogin(final GuiAltManager gui) {
         this.prevGui = gui;
@@ -40,9 +40,9 @@ public class GuiDirectLogin extends GuiScreen {
 
     public void initGui() {
         Keyboard.enableRepeatEvents(true);
-        buttonList.add(loginButton = new GuiButton(1, width / 2 - 100, height / 4 + 72, "Login"));
-        buttonList.add(clipboardLoginButton = new GuiButton(2, width / 2 - 100, height / 4 + 96, "Clipboard Login"));
-        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, "Back"));
+        buttonList.add(loginButton = new GuiButton(1, width / 2 - 100, height / 4 + 72, "%ui.alt.login%"));
+        buttonList.add(clipboardLoginButton = new GuiButton(2, width / 2 - 100, height / 4 + 96, "%ui.alt.clipBoardLogin%"));
+        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, "%ui.back%"));
         username = new GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20);
         username.setFocused(true);
         username.setMaxStringLength(Integer.MAX_VALUE);
@@ -55,17 +55,17 @@ public class GuiDirectLogin extends GuiScreen {
         drawBackground(0);
         Gui.drawRect(30, 30, width - 30, height - 30, Integer.MIN_VALUE);
 
-        drawCenteredString(Fonts.font40, "Direct Login", width / 2, 34, 0xffffff);
+        drawCenteredString(Fonts.font40, "%ui.alt.directLogin%", width / 2, 34, 0xffffff);
         drawCenteredString(Fonts.font35, status == null ? "" : status, width / 2, height / 4 + 60, 0xffffff);
 
         username.drawTextBox();
         password.drawTextBox();
 
         if(username.getText().isEmpty() && !username.isFocused())
-            drawCenteredString(Fonts.font40, "§7Username / E-Mail", width / 2 - 55, 66, 0xffffff);
+            drawCenteredString(Fonts.font40, "§7%ui.alt.loginUsername%", width / 2 - 55, 66, 0xffffff);
 
         if(password.getText().isEmpty() && !password.isFocused())
-            drawCenteredString(Fonts.font40, "§7Password", width / 2 - 74, 91, 0xffffff);
+            drawCenteredString(Fonts.font40, "§7%ui.alt.loginPassword%", width / 2 - 74, 91, 0xffffff);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -79,14 +79,14 @@ public class GuiDirectLogin extends GuiScreen {
                 break;
             case 1:
                 if (username.getText().isEmpty()) {
-                    status = "§cYou have to fill in both fields!";
+                    status = "§c%ui.alt.fillBoth%";
                     return;
                 }
 
                 loginButton.enabled = clipboardLoginButton.enabled = false;
 
                 new Thread(() -> {
-                    status = "§aLogging in...";
+                    status = "§a%ui.alt.LoggingIn%";
 
                     if (password.getText().isEmpty())
                         status = GuiAltManager.login(new MinecraftAccount(ColorUtils.translateAlternateColorCodes(username.getText())));
@@ -102,25 +102,22 @@ public class GuiDirectLogin extends GuiScreen {
                     final String[] args = clipboardData.split(":", 2);
 
                     if (!clipboardData.contains(":") || args.length != 2) {
-                        status = "§cInvalid clipboard data. (Use: E-Mail:Password)";
+                        status = "§c%ui.alt.invalidClipData%";
                         return;
                     }
 
                     loginButton.enabled = clipboardLoginButton.enabled = false;
 
                     new Thread(() -> {
-                        status = "§aLogging in...";
+                        status = "§a%ui.alt.loggingIn%";
 
                         status = GuiAltManager.login(new MinecraftAccount(args[0], args[1]));
 
                         loginButton.enabled = clipboardLoginButton.enabled = true;
                     }).start();
                 } catch (final UnsupportedFlavorException e) {
-                    status = "§cClipboard flavor unsupported!";
+                    status = "§c%ui.alt.readFailed%";
                     ClientUtils.getLogger().error("Failed to read data from clipboard.", e);
-                } catch (IOException e) {
-                    status = "§cUnknown error! (See log)";
-                    ClientUtils.getLogger().error(e);
                 }
                 break;
         }

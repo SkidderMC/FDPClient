@@ -9,6 +9,10 @@ object LanguageManager {
     val defaultLocale="en_us"
 
     private var language=Language(defaultLocale)
+        set(value){
+            cachedStrings.clear()
+            field=value
+        }
 
     // regex is slow, so we need to cache match results
     private val pattern=Pattern.compile("$key[A-Za-z0-9\u002E]*$key")
@@ -35,8 +39,13 @@ object LanguageManager {
         return language.get(key)
     }
 
-    fun getAndFormat(key: String, vararg args: Any?):String{
-        return String.format(get(key),*args)
+    fun getAndFormat(key: String, vararg argsIn: Any?):String{
+        val args=argsIn.toList().toMutableList()
+        args.forEachIndexed { index,arg ->
+            if(arg is String)
+                args[index]=replace(arg)
+        }
+        return String.format(get(key),*args.toTypedArray())
     }
 
     fun switchLanguage(languageStr: String){
