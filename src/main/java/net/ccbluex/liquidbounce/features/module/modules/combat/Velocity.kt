@@ -35,7 +35,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce", "Redesky1", "Redesky2",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce", "Redesky1", "Redesky2","HuaYuTing",
             "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch", "Legit"), "Simple")
 
     // Reverse
@@ -162,6 +162,18 @@ class Velocity : Module() {
 
                     mc.thePlayer.motionX /= reduce
                     mc.thePlayer.motionZ /= reduce
+                }
+            }
+            "huayuting" -> {
+                if (mc.thePlayer.hurtTime>0){
+                    if(mc.thePlayer.onGround) {
+                        mc.thePlayer.motionX *= 0
+                        mc.thePlayer.motionZ *= 0
+                    }
+                    else{
+                        mc.thePlayer.motionX *= 0.62
+                        mc.thePlayer.motionZ *= 0.62
+                    }
                 }
             }
 
