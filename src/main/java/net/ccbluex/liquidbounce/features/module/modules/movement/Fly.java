@@ -822,8 +822,8 @@ public class Fly extends Module {
 
             final String mode = modeValue.get();
 
-            if (mode.equalsIgnoreCase("NCP") || mode.equalsIgnoreCase("Rewinside") || mode.equalsIgnoreCase("Verus") ||
-                mode.equalsIgnoreCase("Verus2") || mode.equalsIgnoreCase("Verus3") ||
+            if (mode.equalsIgnoreCase("NCP") || mode.equalsIgnoreCase("Rewinside") || (mode.equalsIgnoreCase("Verus")&&verusFlyable) ||
+                (mode.equalsIgnoreCase("Verus2")&&verusFlyable) ||
                     (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null))
                 packetPlayer.onGround = true;
 
