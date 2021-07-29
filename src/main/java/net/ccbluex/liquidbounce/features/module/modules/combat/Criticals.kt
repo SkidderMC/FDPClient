@@ -274,26 +274,22 @@ class Criticals : Module() {
                     if(mc.thePlayer.onGround && !aacLastState) {
                         packet.onGround = mc.thePlayer.onGround
                         aacLastState = mc.thePlayer.onGround
+                        packet.y += 0.00101
                         return
                     }
                     aacLastState = mc.thePlayer.onGround
-                    packet.y += 0.001335979112147
+                    packet.y += 0.001
                     if(mc.thePlayer.onGround) packet.onGround = false
                 }
                 "aac4hover2" -> {
                     if(mc.thePlayer.onGround && !aacLastState) {
                         packet.onGround = mc.thePlayer.onGround
                         aacLastState = mc.thePlayer.onGround
+                        packet.y += 0.000000000000136
                         return
                     }
                     aacLastState = mc.thePlayer.onGround
-                    jState++
-                    if(jState % 25 !=0) {
-                        packet.y += 0.000000000000036
-                    } else {
-                        if(mc.thePlayer.onGround) packet.onGround = true
-                        return
-                    }
+                    packet.y += 0.000000000000036
                     if(mc.thePlayer.onGround) packet.onGround = false
                 }
                 "hover2" -> {
