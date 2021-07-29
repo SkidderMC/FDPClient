@@ -35,7 +35,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4", "Redesky", "RedeskyTest",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce", "Redesky1", "Redesky2",
             "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch", "Legit"), "Simple")
 
     // Reverse
@@ -121,20 +121,26 @@ class Velocity : Module() {
                 }
             }
 
-            "aac" -> if (velocityInput && velocityTimer.hasTimePassed(80L)) {
-                mc.thePlayer.motionX *= horizontalValue.get()
-                mc.thePlayer.motionZ *= horizontalValue.get()
-                //mc.thePlayer.motionY *= verticalValue.get() ?
-                velocityInput = false
-            }
-
-            "aacv4" -> {
-                if (mc.thePlayer.hurtTime>0 && !mc.thePlayer.onGround){
+            "aac4reduce" -> {
+                if (mc.thePlayer.hurtTime>0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(80L)){
                     mc.thePlayer.motionX *= 0.62
                     mc.thePlayer.motionZ *= 0.62
                 }
+                if(velocityInput && (mc.thePlayer.hurtTime<4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
+                    velocityInput = false
+                }
             }
-
+            
+            "aac5reduce" -> {
+                if (mc.thePlayer.hurtTime>1 && velocityInput){
+                    mc.thePlayer.motionX *= 0.81
+                    mc.thePlayer.motionZ *= 0.81
+                }
+                if(velocityInput && (mc.thePlayer.hurtTime<5 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
+                    velocityInput = false
+                }
+            }
+            
             "aacpush" -> {
                 if (jump) {
                     if (mc.thePlayer.onGround)
@@ -205,7 +211,13 @@ class Velocity : Module() {
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
 
-                "aac", "reverse", "smoothreverse", "aaczero" -> velocityInput = true
+                "aac4reduce" -> {
+                    velocityInput = true
+                    packet.motionX = (packet.getMotionX() * 0.6).toInt()
+                    packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
+                }
+                
+                "aac5reduce", "reverse", "smoothreverse", "aaczero" -> velocityInput = true
 
                 "phase" -> {
                     if (!mc.thePlayer.onGround&&phaseOnlyGround.get())
@@ -246,7 +258,7 @@ class Velocity : Module() {
                     pos=BlockPos(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
                 }
                 
-                "redeskytest" -> {
+                "redesky2" -> {
                     if(packet.getMotionX()==0&&packet.getMotionZ()==0){ // ignore horizonal velocity
                         return
                     }
@@ -263,7 +275,7 @@ class Velocity : Module() {
                     if(redeCount>12) redeCount -= 5
                 }
 
-                "redesky" -> {
+                "redesky1" -> {
                     if(packet.getMotionX()==0&&packet.getMotionZ()==0){ // ignore horizonal velocity
                         return
                     }
