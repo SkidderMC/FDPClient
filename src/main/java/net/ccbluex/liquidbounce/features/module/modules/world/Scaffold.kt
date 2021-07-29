@@ -852,7 +852,7 @@ class Scaffold : Module() {
             var amount = 0
             for (i in 36..44) {
                 val itemStack = mc.thePlayer.inventoryContainer.getSlot(i).stack
-                if (itemStack.item is ItemBlock && InventoryUtils.canPlaceBlock((itemStack.item as ItemBlock).block))
+                if (itemStack!= null && itemStack.item is ItemBlock && InventoryUtils.canPlaceBlock((itemStack.item as ItemBlock).block))
                     amount += itemStack.stackSize
             }
             return amount
