@@ -35,7 +35,8 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce", "Redesky1", "Redesky2","HuaYuTing",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce", "Redesky1", "Redesky2",
+            "HuaYuTing", "TestRedesky",
             "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch", "Legit"), "Simple")
 
     // Reverse
@@ -141,6 +142,16 @@ class Velocity : Module() {
                 }
             }
             
+            "testredesky" -> {
+                if (mc.thePlayer.hurtTime>0 && velocityInput){
+                    velocityInput = false
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,Double.POSITIVE_INFINITY,mc.thePlayer.posZ,true))
+                }
+                if(velocityTimer.hasTimePassed(120L) && velocityInput) {
+                    velocityInput = false
+                }
+            }
+            
             "aacpush" -> {
                 if (jump) {
                     if (mc.thePlayer.onGround)
@@ -241,6 +252,11 @@ class Velocity : Module() {
                     packet.motionX = 0
                     packet.motionY = 0
                     packet.motionZ = 0
+                }
+                
+                "testredesky" -> {
+                    event.cancelEvent()
+                    velocityInput = true
                 }
 
                 "packetphase" -> {
