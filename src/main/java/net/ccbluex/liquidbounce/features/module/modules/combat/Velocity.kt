@@ -243,7 +243,7 @@ class Velocity : Module() {
 
                 "aac5.2.0" -> {
                     event.cancelEvent()
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(1.7976931348623157E+308,mc.thePlayer.posY,1.7976931348623157E+308,true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
                 }
                 
                 "aac5reduce", "reverse", "smoothreverse", "aaczero" -> velocityInput = true
