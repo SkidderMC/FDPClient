@@ -396,7 +396,7 @@ public class Fly extends Module {
 
                 handleVanillaKickBypass();
                 break;
-            case "verus1":
+            case "verus":
                 if(flyTimer.hasTimePassed(3000)) verusFlyable=false;
                 if(verusFlyable&&flyTimer.hasTimePassed(100)){
                     MovementUtils.strafe(1.5F);
