@@ -145,7 +145,8 @@ class Velocity : Module() {
             "testredesky" -> {
                 if (mc.thePlayer.hurtTime>0 && velocityInput){
                     velocityInput = false
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,Double.POSITIVE_INFINITY,mc.thePlayer.posZ,true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
                 }
                 if(velocityTimer.hasTimePassed(120L) && velocityInput) {
                     velocityInput = false
