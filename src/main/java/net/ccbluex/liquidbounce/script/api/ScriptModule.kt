@@ -32,7 +32,7 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
 
         val categoryString = moduleObject.getMember("category") as String
         for (category in ModuleCategory.values())
-            if (categoryString.equals(category.displayName, true))
+            if (categoryString.equals(category.configName, true))
                 this.category = category
 
         if (moduleObject.hasMember("settings")) {

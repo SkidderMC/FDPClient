@@ -35,7 +35,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce", "Redesky1", "Redesky2",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce", "Redesky1", "Redesky2", "AAC5.2.0",
             "HuaYuTing", "TestRedesky",
             "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch", "Legit"), "Simple")
 
@@ -239,6 +239,11 @@ class Velocity : Module() {
                     velocityInput = true
                     packet.motionX = (packet.getMotionX() * 0.6).toInt()
                     packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
+                }
+
+                "aac5.2.0" -> {
+                    event.cancelEvent()
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(1.7976931348623157E+308,mc.thePlayer.posY,1.7976931348623157E+308,true))
                 }
                 
                 "aac5reduce", "reverse", "smoothreverse", "aaczero" -> velocityInput = true
