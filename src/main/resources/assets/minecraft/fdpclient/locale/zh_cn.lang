@@ -897,7 +897,6 @@ module.Scaffold.value.TowerActivation.name=搭高触发条件
 module.Scaffold.value.TowerTimer.name=搭高变速齿轮
 module.Scaffold.value.SameY.name=同一Y轴
 module.Scaffold.value.SafeWalk.name=安全行走
-module.Scaffold.value.AutoJump.name=自动跳跃
 module.Scaffold.value.HitableCheck.name=可点击检测
 module.Scaffold.value.ExtraClick.name=额外点击
 module.Scaffold.value.ExtraClickMaxDelay.name=额外点击最大延迟

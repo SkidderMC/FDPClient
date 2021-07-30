@@ -897,7 +897,6 @@ module.Scaffold.value.TowerActivation.name=TowerActivation
 module.Scaffold.value.TowerTimer.name=TowerTimer
 module.Scaffold.value.SameY.name=SameY
 module.Scaffold.value.SafeWalk.name=SafeWalk
-module.Scaffold.value.AutoJump.name=AutoJump
 module.Scaffold.value.HitableCheck.name=HitableCheck
 module.Scaffold.value.ExtraClick.name=ExtraClick
 module.Scaffold.value.ExtraClickMaxDelay.name=ExtraClickMaxDelay

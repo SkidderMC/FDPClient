@@ -5,10 +5,12 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.*
@@ -136,9 +138,8 @@ class Scaffold : Module() {
     private val towerTimerValue = FloatValue("TowerTimer", 1f, 0.1f, 5f)
 
     // Safety
-    private val sameYValue = BoolValue("SameY", false)
+    private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "OFF"), "WhenSpeed")
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "OFF")
-    private val autoJumpValue = BoolValue("AutoJump", false)
     private val hitableCheck = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple")
 
     // Extra click
@@ -185,8 +186,8 @@ class Scaffold : Module() {
     // Target block
     private var targetPlace: PlaceInfo? = null
 
-    // Launch position
-    private var launchY = 0
+    // Last OnGround position
+    private var lastGroundY = 0
 
     // Rotation lock
     private var lockRotation: Rotation? = null
@@ -223,7 +224,7 @@ class Scaffold : Module() {
      */
     override fun onEnable() {
         if (mc.thePlayer == null) return
-        launchY = mc.thePlayer.posY.toInt()
+        lastGroundY = mc.thePlayer.posY.toInt()
         lastPlace=2
         clickDelay=TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get())
     }
@@ -242,21 +243,26 @@ class Scaffold : Module() {
         if(!towerStatus) mc.timer.timerSpeed = timerValue.get()
         if (towerStatus) {
             canSameY = false
-            launchY = mc.thePlayer.posY.toInt()
-        } else if (sameYValue.get()) {
-            canSameY = true
-            if(autoJumpValue.get() && !mc.gameSettings.keyBindJump.isKeyDown && mc.thePlayer.onGround) {
-                mc.thePlayer.jump()
+            lastGroundY = mc.thePlayer.posY.toInt()
+        } else {
+            when(sameYValue.get().toLowerCase()){
+                "simple" -> {
+                    canSameY = true
+                }
+                "autojump" -> {
+                    canSameY = true
+                    if (MovementUtils.isMoving())
+                        mc.thePlayer.jump()
+                }
+                "whenspeed" -> {
+                    canSameY=LiquidBounce.moduleManager.getModule(Speed::class.java).state
+                }
+                else -> {
+                    canSameY = false
+                }
             }
-        } else if (autoJumpValue.get()) {
-            canSameY = true
-            if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
-                mc.thePlayer.jump()
-                launchY = mc.thePlayer.posY.toInt()
-            }
-        }else {
-            canSameY = false
-            launchY = mc.thePlayer.posY.toInt()
+            if(mc.thePlayer.onGround)
+                lastGroundY = mc.thePlayer.posY.toInt()
         }
 
         if(clickTimer.hasTimePassed(clickDelay)){
@@ -560,10 +566,10 @@ class Scaffold : Module() {
             mc.thePlayer.posZ
         ) else BlockPos(
             mc.thePlayer.posX, mc.thePlayer.posY - 0.6, mc.thePlayer.posZ
-        ).down() else if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5 && ((!canSameY && sameYValue.get()) || !sameYValue.get())) BlockPos(
+        ).down() else if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5 && !canSameY) BlockPos(
             mc.thePlayer
-        ) else if(canSameY && launchY<=mc.thePlayer.posY) BlockPos(
-            mc.thePlayer.posX, launchY-1.0, mc.thePlayer.posZ) else BlockPos(
+        ) else if(canSameY && lastGroundY<=mc.thePlayer.posY) BlockPos(
+            mc.thePlayer.posX, lastGroundY-1.0, mc.thePlayer.posZ) else BlockPos(
             mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ
         ).down()
         if (!expand && (!BlockUtils.isReplaceable(blockPosition) || search(blockPosition, !shouldGoDown))) return
@@ -595,7 +601,7 @@ class Scaffold : Module() {
             }
             return
         }
-        if (!delayTimer.hasTimePassed(delay) || !towerStatus && canSameY && launchY - 1 != targetPlace!!.vec3.yCoord.toInt())
+        if (!delayTimer.hasTimePassed(delay) || !towerStatus && canSameY && lastGroundY - 1 != targetPlace!!.vec3.yCoord.toInt())
             return
 
         if(!rotationsValue.get().equals("None",true)){

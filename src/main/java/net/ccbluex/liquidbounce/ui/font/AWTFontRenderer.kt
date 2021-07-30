@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
+import java.lang.IllegalStateException
 import javax.imageio.ImageIO
 
 /**
@@ -150,12 +151,12 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
         val charArr=char.toCharArray()
         if(char.length==1){
             return "char-${charArr[0].toInt()}"
-        }else if(char.length==2){
+        }else if(char.length==2&&charArr[0] in '\ud800'..'\udfff'&&charArr[1] in '\ud800'..'\udfff'){
             val first=(charArr[0].toInt()-0xd800)*0x400
             val second=charArr[1].toInt()-0xdc00
             return "char-${first+second+0x10000}"
         }
-        return "NMSL"
+        throw IllegalStateException("The char $char not UTF-8 or UTF-16")
     }
 
     /**
