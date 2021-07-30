@@ -183,8 +183,8 @@ class Velocity : Module() {
                         mc.thePlayer.motionZ *= 0
                     }
                     else{
-                        mc.thePlayer.motionX *= 0.62
-                        mc.thePlayer.motionZ *= 0.62
+                        mc.thePlayer.motionX *= 0.80
+                        mc.thePlayer.motionZ *= 0.80
                     }
                 }
             }
