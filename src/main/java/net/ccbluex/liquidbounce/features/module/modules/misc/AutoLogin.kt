@@ -39,6 +39,7 @@ class AutoLogin : Module() {
         val packet=event.packet
 
         if(title.get()&&packet is S45PacketTitle){
+            packet.message ?: return
             processMessage(packet.message.unformattedText)
         }
 

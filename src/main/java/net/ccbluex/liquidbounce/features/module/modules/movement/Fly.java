@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
+import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
@@ -65,6 +66,8 @@ public class Fly extends Module {
             "AAC3.3.12-Glide",
             "AAC3.3.13",
             "AAC4.X-Glide",
+            "AAC5.2.0",
+
             // CubeCraft
             "CubeCraft",
 
@@ -236,6 +239,17 @@ public class Fly extends Module {
                 launchY+=0.015625;
                 verusFlyable=true;
                 break;
+            case "aac5.2.0":
+                mc.thePlayer.motionX = 0;
+                mc.thePlayer.motionZ = 0;
+                mc.thePlayer.motionY = 0;
+                if(mc.thePlayer.onGround){
+                    chat("JUMP INTO AIR AND TOGGLE THIS MODULE");
+                    setState(false);
+                }else{
+                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x,1.7976931348623157E+308,z,true));
+                }
+                break;
             case "ncp":
                 if(!mc.thePlayer.onGround)
                     break;
@@ -383,6 +397,11 @@ public class Fly extends Module {
                 }
                 break;
             }
+            case "aac5.2.0":
+                mc.thePlayer.motionX = 0;
+                mc.thePlayer.motionZ = 0;
+                mc.thePlayer.motionY = 0.003;
+                break;
             case "vanilla":
                 mc.thePlayer.capabilities.isFlying = false;
                 mc.thePlayer.motionY = 0;
@@ -829,6 +848,9 @@ public class Fly extends Module {
 
             if (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("BoostHypixel"))
                 packetPlayer.onGround = false;
+
+            if(mode.equalsIgnoreCase("AAC5.2.0"))
+                event.cancelEvent();
         }
 
         if(packet instanceof S08PacketPlayerPosLook) {
@@ -837,6 +859,20 @@ public class Fly extends Module {
             if(mode.equalsIgnoreCase("BoostHypixel")) {
                 failedStart = true;
                 ClientUtils.displayChatMessage("§8[§c§lBoostHypixel-§a§lFly§8] §cSetback detected.");
+            }else if(mode.equalsIgnoreCase("AAC5.2.0")){
+                event.cancelEvent();
+                S08PacketPlayerPosLook s08=(S08PacketPlayerPosLook)packet;
+                mc.thePlayer.setPosition(s08.getX(), s08.getY(), s08.getZ());
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ, s08.getYaw(), s08.getPitch(), false));
+                double dist=0.14;
+                double yaw=Math.toRadians(mc.thePlayer.rotationYaw);
+                mc.thePlayer.setPosition(mc.thePlayer.posX + (-Math.sin(yaw) * dist), mc.thePlayer.posY, mc.thePlayer.posZ + (Math.cos(yaw) * dist));
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+                        mc.thePlayer.posX,
+                        mc.thePlayer.posY,
+                        mc.thePlayer.posZ,
+                        false));
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true));
             }
         }
     }
