@@ -30,7 +30,7 @@ class Step : Module() {
      */
 
     private val modeValue = ListValue("Mode", arrayOf(
-        "Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC4.4.0", "Test", "Spartan", "Rewinside"
+        "Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC4.4.0", "Spartan", "Rewinside"
     ), "NCP")
 
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
@@ -206,12 +206,8 @@ class Step : Module() {
         if(mode.equals("AAC4.4.0", ignoreCase = true)) {
             //chat("setStepHeight")
         }else {
-            if(mode.equals("Test", ignoreCase = true)) {
-                mc.thePlayer.stepHeight = 1.0F
-            }else {
-                mc.thePlayer.stepHeight = height
-                event.stepHeight = height
-            }
+            mc.thePlayer.stepHeight = height
+            event.stepHeight = height
         }
 
         // Detect possible step
@@ -325,19 +321,6 @@ class Step : Module() {
                         NO SKIDDER PLEASE
                         
                     */  
-                }
-                
-                mode.equals("Test", ignoreCase = true) -> {
-                    fakeJump()
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                        stepY + 0.41999850000000, stepZ, false))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                        stepY + 0.75319750000000, stepZ, false))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                        stepY + 1.00000000000000, stepZ, true))
-                    mc.timer.timerSpeed = 0.40F
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                        1.7976931348623157E+308, stepZ, true))
                 }
                 
                 mode.equals("Rewinside", ignoreCase = true) -> {
