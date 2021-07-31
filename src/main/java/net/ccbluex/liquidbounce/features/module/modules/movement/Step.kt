@@ -322,6 +322,7 @@ class Step : Module() {
                         
                     */  
                 }
+                
                 mode.equals("Rewinside", ignoreCase = true) -> {
                     fakeJump()
 
