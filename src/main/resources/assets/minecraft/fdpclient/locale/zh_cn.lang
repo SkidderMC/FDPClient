@@ -912,6 +912,8 @@ module.Scaffold.value.TowerTeleportHeight.name=搭高传送高度
 module.Scaffold.value.TowerTeleportDelay.name=搭高传送延迟
 module.Scaffold.value.TowerTeleportGround.name=搭高传送地面
 module.Scaffold.value.TowerTeleportNoMotion.name=搭高传送无移动
+module.Scaffold.value.MotionSpeedSet.name=移动速度更改
+module.Scaffold.value.MotionSpeed.name=移动速度
 module.Scaffold.value.Counter.name=计数器
 module.Scaffold.value.Mark.name=标记
 

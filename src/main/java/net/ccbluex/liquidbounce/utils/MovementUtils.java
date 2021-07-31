@@ -88,6 +88,36 @@ public final class MovementUtils extends MinecraftInstance {
 
     private static double bps=0.0,lastX=0.0,lastY=0.0,lastZ=0.0;
 
+    public static void setMotion(double speed) {
+        double forward = mc.thePlayer.movementInput.moveForward;
+        double strafe = mc.thePlayer.movementInput.moveStrafe;
+        float yaw = mc.thePlayer.rotationYaw;
+        if ((forward == 0.0D) && (strafe == 0.0D)) {
+            mc.thePlayer.motionX = 0;
+            mc.thePlayer.motionZ = 0;
+        } else {
+            if (forward != 0.0D) {
+                if (strafe > 0.0D) {
+                    yaw += (forward > 0.0D ? -45 : 45);
+                } else if (strafe < 0.0D) {
+                    yaw += (forward > 0.0D ? 45 : -45);
+                }
+                strafe = 0.0D;
+                if (forward > 0.0D) {
+                    forward = 1;
+                } else if (forward < 0.0D) {
+                    forward = -1;
+                }
+            }
+            final double cos = Math.cos(Math.toRadians(yaw + 90.0F));
+            final double sin = Math.sin(Math.toRadians(yaw + 90.0F));
+            mc.thePlayer.motionX = forward * speed * cos
+                    + strafe * speed * sin;
+            mc.thePlayer.motionZ = forward * speed * sin
+                    - strafe * speed * cos;
+        }
+    }
+
     public static void updateBlocksPerSecond() {
         if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 1) {
             bps=0.0;

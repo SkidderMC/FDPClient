@@ -912,6 +912,8 @@ module.Scaffold.value.TowerTeleportHeight.name=TowerTeleportHeight
 module.Scaffold.value.TowerTeleportDelay.name=TowerTeleportDelay
 module.Scaffold.value.TowerTeleportGround.name=TowerTeleportGround
 module.Scaffold.value.TowerTeleportNoMotion.name=TowerTeleportNoMotion
+module.Scaffold.value.MotionSpeedSet.name=MotionSpeedSet
+module.Scaffold.value.MotionSpeed.name=MotionSpeed
 module.Scaffold.value.Counter.name=Counter
 module.Scaffold.value.Mark.name=Mark
 

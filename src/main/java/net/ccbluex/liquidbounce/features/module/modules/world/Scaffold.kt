@@ -113,6 +113,8 @@ class Scaffold : Module() {
 
     // Game
     private val timerValue = FloatValue("Timer", 1f, 0.1f, 5f)
+    private val motionspeedstatus = BoolValue("MotionSpeedSet", false)
+    private val motionspeed = FloatValue("MotionSpeedValue", 0.1f, 0.05f, 1f)
     private val speedModifierValue = FloatValue("SpeedModifier", 1f, 0f, 2f)
 
     // Tower
@@ -373,6 +375,7 @@ class Scaffold : Module() {
         val eventState = event.eventState
         towerStatus = false;
         // Tower
+        if(motionspeedstatus.get()) MovementUtils.setMotion(motionspeed.get().toDouble())
         towerStatus = (!stopWhenBlockAbove.get() || BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 2, mc.thePlayer.posZ)) is BlockAir)
         if(towerStatus) {
             //further checks
