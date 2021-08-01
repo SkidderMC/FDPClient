@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -41,6 +42,7 @@ import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.max
@@ -153,7 +155,7 @@ class KillAura : Module() {
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50)
 
     // Visuals
-    private val markValue = BoolValue("Mark", true)
+    private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
     private val fakeSharpValue = BoolValue("FakeSharp", true)
 
     /**
@@ -162,12 +164,12 @@ class KillAura : Module() {
 
     // Target
     var target: EntityLivingBase? = null
-    private var markEntity: EntityLivingBase? = null
     private val markTimer=MSTimer()
     private var currentTarget: EntityLivingBase? = null
     private var hitable = false
     private val prevTargetEntities = mutableListOf<Int>()
     private val discoveredTargets = mutableListOf<EntityLivingBase>()
+    private val inRangeDiscoveredTargets = mutableListOf<EntityLivingBase>()
 
     // Attack delay
     private val attackTimer = MSTimer()
@@ -367,74 +369,135 @@ class KillAura : Module() {
             attackDelay = TimeUtils.randomClickDelay(minCPS.get(), maxCPS.get())
         }
 
-        if (markValue.get() && markEntity!=null){
-            if(markTimer.hasTimePassed(500) || markEntity!!.isDead){
-                markEntity=null
-                return
-            }
-            //can mark
-            val drawTime = (System.currentTimeMillis() % 2000).toInt()
-            val drawMode=drawTime>1000
-            var drawPercent=drawTime/1000.0
-            //true when goes up
-            if(!drawMode){
-                drawPercent=1-drawPercent
-            }else{
-                drawPercent-=1
-            }
-            drawPercent=EaseUtils.easeInOutQuad(drawPercent)
-            val points = mutableListOf<Vec3>()
-            val bb=markEntity!!.entityBoundingBox
-            val radius=bb.maxX-bb.minX
-            val height=bb.maxY-bb.minY
-            val posX = markEntity!!.lastTickPosX + (markEntity!!.posX - markEntity!!.lastTickPosX) * mc.timer.renderPartialTicks
-            var posY = markEntity!!.lastTickPosY + (markEntity!!.posY - markEntity!!.lastTickPosY) * mc.timer.renderPartialTicks
-            if(drawMode){
-                posY-=0.5
-            }else{
-                posY+=0.5
-            }
-            val posZ = markEntity!!.lastTickPosZ + (markEntity!!.posZ - markEntity!!.lastTickPosZ) * mc.timer.renderPartialTicks
-            for(i in 0..360 step 7){
-                points.add(Vec3(posX - sin(i * Math.PI / 180F) * radius,posY+height*drawPercent,posZ + cos(i * Math.PI / 180F) * radius))
-            }
-            points.add(points[0])
-            //draw
-            mc.entityRenderer.disableLightmap()
-            GL11.glPushMatrix()
-            GL11.glDisable(GL11.GL_TEXTURE_2D)
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            GL11.glEnable(GL11.GL_LINE_SMOOTH)
-            GL11.glEnable(GL11.GL_BLEND)
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
-            GL11.glBegin(GL11.GL_LINE_STRIP)
-            val baseMove=(if(drawPercent>0.5){1-drawPercent}else{drawPercent})*2
-            val min=(height/60)*20*(1-baseMove)*(if(drawMode){-1}else{1})
-            for(i in 0..20) {
-                var moveFace=(height/60F)*i*baseMove
-                if(drawMode){
-                    moveFace=-moveFace
+        when(markValue.get().toLowerCase()){
+            "liquid" -> {
+                discoveredTargets.forEach {
+                    RenderUtils.drawPlatform(it, if (it.hurtTime<=0) Color(37, 126, 255, 170) else Color(255, 0, 0, 170))
                 }
-                val firstPoint=points[0]
-                GL11.glVertex3d(
-                    firstPoint.xCoord - mc.renderManager.viewerPosX, firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY,
-                    firstPoint.zCoord - mc.renderManager.viewerPosZ
-                )
-                GL11.glColor4f(1F, 1F, 1F, 0.7F*(i/20F))
-                for (vec3 in points) {
-                    GL11.glVertex3d(
-                        vec3.xCoord - mc.renderManager.viewerPosX, vec3.yCoord - moveFace - min - mc.renderManager.viewerPosY,
-                        vec3.zCoord - mc.renderManager.viewerPosZ
-                    )
-                }
-                GL11.glColor4f(0F,0F,0F,0F)
             }
-            GL11.glEnd()
-            GL11.glEnable(GL11.GL_DEPTH_TEST)
-            GL11.glDisable(GL11.GL_LINE_SMOOTH)
-            GL11.glDisable(GL11.GL_BLEND)
-            GL11.glEnable(GL11.GL_TEXTURE_2D)
-            GL11.glPopMatrix()
+            "block" -> {
+                discoveredTargets.forEach {
+                    val bb=it.entityBoundingBox
+                    it.entityBoundingBox=bb.expand(0.2,0.2,0.2)
+                    RenderUtils.drawEntityBox(it, if (it.hurtTime<=0) Color.GREEN else Color.RED, true, true, 4f)
+                    it.entityBoundingBox=bb
+                }
+            }
+            "fdp" -> {
+                val drawTime = (System.currentTimeMillis() % 1500).toInt()
+                val drawMode=drawTime>750
+                var drawPercent=drawTime/750.0
+                //true when goes up
+                if(!drawMode){
+                    drawPercent=1-drawPercent
+                }else{
+                    drawPercent-=1
+                }
+                drawPercent=EaseUtils.easeInOutQuad(drawPercent)
+                discoveredTargets.forEach {
+                    GL11.glPushMatrix()
+                    GL11.glDisable(3553)
+                    GL11.glEnable(2848)
+                    GL11.glEnable(2881)
+                    GL11.glEnable(2832)
+                    GL11.glEnable(3042)
+                    GL11.glBlendFunc(770, 771)
+                    GL11.glHint(3154, 4354)
+                    GL11.glHint(3155, 4354)
+                    GL11.glHint(3153, 4354)
+                    GL11.glDisable(2929)
+                    GL11.glDepthMask(false)
+
+                    val bb=it.entityBoundingBox
+                    val radius=(bb.maxX-bb.minX)+0.3
+                    val height=bb.maxY-bb.minY
+                    val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                    val y = (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
+                    val z = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    GL11.glLineWidth((radius*5f).toFloat())
+                    GL11.glBegin(3)
+                    for (i in 0..360) {
+                        val rainbow = Color(Color.HSBtoRGB((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)).toFloat() % 1.0f, 0.7f, 1.0f))
+                        GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
+                        GL11.glVertex3d(x + radius * cos(i * 6.283185307179586 / 45.0), y, z + radius * sin(i * 6.283185307179586 / 45.0))
+                    }
+                    GL11.glEnd()
+
+                    GL11.glDepthMask(true)
+                    GL11.glEnable(2929)
+                    GL11.glDisable(2848)
+                    GL11.glDisable(2881)
+                    GL11.glEnable(2832)
+                    GL11.glEnable(3553)
+                    GL11.glPopMatrix()
+                }
+            }
+            "jello" -> {
+                discoveredTargets.forEach {
+                    val drawTime = (System.currentTimeMillis() % 2000).toInt()
+                    val drawMode=drawTime>1000
+                    var drawPercent=drawTime/1000.0
+                    //true when goes up
+                    if(!drawMode){
+                        drawPercent=1-drawPercent
+                    }else{
+                        drawPercent-=1
+                    }
+                    drawPercent=EaseUtils.easeInOutQuad(drawPercent)
+                    val points = mutableListOf<Vec3>()
+                    val bb=it.entityBoundingBox
+                    val radius=bb.maxX-bb.minX
+                    val height=bb.maxY-bb.minY
+                    val posX = it.lastTickPosX + (it.posX - it.lastTickPosX) * mc.timer.renderPartialTicks
+                    var posY = it.lastTickPosY + (it.posY - it.lastTickPosY) * mc.timer.renderPartialTicks
+                    if(drawMode){
+                        posY-=0.5
+                    }else{
+                        posY+=0.5
+                    }
+                    val posZ = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * mc.timer.renderPartialTicks
+                    for(i in 0..360 step 7){
+                        points.add(Vec3(posX - sin(i * Math.PI / 180F) * radius,posY+height*drawPercent,posZ + cos(i * Math.PI / 180F) * radius))
+                    }
+                    points.add(points[0])
+                    //draw
+                    mc.entityRenderer.disableLightmap()
+                    GL11.glPushMatrix()
+                    GL11.glDisable(GL11.GL_TEXTURE_2D)
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                    GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                    GL11.glEnable(GL11.GL_BLEND)
+                    GL11.glDisable(GL11.GL_DEPTH_TEST)
+                    GL11.glBegin(GL11.GL_LINE_STRIP)
+                    val baseMove=(if(drawPercent>0.5){1-drawPercent}else{drawPercent})*2
+                    val min=(height/60)*20*(1-baseMove)*(if(drawMode){-1}else{1})
+                    for(i in 0..20) {
+                        var moveFace=(height/60F)*i*baseMove
+                        if(drawMode){
+                            moveFace=-moveFace
+                        }
+                        val firstPoint=points[0]
+                        GL11.glVertex3d(
+                            firstPoint.xCoord - mc.renderManager.viewerPosX, firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY,
+                            firstPoint.zCoord - mc.renderManager.viewerPosZ
+                        )
+                        GL11.glColor4f(1F, 1F, 1F, 0.7F*(i/20F))
+                        for (vec3 in points) {
+                            GL11.glVertex3d(
+                                vec3.xCoord - mc.renderManager.viewerPosX, vec3.yCoord - moveFace - min - mc.renderManager.viewerPosY,
+                                vec3.zCoord - mc.renderManager.viewerPosZ
+                            )
+                        }
+                        GL11.glColor4f(0F,0F,0F,0F)
+                    }
+                    GL11.glEnd()
+                    GL11.glEnable(GL11.GL_DEPTH_TEST)
+                    GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                    GL11.glDisable(GL11.GL_BLEND)
+                    GL11.glEnable(GL11.GL_TEXTURE_2D)
+                    GL11.glPopMatrix()
+                }
+            }
         }
     }
 
@@ -482,7 +545,7 @@ class KillAura : Module() {
             if (!targetModeValue.get().equals("Multi", ignoreCase = true)) {
                 attackEntity(currentTarget!!)
             } else {
-                discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < getRange(it)  }.forEachIndexed { index, entity ->
+                inRangeDiscoveredTargets.forEachIndexed { index, entity ->
                     if(limitedMultiTargetsValue.get()==0 || index<limitedMultiTargetsValue.get())
                         attackEntity(entity)
                 }
@@ -533,16 +596,6 @@ class KillAura : Module() {
                 discoveredTargets.add(entity)
         }
 
-        // Cleanup last targets when no targets found and try again
-        if (discoveredTargets.isEmpty()) {
-            if (prevTargetEntities.isNotEmpty()) {
-                prevTargetEntities.clear()
-                updateTarget()
-            }
-
-            return
-        }
-
         // Sort targets by priority
         when (priorityValue.get().toLowerCase()) {
             "distance" -> discoveredTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) } // Sort by distance
@@ -550,6 +603,18 @@ class KillAura : Module() {
             "direction" -> discoveredTargets.sortBy { RotationUtils.getRotationDifference(it) } // Sort by FOV
             "livingtime" -> discoveredTargets.sortBy { -it.ticksExisted } // Sort by existence
             "armor" -> discoveredTargets.sortBy { it.totalArmorValue } // Sort by armor
+        }
+
+        inRangeDiscoveredTargets.clear()
+        inRangeDiscoveredTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)<getRange(it) })
+
+        // Cleanup last targets when no targets found and try again
+        if (inRangeDiscoveredTargets.isEmpty()) {
+            if (prevTargetEntities.isNotEmpty()) {
+                prevTargetEntities.clear()
+                updateTarget()
+            }
+            return
         }
 
         // Find best target
@@ -578,7 +643,6 @@ class KillAura : Module() {
 
         // Call attack event
         LiquidBounce.eventManager.callEvent(AttackEvent(entity))
-        markEntity = entity
         markTimer.reset()
 
         // Attack target

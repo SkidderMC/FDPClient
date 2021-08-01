@@ -345,7 +345,7 @@ public final class RenderUtils extends MinecraftInstance {
         if (outline) {
             glLineWidth(outlineWidth);
             enableGlCap(GL_LINE_SMOOTH);
-            glColor(color.getRed(), color.getGreen(), color.getBlue(), 95);
+            glColor(color.getRed(), color.getGreen(), color.getBlue(), box?170:255);
             drawSelectionBoundingBox(axisAlignedBB);
         }
 

@@ -1,5 +1,5 @@
 version = "v1"
-group = "me.method17"
+group = "org.unlegitmc.fdp"
 
 buildscript {
     repositories {
