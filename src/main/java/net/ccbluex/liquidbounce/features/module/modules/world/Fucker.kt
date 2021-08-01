@@ -66,7 +66,7 @@ object Fucker : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (noHitValue.get()) {
-            val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
+            val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)
 
             if (killAura.state && killAura.target != null)
                 return
@@ -130,7 +130,7 @@ object Fucker : Module() {
             // Destory block
             actionValue.get().equals("destroy", true) || surroundings -> {
                 // Auto Tool
-                val autoTool = LiquidBounce.moduleManager[AutoTool::class.java] as AutoTool
+                val autoTool = LiquidBounce.moduleManager[AutoTool::class.java]
                 if (autoTool.state)
                     autoTool.switchSlot(currentPos)
 

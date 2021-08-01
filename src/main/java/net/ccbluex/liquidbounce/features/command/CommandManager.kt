@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command
 
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.ReflectUtils
 import org.reflections.Reflections
 
 class CommandManager {
@@ -18,8 +19,8 @@ class CommandManager {
      * Register all default commands
      */
     fun registerCommands() {
-        Reflections("${this.javaClass.`package`.name}.commands")
-            .getSubTypesOf(Command::class.java).forEach(this::registerCommand)
+        ReflectUtils.getReflects("${this.javaClass.`package`.name}.commands",Command::class.java)
+            .forEach(this::registerCommand)
     }
 
     /**

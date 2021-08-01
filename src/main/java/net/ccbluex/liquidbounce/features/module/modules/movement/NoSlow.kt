@@ -85,7 +85,7 @@ class NoSlow : Module() {
                 }
             }
         }else{
-            val killAura = LiquidBounce.moduleManager[KillAura::class.java] as KillAura
+            val killAura = LiquidBounce.moduleManager[KillAura::class.java]
             if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
                 return
             }

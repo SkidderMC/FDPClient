@@ -11,7 +11,7 @@ class RedeSkyHopOld: SpeedMode("RedeSkyHopOld") {
             mc.thePlayer.isSprinting = true
             mc.timer.timerSpeed = 1F
             if (mc.thePlayer.onGround) {
-                val speedModule=LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
+                val speedModule=LiquidBounce.moduleManager.getModule(Speed::class.java)
 
                 mc.thePlayer.motionY=speedModule.redeSkyHeight.get().toDouble()
                 MovementUtils.strafe(MovementUtils.getSpeed()

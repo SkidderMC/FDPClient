@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.ReflectUtils
 import org.lwjgl.input.Keyboard
 import org.reflections.Reflections
 import java.util.*
@@ -33,8 +34,8 @@ class ModuleManager : Listenable {
     fun registerModules() {
         ClientUtils.getLogger().info("[ModuleManager] Loading modules...")
 
-        Reflections("${this.javaClass.`package`.name}.modules")
-            .getSubTypesOf(Module::class.java).forEach(this::registerModule)
+        ReflectUtils.getReflects("${this.javaClass.`package`.name}.modules",Module::class.java)
+            .forEach(this::registerModule)
 
         modules.forEach{ it.onInitialize() }
 

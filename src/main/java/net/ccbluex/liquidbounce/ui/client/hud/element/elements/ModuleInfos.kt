@@ -5,13 +5,13 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
-import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.NotUsable
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -20,11 +20,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-
-/**
- * @author liulihaocai
- * InventoryHUD
- */
+@NotUsable
 @ElementInfo(name = "ModuleInfos")
 class ModuleInfos : Element(300.0,100.0,1F, Side(Side.Horizontal.RIGHT,Side.Vertical.UP)) {
     private val bgRedValue = IntegerValue("BGRed", 0, 0, 255)
@@ -103,15 +99,6 @@ class ModuleInfos : Element(300.0,100.0,1F, Side(Side.Horizontal.RIGHT,Side.Vert
         } else {
             font.drawStringWithShadow("LongJump:", 5F, 45F, Color(255, 255, 255).rgb) +
                     font.drawStringWithShadow(" " + this.q + " Binds： " + Keyboard.getKeyName(longjump.keyBind), 70F, 45F, Color(255, 255, 255).rgb)
-        }
-
-        val targetstrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java) as TargetStrafe?
-        if(targetstrafe!!.state){
-            font.drawStringWithShadow("TargetStrafe:", 5F, 55F, Color(255, 255, 255).rgb) +
-                    font.drawStringWithShadow(" " + this.i + " Binds： " + Keyboard.getKeyName(targetstrafe.keyBind), 70F, 55F, Color(255, 255, 255).rgb)
-        } else {
-            font.drawStringWithShadow("TargetStrafe:", 5F, 55F, Color(255, 255, 255).rgb) +
-                    font.drawStringWithShadow(" " + this.q + " Binds： " + Keyboard.getKeyName(targetstrafe.keyBind), 70F, 55F, Color(255, 255, 255).rgb)
         }
 
         return Border(0F,startY,174F,66F)

@@ -69,7 +69,7 @@ class AutoWeapon : Module() {
     }
 
     @EventTarget
-    fun onUpdate(update: UpdateEvent) {
+    fun onUpdate(event: UpdateEvent) {
         // Switch back to old item after some time
         if (spoofedSlot > 0) {
             if (spoofedSlot == 1)

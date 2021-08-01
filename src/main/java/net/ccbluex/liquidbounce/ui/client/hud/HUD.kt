@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.ReflectUtils
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
 import org.reflections.Reflections
@@ -24,8 +25,8 @@ open class HUD : MinecraftInstance() {
 
     companion object {
 
-        val elements = Reflections("${HUD::class.java.`package`.name}.element.elements")
-            .getSubTypesOf(Element::class.java).toTypedArray()
+        val elements = ReflectUtils.getReflects("${HUD::class.java.`package`.name}.element.elements",Element::class.java)
+            .toTypedArray()
 
         /**
          * Create default HUD

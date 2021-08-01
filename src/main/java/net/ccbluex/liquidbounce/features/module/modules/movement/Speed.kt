@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.ReflectUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -20,8 +21,8 @@ import org.reflections.Reflections
 
 @ModuleInfo(name = "Speed", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
 class Speed : Module() {
-    val modes=Reflections("${this.javaClass.`package`.name}.speeds")
-        .getSubTypesOf(SpeedMode::class.java).map { it.newInstance() as SpeedMode }
+    val modes=ReflectUtils.getReflects("${this.javaClass.`package`.name}.speeds",SpeedMode::class.java)
+        .map { it.newInstance() as SpeedMode }
         .sortedBy { it.modeName }
 
     val mode: SpeedMode

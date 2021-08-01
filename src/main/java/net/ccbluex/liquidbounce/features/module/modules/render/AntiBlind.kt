@@ -39,7 +39,7 @@ class AntiBlind : Module() {
 
     @EventTarget(ignoreCondition = true)
     fun onUpdate(event: UpdateEvent?) {
-        if (state || LiquidBounce.moduleManager.getModule(XRay::class.java)!!.state) {
+        if (state || LiquidBounce.moduleManager.getModule(XRay::class.java).state) {
             when (bright.get().toLowerCase()) {
                 "gamma" -> if (mc.gameSettings.gammaSetting <= 100f) mc.gameSettings.gammaSetting++
                 "nightvision" -> mc.thePlayer.addPotionEffect(PotionEffect(Potion.nightVision.id, 1337, 1))

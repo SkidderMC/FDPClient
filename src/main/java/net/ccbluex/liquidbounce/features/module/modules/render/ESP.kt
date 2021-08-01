@@ -235,7 +235,7 @@ class ESP : Module() {
             //draw
             for ((key, value) in entityMap) {
                 shader.startDraw(partialTicks)
-                for (entity in value!!) {
+                for (entity in value) {
                     mc.renderManager.renderEntityStatic(entity, partialTicks, true)
                 }
                 shader.stopDraw(key, radius, 1f)

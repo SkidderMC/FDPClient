@@ -115,7 +115,7 @@ class ChestStealer : Module() {
             return
 
         // inventory cleaner
-        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java] as InventoryCleaner
+        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]
 
         // Is empty?
         if (!isEmpty(screen) && !(closeOnFullValue.get() && fullInventory)) {
@@ -174,7 +174,7 @@ class ChestStealer : Module() {
     }
 
     private fun isEmpty(chest: GuiChest): Boolean {
-        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java] as InventoryCleaner
+        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]
 
         for (i in 0 until chest.inventoryRows * 9) {
             val slot = chest.inventorySlots.inventorySlots[i]

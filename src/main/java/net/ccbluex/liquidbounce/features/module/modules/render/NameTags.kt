@@ -46,7 +46,7 @@ class NameTags : Module() {
         for(entity in mc.theWorld.loadedEntityList) {
             if(EntityUtils.isSelected(entity, false)) {
                 renderNameTag(entity as EntityLivingBase,
-                    if(hackerValue.get()&&(LiquidBounce.moduleManager.getModule(HackerDetector::class.java) as HackerDetector).isHacker(entity))
+                    if(hackerValue.get()&&(LiquidBounce.moduleManager.getModule(HackerDetector::class.java)).isHacker(entity))
                     { "§c" }else{ "" } + if(!modeValue.get().equals("Liquid",ignoreCase = true)&&AntiBot.isBot(entity)){ "§e" }else{ "" }
                             + if (clearNamesValue.get()){ entity.name } else { entity.getDisplayName().unformattedText })
             }

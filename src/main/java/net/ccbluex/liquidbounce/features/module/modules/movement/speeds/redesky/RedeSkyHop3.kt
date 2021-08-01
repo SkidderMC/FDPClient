@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 class RedeSkyHop3 : SpeedMode("RedeSkyHop3") {
     override fun onMotion() {
         if(MovementUtils.isMoving()) {
-            val speedModule=LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
+            val speedModule=LiquidBounce.moduleManager.getModule(Speed::class.java)
             if (mc.thePlayer.onGround) {
                 mc.thePlayer.motionY=speedModule.redeSkyHeight.get().toDouble()
             } else {

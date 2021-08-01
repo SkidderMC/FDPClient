@@ -164,7 +164,7 @@ class Velocity : Module() {
 
                     // Reduce Y
                     if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get()
-                            && !LiquidBounce.moduleManager[Speed::class.java]!!.state)
+                            && !LiquidBounce.moduleManager[Speed::class.java].state)
                         mc.thePlayer.motionY -= 0.014999993
                 }
 
@@ -297,7 +297,7 @@ class Velocity : Module() {
                         return
                     }
                     
-                    val target=LiquidBounce.combatManager.getNearByEntity((LiquidBounce.moduleManager.get(KillAura::class.java) as KillAura).rangeValue.get()+1) ?: return
+                    val target=LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager.get(KillAura::class.java).rangeValue.get()+1) ?: return
                     mc.thePlayer.motionX=0.0
                     mc.thePlayer.motionZ=0.0
                     packet.motionX = 0
@@ -320,7 +320,7 @@ class Velocity : Module() {
                             return
                     }
 
-                    val target=LiquidBounce.combatManager.getNearByEntity((LiquidBounce.moduleManager.get(KillAura::class.java) as KillAura).rangeValue.get()) ?: return
+                    val target=LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager.get(KillAura::class.java).rangeValue.get()) ?: return
                     if(rspAlwaysValue.get()){
                         mc.thePlayer.motionX=0.0
                         mc.thePlayer.motionZ=0.0
