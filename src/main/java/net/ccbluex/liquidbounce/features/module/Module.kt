@@ -15,11 +15,14 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.RegexUtils
+import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
 import java.io.File
 import java.io.FileReader
+import java.util.regex.Pattern
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
@@ -48,6 +51,10 @@ open class Module : MinecraftInstance(), Listenable {
     val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
     var splicedName=""
         get() {
+//            val translatedName=LanguageManager.replace(localizedName)
+//            if(field.replace(" ","") != translatedName){
+//                field=StringUtils.toCompleteString(RegexUtils.match(translatedName, "[A-Z][a-z]*"))
+//            }
             if(field.isEmpty()){
                 // TODO: Use Regex to split it
                 val sb=StringBuilder()

@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.utils
 
 import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 object RegexUtils {
     @JvmStatic
@@ -12,5 +13,15 @@ object RegexUtils {
         }
 
         return result.toTypedArray()
+    }
+
+    @JvmStatic
+    fun match(text: String, pattern: Pattern):Array<String>{
+        return match(pattern.matcher(text))
+    }
+
+    @JvmStatic
+    fun match(text: String, pattern: String):Array<String>{
+        return match(text, Pattern.compile(pattern))
     }
 }
