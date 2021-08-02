@@ -77,9 +77,19 @@ class KillAura : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
 
     // Range
-    val rangeValue = FloatValue("Range", 3.7f, 1f, 8f)
-    private val throughWallsRangeValue = FloatValue("ThroughWallsRange", 1.5f, 0f, 8f)
-    private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 10f)
+    val rangeValue = object : FloatValue("Range", 3.7f, 1f, 8f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val i = discoverRangeValue.get()
+            if (i < newValue) set(i)
+        }
+    }
+    private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 1.5f, 0f, 8f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val i = rangeValue.get()
+            if (i < newValue) set(i)
+        }
+    }
+    private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 15f)
     private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f)
 
     // Modes
@@ -92,10 +102,14 @@ class KillAura : Module() {
 
     // AutoBlock
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Off"),"Off")
-    private val autoBlockRangeValue = FloatValue("AutoBlockRange", 2.5f, 0f, 8f)
+    private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val i = discoverRangeValue.get()
+            if (i < newValue) set(i)
+        }
+    }
     private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"),"AfterTick")
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
-    private val autoBlockFacing = BoolValue("AutoBlockFacing",false)
     private val blockRate = IntegerValue("BlockRate", 100, 1, 100)
 
     // Raycast
@@ -218,7 +232,7 @@ class KillAura : Module() {
 
         if (!event.isPre()) {
             // AutoBlock
-            if (!autoBlockValue.get().equals("off",true) && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.get().equals("AfterAttack",true)||discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)>maxRange }.isNotEmpty()) && canBlock()) {
+            if (!autoBlockValue.get().equals("off",true) && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.get().equals("AfterAttack",true)||discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)>maxRange }.isNotEmpty()) && canBlock) {
                 val target=discoveredTargets[0]
                 if(mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get())
                     startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target)<maxRange))
@@ -609,11 +623,9 @@ class KillAura : Module() {
         inRangeDiscoveredTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)<getRange(it) })
 
         // Cleanup last targets when no targets found and try again
-        if (inRangeDiscoveredTargets.isEmpty()) {
-            if (prevTargetEntities.isNotEmpty()) {
-                prevTargetEntities.clear()
-                updateTarget()
-            }
+        if (inRangeDiscoveredTargets.isEmpty()&&prevTargetEntities.isNotEmpty()) {
+            prevTargetEntities.clear()
+            updateTarget()
             return
         }
 
@@ -683,7 +695,7 @@ class KillAura : Module() {
         }
 
         // Start blocking after attack
-        if (mc.thePlayer.isBlocking || (!autoBlockValue.get().equals("off",true) && canBlock())) {
+        if (mc.thePlayer.isBlocking || (!autoBlockValue.get().equals("off",true) && canBlock)) {
             if(autoBlockPacketValue.get().equals("AfterTick",true))
                 return
 
@@ -807,17 +819,8 @@ class KillAura : Module() {
     /**
      * Check if player is able to block
      */
-    private fun canBlock(): Boolean {
-        return if(mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword){
-            if(autoBlockFacing.get()&&(target!!.getDistanceToEntityBox(mc.thePlayer)<maxRange)){
-                target!!.rayTrace(maxRange.toDouble(),1F).typeOfHit != MovingObjectPosition.MovingObjectType.MISS
-            }else{
-                true
-            }
-        }else{
-            false
-        }
-    }
+    private val canBlock: Boolean
+        get() = mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
 
     /**
      * Range

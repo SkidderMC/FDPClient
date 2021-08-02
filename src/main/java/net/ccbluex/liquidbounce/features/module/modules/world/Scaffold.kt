@@ -243,7 +243,7 @@ class Scaffold : Module() {
         //if(tolleyStayTick>100) tolleyStayTick=100
         if(towerStatus && towerModeValue.get().toLowerCase()!="aac3.3.9" && towerModeValue.get().toLowerCase()!="aac4.4constant" && towerModeValue.get().toLowerCase()!="aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if(!towerStatus) mc.timer.timerSpeed = timerValue.get()
-        if (towerStatus) {
+        if (towerStatus || mc.thePlayer.isCollidedHorizontally) {
             canSameY = false
             lastGroundY = mc.thePlayer.posY.toInt()
         } else {
