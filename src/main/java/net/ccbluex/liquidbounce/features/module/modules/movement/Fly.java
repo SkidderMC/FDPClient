@@ -142,6 +142,7 @@ public class Fly extends Module {
     private final IntegerValue aac520Append = new IntegerValue("AAC5.2.0Append",13,5,30);
     private final FloatValue aac520AppendTimer = new FloatValue("AAC5.2.0FastAppendTimer",0.4f,0.1f,0.7f);
     private final FloatValue aac520MaxTimer = new FloatValue("AAC5.2.0FastMaxTimer",1.2f,1f,3f);
+    private final IntegerValue aac520Purse = new IntegerValue("AAC5.2.0Purse",7,3,20);
     private final BoolValue rssDropoff = new BoolValue("RSSmoothDropoffA", true);
 
     private final BoolValue motionResetValue = new BoolValue("MotionReset", false);
@@ -915,7 +916,7 @@ public class Fly extends Module {
             if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")){
                 aac5C03List.add(packetPlayer);
                 event.cancelEvent();
-                if(aac5C03List.size()>6)
+                if(aac5C03List.size()>aac520Purse.get())
                     sendAAC5Packets();
             }
         }
@@ -1136,11 +1137,17 @@ public class Fly extends Module {
     private final ArrayList<C03PacketPlayer> aac5C03List=new ArrayList<>();
 
     private void sendAAC5Packets(){
+        float yaw=mc.thePlayer.rotationYaw;
+        float pitch=mc.thePlayer.rotationPitch;
         for(C03PacketPlayer packet : aac5C03List){
             PacketUtils.sendPacketNoEvent(packet);
             if(packet.isMoving()){
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,1e+159,packet.z, 0, 0, true));
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,packet.y,packet.z, 0, 0, true));
+                if(packet.getRotating()){
+                    yaw=packet.yaw;
+                    pitch=packet.pitch;
+                }
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,1e+159,packet.z, yaw, pitch, true));
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,packet.y,packet.z, yaw, pitch, true));
             }
         }
         aac5C03List.clear();
