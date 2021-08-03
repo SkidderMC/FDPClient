@@ -117,6 +117,8 @@ class PacketEvent(val packet: Packet<*>, val type: Type) : CancellableEvent() {
         RECEIVE,
         SEND
     }
+
+    fun isServerSide() = type==Type.RECEIVE
 }
 
 /**
