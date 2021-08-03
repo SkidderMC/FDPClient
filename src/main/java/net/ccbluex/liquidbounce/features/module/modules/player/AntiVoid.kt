@@ -19,7 +19,7 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val modeValue=ListValue("Mode", arrayOf("Blink","TPBack","FlyFlag","GroundSpoof"),"Blink")
+    private val modeValue=ListValue("Mode", arrayOf("Blink","TPBack","FlyFlag","GroundSpoof","TestMinemora"),"Blink")
     private val fallModeValue=ListValue("FallCheckMode", arrayOf("GroundDist","PredictFall","FallDist"),"FallDist")
     private val maxFallDistValue=FloatValue("MaxFallDistance",10F,5F,20F)
     private val resetMotion=BoolValue("ResetMotion",false)
@@ -140,6 +140,17 @@ class AntiVoid : Module() {
                     }
                 }
             }
+
+            "testminemora" -> {
+                if (mc.thePlayer.onGround && BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)) !is BlockAir) {
+                    posX = mc.thePlayer.prevPosX
+                    posY = mc.thePlayer.prevPosY
+                    posZ = mc.thePlayer.prevPosZ
+                }
+                if(willVoid(maxFallDistValue.get())) {
+                    mc.thePlayer.setPositionAndUpdate(posX, posY, posZ)
+                }
+            }
         }
     }
 
@@ -147,17 +158,27 @@ class AntiVoid : Module() {
     fun onPacket(event: PacketEvent){
         val packet=event.packet
 
-        when(modeValue.get().toLowerCase()){
+        when(modeValue.get().toLowerCase()) {
             "blink" -> {
-                if(blink && (packet is C03PacketPlayer)){
+                if (blink && (packet is C03PacketPlayer)) {
                     packetCache.add(packet)
                     event.cancelEvent()
                 }
             }
 
             "groundspoof" -> {
-                if(canSpoof&&(packet is C03PacketPlayer)){
-                    packet.onGround=true
+                if (canSpoof && (packet is C03PacketPlayer)) {
+                    packet.onGround = true
+                }
+            }
+
+            "testminemora" -> {
+                if(willVoid(maxFallDistValue.get()) && (packet is C03PacketPlayer) && BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)) is BlockAir) {
+                    var ran1 = Math.random() * 10
+                    packet.x += ran1
+                    packet.y = 1.7976931348623157E+308
+                    packet.z -= ran1
+                    packet.onGround = true
                 }
             }
         }
