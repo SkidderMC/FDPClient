@@ -10,10 +10,6 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
-import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
-import net.ccbluex.liquidbounce.features.module.modules.player.Blink
-import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
@@ -34,11 +30,13 @@ import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
-import net.minecraft.util.*
+import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.MathHelper
+import net.minecraft.util.Vec3
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
@@ -268,7 +266,7 @@ class KillAura : Module() {
 
         update()
 
-        if(strafeOnlyGroundValue.get()&&!mc.thePlayer.onGround || LiquidBounce.moduleManager[Scaffold::class.java].state)
+        if(strafeOnlyGroundValue.get()&&!mc.thePlayer.onGround)
             return
 
         if (discoveredTargets.isNotEmpty() && RotationUtils.targetRotation != null) {
@@ -339,6 +337,8 @@ class KillAura : Module() {
             currentTarget = null
             hitable = false
             stopBlocking()
+            discoveredTargets.clear()
+            inRangeDiscoveredTargets.clear()
             return
         }
 
@@ -375,6 +375,8 @@ class KillAura : Module() {
             currentTarget = null
             hitable = false
             stopBlocking()
+            discoveredTargets.clear()
+            inRangeDiscoveredTargets.clear()
         }
         if (currentTarget != null && attackTimer.hasTimePassed(attackDelay) &&
             currentTarget!!.hurtTime <= hurtTimeValue.get()) {
@@ -807,7 +809,6 @@ class KillAura : Module() {
      */
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
-                || LiquidBounce.moduleManager[Blink::class.java].state || LiquidBounce.moduleManager[FreeCam::class.java].state
 
     /**
      * Check if [entity] is alive

@@ -51,8 +51,6 @@ class CustomSpeed : SpeedMode("Custom") {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
         }
-
-        ClientUtils.displayAlert("Speed=${MovementUtils.getSpeed()}")
     }
 
     override fun onEnable() {
