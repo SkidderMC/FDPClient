@@ -27,7 +27,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.network.play.server.S00PacketKeepAlive;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S19PacketEntityStatus;
 import net.minecraft.potion.Potion;
@@ -144,7 +143,7 @@ public class Fly extends Module {
     private final FloatValue aac520AppendTimer = new FloatValue("AAC5.2.0FastAppendTimer",0.4f,0.1f,0.7f);
     private final FloatValue aac520MaxTimer = new FloatValue("AAC5.2.0FastMaxTimer",1.2f,1f,3f);
     private final IntegerValue aac520Purse = new IntegerValue("AAC5.2.0Purse",7,3,20);
-    private final BoolValue aacapValue = new BoolValue("AACAP Support", false);
+    private final BoolValue aac520UseC04 = new BoolValue("AAC5.2.0UseC04", false);
     private final BoolValue rssDropoff = new BoolValue("RSSmoothDropoffA", true);
 
     private final BoolValue motionResetValue = new BoolValue("MotionReset", false);
@@ -375,14 +374,7 @@ public class Fly extends Module {
                 break;
             }
             case "aac5.2.0-vanilla":{
-                if(aacapValue.get()){
-                    testAAC5Packets();
-                    ClientUtils.displayChatMessage("aacap");
-                }
-                else {
-                    sendAAC5Packets();
-                    ClientUtils.displayChatMessage("aac5");
-                }
+                sendAAC5Packets();
                 break;
             }
         }
@@ -926,16 +918,8 @@ public class Fly extends Module {
                 aac5C03List.add(packetPlayer);
                 event.cancelEvent();
                 if(aac5C03List.size()>aac520Purse.get()) {
-                    if(aacapValue.get()){
-                        testAAC5Packets();
-                        ClientUtils.displayChatMessage("aacap");
-                    }
-                    else {
-                        sendAAC5Packets();
-                        ClientUtils.displayChatMessage("aac5");
-                    }
+                    sendAAC5Packets();
                 }
-
             }
         }
 
@@ -1164,22 +1148,17 @@ public class Fly extends Module {
                     yaw=packet.yaw;
                     pitch=packet.pitch;
                 }
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,1e+159,packet.z, yaw, pitch, true));
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,packet.y,packet.z, yaw, pitch, true));
+                if(aac520UseC04.get()){
+                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,1e+159,packet.z, true));
+                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z, true));
+                }else{
+                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,1e+159,packet.z, yaw, pitch, true));
+                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,packet.y,packet.z, yaw, pitch, true));
+                }
             }
         }
         aac5C03List.clear();
     }
-    private void testAAC5Packets(){
-        for(C03PacketPlayer packet : aac5C03List){
-            PacketUtils.sendPacketNoEvent(packet);
-            if(packet.isMoving()){
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,1e+159,packet.z,false));
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z,false));
-            }
-        }
-        aac5C03List.clear();
-        }
 
     @Override
     public String getTag() {
