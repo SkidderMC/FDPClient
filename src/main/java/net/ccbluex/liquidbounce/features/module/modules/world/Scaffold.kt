@@ -70,7 +70,7 @@ class Scaffold : Module() {
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "LiteSpoof")
 
     // Basic stuff
-    val sprintValue = BoolValue("Sprint", true)
+    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "OFF"), "Always")
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val searchValue = BoolValue("Search", true)
     private val downValue = BoolValue("Down", true)
@@ -308,7 +308,9 @@ class Scaffold : Module() {
             clickTimer.reset()
         }
 
-        mc.thePlayer.isSprinting = sprintValue.get()
+        mc.thePlayer.isSprinting = canSprint
+        chat("SPR $canSprint")
+
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && blocksAmount > 1
         if (shouldGoDown) mc.gameSettings.keyBindSneak.pressed = false
         if (mc.thePlayer.onGround) {
@@ -623,6 +625,7 @@ class Scaffold : Module() {
             }
         }
 
+        val isDynamicSprint=sprintValue.get().equals("dynamic",true)
         var blockSlot = -1
         var itemStack = mc.thePlayer.heldItem
         if (mc.thePlayer.heldItem == null || !(mc.thePlayer.heldItem.item is ItemBlock && !InventoryUtils.isBlockListBlock(mc.thePlayer.heldItem.item as ItemBlock))) {
@@ -636,6 +639,8 @@ class Scaffold : Module() {
             }
             itemStack = mc.thePlayer.inventoryContainer.getSlot(blockSlot).stack
         }
+        if(isDynamicSprint)
+            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
         if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, itemStack, targetPlace!!.blockPos, targetPlace!!.enumFacing, targetPlace!!.vec3)) {
             //delayTimer.reset()
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
@@ -663,6 +668,8 @@ class Scaffold : Module() {
                 }
             }
         }
+        if(isDynamicSprint)
+            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
 
         if (autoBlockValue.get().equals("LiteSpoof", ignoreCase = true) && blockSlot >= 0)
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
@@ -916,7 +923,15 @@ class Scaffold : Module() {
         if (towerStatus)
             event.cancelEvent();
     }
-    
+
+    val canSprint: Boolean
+        get() = when(sprintValue.get().toLowerCase()) {
+            "always","dynamic" -> true
+            "onground" -> mc.thePlayer.onGround
+            "offground" -> !mc.thePlayer.onGround
+            else -> false
+        }
+
     override val tag: String
         get() = if(towerStatus){ "Tower" }else{ "Normal" }
 

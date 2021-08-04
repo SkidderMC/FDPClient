@@ -308,7 +308,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         }
 
         final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
-        if ((scaffold.getState() && !scaffold.getSprintValue().get()) || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.targetRotation != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30))
+        if ((scaffold.getState() && !scaffold.getCanSprint()) || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.targetRotation != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30))
             this.setSprinting(false);
 
         if (this.isSprinting() && ((!(sprint.getState() && sprint.getAllDirectionsValue().get()) && this.movementInput.moveForward < f) || this.isCollidedHorizontally || !flag3)) {
