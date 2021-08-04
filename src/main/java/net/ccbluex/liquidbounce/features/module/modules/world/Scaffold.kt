@@ -309,7 +309,6 @@ class Scaffold : Module() {
         }
 
         mc.thePlayer.isSprinting = canSprint
-        chat("SPR $canSprint")
 
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && blocksAmount > 1
         if (shouldGoDown) mc.gameSettings.keyBindSneak.pressed = false
