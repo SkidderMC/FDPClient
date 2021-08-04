@@ -40,5 +40,5 @@ jobs:
         uses: actions/upload-artifact@v2.2.3
         with:
           name: FDPClient-v1.jar
-          path: build/libs/FDPClient-v1.jar
+          path: build/libs/FDPClient
           retention-days: 30
