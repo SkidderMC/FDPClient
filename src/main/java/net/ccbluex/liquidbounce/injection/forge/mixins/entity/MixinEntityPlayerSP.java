@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
@@ -99,8 +100,13 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Shadow
     public abstract boolean isSneaking();
 
-    @Shadow
-    protected abstract boolean isCurrentViewEntity();
+    /**
+     * @author liuli
+     */
+    @Overwrite
+    protected boolean isCurrentViewEntity() {
+        return (mc.getRenderViewEntity()!=null&&mc.getRenderViewEntity().equals(this)) || (LiquidBounce.moduleManager!=null&&LiquidBounce.moduleManager.getModule(Fly.class).getState());
+    }
 
     @Shadow
     private double lastReportedPosX;

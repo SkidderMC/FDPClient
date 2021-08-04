@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.block.BlockAir;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -198,6 +199,7 @@ public class Fly extends Module {
     private int aac5Same=0;
     private C03PacketPlayer.C06PacketPlayerPosLook aac5QueuedPacket=null;
     private int aac5SameReach=5;
+    private EntityOtherPlayerMP clonedPlayer=null;
 
     private float launchYaw=0;
     private float launchPitch=0;
@@ -271,6 +273,14 @@ public class Fly extends Module {
                 aac5Same=0;
                 aac5SameReach=5;
                 aac5Status=0;
+                break;
+            case "aac5.2.0-vanilla":
+                clonedPlayer = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
+                clonedPlayer.rotationYawHead = mc.thePlayer.rotationYawHead;
+                clonedPlayer.copyLocationAndAnglesFrom(mc.thePlayer);
+                mc.theWorld.addEntityToWorld((int) -(Math.random() * 10000), clonedPlayer);
+                clonedPlayer.setInvisible(true);
+                mc.setRenderViewEntity(clonedPlayer);
                 break;
             case "ncp":
                 if(!mc.thePlayer.onGround)
@@ -375,6 +385,9 @@ public class Fly extends Module {
             }
             case "aac5.2.0-vanilla":{
                 sendAAC5Packets();
+                mc.setRenderViewEntity(mc.thePlayer);
+                mc.theWorld.removeEntityFromWorld(clonedPlayer.getEntityId());
+                clonedPlayer=null;
                 break;
             }
         }
@@ -459,6 +472,8 @@ public class Fly extends Module {
                 }
                 break;
             case "aac5.2.0-vanilla":
+                clonedPlayer.rotationYaw=mc.thePlayer.rotationYaw;
+                clonedPlayer.rotationPitch=mc.thePlayer.rotationPitch;
             case "vanilla":
                 mc.thePlayer.capabilities.isFlying = false;
                 mc.thePlayer.motionY = 0;
@@ -895,8 +910,13 @@ public class Fly extends Module {
 
         final Packet<?> packet = event.getPacket();
 
-//        if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla"))
-//            event.cancelEvent();
+        if(packet instanceof S08PacketPlayerPosLook){
+            final S08PacketPlayerPosLook packetPlayerPosLook=(S08PacketPlayerPosLook) packet;
+
+            if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")){
+                clonedPlayer.setPosition(packetPlayerPosLook.getX(),packetPlayerPosLook.getY(),packetPlayerPosLook.getZ());
+            }
+        }
 
         if(packet instanceof C03PacketPlayer) {
             final C03PacketPlayer packetPlayer = (C03PacketPlayer) packet;
@@ -1142,12 +1162,12 @@ public class Fly extends Module {
         float yaw=mc.thePlayer.rotationYaw;
         float pitch=mc.thePlayer.rotationPitch;
         for(C03PacketPlayer packet : aac5C03List){
-            PacketUtils.sendPacketNoEvent(packet);
             if(packet.isMoving()){
                 if(packet.getRotating()){
                     yaw=packet.yaw;
                     pitch=packet.pitch;
                 }
+                PacketUtils.sendPacketNoEvent(packet);
                 if(aac520UseC04.get()){
                     PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,1e+159,packet.z, true));
                     PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z, true));
