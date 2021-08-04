@@ -472,6 +472,8 @@ public class Fly extends Module {
                 }
                 break;
             case "aac5.2.0-vanilla":
+                clonedPlayer.inventory.copyInventory(mc.thePlayer.inventory);
+                clonedPlayer.setHealth(mc.thePlayer.getHealth());
                 clonedPlayer.rotationYaw=mc.thePlayer.rotationYaw;
                 clonedPlayer.rotationPitch=mc.thePlayer.rotationPitch;
             case "vanilla":
@@ -1162,12 +1164,12 @@ public class Fly extends Module {
         float yaw=mc.thePlayer.rotationYaw;
         float pitch=mc.thePlayer.rotationPitch;
         for(C03PacketPlayer packet : aac5C03List){
+            PacketUtils.sendPacketNoEvent(packet);
             if(packet.isMoving()){
                 if(packet.getRotating()){
                     yaw=packet.yaw;
                     pitch=packet.pitch;
                 }
-                PacketUtils.sendPacketNoEvent(packet);
                 if(aac520UseC04.get()){
                     PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,1e+159,packet.z, true));
                     PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z, true));
