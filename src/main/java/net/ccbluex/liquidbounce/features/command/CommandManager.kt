@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.features.command
 
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ReflectUtils
-import org.reflections.Reflections
 
 class CommandManager {
     val commands = HashMap<String, Command>()

@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.ReflectUtils
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
-import org.reflections.Reflections
 import kotlin.math.max
 import kotlin.math.min
 

@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.ui.i18n
 
 import java.io.InputStreamReader
 import java.util.*
-import kotlin.collections.HashMap
 
 class Language(val locale: String, private val defaultLocale: String) {
 

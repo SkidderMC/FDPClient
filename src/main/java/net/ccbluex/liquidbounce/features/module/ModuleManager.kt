@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ReflectUtils
 import org.lwjgl.input.Keyboard
-import org.reflections.Reflections
 import java.util.*
 
 class ModuleManager : Listenable {

@@ -14,7 +14,6 @@ import org.lwjgl.opengl.GL11
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
-import java.lang.IllegalStateException
 import javax.imageio.ImageIO
 
 /**
