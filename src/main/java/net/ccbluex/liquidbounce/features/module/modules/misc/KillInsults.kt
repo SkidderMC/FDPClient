@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets
 
 @ModuleInfo(name = "KillInsults", category = ModuleCategory.MISC)
 object KillInsults : Module() {
-    var abuseWords: JsonArray? = null
+    var abuseWords = mutableListOf<String>()
     private var target: EntityPlayer? = null
 
     val modeValue = ListValue(
@@ -42,11 +42,13 @@ object KillInsults : Module() {
 
     fun loadFile(){
         fun convertJson(){
-            abuseWords = JsonArray()
-            IOUtils.toString(FileInputStream(abuseFile),"utf-8").split("\n")
-                .filter { it.isNotBlank() }.map{ JsonPrimitive(it) }.forEach(abuseWords!!::add)
+            abuseWords.clear()
+            abuseWords.addAll(IOUtils.toString(FileInputStream(abuseFile),"utf-8").split("\n")
+                .filter { it.isNotBlank() })
             val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(abuseFile), StandardCharsets.UTF_8))
-            writer.write(FileManager.PRETTY_GSON.toJson(abuseWords))
+            val json=JsonArray()
+            abuseWords.map { JsonPrimitive(it) }.forEach(json::add)
+            writer.write(FileManager.PRETTY_GSON.toJson(json))
             writer.close()
         }
 
@@ -60,9 +62,12 @@ object KillInsults : Module() {
             //read it
             val json=JsonParser().parse(IOUtils.toString(FileInputStream(abuseFile),"utf-8"))
             if(json.isJsonArray){
-                abuseWords = json.asJsonArray
+                abuseWords.clear()
+                json.asJsonArray.forEach{
+                    abuseWords.add(it.asString)
+                }
             }else{
-                // not jsonArray convert it to jsonarray
+                // not jsonArray convert it to jsonArray
                 convertJson()
             }
         } catch (e: Throwable) {
@@ -79,7 +84,7 @@ object KillInsults : Module() {
         get() = modeValue.get()
 
     fun getRandomOne():String{
-        return abuseWords!![RandomUtils.nextInt(0, abuseWords!!.size()-1)].asString
+        return abuseWords[RandomUtils.nextInt(0, abuseWords.size-1)]
     }
 
     @EventTarget

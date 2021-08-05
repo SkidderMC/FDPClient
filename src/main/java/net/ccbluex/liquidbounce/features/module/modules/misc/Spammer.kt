@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.TextValue
+import net.minecraft.client.gui.GuiChat
 
 @ModuleInfo(name = "Spammer", category = ModuleCategory.MISC)
 class Spammer : Module() {
@@ -50,6 +51,9 @@ class Spammer : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if(mc.currentScreen!=null && mc.currentScreen is GuiChat)
+            return
+
         if (msTimer.hasTimePassed(delay)) {
             mc.thePlayer.sendChatMessage(when(modeValue.get().toLowerCase()){
                 "insult" -> {
@@ -57,10 +61,10 @@ class Spammer : Module() {
                 }
                 "orderinsult" -> {
                     lastIndex++
-                    if(lastIndex>=(KillInsults.abuseWords!!.size()-1)){
+                    if(lastIndex>=(KillInsults.abuseWords.size-1)){
                         lastIndex=0
                     }
-                    replaceAbuse(KillInsults.abuseWords!![lastIndex].asString)
+                    replaceAbuse(KillInsults.abuseWords[lastIndex])
                 }
                 else -> replace(messageValue.get())
             })
