@@ -73,6 +73,7 @@ dependencies {
     }
 
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.12'
+    implementation group: 'com.github.UnlegitMC', name: 'FuckPCL', version: '1.0.0'
     compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.3.61'
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -119,8 +120,12 @@ shadowJar {
         include(dependency('org.scijava:native-lib-loader'))
         include(dependency('com.kohlschutter.junixsocket:junixsocket-common'))
         include(dependency('com.kohlschutter.junixsocket:junixsocket-native-common'))
+
         include(dependency('org.reflections:reflections'))
+        // depend of reflections
         include(dependency('org.javassist:javassist'))
+
+        include(dependency('com.github.UnlegitMC:FuckPCL'))
 
         include(dependency('org.jetbrains.kotlin:kotlin-stdlib'))
     }
