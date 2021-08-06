@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.ui.other
+package net.ccbluex.liquidbounce.ui.sound
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.FileUtils
