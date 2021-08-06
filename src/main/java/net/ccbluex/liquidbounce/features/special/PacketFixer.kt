@@ -4,18 +4,27 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.ServerUtils
+import net.minecraft.client.Minecraft
+import net.minecraft.network.login.client.C00PacketLoginStart
+import net.minecraft.network.login.server.S00PacketDisconnect
+import net.minecraft.network.play.client.C00PacketKeepAlive
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.server.S09PacketHeldItemChange
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
+import net.minecraft.network.play.server.S40PacketDisconnect
+import net.minecraft.util.ChatComponentText
 import net.minecraft.world.Explosion
 
 class PacketFixer : Listenable,MinecraftInstance() {
     private var serversideSlot=0
+    private val canBlockServer=System.getProperty("no-server-block")==null
 
     @EventTarget
     fun onPacket(event: PacketEvent){
@@ -49,6 +58,13 @@ class PacketFixer : Listenable,MinecraftInstance() {
             LiquidBounce.eventManager.callEvent(packetEvent)
             if(!packetEvent.isCancelled) {
                 PacketUtils.handlePacket(velocityPacket)
+            }
+        }else if(canBlockServer && packet is C00PacketKeepAlive){
+            LiquidBounce.blockedServers.forEach{
+                ServerUtils.serverData?.serverIP?.contains(it, true)
+                PacketUtils.handlePacket(S40PacketDisconnect(ChatComponentText("§cVOCÊ NÃO PODE HACKEAR NESTE SERVIDOR PORQUE ESTE SERVIDOR FOI BLOQUEADO.\n" +
+                        "ADICIONE UM ARGUMENTO JVM \"-Dno-server-block\" PARA IGNORAR ESTE LIMITE!")))
+                return
             }
         }
     }

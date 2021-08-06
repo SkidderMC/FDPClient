@@ -78,6 +78,7 @@ object LiquidBounce {
     var website = "null"
     var updateMessage="Press \"Download\" button to download the latest version!"
     var displayedUpdateScreen=false
+    val blockedServers=mutableListOf<String>()
 
     // Menu Background
     var background: ResourceLocation? = null
@@ -117,6 +118,11 @@ object LiquidBounce {
             updatelog = jsonObj.getAsJsonArray("updatelog")
             if(jsonObj.has("updatemsg"))
                 updateMessage=jsonObj.get("updatemsg").asString
+
+            if(jsonObj.has("blockedServers"))
+                jsonObj.get("blockedServers").asJsonArray.forEach {
+                    blockedServers.add(it.asString)
+                }
 
             if(latestVersion== CLIENT_VERSION || !enableUpdateAlert)
                 latestVersion = ""
