@@ -61,10 +61,11 @@ class PacketFixer : Listenable,MinecraftInstance() {
             }
         }else if(canBlockServer && packet is C00PacketKeepAlive){
             LiquidBounce.blockedServers.forEach{
-                ServerUtils.serverData?.serverIP?.contains(it, true)
-                PacketUtils.handlePacket(S40PacketDisconnect(ChatComponentText("§cVOCÊ NÃO PODE HACKEAR NESTE SERVIDOR PORQUE ESTE SERVIDOR FOI BLOQUEADO.\n" +
-                        "ADICIONE UM ARGUMENTO JVM \"-Dno-server-block\" PARA IGNORAR ESTE LIMITE!")))
-                return
+                if(ServerUtils.serverData?.serverIP?.contains(it, true) == true){
+                    PacketUtils.handlePacket(S40PacketDisconnect(ChatComponentText("§cVOCÊ NÃO PODE HACKEAR NESTE SERVIDOR PORQUE ESTE SERVIDOR FOI BLOQUEADO.\n" +
+                            "ADICIONE UM ARGUMENTO JVM \"-Dno-server-block\" PARA IGNORAR ESTE LIMITE!")))
+                    return
+                }
             }
         }
     }
