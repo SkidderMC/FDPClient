@@ -15,7 +15,7 @@ import net.minecraft.network.play.server.S2BPacketChangeGameState
 @ModuleInfo(name = "Ambience", category = ModuleCategory.WORLD)
 class Ambience : Module() {
     private val timeModeValue = ListValue("TimeMode", arrayOf("None","Normal", "Custom"), "Normal")
-    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None","Sunny","Rainy","Thunderstorm","OnlyThunder"), "None")
+    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None","Sunny","Rainy","Thunder"), "None")
     private val customWorldTimeValue = IntegerValue("CustomTime", 1000, 0, 24000)
     private val changeWorldTimeSpeedValue = IntegerValue("ChangeWorldTimeSpeed", 150, 10, 500)
     private val weatherStrengthValue = FloatValue("WeatherStrength", 1f, 0f, 1f)
@@ -50,12 +50,8 @@ class Ambience : Module() {
                 mc.theWorld.setRainStrength(weatherStrengthValue.get())
                 mc.theWorld.setThunderStrength(0f)
             }
-            "thunderstorm" -> { //机翻的 XDDD
+            "thunder" -> {
                 mc.theWorld.setRainStrength(weatherStrengthValue.get())
-                mc.theWorld.setThunderStrength(weatherStrengthValue.get())
-            }
-            "onlythunder" -> {
-                mc.theWorld.setRainStrength(0f)
                 mc.theWorld.setThunderStrength(weatherStrengthValue.get())
             }
         }
