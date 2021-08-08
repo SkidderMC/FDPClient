@@ -277,14 +277,14 @@ public class Fly extends Module {
                 break;
             case "aac5.2.0-vanilla":
                 if(aac520view.get()){
-                clonedPlayer = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
-                clonedPlayer.rotationYawHead = mc.thePlayer.rotationYawHead;
-                clonedPlayer.copyLocationAndAnglesFrom(mc.thePlayer);
-                mc.theWorld.addEntityToWorld((int) -(Math.random() * 10000), clonedPlayer);
-                clonedPlayer.setInvisible(true);
-                mc.setRenderViewEntity(clonedPlayer);
-                break;}
-                else{break;}
+                    clonedPlayer = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
+                    clonedPlayer.rotationYawHead = mc.thePlayer.rotationYawHead;
+                    clonedPlayer.copyLocationAndAnglesFrom(mc.thePlayer);
+                    mc.theWorld.addEntityToWorld((int) -(Math.random() * 10000), clonedPlayer);
+                    clonedPlayer.setInvisible(true);
+                    mc.setRenderViewEntity(clonedPlayer);
+                }
+                break;
             case "ncp":
                 if(!mc.thePlayer.onGround)
                     break;
@@ -389,11 +389,10 @@ public class Fly extends Module {
             case "aac5.2.0-vanilla":{
                 sendAAC5Packets();
                 if(aac520view.get()){
-                mc.setRenderViewEntity(mc.thePlayer);
-                mc.theWorld.removeEntityFromWorld(clonedPlayer.getEntityId());
-                clonedPlayer=null;
-                break;}
-                else{break;}
+                    mc.setRenderViewEntity(mc.thePlayer);
+                    mc.theWorld.removeEntityFromWorld(clonedPlayer.getEntityId());
+                    clonedPlayer=null;
+                }
             }
         }
 
@@ -478,11 +477,11 @@ public class Fly extends Module {
                 break;
             case "aac5.2.0-vanilla":
                 if(aac520view.get()){
-                clonedPlayer.inventory.copyInventory(mc.thePlayer.inventory);
-                clonedPlayer.setHealth(mc.thePlayer.getHealth());
-                clonedPlayer.rotationYaw=mc.thePlayer.rotationYaw;
-                clonedPlayer.rotationPitch=mc.thePlayer.rotationPitch;}
-                else{}
+                    clonedPlayer.inventory.copyInventory(mc.thePlayer.inventory);
+                    clonedPlayer.setHealth(mc.thePlayer.getHealth());
+                    clonedPlayer.rotationYaw=mc.thePlayer.rotationYaw;
+                    clonedPlayer.rotationPitch=mc.thePlayer.rotationPitch;
+                }
             case "vanilla":
                 mc.thePlayer.capabilities.isFlying = false;
                 mc.thePlayer.motionY = 0;
@@ -919,14 +918,11 @@ public class Fly extends Module {
 
         final Packet<?> packet = event.getPacket();
 
-        if(packet instanceof S08PacketPlayerPosLook || aac520view.get()){
+        if(packet instanceof S08PacketPlayerPosLook){
             final S08PacketPlayerPosLook packetPlayerPosLook=(S08PacketPlayerPosLook) packet;
 
-            if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")) {
-                if (aac520view.get()) {
-                    clonedPlayer.setPosition(packetPlayerPosLook.getX(), packetPlayerPosLook.getY(), packetPlayerPosLook.getZ());
-                }
-                else{}
+            if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")&&aac520view.get()) {
+                clonedPlayer.setPosition(packetPlayerPosLook.getX(), packetPlayerPosLook.getY(), packetPlayerPosLook.getZ());
             }
         }
 
