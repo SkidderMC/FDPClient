@@ -48,9 +48,6 @@ class AutoPlay : Module(){
             val windowId=packet.func_149175_c()
             val slot=packet.func_149173_d()
             val itemName=item.unlocalizedName
-            if(itemName.contains("paper",ignoreCase = true)) {
-                ClientUtils.displayChatMessage("$windowId $slot ${item.displayName}")
-            }
             // Redesky Check
             if(clickState==0 && windowId==0 && slot==42 && itemName.contains("paper",ignoreCase = true) && item.displayName.contains("Jogar novamente",ignoreCase = true)){
                 AutoDisable.handleGameEnd()
