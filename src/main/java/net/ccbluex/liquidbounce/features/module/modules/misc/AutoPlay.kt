@@ -10,12 +10,15 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.AutoDisable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import java.util.*
@@ -45,7 +48,10 @@ class AutoPlay : Module(){
             val windowId=packet.func_149175_c()
             val slot=packet.func_149173_d()
             val itemName=item.unlocalizedName
-            //do check
+            if(itemName.contains("paper",ignoreCase = true)) {
+                ClientUtils.displayChatMessage("$windowId $slot ${item.displayName}")
+            }
+            // Redesky Check
             if(clickState==0 && windowId==0 && slot==42 && itemName.contains("paper",ignoreCase = true) && item.displayName.contains("Jogar novamente",ignoreCase = true)){
                 AutoDisable.handleGameEnd()
                 if(state){
@@ -69,6 +75,32 @@ class AutoPlay : Module(){
                         mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId, slot, 0, 0, item, 1919))
                     }
                 },500L)
+            }
+            // BlockMC Check
+            if(clickState==0 && windowId==0 && slot==43 && itemName.contains("paper",ignoreCase = true) && item.displayName.contains("§b§lPlay Again",ignoreCase = true)){
+                AutoDisable.handleGameEnd()
+                if(state){
+                    Timer().schedule(object :TimerTask(){
+                        override fun run() {
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
+                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                            clickState=2
+                        }
+                    },delayValue.get()*1000L)
+                    LiquidBounce.hud.addNotification(Notification(name,"Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO,time=delayValue.get()*1000-500))
+                }
+            }
+        }
+        if(packet is S02PacketChat) {
+            // Minemora check
+            if(packet.chatComponent.unformattedText.contains("Has click en alguna de las siguientes opciones:") && ServerUtils.getRemoteIp().contains("minemora.net")) {
+                Timer().schedule(object : TimerTask() {
+                    override fun run() {
+                        mc.thePlayer.sendChatMessage("/join")
+                    }
+                },delayValue.get().toLong()*1000)
+                LiquidBounce.hud.addNotification(Notification(name,"Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO,time=delayValue.get()*1000-500))
             }
         }
         if(silentValue.get() && clickState==2 && packet is S2DPacketOpenWindow){
