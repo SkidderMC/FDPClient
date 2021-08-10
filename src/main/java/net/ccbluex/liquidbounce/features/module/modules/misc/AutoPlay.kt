@@ -91,10 +91,11 @@ class AutoPlay : Module(){
         }
         if(packet is S02PacketChat) {
             val text=packet.chatComponent.unformattedText
-            // Minemora check
-            if(text.contains("Has click en alguna de las siguientes opciones",true)) {
-                queueAutoPlay {
-                    mc.thePlayer.sendChatMessage("/join")
+            if(modeValue.get().equals("Minemora",true)) {
+                if (text.contains("Has click en alguna de las siguientes opciones", true)) {
+                    queueAutoPlay {
+                        mc.thePlayer.sendChatMessage("/join")
+                    }
                 }
             }
         }
