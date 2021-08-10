@@ -84,8 +84,10 @@ class Scaffold : Module() {
     private val expandLengthValue = IntegerValue("ExpandLength", 5, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2","Custom"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90)
+    private val customYaw = IntegerValue("CustomYaw",-145,-180,180)
+    private val customPitch = IntegerValue("CustomPitch",79,-90,90)
     //private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     //private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true)
@@ -829,6 +831,9 @@ class Scaffold : Module() {
                 }
                 "test2" -> {
                     rotation = Rotation(((MovementUtils.getDirection() * 180f / Math.PI).toFloat() + 135).toFloat(), placeRotation.rotation.pitch)
+                }
+                "custom" -> {
+                    rotation = Rotation(mc.thePlayer.rotationYaw + customYaw.get(), customPitch.get().toFloat())
                 }
             }
             if (rotation != null) {
