@@ -61,10 +61,10 @@ class Spammer : Module() {
                 }
                 "orderinsult" -> {
                     lastIndex++
-                    if(lastIndex>=(KillInsults.abuseWords.size-1)){
+                    if(lastIndex>=(KillInsults.insultWords.size-1)){
                         lastIndex=0
                     }
-                    replaceAbuse(KillInsults.abuseWords[lastIndex])
+                    replaceAbuse(KillInsults.insultWords[lastIndex])
                 }
                 else -> replace(messageValue.get())
             })

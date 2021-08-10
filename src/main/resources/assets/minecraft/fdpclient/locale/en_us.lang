@@ -236,7 +236,8 @@ module.AutoLogin.value.Title.name=Title
 module.AutoLogin.value.Chat.name=Chat
 
 module.AutoPlay.name=AutoPlay
-module.AutoPlay.description=Auto join another game when game end(only redesky)
+module.AutoPlay.description=Auto join another game when game end
+module.AutoPlay.value.Server.name=Server
 module.AutoPlay.value.Silent.name=Silent
 module.AutoPlay.value.JoinDelay.name=JoinDelay
 

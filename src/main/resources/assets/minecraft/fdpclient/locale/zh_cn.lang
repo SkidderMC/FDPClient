@@ -236,7 +236,8 @@ module.AutoLogin.value.Title.name=监听标题
 module.AutoLogin.value.Chat.name=监听聊天
 
 module.AutoPlay.name=自动游玩
-module.AutoPlay.description=在游戏结束时自动加入下一局(仅Redesky)
+module.AutoPlay.description=在游戏结束时自动加入下一局
+module.AutoPlay.value.Server.name=服务器
 module.AutoPlay.value.Silent.name=静默
 module.AutoPlay.value.JoinDelay.name=加入延时
 
