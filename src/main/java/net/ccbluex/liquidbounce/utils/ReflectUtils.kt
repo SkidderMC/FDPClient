@@ -11,4 +11,4 @@ object ReflectUtils {
     }
 }
 
-annotation class NotUsable()
+annotation class NotUsable

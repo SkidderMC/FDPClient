@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.Consumer;
 
 public final class MiscUtils extends MinecraftInstance {
 
@@ -64,5 +65,10 @@ public final class MiscUtils extends MinecraftInstance {
         frame.dispose();
 
         return action == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile() : null;
+    }
+
+    public static <T> T make(T object, Consumer<T> consumer) {
+        consumer.accept(object);
+        return object;
     }
 }

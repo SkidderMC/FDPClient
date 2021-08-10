@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.FileUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -55,9 +56,7 @@ object KillInsults : Module() {
         try {
             //check file exists
             if(!insultFile.exists()){
-                val fos = FileOutputStream(insultFile)
-                IOUtils.copy(KillInsults::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/insult.json"), fos)
-                fos.close()
+                FileUtils.unpackFile(insultFile, "assets/minecraft/fdpclient/misc/insult.json")
             }
             //read it
             val json=JsonParser().parse(IOUtils.toString(FileInputStream(insultFile),"utf-8"))

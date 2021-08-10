@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.file.config.sections
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.special.macro.Macro
+import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.file.config.ConfigSection
 
 class MacrosSection : ConfigSection("macros") {

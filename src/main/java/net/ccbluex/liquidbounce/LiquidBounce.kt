@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.CombatManager
 import net.ccbluex.liquidbounce.features.special.PacketFixer
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
-import net.ccbluex.liquidbounce.features.special.macro.MacroManager
+import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.MetricsLite
 import net.ccbluex.liquidbounce.file.config.ConfigManager
@@ -32,7 +32,6 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
-import net.ccbluex.liquidbounce.utils.misc.betterfps.BetterFPSCore
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
@@ -83,9 +82,6 @@ object LiquidBounce {
     // Menu Background
     var background: ResourceLocation? = null
 
-    // Better FPS
-    lateinit var betterFPSCore: BetterFPSCore
-
     init {
         val commitId=LiquidBounce::class.java.classLoader.getResourceAsStream("FDP_GIT_COMMIT_ID")
         CLIENT_VERSION=if (commitId==null){
@@ -101,7 +97,6 @@ object LiquidBounce {
      * do things that need long time async
      */
     fun initClient(){
-        betterFPSCore = BetterFPSCore()
         isStarting = true
 
         updatelog=JsonArray()

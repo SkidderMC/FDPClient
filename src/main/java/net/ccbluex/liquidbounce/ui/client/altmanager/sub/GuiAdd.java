@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.elements.GuiPasswordField;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.TabUtils;
 import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -119,9 +118,6 @@ public class GuiAdd extends GuiScreen {
             case Keyboard.KEY_ESCAPE:
                 mc.displayGuiScreen(prevGui);
                 return;
-            case Keyboard.KEY_TAB:
-                TabUtils.tab(username, password);
-                return;
             case Keyboard.KEY_RETURN:
                 actionPerformed(addButton);
                 return;
@@ -132,6 +128,7 @@ public class GuiAdd extends GuiScreen {
 
         if(password.isFocused())
             password.textboxKeyTyped(typedChar, keyCode);
+
         super.keyTyped(typedChar, keyCode);
     }
 
