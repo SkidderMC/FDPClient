@@ -80,9 +80,12 @@ class AutoPlay : Module(){
                 }
                 "blocksmc" -> {
                     if(clickState==0 && windowId==0 && slot==43 && itemName.contains("paper",ignoreCase = true) && displayName.contains("Play Again",ignoreCase = true)){
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
                         queueAutoPlay {
-                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
+                            repeat(2){
+                                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
+                            }
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                         }
                         clickState=1
                     }
@@ -101,7 +104,9 @@ class AutoPlay : Module(){
                 "blocksmc" -> {
                     if(clickState==1 && text.contains("Only VIP players can join full servers!")){
                         // connect failed so try to join again
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
                         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
                 }
             }
