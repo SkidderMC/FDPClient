@@ -57,44 +57,51 @@ class AutoPlay : Module(){
             val itemName=item.unlocalizedName
             val displayName=item.displayName
 
-            if(modeValue.get().equals("RedeSky",true)){
-                if(clickState==0 && windowId==0 && slot==42 && itemName.contains("paper",ignoreCase = true) && displayName.contains("Jogar novamente",ignoreCase = true)){
-                    clickState=1
-                    clicking=true
-                    queueAutoPlay {
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(6))
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                        clickState=2
-                    }
-                }else if(clickState==2 && windowId!=0 && slot==11 && itemName.contains("enderPearl",ignoreCase = true)){
-                    Timer().schedule(object :TimerTask() {
-                        override fun run() {
-                            clicking=false
-                            clickState=0
-                            mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId, slot, 0, 0, item, 1919))
+            when(modeValue.get().toLowerCase()){
+                "redesky" -> {
+                    if(clickState==0 && windowId==0 && slot==42 && itemName.contains("paper",ignoreCase = true) && displayName.contains("Jogar novamente",ignoreCase = true)){
+                        clickState=1
+                        clicking=true
+                        queueAutoPlay {
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(6))
+                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                            clickState=2
                         }
-                    },500L)
-                }
-            }
-
-            if(modeValue.get().equals("BlocksMC",true)){
-                if(clickState==0 && windowId==0 && slot==43 && itemName.contains("paper",ignoreCase = true) && displayName.contains("Play Again",ignoreCase = true)){
-                    queueAutoPlay {
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    }else if(clickState==2 && windowId!=0 && slot==11 && itemName.contains("enderPearl",ignoreCase = true)){
+                        Timer().schedule(object :TimerTask() {
+                            override fun run() {
+                                clicking=false
+                                clickState=0
+                                mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId, slot, 0, 0, item, 1919))
+                            }
+                        },500L)
                     }
-                    clickState=1
+                }
+                "blocksmc" -> {
+                    if(clickState==0 && windowId==0 && slot==43 && itemName.contains("paper",ignoreCase = true) && displayName.contains("Play Again",ignoreCase = true)){
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
+                        queueAutoPlay {
+                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
+                        }
+                        clickState=1
+                    }
                 }
             }
-        }
-        if(packet is S02PacketChat) {
+        }else if(packet is S02PacketChat) {
             val text=packet.chatComponent.unformattedText
-            if(modeValue.get().equals("Minemora",true)) {
-                if (text.contains("Has click en alguna de las siguientes opciones", true)) {
-                    queueAutoPlay {
-                        mc.thePlayer.sendChatMessage("/join")
+            when(modeValue.get().toLowerCase()){
+                "minemora" -> {
+                    if (text.contains("Has click en alguna de las siguientes opciones", true)) {
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/join")
+                        }
+                    }
+                }
+                "blocksmc" -> {
+                    if(clickState==1 && text.contains("Only VIP players can join full servers!")){
+                        // connect failed so try to join again
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
                     }
                 }
             }
