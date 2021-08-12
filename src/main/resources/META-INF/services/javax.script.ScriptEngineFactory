@@ -1,0 +1,2 @@
+jdk.nashorn.api.scripting.NashornScriptEngineFactory
+org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory

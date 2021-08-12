@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
+import net.minecraftforge.fml.client.GuiModList
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -76,7 +77,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             4 -> mc.shutdown()
             100 -> mc.displayGuiScreen(GuiAltManager(this))
             102 -> mc.displayGuiScreen(GuiBackground(this))
-            103 -> mc.displayGuiScreen(GuiModsMenu(this))
+            103 -> mc.displayGuiScreen(GuiModList(this))
         }
     }
 

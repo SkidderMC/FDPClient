@@ -6,16 +6,19 @@
 package net.ccbluex.liquidbounce.script
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.script.kotlin.KotlinScript
+import net.ccbluex.liquidbounce.script.kotlin.KotlinScriptDependency
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.io.File
-import java.io.FileFilter
+import javax.swing.JOptionPane
 
 class ScriptManager {
 
     val scripts = mutableListOf<Script>()
 
+    val kotlinScripts = mutableListOf<KotlinScript>()
+
     val scriptsFolder = File(LiquidBounce.fileManager.dir, "scripts")
-    private val scriptFileExtension = ".js"
 
     /**
      * Loads all scripts inside the scripts folder.
@@ -24,7 +27,13 @@ class ScriptManager {
         if(!scriptsFolder.exists())
             scriptsFolder.mkdir()
 
-        scriptsFolder.listFiles(FileFilter { it.name.endsWith(scriptFileExtension) }).forEach { loadScript(it) }
+        scriptsFolder.listFiles().forEach {
+            if(it.name.endsWith(".js",true)){
+                loadJsScript(it)
+            }else if(it.name.endsWith(".kt",true) || it.name.endsWith(".kts",true)){
+                loadKtScript(it)
+            }
+        }
     }
 
     /**
@@ -37,12 +46,30 @@ class ScriptManager {
     /**
      * Loads a script from a file.
      */
-    fun loadScript(scriptFile : File) {
+    fun loadJsScript(scriptFile : File) {
         try {
             scripts.add(Script(scriptFile))
             ClientUtils.getLogger().info("[ScriptAPI] Successfully loaded script '${scriptFile.name}'.")
         } catch(t : Throwable) {
             ClientUtils.getLogger().error("[ScriptAPI] Failed to load script '${scriptFile.name}'.", t)
+        }
+    }
+
+    /**
+     * Loads a script from a file.
+     */
+    fun loadKtScript(scriptFile : File) {
+        try {
+            // prepare scripting runtime
+            KotlinScriptDependency.check()
+            // load script
+            kotlinScripts.add(KotlinScript(scriptFile))
+            ClientUtils.getLogger().info("[ScriptAPI] Successfully loaded kotlin script '${scriptFile.name}'.")
+        } /*catch (t : NoSuchFieldError){
+            JOptionPane.showMessageDialog(null, "If this error first appear, try restart your minecraft." +
+                    "and if this error appears many times, try disable \"file complete check\"/\"文件完整性检查\"", "KotlinScript Loaded Failed", JOptionPane.ERROR_MESSAGE)
+        } */catch(t : Throwable) {
+            ClientUtils.getLogger().error("[ScriptAPI] Failed to load kotlin script '${scriptFile.name}'.", t)
         }
     }
 
@@ -58,41 +85,5 @@ class ScriptManager {
      */
     fun disableScripts() {
         scripts.forEach { it.onDisable() }
-    }
-
-    /**
-     * Imports a script.
-     * @param file JavaScript file to be imported.
-     */
-    fun importScript(file : File) {
-        val scriptFile = File(scriptsFolder, file.name)
-        file.copyTo(scriptFile)
-
-        loadScript(scriptFile)
-        ClientUtils.getLogger().info("[ScriptAPI]  Successfully imported script '${scriptFile.name}'.")
-    }
-
-    /**
-     * Deletes a script.
-     * @param script Script to be deleted.
-     */
-    fun deleteScript(script : Script) {
-        script.onDisable()
-        scripts.remove(script)
-        script.scriptFile.delete()
-
-        ClientUtils.getLogger().info("[ScriptAPI]  Successfully deleted script '${script.scriptFile.name}'.")
-    }
-
-    /**
-     * Reloads all scripts.
-     */
-    fun reloadScripts() {
-        disableScripts()
-        unloadScripts()
-        loadScripts()
-        enableScripts()
-
-        ClientUtils.getLogger().info("[ScriptAPI]  Successfully reloaded scripts.")
     }
 }

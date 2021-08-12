@@ -3,8 +3,6 @@ ui.altmanager=账号管理
 ui.mods=模组管理
 ui.background=背景
 ui.website=官网
-ui.forgeMods=Forge模组
-ui.scripts=脚本
 ui.serverSpoof=服务器伪装
 ui.antiForge=反Forge检测
 ui.reconnect=重新连接
@@ -31,16 +29,6 @@ ui.update.available=有可用更新！
 ui.update.released=FDP Client %s 发布了!
 ui.update.dismiss=忽略
 ui.update.download=下载
-
-ui.scripts.by=作者 %s
-ui.scripts.import=导入
-ui.scripts.delete=删除
-ui.scripts.reload=重载
-ui.scripts.folder=打开文件夹
-ui.scripts.docs=文档
-ui.scripts.find=寻找脚本
-ui.scripts.error.extension.title=错误的文件后缀名
-ui.scripts.error.extension.message=文件的后缀名需要为 .js 或 .zip
 
 ui.keybind.title=按键绑定管理
 ui.keybind.select=选择一个模块绑定

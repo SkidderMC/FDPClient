@@ -13,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: '1.3.61'
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: '1.3.72'
         classpath group: 'com.github.liulihaocai', name: 'ForgeGradle', version: 'd974a94268'
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.6-SNAPSHOT'
         classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: '4.0.4'
@@ -74,7 +74,15 @@ dependencies {
 
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.12'
     implementation group: 'com.github.UnlegitMC', name: 'FuckPCL', version: '1.0.0'
-    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.3.61'
+
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.3.72'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.3.72'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-script-runtime', version: '1.3.72'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-script-util', version: '1.3.72'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-compiler-embeddable', version: '1.3.72'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-scripting-jvm', version: '1.3.72'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-scripting-compiler-embeddable', version: '1.3.72'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-scripting-jsr223-embeddable', version: '1.3.72'
 
     compile fileTree(include: ['*.jar'], dir: 'libs')
 }
@@ -127,7 +135,19 @@ shadowJar {
 
         include(dependency('com.github.UnlegitMC:FuckPCL'))
 
+        // kotlin
         include(dependency('org.jetbrains.kotlin:kotlin-stdlib'))
+        include(dependency('org.jetbrains:annotations'))
+//        include(dependency('org.jetbrains.kotlin:kotlin-reflect'))
+//        include(dependency('org.jetbrains.kotlin:kotlin-script-runtime'))
+//        include(dependency('org.jetbrains.kotlin:kotlin-script-util'))
+//        include(dependency('org.jetbrains.kotlin:kotlin-compiler-embeddable'))
+//        include(dependency('org.jetbrains.kotlin:kotlin-scripting-jsr223-embeddable'))
+//        include(dependency('org.jetbrains.kotlin:kotlin-scripting-jvm'))
+//        include(dependency('org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable'))
+//        include(dependency('org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable'))
+//        include(dependency('org.jetbrains.intellij.deps:trove4j'))
+//        include(dependency('org.jetbrains.kotlin:kotlin-scripting-common'))
     }
 
     exclude 'dummyThing'

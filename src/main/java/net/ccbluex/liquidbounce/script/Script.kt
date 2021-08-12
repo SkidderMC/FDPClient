@@ -23,7 +23,7 @@ import javax.script.ScriptEngineManager
 class Script(val scriptFile: File) : MinecraftInstance() {
 
     private var scriptEngine = ScriptEngineManager().getEngineByName("nashorn")
-    private val scriptText = scriptFile.readText()
+    private val scriptText = scriptFile.readText(Charsets.UTF_8)
 
     // Script information
     lateinit var scriptName: String
