@@ -133,16 +133,16 @@ class KillAura : Module() {
         }
     }
 
-    private val silentRotationValue = BoolValue("SilentRotation", true).displayable { maxTurnSpeed.get()<=0f }
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { maxTurnSpeed.get()<=0f }
+    private val silentRotationValue = BoolValue("SilentRotation", true).displayable { maxTurnSpeed.get()>0f }
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && maxTurnSpeed.get()>0f }
     private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.get().equals("Off",true) }
-    private val randomCenterValue = BoolValue("RandomCenter", false).displayable { maxTurnSpeed.get()<=0f }
-    private val outborderValue = BoolValue("Outborder", false).displayable { maxTurnSpeed.get()<=0f }
-    private val hitableValue = BoolValue("AlwaysHitable",true).displayable { maxTurnSpeed.get()<=0f }
+    private val randomCenterValue = BoolValue("RandomCenter", false).displayable { maxTurnSpeed.get()>0f }
+    private val outborderValue = BoolValue("Outborder", false).displayable { maxTurnSpeed.get()>0f }
+    private val hitableValue = BoolValue("AlwaysHitable",true).displayable { maxTurnSpeed.get()>0f }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
-    private val predictValue = BoolValue("Predict", true).displayable { maxTurnSpeed.get()<=0f }
+    private val predictValue = BoolValue("Predict", true).displayable { maxTurnSpeed.get()>0f }
 
     private val maxPredictSize: FloatValue = object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
