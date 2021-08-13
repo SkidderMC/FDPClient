@@ -21,10 +21,9 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.util.EnumFacing
 
-// TODO: Enhance Custom Mode
 @ModuleInfo(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
 class LongJump : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC", "BlocksMC2", "HYT4v4", "Custom"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC", "BlocksMC2", "HYT4v4"), "NCP")
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
     // redesky
@@ -36,6 +35,7 @@ class LongJump : Module() {
     private val rsReduceYMotionValue = FloatValue("RedeSkyReduceYMotion",0.15F,0.01F,0.20F).displayable { modeValue.get().equals("RedeSky",true) }
     private val rsUseTimerValue = BoolValue("RedeSkyTimer", true).displayable { modeValue.get().equals("RedeSky",true) }
     private val rsTimerValue = FloatValue("RedeSkyTimer",0.30F,0.1F,1F).displayable { modeValue.get().equals("RedeSky",true) }
+
     // redesky2
     private val rs2AirSpeedValue = FloatValue("RedeSky2AirSpeed",0.1F,0.05F,0.25F).displayable { modeValue.get().equals("RedeSky2",true) }
     private val rs2MinAirSpeedValue = FloatValue("RedeSky2MinAirSpeed",0.08F,0.05F,0.25F).displayable { modeValue.get().equals("RedeSky2",true) }
@@ -49,10 +49,7 @@ class LongJump : Module() {
     private val rs3BoostValue= FloatValue("RedeSky3Boost",1F,0.3F,1.5F).displayable { modeValue.get().equals("RedeSky3",true) }
     private val rs3HeightValue= FloatValue("RedeSky3Height",1F,0.3F,1.5F).displayable { modeValue.get().equals("RedeSky3",true) }
     private val rs3TimerValue = FloatValue("RedeSky3Timer",1F,0.1F,5F).displayable { modeValue.get().equals("RedeSky3",true) }
-    // Custom
-    private val customLongValue=FloatValue("CustomLong",1F,0.5F,10F).displayable { modeValue.get().equals("Custom",true) }
-    private val customHeightValue=FloatValue("CustomHeight",1F,0F,3F).displayable { modeValue.get().equals("Custom",true) }
-    private val customTimerValue=FloatValue("CustomTimer",1F,0.1F,3F).displayable { modeValue.get().equals("Custom",true) }
+
     // settings
     private val autoJumpValue = BoolValue("AutoJump", true)
     private val autoCloseValue = BoolValue("AutoClose", true)
@@ -235,12 +232,6 @@ class LongJump : Module() {
                         mc.thePlayer.motionY += 0.031470000997
                         MovementUtils.strafe(MovementUtils.getSpeed() * 1.0114514f)
                         mc.timer.timerSpeed = 1.0114514f
-                    }
-
-                    "custom" -> {
-                        mc.thePlayer.motionY += customHeightValue.get()/2F
-                        MovementUtils.strafe(customLongValue.get()/2F)
-                        mc.timer.timerSpeed = customTimerValue.get()
                     }
                 }
             }

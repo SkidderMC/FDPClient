@@ -24,12 +24,8 @@ import net.minecraft.network.play.server.S18PacketEntityTeleport
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
-import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
-// TODO: Timer check
 @ModuleInfo(name = "HackerDetector", category = ModuleCategory.PLAYER)
 class HackerDetector : Module() {
     private val GRAVITY_FRICTION = 0.9800000190734863
@@ -122,18 +118,39 @@ class HackerDetector : Module() {
         }
         val maxMotionY = 0.47 //for strict check u can change this to 0.42
         val maxOffset = 0.07
+        val triggerBalance = 100
+        val minimumClamp = 1000
         var passed=true
+
+        // timer check
+        val packetTimeNow = System.currentTimeMillis()
+        var packetBalance = data.packetBalance
+        val rate: Long = packetTimeNow - data.lastMovePacket
+        packetBalance += 50.0
+        packetBalance -= rate.toDouble()
+        if (packetBalance >= triggerBalance) {
+            val ticks = (packetBalance / 50).roundToInt()
+            packetBalance = (-1 * (triggerBalance / 2)).toDouble()
+            data.flag("timer",25,"OVERSHOT TIMER $ticks")
+        } else if (packetBalance < -1 * minimumClamp) {
+            // Clamp minimum, 50ms=1tick of lag leniency
+            packetBalance = (-1 * minimumClamp).toDouble()
+        }
+        if(packetBalance < triggerBalance) {
+            data.packetBalance = packetBalance
+            data.lastMovePacket = packetTimeNow
+        }
         
         if(player.hurtTime>0){
             //velocity
             if (player.hurtResistantTime in 7..11
                 && player.prevPosX == player.posX && player.posZ == player.lastTickPosZ
                 && !mc.theWorld.checkBlockCollision(player.entityBoundingBox.expand(0.05, 0.0, 0.05))) {
-                flag("velocity",50,data,"NO KNOCKBACK")
+                data.flag("velocity",50,"NO KNOCKBACK")
             }
             if (player.hurtResistantTime in 7..11
                 && player.lastTickPosY == player.posY) {
-                flag("velocity",50,data,"NO KNOCKBACK")
+                data.flag("velocity",50,"NO KNOCKBACK")
             }
             return
         }
@@ -146,31 +163,31 @@ class HackerDetector : Module() {
 
         //killaura from jigsaw
         if (data.aps >= 10) {
-            flag("killaura",30,data,"HIGH APS(aps=${data.aps})")
+            data.flag("killaura",30,"HIGH APS(aps=${data.aps})")
             passed=false
         }
         if (data.aps > 2 && data.aps == data.preAps && data.aps != 0) {
-            flag("killaura",30,data,"STRANGE APS(aps=${data.aps})")
+            data.flag("killaura",30,"STRANGE APS(aps=${data.aps})")
             passed=false
         }
         if (abs(player.rotationYaw - player.prevRotationYaw) > 50 && player.swingProgress != 0F
             && data.aps >= 3) {
-            flag("killaura",30,data,"YAW RATE(aps=${data.aps},yawRot=${abs(player.rotationYaw - player.prevRotationYaw)})")
+            data.flag("killaura",30,"YAW RATE(aps=${data.aps},yawRot=${abs(player.rotationYaw - player.prevRotationYaw)})")
             passed=false
         }
 
         //flight
         if(player.ridingEntity==null&&data.airTicks>(minAirTicks/2)){
             if (abs(data.motionY - data.lastMotionY) < (if(data.airTicks >= 115){1E-3}else{5E-3})){
-                flag("fly",20,data,"GLIDE(diff=${abs(data.motionY - data.lastMotionY)})")
+                data.flag("fly",20,"GLIDE(diff=${abs(data.motionY - data.lastMotionY)})")
                 passed=false
             }
             if(data.motionY > maxMotionY){
-                flag("fly",20,data,"YAXIS(motY=${data.motionY})")
+                data.flag("fly",20,"YAXIS(motY=${data.motionY})")
                 passed=false
             }
             if(data.airTicks > minAirTicks&&data.motionY>0){
-                flag("fly",30,data,"YAXIS(motY=${data.motionY})")
+                data.flag("fly",30,"YAXIS(motY=${data.motionY})")
                 passed=false
             }
             //gravity check from ACR
@@ -194,7 +211,7 @@ class HackerDetector : Module() {
                 limit *= 1.5
             }
             if (distanceXZ > limit) {
-                flag("speed",20,data,"GROUND SPEED(speed=$distanceXZ,limit=$limit)")
+                data.flag("speed",20,"GROUND SPEED(speed=$distanceXZ,limit=$limit)")
             }
         }else{
             val multiplier = 0.985
@@ -213,7 +230,7 @@ class HackerDetector : Module() {
                 predict *= 0.7
 
             if (distanceXZ - predict > limit) {
-                flag("speed",20,data,"AIR SPEED(speed=$distanceXZ,limit=$limit,predict=$predict)")
+                data.flag("speed",20,"AIR SPEED(speed=$distanceXZ,limit=$limit,predict=$predict)")
             }
         }
 //        if (abs(data.motionX) > 0.42
@@ -232,29 +249,29 @@ class HackerDetector : Module() {
         }
     }
 
-    private fun flag(type: String,vl: Int,data: HackerData,msg: String){
-        if(!data.useHacks.contains(type)) data.useHacks.add(type)
+    private fun HackerData.flag(type: String,vl: Int,msg: String){
+        if(!this.useHacks.contains(type)) this.useHacks.add(type)
         //display debug message
         if(debugMode.get()){
-            chat("§f${data.player.name} §euse §2$type §7$msg §c${data.vl}+${vl}")
+            chat("§f${this.player.name} §euse §2$type §7$msg §c${this.vl}+${vl}")
         }
-        data.vl+=vl
+        this.vl+=vl
 
-        if(data.vl>vlValue.get()){
+        if(this.vl>vlValue.get()){
             var use=""
-            for(typ in data.useHacks){
+            for(typ in this.useHacks){
                 use+="$typ,"
             }
             use=use.substring(0,use.length-1)
-            chat("§f${data.player.name} §eusing hack §a$use")
+            chat("§f${this.player.name} §eusing hack §a$use")
             if(notify.get()){
-                LiquidBounce.hud.addNotification(Notification(name,"${data.player.name} might use hack ($use)",NotifyType.WARNING))
+                LiquidBounce.hud.addNotification(Notification(name,"${this.player.name} might use hack ($use)",NotifyType.WARNING))
             }
-            data.vl=-vlValue.get()
+            this.vl=-vlValue.get()
 
             if(report.get()){
                 val autoReportModule=LiquidBounce.moduleManager.getModule(AutoReport::class.java)
-                autoReportModule.doReport(data.player)
+                autoReportModule.doReport(this.player)
             }
         }
     }
@@ -278,13 +295,13 @@ class HackerDetector : Module() {
         //reach check
         val reach=attacker.getDistanceToEntity(entity)
         if(reach>3.7){
-            flag("killaura",70,data,"(reach=$reach)")
+            data.flag("killaura",70,"(reach=$reach)")
         }
 
         //aim check
         val yawDiff=calculateYawDifference(attacker,entity)
         if(yawDiff>50){
-            flag("killaura",100,data,"(yawDiff=$yawDiff)")
+            data.flag("killaura",100,"(yawDiff=$yawDiff)")
         }
     }
 
@@ -302,6 +319,8 @@ class HackerDetector : Module() {
 }
 
 class HackerData(val player:EntityPlayer){
+    var packetBalance=0.0
+    var lastMovePacket=System.currentTimeMillis()
     var aliveTicks=0
     // Ticks in air
     var airTicks = 0
