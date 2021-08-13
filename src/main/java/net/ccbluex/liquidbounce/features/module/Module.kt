@@ -50,7 +50,6 @@ open class Module : MinecraftInstance(), Listenable {
 //                field=StringUtils.toCompleteString(RegexUtils.match(translatedName, "[A-Z][a-z]*"))
 //            }
             if(field.isEmpty()){
-                // TODO: Use Regex to split it
                 val sb=StringBuilder()
                 val arr=name.toCharArray()
                 for(i in arr.indices){

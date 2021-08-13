@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// TODO: convert to kotlin
+// TODO: Radius
 @ModuleInfo(name = "AntiBot", category = ModuleCategory.MISC)
 public class AntiBot extends Module {
     private final BoolValue tabValue = new BoolValue("Tab", true);

@@ -22,9 +22,9 @@ import net.minecraft.network.play.client.C03PacketPlayer
 @ModuleInfo(name = "FastUse", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay", "DelayedInstant"), "DelayedInstant")
-    private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F)
-    private val durationValue = IntegerValue("InstantDelay", 14, 0, 35)
-    private val delayValue = IntegerValue("Delay", 0, 0, 300)
+    private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F).displayable { modeValue.get().equals("Timer",true) }
+    private val durationValue = IntegerValue("InstantDelay", 14, 0, 35).displayable { modeValue.get().equals("DelayedInstant",true) }
+    private val delayValue = IntegerValue("CustomDelay", 0, 0, 300).displayable { modeValue.get().equals("CustomDelay",true) }
 
     private val msTimer = MSTimer()
     private var usedTimer = false

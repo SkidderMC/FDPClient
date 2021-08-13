@@ -19,11 +19,11 @@ import net.minecraft.potion.Potion
 @ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
 class Sprint : Module() {
     val allDirectionsValue = BoolValue("AllDirections", true)
-    private val allDirectionsRotateValue = BoolValue("AllDirectionsRotate", true)
+    private val allDirectionsRotateValue = BoolValue("AllDirectionsRotate", true).displayable { allDirectionsValue.get() }
     private val blindnessValue = BoolValue("Blindness", true)
     val foodValue = BoolValue("Food", true)
     val checkServerSide = BoolValue("CheckServerSide", false)
-    val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false)
+    val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false).displayable { checkServerSide.get() }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {

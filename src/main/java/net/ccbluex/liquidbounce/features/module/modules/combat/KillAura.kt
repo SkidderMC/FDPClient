@@ -105,15 +105,15 @@ class KillAura : Module() {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
         }
-    }
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"),"AfterTick")
-    private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true)
-    private val blockRate = IntegerValue("BlockRate", 100, 1, 100)
+    }.displayable { !autoBlockValue.get().equals("Off",true) }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"),"AfterTick").displayable { !autoBlockValue.get().equals("Off",true) }
+    private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true).displayable { !autoBlockValue.get().equals("Off",true) }
+    private val blockRate = IntegerValue("BlockRate", 100, 1, 100).displayable { !autoBlockValue.get().equals("Off",true) }
 
     // Raycast
     private val raycastValue = BoolValue("RayCast", true)
-    private val raycastIgnoredValue = BoolValue("RayCastIgnored", false)
-    private val livingRaycastValue = BoolValue("LivingRayCast", true)
+    private val raycastIgnoredValue = BoolValue("RayCastIgnored", false).displayable { raycastValue.get() }
+    private val livingRaycastValue = BoolValue("LivingRayCast", true).displayable { raycastValue.get() }
 
     // Bypass
     private val aacValue = BoolValue("AAC", true)
@@ -133,38 +133,38 @@ class KillAura : Module() {
         }
     }
 
-    private val silentRotationValue = BoolValue("SilentRotation", true)
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient")
-    private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true)
-    private val randomCenterValue = BoolValue("RandomCenter", false)
-    private val outborderValue = BoolValue("Outborder", false)
-    private val hitableValue = BoolValue("AlwaysHitable",true)
+    private val silentRotationValue = BoolValue("SilentRotation", true).displayable { maxTurnSpeed.get()<=0f }
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { maxTurnSpeed.get()<=0f }
+    private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.get().equals("Off",true) }
+    private val randomCenterValue = BoolValue("RandomCenter", false).displayable { maxTurnSpeed.get()<=0f }
+    private val outborderValue = BoolValue("Outborder", false).displayable { maxTurnSpeed.get()<=0f }
+    private val hitableValue = BoolValue("AlwaysHitable",true).displayable { maxTurnSpeed.get()<=0f }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
-    private val predictValue = BoolValue("Predict", true)
+    private val predictValue = BoolValue("Predict", true).displayable { maxTurnSpeed.get()<=0f }
 
     private val maxPredictSize: FloatValue = object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minPredictSize.get()
             if (v > newValue) set(v)
         }
-    }
+    }.displayable { predictValue.displayable && predictValue.get() } as FloatValue
 
     private val minPredictSize: FloatValue = object : FloatValue("MinPredictSize", 1f, 0.1f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxPredictSize.get()
             if (v < newValue) set(v)
         }
-    }
+    }.displayable { predictValue.displayable && predictValue.get() } as FloatValue
 
     // Bypass
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f)
-    private val fakeSwingValue = BoolValue("FakeSwing", true)
+    private val fakeSwingValue = BoolValue("FakeSwing", true).displayable { failRateValue.get()!=0f }
     private val noInventoryAttackValue = BoolValue("NoInvAttack", false)
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500)
-    private val switchDelayValue = IntegerValue("SwitchDelay",300 ,1, 2000)
-    private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50)
+    private val switchDelayValue = IntegerValue("SwitchDelay",300 ,1, 2000).displayable { targetModeValue.get().equals("Switch",true) }
+    private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.get().equals("Multi",true) }
 
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")

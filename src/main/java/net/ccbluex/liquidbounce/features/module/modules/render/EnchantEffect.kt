@@ -11,9 +11,9 @@ import java.awt.Color
 
 @ModuleInfo(name = "EnchantEffect", category = ModuleCategory.RENDER)
 class EnchantEffect : Module() {
-    private val redValue = IntegerValue("Red", 255, 0, 255)
-    private val greenValue = IntegerValue("Green", 0, 0, 255)
-    private val blueValue = IntegerValue("Blue", 0, 0, 255)
+    private val redValue = IntegerValue("Red", 255, 0, 255).displayable { modeValue.get().equals("Custom",true) }
+    private val greenValue = IntegerValue("Green", 0, 0, 255).displayable { modeValue.get().equals("Custom",true) }
+    private val blueValue = IntegerValue("Blue", 0, 0, 255).displayable { modeValue.get().equals("Custom",true) }
     private val modeValue = ListValue("Mode", arrayOf("Rainbow", "AnotherRainbow", "Custom"), "Custom")
 
     fun getColor():Color{

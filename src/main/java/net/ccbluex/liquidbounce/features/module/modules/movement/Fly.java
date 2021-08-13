@@ -39,7 +39,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 
-// TODO: convert to kotlin
+// TODO: RECODE IT AS SPEED AND ADD VALUE DISPLAYABLE
 @ModuleInfo(name = "Fly", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_F, autoDisable = EnumAutoDisableType.FLAG)
 public class Fly extends Module {
 

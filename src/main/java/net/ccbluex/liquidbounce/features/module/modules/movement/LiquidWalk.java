@@ -22,13 +22,12 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import org.lwjgl.input.Keyboard;
 
-// TODO: convert to kotlin
 @ModuleInfo(name = "LiquidWalk", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_J)
 public class LiquidWalk extends Module {
     public final ListValue modeValue = new ListValue("Mode", new String[] {"Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "Spartan", "Dolphin", "Legit"}, "NCP");
     private final BoolValue noJumpValue = new BoolValue("NoJump", false);
 
-    private final FloatValue aacFlyValue = new FloatValue("AACFlyMotion", 0.5F, 0.1F, 1F);
+    private final FloatValue aacFlyValue = (FloatValue) new FloatValue("AACFlyMotion", 0.5F, 0.1F, 1F).displayable(() -> modeValue.get().equalsIgnoreCase("AACFly"));
 
     private boolean nextTick;
 

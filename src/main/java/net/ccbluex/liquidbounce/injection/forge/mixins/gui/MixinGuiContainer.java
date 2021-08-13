@@ -61,7 +61,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                     if (pct != 0) {
                         GL11.glPushMatrix();
 
-                        switch (animations.getMoveValue().get().toLowerCase()){
+                        switch (animations.getModeValue().get().toLowerCase()){
                             case "slide":{
                                 pct=(float)EaseUtils.easeInBack(pct);
                                 GL11.glTranslatef(0F, -(guiTop + ySize) * pct, 0F);

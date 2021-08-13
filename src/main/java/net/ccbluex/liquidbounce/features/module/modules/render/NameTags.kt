@@ -36,8 +36,8 @@ class NameTags : Module() {
     private val fontValue = FontValue("Font", Fonts.font40)
     private val borderValue = BoolValue("Border", true)
     private val hackerValue = BoolValue("Hacker", true)
-    private val jelloColorValue = BoolValue("JelloHPColor", true)
-    private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255)
+    private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.get().equals("Jello",true) }
+    private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.get().equals("Jello",true) }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
 
     @EventTarget

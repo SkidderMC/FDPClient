@@ -22,7 +22,7 @@ import org.lwjgl.input.Keyboard
 class InventoryMove : Module() {
 
     private val noDetectableValue = BoolValue("NoDetectable", false)
-    private val bypassValue = BoolValue("Bypass", true)
+    private val bypassValue = BoolValue("Bypass", false)
     private val rotateValue = BoolValue("Rotate", true)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
 

@@ -69,7 +69,7 @@ class ChestStealer : Module() {
             if (i > newValue) set(i)
             nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), this.get())
         }
-    }
+    }.displayable { autoCloseValue.get() } as IntegerValue
 
     private val autoCloseMinDelayValue: IntegerValue = object : IntegerValue("AutoCloseMinDelay", 0, 0, 400) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -77,9 +77,9 @@ class ChestStealer : Module() {
             if (i < newValue) set(i)
             nextCloseDelay = TimeUtils.randomDelay(this.get(), autoCloseMaxDelayValue.get())
         }
-    }
+    }.displayable { autoCloseValue.get() } as IntegerValue
 
-    private val closeOnFullValue = BoolValue("CloseOnFull", true)
+    private val closeOnFullValue = BoolValue("CloseOnFull", true).displayable { autoCloseValue.get() }
     private val chestTitleValue = BoolValue("ChestTitle", false)
 
     /**

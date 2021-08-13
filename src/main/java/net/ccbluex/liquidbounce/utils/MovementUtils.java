@@ -163,7 +163,6 @@ public final class MovementUtils extends MinecraftInstance {
         }
     }
 
-    // TODO: Make better and faster calculation lol
     public static double calculateGround() {
         final AxisAlignedBB playerBoundingBox = mc.thePlayer.getEntityBoundingBox();
         double blockHeight = 1D;

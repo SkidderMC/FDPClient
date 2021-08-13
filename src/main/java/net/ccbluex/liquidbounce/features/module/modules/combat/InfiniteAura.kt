@@ -33,12 +33,12 @@ import java.awt.Color
 @ModuleInfo(name = "InfiniteAura", category = ModuleCategory.COMBAT)
 class InfiniteAura : Module() {
     private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
-    private val targetsValue=IntegerValue("Targets",3,1,10)
+    private val targetsValue=IntegerValue("Targets",3,1,10).displayable { modeValue.get().equals("Aura",true) }
     private val cpsValue=IntegerValue("CPS",1,1,10)
     private val distValue=IntegerValue("Distance",30,20,100)
     private val moveDistanceValue=FloatValue("MoveDistance",5F,2F,15F)
     private val noRegen=BoolValue("NoRegen",true)
-    private val doSwing=BoolValue("Swing",true)
+    private val doSwing=BoolValue("Swing",true).displayable { modeValue.get().equals("Aura",true) }
     private val path=BoolValue("PathRender",true)
 
     private val timer=MSTimer()

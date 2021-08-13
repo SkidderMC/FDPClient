@@ -14,11 +14,11 @@ import net.minecraft.network.play.server.S2BPacketChangeGameState
 
 @ModuleInfo(name = "Ambience", category = ModuleCategory.WORLD)
 class Ambience : Module() {
-    private val timeModeValue = ListValue("TimeMode", arrayOf("None","Normal", "Custom"), "Normal")
+    private val timeModeValue = ListValue("TimeMode", arrayOf("None","Normal","Custom"), "Normal")
     private val weatherModeValue = ListValue("WeatherMode", arrayOf("None","Sunny","Rainy","Thunder"), "None")
-    private val customWorldTimeValue = IntegerValue("CustomTime", 1000, 0, 24000)
-    private val changeWorldTimeSpeedValue = IntegerValue("ChangeWorldTimeSpeed", 150, 10, 500)
-    private val weatherStrengthValue = FloatValue("WeatherStrength", 1f, 0f, 1f)
+    private val customWorldTimeValue = IntegerValue("CustomTime", 1000, 0, 24000).displayable { timeModeValue.get().equals("Custom",true) }
+    private val changeWorldTimeSpeedValue = IntegerValue("ChangeWorldTimeSpeed", 150, 10, 500).displayable { timeModeValue.get().equals("Normal",true) }
+    private val weatherStrengthValue = FloatValue("WeatherStrength", 1f, 0f, 1f).displayable { !weatherModeValue.get().equals("None",true) }
 
     var i = 0L
 

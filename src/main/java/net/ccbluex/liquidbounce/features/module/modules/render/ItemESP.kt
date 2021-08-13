@@ -28,7 +28,7 @@ import java.awt.Color
 class ItemESP : Module() {
     private val modeValue =
         ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "ShaderOutline", "ShaderGlow"), "Box")
-    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f)
+    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.get().equals("Outline",true) }
     private val colorRedValue = IntegerValue("R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("G", 255, 0, 255)
     private val colorBlueValue = IntegerValue("B", 0, 0, 255)

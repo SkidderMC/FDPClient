@@ -37,25 +37,25 @@ class Speed : Module() {
         }
     }
 
-    val customSpeedValue = FloatValue("CustomSpeed", 1.6f, 0.2f, 2f)
-    val customLaunchSpeedValue = FloatValue("CustomLaunchSpeed", 1.6f, 0.2f, 2f)
-    val customAddYMotionValue = FloatValue("CustomAddYMotion", 0f, 0f, 2f)
-    val customYValue = FloatValue("CustomY", 0f, 0f, 4f)
-    val customUpTimerValue = FloatValue("CustomUpTimer", 1f, 0.1f, 2f)
-    val customDownTimerValue = FloatValue("CustomDownTimer", 1f, 0.1f, 2f)
-    val customStrafeValue = ListValue("CustomStrafe", arrayOf("Strafe","Boost","Plus","PlusOnlyUp","Non-Strafe"),"Boost")
-    val customGroundStay = IntegerValue("CustomGroundStay",0,0,10)
-    val groundResetXZValue = BoolValue("CustomGroundResetXZ", false)
-    val resetXZValue = BoolValue("CustomResetXZ", false)
-    val resetYValue = BoolValue("CustomResetY", false)
-    val launchSpeedValue = BoolValue("CustomDoLaunchSpeed", true)
-    val portMax = FloatValue("AAC-PortLength", 1F, 1F, 20F)
-    val redeSkyHopGSpeed = FloatValue("RedeSkyHop-GSpeed", 0.3f, 0.1f, 0.7f)
-    val redeSkyHeight = FloatValue("RedeSkyHeight", 0.45f, 0.30f, 0.55f)
-    val redeSkyHopTimer = FloatValue("RedeSkyHop-Timer", 6f, 1.1f, 10f)
-    val redeSkyHop3Speed = FloatValue("RedeSkyHop3-Speed", 0.07f, 0.01f, 0.1f)
-    val aacGroundTimerValue = FloatValue("AACGround-Timer", 3f, 1.1f, 10f)
-    val cubecraftPortLengthValue = FloatValue("CubeCraft-PortLength", 1f, 0.1f, 2f)
+    val customSpeedValue = FloatValue("CustomSpeed", 1.6f, 0.2f, 2f).displayable { modeValue.get().equals("Custom",true) }
+    val customLaunchSpeedValue = FloatValue("CustomLaunchSpeed", 1.6f, 0.2f, 2f).displayable { modeValue.get().equals("Custom",true) }
+    val customAddYMotionValue = FloatValue("CustomAddYMotion", 0f, 0f, 2f).displayable { modeValue.get().equals("Custom",true) }
+    val customYValue = FloatValue("CustomY", 0f, 0f, 4f).displayable { modeValue.get().equals("Custom",true) }
+    val customUpTimerValue = FloatValue("CustomUpTimer", 1f, 0.1f, 2f).displayable { modeValue.get().equals("Custom",true) }
+    val customDownTimerValue = FloatValue("CustomDownTimer", 1f, 0.1f, 2f).displayable { modeValue.get().equals("Custom",true) }
+    val customStrafeValue = ListValue("CustomStrafe", arrayOf("Strafe","Boost","Plus","PlusOnlyUp","Non-Strafe"),"Boost").displayable { modeValue.get().equals("Custom",true) }
+    val customGroundStay = IntegerValue("CustomGroundStay",0,0,10).displayable { modeValue.get().equals("Custom",true) }
+    val groundResetXZValue = BoolValue("CustomGroundResetXZ", false).displayable { modeValue.get().equals("Custom",true) }
+    val resetXZValue = BoolValue("CustomResetXZ", false).displayable { modeValue.get().equals("Custom",true) }
+    val resetYValue = BoolValue("CustomResetY", false).displayable { modeValue.get().equals("Custom",true) }
+    val launchSpeedValue = BoolValue("CustomDoLaunchSpeed", true).displayable { modeValue.get().equals("Custom",true) }
+    val portMax = FloatValue("AACPort-Length", 1F, 1F, 20F).displayable { modeValue.get().equals("AACPort",true) }
+    val redeSkyHopGSpeed = FloatValue("RedeSkyHop-GSpeed", 0.3f, 0.1f, 0.7f).displayable { modeValue.get().equals("RedeSkyHop",true) }
+    val redeSkyHeight = FloatValue("RedeSkyHeight", 0.45f, 0.30f, 0.55f).displayable { modeValue.get().contains("RedeSkyHop",true) }
+    val redeSkyHopTimer = FloatValue("RedeSkyHop-Timer", 6f, 1.1f, 10f).displayable { modeValue.get().contains("RedeSkyHop",true) }
+    val redeSkyHop3Speed = FloatValue("RedeSkyHop3-Speed", 0.07f, 0.01f, 0.1f).displayable { modeValue.get().equals("RedeSkyHop3",true) }
+    val aacGroundTimerValue = FloatValue("AACGround-Timer", 3f, 1.1f, 10f).displayable { modeValue.get().equals("AACGround",true) }
+    val cubecraftPortLengthValue = FloatValue("TeleportCubeCraft-PortLength", 1f, 0.1f, 2f).displayable { modeValue.get().equals("TeleportCubeCraft",true) }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {

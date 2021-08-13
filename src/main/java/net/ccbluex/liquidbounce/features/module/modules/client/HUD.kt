@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 class HUD : Module() {
     val betterHotbarValue = BoolValue("BetterHotbar", true)
-    val hotbarAlphaValue = IntegerValue("HotbarAlpha", 150, 0, 255)
+    val hotbarAlphaValue = IntegerValue("HotbarAlpha", 150, 0, 255).displayable { betterHotbarValue.get() }
     val inventoryParticle = BoolValue("InventoryParticle", false)
     val fontChatValue = BoolValue("FontChat", false)
     val chatRectValue = BoolValue("ChatRect", true)

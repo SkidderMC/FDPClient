@@ -49,13 +49,17 @@ class AutoLogin : Module() {
     }
 
     private fun processMessage(msg: String){
-        val regCommand=registerCommand.get().split(" ")[0]
-        if(regCommand.isNotEmpty()&&msg.contains(regCommand,ignoreCase = true)){
-            delayedMessage(registerCommand.get().replace("%p",passwordValue.get()))
+        if(registerCommand.get().isNotBlank()) {
+            val regCommand = registerCommand.get().split(" ")[0]
+            if (regCommand.isNotEmpty() && msg.contains(regCommand, ignoreCase = true)) {
+                delayedMessage(registerCommand.get().replace("%p", passwordValue.get()))
+            }
         }
-        val logCommand=loginCommand.get().split(" ")[0]
-        if(logCommand.isNotEmpty()&&msg.contains(logCommand,ignoreCase = true)){
-            delayedMessage(loginCommand.get().replace("%p",passwordValue.get()))
+        if(loginCommand.get().isNotBlank()) {
+            val logCommand = loginCommand.get().split(" ")[0]
+            if (logCommand.isNotEmpty() && msg.contains(logCommand, ignoreCase = true)) {
+                delayedMessage(loginCommand.get().replace("%p", passwordValue.get()))
+            }
         }
     }
 

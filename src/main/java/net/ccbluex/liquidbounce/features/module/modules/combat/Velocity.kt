@@ -41,22 +41,32 @@ class Velocity : Module() {
 
     // Reverse
     private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F)
+        .displayable { modeValue.get().equals("Reverse",true) }
     private val reverse2StrengthValue = FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F)
+        .displayable { modeValue.get().equals("SmoothReverse",true) }
 
     // AAC Push
     private val aacPushXZReducerValue = FloatValue("AACPushXZReducer", 2F, 1F, 3F)
+        .displayable { modeValue.get().equals("AACPush",true) }
     private val aacPushYReducerValue = BoolValue("AACPushYReducer", true)
+        .displayable { modeValue.get().equals("AACPush",true) }
 
     // phase
     private val phaseHeightValue = FloatValue("PhaseHeight",0.5F,0F,1F)
+        .displayable { modeValue.get().contains("Phase",true) }
     private val phaseOnlyGround = BoolValue("PhaseOnlyGround",true)
+        .displayable { modeValue.get().contains("Phase",true) }
 
     // legit
     private val legitStrafeValue = BoolValue("LegitStrafe",false)
+        .displayable { modeValue.get().equals("Legit",true) }
     private val legitFaceValue = BoolValue("LegitFace",true)
+        .displayable { modeValue.get().equals("Legit",true) }
 
     private val rspAlwaysValue = BoolValue("RedeskyAlwaysReduce",true)
+        .displayable { modeValue.get().contains("RedeSky",true) }
     private val rspDengerValue = BoolValue("RedeskyOnlyDanger",false)
+        .displayable { modeValue.get().contains("RedeSky",true) }
 
     /**
      * VALUES

@@ -34,7 +34,7 @@ class Blink : Module() {
     private var disableLogger = false
     private val positions = LinkedList<DoubleArray>()
     private val pulseValue = BoolValue("Pulse", false)
-    private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000)
+    private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000).displayable { pulseValue.get() }
     private val pulseTimer = MSTimer()
 
     override fun onEnable() {
