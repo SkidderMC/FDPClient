@@ -111,6 +111,9 @@ public class SlowlyStyle extends Style {
 
                 moduleElement.slowlySettingsYPos = moduleElement.getY() + 6;
                 for (final Value value : moduleValues) {
+                    if(!value.getDisplayable())
+                        continue;
+
                     if (value instanceof BoolValue) {
                         final String text = value.getLocaledName();
                         final float textWidth = Fonts.font35.getStringWidth(text);

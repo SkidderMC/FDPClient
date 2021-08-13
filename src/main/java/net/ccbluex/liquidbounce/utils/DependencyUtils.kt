@@ -1,14 +1,9 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.minecraft.launchwrapper.LaunchClassLoader
 import net.minecraftforge.fml.common.Loader
-import net.minecraftforge.fml.common.ModClassLoader
 import java.io.File
 import java.net.URL
-import java.net.URLClassLoader
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 
 object DependencyUtils {
     val MAVEN_CENTRAL="https://repo.maven.apache.org/maven2/"

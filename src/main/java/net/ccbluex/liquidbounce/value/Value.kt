@@ -21,6 +21,16 @@ abstract class Value<T>(val name: String, protected var value: T) {
         return this
     }
 
+    private var displayableFunc: () -> Boolean = { true }
+
+    fun displayable(func: () -> Boolean): Value<T> {
+        displayableFunc=func
+        return this
+    }
+
+    val displayable: Boolean
+        get() = displayableFunc()
+
     fun set(newValue: T) {
         if (newValue == value) return
 

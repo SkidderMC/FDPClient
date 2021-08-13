@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.script.kotlin.KotlinScript
 import net.ccbluex.liquidbounce.script.kotlin.KotlinScriptDependency
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.io.File
-import javax.swing.JOptionPane
 
 class ScriptManager {
 

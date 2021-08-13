@@ -71,6 +71,9 @@ public class NullStyle extends Style {
             if(moduleElement.isShowSettings()) {
                 int yPos = moduleElement.getY() + 4;
                 for(final Value value : moduleValues) {
+                    if(!value.getDisplayable())
+                        continue;
+
                     if(value instanceof BoolValue) {
                         String text = value.getLocaledName();
                         float textWidth = Fonts.minecraftFont.getStringWidth(text);

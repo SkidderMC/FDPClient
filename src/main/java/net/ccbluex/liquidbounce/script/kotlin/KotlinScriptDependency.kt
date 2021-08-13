@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.script.kotlin
 
-import gnu.trove.THash
 import net.ccbluex.liquidbounce.utils.DependencyUtils
 
 object KotlinScriptDependency {
@@ -28,7 +27,5 @@ object KotlinScriptDependency {
         DependencyUtils.loadMavenDependency("org.jetbrains.kotlin", "kotlin-scripting-compiler-impl-embeddable", "1.3.72")
         DependencyUtils.loadMavenDependency("org.jetbrains.kotlin", "kotlin-scripting-common", "1.3.72")
         DependencyUtils.loadMavenDependency("org.jetbrains.intellij.deps", "trove4j", "1.0.20181211")
-
-        Class.forName("org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory")
     }
 }

@@ -39,7 +39,9 @@ class Spammer : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Single","Insult","OrderInsult"),"Single")
     private val messageValue = TextValue("Message", "Buy %r Minecraft %r Legit %r and %r stop %r using %r cracked %r servers %r%r")
+        .displayable { !modeValue.get().contains("insult",true) }
     private val insultMessageValue = TextValue("InsultMessage", "[%s] %w [%s]")
+        .displayable { modeValue.get().contains("insult",true) }
 
     private val msTimer = MSTimer()
     private var delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
