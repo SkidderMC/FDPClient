@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.features.special.AutoDisable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -39,6 +40,8 @@ class ModuleManager : Listenable {
         modules.forEach{ it.onInitialize() }
 
         modules.forEach { it.loadLocale() }
+
+        LiquidBounce.eventManager.registerListener(AutoDisable)
 
         ClientUtils.getLogger().info("[ModuleManager] Loaded ${modules.size} modules.")
     }
