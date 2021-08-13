@@ -53,8 +53,8 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     @Inject(method = "keyTyped", at = @At("HEAD"), cancellable = true)
     private void keyTyped(char typedChar, int keyCode, CallbackInfo callbackInfo) {
         String text=inputField.getText();
+        this.inputField.setMaxStringLength(114514);
         if(text.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
-            this.inputField.setMaxStringLength(114514);
             if (keyCode == 28 || keyCode == 156) {
                 LiquidBounce.commandManager.executeCommands(text);
                 callbackInfo.cancel();
@@ -63,8 +63,6 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
             }else{
                 LiquidBounce.commandManager.autoComplete(text);
             }
-        }else{
-            this.inputField.setMaxStringLength(100);
         }
     }
 
