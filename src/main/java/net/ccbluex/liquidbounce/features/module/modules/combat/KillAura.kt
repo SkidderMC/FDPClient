@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -260,7 +259,7 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        if (rotationStrafeValue.get().equals("Off", true) && !mc.thePlayer.isRiding || LiquidBounce.moduleManager[Scaffold::class.java].state)
+        if (rotationStrafeValue.get().equals("Off", true) && !mc.thePlayer.isRiding)
             return
 
         update()

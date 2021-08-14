@@ -12,6 +12,8 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.MathHelper;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -41,15 +43,49 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     @Shadow
     public abstract void onAutocompleteResponse(String[] p_onAutocompleteResponse_1_);
 
+    @Shadow
+    private int sentHistoryCursor;
+
+    @Shadow private String historyBuffer;
+
+    /**
+     * @author Liuli
+     * 这种客户端验证需要玩家点击一段.开头的100长度字符串，而客户端会自动填充.say来尝试绕过
+     * 但是自动填充的.say在需要按上箭头重新发送上一条消息的时候就会因为长度不够导致展示不全
+     */
+    @Overwrite
+    public void getSentHistory(int p_getSentHistory_1_) {
+        int i = this.sentHistoryCursor + p_getSentHistory_1_;
+        int j = this.mc.ingameGUI.getChatGUI().getSentMessages().size();
+        i = MathHelper.clamp_int(i, 0, j);
+        if (i != this.sentHistoryCursor) {
+            if (i == j) {
+                this.sentHistoryCursor = j;
+                setText(this.historyBuffer);
+            } else {
+                if (this.sentHistoryCursor == j) {
+                    this.historyBuffer = this.inputField.getText();
+                }
+
+                setText(this.mc.ingameGUI.getChatGUI().getSentMessages().get(i));
+                this.sentHistoryCursor = i;
+            }
+        }
+    }
+
+    private void setText(String text){
+        if(text.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
+            this.inputField.setMaxStringLength(114514);
+        } else {
+            this.inputField.setMaxStringLength(100);
+        }
+        this.inputField.setText(text);
+    }
+
     @Inject(method = "initGui", at = @At("RETURN"))
     private void init(CallbackInfo callbackInfo) {
         inputField.yPosition = height + 1;
         yPosOfInputField = inputField.yPosition;
-//        this.inputField.setMaxStringLength(114514);
-//        TODO: 使用更好的方法解决这种客户端验证
-//         这种客户端验证需要玩家点击一段.开头的100长度字符串，而客户端会自动填充.say来尝试绕过
-//         但是自动填充的.say在需要按上箭头重新发送上一条消息的时候就会因为长度不够导致展示不全
-//         现在这种解决方法可能导致：玩家粘贴长字符串，服务器点击填充长字符串 时导致崩端
     }
 
     /**
@@ -59,6 +95,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     private void keyTyped(char typedChar, int keyCode, CallbackInfo callbackInfo) {
         String text=inputField.getText();
         if(text.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
+            this.inputField.setMaxStringLength(114514);
             if (keyCode == 28 || keyCode == 156) {
                 LiquidBounce.commandManager.executeCommands(text);
                 callbackInfo.cancel();
@@ -67,6 +104,8 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
             }else{
                 LiquidBounce.commandManager.autoComplete(text);
             }
+        } else {
+            this.inputField.setMaxStringLength(100);
         }
     }
 
@@ -76,7 +115,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     @Inject(method = "setText", at = @At("HEAD"), cancellable = true)
     private void setText(String newChatText, boolean shouldOverwrite, CallbackInfo callbackInfo) {
         if(shouldOverwrite&&newChatText.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))){
-            this.inputField.setText(LiquidBounce.commandManager.getPrefix()+"say "+newChatText);
+            setText(LiquidBounce.commandManager.getPrefix()+"say "+newChatText);
             callbackInfo.cancel();
         }
     }
