@@ -1,5 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -15,7 +17,7 @@ import org.kitteh.irc.client.library.util.StsUtil
 object IRC : Module() {
     private var client: Client? = null
     private var channel: Channel? = null
-    private var nick=mc.session.username
+    private var nick=mc.session.username.replace("_","")
 
     override fun onEnable() {
         client=Client.builder().nick(nick).server()
@@ -48,8 +50,9 @@ object IRC : Module() {
         ClientUtils.displayChatMessage("§b§lIRC §8> §7[§f$nick§7] §f$msg")
     }
 
-    fun changeNick(nick: String){
+    fun changeNick(nick_: String){
         client ?: return
+        val nick=nick_.replace("_","")
         if(nick!=this.nick){
             client!!.nick=nick
             this.nick=nick
@@ -64,11 +67,16 @@ object IRC : Module() {
 
     fun isUser(name: String):Boolean{
         channel ?: return false
-        channel!!.users.forEach {
-            if(it.nick == name)
+        channel!!.nicknames.forEach {
+            if(it.replace("_","").equals(name.replace("_",""),true))
                 return true
         }
         return false
+    }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent){
+        changeNick(mc.getSession().username)
     }
 
     override val tag: String?

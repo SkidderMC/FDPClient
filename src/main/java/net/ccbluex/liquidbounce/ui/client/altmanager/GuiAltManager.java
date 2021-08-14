@@ -123,8 +123,6 @@ public class GuiAltManager extends GuiScreen {
         Fonts.font35.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.username",mc.getSession().getUsername()), 6, 6, 0xffffff);
         Fonts.font35.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.type",(UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "%ui.alt.type.premium%" : "%ui.alt.type.cracked%")), 6, 15, 0xffffff);
 
-        IRC.INSTANCE.changeNick(mc.getSession().getUsername());
-
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
