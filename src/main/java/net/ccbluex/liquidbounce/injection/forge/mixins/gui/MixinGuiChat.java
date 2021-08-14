@@ -45,6 +45,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     private void init(CallbackInfo callbackInfo) {
         inputField.yPosition = height + 1;
         yPosOfInputField = inputField.yPosition;
+        this.inputField.setMaxStringLength(114514);
     }
 
     /**
@@ -53,7 +54,6 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     @Inject(method = "keyTyped", at = @At("HEAD"), cancellable = true)
     private void keyTyped(char typedChar, int keyCode, CallbackInfo callbackInfo) {
         String text=inputField.getText();
-        this.inputField.setMaxStringLength(114514);
         if(text.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
             if (keyCode == 28 || keyCode == 156) {
                 LiquidBounce.commandManager.executeCommands(text);
@@ -72,7 +72,6 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     @Inject(method = "setText", at = @At("HEAD"), cancellable = true)
     private void setText(String newChatText, boolean shouldOverwrite, CallbackInfo callbackInfo) {
         if(shouldOverwrite&&newChatText.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))){
-            this.inputField.setMaxStringLength(114514);
             this.inputField.setText(LiquidBounce.commandManager.getPrefix()+"say "+newChatText);
             callbackInfo.cancel();
         }
