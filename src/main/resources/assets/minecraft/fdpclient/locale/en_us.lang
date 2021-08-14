@@ -1042,3 +1042,6 @@ module.Velocity.value.RedeskyOnlyDanger.name=RedeskyOnlyDanger
 
 module.XRay.name=XRay
 module.XRay.description=Allows you to see selected blocks through walls
+
+module.IRC.name=IRC
+module.IRC.description=Allow you chat with other users

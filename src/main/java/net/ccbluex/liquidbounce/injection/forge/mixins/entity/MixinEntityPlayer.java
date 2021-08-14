@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
 
+    @Shadow public abstract String getName();
+
     @Shadow
     public abstract ItemStack getHeldItem();
 

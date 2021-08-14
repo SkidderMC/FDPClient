@@ -72,10 +72,6 @@ public final class ClientUtils extends MinecraftInstance {
         }
     }
 
-    public static void sendEncryption(final NetworkManager networkManager, final SecretKey secretKey, final PublicKey publicKey, final S01PacketEncryptionRequest encryptionRequest) {
-        networkManager.sendPacket(new C01PacketEncryptionResponse(secretKey, publicKey, encryptionRequest.getVerifyToken()), p_operationComplete_1_ -> networkManager.enableEncryption(secretKey));
-    }
-
     public static void displayAlert(final String message){
         displayChatMessage("§8["+LiquidBounce.COLORED_NAME+"§8] §f"+message);
     }

@@ -144,9 +144,7 @@ open class Module : MinecraftInstance(), Listenable {
         state = !state
     }
 
-    fun chat(msg: String){
-        ClientUtils.displayAlert(msg)
-    }
+    protected fun chat(msg: String) = ClientUtils.displayAlert(msg)
 
     /**
      * Called when module toggled

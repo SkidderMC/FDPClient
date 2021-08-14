@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.client.IRC;
 import net.ccbluex.liquidbounce.features.module.modules.misc.NameProtect;
 import net.ccbluex.liquidbounce.features.module.modules.render.NoFOV;
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager;
@@ -26,8 +27,12 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getCape(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
-        if(!getUniqueID().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()))
+        if(!getUniqueID().equals(Minecraft.getMinecraft().thePlayer.getUniqueID())){
+            if(IRC.INSTANCE.isUser(getName())){
+                callbackInfoReturnable.setReturnValue(GuiCapeManager.INSTANCE.getFDP_CAPE_1().getResource());
+            }
             return;
+        }
 
         if(GuiCapeManager.INSTANCE.getNowCape()!=null)
             callbackInfoReturnable.setReturnValue(GuiCapeManager.INSTANCE.getNowCape().getResource());

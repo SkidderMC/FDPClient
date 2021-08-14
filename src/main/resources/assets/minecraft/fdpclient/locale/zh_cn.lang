@@ -1042,3 +1042,6 @@ module.Velocity.value.RedeskyOnlyDanger.name=RedeskyOnlyDanger
 
 module.XRay.name=矿物透视
 module.XRay.description=允许你透视指定的方块/矿物
+
+module.IRC.name=IRC
+module.IRC.description=让你能够和其他用户聊天

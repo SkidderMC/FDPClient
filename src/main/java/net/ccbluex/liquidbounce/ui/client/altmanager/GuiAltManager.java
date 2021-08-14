@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.altmanager;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.client.IRC;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiAdd;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiDirectLogin;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
@@ -121,6 +122,8 @@ public class GuiAltManager extends GuiScreen {
         Fonts.font35.drawCenteredString(status, width / 2, 32, 0xffffff);
         Fonts.font35.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.username",mc.getSession().getUsername()), 6, 6, 0xffffff);
         Fonts.font35.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.type",(UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "%ui.alt.type.premium%" : "%ui.alt.type.cracked%")), 6, 15, 0xffffff);
+
+        IRC.INSTANCE.changeNick(mc.getSession().getUsername());
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
