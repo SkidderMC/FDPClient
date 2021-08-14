@@ -29,8 +29,12 @@ object LanguageManager {
         val matcher=pattern.matcher(text)
         var result=text
         RegexUtils.match(matcher).forEach {
-            result=result.replace(it,get(it.substring(1,it.length-1)))
+            val spliced=it.substring(1,it.length-1)
+            val converted=get(spliced)
+            if(spliced!=converted)
+                result=result.replace(it,converted)
         }
+        cachedStrings[text] = result
 
         return result
     }
