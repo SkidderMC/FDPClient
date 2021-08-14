@@ -56,8 +56,8 @@ class ModuleInfos : Element(300.0,100.0,1F, Side(Side.Horizontal.RIGHT,Side.Vert
         }
 
         //render Infos
-        val fly = LiquidBounce.moduleManager.getModule(Fly::class.java) as Fly?
-        if (fly!!.state) {
+        val fly = LiquidBounce.moduleManager.getModule(Fly::class.java)
+        if (fly.state) {
             font.drawStringWithShadow("Fly:", 5F, 5F, Color(255, 255, 255).rgb) +
                     font.drawStringWithShadow(" " + this.i + " Binds： " + Keyboard.getKeyName(fly.keyBind), 70F, 5F, Color(255, 255, 255).rgb)
         } else {
@@ -65,19 +65,19 @@ class ModuleInfos : Element(300.0,100.0,1F, Side(Side.Horizontal.RIGHT,Side.Vert
                     font.drawStringWithShadow(" " + this.q + " Binds： " + Keyboard.getKeyName(fly.keyBind), 70F, 5F, Color(255, 255, 255).rgb)
         }
 
-        val Speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed?
-        if (Speed.keyBind != "NONE") {
-        if (Speed!!.state) {
-            font.drawStringWithShadow("Speed:" , 5F, 15F, Color(255, 255, 255).rgb) +
-                    font.drawStringWithShadow(" " + this.i + " Binds： " + Keyboard.getKeyName(Speed.keyBind), 70F, 15F, Color(255, 255, 255).rgb)
-        } else {
-            font.drawStringWithShadow("Speed:", 5F, 15F, Color(255, 255, 255).rgb) +
-                    font.drawStringWithShadow(" " + this.q + " Binds： " + Keyboard.getKeyName(Speed.keyBind), 70F, 15F, Color(255, 255, 255).rgb)
-        }
+        val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)
+        if (speed.keyBind != Keyboard.KEY_NONE) {
+            if (speed.state) {
+                font.drawStringWithShadow("Speed:" , 5F, 15F, Color(255, 255, 255).rgb) +
+                        font.drawStringWithShadow(" " + this.i + " Binds： " + Keyboard.getKeyName(speed.keyBind), 70F, 15F, Color(255, 255, 255).rgb)
+            } else {
+                font.drawStringWithShadow("Speed:", 5F, 15F, Color(255, 255, 255).rgb) +
+                        font.drawStringWithShadow(" " + this.q + " Binds： " + Keyboard.getKeyName(speed.keyBind), 70F, 15F, Color(255, 255, 255).rgb)
+            }
         }
 
-        val killaura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura?
-        if (killaura!!.state) {
+        val killaura = LiquidBounce.moduleManager.getModule(KillAura::class.java)
+        if (killaura.state) {
             font.drawStringWithShadow("KillAura:", 5F, 25F, Color(255, 255, 255).rgb) +
                     font.drawStringWithShadow(" " + this.i + " Binds： " + Keyboard.getKeyName(killaura.keyBind), 70F, 25F, Color(255, 255, 255).rgb)
         } else {
@@ -85,8 +85,8 @@ class ModuleInfos : Element(300.0,100.0,1F, Side(Side.Horizontal.RIGHT,Side.Vert
                     font.drawStringWithShadow(" " + this.q + " Binds： " + Keyboard.getKeyName(killaura.keyBind), 70F, 25F, Color(255, 255, 255).rgb)
         }
 
-        val scaffold = LiquidBounce.moduleManager.getModule(Scaffold::class.java) as Scaffold?
-        if (scaffold!!.state) {
+        val scaffold = LiquidBounce.moduleManager.getModule(Scaffold::class.java)
+        if (scaffold.state) {
             font.drawStringWithShadow("Scaffold:", 5F, 35F, Color(255, 255, 255).rgb) +
                     font.drawStringWithShadow(" " + this.i + " Binds： " + Keyboard.getKeyName(scaffold.keyBind), 70F, 35F, Color(255, 255, 255).rgb)
         } else {
@@ -94,8 +94,8 @@ class ModuleInfos : Element(300.0,100.0,1F, Side(Side.Horizontal.RIGHT,Side.Vert
                     font.drawStringWithShadow(" " + this.q + " Binds： " + Keyboard.getKeyName(scaffold.keyBind), 70F, 35F, Color(255, 255, 255).rgb)
         }
 
-        val longjump = LiquidBounce.moduleManager.getModule(LongJump::class.java) as LongJump?
-        if (longjump!!.state) {
+        val longjump = LiquidBounce.moduleManager.getModule(LongJump::class.java)
+        if (longjump.state) {
             font.drawStringWithShadow("LongJump:", 5F, 45F, Color(255, 255, 255).rgb) +
                     font.drawStringWithShadow(" " + this.i + " Binds： " + Keyboard.getKeyName(longjump.keyBind), 70F, 45F, Color(255, 255, 255).rgb)
         } else {

@@ -11,7 +11,7 @@ import org.kitteh.irc.client.library.event.channel.ChannelJoinEvent
 import org.kitteh.irc.client.library.event.channel.ChannelMessageEvent
 import org.kitteh.irc.client.library.util.StsUtil
 
-@ModuleInfo(name = "IRC", category = ModuleCategory.CLIENT)
+@ModuleInfo(name = "IRC", category = ModuleCategory.CLIENT, defaultOn = true)
 object IRC : Module() {
     private var client: Client? = null
     private var channel: Channel? = null
@@ -38,6 +38,7 @@ object IRC : Module() {
     }
 
     override fun onDisable() {
+        client ?: return
         client!!.shutdown()
         client=null
         channel=null
@@ -56,7 +57,9 @@ object IRC : Module() {
     }
 
     fun sendMessage(msg: String){
+        channel ?: return
         channel!!.sendMessage(msg)
+        displayChat(nick, msg)
     }
 
     fun isUser(name: String):Boolean{
@@ -68,6 +71,6 @@ object IRC : Module() {
         return false
     }
 
-    override val tag: String
-        get() = if(channel==null){ "Connecting" }else { "Connected" }
+    override val tag: String?
+        get() = if(channel==null){ "Connecting" }else { null }
 }

@@ -39,7 +39,7 @@ class ModuleManager : Listenable {
 
         modules.forEach{ it.onInitialize() }
 
-        modules.forEach { it.loadLocale() }
+        modules.forEach { it.onLoad() }
 
         LiquidBounce.eventManager.registerListener(AutoDisable)
 

@@ -12,7 +12,6 @@ class ChatCommand : Command("chat", arrayOf("c")) {
         if (args.size > 1) {
             if(IRC.state){
                 IRC.sendMessage(StringUtils.toCompleteString(args, 1))
-                chat("Message was sent to the IRC.")
             }else{
                 chat("IRC is not connected. Please toggle the IRC module!")
             }
