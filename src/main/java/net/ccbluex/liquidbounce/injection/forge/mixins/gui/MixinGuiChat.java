@@ -45,7 +45,11 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     private void init(CallbackInfo callbackInfo) {
         inputField.yPosition = height + 1;
         yPosOfInputField = inputField.yPosition;
-        this.inputField.setMaxStringLength(114514);
+//        this.inputField.setMaxStringLength(114514);
+//        TODO: 使用更好的方法解决这种客户端验证
+//         这种客户端验证需要玩家点击一段.开头的100长度字符串，而客户端会自动填充.say来尝试绕过
+//         但是自动填充的.say在需要按上箭头重新发送上一条消息的时候就会因为长度不够导致展示不全
+//         现在这种解决方法可能导致：玩家粘贴长字符串，服务器点击填充长字符串 时导致崩端
     }
 
     /**
