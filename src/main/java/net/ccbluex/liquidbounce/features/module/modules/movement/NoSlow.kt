@@ -72,20 +72,18 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        val killAura = LiquidBounce.moduleManager[KillAura::class.java]
         if (!MovementUtils.isMoving())
             return
 
         val heldItem = mc.thePlayer.heldItem
-        if(mc.thePlayer.isUsingItem && heldItem != null && heldItem.item !is ItemSword){
-            when(modeValue.get().toLowerCase()) {
-                "aac5" -> {
-                    if (event.isPre()) {
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
-                    }
-                }
+        if(modeValue.get().toLowerCase() == "aac5") {
+            if (!event.isPre() && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking() || killAura.blockingStatus)) {
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
             }
-        }else{
-            val killAura = LiquidBounce.moduleManager[KillAura::class.java]
+            return
+        }
+        if(modeValue.get().toLowerCase() != "aac5") {
             if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
                 return
             }
@@ -125,10 +123,6 @@ class NoSlow : Module() {
                         sendPacket(event, false, true, false, 0, true, true)
                     }
                 }
-
-                "aac5" -> {
-                    sendPacket(event,true,true,true,200,false)
-                }
             }
         }
     }
@@ -136,7 +130,7 @@ class NoSlow : Module() {
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
         val heldItem = mc.thePlayer.heldItem?.item
-
+        
         event.forward = getMultiplier(heldItem, true)
         event.strafe = getMultiplier(heldItem, false)
     }
