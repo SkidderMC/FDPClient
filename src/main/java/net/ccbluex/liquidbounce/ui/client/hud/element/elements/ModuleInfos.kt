@@ -66,12 +66,14 @@ class ModuleInfos : Element(300.0,100.0,1F, Side(Side.Horizontal.RIGHT,Side.Vert
         }
 
         val Speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed?
+        if (Speed.keyBind != "NONE") {
         if (Speed!!.state) {
             font.drawStringWithShadow("Speed:" , 5F, 15F, Color(255, 255, 255).rgb) +
                     font.drawStringWithShadow(" " + this.i + " Binds： " + Keyboard.getKeyName(Speed.keyBind), 70F, 15F, Color(255, 255, 255).rgb)
         } else {
             font.drawStringWithShadow("Speed:", 5F, 15F, Color(255, 255, 255).rgb) +
                     font.drawStringWithShadow(" " + this.q + " Binds： " + Keyboard.getKeyName(Speed.keyBind), 70F, 15F, Color(255, 255, 255).rgb)
+        }
         }
 
         val killaura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura?
