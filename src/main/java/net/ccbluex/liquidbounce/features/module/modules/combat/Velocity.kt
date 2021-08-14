@@ -91,14 +91,15 @@ class Velocity : Module() {
     
     private var redeCount = 24
     
-    private var templatePacket = null
-
+    private var templateX = 0.0
+    private var templateY = 0.0
+    private var templateZ = 0.0
+    
     override val tag: String
         get() = modeValue.get()
 
     override fun onDisable() {
         mc.thePlayer?.speedInAir = 0.02F
-        templatePacket = null
     }
 
     @EventTarget
@@ -170,10 +171,9 @@ class Velocity : Module() {
                 }
                 if(velocityTimer.hasTimePassed(80L) && velocityInput) {
                     velocityInput = false
-                    mc.thePlayer.motionX = templatePacket.motionX/8000.0
-                    mc.thePlayer.motionZ = templatePacket.motionZ/8000.0
-                    mc.thePlayer.motionY = templatePacket.motionY/8000.0
-                    templatePacket = null
+                    mc.thePlayer.motionX = templateX/8000.0
+                    mc.thePlayer.motionZ = templateZ/8000.0
+                    mc.thePlayer.motionY = templateY/8000.0
                 }
             }
             
@@ -287,7 +287,9 @@ class Velocity : Module() {
                 "aac5.2.0combat" -> {
                     event.cancelEvent()
                     velocityInput = true
-                    templatePacket = packet
+                    templateX = packet.motionX
+                    templateZ = packet.motionZ
+                    templateY = packet.motionY
                 }
 
                 "packetphase" -> {
