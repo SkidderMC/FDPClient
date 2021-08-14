@@ -91,9 +91,9 @@ class Velocity : Module() {
     
     private var redeCount = 24
     
-    private var templateX = 0.0
-    private var templateY = 0.0
-    private var templateZ = 0.0
+    private var templateX = 0
+    private var templateY = 0
+    private var templateZ = 0
     
     override val tag: String
         get() = modeValue.get()
