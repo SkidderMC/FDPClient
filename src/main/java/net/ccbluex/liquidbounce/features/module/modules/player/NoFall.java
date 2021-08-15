@@ -162,22 +162,26 @@ public class NoFall extends Module {
                     offsetYs -= 0.5;
                 }
                 if(mc.thePlayer.onGround) {
-                    mc.thePlayer.fallDistance=-2;
+                    mc.thePlayer.fallDistance = -1.25;
                     aac5Check=false;
                 }
                 if(aac5Timer>0) {
                     aac5Timer -= 1;
                 }
                 if(aac5Check && mc.thePlayer.fallDistance>3.125 && !mc.thePlayer.onGround) {
-                    aac5doFlag=true;
-                    aac5Timer = 16;
-                    //chat("test");
+                    aac5doFlag = true;
+                    aac5Timer = 19;
                 }else {
                     if(aac5Timer<2) aac5doFlag=false;
                 }
                 if(aac5doFlag) {
-                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+                    if(mc.thePlayer.onGround) {
+                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
                             mc.thePlayer.posY + 0.5, mc.thePlayer.posZ, true));
+                    }else{
+                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+                            mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, true));
+                    }
                 }
                 break;
             }
