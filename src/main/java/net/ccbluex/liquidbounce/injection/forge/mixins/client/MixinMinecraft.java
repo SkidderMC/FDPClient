@@ -32,6 +32,7 @@ import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,6 +42,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.swing.*;
+import java.io.File;
 import java.nio.file.AccessDeniedException;
 
 @Mixin(Minecraft.class)
@@ -82,7 +84,12 @@ public abstract class MixinMinecraft {
     @Shadow
     public GameSettings gameSettings;
 
-    @Shadow private Entity renderViewEntity;
+    @Shadow
+    private Entity renderViewEntity;
+
+    @Shadow
+    @Final
+    public File mcDataDir;
 
     @Inject(method = "run", at = @At("HEAD"))
     private void init(CallbackInfo callbackInfo) {
@@ -97,7 +104,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
     private void startGame(CallbackInfo callbackInfo) throws AccessDeniedException {
-        if(PCLChecker.runCheck()){
+        if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
             Display.destroy();
             String warnStr="Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
             JOptionPane.showMessageDialog(null, warnStr, "Alert", JOptionPane.ERROR_MESSAGE);
