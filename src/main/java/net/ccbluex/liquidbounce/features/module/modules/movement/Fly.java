@@ -403,6 +403,15 @@ public class Fly extends Module {
                 mc.thePlayer.motionY=0;
                 break;
             }
+            case "aac5.2.0-smooth":{
+                sendAAC5Packets();
+                if(aac520view.get()){
+                    mc.setRenderViewEntity(mc.thePlayer);
+                    mc.theWorld.removeEntityFromWorld(clonedPlayer.getEntityId());
+                    clonedPlayer=null;
+                }
+                break;
+            }
             case "aac5.2.0-vanilla":{
                 sendAAC5Packets();
                 if(aac520view.get()){
@@ -410,6 +419,7 @@ public class Fly extends Module {
                     mc.theWorld.removeEntityFromWorld(clonedPlayer.getEntityId());
                     clonedPlayer=null;
                 }
+                break;
             }
         }
 
