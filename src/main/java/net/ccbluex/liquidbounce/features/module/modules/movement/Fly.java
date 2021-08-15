@@ -487,7 +487,7 @@ public class Fly extends Module {
                 }
                 break;
             case "aac5.2.0-smooth":
-                mc.thePlayer.noClip=true;
+                mc.thePlayer.noClip=!MovementUtils.isMoving();
                 if(!flyTimer.hasTimePassed(1000) || !aac5FlyStart) {
                     mc.thePlayer.motionY = 0;
                     mc.thePlayer.motionX = 0;
@@ -976,10 +976,14 @@ public class Fly extends Module {
                 event.cancelEvent();
 
             if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla") || modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth")){
-                aac5C03List.add(packetPlayer);
-                event.cancelEvent();
-                if(!(modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth") && !flyTimer.hasTimePassed(1000))&&aac5C03List.size()>aac520Purse.get()) {
-                    sendAAC5Packets();
+                double f=mc.thePlayer.width/2.0;
+                // need to no collide else will flag
+                if(!mc.theWorld.checkBlockCollision(new AxisAlignedBB(packetPlayer.x - f, packetPlayer.y, packetPlayer.z - f, packetPlayer.x + f, packetPlayer.y + mc.thePlayer.height, packetPlayer.z + f))){
+                    aac5C03List.add(packetPlayer);
+                    event.cancelEvent();
+                    if(!(modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth") && !flyTimer.hasTimePassed(1000))&&aac5C03List.size()>aac520Purse.get()) {
+                        sendAAC5Packets();
+                    }
                 }
             }
         }
