@@ -491,14 +491,14 @@ public class Fly extends Module {
                     mc.thePlayer.motionX = 0;
                     mc.thePlayer.motionZ = 0;
                     mc.thePlayer.jumpMovementFactor = 0.00f;
-                    mc.timer.timerSpeed = 0.33F;
+                    mc.timer.timerSpeed = 0.32F;
                     return;
                 }else {
                     if(!aac5FlyClip) {
                         mc.timer.timerSpeed = 0.19F;
                     }else{
                         aac5FlyClip=false;
-                        mc.timer.timerSpeed = 0.8F;
+                        mc.timer.timerSpeed = 1.2F;
                     }
                 }
             case "aac5.2.0-vanilla":
@@ -948,7 +948,7 @@ public class Fly extends Module {
             aac5FlyStart=true;
             if(flyTimer.hasTimePassed(2000)) {
                 aac5FlyClip=true;
-                mc.timer.timerSpeed = 1.0F;
+                mc.timer.timerSpeed = 1.3F;
             }
             final S08PacketPlayerPosLook packetPlayerPosLook=(S08PacketPlayerPosLook) packet;
 
