@@ -204,6 +204,7 @@ public class Fly extends Module {
     private EntityOtherPlayerMP clonedPlayer=null;
     private boolean aac5FlyClip=false;
     private boolean aac5FlyStart=false;
+    private boolean aac5nextFlag=false;
 
     private float launchYaw=0;
     private float launchPitch=0;
@@ -292,6 +293,7 @@ public class Fly extends Module {
                 flyTimer.reset();
                 aac5FlyClip=false;
                 aac5FlyStart=false;
+                aac5nextFlag=false;
                 mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ);
                 break;
             case "ncp":
@@ -947,50 +949,10 @@ public class Fly extends Module {
         final Packet<?> packet = event.getPacket();
 
         if(packet instanceof S08PacketPlayerPosLook){
-            aac5FlyStart=true;
-            if(flyTimer.hasTimePassed(2000)) {
-                aac5FlyClip=true;
-                mc.timer.timerSpeed = 1.3F;
-            }
             final S08PacketPlayerPosLook packetPlayerPosLook=(S08PacketPlayerPosLook) packet;
 
-            if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")&&aac520view.get()) {
-                clonedPlayer.setPosition(packetPlayerPosLook.getX(), packetPlayerPosLook.getY(), packetPlayerPosLook.getZ());
-            }
-        }
-
-        if(packet instanceof C03PacketPlayer) {
-            final C03PacketPlayer packetPlayer = (C03PacketPlayer) packet;
-
             final String mode = modeValue.get();
 
-            if (mode.equalsIgnoreCase("NCP") || mode.equalsIgnoreCase("Rewinside") || (mode.equalsIgnoreCase("Verus")&&verusFlyable) ||
-                (mode.equalsIgnoreCase("Verus2")&&verusFlyable) ||
-                    (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null))
-                packetPlayer.onGround = true;
-
-            if (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("BoostHypixel"))
-                packetPlayer.onGround = false;
-
-            if(mode.contains("AAC5.2.0"))
-                event.cancelEvent();
-
-            if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla") || modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth")){
-                double f=mc.thePlayer.width/2.0;
-                // need to no collide else will flag
-                if(!mc.theWorld.checkBlockCollision(new AxisAlignedBB(packetPlayer.x - f, packetPlayer.y, packetPlayer.z - f, packetPlayer.x + f, packetPlayer.y + mc.thePlayer.height, packetPlayer.z + f))){
-                    aac5C03List.add(packetPlayer);
-                    event.cancelEvent();
-                    if(!(modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth") && !flyTimer.hasTimePassed(1000))&&aac5C03List.size()>aac520Purse.get()) {
-                        sendAAC5Packets();
-                    }
-                }
-            }
-        }
-
-        if(packet instanceof S08PacketPlayerPosLook) {
-            final String mode = modeValue.get();
-            if(verusFlyable) verusFlyable=false;
             if(mode.equalsIgnoreCase("BoostHypixel")) {
                 failedStart = true;
                 ClientUtils.displayChatMessage("§8[§c§lBoostHypixel-§a§lFly§8] §cSetback detected.");
@@ -1041,6 +1003,47 @@ public class Fly extends Module {
                             aac5SameReach+=aac520Append.get();
                             mc.timer.timerSpeed+=aac520AppendTimer.get();
                         }
+                    }
+                }
+            }else if(mode.equalsIgnoreCase("AAC5.2.0-Smooth")){
+                aac5FlyStart=true;
+                if(flyTimer.hasTimePassed(2000)) {
+                    aac5FlyClip=true;
+                    mc.timer.timerSpeed = 1.3F;
+                }
+                aac5nextFlag=true;
+            }else if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")&&aac520view.get()) {
+                clonedPlayer.setPosition(packetPlayerPosLook.getX(), packetPlayerPosLook.getY(), packetPlayerPosLook.getZ());
+            }else if(verusFlyable) {
+                verusFlyable = false;
+            }
+        }
+
+        if(packet instanceof C03PacketPlayer) {
+            final C03PacketPlayer packetPlayer = (C03PacketPlayer) packet;
+
+            final String mode = modeValue.get();
+
+            if (mode.equalsIgnoreCase("NCP") || mode.equalsIgnoreCase("Rewinside") || (mode.equalsI操gnoreCase("Verus")&&verusFlyable) ||
+                (mode.equalsIgnoreCase("Verus2")&&verusFlyable) ||
+                    (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null))
+                packetPlayer.onGround = true;
+
+            if (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("BoostHypixel"))
+                packetPlayer.onGround = false;
+
+            if(mode.contains("AAC5.2.0"))
+                event.cancelEvent();
+
+            if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla") || modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth")){
+                double f=mc.thePlayer.width/2.0;
+                // need to no collide else will flag
+                if(aac5nextFlag || !mc.theWorld.checkBlockCollision(new AxisAlignedBB(packetPlayer.x - f, packetPlayer.y, packetPlayer.z - f, packetPlayer.x + f, packetPlayer.y + mc.thePlayer.height, packetPlayer.z + f))){
+                    aac5C03List.add(packetPlayer);
+                    aac5nextFlag=false;
+                    event.cancelEvent();
+                    if(!(modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth") && !flyTimer.hasTimePassed(1000))&&aac5C03List.size()>aac520Purse.get()) {
+                        sendAAC5Packets();
                     }
                 }
             }
