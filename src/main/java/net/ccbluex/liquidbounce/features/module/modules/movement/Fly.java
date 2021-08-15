@@ -202,7 +202,7 @@ public class Fly extends Module {
     private C03PacketPlayer.C06PacketPlayerPosLook aac5QueuedPacket=null;
     private int aac5SameReach=5;
     private EntityOtherPlayerMP clonedPlayer=null;
-    private final TickTimer aac5FlyTimer = new TickTimer();
+    private boolean aac5FlyClip=false;
     private boolean aac5FlyStart=false;
 
     private float launchYaw=0;
@@ -502,8 +502,11 @@ public class Fly extends Module {
                     mc.timer.timerSpeed = 0.33F;
                     return;
                 }else if(aac5FlyStart) {
-                    if(aac5FlyTimer.hasTimePassed(80)) {
+                    if(!aac5FlyClip) {
                         mc.timer.timerSpeed = 0.19F;
+                    }else{
+                        aac5FlyClip=false;
+                        mc.timer.timerSpeed = 0.8F;
                     }
                 }
             case "aac5.2.0-vanilla":
@@ -952,7 +955,7 @@ public class Fly extends Module {
         if(packet instanceof S08PacketPlayerPosLook){
             aac5FlyStart=true;
             if(flyTimer.hasTimePassed(2000)) {
-                aac5FlyTimer.reset();
+                aac5FlyClip=true;
                 mc.timer.timerSpeed = 1.0F;
             }
             final S08PacketPlayerPosLook packetPlayerPosLook=(S08PacketPlayerPosLook) packet;
