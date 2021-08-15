@@ -69,6 +69,7 @@ ui.alt.loginPassword=密码
 ui.alt.alreadyAdded=这个帐号已经存在于列表中了
 ui.alt.notWorking=帐号登录失败
 ui.alt.checking=验证中...
+ui.alt.randomAltField=随机用户名规则
 
 ui.scaffold.blocks=剩余方块 > %d
 

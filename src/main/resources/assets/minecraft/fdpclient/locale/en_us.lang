@@ -69,6 +69,7 @@ ui.alt.loginPassword=Password
 ui.alt.alreadyAdded=The account has already been added.
 ui.alt.notWorking=The account doesn't work.
 ui.alt.checking=Checking...
+ui.alt.randomAltField=Rule of random alts
 
 ui.scaffold.blocks=Blocks > %d
 

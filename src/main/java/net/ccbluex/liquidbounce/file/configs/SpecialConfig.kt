@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
+import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import java.io.*
 import java.nio.charset.StandardCharsets
 
@@ -26,12 +27,16 @@ class SpecialConfig(file: File) : FileConfig(file) {
         ServerSpoof.address="redesky.com"
         GuiBackground.enabled=true
         GuiBackground.particles=false
+        GuiAltManager.randomAltField.text="F%nD%nP%n_%s%s%s"
 
         if(json.has("prefix")){
             LiquidBounce.commandManager.prefix=json.get("prefix").asCharacter
         }
         if(json.has("auto-reconnect")){
             AutoReconnect.delay=json.get("auto-reconnect").asInt
+        }
+        if(json.has("alt-field")){
+            GuiAltManager.randomAltField.text=json.get("alt-field").asString
         }
         if(json.has("anti-forge")){
             val jsonValue = json.getAsJsonObject("anti-forge")
@@ -68,6 +73,7 @@ class SpecialConfig(file: File) : FileConfig(file) {
 
         json.addProperty("prefix",LiquidBounce.commandManager.prefix)
         json.addProperty("auto-reconnect", AutoReconnect.delay)
+        json.addProperty("alt-field", GuiAltManager.randomAltField.text)
 
         val antiForgeJson= JsonObject()
         antiForgeJson.addProperty("enable", AntiForge.enabled)

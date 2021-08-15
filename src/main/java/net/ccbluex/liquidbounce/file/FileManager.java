@@ -162,7 +162,7 @@ public class FileManager extends MinecraftInstance {
      * @param config to save
      */
     public void saveConfig(final FileConfig config) {
-        saveConfig(config, false);
+        saveConfig(config, true);
     }
 
     /**
