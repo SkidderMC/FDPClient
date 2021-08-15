@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class RedeSkyHopOld: SpeedMode("RedeSkyHopOld") {
-    override fun onMotion() {
+    override fun onPreMotion() {
         if(MovementUtils.isMoving()){
             mc.thePlayer.isSprinting = true
             mc.timer.timerSpeed = 1F

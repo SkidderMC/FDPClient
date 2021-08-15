@@ -8,17 +8,12 @@ package net.ccbluex.liquidbounce.utils;
 import com.google.gson.JsonObject;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.login.client.C01PacketEncryptionResponse;
-import net.minecraft.network.login.server.S01PacketEncryptionRequest;
 import net.minecraft.util.IChatComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
-import javax.crypto.SecretKey;
 import java.lang.reflect.Field;
-import java.security.PublicKey;
 
 public final class ClientUtils extends MinecraftInstance {
 

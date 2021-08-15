@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 
 class SpartanYPort : SpeedMode("SpartanYPort") {
     private var airMoves = 0
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (mc.gameSettings.keyBindForward.isKeyDown && !mc.gameSettings.keyBindJump.isKeyDown) {
             if (mc.thePlayer.onGround) {
                 mc.thePlayer.jump()

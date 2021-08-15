@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class AAC2BHop : SpeedMode("AAC2BHop") {
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (mc.thePlayer.isInWater) return
 
         if (MovementUtils.isMoving()) {

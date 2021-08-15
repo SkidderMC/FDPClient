@@ -11,7 +11,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 class MiJump : SpeedMode("MiJump") {
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (!MovementUtils.isMoving()) return
 
         if (mc.thePlayer.onGround && !mc.thePlayer.movementInput.jump) {

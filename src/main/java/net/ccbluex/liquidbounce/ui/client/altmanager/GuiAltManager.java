@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.ui.client.altmanager;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.client.IRC;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiAdd;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiDirectLogin;
 import net.ccbluex.liquidbounce.ui.font.Fonts;

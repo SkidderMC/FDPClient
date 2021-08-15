@@ -13,7 +13,7 @@ class Boost : SpeedMode("Boost") {
     private var motionDelay = 0
     private var ground = 0f
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         var speed = 3.1981
         var offset = 4.69
         var shouldOffset = true

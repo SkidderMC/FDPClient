@@ -158,6 +158,8 @@ shadowJar {
 
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
+    exclude 'LICENSE'
+    exclude 'NOTICE'
 
     classifier = ''
 }

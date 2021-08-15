@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class YPort2 : SpeedMode("YPort2") {
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (mc.thePlayer.isOnLadder || mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || !MovementUtils.isMoving()) return
 
         if (mc.thePlayer.onGround) mc.thePlayer.jump() else mc.thePlayer.motionY = -1.0

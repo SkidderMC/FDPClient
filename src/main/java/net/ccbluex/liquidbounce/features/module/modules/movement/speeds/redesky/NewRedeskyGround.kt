@@ -8,7 +8,7 @@ class NewRedeskyGround : SpeedMode("NewRedeskyGround") {
     private val timer=MSTimer()
     private var stage=false
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         if(MovementUtils.isMoving()){
             if(stage){
                 mc.timer.timerSpeed=1.20F

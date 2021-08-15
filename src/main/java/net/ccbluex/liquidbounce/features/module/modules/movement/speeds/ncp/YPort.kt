@@ -28,7 +28,7 @@ class YPort : SpeedMode("YPort") {
     private var timerDelay = 0
     private var safeJump = false
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (!safeJump && !mc.gameSettings.keyBindJump.isKeyDown && !mc.thePlayer.isOnLadder && !mc.thePlayer.isInsideOfMaterial(Material.water)
             && !mc.thePlayer.isInsideOfMaterial(Material.lava) && !mc.thePlayer.isInWater && (this.getBlock(-1.1) !is BlockAir
             && this.getBlock(-1.1) !is BlockAir || this.getBlock(-0.1) !is BlockAir && mc.thePlayer.motionX != 0.0

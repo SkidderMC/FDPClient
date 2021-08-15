@@ -20,9 +20,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
-import org.lwjgl.input.Keyboard;
 
-@ModuleInfo(name = "LiquidWalk", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_J)
+@ModuleInfo(name = "LiquidWalk", category = ModuleCategory.MOVEMENT)
 public class LiquidWalk extends Module {
     public final ListValue modeValue = new ListValue("Mode", new String[] {"Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "Spartan", "Dolphin", "Legit"}, "NCP");
     private final BoolValue noJumpValue = new BoolValue("NoJump", false);

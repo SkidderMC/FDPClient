@@ -25,6 +25,9 @@ class Freeze : Module() {
     private var z = 0.0
 
     override fun onEnable() {
+        if (mc.thePlayer == null)
+            return
+
         x=mc.thePlayer.posX
         y=mc.thePlayer.posY
         z=mc.thePlayer.posZ

@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class OldAACBHop : SpeedMode("OldAACBHop") {
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) {
                 MovementUtils.strafe(0.56f)

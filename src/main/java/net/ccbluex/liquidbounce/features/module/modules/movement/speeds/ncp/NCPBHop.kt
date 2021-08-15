@@ -36,7 +36,7 @@ class NCPBHop : SpeedMode("NCPBHop") {
         level = 0
     }
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         val xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX
         val zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ
         lastDist = sqrt(xDist * xDist + zDist * zDist)

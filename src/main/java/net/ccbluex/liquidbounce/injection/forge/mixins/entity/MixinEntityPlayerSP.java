@@ -102,6 +102,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     /**
      * @author liuli
+     * for aac5.2.0-vanilla fly with betterview mode
      */
     @Overwrite
     protected boolean isCurrentViewEntity() {

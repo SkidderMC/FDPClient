@@ -17,15 +17,16 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import org.lwjgl.input.Keyboard
 
-@ModuleInfo(name = "Speed", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
+@ModuleInfo(name = "Speed", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, keyBind = Keyboard.KEY_V)
 class Speed : Module() {
     val modes=ReflectUtils.getReflects("${this.javaClass.`package`.name}.speeds",SpeedMode::class.java)
         .map { it.newInstance() as SpeedMode }
         .sortedBy { it.modeName }
 
     val mode: SpeedMode
-        get() = modes.filter { it.modeName.equals(modeValue.get(),true) }.get(0)
+        get() = modes.filter { it.modeName.equals(modeValue.get(),true) }[0]
 
     val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "NCPBHop") {
         override fun onChange(oldValue: String, newValue: String) {
@@ -58,7 +59,7 @@ class Speed : Module() {
     val cubecraftPortLengthValue = FloatValue("TeleportCubeCraft-PortLength", 1f, 0.1f, 2f).displayable { modeValue.get().equals("TeleportCubeCraft",true) }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.isSneaking) return
         if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
         mode.onUpdate()
@@ -66,9 +67,10 @@ class Speed : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        mode.onMotion(event)
         if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE) return
         if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
-        mode.onMotion()
+        mode.onPreMotion()
     }
 
     @EventTarget

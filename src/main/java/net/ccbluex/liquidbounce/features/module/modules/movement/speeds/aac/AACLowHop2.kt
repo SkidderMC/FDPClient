@@ -20,7 +20,7 @@ class AACLowHop2 : SpeedMode("AACLowHop2") {
         mc.timer.timerSpeed = 1f
     }
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         mc.timer.timerSpeed = 1f
 
         if (mc.thePlayer.isInWater) return

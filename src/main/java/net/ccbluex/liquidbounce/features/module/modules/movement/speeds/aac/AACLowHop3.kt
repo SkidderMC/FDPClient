@@ -18,7 +18,7 @@ class AACLowHop3 : SpeedMode("AACLowHop3") {
         firstJump = true
     }
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.hurtTime <= 0) {
                 if (mc.thePlayer.onGround) {

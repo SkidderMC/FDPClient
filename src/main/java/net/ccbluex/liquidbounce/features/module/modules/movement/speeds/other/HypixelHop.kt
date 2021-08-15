@@ -63,7 +63,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
         mc.timer.timerSpeed=1F
     }
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         val thePlayer = mc.thePlayer ?: return
         val xDist: Double = thePlayer.posX - thePlayer.prevPosX
         val zDist: Double = thePlayer.posZ - thePlayer.prevPosZ

@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.util.MathHelper
 
 class AACBHop : SpeedMode("AACBHop") {
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (mc.thePlayer.isInWater) return
 
         if (MovementUtils.isMoving()) {
