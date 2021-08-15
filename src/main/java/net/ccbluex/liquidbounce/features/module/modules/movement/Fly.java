@@ -298,7 +298,7 @@ public class Fly extends Module {
                     mc.setRenderViewEntity(clonedPlayer);
                 }
                 flyTimer.reset();
-                aac5FlyTimer.reset();
+                aac5FlyClip=false;
                 aac5FlyStart=false;
                 mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ);
                 break;
