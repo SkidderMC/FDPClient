@@ -289,14 +289,6 @@ public class Fly extends Module {
                 }
                 break;
             case "aac5.2.0-smooth":
-                if(aac520view.get()){
-                    clonedPlayer = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
-                    clonedPlayer.rotationYawHead = mc.thePlayer.rotationYawHead;
-                    clonedPlayer.copyLocationAndAnglesFrom(mc.thePlayer);
-                    mc.theWorld.addEntityToWorld((int) -(Math.random() * 10000), clonedPlayer);
-                    clonedPlayer.setInvisible(true);
-                    mc.setRenderViewEntity(clonedPlayer);
-                }
                 flyTimer.reset();
                 aac5FlyClip=false;
                 aac5FlyStart=false;
@@ -399,28 +391,18 @@ public class Fly extends Module {
         final String mode = modeValue.get();
 
         switch (mode.toLowerCase()){
-            case "redeskycollide":{
+            case "redeskycollide":
                 mc.thePlayer.motionY=0;
                 break;
-            }
-            case "aac5.2.0-smooth":{
-                sendAAC5Packets();
+            case "aac5.2.0-vanilla":
                 if(aac520view.get()){
                     mc.setRenderViewEntity(mc.thePlayer);
                     mc.theWorld.removeEntityFromWorld(clonedPlayer.getEntityId());
                     clonedPlayer=null;
                 }
-                break;
-            }
-            case "aac5.2.0-vanilla":{
+            case "aac5.2.0-smooth":
                 sendAAC5Packets();
-                if(aac520view.get()){
-                    mc.setRenderViewEntity(mc.thePlayer);
-                    mc.theWorld.removeEntityFromWorld(clonedPlayer.getEntityId());
-                    clonedPlayer=null;
-                }
                 break;
-            }
         }
 
         mc.thePlayer.capabilities.isFlying = false;
@@ -511,7 +493,7 @@ public class Fly extends Module {
                     mc.thePlayer.jumpMovementFactor = 0.00f;
                     mc.timer.timerSpeed = 0.33F;
                     return;
-                }else if(aac5FlyStart) {
+                }else {
                     if(!aac5FlyClip) {
                         mc.timer.timerSpeed = 0.19F;
                     }else{
@@ -520,7 +502,7 @@ public class Fly extends Module {
                     }
                 }
             case "aac5.2.0-vanilla":
-                if(aac520view.get()){
+                if(aac520view.get()&&modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")){
                     clonedPlayer.inventory.copyInventory(mc.thePlayer.inventory);
                     clonedPlayer.setHealth(mc.thePlayer.getHealth());
                     clonedPlayer.rotationYaw=mc.thePlayer.rotationYaw;
@@ -532,9 +514,9 @@ public class Fly extends Module {
                 mc.thePlayer.motionX = 0;
                 mc.thePlayer.motionZ = 0;
                 if (mc.gameSettings.keyBindJump.isKeyDown())
-                    mc.thePlayer.motionY += vanillaSpeed;
+                    mc.thePlayer.motionY += vanillaSpeed*0.5;
                 if (mc.gameSettings.keyBindSneak.isKeyDown())
-                    mc.thePlayer.motionY -= vanillaSpeed;
+                    mc.thePlayer.motionY -= vanillaSpeed*0.5;
                 MovementUtils.strafe(vanillaSpeed);
 
                 if(!modeValue.get().toLowerCase().contains("aac"))
@@ -994,9 +976,7 @@ public class Fly extends Module {
             if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla") || modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth")){
                 aac5C03List.add(packetPlayer);
                 event.cancelEvent();
-                if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth") && !flyTimer.hasTimePassed(1000)) {
-                    
-                } else if(aac5C03List.size()>aac520Purse.get()) {
+                if(!(modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth") && !flyTimer.hasTimePassed(1000))&&aac5C03List.size()>aac520Purse.get()) {
                     sendAAC5Packets();
                 }
             }
