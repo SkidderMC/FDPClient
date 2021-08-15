@@ -402,6 +402,7 @@ public class Fly extends Module {
                 }
             case "aac5.2.0-smooth":
                 sendAAC5Packets();
+                mc.thePlayer.noClip = false;
                 break;
         }
 
@@ -486,6 +487,7 @@ public class Fly extends Module {
                 }
                 break;
             case "aac5.2.0-smooth":
+                mc.thePlayer.noClip=true;
                 if(!flyTimer.hasTimePassed(1000) || !aac5FlyStart) {
                     mc.thePlayer.motionY = 0;
                     mc.thePlayer.motionX = 0;
@@ -501,7 +503,6 @@ public class Fly extends Module {
                         mc.timer.timerSpeed = 1.2F;
                     }
                 }
-                if(mc.gameSettings.keyBindSneak.isKeyDown()) mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY -0.02, mc.thePlayer.posZ);
             case "aac5.2.0-vanilla":
                 if(aac520view.get()&&modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")){
                     clonedPlayer.inventory.copyInventory(mc.thePlayer.inventory);
