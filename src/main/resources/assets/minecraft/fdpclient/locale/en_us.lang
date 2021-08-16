@@ -446,6 +446,10 @@ module.EnchantEffect.value.Green.name=Green
 module.EnchantEffect.value.Blue.name=Blue
 module.EnchantEffect.value.Mode.name=Mode
 
+module.FakeDead.name=FakeDead
+module.FakeDead.name.value.FakeDeathTime.name=FakeDeathTime
+module.FakeDead.name.value.FakeGetHurt.name=FakeGetHurt
+
 module.FastBreak.name=FastBreak
 module.FastBreak.description=Allows you to break blocks faster
 module.FastBreak.value.BreakDamage.name=BreakDamage
