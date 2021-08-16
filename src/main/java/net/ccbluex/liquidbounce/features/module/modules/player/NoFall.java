@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam;
+import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
@@ -68,7 +69,7 @@ public class NoFall extends Module {
 
         if (mc.thePlayer.isSpectator() || mc.thePlayer.capabilities.allowFlying || mc.thePlayer.capabilities.disableDamage)
             return;
-        
+
         if(BlockUtils.collideBlock(mc.thePlayer.getEntityBoundingBox(), block -> block instanceof BlockLiquid) ||
                 BlockUtils.collideBlock(new AxisAlignedBB(mc.thePlayer.getEntityBoundingBox().maxX, mc.thePlayer.getEntityBoundingBox().maxY, mc.thePlayer.getEntityBoundingBox().maxZ, mc.thePlayer.getEntityBoundingBox().minX, mc.thePlayer.getEntityBoundingBox().minY - 0.01D, mc.thePlayer.getEntityBoundingBox().minZ), block -> block instanceof BlockLiquid))
             return;
@@ -177,10 +178,10 @@ public class NoFall extends Module {
                 if(aac5doFlag) {
                     if(mc.thePlayer.onGround) {
                         mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
-                            mc.thePlayer.posY + 0.5, mc.thePlayer.posZ, true));
+                                mc.thePlayer.posY + 0.5, mc.thePlayer.posZ, true));
                     }else{
                         mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
-                            mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, true));
+                                mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, true));
                     }
                 }
                 break;
@@ -270,7 +271,7 @@ public class NoFall extends Module {
             if (mode.equalsIgnoreCase("Hypixel")
                     && mc.thePlayer != null && mc.thePlayer.fallDistance > 1.5)
                 packet.onGround = mc.thePlayer.ticksExisted % 2 == 0;
-            
+
             if (mode.equalsIgnoreCase("HypSpoof"))
                 PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z,false));
 
@@ -282,7 +283,7 @@ public class NoFall extends Module {
                 }
                 aac4Packets.add(packet);
             }
-            
+
             if (mode.equalsIgnoreCase("Verus") && NeedSpoof) {
                 packet.onGround = true;
                 NeedSpoof = false;
