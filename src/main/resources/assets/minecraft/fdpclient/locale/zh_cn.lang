@@ -446,6 +446,10 @@ module.EnchantEffect.value.Green.name=绿
 module.EnchantEffect.value.Blue.name=蓝
 module.EnchantEffect.value.Mode.name=模式
 
+module.FakeDead.name=假死
+module.FakeDead.name.value.FakeDeathTime.name=假死时间
+module.FakeDead.name.value.FakeGetHurt.name=假受伤
+
 module.FastBreak.name=快速挖掘
 module.FastBreak.description=让你更快地挖掘方块
 module.FastBreak.value.BreakDamage.name=挖掘进度
