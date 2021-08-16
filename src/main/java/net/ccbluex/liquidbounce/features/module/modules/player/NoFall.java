@@ -28,7 +28,7 @@ import java.util.TimerTask;
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 public class NoFall extends Module {
-    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "Phase", "Verus"}, "SpoofGround");
+    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "NoGround", "Packet", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus"}, "SpoofGround");
 
     private final IntegerValue phaseOffsetValue = (IntegerValue) new IntegerValue("PhaseOffset",1,0,5).displayable(() -> modeValue.get().equalsIgnoreCase("Phase"));
 
@@ -270,7 +270,9 @@ public class NoFall extends Module {
             if (mode.equalsIgnoreCase("Hypixel")
                     && mc.thePlayer != null && mc.thePlayer.fallDistance > 1.5)
                 packet.onGround = mc.thePlayer.ticksExisted % 2 == 0;
-
+            
+            if (mode.equalsIgnoreCase("HypSpoof"))
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z,false));
 
             if (mode.equalsIgnoreCase("AACv4")&&aac4Fakelag){
                 event.cancelEvent();
