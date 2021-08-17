@@ -254,7 +254,7 @@ class Scaffold : Module() {
                 }
                 "autojump" -> {
                     canSameY = true
-                    if (MovementUtils.isMoving())
+                    if (MovementUtils.isMoving()&&mc.thePlayer.onGround)
                         mc.thePlayer.jump()
                 }
                 "whenspeed" -> {
