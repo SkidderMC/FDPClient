@@ -66,8 +66,6 @@ open class Module : MinecraftInstance(), Listenable {
             return field
         }
 
-    var slideStep = 0F
-
     init {
         name = moduleInfo.name
         description = "%module.$name.description%"
@@ -128,9 +126,25 @@ open class Module : MinecraftInstance(), Listenable {
 
     // HUD
     val hue = Math.random().toFloat()
-    var slide = 0F
+    var slideAnimation: Animation?=null
+    var slide = 0f
+        get(){
+            if(slideAnimation!=null){
+                field=slideAnimation!!.value.toFloat()
+                if(slideAnimation!!.state==Animation.EnumAnimationState.STOPPED){
+                    slideAnimation=null
+                }
+            }
+            return field
+        }
+        set(value){
+            if(slideAnimation==null){
+                slideAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START_AND_END,field.toDouble(),value.toDouble(),500L)
+                    .start()
+            }
+        }
     var yPosAnimation: Animation?=null
-    var yPos: Float = 0f
+    var yPos = 0f
         get(){
             if(yPosAnimation!=null){
                 field=yPosAnimation!!.value.toFloat()
@@ -142,7 +156,7 @@ open class Module : MinecraftInstance(), Listenable {
         }
         set(value){
             if(yPosAnimation==null){
-                yPosAnimation=Animation(EaseUtils.EnumEasingType.QUART,EaseUtils.EnumEasingOrder.FAST_AT_START_AND_END,field.toDouble(),value.toDouble(),300L)
+                yPosAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START_AND_END,field.toDouble(),value.toDouble(),500L)
                                 .start()
             }
         }

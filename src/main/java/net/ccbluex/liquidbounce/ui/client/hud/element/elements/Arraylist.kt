@@ -87,18 +87,9 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
 
             module.width = fontRenderer.getStringWidth(displayString)
 
-            if (module.state) {
-                if (module.slide < module.width) {
-                    module.slide = AnimationUtils.easeOut(module.slideStep, module.width.toFloat()) * module.width
-                    module.slideStep += delta / 4F
-                }
-            } else if (module.slide > 0) {
-                module.slide = AnimationUtils.easeOut(module.slideStep, module.width.toFloat()) * module.width
-                module.slideStep -= delta / 4F
-            }
-
-            module.slide = module.slide.coerceIn(0F, module.width.toFloat())
-            module.slideStep = module.slideStep.coerceIn(0F, module.width.toFloat())
+            val targetSlide=if(module.state){ module.width.toFloat() } else { 0f }
+            if(module.slide!=targetSlide)
+                module.slide=targetSlide
         }
 
         // Draw arraylist
