@@ -47,6 +47,7 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
+// TODO: Recode KillAura mark
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
 

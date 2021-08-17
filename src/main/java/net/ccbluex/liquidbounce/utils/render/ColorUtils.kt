@@ -199,4 +199,10 @@ object ColorUtils {
             Color(json.get("red").asInt,json.get("green").asInt,json.get("blue").asInt)
         },if(json.has("alpha")){json.get("alpha").asInt}else{160})
     }
+
+    private val startTime=System.currentTimeMillis()
+
+    fun hslRainbow(index: Int,lowest: Float=0.41f,bigest: Float=0.58f,indexOffset: Int=300,timeSplit: Int=3000):Color{
+        return Color.getHSBColor((abs(((((System.currentTimeMillis()-startTime).toInt()+index*indexOffset)/timeSplit.toFloat())%2)-1)*(bigest-lowest))+lowest,0.7f,1f)
+    }
 }
