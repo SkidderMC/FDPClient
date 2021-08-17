@@ -33,14 +33,11 @@ open class HUD : MinecraftInstance() {
         @JvmStatic
         fun createDefault(): HUD {
             val text1=Text(scale = 1.5F,x=4.0,y=4.0)
-            text1.displayString.set("F")
-            text1.colorModeValue.set("AnotherRainbow")
-            val text2=Text(scale = 1.5F,x = 4.0+(Fonts.font40.getStringWidth("F")),y=4.0)
-            text2.displayString.set("DP Client")
+            text1.displayString.set("FDPClient")
+            text1.colorModeValue.set("RiseRainbow")
 
             return HUD()
                 .addElement(text1)
-                .addElement(text2)
                 .addElement(KeyStrokes())
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())

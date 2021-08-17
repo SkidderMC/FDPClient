@@ -48,7 +48,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
-    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "OtherRainbow", "SkyRainbow"), "Custom")
+    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
     private val shadow = BoolValue("Shadow", false)
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
@@ -57,6 +57,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val rect = BoolValue("Rect", false)
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed",10,1,10)
+    private val rainbowIndex = IntegerValue("RainbowIndex",1,1,20)
     private var fontValue = FontValue("Font", Fonts.font40)
 
     private var editMode = false
@@ -153,10 +154,11 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         }
 
         fontRenderer.drawString(displayText, 0F, 0F, when(colorModeValue.get().toLowerCase()){
-            "rainbow" -> ColorUtils.rainbow(400000000L).rgb
-            "skyrainbow" -> RenderUtils.skyRainbow(1, 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+            "rainbow" -> ColorUtils.rainbow(400000000L * rainbowIndex.get()).rgb
+            "skyrainbow" -> RenderUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "otherrainbow" -> RenderUtils.arrayRainbow(rainbowSpeed.get()).rgb
-            "anotherrainbow" -> ColorUtils.fade(color,100,1).rgb
+            "riserainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
+            "anotherrainbow" -> ColorUtils.fade(color,100,rainbowIndex.get()).rgb
             else -> color.rgb
         }, shadow.get())
 
