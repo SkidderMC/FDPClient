@@ -117,6 +117,7 @@ module.Animations.value.ItemPosY.name=ItemPosY
 module.Animations.value.ItemPosZ.name=ItemPosZ
 module.Animations.value.ItemScale.name=ItemScale
 module.Animations.value.SwingAnim.name=SwingAnim
+module.Animations.value.SwingSpeed.name=SwingSpeed
 
 module.AntiAim.name=AntiAim
 module.AntiAim.description=Anti aiming like CS:GO
