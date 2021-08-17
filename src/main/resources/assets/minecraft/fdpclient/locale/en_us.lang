@@ -639,6 +639,7 @@ module.KillAura.description=Automatically attacks targets around you
 module.KillAura.value.MaxCPS.name=MaxCPS
 module.KillAura.value.MinCPS.name=MinCPS
 module.KillAura.value.HurtTime.name=HurtTime
+module.KillAura.value.1.9CombatDelay.name=1.9CombatDelay
 module.KillAura.value.Range.name=Range
 module.KillAura.value.ThroughWallsRange.name=ThroughWallsRange
 module.KillAura.value.DiscoverRange.name=DiscoverRange

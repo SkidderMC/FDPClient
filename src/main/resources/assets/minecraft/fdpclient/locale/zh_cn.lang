@@ -639,6 +639,7 @@ module.KillAura.description=自动攻击你身边的目标
 module.KillAura.value.MaxCPS.name=最大CPS
 module.KillAura.value.MinCPS.name=最小CPS
 module.KillAura.value.HurtTime.name=伤害时间
+module.KillAura.value.1.9CombatDelay.name=高版本战斗延迟
 module.KillAura.value.Range.name=距离
 module.KillAura.value.ThroughWallsRange.name=隔墙距离
 module.KillAura.value.DiscoverRange.name=发现距离
