@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Horizontal
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -31,7 +32,7 @@ import java.awt.Color
 class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
 
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "SkyRainbow")
+    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "RiseRainbow")
     private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
     private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
@@ -49,6 +50,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val tags = BoolValue("Tags", true)
     private val shadow = BoolValue("ShadowText", false)
     private val split = BoolValue("SplitName", false)
+    private val slideInAnimation = BoolValue("SlideInAnimation", true)
     private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
@@ -77,7 +79,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         fun getModuleName(module: Module) = if(split.get()){ module.splicedName }else{ module.localizedName }
 
         for (module in LiquidBounce.moduleManager.modules) {
-            if (!module.array || (!module.state && module.slide == 0F)) continue
+            if (!module.array || (!module.state && module.slide == 0F && (module.yPosAnimation==null || module.yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED))) continue
 
             var displayString = getModuleName(module)+if(module.tag!=null){if(tags.get()){" "+module.tag}else{""}}else{""}
 
@@ -121,10 +123,12 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
                 modules.forEachIndexed { index, module ->
-
                     val xPos = -module.slide - 2
-                    val yPos = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
-                            if (side.vertical == Vertical.DOWN) index + 1 else index
+                    val realYPos=if(slideInAnimation.get()&&!module.state){ if(side.vertical==Vertical.DOWN){0f}else{-textHeight} } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
+                            if (side.vertical == Vertical.DOWN) index + 1 else index }
+                    val yPos = module.yPos
+                    if(yPos!=realYPos)
+                        module.yPos=realYPos
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
                     val rectX=xPos - if (rectMode.equals("right", true)) 5 else 2
@@ -207,8 +211,11 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
             Horizontal.LEFT -> {
                 modules.forEachIndexed { index, module ->
                     val xPos = -(module.width - module.slide) + if (rectMode.equals("left", true)) 5 else 2
-                    val yPos = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
-                            if (side.vertical == Vertical.DOWN) index + 1 else index
+                    val realYPos=if(slideInAnimation.get()&&!module.state){ if(side.vertical==Vertical.DOWN){0f}else{-textHeight} } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
+                            if (side.vertical == Vertical.DOWN) index + 1 else index }
+                    val yPos = module.yPos
+                    if(yPos!=realYPos)
+                        module.yPos=realYPos
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
                     RenderUtils.drawRect(
@@ -307,7 +314,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
 
     override fun updateElement() {
         modules = LiquidBounce.moduleManager.modules
-                .filter { it.array && it.slide > 0 }
+                .filter { it.array && (it.state || it.slide > 0 || !(it.yPosAnimation==null || it.yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED)) }
                 .sortedBy { -it.width }
     }
 }

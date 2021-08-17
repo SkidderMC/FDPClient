@@ -186,10 +186,10 @@ public abstract class MixinGuiNewChat {
 
                                 if(hud.getChatAnimValue().get()&&!flag) {
                                     if (j1 <= 20) {
-                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(1 - (j1 / 20.0))), 0F, 0F);
+                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(1 - ((j1+mc.timer.renderPartialTicks) / 20.0))), 0F, 0F);
                                     }
                                     if (j1 >= 180) {
-                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart((j1 - 180) / 20.0)), 0F, 0F);
+                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(((j1+mc.timer.renderPartialTicks) - 180) / 20.0)), 0F, 0F);
                                     }
                                 }
 
