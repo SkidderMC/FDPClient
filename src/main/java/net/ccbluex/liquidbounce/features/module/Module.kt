@@ -139,7 +139,7 @@ open class Module : MinecraftInstance(), Listenable {
         }
         set(value){
             if(slideAnimation==null){
-                slideAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START_AND_END,field.toDouble(),value.toDouble(),500L)
+                slideAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START,field.toDouble(),value.toDouble(),300L)
                     .start()
             }
         }
@@ -156,7 +156,7 @@ open class Module : MinecraftInstance(), Listenable {
         }
         set(value){
             if(yPosAnimation==null){
-                yPosAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START_AND_END,field.toDouble(),value.toDouble(),500L)
+                yPosAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START_AND_END,field.toDouble(),value.toDouble(),300L)
                                 .start()
             }
         }

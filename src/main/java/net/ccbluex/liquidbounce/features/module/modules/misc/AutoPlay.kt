@@ -85,7 +85,6 @@ class AutoPlay : Module(){
                             repeat(2){
                                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
                             }
-                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                         }
                         clickState=1
                     }
@@ -111,7 +110,6 @@ class AutoPlay : Module(){
                                 repeat(2){
                                     mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
                                 }
-                                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                             }
                         },1500)
                     }
