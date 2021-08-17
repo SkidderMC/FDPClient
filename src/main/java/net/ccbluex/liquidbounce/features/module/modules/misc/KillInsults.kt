@@ -7,6 +7,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -25,7 +26,6 @@ import java.nio.charset.StandardCharsets
 @ModuleInfo(name = "KillInsults", category = ModuleCategory.MISC)
 object KillInsults : Module() {
     var insultWords = mutableListOf<String>()
-    private var target: EntityPlayer? = null
 
     val modeValue = ListValue(
         "Mode", arrayOf(
@@ -35,7 +35,7 @@ object KillInsults : Module() {
         ), "RawWords"
     )
     private val waterMarkValue = BoolValue("WaterMark", true)
-    val insultFile=File(LiquidBounce.fileManager.dir, "insult.json")
+    private val insultFile=File(LiquidBounce.fileManager.dir, "insult.json")
 
     init {
         loadFile()
@@ -75,42 +75,48 @@ object KillInsults : Module() {
         }
     }
 
-    override fun onEnable() {
-        target = null
-    }
-
-    override val tag: String
-        get() = modeValue.get()
-
     fun getRandomOne():String{
         return insultWords[RandomUtils.nextInt(0, insultWords.size-1)]
     }
 
+    private val hitEntityList=mutableListOf<EntityPlayer>()
+
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        if (event.targetEntity is EntityPlayer) {
-            target = event.targetEntity
+        val target=event.targetEntity
+        if (target is EntityPlayer && !hitEntityList.contains(target)) {
+            hitEntityList.add(target)
         }
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
-        if (target != null && target!!.isDead) {
-            val name=target!!.name
-            LiquidBounce.hud.addNotification(Notification("Killed","Killed $name.", NotifyType.INFO))
-            when (modeValue.get().toLowerCase()) {
-                "clear" -> {
-                    sendInsultWords("L $name",name)
+    fun onUpdate(event: UpdateEvent) {
+        // bypass java.util.ConcurrentModificationException
+        hitEntityList.map { it }.forEach {
+            if(it.isDead){
+                when (modeValue.get().toLowerCase()) {
+                    "clear" -> {
+                        sendInsultWords("L $name",it.name)
+                    }
+                    "withwords" -> {
+                        sendInsultWords("L $name " + getRandomOne(),it.name)
+                    }
+                    "rawwords" -> {
+                        sendInsultWords(getRandomOne(),it.name)
+                    }
                 }
-                "withwords" -> {
-                    sendInsultWords("L $name " + getRandomOne(),name)
-                }
-                "rawwords" -> {
-                    sendInsultWords(getRandomOne(),name)
-                }
+                hitEntityList.remove(it)
             }
-            target = null
         }
+    }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent){
+        hitEntityList.clear()
+    }
+
+    override fun onDisable() {
+        hitEntityList.clear()
     }
 
     private fun sendInsultWords(msg: String, name: String) {
@@ -120,4 +126,7 @@ object KillInsults : Module() {
         }
         mc.thePlayer.sendChatMessage(message)
     }
+
+    override val tag: String
+        get() = modeValue.get()
 }

@@ -34,19 +34,15 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
      * Draw element
      */
     override fun drawElement(partialTicks: Float): Border? {
-        val notifications = mutableListOf<Notification>()
-        //FUCK YOU java.util.ConcurrentModificationException
-        for((index, notify) in LiquidBounce.hud.notifications.withIndex()){
+        // bypass java.util.ConcurrentModificationException
+        LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
             if(notify.drawNotification(index)){
-                notifications.add(notify)
+                LiquidBounce.hud.notifications.remove(notify)
             }
 
             GL11.glPopMatrix()
-        }
-        for(notify in notifications){
-            LiquidBounce.hud.notifications.remove(notify)
         }
 
         if (mc.currentScreen is GuiHudDesigner) {
