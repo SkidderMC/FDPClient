@@ -30,9 +30,6 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ItemRenderer.class)
 public abstract class MixinItemRenderer {
-    private float lastSwingProgress=0;
-    private long hSwing=-1;
-
     @Shadow
     private float prevEquippedProgress;
 
@@ -115,12 +112,12 @@ public abstract class MixinItemRenderer {
         GlStateManager.pushMatrix();
 
         if (this.itemToRender != null) {
-            final KillAura killAura = (KillAura) LiquidBounce.moduleManager.getModule(KillAura.class);
+            final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
 
             if (this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
-            } else if (abstractclientplayer.getItemInUseCount() > 0  (itemToRender.getItem() instanceof ItemSword && killAura.getBlockingStatus()) 
-                    (itemToRender.getItem() instanceof ItemSword && LiquidBounce.moduleManager.getModule(Animations.class).getState() && Animations.fakeBlock.get() && killAura.getTarget() != null)) {
+            } else if (abstractclientplayer.getItemInUseCount() > 0 || (itemToRender.getItem() instanceof ItemSword
+                    && ((killAura.getAutoBlockValue().get().equalsIgnoreCase("Fake")&&killAura.getTarget()!=null) || killAura.getBlockingStatus()))) {
                 EnumAction enumaction = killAura.getBlockingStatus() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
                 switch(enumaction) {
                     case NONE:
