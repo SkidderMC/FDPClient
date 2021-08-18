@@ -11,10 +11,7 @@ import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.MovementUtils;
-import net.ccbluex.liquidbounce.utils.PacketUtils;
-import net.ccbluex.liquidbounce.utils.RotationUtils;
+import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
@@ -205,6 +202,7 @@ public class Fly extends Module {
     private boolean aac5FlyClip=false;
     private boolean aac5FlyStart=false;
     private boolean aac5nextFlag=false;
+    private double aac5LastFlag=0;
 
     private float launchYaw=0;
     private float launchPitch=0;
@@ -949,7 +947,7 @@ public class Fly extends Module {
         final Packet<?> packet = event.getPacket();
 
         if(packet instanceof S08PacketPlayerPosLook){
-            final S08PacketPlayerPosLook packetPlayerPosLook=(S08PacketPlayerPosLook) packet;
+            final S08PacketPlayerPosLook s08=(S08PacketPlayerPosLook) packet;
 
             final String mode = modeValue.get();
 
@@ -958,7 +956,6 @@ public class Fly extends Module {
                 ClientUtils.displayChatMessage("§8[§c§lBoostHypixel-§a§lFly§8] §cSetback detected.");
             }else if(mode.equalsIgnoreCase("AAC5.2.0")){
                 event.cancelEvent();
-                S08PacketPlayerPosLook s08=(S08PacketPlayerPosLook)packet;
                 mc.thePlayer.setPosition(s08.getX(), s08.getY(), s08.getZ());
                 PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ, s08.getYaw(), s08.getPitch(), false));
                 double dist=0.14;
@@ -972,7 +969,6 @@ public class Fly extends Module {
                 PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true));
             }else if(mode.equalsIgnoreCase("AAC5.2.0-Fast")){
                 event.cancelEvent();
-                S08PacketPlayerPosLook s08=(S08PacketPlayerPosLook)packet;
                 if(aac5Status==0){
                     mc.thePlayer.setPosition(s08.getX(), s08.getY(), s08.getZ());
                     PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ, s08.getYaw(), s08.getPitch(), false));
@@ -1006,6 +1002,23 @@ public class Fly extends Module {
                     }
                 }
             }else if(mode.equalsIgnoreCase("AAC5.2.0-Smooth")){
+//                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(s08.getX(),s08.getY(),s08.getZ(), s08.getYaw(), s08.getPitch(), false));
+//                double x = s08.getX() - mc.thePlayer.posX;
+//                double y = s08.getY() - mc.thePlayer.posY;
+//                double z = s08.getZ() - mc.thePlayer.posZ;
+//                double diff = MathHelper.sqrt_double(x * x + y * y + z * z);
+//                double value=s08.getX()+s08.getY()+s08.getZ();
+//                if(aac5LastFlag==value) {
+//                    if (diff > 40) {
+//                        mc.thePlayer.setPosition(s08.getX(), s08.getY(), s08.getZ());
+//                    } else {
+//                        PathUtils.findBlinkPath(s08.getX(), s08.getY(), s08.getZ(), mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, 2).forEach(vector3d -> {
+//                            mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(vector3d.xCoord, vector3d.yCoord, vector3d.zCoord, true));
+//                        });
+//                    }
+//                }
+//                aac5LastFlag=value;
+//                event.cancelEvent();
                 aac5FlyStart=true;
                 if(flyTimer.hasTimePassed(2000)) {
                     aac5FlyClip=true;
@@ -1013,7 +1026,7 @@ public class Fly extends Module {
                 }
                 aac5nextFlag=true;
             }else if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")&&aac520view.get()) {
-                clonedPlayer.setPosition(packetPlayerPosLook.getX(), packetPlayerPosLook.getY(), packetPlayerPosLook.getZ());
+                clonedPlayer.setPosition(s08.getX(), s08.getY(), s08.getZ());
             }else if(verusFlyable) {
                 verusFlyable = false;
             }
