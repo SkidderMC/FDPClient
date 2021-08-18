@@ -8,7 +8,8 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 
-@ModuleInfo(name = "Animations", category = ModuleCategory.RENDER)
+
+@ModuleInfo(name = "Animations", description = ".", category = ModuleCategory.RENDER)
 class Animations : Module() {
     val presetValue = ListValue(
         "Preset", arrayOf(
@@ -30,6 +31,9 @@ class Animations : Module() {
     val itemScale = FloatValue("ItemScale", 0.4f, 0.0f, 2.0f)
     val swingAnim = BoolValue("SwingAnim",false)
     val swingSpeed = FloatValue("SwingSpeed", 1f, 0.5f, 5.0f)
+
+    //idk why i add this. XD. but it is fun right 
+    val fakeBlock = BoolValue("FakeBlock", false)
 
     override val tag: String
         get() = presetValue.get()
