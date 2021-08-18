@@ -1077,10 +1077,4 @@ public final class RenderUtils extends MinecraftInstance {
         drawRect(x + width, y1 - width, x1 - width, y1, borderColor);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
-
-    private static final long startTime=System.currentTimeMillis();
-
-    public static Color arrayRainbow(int offset){
-        return new Color(Color.HSBtoRGB((float) ((double) ((System.currentTimeMillis()-startTime)/10000F)+ Math.sin((double) (((System.currentTimeMillis()-startTime)/100F)%50) + offset) / 50.0 * 1.6) % 1.0f, 0.5f, 1.0f));
-    }
 }

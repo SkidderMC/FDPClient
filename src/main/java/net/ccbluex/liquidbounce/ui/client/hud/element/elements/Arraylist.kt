@@ -33,15 +33,15 @@ import java.awt.Color
 class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
 
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "RiseRainbow")
+    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "RiseRainbow", "SkyRainbow"), "RiseRainbow")
     private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
     private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
-    private val tagColorModeValue = ListValue("Tag-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
+    private val tagColorModeValue = ListValue("Tag-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
     private val tagColorRedValue = IntegerValue("Tag-R", 195, 0, 255)
     private val tagColorGreenValue = IntegerValue("Tag-G", 195, 0, 255)
     private val tagColorBlueValue = IntegerValue("Tag-B", 195, 0, 255)
-    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "Rainbow")
+    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "RiseRainbow", "SkyRainbow"), "Rainbow")
     private val rectColorRedValue = IntegerValue("Rect-R", 255, 0, 255)
     private val rectColorGreenValue = IntegerValue("Rect-G", 255, 0, 255)
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
@@ -53,7 +53,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
     private val split = BoolValue("SplitName", false)
     private val slideInAnimation = BoolValue("SlideInAnimation", true)
     private val noRenderModules = BoolValue("NoRenderModules", true)
-    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
+    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
@@ -138,7 +138,6 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            "otherrainbow" -> RenderUtils.arrayRainbow((index+1)*rainbowSpeed.get()).rgb
                             "riserainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(backgroundCustomColor,100,index+1).rgb
                             else -> backgroundCustomColor.rgb
@@ -152,7 +151,6 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            "otherrainbow" -> RenderUtils.arrayRainbow((index+1)*rainbowSpeed.get()).rgb
                             "riserainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(customColor,100,index+1).rgb
                             else -> customColor.rgb
@@ -163,7 +161,6 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index)
                             "random" -> Color(moduleColor)
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
-                            "otherrainbow" -> ColorUtils.antiColor(RenderUtils.arrayRainbow((index+1)*rainbowSpeed.get()))
                             "riserainbow" -> ColorUtils.antiColor(ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()))
                             "anotherrainbow" -> ColorUtils.antiColor(ColorUtils.fade(tagCustomColor,100,index+1))
                             else -> ColorUtils.antiColor(tagCustomColor)
@@ -175,7 +172,6 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            "otherrainbow" -> RenderUtils.arrayRainbow((index+1)*rainbowSpeed.get()).rgb
                             "riserainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(rectCustomColor,100,index+1).rgb
                             else -> rectCustomColor.rgb
@@ -224,7 +220,6 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            "otherrainbow" -> RenderUtils.arrayRainbow((index+1)*rainbowSpeed.get()).rgb
                             "riserainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(backgroundCustomColor,100,index+1).rgb
                             else -> backgroundCustomColor.rgb
@@ -237,7 +232,6 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                         "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                         "random" -> moduleColor
                         "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                        "otherrainbow" -> RenderUtils.arrayRainbow((index+1)*rainbowSpeed.get()).rgb
                         "riserainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                         "anotherrainbow" -> ColorUtils.fade(customColor,100,index+1).rgb
                         else -> customColor.rgb
@@ -248,7 +242,6 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index)
                             "random" -> Color(moduleColor)
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
-                            "otherrainbow" -> ColorUtils.antiColor(RenderUtils.arrayRainbow((index+1)*rainbowSpeed.get()))
                             "riserainbow" -> ColorUtils.antiColor(ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()))
                             "anotherrainbow" -> ColorUtils.antiColor(ColorUtils.fade(tagCustomColor,100,index+1))
                             else -> ColorUtils.antiColor(tagCustomColor)
@@ -259,7 +252,6 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                             "rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            "otherrainbow" -> RenderUtils.arrayRainbow((index+1)*rainbowSpeed.get()).rgb
                             "riserainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(rectCustomColor,100,index+1).rgb
                             else -> rectCustomColor.rgb

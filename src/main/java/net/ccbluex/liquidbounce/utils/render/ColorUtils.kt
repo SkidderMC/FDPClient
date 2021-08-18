@@ -166,13 +166,6 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun fluxRainbow(delay: Int, timeOffset: Long, sa: Float): Color {
-        var rainbowState = ceil((System.currentTimeMillis() + timeOffset) / 8 + delay / 20.0)
-        rainbowState %= 360.0
-        return Color.getHSBColor((rainbowState / 360f).toFloat(), sa, 1f)
-    }
-
-    @JvmStatic
     fun antiColor(color: Color) = Color(255-color.red,255-color.green,255-color.blue,color.alpha)
 
     @JvmStatic
@@ -192,7 +185,7 @@ object ColorUtils {
             when(json.get("rainbow").asString.toLowerCase()){
                 "normal" -> rainbow(400000000L * if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1})
                 "sky" -> RenderUtils.skyRainbow(if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1},0.9f,1f,5.0)
-                "other" -> RenderUtils.arrayRainbow(if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1}+1)
+                "rise" -> hslRainbow(if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1}+1)
                 else -> Color.WHITE
             }
         }else{
