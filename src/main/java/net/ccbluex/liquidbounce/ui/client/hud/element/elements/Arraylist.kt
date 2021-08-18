@@ -59,7 +59,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 100, 0, 255)
     private val backgroundExpand = IntegerValue("Background-Expand",2,0,10)
-    private val rainbowSpeed = IntegerValue("RainbowSpeed",5,1,10)
+    private val rainbowSpeed = IntegerValue("RainbowSpeed",1,1,10)
     private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline"), "None")
     private val upperCaseValue = BoolValue("UpperCase", false)
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)

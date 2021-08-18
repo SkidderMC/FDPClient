@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets", single = true)
 class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux"), "Novoline")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux","Rise"), "Novoline")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed",10,5,20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed",20,5,40)
@@ -99,6 +99,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             "astolfo" -> drawAstolfo(prevTarget!!,nowAnimHP)
             "liquid" -> drawLiquid(prevTarget!!,nowAnimHP)
             "flux" -> drawFlux(prevTarget!!,nowAnimHP)
+            "rise" -> drawRise(prevTarget!!,nowAnimHP)
         }
 
         return getTBorder()
@@ -175,23 +176,44 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         }
     }
 
-//    private fun drawFancy(target: EntityLivingBase, easingHealth: Float){
-//        val width = (48 + 9 + target.name.let(Fonts.font40::getStringWidth))
-//            .coerceAtLeast(100)
-//            .toFloat()
-//
-//        RenderUtils.drawRect(0f,0f,width,48+6f,Color(0,0,0,150))
-//        RenderUtils.drawRect(0f,0f,width,2f,Color(56,245,200))
-//
-//        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
-//        if (playerInfo != null) {
-//            RenderUtils.drawHead(playerInfo.locationSkin, 2, 4, 48, 48)
-//        }
-//
-//        GL11.glTranslatef(48+3+3f,7f,0f)
-//
-//        Fonts.font40.drawString(target.name,0f,0f,Color.WHITE.rgb)
-//    }
+    private fun drawRise(target: EntityLivingBase, easingHealth: Float){
+        val font=fontValue.get()
+
+        RenderUtils.drawCircleRect(0f,0f,150f,50f,5f,Color(0,0,0,130).rgb)
+
+        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
+        if (playerInfo != null) {
+            val hurtPercent=(target.hurtTime-mc.timer.renderPartialTicks)/10
+            GL11.glColor4f(1f, 1-(0.5f*hurtPercent), 1-(0.5f*hurtPercent), 1f)
+            mc.textureManager.bindTexture(playerInfo.locationSkin)
+            RenderUtils.drawScaledCustomSizeModalRect(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
+            RenderUtils.drawScaledCustomSizeModalRect(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
+        }
+
+        font.drawString("Name ${target.name}", 40, 11,Color.WHITE.rgb)
+        font.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))} Hurt ${target.hurtTime}", 40, 11+font.FONT_HEIGHT,Color.WHITE.rgb)
+
+        // 渐变血量条
+        GL11.glEnable(3042)
+        GL11.glDisable(3553)
+        GL11.glBlendFunc(770, 771)
+        GL11.glEnable(2848)
+        GL11.glShadeModel(7425)
+        fun renderSideway(x: Int,x1: Int){
+            RenderUtils.quickDrawGradientSideways(x.toDouble(),39.0, x1.toDouble(),45.0,ColorUtils.hslRainbow(x,indexOffset = 10).rgb,ColorUtils.hslRainbow(x1,indexOffset = 10).rgb)
+        }
+        val stopPos=(5+((135-font.getStringWidth(decimalFormat.format(target.maxHealth)))*(easingHealth/target.maxHealth))).toInt()
+        for(i in 5..stopPos step 5){
+            renderSideway(i, (i + 5).coerceAtMost(stopPos))
+        }
+        GL11.glEnable(3553)
+        GL11.glDisable(3042)
+        GL11.glDisable(2848)
+        GL11.glShadeModel(7424)
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+
+        font.drawString(decimalFormat.format(target.health),stopPos+5,43-font.FONT_HEIGHT/2,Color.WHITE.rgb)
+    }
 
     private fun drawFlux(target: EntityLivingBase, nowAnimHP: Float){
         val width = (38 + target.name.let(Fonts.font40::getStringWidth))
@@ -231,6 +253,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             "flux" -> Border(0F,0F,(38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
                 .coerceAtLeast(70)
                 .toFloat(),34F)
+            "rise" -> Border(0F,0F,150F,50F)
             else -> null
         }
     }

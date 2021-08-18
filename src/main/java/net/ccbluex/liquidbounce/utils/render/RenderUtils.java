@@ -150,32 +150,66 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         GlStateManager.color(var6, var7, var8, var11);
 
-        if (var11 > 0.5F) {
-            glEnable(GL_BLEND);
-            glEnable(GL_LINE_SMOOTH);
-            glEnable(GL_POINT_SMOOTH);
-            glLineWidth(2);
-            glBegin(GL11.GL_LINE_STRIP);
-            for(double i = end; i >= start; i-= 4) {
-                double ldx = Math.cos(i * Math.PI / 180.0) * (w * 1.001);
-                double ldy = Math.sin(i * Math.PI / 180.0) * (h * 1.001);
-                glVertex2d(x + ldx, y + ldy);
-            }
-            glEnd();
-            glDisable(GL_BLEND);
-            glDisable(GL_LINE_SMOOTH);
-            glDisable(GL_POINT_SMOOTH);
-        }
-
         GL11.glBegin(GL11.GL_TRIANGLE_FAN);
 
-        for(double i = end; i >= start; i-= 4) {
+        GL11.glVertex2d(x, y);
+        for(double i = end; i >= start; i-=4) {
             double ldx = Math.cos(i * Math.PI / 180.0) * w;
             double ldy = Math.sin(i * Math.PI / 180.0) * h;
             GL11.glVertex2d(x + ldx, y + ldy);
         }
+        GL11.glVertex2d(x, y);
 
         GL11.glEnd();
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
+    public static void quickRenderCircle(double x, double y, double start, double end, double w, double h) {
+        if (start > end) {
+            double temp = end;
+            end = start;
+            start = temp;
+        }
+
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+        GL11.glVertex2d(x, y);
+        for(double i = end; i >= start; i-=4) {
+            double ldx = Math.cos(i * Math.PI / 180.0) * w;
+            double ldy = Math.sin(i * Math.PI / 180.0) * h;
+            GL11.glVertex2d(x + ldx, y + ldy);
+        }
+        GL11.glVertex2d(x, y);
+        GL11.glEnd();
+    }
+
+    public static void drawCircleRect(float x, float y, float x1, float y1, float radius, int color){
+        GlStateManager.color(0, 0, 0);
+        GL11.glColor4f(0, 0, 0, 0);
+
+        float var11 = (color >> 24 & 255) / 255.0F;
+        float var6 = (color >> 16 & 255) / 255.0F;
+        float var7 = (color >> 8 & 255) / 255.0F;
+        float var8 = (color & 255) / 255.0F;
+
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(var6, var7, var8, var11);
+
+        // 圆角
+        quickRenderCircle(x1-radius,y1-radius,0,90,radius,radius);
+        quickRenderCircle(x+radius,y1-radius,90,180,radius,radius);
+        quickRenderCircle(x+radius,y+radius,180,270,radius,radius);
+        quickRenderCircle(x1-radius,y+radius,270,360,radius,radius);
+
+        // 矩形
+        quickDrawRect(x+radius,y+radius,x1-radius,y1-radius);
+        quickDrawRect(x,y+radius,x+radius,y1-radius);
+        quickDrawRect(x1-radius,y+radius,x1,y1-radius);
+        quickDrawRect(x+radius,y,x1-radius,y+radius);
+        quickDrawRect(x+radius,y1-radius,x1-radius,y1);
 
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
@@ -220,6 +254,34 @@ public final class RenderUtils extends MinecraftInstance {
         glEnable(2848);
         glShadeModel(7425);
 
+        glBegin(7);
+        glColor4f(f1, f2, f3, f);
+        glVertex2d(left, top);
+        glVertex2d(left, bottom);
+
+        glColor4f(f5, f6, f7, f4);
+        glVertex2d(right, bottom);
+        glVertex2d(right, top);
+        glEnd();
+
+        glEnable(3553);
+        glDisable(3042);
+        glDisable(2848);
+        glShadeModel(7424);
+        glColor4f(1f,1f,1f,1f);
+    }
+
+    public static void quickDrawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
+        float f = (col1 >> 24 & 0xFF) / 255.0F;
+        float f1 = (col1 >> 16 & 0xFF) / 255.0F;
+        float f2 = (col1 >> 8 & 0xFF) / 255.0F;
+        float f3 = (col1 & 0xFF) / 255.0F;
+
+        float f4 = (col2 >> 24 & 0xFF) / 255.0F;
+        float f5 = (col2 >> 16 & 0xFF) / 255.0F;
+        float f6 = (col2 >> 8 & 0xFF) / 255.0F;
+        float f7 = (col2 & 0xFF) / 255.0F;
+
         glPushMatrix();
         glBegin(7);
         glColor4f(f1, f2, f3, f);
@@ -231,11 +293,6 @@ public final class RenderUtils extends MinecraftInstance {
         glVertex2d(right, top);
         glEnd();
         glPopMatrix();
-
-        glEnable(3553);
-        glDisable(3042);
-        glDisable(2848);
-        glShadeModel(7424);
     }
 
     public static void drawBlockBox(final BlockPos blockPos, final Color color, final boolean outline, final boolean box, final float outlineWidth) {
@@ -922,6 +979,8 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glColor4f(1F, 1F, 1F, 1F);
         mc.getTextureManager().bindTexture(skin);
         RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
+                64F, 64F);
+        RenderUtils.drawScaledCustomSizeModalRect(x, y, 40F, 8F, 8, 8, width, height,
                 64F, 64F);
     }
 
