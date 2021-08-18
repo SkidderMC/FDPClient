@@ -138,7 +138,7 @@ open class Module : MinecraftInstance(), Listenable {
             return field
         }
         set(value){
-            if(slideAnimation==null){
+            if(slideAnimation==null || (slideAnimation!=null&&slideAnimation!!.to!=value.toDouble())){
                 slideAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START,field.toDouble(),value.toDouble(),300L)
                     .start()
             }
@@ -155,7 +155,7 @@ open class Module : MinecraftInstance(), Listenable {
             return field
         }
         set(value){
-            if(yPosAnimation==null){
+            if(yPosAnimation==null || (yPosAnimation!=null&&yPosAnimation!!.to!=value.toDouble())){
                 yPosAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START_AND_END,field.toDouble(),value.toDouble(),300L)
                                 .start()
             }
