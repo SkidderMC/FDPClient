@@ -114,12 +114,13 @@ public abstract class MixinItemRenderer {
         GlStateManager.enableRescaleNormal();
         GlStateManager.pushMatrix();
 
-        if(this.itemToRender != null) {
-            final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
+        if (this.itemToRender != null) {
+            final KillAura killAura = (KillAura) LiquidBounce.moduleManager.getModule(KillAura.class);
 
-            if(this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
+            if (this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
-            } else if (abstractclientplayer.getItemInUseCount() > 0 || (itemToRender.getItem() instanceof ItemSword && killAura.getBlockingStatus())) {
+            } else if (abstractclientplayer.getItemInUseCount() > 0  (itemToRender.getItem() instanceof ItemSword && killAura.getBlockingStatus()) 
+                    (itemToRender.getItem() instanceof ItemSword && LiquidBounce.moduleManager.getModule(Animations.class).getState() && Animations.fakeBlock.get() && killAura.getTarget() != null)) {
                 EnumAction enumaction = killAura.getBlockingStatus() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
                 switch(enumaction) {
                     case NONE:
