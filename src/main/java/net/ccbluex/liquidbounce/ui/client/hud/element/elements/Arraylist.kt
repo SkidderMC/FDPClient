@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -29,7 +30,7 @@ import java.awt.Color
  * Shows a list of enabled modules
  */
 @ElementInfo(name = "Arraylist", single = true)
-class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
+class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
 
     private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "RiseRainbow")
@@ -37,9 +38,9 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
     private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
     private val tagColorModeValue = ListValue("Tag-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
-    private val tagColorRedValue = IntegerValue("Tag-R", 255, 0, 255)
-    private val tagColorGreenValue = IntegerValue("Tag-G", 255, 0, 255)
-    private val tagColorBlueValue = IntegerValue("Tag-B", 255, 0, 255)
+    private val tagColorRedValue = IntegerValue("Tag-R", 195, 0, 255)
+    private val tagColorGreenValue = IntegerValue("Tag-G", 195, 0, 255)
+    private val tagColorBlueValue = IntegerValue("Tag-B", 195, 0, 255)
     private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "Rainbow")
     private val rectColorRedValue = IntegerValue("Rect-R", 255, 0, 255)
     private val rectColorGreenValue = IntegerValue("Rect-G", 255, 0, 255)
@@ -51,24 +52,29 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val shadow = BoolValue("ShadowText", false)
     private val split = BoolValue("SplitName", false)
     private val slideInAnimation = BoolValue("SlideInAnimation", true)
+    private val noRenderModules = BoolValue("NoRenderModules", true)
     private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "OtherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
-    private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 0, 0, 255)
+    private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 100, 0, 255)
     private val backgroundExpand = IntegerValue("Background-Expand",2,0,10)
-    private val rainbowSpeed = IntegerValue("RainbowSpeed",10,1,10)
+    private val rainbowSpeed = IntegerValue("RainbowSpeed",5,1,10)
     private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline"), "None")
     private val upperCaseValue = BoolValue("UpperCase", false)
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
-    private val fontValue = FontValue("Font", Fonts.font40)
+    private val fontValue = FontValue("Font", Fonts.font35)
 
     private var x2 = 0
     private var y2 = 0F
 
     private var modules = emptyList<Module>()
+
+    private fun shouldExpect(module: Module):Boolean{
+        return noRenderModules.get() && module.category==ModuleCategory.RENDER
+    }
 
     override fun drawElement(partialTicks: Float): Border? {
         val fontRenderer = fontValue.get()
@@ -79,7 +85,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
         fun getModuleName(module: Module) = if(split.get()){ module.splicedName }else{ module.localizedName }
 
         for (module in LiquidBounce.moduleManager.modules) {
-            if (!module.array || (!module.state && module.slide == 0F && (module.yPosAnimation==null || module.yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED))) continue
+            if (!module.array || shouldExpect(module) || (!module.state && module.slide == 0F && (module.yPosAnimation==null || module.yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED))) continue
 
             var displayString = getModuleName(module)+if(module.tag!=null){if(tags.get()){" "+module.tag}else{""}}else{""}
 
@@ -305,7 +311,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
 
     override fun updateElement() {
         modules = LiquidBounce.moduleManager.modules
-                .filter { it.array && (it.state || it.slide > 0 || !(it.yPosAnimation==null || it.yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED)) }
+                .filter { it.array && !shouldExpect(it) && (it.state || it.slide > 0 || !(it.yPosAnimation==null || it.yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED)) }
                 .sortedBy { -it.width }
     }
 }

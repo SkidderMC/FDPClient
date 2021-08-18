@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.ui.client.hud
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.ReflectUtils
@@ -32,13 +31,14 @@ open class HUD : MinecraftInstance() {
          */
         @JvmStatic
         fun createDefault(): HUD {
-            val text1=Text(scale = 1.5F,x=4.0,y=4.0)
-            text1.displayString.set("FDPClient")
+            val text1=Text(x=15.0,y=15.0)
+            text1.displayString.set("FDPClient | %serverIp% | %fps% FPS")
             text1.colorModeValue.set("RiseRainbow")
+            text1.rectValue.set("OneTap")
+            text1.rectColorModeValue.set("RiseRainbow")
 
             return HUD()
                 .addElement(text1)
-                .addElement(KeyStrokes())
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())
                 .addElement(Armor())
@@ -167,7 +167,6 @@ open class HUD : MinecraftInstance() {
      */
     fun addElement(element: Element): HUD {
         elements.add(element)
-        element.updateElement()
         return this
     }
 

@@ -993,6 +993,32 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glPopMatrix();
     }
 
+    public static void drawOutLineRect(double x, double y, double x1, double y1, double width, int internalColor, int borderColor) {
+        drawRect(x + width, y + width, x1 - width, y1 - width, internalColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x + width, y, x1 - width, y + width, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x, y, x + width, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x1 - width, y, x1, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x + width, y1 - width, x1 - width, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    public static void drawOutLineRect(int x, int y, int x1, int y1, int width, int internalColor, int borderColor) {
+        drawRect(x + width, y + width, x1 - width, y1 - width, internalColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x + width, y, x1 - width, y + width, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x, y, x + width, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x1 - width, y, x1, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x + width, y1 - width, x1 - width, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
     private static final long startTime=System.currentTimeMillis();
 
     public static Color arrayRainbow(int offset){
