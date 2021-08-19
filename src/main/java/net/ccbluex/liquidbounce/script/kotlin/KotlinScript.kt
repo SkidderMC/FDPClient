@@ -7,6 +7,7 @@ import javax.script.ScriptEngineManager
 /**
  * @author Liulihaocai
  * Load kotlin scripts dynamically
+ * TODO: This cannot call minecraft class, and the searge remapper not working
  */
 class KotlinScript(val scriptFile: File) {
 

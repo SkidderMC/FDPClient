@@ -52,10 +52,8 @@ class ModuleManager : Listenable {
     fun registerModule(module: Module) {
         modules += module
         moduleClassMap[module.javaClass] = module
-
-        if(module.moduleCommand) {
-            generateCommand(module)
-        }
+        
+        generateCommand(module)
 
         LiquidBounce.eventManager.registerListener(module)
     }
@@ -92,6 +90,9 @@ class ModuleManager : Listenable {
      * Generate command for [module]
      */
     internal fun generateCommand(module: Module) {
+        if(!module.moduleCommand)
+            return
+
         val values = module.values
 
         if (values.isEmpty())
