@@ -188,7 +188,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
         if (playerInfo != null) {
             val hurtPercent=(target.hurtTime-mc.timer.renderPartialTicks)/10
-            GL11.glColor4f(1f, 1-(0.5f*hurtPercent), 1-(0.5f*hurtPercent), 1f)
+            GL11.glColor4f(1f, 1-hurtPercent, 1-hurtPercent, 1f)
             mc.textureManager.bindTexture(playerInfo.locationSkin)
             RenderUtils.drawScaledCustomSizeModalRect(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
             RenderUtils.drawScaledCustomSizeModalRect(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)

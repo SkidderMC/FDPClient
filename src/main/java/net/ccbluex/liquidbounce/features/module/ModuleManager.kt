@@ -52,7 +52,7 @@ class ModuleManager : Listenable {
     fun registerModule(module: Module) {
         modules += module
         moduleClassMap[module.javaClass] = module
-        
+
         generateCommand(module)
 
         LiquidBounce.eventManager.registerListener(module)
