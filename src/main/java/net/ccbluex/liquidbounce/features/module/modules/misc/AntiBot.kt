@@ -7,16 +7,20 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.extensions.getFullName
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S0BPacketAnimation
 import net.minecraft.network.play.server.S14PacketEntity
+import net.minecraft.network.play.server.S38PacketPlayerListItem
 
 @ModuleInfo(name = "AntiBot", category = ModuleCategory.MISC)
 object AntiBot : Module() {
@@ -39,6 +43,7 @@ object AntiBot : Module() {
     private val needHitValue = BoolValue("NeedHit", false)
     private val duplicateInWorldValue = BoolValue("DuplicateInWorld", false)
     private val duplicateInTabValue = BoolValue("DuplicateInTab", false)
+    private val matrixValue = BoolValue("MatrixBot", false)
     private val alwaysInRadiusValue = BoolValue("AlwaysInRadius", false)
     private val alwaysRadiusValue = FloatValue("AlwaysInRadiusBlocks", 20f, 5f, 30f).displayable { alwaysInRadiusValue.get() }
 
@@ -147,7 +152,26 @@ object AntiBot : Module() {
             return
 
         val packet = event.packet
-
+        if (matrixValue.get()) {
+            if (packet is S38PacketPlayerListItem) {
+                if (packet.action == S38PacketPlayerListItem.Action.ADD_PLAYER) {
+                    for (i in mc.theWorld.loadedEntityList) {
+                        val entityLivingBase = i as EntityLivingBase
+                        for (j in packet.entries) {
+                            if (entityLivingBase !is EntityPlayerSP && j.profile.name.equals(
+                                    entityLivingBase.name,
+                                    ignoreCase = true
+                                ) && (j.profile.id !== entityLivingBase.uniqueID || j.profile.id !== entityLivingBase.persistentID) || MovementUtils.getDirection() === getEntityDirection(
+                                    entityLivingBase
+                                )
+                            ) {
+                                event.cancelEvent()
+                            }
+                        }
+                    }
+                }
+            }
+        }
         if (packet is S14PacketEntity) {
             val entity = packet.getEntity(mc.theWorld!!)
 
@@ -184,6 +208,17 @@ object AntiBot : Module() {
                     && !swing.contains(entity.entityId))
                 swing.add(entity.entityId)
         }
+    }
+
+    fun getEntityDirection(entityLivingBase: EntityLivingBase): Double {
+        var rotationYaw = entityLivingBase.rotationYaw
+        if (entityLivingBase.moveForward < 0f) rotationYaw += 180f
+        var forward = 1f
+        if (entityLivingBase.moveForward < 0f) forward = -0.5f else if (entityLivingBase.moveForward > 0f) forward =
+            0.5f
+        if (entityLivingBase.moveStrafing > 0f) rotationYaw -= 90f * forward
+        if (entityLivingBase.moveStrafing < 0f) rotationYaw += 90f * forward
+        return Math.toRadians(rotationYaw.toDouble())
     }
 
     @EventTarget
