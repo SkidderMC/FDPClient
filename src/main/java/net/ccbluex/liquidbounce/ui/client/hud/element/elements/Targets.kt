@@ -216,7 +216,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         GL11.glShadeModel(7424)
         GL11.glColor4f(1f, 1f, 1f, 1f)
 
-        font.drawString(decimalFormat.format(getHealth(target)),stopPos+5,43-font.FONT_HEIGHT/2,Color.WHITE.rgb)
+        font.drawString(decimalFormat.format(easingHealth),stopPos+5,43-font.FONT_HEIGHT/2,Color.WHITE.rgb)
     }
 
     private fun drawFlux(target: EntityLivingBase, nowAnimHP: Float){
