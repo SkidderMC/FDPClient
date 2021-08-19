@@ -1223,8 +1223,8 @@ public class Fly extends Module {
         float yaw=mc.thePlayer.rotationYaw;
         float pitch=mc.thePlayer.rotationPitch;
         for(C03PacketPlayer packet : aac5C03List){
-            PacketUtils.sendPacketNoEvent(packet);
             if(packet.isMoving()){
+                PacketUtils.sendPacketNoEvent(packet);
                 if(packet.getRotating()){
                     yaw=packet.yaw;
                     pitch=packet.pitch;
