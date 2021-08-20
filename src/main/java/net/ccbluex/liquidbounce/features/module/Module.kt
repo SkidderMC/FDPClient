@@ -109,14 +109,18 @@ open class Module : MinecraftInstance(), Listenable {
             }
 
             // Call on enabled or disabled
-            if (value) {
-                onEnable()
+            try {
+                if (value) {
+                    onEnable()
 
-                if (canEnable)
-                    field = true
-            } else {
-                onDisable()
-                field = false
+                    if (canEnable)
+                        field = true
+                } else {
+                    onDisable()
+                    field = false
+                }
+            }catch (e: Throwable){
+                e.printStackTrace()
             }
 
             // Save module state

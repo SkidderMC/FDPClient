@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.ultralight.view
 
-class AllTimeGuiView(url: String) : GuiView(url) {
+class AllTimeGuiView(page: Page) : GuiView(page) {
     init {
         init()
     }

@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.*
+import java.io.File
 import java.nio.ByteBuffer
 
 class View {
@@ -34,6 +35,14 @@ class View {
 
     fun loadURL(url: String){
         view.loadURL(url)
+    }
+
+    fun loadFile(file: File){
+        view.loadURL("file:///${file.absolutePath}")
+    }
+
+    fun loadPage(page: Page){
+        view.loadURL(page.url)
     }
 
     fun resize(width: Int, height: Int){
