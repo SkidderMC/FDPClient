@@ -83,7 +83,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         }
 
         // Draw panel
-        Gui.drawRect(x, y + 12, x + width, y + realHeight, Color(27, 34, 40).rgb)
+        Gui.drawRect(x, y + 12, x + width, y + realHeight, Color(0, 0, 0, 150).rgb)
         when {
             create -> drawCreate(mouseX, currMouseY)
             currentElement != null -> drawEditor(mouseX, currMouseY)
@@ -147,7 +147,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             realHeight += 10
         }
 
-        Gui.drawRect(x, y, x + width, y + 12, ClickGUI.generateColor().rgb)
+        Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
         Fonts.font35.drawString("§lCreate element", x + 2F, y + 3.5F, Color.WHITE.rgb)
     }
 
@@ -194,7 +194,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             realHeight += 10
         }
 
-        Gui.drawRect(x, y, x + width, y + 12, ClickGUI.generateColor().rgb)
+        Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
         Fonts.font35.drawString("§lEditor", x + 2F, y + 3.5f, Color.WHITE.rgb)
     }
 
@@ -272,7 +272,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         realHeight += 10
 
         // Values
-        for (value in element.values.filter { it.displayable }) {
+        for (value in element.values) {
             when (value) {
                 is BoolValue -> {
                     // Title
@@ -425,7 +425,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         }
 
         // Header
-        Gui.drawRect(x, y, x + width, y + 12, ClickGUI.generateColor().rgb)
+        Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
         Fonts.font35.drawString("§l${element.name}", x + 2F, y + 3.5F, Color.WHITE.rgb)
 
         // Delete button
