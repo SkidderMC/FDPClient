@@ -2,10 +2,13 @@ package net.ccbluex.liquidbounce.utils
 
 import org.apache.commons.io.IOUtils
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.util.zip.ZipInputStream
 
 
 object FileUtils {
@@ -21,4 +24,35 @@ object FileUtils {
         ClientUtils.logWarn("Downloading $url to $file")
         Files.copy(url.openStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
     }
+
+    @JvmStatic
+    fun extractZip(zipStream: InputStream, folder: File) {
+        if (!folder.exists()) {
+            folder.mkdir()
+        }
+
+        ZipInputStream(zipStream).use { zipInputStream ->
+            var zipEntry = zipInputStream.nextEntry
+
+            while (zipEntry != null) {
+                if (zipEntry.isDirectory) {
+                    zipEntry = zipInputStream.nextEntry
+                    continue
+                }
+
+                val newFile = File(folder, zipEntry.name)
+                File(newFile.parent).mkdirs()
+
+                FileOutputStream(newFile).use {
+                    zipInputStream.copyTo(it)
+                }
+                zipEntry = zipInputStream.nextEntry
+            }
+
+            zipInputStream.closeEntry()
+        }
+    }
+
+    @JvmStatic
+    fun extractZip(zipFile: File, folder: File) = extractZip(FileInputStream(zipFile), folder)
 }

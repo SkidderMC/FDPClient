@@ -21,7 +21,20 @@ public final class ClientUtils extends MinecraftInstance {
 
     private static Field fastRenderField;
 
+    public static final EnumOSType osType;
+
     static {
+        String os=System.getProperty("os.name").toLowerCase();
+        if(os.contains("win")){
+            osType=EnumOSType.WINDOWS;
+        }else if(os.contains("mac")){
+            osType=EnumOSType.MACOS;
+        }else if(os.contains("nix") || os.contains("nux") || os.contains("aix")){
+            osType=EnumOSType.LINUX;
+        }else {
+            osType=EnumOSType.UNKNOWN;
+        }
+
         try {
             fastRenderField = GameSettings.class.getDeclaredField("ofFastRender");
 
@@ -81,5 +94,18 @@ public final class ClientUtils extends MinecraftInstance {
         jsonObject.addProperty("text", message);
 
         mc.thePlayer.addChatMessage(IChatComponent.Serializer.jsonToComponent(jsonObject.toString()));
+    }
+
+    public enum EnumOSType {
+        WINDOWS("win"),
+        LINUX("linux"),
+        MACOS("mac"),
+        UNKNOWN("unk");
+
+        public final String friendlyName;
+
+        EnumOSType(String friendlyName){
+            this.friendlyName=friendlyName;
+        }
     }
 }

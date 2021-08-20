@@ -86,6 +86,11 @@ dependencies {
 
     implementation group: 'com.github.UnlegitMC', name: 'KittehIRCClientLib', version: '8a02d160f8'
 
+    implementation group: 'com.labymedia', name: 'ultralight-java-base', version: '0.4.6'
+    implementation group: 'com.labymedia', name: 'ultralight-java-databind', version: '0.4.6'
+    // GPUDriver need the GLFW windowId to run, but LWJGL2 dont support GLFW
+//    implementation group: 'com.labymedia', name: 'ultralight-java-gpu', version: '0.4.6'
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
@@ -154,12 +159,19 @@ shadowJar {
 //        include(dependency('org.jetbrains.kotlin:kotlin-scripting-compiler-impl-embeddable'))
 //        include(dependency('org.jetbrains.intellij.deps:trove4j'))
 //        include(dependency('org.jetbrains.kotlin:kotlin-scripting-common'))
+
+        // ultralight
+        include(dependency('com.labymedia:ultralight-java-base'))
+        include(dependency('com.labymedia:ultralight-java-databind'))
     }
 
     exclude 'dummyThing'
     exclude 'LICENSE.txt'
     exclude 'LICENSE'
     exclude 'NOTICE'
+
+    // Ultralight native files are going to be downloaded from CCBlueX's cloud
+    exclude "native-binaries/*"
 
     classifier = ''
 }

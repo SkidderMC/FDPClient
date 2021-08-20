@@ -28,6 +28,7 @@ import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
+import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -43,6 +44,7 @@ object LiquidBounce {
     const val COLORED_NAME = "§c§lFDP§6§lClient"
     const val CLIENT_REAL_VERSION = "v1.4.0"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
+    const val CLIENT_STORAGE = "https://unlegitmc.github.io/FDPStorage/"
     const val MINECRAFT_VERSION = "1.8.9"
 
     // 自动读取客户端版本
@@ -138,8 +140,11 @@ object LiquidBounce {
         fileManager = FileManager()
         configManager = ConfigManager()
 
-        // Crate event manager
+        // Create event manager
         eventManager = EventManager()
+
+        // Load Ultralight renderer
+        UltralightEngine.init()
 
         // Register listeners
         eventManager.registerListener(RotationUtils())
