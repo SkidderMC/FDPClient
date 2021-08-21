@@ -84,9 +84,6 @@ open class Module : MinecraftInstance(), Listenable {
                 it.localedName="%module.$name.value.${it.name}.name%"
             }
         }
-        if(moduleInfo.defaultOn){
-            state=true
-        }
     }
 
     // Current state of module
