@@ -15,7 +15,7 @@ import net.minecraft.network.play.server.S2BPacketChangeGameState
 @ModuleInfo(name = "Ambience", category = ModuleCategory.WORLD)
 class Ambience : Module() {
     private val timeModeValue = ListValue("TimeMode", arrayOf("None","Normal","Custom"), "Normal")
-    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None","Sunny","Rainy","Thunder"), "None")
+    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None","Sun","Rain","Thunder"), "None")
     private val customWorldTimeValue = IntegerValue("CustomTime", 1000, 0, 24000).displayable { timeModeValue.get().equals("Custom",true) }
     private val changeWorldTimeSpeedValue = IntegerValue("ChangeWorldTimeSpeed", 150, 10, 500).displayable { timeModeValue.get().equals("Normal",true) }
     private val weatherStrengthValue = FloatValue("WeatherStrength", 1f, 0f, 1f).displayable { !weatherModeValue.get().equals("None",true) }
@@ -42,11 +42,11 @@ class Ambience : Module() {
         }
 
         when(weatherModeValue.get().toLowerCase()){
-            "sunny" -> {
+            "sun" -> {
                 mc.theWorld.setRainStrength(0f)
                 mc.theWorld.setThunderStrength(0f)
             }
-            "rainy" -> {
+            "rain" -> {
                 mc.theWorld.setRainStrength(weatherStrengthValue.get())
                 mc.theWorld.setThunderStrength(0f)
             }
