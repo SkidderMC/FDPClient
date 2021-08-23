@@ -43,15 +43,15 @@ public class NoFall extends Module {
     private boolean aac5Check=false;
     private int aac5Timer=0;
     private final ArrayList<C03PacketPlayer> aac4Packets=new ArrayList<>();
+    private boolean needSpoof=false;
 
-    private boolean NeedSpoof=false;
     @Override
     public void onEnable(){
         aac4Fakelag=false;
         aac5Check=false;
         aac4PacketModify=false;
         aac4Packets.clear();
-        NeedSpoof=false;
+        needSpoof =false;
         aac5doFlag=false;
         aac5Timer=0;
     }
@@ -211,7 +211,7 @@ public class NoFall extends Module {
                     mc.thePlayer.fallDistance = 0.0f;
                     mc.thePlayer.motionX *= 0.6;
                     mc.thePlayer.motionZ *= 0.6;
-                    NeedSpoof = true;
+                    needSpoof = true;
                 }
             }
         }
@@ -287,9 +287,9 @@ public class NoFall extends Module {
                 aac4Packets.add(packet);
             }
 
-            if (mode.equalsIgnoreCase("Verus") && NeedSpoof) {
+            if (mode.equalsIgnoreCase("Verus") && needSpoof) {
                 packet.onGround = true;
-                NeedSpoof = false;
+                needSpoof = false;
             }
         }
     }
