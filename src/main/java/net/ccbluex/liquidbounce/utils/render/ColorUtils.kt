@@ -155,15 +155,15 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun Slowly(time: Long, count: Int, qd: Float, sq: Float): Color? {
+    fun slowlyRainbow(time: Long, count: Int, qd: Float, sq: Float): Color {
         val color = Color(Color.HSBtoRGB((time.toFloat() + count * -3000000f) / 2 / 1.0E9f, qd, sq))
         return Color(color.red / 255.0f * 1, color.green / 255.0f * 1, color.blue / 255.0f * 1, color.alpha / 255.0f)
     }
 
     @JvmStatic
-    fun TwoRainbow(offset: Long,alpha: Float): Color {
-        var currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F));
-        return Color(currentColor.getRed() / 255.0F * 1.0F, currentColor.getGreen() / 255.0F * 1.0F, currentColor.getBlue() / 255.0F * 1.0F, alpha);
+    fun twoRainbow(offset: Long,alpha: Float): Color {
+        val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
+        return Color(currentColor.red / 255.0F * 1.0F, currentColor.green / 255.0F * 1.0F, currentColor.blue / 255.0F * 1.0F, alpha)
     }
 
     @JvmStatic

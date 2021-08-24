@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.utils.ClassUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.minecraft.client.Minecraft;
@@ -22,6 +23,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
 
@@ -85,16 +87,16 @@ public abstract class MixinGuiInGame {
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
     private void renderPumpkinOverlay(final CallbackInfo callbackInfo) {
-        final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
+        final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
 
         if(antiBlind.getState() && antiBlind.getPumpkinEffect().get())
             callbackInfo.cancel();
     }
- }
 
-@Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true) 
-    private void injectCrosshair(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        final Crosshair crossHair = (Crosshair) LiquidBounce.moduleManager.getModule(Crosshair.class);
-        if (crossHair.getState() && crossHair.noVanillaCH.get())
-            callbackInfoReturnable.setReturnValue(false);
+    @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
+    private void injectCrosshair(CallbackInfoReturnable<Boolean> cir) {
+        final Crosshair crossHair = LiquidBounce.moduleManager.getModule(Crosshair.class);
+        if (crossHair.getState())
+            cir.setReturnValue(false);
     }
+ }
