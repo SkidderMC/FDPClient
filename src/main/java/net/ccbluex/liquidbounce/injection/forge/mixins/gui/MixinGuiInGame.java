@@ -90,4 +90,11 @@ public abstract class MixinGuiInGame {
         if(antiBlind.getState() && antiBlind.getPumpkinEffect().get())
             callbackInfo.cancel();
     }
-}
+ }
+
+@Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true) 
+    private void injectCrosshair(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+        final Crosshair crossHair = (Crosshair) LiquidBounce.moduleManager.getModule(Crosshair.class);
+        if (crossHair.getState() && crossHair.noVanillaCH.get())
+            callbackInfoReturnable.setReturnValue(false);
+    }
