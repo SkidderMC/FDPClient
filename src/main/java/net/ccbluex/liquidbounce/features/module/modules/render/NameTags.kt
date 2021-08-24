@@ -108,10 +108,10 @@ class NameTags : Module() {
                 val nameColor = if (bot) "§3" else if (entity.isInvisible) "§6" else if (entity.isSneaking) "§4" else "§7"
                 val ping = if (entity is EntityPlayer) EntityUtils.getPing(entity) else 0
 
-                val distanceText = if (distanceValue.get()) "§7${mc.thePlayer.getDistanceToEntity(entity).roundToInt()}m " else ""
+                val distanceText = if (distanceValue.get()) "§7 [§a${mc.thePlayer.getDistanceToEntity(entity).roundToInt()}§7]" else ""
                 val pingText = if (pingValue.get() && entity is EntityPlayer) (if (ping > 200) "§c" else if (ping > 100) "§e" else "§a") + ping + "ms §7" else ""
-                val healthText = if (healthValue.get()) "§7§c " + entity.health.toInt() + " HP" else ""
-                val botText = if (bot) " §c§lBot" else ""
+                val healthText = if (healthValue.get()) "§7 [§f" + entity.health.toInt() + "§c❤§7]" else ""
+                val botText = if (bot) " §7[§6§lBot§7]" else ""
 
                 val text = "$distanceText$pingText$nameColor$tag$healthText$botText"
 
