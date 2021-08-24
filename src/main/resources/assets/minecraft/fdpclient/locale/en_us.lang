@@ -1053,3 +1053,18 @@ module.XRay.description=Allows you to see selected blocks through walls
 
 module.IRC.name=IRC
 module.IRC.description=Allow you chat with other users
+
+module.Crosshair.name=Crosshair
+module.Crosshair.description=Change a better crosshair
+module.Crosshair.value.Color.name=Color
+module.Crosshair.value.Red.name=Red
+module.Crosshair.value.Green.name=Green
+module.Crosshair.value.Blue.name=Blue
+module.Crosshair.value.Alpha.name=Alpha
+module.Crosshair.value.Saturation.name=Saturation
+module.Crosshair.value.Brightness.name=Brightness
+module.Crosshair.value.Width.name=Width
+module.Crosshair.value.Length.name=Length
+module.Crosshair.value.Gap.name=Gap
+module.Crosshair.value.Dynamic.name=Dynamic
+module.Crosshair.value.HitMarker.name=HitMarker

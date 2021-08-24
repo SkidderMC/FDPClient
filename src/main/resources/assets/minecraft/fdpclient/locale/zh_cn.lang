@@ -1053,3 +1053,18 @@ module.XRay.description=允许你透视指定的方块/矿物
 
 module.IRC.name=IRC
 module.IRC.description=让你能够和其他用户聊天
+
+module.Crosshair.name=准星
+module.Crosshair.description=显示一个更好的准星
+module.Crosshair.value.Color.name=颜色
+module.Crosshair.value.Red.name=红
+module.Crosshair.value.Green.name=绿
+module.Crosshair.value.Blue.name=蓝
+module.Crosshair.value.Alpha.name=透明度
+module.Crosshair.value.Saturation.name=饱和度
+module.Crosshair.value.Brightness.name=亮度
+module.Crosshair.value.Width.name=宽度
+module.Crosshair.value.Length.name=长度
+module.Crosshair.value.Gap.name=间距
+module.Crosshair.value.Dynamic.name=动态
+module.Crosshair.value.HitMarker.name=攻击指示

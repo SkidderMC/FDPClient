@@ -26,11 +26,11 @@ import java.awt.Color
 @ModuleInfo(name = "Crosshair", category = ModuleCategory.RENDER)
 class Crosshair : Module() {
     //Color
-    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Slowly"), "Custom")
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Slowly", "Rise"), "Custom")
     private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorModeValue.get().equals("Custom",true) }
     private val colorGreenValue = IntegerValue("Green", 255, 0, 255).displayable { colorModeValue.get().equals("Custom",true) }
     private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { colorModeValue.get().equals("Custom",true) }
-    private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255).displayable { colorModeValue.get().equals("Custom",true) }
+    private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255)
 
     //Rainbow thingy
     private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f).displayable { colorModeValue.get().equals("Slowly",true) }
@@ -38,7 +38,7 @@ class Crosshair : Module() {
 
     //Size, width, hitmarker
     private val widthValue = FloatValue("Width", 0.5f, 0.25f, 10f)
-    private val sizeValue = FloatValue("Size/Length", 7f, 0.25f, 15f)
+    private val sizeValue = FloatValue("Length", 7f, 0.25f, 15f)
     private val gapValue = FloatValue("Gap", 5f, 0.25f, 15f)
     private val dynamicValue = BoolValue("Dynamic", true)
     private val hitMarkerValue = BoolValue("HitMarker", true)
@@ -94,8 +94,8 @@ class Crosshair : Module() {
         get() =
             when (colorModeValue.get().toLowerCase()) {
                 "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
-                "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())
-                "rise" -> ColorUtils.hslRainbow(1)
+                "slowly" -> ColorUtils.reAlpha(ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get()),colorAlphaValue.get())
+                "rise" -> ColorUtils.reAlpha(ColorUtils.hslRainbow(1),colorAlphaValue.get())
                 else -> Color.WHITE
             }
 }
