@@ -21,6 +21,7 @@ import net.minecraft.potion.Potion
 class Sprint : Module() {
     val allDirectionsValue = BoolValue("AllDirections", true)
     private val allDirectionsRotateValue = BoolValue("AllDirectionsRotate", true).displayable { allDirectionsValue.get() }
+    private val allDirectionsMinemoraValue = BoolValue("MinemoraAllDirectionsTest", false).displayable { allDirectionsValue.get() }
     private val allDirectionsSpoofValue = BoolValue("AllDirectionsSpoof", false).displayable { allDirectionsValue.get() } // bypass alice
     private val blindnessValue = BoolValue("Blindness", true)
     val foodValue = BoolValue("Food", true)
@@ -45,6 +46,9 @@ class Sprint : Module() {
             mc.thePlayer.isSprinting = true
             if (allDirectionsRotateValue.get() && !mc.gameSettings.keyBindForward.pressed) {
                 RotationUtils.setTargetRotation(Rotation((MovementUtils.getDirection() * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch))
+            }
+                        if (allDirectionsMinemoraValue.get() && !mc.gameSettings.keyBindForward.pressed) {
+                mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000013, mc.thePlayer.posZ)
             }
             if(allDirectionsSpoofValue.get()&&RotationUtils.getRotationDifference(Rotation((MovementUtils.getDirection() * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch)) > 30){
                 mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))
