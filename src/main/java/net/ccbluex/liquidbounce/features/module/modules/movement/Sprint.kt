@@ -14,12 +14,14 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.potion.Potion
 
 @ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
 class Sprint : Module() {
     val allDirectionsValue = BoolValue("AllDirections", true)
     private val allDirectionsRotateValue = BoolValue("AllDirectionsRotate", true).displayable { allDirectionsValue.get() }
+    private val allDirectionsSpoofValue = BoolValue("AllDirectionsSpoof", false).displayable { allDirectionsValue.get() } // bypass alice
     private val blindnessValue = BoolValue("Blindness", true)
     val foodValue = BoolValue("Food", true)
     val checkServerSide = BoolValue("CheckServerSide", false)
@@ -43,6 +45,10 @@ class Sprint : Module() {
             mc.thePlayer.isSprinting = true
             if (allDirectionsRotateValue.get() && !mc.gameSettings.keyBindForward.pressed) {
                 RotationUtils.setTargetRotation(Rotation((MovementUtils.getDirection() * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch))
+            }
+            if(allDirectionsSpoofValue.get()&&RotationUtils.getRotationDifference(Rotation((MovementUtils.getDirection() * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch)) > 30){
+                mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))
+                mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.START_SPRINTING))
             }
         }
     }

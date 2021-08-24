@@ -952,6 +952,7 @@ module.Sprint.name=Sprint
 module.Sprint.description=Automatically sprints all the time
 module.Sprint.value.AllDirections.name=AllDirections
 module.Sprint.value.AllDirectionsRotate.name=AllDirectionsRotate
+module.Sprint.value.AllDirectionsSpoof.name=AllDirectionsSpoof
 module.Sprint.value.Blindness.name=Blindness
 module.Sprint.value.Food.name=Food
 module.Sprint.value.CheckServerSide.name=CheckServerSide

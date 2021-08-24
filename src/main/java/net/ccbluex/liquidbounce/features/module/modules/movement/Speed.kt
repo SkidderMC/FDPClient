@@ -85,6 +85,12 @@ class Speed : Module() {
         mode.onTick()
     }
 
+    @EventTarget
+    fun onJump(event: JumpEvent) {
+        if(mode.noJump)
+            event.cancelEvent()
+    }
+
     override fun onEnable() {
         if (mc.thePlayer == null) return
         mc.timer.timerSpeed = 1f
