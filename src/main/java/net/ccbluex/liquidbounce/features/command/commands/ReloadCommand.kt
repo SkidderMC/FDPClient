@@ -44,9 +44,6 @@ class ReloadCommand : Command("reload", arrayOf("configreload")) {
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.xrayConfig)
         chat("§c§lReloading HUD...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.hudConfig)
-        chat("§c§lReloading ClickGUI...")
-        LiquidBounce.clickGui.destroy()
-        LiquidBounce.clickGui.init()
         chat("Reloaded.")
         LiquidBounce.isStarting = false
         LiquidBounce.isLoadingConfig = false

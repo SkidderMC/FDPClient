@@ -99,7 +99,8 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
                 LiquidBounce.commandManager.executeCommands(text);
                 callbackInfo.cancel();
                 mc.ingameGUI.getChatGUI().addToSentMessages(text);
-                Minecraft.getMinecraft().displayGuiScreen(null);
+                if(mc.currentScreen instanceof GuiChat)
+                    Minecraft.getMinecraft().displayGuiScreen(null);
             }else{
                 LiquidBounce.commandManager.autoComplete(text);
             }

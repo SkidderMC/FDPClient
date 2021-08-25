@@ -76,6 +76,7 @@ dependencies {
     implementation group: 'com.github.UnlegitMC', name: 'FuckPCL', version: '1.1'
 
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.3.72'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk7', version: '1.3.72'
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.3.72'
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-script-runtime', version: '1.3.72'
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-script-util', version: '1.3.72'
@@ -149,7 +150,9 @@ shadowJar {
 
         // kotlin
         include(dependency('org.jetbrains.kotlin:kotlin-stdlib'))
+        include(dependency('org.jetbrains.kotlin:kotlin-stdlib-jdk7'))
         include(dependency('org.jetbrains:annotations'))
+        // these will be downloaded in runtime
 //        include(dependency('org.jetbrains.kotlin:kotlin-reflect'))
 //        include(dependency('org.jetbrains.kotlin:kotlin-script-runtime'))
 //        include(dependency('org.jetbrains.kotlin:kotlin-script-util'))

@@ -147,13 +147,7 @@ class View {
     }
 
     fun garbageCollect(){
-        val lock=view.lockJavascriptContext() // idk why use{} not working
-        try {
-            lock.context.garbageCollect()
-        }catch (t: Throwable){
-            // ignored
-            t.printStackTrace()
-        }
+        view.lockJavascriptContext().use { it.context.garbageCollect() }
     }
 
     fun close(){
