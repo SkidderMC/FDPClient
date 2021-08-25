@@ -33,7 +33,6 @@ public class FileManager extends MinecraftInstance {
     public final File legacySettingsDir = new File(dir, "legacy-settings");
     public final File capesDir = new File(dir, "capes");
 
-    public final ClickGuiConfig clickGuiConfig = new ClickGuiConfig(new File(dir, "clickgui.json"));
     public final AccountsConfig accountsConfig = new AccountsConfig(new File(dir, "accounts.json"));
     public final FriendsConfig friendsConfig = new FriendsConfig(new File(dir, "friends.json"));
     public final XRayConfig xrayConfig = new XRayConfig(new File(dir, "xray-blocks.json"));

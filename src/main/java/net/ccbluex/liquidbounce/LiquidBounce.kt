@@ -22,13 +22,14 @@ import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
-import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
+import net.ccbluex.liquidbounce.ui.ultralight.view.AllTimeGuiView
+import net.ccbluex.liquidbounce.ui.ultralight.view.Page
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -36,6 +37,7 @@ import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
+import java.io.File
 
 object LiquidBounce {
 
@@ -68,7 +70,7 @@ object LiquidBounce {
 
     // HUD & ClickGUI & KeybindManager
     lateinit var hud: HUD
-    lateinit var clickGui: ClickGui
+    lateinit var clickGui: AllTimeGuiView
     lateinit var keyBindManager: KeyBindManager
 
     lateinit var metricsLite: MetricsLite
@@ -187,8 +189,8 @@ object LiquidBounce {
         configManager.loadConfigSet()
 
         // ClickGUI
-        clickGui = ClickGui()
-        fileManager.loadConfigs(fileManager.clickGuiConfig, fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig)
+        clickGui = AllTimeGuiView(Page(File(UltralightEngine.pagesPath,"clickgui.html")))
+        fileManager.loadConfigs(fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig)
 
         // KeyBindManager
         keyBindManager=KeyBindManager()

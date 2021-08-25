@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.modules.misc.KillInsults
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
-import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.font.Fonts
 
 class ReloadCommand : Command("reload", arrayOf("configreload")) {
@@ -46,8 +45,8 @@ class ReloadCommand : Command("reload", arrayOf("configreload")) {
         chat("§c§lReloading HUD...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.hudConfig)
         chat("§c§lReloading ClickGUI...")
-        LiquidBounce.clickGui = ClickGui()
-        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.clickGuiConfig)
+        LiquidBounce.clickGui.destroy()
+        LiquidBounce.clickGui.init()
         chat("Reloaded.")
         LiquidBounce.isStarting = false
         LiquidBounce.isLoadingConfig = false
