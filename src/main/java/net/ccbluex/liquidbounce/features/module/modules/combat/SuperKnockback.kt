@@ -14,33 +14,53 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C0BPacketEntityAction
 
 @ModuleInfo(name = "SuperKnockback", category = ModuleCategory.COMBAT)
 class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val delayValue = IntegerValue("Delay",0,0,1000)
-    private val onlyMoveValue = BoolValue("OnlyMove", false)
+    private val modeValue = ListValue("Mode", arrayOf("ExtraPacket", "WTap", "Packet"), "ExtraPacket")
+    
+    private val delay = IntegerValue("Delay", 0, 0, 500)
 
-    private val timer=MSTimer()
+    val timer = MSTimer()
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
-            if (!timer.hasTimePassed(delayValue.get().toLong())||event.targetEntity.hurtTime > hurtTimeValue.get()||(!MovementUtils.isMoving() && onlyMoveValue.get()))
+            if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delay.get().toLong()))
                 return
+            when (modeValue.get().toLowerCase()) {
+                "extrapacket" -> {
+                    if (mc.thePlayer.isSprinting)
+                        mc.thePlayer.isSprinting = true
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
 
-            if (mc.thePlayer.isSprinting)
-                mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+                    mc.thePlayer.serverSprintState = true
+                }
 
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
-            mc.thePlayer.isSprinting = true
-            mc.thePlayer.serverSprintState = true
-
+                "wtap" -> {
+                    if (mc.thePlayer.isSprinting)
+                        mc.thePlayer.isSprinting = false
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+                    mc.thePlayer.serverSprintState = true
+                }
+                "packet" -> {
+                    if(mc.thePlayer.isSprinting)
+                        mc.thePlayer.isSprinting = true
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+                    mc.thePlayer.serverSprintState = true
+                }
+            }
             timer.reset()
         }
     }
+    override val tag: String?
+        get() = modeValue.get()
 }
