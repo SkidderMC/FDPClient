@@ -8,8 +8,8 @@ object LanguageManager {
     val key="%"
     val defaultLocale="en_us"
 
-    private var language=Language(defaultLocale)
-        set(value){
+    var language=Language(defaultLocale)
+        private set(value){
             cachedStrings.clear()
             field=value
         }

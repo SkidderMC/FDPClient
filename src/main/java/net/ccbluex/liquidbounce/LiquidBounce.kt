@@ -29,7 +29,6 @@ import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
 import net.ccbluex.liquidbounce.ui.ultralight.view.AllTimeGuiView
-import net.ccbluex.liquidbounce.ui.ultralight.view.Page
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -37,7 +36,6 @@ import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
-import java.io.File
 
 object LiquidBounce {
 
@@ -68,9 +66,8 @@ object LiquidBounce {
     lateinit var macroManager: MacroManager
     lateinit var configManager: ConfigManager
 
-    // HUD & ClickGUI & KeybindManager
+    // HUD & KeybindManager
     lateinit var hud: HUD
-    lateinit var clickGui: AllTimeGuiView
     lateinit var keyBindManager: KeyBindManager
 
     lateinit var metricsLite: MetricsLite
@@ -187,9 +184,6 @@ object LiquidBounce {
         // Load configs
         configManager.loadLegacySupport()
         configManager.loadConfigSet()
-
-        // ClickGUI
-        clickGui = AllTimeGuiView(Page(File(UltralightEngine.pagesPath,"clickgui.html")))
         fileManager.loadConfigs(fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig)
 
         // KeyBindManager

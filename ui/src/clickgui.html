@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <style>
+<style>
         body {
             -moz-user-select: none;
             -webkit-user-select: none;
@@ -133,34 +133,54 @@
             transition: all 0.3s;
         }
     </style>
-    <div class="mdui-card card">
-        <div id="list">
-            <p id="logo">FDPClient
-                <!-- <a id="user">
-                    <img src="https://himg.bdimg.com/sys/portraitn/item/public.1.89baa8f0.LtCPrtIZBGaoQ5ymYoidvA" /> User#1145
-                </a> -->
-            </p>
-            <div class="mdui-row">
-                <div class="mdui-col-xs-4" id="mts">
-                    <ul class="mdui-list l1">
+<div class="mdui-card card">
+    <div id="list">
+        <p id="logo">FDPClient
+            <!-- <a id="user">
+                <img src="https://himg.bdimg.com/sys/portraitn/item/public.1.89baa8f0.LtCPrtIZBGaoQ5ymYoidvA" /> User#1145
+            </a> -->
+        </p>
+        <div class="mdui-row">
+            <div class="mdui-col-xs-4" id="mts">
+                <ul class="mdui-list l1">
 
-                    </ul>
+                </ul>
+            </div>
+            <div class="mdui-col-xs-4" id="ms">
+                <div class="mdui-list l2">
+                    <label class="mdui-list-item mdui-ripple">
+                        <div class="mdui-list-item-content">AimBot</div>
+                        <div class="mdui-checkbox">
+                            <input type="checkbox"/>
+                            <i class="mdui-checkbox-icon"></i>
+                        </div>
+                    </label>
+                    <label class="mdui-list-item mdui-ripple">
+                        <div class="mdui-list-item-content">AntiBot</div>
+                        <div class="mdui-checkbox">
+                            <input type="checkbox" checked/>
+                            <i class="mdui-checkbox-icon"></i>
+                        </div>
+                    </label>
+                    <label class="mdui-list-item mdui-ripple" Mname="Killaura" Mtype="Combat" onclick="clickModule()">
+                        <div class="mdui-list-item-content">Killaura</div>
+                        <div class="mdui-checkbox">
+                            <input type="checkbox"/>
+                            <i class="mdui-checkbox-icon"></i>
+                        </div>
+                    </label>
                 </div>
-                <div class="mdui-col-xs-4" id="ms">
-                    <div class="mdui-list l2">
+            </div>
+            <div class="mdui-col-xs-1" id="mss"><br>
+                <div class="mdui-list l3">
 
-                    </div>
-                </div>
-                <div class="mdui-col-xs-1" id="mss"><br>
-                    <div class="mdui-list l3">
-
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="./js/moduleBridge.js"></script>
-    <script>
+</div>
+<script src="./js/moduleBridge.js"></script>
+<script>
         var modules = {
             Modules: getCategoryJson()
         }
@@ -211,13 +231,14 @@
         }
         // 设置模块 开关
         function rc(mt, i) {
-            modules.Modules[mt].modules[i].Enable = !modules.Modules[mt].modules[i].Enable;
-            getModule(modules.Modules[mt].modules[i].Name).setState(Boolean(modules.Modules[mt].modules[i].Enable))
-                // if($('#M-'+modules.Modules[mt].Namee+"-"+modules.Modules[mt].modules[i].Name+' div input').attr("checked")=="true"){
-                //     $('#M-'+modules.Modules[mt].Namee+"-"+modules.Modules[mt].modules[i].Name+' div input').removeAttr("checked");
-                // }else{
-                //     $('#M-'+modules.Modules[mt].Namee+"-"+modules.Modules[mt].modules[i].Name+' div input').attr("checked","true");
-                // }
+            var module = getModule(modules.Modules[mt].modules[i].Name)
+            module.toggle()
+            modules.Modules[mt].modules[i].Enable = module.getState()
+            if (modules.Modules[mt].modules[i].Enable) {
+                $('#M-' + modules.Modules[mt].Namee + "-" + modules.Modules[mt].modules[i].Name + ' div input').removeAttr("checked");
+            } else {
+                $('#M-' + modules.Modules[mt].Namee + "-" + modules.Modules[mt].modules[i].Name + ' div input').attr("checked", "true");
+            }
         }
 
         function clickModuleT(a) {
@@ -344,7 +365,7 @@
             return false;
         }
     </script>
-    <p style="color: rgba(255, 255, 255, 0.3);position: fixed;bottom: -5px;font-size: 10px;right: 3px;text-align: right;">Make by 2734583@qq.com<br>Power by Material Design<br>Running in FDPClient</p>
+<p style="color: rgba(255, 255, 255, 0.3);position: fixed;bottom: -5px;font-size: 10px;right: 3px;text-align: right;">Make by 2734583@qq.com<br>Power by Material Design<br>Running in FDPClient</p>
 </body>
 
 </html>
