@@ -28,12 +28,12 @@ object UltralightEngine : Listenable {
 
     val logger = LogManager.getLogger("Ultralight")
 
-    private val ultralightPath = File(LiquidBounce.fileManager.cacheDir, "ultralight")
-    private val resourcePath = File(ultralightPath, "resources")
-    private val pagesPath = File(ultralightPath, "pages")
-    private val cachePath = File(ultralightPath, "cache")
+    val ultralightPath = File(LiquidBounce.fileManager.cacheDir, "ultralight")
+    val resourcePath = File(ultralightPath, "resources")
+    val pagesPath = File(ultralightPath, "pages")
+    val cachePath = File(ultralightPath, "cache")
 
-    private const val ULTRALIGHT_NATIVE_VERSION = "0.4.6"
+    const val ULTRALIGHT_NATIVE_VERSION = "0.4.6"
 
     var width=0
     var height=0
@@ -41,7 +41,7 @@ object UltralightEngine : Listenable {
     var scaledHeight=0
     var factor=1
 
-    private val views=mutableListOf<View>()
+    val views=mutableListOf<View>()
 
     init {
         if(!pagesPath.exists())
@@ -54,6 +54,7 @@ object UltralightEngine : Listenable {
     fun init(){
         // download ultralight natives and resources from web
         checkResources()
+        checkPageResources()
 
         // then load it
         UltralightJava.load(resourcePath.toPath())
@@ -85,10 +86,10 @@ object UltralightEngine : Listenable {
     }
 
     private fun checkResources(){
-        val versionsFile = File(resourcePath, "VERSION")
+        val versionFile = File(resourcePath, "VERSION")
 
         // Check if library version is matching the resources version
-        if (versionsFile.exists() && versionsFile.readText() == ULTRALIGHT_NATIVE_VERSION)
+        if (versionFile.exists() && versionFile.readText() == ULTRALIGHT_NATIVE_VERSION)
             return
 
         if(resourcePath.exists())
@@ -102,8 +103,26 @@ object UltralightEngine : Listenable {
         FileUtils.extractZip(resourcesZip, resourcePath)
         resourcesZip.delete()
 
-        versionsFile.createNewFile()
-        versionsFile.writeText(ULTRALIGHT_NATIVE_VERSION)
+        versionFile.createNewFile()
+        versionFile.writeText(ULTRALIGHT_NATIVE_VERSION)
+    }
+
+    private fun checkPageResources(){
+        val versionFile = File(pagesPath, "VERSION")
+
+        if (versionFile.exists() && versionFile.readText() == LiquidBounce.CLIENT_VERSION)
+            return
+
+        if(pagesPath.exists())
+            pagesPath.deleteRecursively()
+
+        pagesPath.mkdirs()
+
+        // packaged file in project "ui"
+        FileUtils.extractZip(UltralightEngine::class.java.classLoader.getResourceAsStream("ui_resources.zip"), pagesPath)
+
+        versionFile.createNewFile()
+        versionFile.writeText(LiquidBounce.CLIENT_VERSION)
     }
 
     fun registerView(view: View){

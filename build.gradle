@@ -88,6 +88,7 @@ dependencies {
 
     implementation group: 'com.labymedia', name: 'ultralight-java-base', version: '0.4.6'
     implementation group: 'com.labymedia', name: 'ultralight-java-databind', version: '0.4.6'
+    implementation project(":ui")
     // GPUDriver need the GLFW windowId to run, but LWJGL2 dont support GLFW
 //    implementation group: 'com.labymedia', name: 'ultralight-java-gpu', version: '0.4.6'
 
@@ -163,6 +164,7 @@ shadowJar {
         // ultralight
         include(dependency('com.labymedia:ultralight-java-base'))
         include(dependency('com.labymedia:ultralight-java-databind'))
+        include(project(":ui"))
     }
 
     exclude 'dummyThing'
