@@ -38,7 +38,7 @@ public class ViewContextProvider implements ContextProvider {
      *
      * @param view The view to use for retrieving the context.
      */
-    private ViewContextProvider(UltralightView view) {
+    public ViewContextProvider(UltralightView view) {
         this.view = view;
     }
 

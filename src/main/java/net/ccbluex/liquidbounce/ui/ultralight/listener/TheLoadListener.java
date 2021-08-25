@@ -28,7 +28,6 @@ import com.labymedia.ultralight.javascript.JavascriptContextLock;
 import com.labymedia.ultralight.javascript.JavascriptGlobalContext;
 import com.labymedia.ultralight.javascript.JavascriptObject;
 import com.labymedia.ultralight.plugin.loading.UltralightLoadListener;
-import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine;
 import net.ccbluex.liquidbounce.ui.ultralight.support.JSBridge;
 import net.ccbluex.liquidbounce.ui.ultralight.support.ViewContextProvider;
@@ -44,6 +43,7 @@ public class TheLoadListener implements UltralightLoadListener {
     private final UltralightView view;
     private final Databind databind;
     private final JavaAPI javaApi;
+    private final ViewContextProvider contextProvider;
 
     /**
      * Constructs a new {@link TheLoadListener} for the given view.
@@ -52,6 +52,8 @@ public class TheLoadListener implements UltralightLoadListener {
      */
     public TheLoadListener(UltralightView view) {
         this.view = view;
+
+        contextProvider = new ViewContextProvider(view);
 
         // Create a databind instance so translation from Java to Javascript and back is possible
         databind = new Databind(
@@ -151,7 +153,7 @@ public class TheLoadListener implements UltralightLoadListener {
             //
             // You can also set Javascript values.
             globalObject.setProperty("java", databind.getConversionUtils().toJavascript(context, javaApi), 0);
-            globalObject.setProperty("bridge", databind.getConversionUtils().toJavascript(context, JSBridge.INSTANCE), 0);
+            globalObject.setProperty("bridge", databind.getConversionUtils().toJavascript(context, new JSBridge(databind, contextProvider)), 0);
             globalObject.setProperty("view", databind.getConversionUtils().toJavascript(context, view), 0);
             globalObject.setProperty("engine", databind.getConversionUtils().toJavascript(context, UltralightEngine.INSTANCE), 0);
         }

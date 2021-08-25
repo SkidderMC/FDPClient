@@ -19,7 +19,7 @@ import java.io.File
 import java.nio.ByteBuffer
 
 class View {
-    private val view: UltralightView
+    val view: UltralightView
 
     private var glTexture = -1
     private val gcTimer = MSTimer()

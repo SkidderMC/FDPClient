@@ -1,6 +1,10 @@
 package net.ccbluex.liquidbounce.ui.ultralight.support
 
-object JSBridge {
+import com.labymedia.ultralight.databind.Databind
+import com.labymedia.ultralight.databind.context.ContextProvider
+import com.labymedia.ultralight.javascript.JavascriptObject
+
+class JSBridge(private val databind: Databind, private val contextProvider: ContextProvider) {
     /**
      * make @param clazz to Any can bypass js engine type check
      */
@@ -14,5 +18,17 @@ object JSBridge {
 
     fun equal(obj1: Any, obj2: Any): Boolean{
         return obj1.equals(obj2)
+    }
+
+    fun forEach(list: List<Any>, func: JavascriptObject){
+        list.forEach { value ->
+            try {
+                contextProvider.syncWithJavascript {
+                    func.callAsFunction(it.context.globalObject, databind.conversionUtils.toJavascript(it.context, value))
+                }
+            }catch (e: Throwable){
+                e.printStackTrace()
+            }
+        }
     }
 }

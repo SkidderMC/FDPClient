@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.ultralight.support.FileSystemAdapter
 import net.ccbluex.liquidbounce.ui.ultralight.view.View
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.FileUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import org.apache.logging.log4j.LogManager
