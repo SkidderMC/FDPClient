@@ -20,8 +20,6 @@ import net.minecraft.entity.Entity
 import net.minecraft.item.*
 import net.minecraft.util.*
 import org.lwjgl.opengl.GL11
-import org.lwjgl.util.glu.Cylinder
-import org.lwjgl.util.glu.GLU
 import java.awt.Color
 
 @ModuleInfo(name = "Projectiles", category = ModuleCategory.RENDER)

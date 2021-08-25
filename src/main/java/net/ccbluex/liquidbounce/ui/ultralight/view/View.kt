@@ -9,6 +9,7 @@ import com.labymedia.ultralight.input.UltralightScrollEvent
 import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
 import net.ccbluex.liquidbounce.ui.ultralight.listener.TheLoadListener
 import net.ccbluex.liquidbounce.ui.ultralight.listener.TheViewListener
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -21,6 +22,7 @@ class View {
     private val view: UltralightView
 
     private var glTexture = -1
+    private val gcTimer = MSTimer()
 
     init {
         view = UltralightEngine.renderer.createView(
@@ -122,6 +124,11 @@ class View {
         glDepthMask(true)
         glDisable(GL_BLEND)
         glEnable(GL_DEPTH_TEST)
+
+        if(gcTimer.hasTimePassed(1000L)){
+            garbageCollect()
+            gcTimer.reset()
+        }
     }
 
     fun deleteTexture() {
@@ -139,12 +146,13 @@ class View {
         glBindTexture(GL_TEXTURE_2D, 0)
     }
 
-    fun gc(){
+    fun garbageCollect(){
         val lock=view.lockJavascriptContext() // idk why use{} not working
         try {
             lock.context.garbageCollect()
         }catch (t: Throwable){
             // ignored
+            t.printStackTrace()
         }
     }
 

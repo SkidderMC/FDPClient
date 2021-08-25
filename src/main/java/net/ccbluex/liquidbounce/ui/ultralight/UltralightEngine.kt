@@ -41,7 +41,6 @@ object UltralightEngine : Listenable {
     var scaledWidth=0
     var scaledHeight=0
     var factor=1
-    private val gcTimer=MSTimer()
 
     private val views=mutableListOf<View>()
 
@@ -139,11 +138,6 @@ object UltralightEngine : Listenable {
 
         this.renderer.update()
         this.renderer.render()
-
-        if(gcTimer.hasTimePassed(1000L)){
-            views.forEach { it.gc() }
-            gcTimer.reset()
-        }
     }
 
     override fun handleEvents() = true

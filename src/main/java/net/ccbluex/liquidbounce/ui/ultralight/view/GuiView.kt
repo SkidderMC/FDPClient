@@ -70,4 +70,6 @@ abstract class GuiView(private val page: Page) : GuiScreen() {
     fun destroy() {
         UltralightEngine.unregisterView(view)
     }
+
+    override fun doesGuiPauseGame() = false
 }

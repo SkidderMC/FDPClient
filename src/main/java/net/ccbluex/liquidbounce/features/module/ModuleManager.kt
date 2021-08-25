@@ -15,11 +15,10 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ReflectUtils
 import org.lwjgl.input.Keyboard
-import java.util.*
 
 class ModuleManager : Listenable {
 
-    val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
+    val modules = mutableListOf<Module>()
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
 
     var pendingBindModule: Module?=null
@@ -52,6 +51,7 @@ class ModuleManager : Listenable {
     fun registerModule(module: Module) {
         modules += module
         moduleClassMap[module.javaClass] = module
+        modules.sortBy { it.name }
 
         generateCommand(module)
 

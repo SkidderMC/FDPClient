@@ -20,6 +20,7 @@
 package net.ccbluex.liquidbounce.ui.ultralight.support;
 
 import com.labymedia.ultralight.plugin.filesystem.UltralightFileSystem;
+import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -253,9 +254,9 @@ public class FileSystemAdapter implements UltralightFileSystem {
     private void log(boolean error, String fmt, Object... args) {
         String message = String.format(fmt, args);
         if (error) {
-            System.err.println("[ERROR/FileSystem] " + message);
+            UltralightEngine.INSTANCE.getLogger().error("[ERROR/FileSystem] " + message);
         } else {
-            System.out.println("[INFO/FileSystem] " + message);
+            UltralightEngine.INSTANCE.getLogger().info("[INFO/FileSystem] " + message);
         }
     }
 }
