@@ -23,7 +23,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange
 
 @ModuleInfo(name = "AutoWeapon", category = ModuleCategory.COMBAT)
 class AutoWeapon : Module() {
-
+    private val onlySwordValue = BoolValue("OnlySword", false)
     private val silentValue = BoolValue("SpoofItem", false)
     private val ticksValue = IntegerValue("SpoofTicks", 10, 1, 20)
     private var attackEnemy = false
@@ -44,7 +44,7 @@ class AutoWeapon : Module() {
             // Find best weapon in hotbar (#Kotlin Style)
             val (slot, _) = (0..8)
                     .map { Pair(it, mc.thePlayer.inventory.getStackInSlot(it)) }
-                    .filter { it.second != null && (it.second.item is ItemSword || it.second.item is ItemTool) }
+                    .filter { it.second != null && (it.second.item is ItemSword || (it.second.item is ItemTool&&!onlySwordValue.get()))}
                     .maxBy {
                         (it.second.attributeModifiers["generic.attackDamage"].first()?.amount
                                 ?: 0.0) + 1.25 * ItemUtils.getEnchantment(it.second, Enchantment.sharpness)
