@@ -28,7 +28,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
-import net.ccbluex.liquidbounce.ui.ultralight.view.AllTimeGuiView
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -42,7 +41,7 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "FDPClient"
     const val COLORED_NAME = "§c§lFDP§6§lClient"
-    const val CLIENT_REAL_VERSION = "v1.4.0-UL"
+    const val CLIENT_REAL_VERSION = "v1.4.0"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_STORAGE = "http://res.getfdp.today/"
     const val MINECRAFT_VERSION = "1.8.9"

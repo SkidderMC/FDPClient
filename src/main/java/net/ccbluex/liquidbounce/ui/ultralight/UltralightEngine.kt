@@ -73,9 +73,9 @@ object UltralightEngine : Listenable {
         platform.setLogger { level, message ->
             @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
             when (level) {
-                UltralightLogLevel.ERROR -> logger.debug("[Ultralight/ERR] $message")
-                UltralightLogLevel.WARNING -> logger.debug("[Ultralight/WARN] $message")
-                UltralightLogLevel.INFO -> logger.debug("[Ultralight/INFO] $message")
+                UltralightLogLevel.ERROR -> logger.error("[Ultralight/ERR] $message")
+                UltralightLogLevel.WARNING -> logger.warn("[Ultralight/WARN] $message")
+                UltralightLogLevel.INFO -> logger.info("[Ultralight/INFO] $message")
             }
         }
 

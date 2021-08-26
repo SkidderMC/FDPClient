@@ -127,6 +127,8 @@ class View {
 
         if(gcTimer.hasTimePassed(1000L)){
             garbageCollect()
+            UltralightEngine.renderer.purgeMemory()
+//            UltralightEngine.renderer.logMemoryUsage()
             gcTimer.reset()
         }
     }
