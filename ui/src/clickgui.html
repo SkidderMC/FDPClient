@@ -185,6 +185,8 @@
         }
         $(".l1").mousedown(function(e) {
             if (3 == e.which) {
+                ClickGUI.openCategory = -1
+                ClickGUI.openModule = -1
                 $("#mts .mdui-list-item-content").css("transform", "scale(1)");
                 setTimeout(function() {
                     $("#mts .mdui-list-item-content").css("display", "inline");
