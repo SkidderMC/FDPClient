@@ -71,6 +71,9 @@ class Velocity : Module() {
         .displayable { modeValue.get().contains("RedeSky",true) }
     private val rspDengerValue = BoolValue("RedeskyOnlyDanger",false)
         .displayable { modeValue.get().contains("RedeSky",true) }
+    
+
+    private val noAirValue = BoolValue("NoAir",false)
 
     /**
      * VALUES
@@ -104,7 +107,7 @@ class Velocity : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(redeCount<24) redeCount++
-        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb)
+        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || (noAirValue.get() && !mc.thePlayer.onGround))
             return
 
         when (modeValue.get().toLowerCase()) {
@@ -238,7 +241,8 @@ class Velocity : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-
+                if (noAirValue.get() && !mc.thePlayer.onGround)
+            return
         if (packet is S12PacketEntityVelocity) {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer)
                 return
@@ -391,6 +395,8 @@ class Velocity : Module() {
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
+                        if (noAirValue.get() && !mc.thePlayer.onGround)
+            return
         when (modeValue.get().toLowerCase()) {
             "legit" -> {
                 if(pos==null||mc.thePlayer.hurtTime<=0)
@@ -436,9 +442,8 @@ class Velocity : Module() {
 
     @EventTarget
     fun onJump(event: JumpEvent) {
-        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb)
+        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || (noAirValue.get() && !mc.thePlayer.onGround))
             return
-
         when (modeValue.get().toLowerCase()) {
             "aacpush" -> {
                 jump = true
