@@ -10,7 +10,12 @@ import org.lwjgl.input.Keyboard
 import java.io.File
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
-class ClickGUI : Module() {
+object ClickGUI : Module() {
+    @JvmField
+    var openCategory: Int = -1 // index in the js array
+    @JvmField
+    var openModule: Int = -1 // index in the js array
+
     override fun onEnable() {
         mc.displayGuiScreen(DynamicGuiView(Page(File(UltralightEngine.pagesPath,"clickgui.html"))))
     }

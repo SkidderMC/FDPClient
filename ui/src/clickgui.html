@@ -203,7 +203,7 @@
             }
         });
         for (var i = 0; i < modules.length; i++) {
-            $('.l1').append('<li class="mdui-list-item mdui-ripple" MTtype="' + i + '" onclick="clickModuleT(this)"><i class="mdui-list-item-icon mdui-icon material-icons">' + modules[i].Icon + '</i><div class="mdui-list-item-content">' + modules[i].Type + '</div></li>');
+            $('.l1').append('<li class="mdui-list-item mdui-ripple" MTtype="' + i + '" onclick="clickModuleT(-1,this)"><i class="mdui-list-item-icon mdui-icon material-icons">' + modules[i].Icon + '</i><div class="mdui-list-item-content">' + modules[i].Type + '</div></li>');
         }
         setTimeout(function() {
             $(".card").css("opacity", "1");
@@ -217,11 +217,14 @@
             $(document.body).append('<script>' + a + "<\/script>");
         }
         // 当模块Category被点击
-        function clickModuleT(a) {
+        function clickModuleT(mt, a) {
+            if (mt == -1 && a != undefined) {
+                mt = $(a).attr("MTtype")
+            }
+            ClickGUI.openCategory = Number(mt)
             $("#ms").css("opacity", "0");
             setTimeout(function() {
                 $('.l2').html("");
-                var mt = $(a).attr("MTtype");
                 for (var i = 0; i < modules[mt].modules.length; i++) {
                     if (modules[mt].modules[i].Hide || modules[mt].modules[i].Hide == null) {
                         var isE = modules[mt].modules[i].Enable ? 'checked' : "";
@@ -298,6 +301,7 @@
         }
         // 当模块被右键点击
         function clickModule(mt, i) {
+            ClickGUI.openModule = Number(i)
             $("#mss").css("opacity", "0");
             $("#mss").css("width", "calc( 66.666666666666% - 80px)");
             $("#mss").css("display", "block");
@@ -332,6 +336,7 @@
         }
         //刷新模块信息（displayable）
         function refresh(mt, i) {
+            ClickGUI.openModule = Number(i)
             modules[mt].modules[i] = getDataJson(getModule(modules[mt].modules[i].Name))
             $("#mss").css("width", "calc( 66.666666666666% - 80px)");
             $("#mss").css("display", "block");
@@ -364,6 +369,12 @@
         }
         document.oncontextmenu = function(e) {
             return false;
+        }
+        if (ClickGUI.openCategory != -1) {
+            clickModuleT(ClickGUI.openCategory)
+            if (ClickGUI.openModule != -1) {
+                clickModule(ClickGUI.openCategory, ClickGUI.openModule)
+            }
         }
     </script>
 <p style="color: rgba(255, 255, 255, 0.3);position: fixed;bottom: -5px;font-size: 10px;right: 3px;text-align: right;">Make by 2734583@qq.com<br>Power by Material Design<br>Running in FDPClient</p>
