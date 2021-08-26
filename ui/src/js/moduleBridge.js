@@ -9,6 +9,7 @@ const FontValue = java.importClass("net.ccbluex.liquidbounce.value.FontValue")
 const LanguageManager = java.importClass("net.ccbluex.liquidbounce.ui.i18n.LanguageManager").INSTANCE
 const ModuleCategory = java.importClass("net.ccbluex.liquidbounce.features.module.ModuleCategory")
 const GameFontRenderer = java.importClass("net.ccbluex.liquidbounce.ui.font.GameFontRenderer")
+const ClickGUI = java.importClass("net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI").INSTANCE
 const Fonts = java.importClass("net.ccbluex.liquidbounce.ui.font.Fonts")
 const Float = java.importClass("java.lang.Float")
 const Integer = java.importClass("java.lang.Integer")

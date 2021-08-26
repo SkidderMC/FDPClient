@@ -29,7 +29,7 @@ import java.util.TimerTask;
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 public class NoFall extends Module {
-    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus"}, "SpoofGround");
+    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus"}, "SpoofGround");
 
     private final IntegerValue phaseOffsetValue = (IntegerValue) new IntegerValue("PhaseOffset",1,0,5).displayable(() -> modeValue.get().equalsIgnoreCase("Phase"));
 
@@ -38,22 +38,24 @@ public class NoFall extends Module {
     private final TickTimer spartanTimer = new TickTimer();
 
     private boolean aac4Fakelag=false;
-    private boolean aac4PacketModify=false;
+    private boolean packetModify =false;
     private boolean aac5doFlag=false;
     private boolean aac5Check=false;
     private int aac5Timer=0;
     private final ArrayList<C03PacketPlayer> aac4Packets=new ArrayList<>();
     private boolean needSpoof=false;
+    private int packet1Count=0;
 
     @Override
     public void onEnable(){
         aac4Fakelag=false;
         aac5Check=false;
-        aac4PacketModify=false;
+        packetModify =false;
         aac4Packets.clear();
         needSpoof =false;
         aac5doFlag=false;
         aac5Timer=0;
+        packet1Count=0;
     }
 
     @EventTarget(ignoreCondition = true)
@@ -214,6 +216,12 @@ public class NoFall extends Module {
                     needSpoof = true;
                 }
             }
+            case "packet1":{
+                if((mc.thePlayer.fallDistance/3)>packet1Count){
+                    packet1Count= (int) (mc.thePlayer.fallDistance/3);
+                    packetModify=true;
+                }
+            }
         }
     }
 
@@ -243,7 +251,7 @@ public class NoFall extends Module {
                 return;
             }
             if (mc.thePlayer.fallDistance > 2.5 && aac4Fakelag) {
-                aac4PacketModify = true;
+                packetModify = true;
                 mc.thePlayer.fallDistance = 0;
             }
             if (inAir(4.0, 1.0)) {
@@ -280,9 +288,9 @@ public class NoFall extends Module {
 
             if (mode.equalsIgnoreCase("AACv4")&&aac4Fakelag){
                 event.cancelEvent();
-                if (aac4PacketModify) {
+                if (packetModify) {
                     packet.onGround = true;
-                    aac4PacketModify = false;
+                    packetModify = false;
                 }
                 aac4Packets.add(packet);
             }
@@ -290,6 +298,11 @@ public class NoFall extends Module {
             if (mode.equalsIgnoreCase("Verus") && needSpoof) {
                 packet.onGround = true;
                 needSpoof = false;
+            }
+
+            if (mode.equalsIgnoreCase("Packet1") && packetModify) {
+                packet.onGround = true;
+                packetModify = false;
             }
         }
     }
