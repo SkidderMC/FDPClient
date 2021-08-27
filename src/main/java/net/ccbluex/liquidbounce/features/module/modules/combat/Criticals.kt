@@ -193,8 +193,8 @@ class Criticals : Module() {
                 "fakecollide" -> {
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
                     if(lookValue.get()){
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x+(motionX/3), y + 0.20, z+(motionZ/3), yaw, pitch, false))
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x+(motionX/1.5), y + 0.121600000013, z+(motionZ/1.5), yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x+(motionX/3), y + 0.20000004768372, z+(motionZ/3), yaw, pitch, false))
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x+(motionX/1.5), y + 0.12160004615784, z+(motionZ/1.5), yaw, pitch, false))
                     }else{
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x+(motionX/3), y + 0.20, z+(motionZ/3), false))
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x+(motionX/1.5), y + 0.121600000013, z+(motionZ/1.5), false))
@@ -288,8 +288,8 @@ class Criticals : Module() {
                                 packet.onGround=false
                                 jState++
                                 when(jState) {
-                                    2 -> packet.y += 0.2
-                                    3 -> packet.y += 0.1216
+                                    2 -> packet.y += 0.20000004768372
+                                    3 -> packet.y += 0.12160004615784
                                     4 -> {
                                         if(hoverNoFall.get()) packet.onGround=true
                                         jState = 1
