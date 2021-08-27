@@ -244,8 +244,8 @@ class Criticals : Module() {
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.yaw, packet.pitch, packet.onGround))  
                         event.cancelEvent()
                         return
-                    }else if(!packet is C04PacketPlayerPosition && !packet is C06PacketPlayerPosLook) {
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.onGround)
+                    }else if(!(packet is C04PacketPlayerPosition) && !(packet is C06PacketPlayerPosLook)) {
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.onGround))
                         event.cancelEvent()
                         return
                     }
