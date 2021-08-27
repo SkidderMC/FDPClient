@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.ui.ultralight.support
 import com.labymedia.ultralight.databind.Databind
 import com.labymedia.ultralight.databind.context.ContextProvider
 import com.labymedia.ultralight.javascript.JavascriptObject
+import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 
 class JSBridge(private val databind: Databind, private val contextProvider: ContextProvider) {
     /**
@@ -30,5 +31,9 @@ class JSBridge(private val databind: Databind, private val contextProvider: Cont
                 e.printStackTrace()
             }
         }
+    }
+
+    fun openURL(url: String){
+        MiscUtils.showURL(url)
     }
 }

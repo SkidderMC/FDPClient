@@ -6,7 +6,6 @@ const ListValue = java.importClass("net.ccbluex.liquidbounce.value.ListValue")
 const IntegerValue = java.importClass("net.ccbluex.liquidbounce.value.IntegerValue")
 const FloatValue = java.importClass("net.ccbluex.liquidbounce.value.FloatValue")
 const FontValue = java.importClass("net.ccbluex.liquidbounce.value.FontValue")
-const LanguageManager = java.importClass("net.ccbluex.liquidbounce.ui.i18n.LanguageManager").INSTANCE
 const ModuleCategory = java.importClass("net.ccbluex.liquidbounce.features.module.ModuleCategory")
 const GameFontRenderer = java.importClass("net.ccbluex.liquidbounce.ui.font.GameFontRenderer")
 const ClickGUI = java.importClass("net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI").INSTANCE
@@ -114,8 +113,4 @@ function getModule(name) {
 
 function setModuleValue(name, valueName, value) {
     getModule(name).getValue(valueName).set(value)
-}
-
-function translate(str) {
-    return LanguageManager.replace(str).replace(/%/g, "").replace(/\./g, "_")
 }

@@ -4,10 +4,12 @@
     <link rel="stylesheet" href="./lib/mdui/mdui.min.css" />
     <script src="./lib/mdui/mdui.min.js"></script>
     <script src="./lib/jquery/jquery.min.js"></script>
+    <script src="./js/moduleBridge.js"></script>
+    <script src="./js/utils.js"></script>
 </head>
 
 <body>
-<style>
+    <style>
         body {
             -moz-user-select: none;
             -webkit-user-select: none;
@@ -16,11 +18,11 @@
             user-select: none;
             background: rgba(0, 0, 0, 0);
         }
-
+        
         #list {
             width: 100%;
         }
-
+        
         .card {
             box-shadow: 0 0 20px rgb(0 0 0 / 10%);
             transform: scale(0.5);
@@ -33,7 +35,7 @@
             top: 10%;
             left: 10%;
         }
-
+        
         #logo {
             display: inline-block;
             width: calc( 100% - 31px);
@@ -43,15 +45,15 @@
             margin: -8px;
             background: rgb(245, 245, 245);
         }
-
+        
         .l2 {
             margin-left: -15px;
         }
-
+        
         #mts {
             transition: all 0.3s;
         }
-
+        
         #ms {
             height: calc( 100% - 68px);
             transition: all 0.3s;
@@ -59,7 +61,7 @@
             opacity: 0;
             margin-top: 8px;
         }
-
+        
         #description {
             color: #8b8b8b;
             font-size: 14px;
@@ -69,7 +71,7 @@
             margin-top: 5px;
             float: right;
         }
-
+        
         #mss {
             margin-top: 8px;
             transition: all 0.3s;
@@ -79,23 +81,23 @@
             height: calc( 100% - 68px);
             background: #fdfdfd;
         }
-
+        
         #ms {
             overflow-y: scroll;
             overflow-x: hidden;
         }
-
+        
         .l1 {
             background: #f9f9f9;
             height: 100%;
             margin-top: 8px;
         }
-
+        
         label.mdui-checkbox {
             float: right;
             margin-right: 20px;
         }
-
+        
         .mdui-slider {
             position: relative;
             display: inline-block;
@@ -104,7 +106,7 @@
             margin-right: 20px;
             height: 36px;
         }
-
+        
         #mss {
             overflow-y: scroll;
             overflow-x: hidden;
@@ -113,63 +115,62 @@
             width: calc(66.6667% - 80px);
             display: block;
         }
-
+        
         .lss {
             transition: all 0.3s;
             opacity: 0;
             margin-right: -20px;
         }
-
+        
         .lla {
             transition: all 0.3s;
         }
     </style>
-<div class="mdui-card card">
-    <div id="list">
-        <p id="logo">FDPClient
-            <a id="description"></a>
-        </p>
-        <div class="mdui-row">
-            <div class="mdui-col-xs-4" id="mts">
-                <ul class="mdui-list l1">
+    <div class="mdui-card card">
+        <div id="list">
+            <p id="logo">FDPClient
+                <a id="description"></a>
+            </p>
+            <div class="mdui-row">
+                <div class="mdui-col-xs-4" id="mts">
+                    <ul class="mdui-list l1">
 
-                </ul>
-            </div>
-            <div class="mdui-col-xs-4" id="ms">
-                <div class="mdui-list l2">
-                    <label class="mdui-list-item mdui-ripple">
+                    </ul>
+                </div>
+                <div class="mdui-col-xs-4" id="ms">
+                    <div class="mdui-list l2">
+                        <label class="mdui-list-item mdui-ripple">
                         <div class="mdui-list-item-content">AimBot</div>
                         <div class="mdui-checkbox">
                             <input type="checkbox"/>
                             <i class="mdui-checkbox-icon"></i>
                         </div>
                     </label>
-                    <label class="mdui-list-item mdui-ripple">
+                        <label class="mdui-list-item mdui-ripple">
                         <div class="mdui-list-item-content">AntiBot</div>
                         <div class="mdui-checkbox">
                             <input type="checkbox" checked/>
                             <i class="mdui-checkbox-icon"></i>
                         </div>
                     </label>
-                    <label class="mdui-list-item mdui-ripple" Mname="Killaura" Mtype="Combat" onclick="clickModule()">
+                        <label class="mdui-list-item mdui-ripple" Mname="Killaura" Mtype="Combat" onclick="clickModule()">
                         <div class="mdui-list-item-content">Killaura</div>
                         <div class="mdui-checkbox">
                             <input type="checkbox"/>
                             <i class="mdui-checkbox-icon"></i>
                         </div>
                     </label>
+                    </div>
                 </div>
-            </div>
-            <div class="mdui-col-xs-1" id="mss"><br>
-                <div class="mdui-list l3">
+                <div class="mdui-col-xs-1" id="mss"><br>
+                    <div class="mdui-list l3">
 
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script src="./js/moduleBridge.js"></script>
-<script>
+    <script>
         var modules = getCategoryJson()
 
         function startOPED(sss, a) {
@@ -379,7 +380,7 @@
             }
         }
     </script>
-<p style="color: rgba(255, 255, 255, 0.3);position: fixed;bottom: -5px;font-size: 10px;right: 3px;text-align: right;">Make by 2734583@qq.com<br>Power by Material Design<br>Running in FDPClient</p>
+    <p style="color: rgba(255, 255, 255, 0.3);position: fixed;bottom: -5px;font-size: 10px;right: 3px;text-align: right;">Make by 2734583@qq.com<br>Power by Material Design<br>Running in FDPClient</p>
 </body>
 
 </html>

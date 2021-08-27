@@ -6,16 +6,12 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.ServerUtils
-import net.minecraft.network.play.client.C00PacketKeepAlive
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.server.S09PacketHeldItemChange
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
-import net.minecraft.network.play.server.S40PacketDisconnect
-import net.minecraft.util.ChatComponentText
 import net.minecraft.world.Explosion
 
 class PacketFixer : Listenable,MinecraftInstance() {

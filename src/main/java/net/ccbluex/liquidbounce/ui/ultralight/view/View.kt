@@ -18,15 +18,22 @@ import org.lwjgl.opengl.GL12.*
 import java.io.File
 import java.nio.ByteBuffer
 
-class View {
+class View(width: Int, height: Int) {
     val view: UltralightView
 
     private var glTexture = -1
     private val gcTimer = MSTimer()
 
+    var width=width
+        private set
+    var height=height
+        private set
+    var realWidth=0
+    var realHeight=0
+
     init {
         view = UltralightEngine.renderer.createView(
-            UltralightEngine.width.toLong(), UltralightEngine.height.toLong(),
+            width.toLong(), height.toLong(),
             UltralightViewConfig()
                 .initialDeviceScale(1.0)
                 .isTransparent(true)
@@ -48,6 +55,8 @@ class View {
     }
 
     fun resize(width: Int, height: Int){
+        this.width=width
+        this.height=height
         view.resize(width.toLong(), height.toLong())
     }
 
@@ -55,6 +64,9 @@ class View {
      * @author CCBlueX
      */
     fun render(){
+        UltralightEngine.renderer.update()
+        UltralightEngine.renderer.render()
+
         if (glTexture == -1) {
             createTexture()
         }
@@ -120,7 +132,7 @@ class View {
         OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
 
-        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, UltralightEngine.scaledWidth, UltralightEngine.scaledHeight, UltralightEngine.scaledWidth.toFloat(), UltralightEngine.scaledHeight.toFloat())
+        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, realWidth, realHeight, realWidth.toFloat(), realHeight.toFloat())
         glDepthMask(true)
         glDisable(GL_BLEND)
         glEnable(GL_DEPTH_TEST)

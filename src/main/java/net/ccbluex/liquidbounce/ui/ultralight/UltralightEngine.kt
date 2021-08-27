@@ -7,22 +7,16 @@ import com.labymedia.ultralight.config.FontHinting
 import com.labymedia.ultralight.config.UltralightConfig
 import com.labymedia.ultralight.plugin.logging.UltralightLogLevel
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.ui.ultralight.support.ClipboardAdapter
 import net.ccbluex.liquidbounce.ui.ultralight.support.FileSystemAdapter
 import net.ccbluex.liquidbounce.ui.ultralight.view.View
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.FileUtils
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.ScaledResolution
 import org.apache.logging.log4j.LogManager
-import org.lwjgl.opengl.Display
 import java.io.File
 import java.net.URL
 
-object UltralightEngine : Listenable {
+object UltralightEngine {
     lateinit var platform: UltralightPlatform
     lateinit var renderer: UltralightRenderer
 
@@ -34,12 +28,6 @@ object UltralightEngine : Listenable {
     val cachePath = File(ultralightPath, "cache")
 
     const val ULTRALIGHT_NATIVE_VERSION = "0.4.6"
-
-    var width=0
-    var height=0
-    var scaledWidth=0
-    var scaledHeight=0
-    var factor=1
 
     val views=mutableListOf<View>()
 
@@ -81,8 +69,6 @@ object UltralightEngine : Listenable {
 
         renderer = UltralightRenderer.create()
         renderer.logMemoryUsage()
-
-        LiquidBounce.eventManager.registerListener(this)
     }
 
     private fun checkResources(){
@@ -108,8 +94,10 @@ object UltralightEngine : Listenable {
     }
 
     private fun checkPageResources(){
-        if(File(pagesPath, "NO_UPDATE").exists())
+        if(File(pagesPath, "NO_UPDATE").exists()) {
+            logger.warn("PASSED RESOURCE CHECK BY \"NO_UPDATE\" FILE")
             return
+        }
 
         val versionFile = File(pagesPath, "VERSION")
 
@@ -136,30 +124,4 @@ object UltralightEngine : Listenable {
         views.remove(view)
         view.close()
     }
-
-    @EventTarget
-    fun onRender2d(event: Render2DEvent){
-        var resized=false
-        if(width!=Display.getWidth()) {
-            width = Display.getWidth()
-            resized=true
-        }
-        if(height!=Display.getHeight()) {
-            height = Display.getHeight()
-            resized=true
-        }
-        val sr=ScaledResolution(Minecraft.getMinecraft())
-        scaledWidth=sr.scaledWidth
-        scaledHeight=sr.scaledHeight
-        factor=sr.scaleFactor
-
-        if(resized){
-            views.forEach { it.resize(width, height) }
-        }
-
-        this.renderer.update()
-        this.renderer.render()
-    }
-
-    override fun handleEvents() = true
 }

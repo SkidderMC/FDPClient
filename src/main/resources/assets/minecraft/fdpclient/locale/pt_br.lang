@@ -2,10 +2,10 @@
 ui.altmanager=AltManager
 ui.mods=Mods
 ui.background=Fundo
-ui.website=Site
 ui.serverSpoof=ServerSpoof
 ui.antiForge=AntiForge
 ui.reconnect=Reconectar
+ui.changelog=Log de Mudanças
 
 ui.back=Voltar
 ui.status=Status
@@ -25,10 +25,9 @@ ui.gameover.close=Ocultar esta tela
 ui.disconnect.randomAlt=Alt aleatório
 ui.disconnect.randomOffline=Random Offline
 
-ui.update.available=Atualização disponível!
 ui.update.released=FDP Client %s foi lançado!
 ui.update.dismiss=Dispensar
-ui.update.download=Download
+ui.update.download=Baixar
 
 ui.keybind.title=Gerenciador de KeyBind
 ui.keybind.select=Selecione um módulo para vincular

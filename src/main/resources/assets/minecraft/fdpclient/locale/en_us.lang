@@ -2,10 +2,10 @@
 ui.altmanager=AltManager
 ui.mods=Mods
 ui.background=Background
-ui.website=Website
 ui.serverSpoof=ServerSpoof
 ui.antiForge=AntiForge
 ui.reconnect=Reconnect
+ui.changelog=ChangeLog
 
 ui.back=Back
 ui.status=Status
@@ -25,7 +25,6 @@ ui.gameover.close=Hide This Screen
 ui.disconnect.randomAlt=Random Alt
 ui.disconnect.randomOffline=Random Offline
 
-ui.update.available=Update available!
 ui.update.released=FDP Client %s got released!
 ui.update.dismiss=Dismiss
 ui.update.download=Download

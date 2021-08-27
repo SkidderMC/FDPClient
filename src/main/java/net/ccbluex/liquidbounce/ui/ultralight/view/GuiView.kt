@@ -3,19 +3,39 @@ package net.ccbluex.liquidbounce.ui.ultralight.view
 import com.labymedia.ultralight.input.*
 import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
 import net.ccbluex.liquidbounce.ui.ultralight.support.UltralightUtils
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.Display
 
 abstract class GuiView(private val page: Page) : GuiScreen() {
     lateinit var view: View
 
+    private var factor=1
+
     fun init(){
-        view=View()
+        view=View(Display.getWidth(), Display.getHeight())
         view.loadPage(page)
         UltralightEngine.registerView(view)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        var resized=false
+        if(view.width!=Display.getWidth()) {
+            resized=true
+        }
+        if(view.height!=Display.getHeight()) {
+            resized=true
+        }
+        val sr=ScaledResolution(Minecraft.getMinecraft())
+        view.realWidth=sr.scaledWidth
+        view.realHeight=sr.scaledHeight
+        factor=sr.scaleFactor
+        if(resized){
+            view.resize(Display.getWidth(), Display.getHeight())
+        }
+
         // mouse stroll
         if(Mouse.hasWheel()){
             val wheel = Mouse.getDWheel()
@@ -30,8 +50,8 @@ abstract class GuiView(private val page: Page) : GuiScreen() {
         // mouse move
         view.fireMouseEvent(UltralightMouseEvent()
             .type(UltralightMouseEventType.MOVED)
-            .x(mouseX*UltralightEngine.factor)
-            .y(mouseY*UltralightEngine.factor)
+            .x(mouseX*factor)
+            .y(mouseY*factor)
             .button(UltralightMouseEventButton.LEFT))
 
         view.render()
@@ -42,8 +62,8 @@ abstract class GuiView(private val page: Page) : GuiScreen() {
         button ?: return
         view.fireMouseEvent(UltralightMouseEvent()
             .type(UltralightMouseEventType.DOWN)
-            .x(mouseX*UltralightEngine.factor)
-            .y(mouseY*UltralightEngine.factor)
+            .x(mouseX*factor)
+            .y(mouseY*factor)
             .button(button))
     }
 
@@ -52,8 +72,8 @@ abstract class GuiView(private val page: Page) : GuiScreen() {
         button ?: return
         view.fireMouseEvent(UltralightMouseEvent()
             .type(UltralightMouseEventType.UP)
-            .x(mouseX*UltralightEngine.factor)
-            .y(mouseY*UltralightEngine.factor)
+            .x(mouseX*factor)
+            .y(mouseY*factor)
             .button(button))
     }
 

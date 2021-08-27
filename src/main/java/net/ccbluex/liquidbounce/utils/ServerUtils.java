@@ -18,7 +18,7 @@ public final class ServerUtils extends MinecraftInstance {
         if(serverData == null)
             return;
 
-        mc.displayGuiScreen(new GuiConnecting(new GuiMultiplayer(new GuiMainMenu()), mc, serverData));
+        mc.displayGuiScreen(new GuiConnecting(new GuiMultiplayer(GuiMainMenu.INSTANCE), mc, serverData));
     }
 
     public static String getRemoteIp() {
