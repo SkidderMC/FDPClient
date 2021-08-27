@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.KeyEvent;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
@@ -8,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -47,9 +49,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                 //hide GUI
                 if(chestStealer.getSilentTitleValue().get()) {
                     String tipString = "%ui.chest.stealing%";
-                    mc.fontRendererObj.drawString(tipString,
-                            (width / 2) - (mc.fontRendererObj.getStringWidth(tipString) / 2),
-                            (height / 2) + 30, 0xffffffff);
+                    mc.fontRendererObj.drawString(tipString, (width / 2) - (mc.fontRendererObj.getStringWidth(tipString) / 2), (height / 2) + 30, 0xffffffff);
                 }
                 callbackInfo.cancel();
             }else{
@@ -83,12 +83,18 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         }
     }
 
-
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreenReturn(CallbackInfo callbackInfo){
         if(translated){
             GL11.glPopMatrix();
             translated=false;
         }
+    }
+
+    @Inject(method = "keyTyped", at = @At("HEAD"))
+    private void keyTyped(char typedChar, int keyCode, CallbackInfo ci){
+        ChestStealer chestStealer=LiquidBounce.moduleManager.getModule(ChestStealer.class);
+        if(Keyboard.getEventKeyState() && chestStealer.getState() && chestStealer.getSilentTitleValue().get() && mc.currentScreen instanceof GuiChest)
+            LiquidBounce.eventManager.callEvent(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
     }
 }
