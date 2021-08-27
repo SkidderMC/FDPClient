@@ -86,6 +86,14 @@ object LiquidBounce {
      */
     fun initClient(){
         isStarting = true
+    }
+
+    /***
+     * Execute if client will be started
+     */
+    fun startClient() {
+        ClientUtils.logInfo("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
+        val startTime=System.currentTimeMillis()
 
         // Create file manager
         fileManager = FileManager()
@@ -96,14 +104,6 @@ object LiquidBounce {
 
         // Load Ultralight renderer
         UltralightEngine.init()
-    }
-
-    /***
-     * Execute if client will be started
-     */
-    fun startClient() {
-        ClientUtils.logInfo("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
-        val startTime=System.currentTimeMillis()
 
         // Load language
         LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
