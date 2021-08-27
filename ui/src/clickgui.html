@@ -265,7 +265,7 @@
         }
         // 设置模块 开关
         function rc(mt, i) {
-            var module = getModule(modules[mt].modules[i].Name)
+            var module = getModule(modules[mt].modules[i].Key)
             module.toggle()
             modules[mt].modules[i].Enable = module.getState()
             if (modules[mt].modules[i].Enable) {

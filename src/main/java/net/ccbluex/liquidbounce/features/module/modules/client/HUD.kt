@@ -6,22 +6,22 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.KeyEvent
-import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.minecraft.client.gui.GuiChat
+import net.minecraft.util.ResourceLocation
 
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 class HUD : Module() {
     val betterHotbarValue = BoolValue("BetterHotbar", true)
     val hotbarAlphaValue = IntegerValue("HotbarAlpha", 150, 0, 255).displayable { betterHotbarValue.get() }
     val inventoryParticle = BoolValue("InventoryParticle", false)
+    private val blurValue = BoolValue("Blur", false)
     val fontChatValue = BoolValue("FontChat", false)
     val chatRectValue = BoolValue("ChatRect", true)
     val chatCombineValue = BoolValue("ChatCombine", true)
@@ -36,6 +36,17 @@ class HUD : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         LiquidBounce.hud.update()
+    }
+
+    @EventTarget
+    fun onScreen(event: ScreenEvent) {
+        if (mc.theWorld == null || mc.thePlayer == null)
+            return
+
+        if (state && blurValue.get() && !mc.entityRenderer.isShaderActive && event.guiScreen != null && !(event.guiScreen is GuiChat || event.guiScreen is GuiHudDesigner))
+            mc.entityRenderer.loadShader(ResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/blur.json"))
+        else if (mc.entityRenderer.shaderGroup != null && mc.entityRenderer.shaderGroup!!.shaderGroupName.contains(LiquidBounce.CLIENT_NAME.toLowerCase() + "/blur.json"))
+            mc.entityRenderer.stopUseShader()
     }
 
     @EventTarget

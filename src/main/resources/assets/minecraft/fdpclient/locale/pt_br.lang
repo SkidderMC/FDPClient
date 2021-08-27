@@ -535,6 +535,7 @@ module.HUD.name=HUD
 module.HUD.description=Alterna a visibilidade do HUD
 module.HUD.value.BetterHotbar.name=MelhorHotbar
 module.HUD.value.HotbarAlpha.name=HotbarAlpha
+module.HUD.value.Blur.name=Borrão
 module.HUD.value.InventoryParticle.name=InventorarioParticula
 module.HUD.value.FontChat.name=FontChat
 module.HUD.value.ChatRect.name=ChatReagir

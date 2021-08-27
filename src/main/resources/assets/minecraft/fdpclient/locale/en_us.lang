@@ -537,6 +537,7 @@ module.HUD.description=Toggles visibility of the HUD
 module.HUD.value.BetterHotbar.name=BetterHotbar
 module.HUD.value.HotbarAlpha.name=HotbarAlpha
 module.HUD.value.InventoryParticle.name=InventoryParticle
+module.HUD.value.Blur.name=Blur
 module.HUD.value.FontChat.name=FontChat
 module.HUD.value.ChatRect.name=ChatRect
 module.HUD.value.ChatCombine.name=ChatCombine

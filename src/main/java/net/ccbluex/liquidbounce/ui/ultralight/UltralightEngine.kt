@@ -108,6 +108,9 @@ object UltralightEngine : Listenable {
     }
 
     private fun checkPageResources(){
+        if(File(pagesPath, "NO_UPDATE").exists())
+            return
+
         val versionFile = File(pagesPath, "VERSION")
 
         if (versionFile.exists() && versionFile.readText() == LiquidBounce.CLIENT_VERSION)

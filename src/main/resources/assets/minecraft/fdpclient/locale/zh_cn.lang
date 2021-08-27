@@ -536,6 +536,7 @@ module.HUD.name=界面
 module.HUD.description=开关界面
 module.HUD.value.BetterHotbar.name=更好的快捷栏
 module.HUD.value.HotbarAlpha.name=快捷栏透明度
+module.HUD.value.Blur.name=模糊效果
 module.HUD.value.InventoryParticle.name=物品栏粒子
 module.HUD.value.FontChat.name=聊天栏字体
 module.HUD.value.ChatRect.name=聊天栏背景
