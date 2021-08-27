@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S0BPacketAnimation
 import net.minecraft.stats.StatList
@@ -28,7 +29,11 @@ import net.minecraft.stats.StatList
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "Hypixel", "Hypixel2","AACPacket", "AAC4Hover1", "AAC4Hover2", "AAC4.3.11OldHYT", "NoGround", "Visual", "RedeSkySmartGround", "RedeSkyLowHop", "Hop", "TPHop", "FakeCollide", "TPCollide", "Jump", "LowJump", "Hover1", "Hover2", "Mineplex", "More", "TestMinemora"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "Hypixel", "Hypixel2","AACPacket", "AAC4.3.11OldHYT", "NoGround", "Visual", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "Motion", "Hover"), "packet")
+    val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump"), "Jump")
+    val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
+    val hoverNoFall = BoolValue("HoverNoFall",true)
+    val hoverCombat = BoolValue("HoverOnlyCombat",true)
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
@@ -185,12 +190,6 @@ class Criticals : Module() {
                     }
                 }
 
-                "hop" -> {
-                    mc.thePlayer.motionY = 0.1
-                    mc.thePlayer.fallDistance = 0.1f
-                    mc.thePlayer.onGround = false
-                }
-
                 "fakecollide" -> {
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
                     if(lookValue.get()){
@@ -200,16 +199,8 @@ class Criticals : Module() {
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x+(motionX/3), y + 0.20, z+(motionZ/3), false))
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x+(motionX/1.5), y + 0.121600000013, z+(motionZ/1.5), false))
                     }
-                    //mc.thePlayer.setPosition(x, y + 0.12160000001304075, z)
                 }
-
-                "tpcollide" -> {
-                    mc.thePlayer.triggerAchievement(StatList.jumpStat)
-                    mc.thePlayer.isAirBorne = true
-                    mc.thePlayer.motionY = 0.0
-                    mc.thePlayer.setPosition(x, y + 0.2, z)
-                }
-
+                
                 "tphop" -> {
                     if(lookValue.get()){
                         mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y + 0.02, z, yaw, pitch, false))
@@ -222,9 +213,18 @@ class Criticals : Module() {
                 }
 
                 "visual" -> mc.thePlayer.onCriticalHit(entity)
-                "jump" -> mc.thePlayer.motionY = 0.42
-                "lowjump" -> mc.thePlayer.motionY = 0.3425
-                "redeskylowhop" -> mc.thePlayer.motionY = 0.35
+                "motion" -> {
+                    when (motionValue.get().toLowerCase()) {
+                        "jump" -> mc.thePlayer.motionY = 0.42
+                        "lowjump" -> mc.thePlayer.motionY = 0.3425
+                        "redeskylowhop" -> mc.thePlayer.motionY = 0.35
+                        "hop" -> {
+                            mc.thePlayer.motionY = 0.1
+                            mc.thePlayer.fallDistance = 0.1f
+                            mc.thePlayer.onGround = false
+                        }
+                    }
+                }
             }
             mc.thePlayer.onCriticalHit(entity)
             msTimer.reset()
@@ -238,71 +238,149 @@ class Criticals : Module() {
         if (packet is C03PacketPlayer){
             when (modeValue.get().toLowerCase()) {
                 "noground" -> packet.onGround = false
-                "hover1" -> {
-                    if(mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
-                        packet.onGround=false
-                        jState++
-                        when(jState) {
-                            0 -> {}
-                            1 -> packet.y += 0.001335979112147
-                            2 -> packet.y += 0.0000000131132
-                            3 -> packet.y += 0.0000000194788
-                            4 -> packet.y += 0.00000000001304
-                            5 -> {
-                                packet.onGround=true
-                                jState = 0
-                            }
-                            else -> jState = 0
+                "hover" -> {
+                    if(hoverCombat.get() && !LiquidBounce.combatManager.inCombat) return
+                    if(packet is C05PacketPlayerLook) {
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.yaw, packet.pitch, packet.onGround))  
+                        event.cancelEvent()
+                        return
+                    }else if(!packet is C04PacketPlayerPosition && !packet is C06PacketPlayerPosLook) {
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.onGround)
+                        event.cancelEvent()
+                        return
+                    }
+                    when (hoverValue.get().toLowerCase()) {
+                        "2b2t" -> {
+                            if(mc.thePlayer.onGround){
+                                packet.onGround=false
+                                jState++
+                                when(jState) {
+                                    2 -> packet.y += 0.02
+                                    3 -> packet.y += 0.01
+                                    4 -> {
+                                        if(hoverNoFall.get()) packet.onGround=true
+                                        jState = 1
+                                    }
+                                    else -> jState = 1
+                                }
+                            }else jState = 0
                         }
-                    }
-                }
-                "aac4hover1" -> {
-                    if(mc.thePlayer.onGround && !aacLastState) {
-                        packet.onGround = mc.thePlayer.onGround
-                        aacLastState = mc.thePlayer.onGround
-                        packet.y += 0.00101
-                        return
-                    }
-                    aacLastState = mc.thePlayer.onGround
-                    packet.y += 0.001
-                    if(mc.thePlayer.onGround) packet.onGround = false
-                }
-                "aac4hover2" -> {
-                    if(mc.thePlayer.onGround && !aacLastState) {
-                        packet.onGround = mc.thePlayer.onGround
-                        aacLastState = mc.thePlayer.onGround
-                        packet.y += 0.000000000000136
-                        return
-                    }
-                    aacLastState = mc.thePlayer.onGround
-                    packet.y += 0.000000000000036
-                    if(mc.thePlayer.onGround) packet.onGround = false
-                }
-                "hover2" -> {
-                    if(mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
-                        packet.onGround=false
-                        jState++
-                        when(jState) {
-                            0 -> {}
-                            1 -> packet.y += 0.00000000000667547
-                            2 -> packet.y += 0.00000000000045413
-                            3 -> packet.y += 0.000000000000036
-                            4 -> {
-                                packet.onGround=true
-                                jState = 0
+                        "minis2" -> {
+                            if(mc.thePlayer.onGround && !aacLastState) {
+                                packet.onGround = mc.thePlayer.onGround
+                                aacLastState = mc.thePlayer.onGround
+                                return
                             }
-                            else -> jState = 0
+                            aacLastState = mc.thePlayer.onGround
+                            if(mc.thePlayer.onGround){
+                                packet.onGround = false
+                                jState++
+                                if(jState % 2 == 0) {
+                                    packet.y += 0.015625
+                                }else if(jState>100) {
+                                    if(hoverNoFall.get()) packet.onGround = true
+                                    jState = 1
+                                }
+                            }else jState = 0
                         }
-                    }
-                }
-                "redeskysmartground" -> {
-                    if(rsNofallValue.get()&&mc.thePlayer.fallDistance>0){
-                        packet.onGround=true
-                        return
-                    }
+                        "tpcollide" -> {
+                            if(mc.thePlayer.onGround){
+                                packet.onGround=false
+                                jState++
+                                when(jState) {
+                                    2 -> packet.y += 0.2
+                                    3 -> packet.y += 0.1216
+                                    4 -> {
+                                        if(hoverNoFall.get()) packet.onGround=true
+                                        jState = 1
+                                    }
+                                    else -> jState = 1
+                                }
+                            }else jState = 0
+                        }
+                        "minis" -> {
+                            if(mc.thePlayer.onGround && !aacLastState) {
+                                packet.onGround = mc.thePlayer.onGround
+                                aacLastState = mc.thePlayer.onGround
+                                return
+                            }
+                            aacLastState = mc.thePlayer.onGround
+                            if(mc.thePlayer.onGround){
+                                packet.onGround = false
+                                jState++
+                                if(jState % 2 == 0) {
+                                    packet.y += 0.0625
+                                }else if(jState>50) {
+                                    if(hoverNoFall.get()) packet.onGround = true
+                                    jState = 1
+                                }
+                            }else jState = 0
+                        }
+                        "normal1" -> {
+                            if(mc.thePlayer.onGround){
+                                if(!(hoverNoFall.get() && jState == 0)) packet.onGround=false
+                                jState++
+                                when(jState) {
+                                    2 -> packet.y += 0.001335979112147
+                                    3 -> packet.y += 0.0000000131132
+                                    4 -> packet.y += 0.0000000194788
+                                    5 -> packet.y += 0.00000000001304
+                                    6 -> {
+                                        if(hoverNoFall.get()) packet.onGround=true
+                                        jState = 1
+                                    }
+                                    else -> jState = 1
+                                }
+                            }else jState = 0
+                        }
+                        "aac4other" -> {
+                            if(mc.thePlayer.onGround && !aacLastState && hoverNoFall.get()) {
+                                packet.onGround = mc.thePlayer.onGround
+                                aacLastState = mc.thePlayer.onGround
+                                packet.y += 0.00101
+                                return
+                            }
+                            aacLastState = mc.thePlayer.onGround
+                            packet.y += 0.001
+                            if(mc.thePlayer.onGround || !hoverNoFall.get()) packet.onGround = false
+                        }
+                        "aac4" -> {
+                            if(mc.thePlayer.onGround && !aacLastState && hoverNoFall.get()) {
+                                packet.onGround = mc.thePlayer.onGround
+                                aacLastState = mc.thePlayer.onGround
+                                packet.y += 0.000000000000136
+                                return
+                            }
+                            aacLastState = mc.thePlayer.onGround
+                            packet.y += 0.000000000000036
+                            if(mc.thePlayer.onGround || !hoverNoFall.get()) packet.onGround = false
+                        }
+                        "normal2" -> {
+                            if(mc.thePlayer.onGround){
+                                if(!(hoverNoFall.get() && jState == 0)) packet.onGround=false
+                                jState++
+                                when(jState) {
+                                    2 -> packet.y += 0.00000000000667547
+                                    3 -> packet.y += 0.00000000000045413
+                                    4 -> packet.y += 0.000000000000036
+                                    5 -> {
+                                        if(hoverNoFall.get()) packet.onGround=true
+                                        jState = 1
+                                    }
+                                    else -> jState = 1
+                                }
+                            }else jState = 0
+                        }
+                        "oldredesky" -> {
+                            if(hoverNoFall.get()&&mc.thePlayer.fallDistance>0){
+                                packet.onGround=true
+                                return
+                            }
 
-                    if(mc.thePlayer.onGround && LiquidBounce.combatManager.inCombat && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)){
-                        packet.onGround=false
+                            if(mc.thePlayer.onGround){
+                                packet.onGround=false
+                            }
+                        }
                     }
                 }
             }
