@@ -19,6 +19,10 @@ import java.io.File
 object GuiMainMenu : DynamicGuiView(Page(File(UltralightEngine.pagesPath,"mainmenu.html"))) {
     @JvmField
     var cancelledUpdate=false
+    @JvmField
+    var updateVersion:String?=null
+    @JvmField
+    var updateMessage:String?=null
 
     @JvmStatic
     fun action(code: Int){
