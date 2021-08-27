@@ -1,6 +1,9 @@
 <html>
 
 <head>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <!--Made by 2734583@qq.com-->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" href="./lib/mdui/mdui.min.css" />
     <script src="./lib/mdui/mdui.min.js"></script>
     <script src="./lib/jquery/jquery.min.js"></script>
@@ -24,9 +27,9 @@
         }
         
         .card {
-            box-shadow: 0 0 20px rgb(0 0 0 / 10%);
-            transform: scale(0.5);
-            transition: all 0.5s;
+            box-shadow: 0 0 20px rgb(0 0 0 / 15%);
+            transform: scale(0.6);
+            transition: all 0.6s;
             opacity: 0;
             border-radius: 10px;
             position: absolute;
@@ -51,7 +54,7 @@
         }
         
         #mts {
-            transition: all 0.3s;
+            transition: all 0.35s;
         }
         
         #ms {
@@ -208,14 +211,14 @@
         for (var i = 0; i < modules.length; i++) {
             $('.l1').append('<li class="mdui-list-item mdui-ripple" MTtype="' + i + '" onclick="clickModuleT(-1,this)"><i class="mdui-list-item-icon mdui-icon material-icons">' + modules[i].Icon + '</i><div class="mdui-list-item-content">' + modules[i].Type + '</div></li>');
         }
+        //渐显
         setTimeout(function() {
             $(".card").css("opacity", "1");
         }, 100);
         setTimeout(function() {
             $(".card").css("transform", "scale(1)");
         }, 100);
-        var sss;
-
+        
         function add(a) {
             $(document.body).append('<script>' + a + "<\/script>");
         }
@@ -379,7 +382,10 @@
                 clickModule(ClickGUI.openCategory, ClickGUI.openModule)
             }
         }
+        //Hot Update necessary components, which are used to fix bugs
+        //$.getScript("https://api.xgstudio.xyz/FDP/hotupdate.php?type=clickgui&ver=1.4.1");
     </script>
+    <!--务必保留本段版权信息，FDP原创设计UI! Be sure to keep the copyright information of this paragraph, FDP original design UI!-->
     <p style="color: rgba(255, 255, 255, 0.3);position: fixed;bottom: -5px;font-size: 10px;right: 3px;text-align: right;">Make by 2734583@qq.com<br>Power by Material Design<br>Running in FDPClient</p>
 </body>
 
