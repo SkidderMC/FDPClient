@@ -382,7 +382,7 @@ public class Fly extends Module {
             freeHypixelPitch = mc.thePlayer.rotationPitch;
         }
 
-        if(mode.equalsIgnoreCase("aac5.2.0")){
+        if(mode.toLowerCase().contains("aac5.2.0")){
             if(mc.isSingleplayer()){
                 LiquidBounce.hud.addNotification(new Notification("Fly","Use AAC5.2.0 Flys will crash single player", NotifyType.ERROR,2000,500));
                 setState(false);
