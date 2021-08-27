@@ -102,8 +102,22 @@ public abstract class MixinMinecraft {
         LiquidBounce.INSTANCE.initClient();
     }
 
+    /**
+     * @author liuli
+     */
+//    @Overwrite
+//    public void drawSplashScreen(TextureManager textureManagerInstance) {
+//
+//    }
+//
+//    @Inject(method = "startGame", at = @At(value = "HEAD"))
+//    private void startGameHEAD(CallbackInfo ci) throws IllegalAccessException {
+//        SplashProgress.finish();
+//        disableForgeSplash(true);
+//    }
+
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
-    private void startGame(CallbackInfo callbackInfo) throws AccessDeniedException {
+    private void startGame(CallbackInfo callbackInfo) throws Exception {
         if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
             Display.destroy();
             String warnStr="Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
@@ -111,7 +125,17 @@ public abstract class MixinMinecraft {
             throw new AccessDeniedException(warnStr);
         }
         LiquidBounce.INSTANCE.startClient();
+//        disableForgeSplash(false);
     }
+
+//    private void disableForgeSplash(boolean stat) throws IllegalAccessException {
+//        for(Field field:SplashProgress.class.getDeclaredFields()){
+//            if(field.getName().equalsIgnoreCase("enabled")){
+//                field.setAccessible(true);
+//                field.set(null,stat);
+//            }
+//        }
+//    }
 
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {

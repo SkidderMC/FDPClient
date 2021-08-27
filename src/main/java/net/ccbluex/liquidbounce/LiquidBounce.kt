@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
@@ -31,7 +29,6 @@ import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
@@ -43,6 +40,7 @@ object LiquidBounce {
     const val COLORED_NAME = "§c§lFDP§6§lClient"
     const val CLIENT_REAL_VERSION = "v1.4.0"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
+    const val CLIENT_WEBSITE="GetFDP.Today"
     const val CLIENT_STORAGE = "http://res.getfdp.today/"
     const val MINECRAFT_VERSION = "1.8.9"
 
@@ -50,7 +48,6 @@ object LiquidBounce {
     @JvmField
     val CLIENT_VERSION: String
 
-    val enableUpdateAlert: Boolean
     var isStarting = true
     var isLoadingConfig = true
 
@@ -71,14 +68,6 @@ object LiquidBounce {
 
     lateinit var metricsLite: MetricsLite
 
-    // Update information
-    var latestVersion = ""
-    lateinit var updatelog: JsonArray
-    var website = "null"
-    var updateMessage="Press \"Download\" button to download the latest version!"
-    var displayedUpdateScreen=false
-    val blockedServers=mutableListOf<String>()
-
     // Menu Background
     var background: ResourceLocation? = null
 
@@ -90,7 +79,6 @@ object LiquidBounce {
             val str=IOUtils.toString(commitId,"utf-8").replace("\n","")
             "git-"+(str.substring(0, 7.coerceAtMost(str.length)))
         }
-        enableUpdateAlert=commitId==null
     }
 
     /***
@@ -99,29 +87,15 @@ object LiquidBounce {
     fun initClient(){
         isStarting = true
 
-        updatelog=JsonArray()
+        // Create file manager
+        fileManager = FileManager()
+        configManager = ConfigManager()
 
-        // check update
-        Thread {
-            val get = HttpUtils.get("https://fdp.liulihaocai.workers.dev/")
+        // Create event manager
+        eventManager = EventManager()
 
-            val jsonObj = JsonParser()
-                .parse(get).asJsonObject
-
-            latestVersion = jsonObj.get("version").asString
-            website = jsonObj.get("website").asString
-            updatelog = jsonObj.getAsJsonArray("updatelog")
-            if(jsonObj.has("updatemsg"))
-                updateMessage=jsonObj.get("updatemsg").asString
-
-            if(jsonObj.has("blockedServers"))
-                jsonObj.get("blockedServers").asJsonArray.forEach {
-                    blockedServers.add(it.asString)
-                }
-
-            if(latestVersion== CLIENT_VERSION || !enableUpdateAlert)
-                latestVersion = ""
-        }.start()
+        // Load Ultralight renderer
+        UltralightEngine.init()
     }
 
     /***
@@ -133,16 +107,6 @@ object LiquidBounce {
 
         // Load language
         LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
-
-        // Create file manager
-        fileManager = FileManager()
-        configManager = ConfigManager()
-
-        // Create event manager
-        eventManager = EventManager()
-
-        // Load Ultralight renderer
-        UltralightEngine.init()
 
         // Register listeners
         eventManager.registerListener(RotationUtils())
