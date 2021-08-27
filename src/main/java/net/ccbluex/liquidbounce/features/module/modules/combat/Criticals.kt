@@ -38,7 +38,7 @@ class Criticals : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
     private val debugValue = BoolValue("DebugMessage", false)
-    private val rsNofallValue = BoolValue("RedeNofall",true)
+    //private val rsNofallValue = BoolValue("RedeNofall",true)
 
     val msTimer = MSTimer()
 
