@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
@@ -164,7 +165,7 @@ class Velocity : Module() {
             }
             
             "aac5.2.0combat" -> {
-                if(LiquidBounce.moduleManager[Speed::class.java].state || LiquidBounce.moduleManager[Fly::class.java].state) return
+                if(LiquidBounce.moduleManager[Fly::class.java].state) return
                 if (mc.thePlayer.hurtTime>0 && velocityInput){
                     velocityInput = false
                     mc.thePlayer.motionX = 0.0
@@ -272,7 +273,7 @@ class Velocity : Module() {
                 }
 
                 "aac5.2.0" -> {
-                    if(LiquidBounce.moduleManager[Speed::class.java].state || LiquidBounce.moduleManager[Fly::class.java].state) return
+                    if(LiquidBounce.moduleManager[Fly::class.java].state) return
                     event.cancelEvent()
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
                 }
@@ -292,7 +293,7 @@ class Velocity : Module() {
                 }
                 
                 "aac5.2.0combat" -> {
-                    if(LiquidBounce.moduleManager[Speed::class.java].state || LiquidBounce.moduleManager[Fly::class.java].state) return
+                    if(LiquidBounce.moduleManager[Fly::class.java].state) return
                     event.cancelEvent()
                     velocityInput = true
                     templateX = packet.motionX
