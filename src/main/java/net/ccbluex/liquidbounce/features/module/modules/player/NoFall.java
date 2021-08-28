@@ -217,9 +217,12 @@ public class NoFall extends Module {
                 }
             }
             case "packet1":{
-                if((mc.thePlayer.fallDistance/3)>packet1Count){
-                    packet1Count= (int) (mc.thePlayer.fallDistance/3);
+                if((((int)mc.thePlayer.fallDistance)/3)>packet1Count){
+                    packet1Count=((int)mc.thePlayer.fallDistance)/3;
                     packetModify=true;
+                }
+                if(mc.thePlayer.onGround){
+                    packet1Count=0;
                 }
             }
         }

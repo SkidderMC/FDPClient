@@ -94,7 +94,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     @Inject(method = "keyTyped", at = @At("HEAD"))
     private void keyTyped(char typedChar, int keyCode, CallbackInfo ci){
         ChestStealer chestStealer=LiquidBounce.moduleManager.getModule(ChestStealer.class);
-        if(Keyboard.getEventKeyState() && chestStealer.getState() && chestStealer.getSilentTitleValue().get() && mc.currentScreen instanceof GuiChest)
-            LiquidBounce.eventManager.callEvent(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
+        if(chestStealer.getState() && chestStealer.getSilentTitleValue().get() && mc.currentScreen instanceof GuiChest)
+            LiquidBounce.eventManager.callEvent(new KeyEvent(keyCode == 0 ? typedChar + 256 : keyCode));
     }
 }
