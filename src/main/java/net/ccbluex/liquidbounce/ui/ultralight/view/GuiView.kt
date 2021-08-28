@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.ui.ultralight.support.UltralightUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
+import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 
@@ -13,11 +14,13 @@ abstract class GuiView(private val page: Page) : GuiScreen() {
     lateinit var view: View
 
     private var factor=1
+    private val pressedKeyList=mutableListOf<Int>()
 
     fun init(){
         view=View(Display.getWidth(), Display.getHeight())
         view.loadPage(page)
         UltralightEngine.registerView(view)
+        pressedKeyList.clear()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -54,6 +57,20 @@ abstract class GuiView(private val page: Page) : GuiScreen() {
             .y(mouseY*factor)
             .button(UltralightMouseEventButton.LEFT))
 
+        // key up
+        pressedKeyList.map{ it }.forEach { key ->
+            if(!Keyboard.isKeyDown(key)){
+                val translatedKey=UltralightUtils.lwjgl2ToUltralightKey(key)
+                val event=UltralightKeyEvent()
+                    .type(UltralightKeyEventType.UP)
+                    .virtualKeyCode(translatedKey)
+                    .nativeKeyCode(key)
+                    .keyIdentifier(UltralightKeyEvent.getKeyIdentifierFromVirtualKeyCode(translatedKey))
+                view.fireKeyEvent(event)
+                pressedKeyList.remove(key)
+            }
+        }
+
         view.render()
     }
 
@@ -77,17 +94,30 @@ abstract class GuiView(private val page: Page) : GuiScreen() {
             .button(button))
     }
 
-    // TODO: Add key event handle
-//    override fun handleKeyboardInput() {
-//        if (Keyboard.getEventKeyState()) {
-//
-//            keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey())
-//        }
-//
-//        mc.dispatchKeypresses()
-//    }
+    override fun handleKeyboardInput() {
+        if (Keyboard.getEventKeyState()) {
+            val char=Keyboard.getEventCharacter()
+            val key=Keyboard.getEventKey()
+            val translatedKey=UltralightUtils.lwjgl2ToUltralightKey(key)
+            val event=UltralightKeyEvent()
+                .type(UltralightKeyEventType.RAW_DOWN)
+                .virtualKeyCode(translatedKey)
+                .nativeKeyCode(key)
+                .keyIdentifier(UltralightKeyEvent.getKeyIdentifierFromVirtualKeyCode(translatedKey))
+            view.fireKeyEvent(event)
+            pressedKeyList.add(key)
+            view.fireKeyEvent(UltralightKeyEvent()
+                .type(UltralightKeyEventType.CHAR)
+                .text(char.toString())
+                .unmodifiedText(char.toString()))
+            keyTyped(char, key) // this need to be handled to make window closeable
+        }
+
+        mc.dispatchKeypresses()
+    }
 
     fun destroy() {
+        pressedKeyList.clear()
         UltralightEngine.unregisterView(view)
     }
 
