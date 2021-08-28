@@ -41,7 +41,7 @@ class Velocity : Module() {
                                                       "AAC5.2.0", "AAC5.2.0Combat", "HuaYuTing",
                                                       "Reverse", "SmoothReverse", 
                                                       "Jump", 
-                                                      "Phase", "PacketPhase", "Glitch",
+                                                      "Phase", "PacketPhase", "Glitch", "Spoof",
                                                       "Legit"), "Simple")
 
     // Reverse
@@ -299,6 +299,11 @@ class Velocity : Module() {
                     templateX = packet.motionX
                     templateZ = packet.motionZ
                     templateY = packet.motionY
+                }
+                
+                "spoof" -> {
+                    event.cancelEvent()
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.motionX/8000.0, packet.motionY/8000.0, packet.motionZ/8000.0, false))
                 }
 
                 "packetphase" -> {
