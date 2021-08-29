@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.ui.ultralight.support.UltralightUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
@@ -106,10 +107,12 @@ abstract class GuiView(private val page: Page) : GuiScreen() {
                 .keyIdentifier(UltralightKeyEvent.getKeyIdentifierFromVirtualKeyCode(translatedKey))
             view.fireKeyEvent(event)
             pressedKeyList.add(key)
-            view.fireKeyEvent(UltralightKeyEvent()
-                .type(UltralightKeyEventType.CHAR)
-                .text(char.toString())
-                .unmodifiedText(char.toString()))
+            if(ChatAllowedCharacters.isAllowedCharacter(char)) {
+                view.fireKeyEvent(UltralightKeyEvent()
+                    .type(UltralightKeyEventType.CHAR)
+                    .text(char.toString())
+                    .unmodifiedText(char.toString()))
+            }
             keyTyped(char, key) // this need to be handled to make window closeable
         }
 

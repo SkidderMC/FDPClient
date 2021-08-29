@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <style>
+<style>
         body {
             -moz-user-select: none;
             -webkit-user-select: none;
@@ -21,11 +21,11 @@
             user-select: none;
             background: rgba(0, 0, 0, 0);
         }
-        
+
         #list {
             width: 100%;
         }
-        
+
         .card {
             box-shadow: 0 0 20px rgb(0 0 0 / 15%);
             transform: scale(0.6);
@@ -38,7 +38,7 @@
             top: 10%;
             left: 10%;
         }
-        
+
         #logo {
             display: inline-block;
             width: calc( 100% - 31px);
@@ -48,15 +48,15 @@
             margin: -8px;
             background: rgb(245, 245, 245);
         }
-        
+
         .l2 {
             margin-left: -15px;
         }
-        
+
         #mts {
             transition: all 0.35s;
         }
-        
+
         #ms {
             height: calc( 100% - 68px);
             transition: all 0.3s;
@@ -64,7 +64,7 @@
             opacity: 0;
             margin-top: 8px;
         }
-        
+
         #description {
             color: #8b8b8b;
             font-size: 14px;
@@ -74,7 +74,7 @@
             margin-top: 5px;
             float: right;
         }
-        
+
         #mss {
             margin-top: 8px;
             transition: all 0.3s;
@@ -84,23 +84,23 @@
             height: calc( 100% - 68px);
             background: #fdfdfd;
         }
-        
+
         #ms {
             overflow-y: scroll;
             overflow-x: hidden;
         }
-        
+
         .l1 {
             background: #f9f9f9;
             height: 100%;
             margin-top: 8px;
         }
-        
+
         label.mdui-checkbox {
             float: right;
             margin-right: 20px;
         }
-        
+
         .mdui-slider {
             position: relative;
             display: inline-block;
@@ -109,7 +109,7 @@
             margin-right: 20px;
             height: 36px;
         }
-        
+
         #mss {
             overflow-y: scroll;
             overflow-x: hidden;
@@ -118,62 +118,62 @@
             width: calc(66.6667% - 80px);
             display: block;
         }
-        
+
         .lss {
             transition: all 0.3s;
             opacity: 0;
             margin-right: -20px;
         }
-        
+
         .lla {
             transition: all 0.3s;
         }
     </style>
-    <div class="mdui-card card">
-        <div id="list">
-            <p id="logo">FDPClient
-                <a id="description"></a>
-            </p>
-            <div class="mdui-row">
-                <div class="mdui-col-xs-4" id="mts">
-                    <ul class="mdui-list l1">
+<div class="mdui-card card">
+    <div id="list">
+        <p id="logo">FDPClient
+            <a id="description"></a>
+        </p>
+        <div class="mdui-row">
+            <div class="mdui-col-xs-4" id="mts">
+                <ul class="mdui-list l1">
 
-                    </ul>
-                </div>
-                <div class="mdui-col-xs-4" id="ms">
-                    <div class="mdui-list l2">
-                        <label class="mdui-list-item mdui-ripple">
+                </ul>
+            </div>
+            <div class="mdui-col-xs-4" id="ms">
+                <div class="mdui-list l2">
+                    <label class="mdui-list-item mdui-ripple">
                         <div class="mdui-list-item-content">AimBot</div>
                         <div class="mdui-checkbox">
                             <input type="checkbox"/>
                             <i class="mdui-checkbox-icon"></i>
                         </div>
                     </label>
-                        <label class="mdui-list-item mdui-ripple">
+                    <label class="mdui-list-item mdui-ripple">
                         <div class="mdui-list-item-content">AntiBot</div>
                         <div class="mdui-checkbox">
                             <input type="checkbox" checked/>
                             <i class="mdui-checkbox-icon"></i>
                         </div>
                     </label>
-                        <label class="mdui-list-item mdui-ripple" Mname="Killaura" Mtype="Combat" onclick="clickModule()">
+                    <label class="mdui-list-item mdui-ripple" Mname="Killaura" Mtype="Combat" onclick="clickModule()">
                         <div class="mdui-list-item-content">Killaura</div>
                         <div class="mdui-checkbox">
                             <input type="checkbox"/>
                             <i class="mdui-checkbox-icon"></i>
                         </div>
                     </label>
-                    </div>
                 </div>
-                <div class="mdui-col-xs-1" id="mss"><br>
-                    <div class="mdui-list l3">
+            </div>
+            <div class="mdui-col-xs-1" id="mss"><br>
+                <div class="mdui-list l3">
 
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <script>
+</div>
+<script>
         var modules = getCategoryJson()
 
         function startOPED(sss, a) {
@@ -218,7 +218,7 @@
         setTimeout(function() {
             $(".card").css("transform", "scale(1)");
         }, 100);
-        
+
         function add(a) {
             $(document.body).append('<script>' + a + "<\/script>");
         }
@@ -305,6 +305,12 @@
             modules[mt].modules[i].Setting[is].Val = a.value;
             refresh(mt, i)
         }
+        // 设置 文字
+        function mssTChange(value, mt, i, is) {
+            setModuleValue(modules[mt].modules[i].Key, modules[mt].modules[i].Setting[is].Key, String(value))
+            modules[mt].modules[i].Setting[is].Val = value;
+            // refresh(mt, i)
+        }
         // 当模块被右键点击
         function clickModule(mt, i) {
             ClickGUI.openModule = Number(i)
@@ -324,7 +330,7 @@
                             $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><select style="float: right;margin-right: 20px;display: inline-block;" class="mdui-select" onchange="mssChange(this.options[this.options.selectedIndex].text,' + mt + ',' + i + ',' + is + ')" mdui-select="{position: \'bottom\'}">' + ops + '</select></li>');
                         }
                         if (modules[mt].modules[i].Setting[is].Type == "Text") {
-                            $('.l3').append('<li class="lla"><div style="position: relative;margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><div class="mdui-textfield" style="float: right;margin: 6px 20px 6px 15px;padding: 0;width: 50%;display: inline-block;"><input class="mdui-textfield-input" value="' + modules[mt].modules[i].Setting[is].Val + '" type="text"/></div></li>');
+                            $('.l3').append('<li class="lla"><div style="position: relative;margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><div class="mdui-textfield" style="float: right;margin: 6px 20px 6px 15px;padding: 0;width: 50%;display: inline-block;"><input class="mdui-textfield-input" value="' + modules[mt].modules[i].Setting[is].Val + '" type="text" oninput="mssTChange($(this).val(),' + mt + ',' + i + ',' + is + ')"/></div></li>');
                         }
                         if (modules[mt].modules[i].Setting[is].Type == "Bool") {
                             var isE = modules[mt].modules[i].Setting[is].Val ? 'checked' : "";
@@ -385,8 +391,8 @@
         //Hot Update necessary components, which are used to fix bugs
         //$.getScript("https://api.xgstudio.xyz/FDP/hotupdate.php?type=clickgui&ver=1.4.1");
     </script>
-    <!--务必保留本段版权信息，FDP原创设计UI! Be sure to keep the copyright information of this paragraph, FDP original design UI!-->
-    <p style="color: rgba(255, 255, 255, 0.3);position: fixed;bottom: -5px;font-size: 10px;right: 3px;text-align: right;">Make by 2734583@qq.com<br>Power by Material Design<br>Running in FDPClient</p>
+<!--务必保留本段版权信息，FDP原创设计UI! Be sure to keep the copyright information of this paragraph, FDP original design UI!-->
+<p style="color: rgba(255, 255, 255, 0.3);position: fixed;bottom: -5px;font-size: 10px;right: 3px;text-align: right;">Make by 2734583@qq.com<br>Power by Material Design<br>Running in FDPClient</p>
 </body>
 
 </html>

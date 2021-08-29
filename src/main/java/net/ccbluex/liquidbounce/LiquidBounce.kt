@@ -41,7 +41,7 @@ object LiquidBounce {
     const val CLIENT_REAL_VERSION = "v1.4.0"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE="GetFDP.Today"
-    const val CLIENT_STORAGE = "http://res.getfdp.today/"
+    const val CLIENT_STORAGE = "https://res.getfdp.today/"
     const val MINECRAFT_VERSION = "1.8.9"
 
     // 自动读取客户端版本
