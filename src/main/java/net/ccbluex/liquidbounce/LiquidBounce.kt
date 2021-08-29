@@ -44,6 +44,7 @@ object LiquidBounce {
     const val CLIENT_REAL_VERSION = "v1.4.0"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val MINECRAFT_VERSION = "1.8.9"
+    const val CLIENT_WEBSITE = "GetFDP.Today"
 
     // 自动读取客户端版本
     @JvmField
@@ -73,11 +74,7 @@ object LiquidBounce {
 
     // Update information
     var latestVersion = ""
-    lateinit var updatelog: JsonArray
-    var website = "null"
-    var updateMessage="Press \"Download\" button to download the latest version!"
     var displayedUpdateScreen=false
-    val blockedServers=mutableListOf<String>()
 
     // Menu Background
     var background: ResourceLocation? = null
@@ -99,27 +96,16 @@ object LiquidBounce {
     fun initClient(){
         isStarting = true
 
-        updatelog=JsonArray()
-
         // check update
         Thread {
-            val get = HttpUtils.get("https://fdp.liulihaocai.workers.dev/")
+            val get = HttpUtils.get("https://api.github.com/repos/UnlegitMC/FDPClient/releases/latest")
 
             val jsonObj = JsonParser()
                 .parse(get).asJsonObject
 
-            latestVersion = jsonObj.get("version").asString
-            website = jsonObj.get("website").asString
-            updatelog = jsonObj.getAsJsonArray("updatelog")
-            if(jsonObj.has("updatemsg"))
-                updateMessage=jsonObj.get("updatemsg").asString
+            latestVersion = jsonObj.get("tag_name").asString
 
-            if(jsonObj.has("blockedServers"))
-                jsonObj.get("blockedServers").asJsonArray.forEach {
-                    blockedServers.add(it.asString)
-                }
-
-            if(latestVersion== CLIENT_VERSION || !enableUpdateAlert)
+            if(latestVersion==CLIENT_VERSION || !enableUpdateAlert)
                 latestVersion = ""
         }.start()
     }

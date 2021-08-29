@@ -127,7 +127,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                     if(name.contains(domain,true)){
                         name=when(serverValue.get().toLowerCase()){
                             "clientname" -> LiquidBounce.COLORED_NAME
-                            "website" -> LiquidBounce.website
+                            "website" -> LiquidBounce.CLIENT_WEBSITE
                             else -> "null"
                         }
                         listColor=ColorUtils.rainbow().rgb

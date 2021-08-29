@@ -45,26 +45,26 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         Fonts.font40.drawCenteredString(LiquidBounce.CLIENT_NAME,(width / 2).toFloat(), (bHeight - 20).toFloat(),Color.WHITE.rgb,false)
         Fonts.font40.drawString(LiquidBounce.CLIENT_VERSION+if(LiquidBounce.latestVersion.isNotEmpty()){" §c-> §a"+LiquidBounce.latestVersion}else{""}
             , 3F, (height - Fonts.font35.FONT_HEIGHT).toFloat(), 0xffffff,  false)
-        val str="§c%ui.website%: §fhttps://${LiquidBounce.website}/"
+        val str="§c%ui.website%: §fhttps://${LiquidBounce.CLIENT_WEBSITE}/"
         Fonts.font40.drawString(str, (this.width - Fonts.font40.getStringWidth(str) - 3).toFloat(), (height - Fonts.font35.FONT_HEIGHT).toFloat(), 0xffffff, false)
         super.drawScreen(mouseX, mouseY, partialTicks)
 
         GL11.glPushMatrix()
         GL11.glTranslatef(2f,2f,0f)
 
-        for (jsonElement in LiquidBounce.updatelog) {
-            try {
-                if(jsonElement.isJsonObject){
-                    val json=jsonElement.asJsonObject
-                    Fonts.font35.drawString(json.get("text").asString, 0f, 0f, ColorUtils.decodeColorJsonFormat(json.getAsJsonObject("color")).rgb)
-                }else{
-                    Fonts.font35.drawString(jsonElement.asString, 0f, 0f, Color(255, 255, 255, 160).rgb)
-                }
-                GL11.glTranslatef(0f,Fonts.font35.height+1f,0f)
-            }catch (e: UnsupportedOperationException){
-                // ignore
-            }
-        }
+//        for (jsonElement in LiquidBounce.updatelog) {
+//            try {
+//                if(jsonElement.isJsonObject){
+//                    val json=jsonElement.asJsonObject
+//                    Fonts.font35.drawString(json.get("text").asString, 0f, 0f, ColorUtils.decodeColorJsonFormat(json.getAsJsonObject("color")).rgb)
+//                }else{
+//                    Fonts.font35.drawString(jsonElement.asString, 0f, 0f, Color(255, 255, 255, 160).rgb)
+//                }
+//                GL11.glTranslatef(0f,Fonts.font35.height+1f,0f)
+//            }catch (e: UnsupportedOperationException){
+//                // ignore
+//            }
+//        }
 
         GL11.glPopMatrix()
     }

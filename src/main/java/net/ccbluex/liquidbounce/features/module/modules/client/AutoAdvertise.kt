@@ -26,7 +26,7 @@ class AutoAdvertise : Module() {
             override fun run() {
                 waiting=false
                 if(mc.thePlayer!=null){
-                    mc.thePlayer.sendChatMessage("["+ RandomUtils.randomString(3)+"] Try FDPClient! ${LiquidBounce.website} ["+ RandomUtils.randomString(3)+"]")
+                    mc.thePlayer.sendChatMessage("["+ RandomUtils.randomString(3)+"] Try FDPClient! ${LiquidBounce.CLIENT_WEBSITE} ["+ RandomUtils.randomString(3)+"]")
                 }
             }
         },2000L)

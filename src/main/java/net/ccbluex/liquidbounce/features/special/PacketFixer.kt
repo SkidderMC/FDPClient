@@ -20,7 +20,6 @@ import net.minecraft.world.Explosion
 
 class PacketFixer : Listenable,MinecraftInstance() {
     private var serversideSlot=0
-    private val canBlockServer=System.getProperty("no-server-block")==null
 
     @EventTarget
     fun onPacket(event: PacketEvent){
@@ -54,14 +53,6 @@ class PacketFixer : Listenable,MinecraftInstance() {
             LiquidBounce.eventManager.callEvent(packetEvent)
             if(!packetEvent.isCancelled) {
                 PacketUtils.handlePacket(velocityPacket)
-            }
-        }else if(canBlockServer && packet is C00PacketKeepAlive){
-            LiquidBounce.blockedServers.forEach{
-                if(ServerUtils.serverData?.serverIP?.contains(it, true) == true){
-                    PacketUtils.handlePacket(S40PacketDisconnect(ChatComponentText("§cVOCÊ NÃO PODE HACKEAR NESTE SERVIDOR PORQUE ESTE SERVIDOR FOI BLOQUEADO.\n" +
-                            "ADICIONE UM ARGUMENTO JVM \"-Dno-server-block\" PARA IGNORAR ESTE LIMITE!")))
-                    return
-                }
             }
         }
     }
