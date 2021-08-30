@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -20,10 +21,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "LiquidWalk", category = ModuleCategory.MOVEMENT)
 public class LiquidWalk extends Module {
-    public final ListValue modeValue = new ListValue("Mode", new String[] {"Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "Spartan", "Dolphin", "Legit"}, "NCP");
+
+    public final ListValue modeValue = new ListValue("Mode", new String[] {"Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "AAC4.2.1", "Horizon1.4.6", "Twillight", "Matrix" , "Dolphin", "Swim"}, "NCP");
     private final BoolValue noJumpValue = new BoolValue("NoJump", false);
 
     private final FloatValue aacFlyValue = (FloatValue) new FloatValue("AACFlyMotion", 0.5F, 0.1F, 1F).displayable(() -> modeValue.get().equalsIgnoreCase("AACFly"));
@@ -32,7 +35,7 @@ public class LiquidWalk extends Module {
 
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
-        if(mc.thePlayer == null || mc.thePlayer.isSneaking() || !mc.thePlayer.isInWater())
+        if(mc.thePlayer == null || mc.thePlayer.isSneaking())
             return;
 
         switch(modeValue.get().toLowerCase()) {
@@ -42,9 +45,9 @@ public class LiquidWalk extends Module {
                     mc.thePlayer.motionY = 0.08D;
                 break;
             case "aac":
-                final BlockPos blockPos = mc.thePlayer.getPosition().down();
+                BlockPos blockPos = mc.thePlayer.getPosition().down();
 
-                if(!mc.thePlayer.onGround && BlockUtils.getBlock(blockPos) == Blocks.water) {
+                if(!mc.thePlayer.onGround && BlockUtils.getBlock(blockPos) == Blocks.water || mc.thePlayer.isInWater()) {
                     if(!mc.thePlayer.isSprinting()) {
                         mc.thePlayer.motionX *= 0.99999;
                         mc.thePlayer.motionY *= 0.0;
@@ -70,48 +73,94 @@ public class LiquidWalk extends Module {
                 if(mc.thePlayer.hurtTime != 0)
                     mc.thePlayer.onGround = false;
                 break;
-            case "spartan":
-                if(mc.thePlayer.isCollidedHorizontally) {
-                    mc.thePlayer.motionY += 0.15;
-                    return;
+                //just rename. cuz this jesus patched in spartan
+            case "matrix":
+                if(mc.thePlayer.isInWater()) {
+                    mc.gameSettings.keyBindJump.pressed = false;
+                    if(mc.thePlayer.isCollidedHorizontally) {
+                        mc.thePlayer.motionY = + 0.09;
+                        return;
+                    }
+
+                    final Block block = BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ));
+                    final Block blockUp = BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.1D, mc.thePlayer.posZ));
+
+                    if(blockUp instanceof BlockLiquid) {
+                        mc.thePlayer.motionY = 0.1;
+                    }else if(block instanceof BlockLiquid) {
+                        mc.thePlayer.motionY = 0;
+                    }
+                    mc.thePlayer.motionX *= 1.15;
+                    mc.thePlayer.motionZ *= 1.15;
+
+
+
                 }
-
-                final Block block = BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ));
-                final Block blockUp = BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.1D, mc.thePlayer.posZ));
-
-                if(blockUp instanceof BlockLiquid) {
-                    mc.thePlayer.motionY = 0.1D;
-                }else if(block instanceof BlockLiquid) {
-                    mc.thePlayer.motionY = 0;
-                }
-
-                mc.thePlayer.onGround = true;
-                mc.thePlayer.motionX *= 1.085;
-                mc.thePlayer.motionZ *= 1.085;
                 break;
             case "aac3.3.11":
-                mc.thePlayer.motionX *= 1.17D;
-                mc.thePlayer.motionZ *= 1.17D;
+                if(mc.thePlayer.isInWater()) {
+                    mc.thePlayer.motionX *= 1.17D;
+                    mc.thePlayer.motionZ *= 1.17D;
 
-                if(mc.thePlayer.isCollidedHorizontally)
-                    mc.thePlayer.motionY = 0.24;
-                else if(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.0D, mc.thePlayer.posZ)).getBlock() != Blocks.air)
-                    mc.thePlayer.motionY += 0.04D;
+                    if(mc.thePlayer.isCollidedHorizontally)
+                        mc.thePlayer.motionY = 0.24;
+                    else if(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.0D, mc.thePlayer.posZ)).getBlock() != Blocks.air)
+                        mc.thePlayer.motionY += 0.04D;
+                }
                 break;
 
             case "dolphin":
-                mc.thePlayer.motionY += 0.03999999910593033;
+                if(mc.thePlayer.isInWater())
+                    mc.thePlayer.motionY += 0.03999999910593033;
                 break;
+              
+            case "aac4.2.1":
+                
+                blockPos = mc.thePlayer.getPosition().down();
+                if(!mc.thePlayer.onGround && BlockUtils.getBlock(blockPos) == Blocks.water || mc.thePlayer.isInWater()) {
+                    mc.thePlayer.motionY *= 0.0;
+                    
+                    mc.thePlayer.jumpMovementFactor = 0.08F;
 
+                    if(mc.thePlayer.fallDistance > 0)
+                       return;
+                    else if(mc.thePlayer.isInWater())
+                        mc.gameSettings.keyBindJump.pressed = true;
+                }
+                break;
+                
+            case "horizon1.4.6":
+                if(mc.thePlayer.isInWater()){
+                    MovementUtils.strafe();
+                    mc.gameSettings.keyBindJump.pressed = true;
+                    if(MovementUtils.isMoving())
+                       if(!mc.thePlayer.onGround){
+                           mc.thePlayer.motionY += 0.13D;
+                       }
+                }
+                break;
+               
+            case "twillight":
+                if(mc.thePlayer.isInWater()){
+                    mc.thePlayer.motionX *= 1.04;
+                    mc.thePlayer.motionZ *= 1.04;
+                    MovementUtils.strafe();
+                }
+                break;
         }
     }
 
     @EventTarget
     public void onMove(final MoveEvent event) {
-        if ("aacfly".equalsIgnoreCase(modeValue.get()) && mc.thePlayer.isInWater()) {
+        if ("aacfly".equals(modeValue.get().toLowerCase()) && mc.thePlayer.isInWater()) {
             event.setY(aacFlyValue.get());
             mc.thePlayer.motionY = aacFlyValue.get();
         }
+        if ("twillight".equals(modeValue.get().toLowerCase()) && mc.thePlayer.isInWater()) {
+            event.setY(0.01);
+            mc.thePlayer.motionY = 0.01;
+        }
+
     }
 
     @EventTarget
