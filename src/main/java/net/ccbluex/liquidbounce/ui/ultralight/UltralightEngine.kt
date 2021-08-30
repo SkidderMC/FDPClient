@@ -51,6 +51,8 @@ object UltralightEngine {
         platform.setConfig(
             UltralightConfig()
                 .forceRepaint(false)
+                .animationTimerDelay(1.0 / 60)
+                .scrollTimerDelay(1.0 / 60)
                 .resourcePath(resourcePath.absolutePath.toString())
                 .cachePath(cachePath.absolutePath.toString())
                 .fontHinting(FontHinting.SMOOTH)
