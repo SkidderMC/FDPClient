@@ -679,6 +679,12 @@ module.KillAura.value.SwitchChangeAtkTimes.name=SwitchChangeAtkTimes
 module.KillAura.value.LimitedMultiTargets.name=LimitedMultiTargets
 module.KillAura.value.Mark.name=Mark
 module.KillAura.value.FakeSharp.name=FakeSharp
+module.KillAura.value.Circle.name=Circle
+module.KillAura.value.CircleRed.name=CircleRed
+module.KillAura.value.CircleGreen.name=CircleGreen
+module.KillAura.value.CircleBlue.name=CircleBlue
+module.KillAura.value.CircleAlpha.name=CircleAlpha
+module.KillAura.value.CircleAccuracy.name=CircleAccuracy
 
 module.LegitSpoof.name=LegitSpoof
 module.LegitSpoof.description=Hack? No im legit
@@ -1067,3 +1073,8 @@ module.Crosshair.value.Length.name=Length
 module.Crosshair.value.Gap.name=Gap
 module.Crosshair.value.Dynamic.name=Dynamic
 module.Crosshair.value.HitMarker.name=HitMarker
+
+module.Damage.name=Damage
+module.Damage.description=Allows you to damage yourself
+module.Damage.value.Mode.name=Mode
+module.Damage.value.Damage.name=Damage

@@ -1067,3 +1067,8 @@ module.Crosshair.value.Length.name=长度
 module.Crosshair.value.Gap.name=间距
 module.Crosshair.value.Dynamic.name=动态
 module.Crosshair.value.HitMarker.name=攻击指示
+
+module.Damage.name=自伤
+module.Damage.description=允许你对自己造成伤害
+module.Damage.value.Mode.name=模式
+module.Damage.value.Damage.name=伤害

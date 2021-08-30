@@ -172,14 +172,13 @@ class KillAura : Module() {
 
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
-    val moveMarkValue = FloatValue("MoveMark", 0f, 0f, 2F)
     private val fakeSharpValue = BoolValue("FakeSharp", true)
-    private val circleValue = BoolValue("Circle", true)
-    private val accuracyValue = IntegerValue("Accuracy", 59, 0, 59)
-    private val red = IntegerValue("Red", 0, 0, 255)
-    private val green = IntegerValue("Green", 0, 0, 255)
-    private val blue = IntegerValue("Blue", 0, 0, 255)
-    private val alpha = IntegerValue("Alpha", 0, 0, 255)
+    private val circleValue=BoolValue("Circle",true)
+    private val circleRed = IntegerValue("CircleRed", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
+    private val circleGreen = IntegerValue("CircleGreen", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
+    private val circleBlue = IntegerValue("CircleBlue", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
+    private val circleAlpha = IntegerValue("CircleAlpha", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
+    private val circleAccuracy = IntegerValue("CircleAccuracy", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
 
     /**
      * MODULE
@@ -394,12 +393,12 @@ class KillAura : Module() {
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
             GL11.glLineWidth(1F)
-            GL11.glColor4f(red.get().toFloat() / 255.0F, green.get().toFloat() / 255.0F, blue.get().toFloat() / 255.0F, alpha.get().toFloat() / 255.0F)
+            GL11.glColor4f(circleRed.get().toFloat() / 255.0F, circleGreen.get().toFloat() / 255.0F, circleBlue.get().toFloat() / 255.0F, circleAlpha.get().toFloat() / 255.0F)
             GL11.glRotatef(90F, 1F, 0F, 0F)
             GL11.glBegin(GL11.GL_LINE_STRIP)
 
-            for (i in 0..360 step 60 - accuracyValue.get()) { // You can change circle accuracy  (60 - accuracy)
-                GL11.glVertex2f(Math.cos(i * Math.PI / 180.0).toFloat() * rangeValue.get(), (Math.sin(i * Math.PI / 180.0).toFloat() * rangeValue.get()))
+            for (i in 0..360 step 60 - circleAccuracy.get()) { // You can change circle accuracy  (60 - accuracy)
+                GL11.glVertex2f(cos(i * Math.PI / 180.0).toFloat() * rangeValue.get(), (sin(i * Math.PI / 180.0).toFloat() * rangeValue.get()))
             }
 
             GL11.glEnd()
@@ -411,7 +410,7 @@ class KillAura : Module() {
 
             GL11.glPopMatrix()
         }
-        
+
         if (cancelRun) {
             target = null
             currentTarget = null
