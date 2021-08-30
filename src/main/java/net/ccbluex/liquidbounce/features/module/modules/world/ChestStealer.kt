@@ -80,7 +80,7 @@ class ChestStealer : Module() {
     }.displayable { autoCloseValue.get() } as IntegerValue
 
     private val closeOnFullValue = BoolValue("CloseOnFull", true).displayable { autoCloseValue.get() }
-    private val chestTitleValue = BoolValue("ChestTitle", false)
+    val chestTitleValue = BoolValue("ChestTitle", false)
 
     /**
      * VALUES
