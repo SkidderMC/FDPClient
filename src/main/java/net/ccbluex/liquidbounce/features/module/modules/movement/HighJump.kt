@@ -24,12 +24,12 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-
+import net.minecraft.block.Block 
 
 @ModuleInfo(name = "HighJump", category = ModuleCategory.MOVEMENT)
 class HighJump : Module() {
     private val heightValue = FloatValue("Height", 2f, 1.1f, 7f)
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "StableMotion", "Damage", "AACv3", "DAC", "Mineplex", "Martrix"), "Vanilla")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "StableMotion", "Damage", "AACv3", "DAC", "Mineplex", "Martrix","MatrixWater"), "Vanilla")
     private val glassValue = BoolValue("OnlyGlassPane", false)
     private val stableMotionValue = FloatValue("StableMotion", 0.42f, 0.1f, 1f).displayable { modeValue.get().equals("StableMotion",true) }
     private var jumpY = 114514.0
@@ -79,7 +79,15 @@ class HighJump : Module() {
                     }
                 }
             }
-
+            "matrixWater" -> {
+                                if (mc.thePlayer.isInWater()) {
+                    if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ)).getBlock() == Block.getBlockById(9)) {
+                        mc.thePlayer.motionY = 0.18
+                    } else if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)).getBlock() == Block.getBlockById(9)) {
+                        mc.thePlayer.motionY = heightValue.get()
+                        mc.thePlayer.onGround = true
+             }   
+            }
             "martrix" -> {
                 if (martrixWasTimer) {
                     mc.timer.timerSpeed = 1.00f
