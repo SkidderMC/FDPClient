@@ -12,12 +12,13 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.util.ResourceLocation
 
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
-class HUD : Module() {
+object HUD : Module() {
     val betterHotbarValue = BoolValue("BetterHotbar", true)
     val hotbarAlphaValue = IntegerValue("HotbarAlpha", 150, 0, 255).displayable { betterHotbarValue.get() }
     val inventoryParticle = BoolValue("InventoryParticle", false)
@@ -26,6 +27,10 @@ class HUD : Module() {
     val chatRectValue = BoolValue("ChatRect", true)
     val chatCombineValue = BoolValue("ChatCombine", true)
     val chatAnimValue = BoolValue("ChatAnimation", true)
+    val hslRainbowStart=FloatValue("HSLRainbowStart",0.41f,0f,1f)
+    val hslRainbowStop=FloatValue("HSLRainbowStop",0.58f,0f,1f)
+    val hslRainbowSaturation=FloatValue("HSLRainbowSaturation",0.7f,0f,1f)
+    val hslRainbowBrightness=FloatValue("HSLRainbowBrightness",1f,0f,1f)
 
     @EventTarget
     fun onRender2D(event: Render2DEvent) {

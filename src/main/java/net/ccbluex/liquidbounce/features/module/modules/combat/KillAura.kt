@@ -174,11 +174,11 @@ class KillAura : Module() {
     private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
     private val fakeSharpValue = BoolValue("FakeSharp", true)
     private val circleValue=BoolValue("Circle",true)
-    private val circleRed = IntegerValue("CircleRed", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
-    private val circleGreen = IntegerValue("CircleGreen", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
-    private val circleBlue = IntegerValue("CircleBlue", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
-    private val circleAlpha = IntegerValue("CircleAlpha", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
-    private val circleAccuracy = IntegerValue("CircleAccuracy", 0, 0, 255).displayable { markValue.get().equals("Circle",true) }
+    private val circleRed = IntegerValue("CircleRed", 0, 0, 255).displayable { circleValue.get() }
+    private val circleGreen = IntegerValue("CircleGreen", 0, 0, 255).displayable { circleValue.get() }
+    private val circleBlue = IntegerValue("CircleBlue", 0, 0, 255).displayable { circleValue.get() }
+    private val circleAlpha = IntegerValue("CircleAlpha", 0, 0, 255).displayable { circleValue.get() }
+    private val circleAccuracy = IntegerValue("CircleAccuracy", 0, 0, 255).displayable { circleValue.get() }
 
     /**
      * MODULE
@@ -382,9 +382,9 @@ class KillAura : Module() {
         if (circleValue.get()) {
             GL11.glPushMatrix()
             GL11.glTranslated(
-                mc.thePlayer.lastTickPosX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosX,
-                mc.thePlayer.lastTickPosY + (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosY,
-                mc.thePlayer.lastTickPosZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosZ
+                mc.thePlayer.lastTickPosX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX,
+                mc.thePlayer.lastTickPosY + (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * mc.timer.renderPartialTicks - mc.renderManager.renderPosY,
+                mc.thePlayer.lastTickPosZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks - mc.renderManager.renderPosZ
             )
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glEnable(GL11.GL_LINE_SMOOTH)

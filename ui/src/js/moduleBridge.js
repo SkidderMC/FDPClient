@@ -55,7 +55,7 @@ function getDataJson(module) {
             json.Setting.push({
                 Type: 'Num',
                 Val: value.get(),
-                Step: .1,
+                Step: .01,
                 MinVal: value.getMinimum(),
                 MaxVal: value.getMaximum()
             })

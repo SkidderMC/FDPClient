@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import com.google.gson.JsonObject
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
@@ -206,7 +207,7 @@ object ColorUtils {
 
     private val startTime=System.currentTimeMillis()
 
-    fun hslRainbow(index: Int,lowest: Float=0.41f,bigest: Float=0.58f,indexOffset: Int=300,timeSplit: Int=1500):Color{
-        return Color.getHSBColor((abs(((((System.currentTimeMillis()-startTime).toInt()+index*indexOffset)/timeSplit.toFloat())%2)-1)*(bigest-lowest))+lowest,0.7f,1f)
+    fun hslRainbow(index: Int, lowest: Float=HUD.hslRainbowStart.get(), bigest: Float=HUD.hslRainbowStop.get(), indexOffset: Int=300, timeSplit: Int=1500, saturation: Float=HUD.hslRainbowSaturation.get(), brightness: Float=HUD.hslRainbowBrightness.get()):Color{
+        return Color.getHSBColor((abs(((((System.currentTimeMillis()-startTime).toInt()+index*indexOffset)/timeSplit.toFloat())%2)-1)*(bigest-lowest))+lowest,saturation,brightness)
     }
 }
