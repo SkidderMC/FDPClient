@@ -152,11 +152,11 @@ public class LiquidWalk extends Module {
 
     @EventTarget
     public void onMove(final MoveEvent event) {
-        if ("aacfly".equals(modeValue.get().toLowerCase()) && mc.thePlayer.isInWater()) {
+        if ("aacfly".equalsIgnoreCase(modeValue.get()) && mc.thePlayer.isInWater()) {
             event.setY(aacFlyValue.get());
             mc.thePlayer.motionY = aacFlyValue.get();
         }
-        if ("twillight".equals(modeValue.get().toLowerCase()) && mc.thePlayer.isInWater()) {
+        if ("twillight".equalsIgnoreCase(modeValue.get()) && mc.thePlayer.isInWater()) {
             event.setY(0.01);
             mc.thePlayer.motionY = 0.01;
         }

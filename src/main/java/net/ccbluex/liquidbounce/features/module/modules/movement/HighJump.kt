@@ -80,13 +80,14 @@ class HighJump : Module() {
                 }
             }
             "matrixWater" -> {
-                                if (mc.thePlayer.isInWater()) {
+                if (mc.thePlayer.isInWater()) {
                     if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ)).getBlock() == Block.getBlockById(9)) {
                         mc.thePlayer.motionY = 0.18
                     } else if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)).getBlock() == Block.getBlockById(9)) {
-                        mc.thePlayer.motionY = heightValue.get()
+                        mc.thePlayer.motionY = heightValue.get().toDouble()
                         mc.thePlayer.onGround = true
-             }   
+                    }
+                }
             }
             "martrix" -> {
                 if (martrixWasTimer) {
