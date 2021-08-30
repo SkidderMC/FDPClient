@@ -21,7 +21,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "FastUse", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay", "DelayedInstant","MinemoraTest"), "DelayedInstant")
+    private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay", "DelayedInstant","MinemoraTest","NCP"), "DelayedInstant")
     private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F).displayable { modeValue.get().equals("Timer",true) }
     private val durationValue = IntegerValue("InstantDelay", 14, 0, 35).displayable { modeValue.get().equals("DelayedInstant",true) }
     private val delayValue = IntegerValue("CustomDelay", 0, 0, 300).displayable { modeValue.get().equals("CustomDelay",true) }
@@ -62,6 +62,14 @@ class FastUse : Module() {
                 "timer" -> {
                     mc.timer.timerSpeed = timerValue.get()
                     usedTimer = true
+                }
+                
+                "NCP" -> if (mc.thePlayer.itemInUseDuration > 14) {
+                     repeat(20) {
+                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    }
+
+                    mc.playerController.onStoppedUsingItem(mc.thePlayer)
                 }
 
                 "MinemoraTest" -> {
