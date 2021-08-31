@@ -47,5 +47,6 @@ class ReloadCommand : Command("reload", arrayOf("configreload")) {
         chat("Reloaded.")
         LiquidBounce.isStarting = false
         LiquidBounce.isLoadingConfig = false
+        System.gc()
     }
 }

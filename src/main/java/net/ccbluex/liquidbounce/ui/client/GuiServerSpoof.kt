@@ -10,18 +10,16 @@ import org.lwjgl.input.Keyboard
 
 class GuiServerSpoof(private val prevGui: GuiScreen) : GuiScreen() {
 
-    private var textField: GuiTextField = GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20)
-    private var stat = GuiButton(2, width / 2 - 100, height / 4 + 96, "STATUS")
-
-    init {
-        textField.isFocused = true
-        textField.text = ServerSpoof.address
-        textField.maxStringLength = 114514
-    }
+    private lateinit var textField: GuiTextField
+    private lateinit var stat: GuiButton
 
     override fun initGui() {
         Keyboard.enableRepeatEvents(true)
-        buttonList.add(stat)
+        textField = GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20)
+        textField.isFocused = true
+        textField.text = ServerSpoof.address
+        textField.maxStringLength = 114514
+        buttonList.add(GuiButton(2, width / 2 - 100, height / 4 + 96, "STATUS").also { stat=it })
         buttonList.add(GuiButton(0, width / 2 - 100, height / 4 + 120, "%ui.back%"))
         updateButtonStat()
     }

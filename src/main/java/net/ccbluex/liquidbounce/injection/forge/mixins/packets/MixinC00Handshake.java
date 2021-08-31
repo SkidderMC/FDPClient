@@ -35,7 +35,7 @@ public class MixinC00Handshake {
     @Overwrite
     public void writePacketData(PacketBuffer buf) {
         buf.writeVarIntToBuffer(this.protocolVersion);
-        buf.writeString(this.ip + (AntiForge.enabled && AntiForge.blockFML && !Minecraft.getMinecraft().isIntegratedServerRunning() ? "" : "\0FML\0"));
+        buf.writeString(this.ip + (AntiForge.INSTANCE.getEnabled() && AntiForge.INSTANCE.getBlockFML() && !Minecraft.getMinecraft().isIntegratedServerRunning() ? "" : "\0FML\0"));
         buf.writeShort(this.port);
         buf.writeVarIntToBuffer(this.requestedState.getId());
     }

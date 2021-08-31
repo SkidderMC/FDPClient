@@ -79,6 +79,6 @@ public class ForgeNetworkTransformer implements IClassTransformer {
     }
 
     public static boolean returnMethod() {
-        return AntiForge.enabled && AntiForge.blockFML && !Minecraft.getMinecraft().isIntegratedServerRunning();
+        return AntiForge.INSTANCE.getEnabled() && AntiForge.INSTANCE.getBlockFML() && !Minecraft.getMinecraft().isIntegratedServerRunning();
     }
 }
