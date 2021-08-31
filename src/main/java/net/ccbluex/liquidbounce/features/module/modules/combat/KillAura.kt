@@ -174,11 +174,11 @@ class KillAura : Module() {
     private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
     private val fakeSharpValue = BoolValue("FakeSharp", true)
     private val circleValue=BoolValue("Circle",true)
-    private val circleRed = IntegerValue("CircleRed", 0, 0, 255).displayable { circleValue.get() }
-    private val circleGreen = IntegerValue("CircleGreen", 0, 0, 255).displayable { circleValue.get() }
-    private val circleBlue = IntegerValue("CircleBlue", 0, 0, 255).displayable { circleValue.get() }
-    private val circleAlpha = IntegerValue("CircleAlpha", 0, 0, 255).displayable { circleValue.get() }
-    private val circleAccuracy = IntegerValue("CircleAccuracy", 0, 0, 255).displayable { circleValue.get() }
+    private val circleRed = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
+    private val circleGreen = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
+    private val circleBlue = IntegerValue("CircleBlue", 255, 0, 255).displayable { circleValue.get() }
+    private val circleAlpha = IntegerValue("CircleAlpha", 255, 0, 255).displayable { circleValue.get() }
+    private val circleAccuracy = IntegerValue("CircleAccuracy", 15, 0, 60).displayable { circleValue.get() }
 
     /**
      * MODULE
@@ -397,9 +397,10 @@ class KillAura : Module() {
             GL11.glRotatef(90F, 1F, 0F, 0F)
             GL11.glBegin(GL11.GL_LINE_STRIP)
 
-            for (i in 0..360 step 60 - circleAccuracy.get()) { // You can change circle accuracy  (60 - accuracy)
+            for (i in 0..360 step 61 - circleAccuracy.get()) { // You can change circle accuracy  (60 - accuracy)
                 GL11.glVertex2f(cos(i * Math.PI / 180.0).toFloat() * rangeValue.get(), (sin(i * Math.PI / 180.0).toFloat() * rangeValue.get()))
             }
+            GL11.glVertex2f(cos(360 * Math.PI / 180.0).toFloat() * rangeValue.get(), (sin(360 * Math.PI / 180.0).toFloat() * rangeValue.get()))
 
             GL11.glEnd()
 
