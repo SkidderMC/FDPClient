@@ -52,5 +52,9 @@
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinVisGraph",
     "world.MixinWorldClient"
+  ],
+  "client": [
+    "gui.MixinGuiKeyBindingList",
+    "gui.MixinGuiSlot"
   ]
 }

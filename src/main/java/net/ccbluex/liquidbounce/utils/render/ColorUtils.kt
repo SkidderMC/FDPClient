@@ -18,6 +18,7 @@ import kotlin.math.min
 object ColorUtils {
 
     private val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
+    private val startTime=System.currentTimeMillis()
 
     @JvmField
     val hexColors = IntArray(16)
@@ -204,8 +205,6 @@ object ColorUtils {
             Color(json.get("red").asInt,json.get("green").asInt,json.get("blue").asInt)
         },if(json.has("alpha")){json.get("alpha").asInt}else{160})
     }
-
-    private val startTime=System.currentTimeMillis()
 
     fun hslRainbow(index: Int, lowest: Float=HUD.hslRainbowStart.get(), bigest: Float=HUD.hslRainbowStop.get(), indexOffset: Int=300, timeSplit: Int=1500, saturation: Float=HUD.hslRainbowSaturation.get(), brightness: Float=HUD.hslRainbowBrightness.get()):Color{
         return Color.getHSBColor((abs(((((System.currentTimeMillis()-startTime).toInt()+index*indexOffset)/timeSplit.toFloat())%2)-1)*(bigest-lowest))+lowest,saturation,brightness)
