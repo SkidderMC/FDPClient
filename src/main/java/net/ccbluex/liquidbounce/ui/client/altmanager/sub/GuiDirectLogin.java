@@ -52,7 +52,6 @@ public class GuiDirectLogin extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawBackground(0);
-        Gui.drawRect(30, 30, width - 30, height - 30, Integer.MIN_VALUE);
 
         drawCenteredString(Fonts.font40, "%ui.alt.directLogin%", width / 2, 34, 0xffffff);
         drawCenteredString(Fonts.font35, status == null ? "" : status, width / 2, height / 4 + 60, 0xffffff);

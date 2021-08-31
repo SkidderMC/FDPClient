@@ -30,7 +30,6 @@ class GuiServerSpoof(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        drawRect(30, 30, width - 30, height - 30, Int.MIN_VALUE)
         drawCenteredString(Fonts.font40, "%ui.serverSpoof%", width / 2, 34, 0xffffff)
         textField.drawTextBox()
         if (textField.text.isEmpty() && !textField.isFocused)
