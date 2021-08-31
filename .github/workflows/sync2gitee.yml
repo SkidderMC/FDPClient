@@ -1,0 +1,37 @@
+name: sync2gitee
+# version: 1.0.3
+# author: [yiXu](https://github.com/yi-Xu-0100)
+# guide: [yi-Xu-0100/hub-mirror](https://github.com/yi-Xu-0100/hub-mirror)
+# template: [sync2gitee.yml](https://github.com/yi-Xu-0100/hub-mirror/blob/main/template/sync2gitee.yml)
+# lastmod: 2021-02-02 10:21:55
+
+on:
+  push:
+  schedule:
+    # UTC 17:00 -> CST (China) 1:00 see https://datetime360.com/cn/utc-cst-china-time/
+    - cron: '1 17 * * *'
+
+jobs:
+  run:
+    name: Sync GitHub to Gitee
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Get current repository name
+        id: info
+        uses: actions/github-script@v3.1
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          result-encoding: string
+          script: |
+            return context.repo.repo;
+      - name: Mirror the GitHub repos to Gitee
+        uses: Yikun/hub-mirror-action@v0.13
+        with:
+          src: github/UnlegitMC
+          dst: gitee/fdpclient-cn
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          static_list: '${{ steps.info.outputs.result }}'
+          account_type: org
+          force_update: true
