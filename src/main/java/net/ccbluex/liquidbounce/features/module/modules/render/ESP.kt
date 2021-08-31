@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.WorldToScreen
 import net.ccbluex.liquidbounce.utils.render.shader.FramebufferShader
@@ -148,15 +147,10 @@ class ESP : Module() {
                                 RenderUtils.drawRect(minX - width * 3, minY - width, minX - width * 2, maxY + width, Color.GRAY)
                                 RenderUtils.drawRect(minX - width * 3, maxY - hpSize, minX - width * 2, maxY + width, ColorUtils.healthColor(entityLiving.health,entityLiving.maxHealth))
                             }else if(mode.equals("real2d", ignoreCase = true)){
-                                val renderColor=if(colorRainbow.get()){
-                                    ColorUtils.hslRainbow(1)
-                                }else{
-                                    color
-                                }
-                                RenderUtils.drawRect(minX - 1, minY - 1, minX, maxY, renderColor)
-                                RenderUtils.drawRect(maxX, minY - 1, maxX + 1, maxY + 1, renderColor)
-                                RenderUtils.drawRect(minX - 1, maxY, maxX, maxY + 1, renderColor)
-                                RenderUtils.drawRect(minX - 1, minY - 1, maxX, minY, renderColor)
+                                RenderUtils.drawRect(minX - 1, minY - 1, minX, maxY, color)
+                                RenderUtils.drawRect(maxX, minY - 1, maxX + 1, maxY + 1, color)
+                                RenderUtils.drawRect(minX - 1, maxY, maxX, maxY + 1, color)
+                                RenderUtils.drawRect(minX - 1, minY - 1, maxX, minY, color)
                             }
                         }
                     }
@@ -278,6 +272,6 @@ class ESP : Module() {
             }
         }
 
-        return if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+        return if (colorRainbow.get()) ColorUtils.rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
     }
 }

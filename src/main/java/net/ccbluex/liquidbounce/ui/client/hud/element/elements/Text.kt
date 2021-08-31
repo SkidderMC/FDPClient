@@ -48,13 +48,13 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
-    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
+    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val shadow = BoolValue("Shadow", false)
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
-    val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "RiseRainbow", "SkyRainbow"), "Custom")
+    val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     val rectValue = ListValue("Rect", arrayOf("Normal","OneTap","Skeet","None"),"None")
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed",10,1,10)
@@ -148,9 +148,8 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         val fontRenderer = fontValue.get()
 
         val rectColor = when(rectColorModeValue.get().toLowerCase()){
-            "rainbow" -> ColorUtils.rainbow(400000000L * rainbowIndex.get()).rgb
+            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
             "skyrainbow" -> RenderUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-            "riserainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
             "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()),100,rainbowIndex.get()).rgb
             else -> Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
         }
@@ -172,9 +171,8 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         }
 
         fontRenderer.drawString(displayText, 0F, 0F, when(colorModeValue.get().toLowerCase()){
-            "rainbow" -> ColorUtils.rainbow(400000000L * rainbowIndex.get()).rgb
+            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
             "skyrainbow" -> RenderUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-            "riserainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
             "anotherrainbow" -> ColorUtils.fade(color,100,rainbowIndex.get()).rgb
             else -> color.rgb
         }, shadow.get())

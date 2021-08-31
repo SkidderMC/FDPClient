@@ -541,10 +541,11 @@ module.HUD.value.FontChat.name=FontChat
 module.HUD.value.ChatRect.name=ChatRect
 module.HUD.value.ChatCombine.name=ChatCombine
 module.HUD.value.ChatAnimation.name=ChatAnimation
-module.HUD.value.HSLRainbowStart.name=HSLRainbowStart
-module.HUD.value.HSLRainbowStop.name=HSLRainbowStop
-module.HUD.value.HSLRainbowSaturation.name=HSLRainbowSaturation
-module.HUD.value.HSLRainbowBrightness.name=HSLRainbowBrightness
+module.HUD.value.RainbowStart.name=RainbowStart
+module.HUD.value.RainbowStop.name=RainbowStop
+module.HUD.value.RainbowSaturation.name=RainbowSaturation
+module.HUD.value.RainbowBrightness.name=RainbowBrightness
+module.HUD.value.RainbowSpeed.name=RainbowSpeed
 
 module.HackerDetector.name=HackerDetector
 module.HackerDetector.description=Detect SIGMA Hackers

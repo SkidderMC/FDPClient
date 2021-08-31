@@ -33,9 +33,9 @@ open class HUD : MinecraftInstance() {
         fun createDefault(): HUD {
             val text1=Text(x=15.0,y=15.0)
             text1.displayString.set("FDPClient | %serverIp% | %fps% FPS")
-            text1.colorModeValue.set("RiseRainbow")
+            text1.colorModeValue.set("Rainbow")
             text1.rectValue.set("OneTap")
-            text1.rectColorModeValue.set("RiseRainbow")
+            text1.rectColorModeValue.set("Rainbow")
 
             return HUD()
                 .addElement(text1)

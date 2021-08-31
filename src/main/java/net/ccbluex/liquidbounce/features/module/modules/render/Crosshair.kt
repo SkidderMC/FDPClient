@@ -26,7 +26,7 @@ import java.awt.Color
 @ModuleInfo(name = "Crosshair", category = ModuleCategory.RENDER)
 class Crosshair : Module() {
     //Color
-    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Slowly", "Rise"), "Custom")
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Slowly", "Rainbow"), "Custom")
     private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorModeValue.get().equals("Custom",true) }
     private val colorGreenValue = IntegerValue("Green", 255, 0, 255).displayable { colorModeValue.get().equals("Custom",true) }
     private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { colorModeValue.get().equals("Custom",true) }
@@ -95,7 +95,7 @@ class Crosshair : Module() {
             when (colorModeValue.get().toLowerCase()) {
                 "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
                 "slowly" -> ColorUtils.reAlpha(ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get()),colorAlphaValue.get())
-                "rise" -> ColorUtils.reAlpha(ColorUtils.hslRainbow(1),colorAlphaValue.get())
+                "rainbow" -> ColorUtils.rainbowWithAlpha(colorAlphaValue.get())
                 else -> Color.WHITE
             }
 }
