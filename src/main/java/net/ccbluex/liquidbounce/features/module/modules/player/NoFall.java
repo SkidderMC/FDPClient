@@ -287,7 +287,7 @@ public class NoFall extends Module {
                 packet.onGround = mc.thePlayer.ticksExisted % 2 == 0;
 
             if (mode.equalsIgnoreCase("HypSpoof"))
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z,false));
+                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z,true));
 
             if (mode.equalsIgnoreCase("AACv4")&&aac4Fakelag){
                 event.cancelEvent();
