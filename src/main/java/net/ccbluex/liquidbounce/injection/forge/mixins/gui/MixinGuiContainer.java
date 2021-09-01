@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.KeyEvent;
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
@@ -35,8 +36,20 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     private boolean translated=false;
 
     @Inject(method = "initGui", at = @At("RETURN"), cancellable = true)
-    private void initGui(CallbackInfo callbackInfo) {
-        guiOpenTime=System.currentTimeMillis();
+    public void injectInitGui(CallbackInfo callbackInfo){
+        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+        if (guiScreen instanceof GuiChest) {
+            buttonList.add(new GuiButton(1024576, this.width / 2 - 100, this.guiTop - 30, 99, 20, "Disable KillAura"));
+            buttonList.add(new GuiButton(727, this.width / 2 + 1, this.guiTop - 30, 99, 20, "Disable Stealer"));
+        }
+    }
+
+    @Override
+    protected void injectedActionPerformed(GuiButton button) {
+        if (button.id == 1024576)
+            LiquidBounce.moduleManager.getModule(KillAura.class).setState(false);
+        if (button.id == 727)
+            LiquidBounce.moduleManager.getModule(ChestStealer.class).setState(false);
     }
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
