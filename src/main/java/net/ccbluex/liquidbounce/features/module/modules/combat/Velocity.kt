@@ -75,7 +75,8 @@ class Velocity : Module() {
         .displayable { modeValue.get().contains("RedeSky",true) }
     
 
-    private val noAirValue = BoolValue("NoAir",false)
+    private val onlyGroundValue = BoolValue("OnlyGround",false)
+    private val onlyCombatValue = BoolValue("OnlyCombat",false)
 
     /**
      * VALUES
@@ -109,7 +110,10 @@ class Velocity : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(redeCount<24) redeCount++
-        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || (noAirValue.get() && !mc.thePlayer.onGround))
+        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb)
+            return
+
+        if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
 
         when (modeValue.get().toLowerCase()) {
@@ -261,9 +265,10 @@ class Velocity : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        val packet = event.packet
-                if (noAirValue.get() && !mc.thePlayer.onGround)
+        if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
+
+        val packet = event.packet
         if (packet is S12PacketEntityVelocity) {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer)
                 return
@@ -423,8 +428,9 @@ class Velocity : Module() {
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-                        if (noAirValue.get() && !mc.thePlayer.onGround)
+        if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
+
         when (modeValue.get().toLowerCase()) {
             "legit" -> {
                 if(pos==null||mc.thePlayer.hurtTime<=0)
@@ -470,8 +476,12 @@ class Velocity : Module() {
 
     @EventTarget
     fun onJump(event: JumpEvent) {
-        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || (noAirValue.get() && !mc.thePlayer.onGround))
+        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || (onlyGroundValue.get() && !mc.thePlayer.onGround))
             return
+
+        if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
+            return
+
         when (modeValue.get().toLowerCase()) {
             "aacpush" -> {
                 jump = true

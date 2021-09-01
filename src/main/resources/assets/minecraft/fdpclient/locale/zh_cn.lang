@@ -1046,6 +1046,8 @@ module.Velocity.value.LegitStrafe.name=LegitStrafe
 module.Velocity.value.LegitFace.name=LegitFace
 module.Velocity.value.RedeskyAlwaysReduce.name=RedeskyAlwaysReduce
 module.Velocity.value.RedeskyOnlyDanger.name=RedeskyOnlyDanger
+module.Velocity.value.OnlyGround.name=仅地面
+module.Velocity.value.OnlyCombat.name=仅战斗
 
 module.XRay.name=矿物透视
 module.XRay.description=允许你透视指定的方块/矿物

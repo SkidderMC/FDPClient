@@ -96,16 +96,17 @@ public abstract class MixinGuiScreen {
 
         if(GuiBackground.Companion.getEnabled()) {
             if (LiquidBounce.INSTANCE.getBackground() == null) {
-                GL11.glDisable(GL11.GL_DEPTH_TEST);
-                GL11.glEnable(GL11.GL_BLEND);
-                GL11.glDepthMask(false);
-                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+//                GL11.glDisable(GL11.GL_DEPTH_TEST);
+//                GL11.glEnable(GL11.GL_BLEND);
+//                GL11.glDepthMask(false);
+//                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
                 RenderUtils.glColor(ColorUtils.hslRainbow(1,0.41f,0.58f,300,4000, 0.7f,1f));
                 mc.getTextureManager().bindTexture(new ResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/misc/bg.png"));
                 Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
-                GL11.glDepthMask(true);
-                GL11.glDisable(GL11.GL_BLEND);
-                GL11.glEnable(GL11.GL_DEPTH_TEST);
+//                GL11.glDepthMask(true);
+//                GL11.glDisable(GL11.GL_BLEND);
+//                GL11.glEnable(GL11.GL_DEPTH_TEST);
+                GlStateManager.resetColor();
             }else{
                 final ScaledResolution scaledResolution = new ScaledResolution(mc);
                 final int width = scaledResolution.getScaledWidth();

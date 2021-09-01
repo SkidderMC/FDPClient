@@ -1057,6 +1057,8 @@ module.Velocity.value.LegitStrafe.name=LegitStrafe
 module.Velocity.value.LegitFace.name=LegitFace
 module.Velocity.value.RedeskyAlwaysReduce.name=RedeskyAlwaysReduce
 module.Velocity.value.RedeskyOnlyDanger.name=RedeskyOnlyDanger
+module.Velocity.value.OnlyGround.name=OnlyGround
+module.Velocity.value.OnlyCombat.name=OnlyCombat
 
 module.XRay.name=XRay
 module.XRay.description=Allows you to see selected blocks through walls
