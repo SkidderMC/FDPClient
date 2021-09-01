@@ -56,19 +56,31 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
             val name = "${I18n.format(potion.name)} $number§f: §7${Potion.getDurationString(effect)}"
             val stringWidth = fontRenderer.getStringWidth(name).toFloat()
 
-            if (width < stringWidth)
-                width = stringWidth
+            if (side.horizontal == Side.Horizontal.RIGHT) {
+                if (width > -stringWidth)
+                    width = -stringWidth
+            } else {
+                if (width < stringWidth)
+                    width = stringWidth
+            }
 
-            fontRenderer.drawString(name, -stringWidth, y, potion.liquidColor, shadow.get())
-            y -= fontRenderer.FONT_HEIGHT
+            when (side.horizontal) {
+                Side.Horizontal.RIGHT -> fontRenderer.drawString(name, -stringWidth, y, potion.liquidColor, shadow.get())
+                Side.Horizontal.LEFT, Side.Horizontal.MIDDLE -> fontRenderer.drawString(name, 0F, y, potion.liquidColor, shadow.get())
+            }
+            
+            when (side.vertical) {
+                Side.Vertical.UP -> y -= fontRenderer.FONT_HEIGHT
+                Side.Vertical.DOWN -> y += fontRenderer.FONT_HEIGHT
+            }
         }
 
         if (width == 0F)
-            width = 40F
+            width = if (side.horizontal == Side.Horizontal.RIGHT) -40F else 40F
 
-        if (y == 0F)
-            y = -10F
+        if (y == 0F && side.vertical != Side.Vertical.UP)
+            y = fontRenderer.FONT_HEIGHT.toFloat()
 
-        return Border(2F, fontRenderer.FONT_HEIGHT.toFloat(), -width - 2F, y + fontRenderer.FONT_HEIGHT - 2F)
+        return if (side.vertical == Side.Vertical.UP) Border(0F, 10F, width, y) else Border(0F, 0F, width, y)
     }
 }
