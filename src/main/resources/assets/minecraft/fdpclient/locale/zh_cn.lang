@@ -19,6 +19,7 @@ ui.background.change=更换背景图
 ui.background.reset=重置背景图
 
 ui.chest.stealing=自动拾箱中...
+ui.chest.disable=关闭 %s
 
 ui.gameover.close=关闭此界面
 

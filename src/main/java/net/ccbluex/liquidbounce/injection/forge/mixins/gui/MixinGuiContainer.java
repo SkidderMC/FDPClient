@@ -5,8 +5,10 @@ import net.ccbluex.liquidbounce.event.KeyEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -39,16 +41,16 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     public void injectInitGui(CallbackInfo callbackInfo){
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
         if (guiScreen instanceof GuiChest) {
-            buttonList.add(new GuiButton(1024576, this.width / 2 - 100, this.guiTop - 30, 99, 20, "Disable KillAura"));
-            buttonList.add(new GuiButton(727, this.width / 2 + 1, this.guiTop - 30, 99, 20, "Disable Stealer"));
+            buttonList.add(new GuiButton(114514, this.width / 2 - 100, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable","%module.KillAura.name%")));
+            buttonList.add(new GuiButton(1919810, this.width / 2 + 1, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable","%module.ChestStealer.name%")));
         }
     }
 
     @Override
-    protected void injectedActionPerformed(GuiButton button) {
-        if (button.id == 1024576)
+    protected void actionPerformed(GuiButton button) {
+        if (button.id == 114514)
             LiquidBounce.moduleManager.getModule(KillAura.class).setState(false);
-        if (button.id == 727)
+        if (button.id == 1919810)
             LiquidBounce.moduleManager.getModule(ChestStealer.class).setState(false);
     }
 

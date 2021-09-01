@@ -219,6 +219,7 @@ public class Fly extends Module {
     public void onEnable() {
         if(mc.thePlayer == null)
             return;
+
         launchY = mc.thePlayer.posY;
         launchYaw=mc.thePlayer.rotationYaw;
         launchPitch=mc.thePlayer.rotationPitch;
@@ -241,6 +242,12 @@ public class Fly extends Module {
         double z = mc.thePlayer.posZ;
 
         final String mode = modeValue.get();
+
+        if(mode.toLowerCase().contains("aac5.2.0")&&mc.isSingleplayer()) {
+            LiquidBounce.hud.addNotification(new Notification("Fly", "Use AAC5.2.0 Flys will crash single player", NotifyType.ERROR, 2000, 500));
+            setState(false);
+            return;
+        }
 
         switch(mode.toLowerCase()) {
             case "verus":
@@ -382,17 +389,6 @@ public class Fly extends Module {
             freeHypixelYaw = mc.thePlayer.rotationYaw;
             freeHypixelPitch = mc.thePlayer.rotationPitch;
         }
-
-        if(mode.toLowerCase().contains("aac5.2.0")){
-            if(mc.isSingleplayer()){
-                LiquidBounce.hud.addNotification(new Notification("Fly","Use AAC5.2.0 Flys will crash single player", NotifyType.ERROR,2000,500));
-                setState(false);
-                return;
-            }
-            LiquidBounce.hud.addNotification(new Notification("Fly","Thanks Paolo V. for the rise crack!", NotifyType.INFO,3000,500));
-        }
-
-       super.onEnable();
     }
 
     @Override

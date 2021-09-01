@@ -60,6 +60,9 @@ public abstract class MixinGuiScreen {
     @Shadow
     protected abstract void drawHoveringText(List<String> textLines, int x, int y);
 
+    @Shadow
+    protected abstract void actionPerformed(GuiButton p_actionPerformed_1_);
+
     @Inject(method = "drawWorldBackground", at = @At("HEAD"))
     private void drawWorldBackground(final CallbackInfo callbackInfo) {
         final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);

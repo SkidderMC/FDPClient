@@ -19,6 +19,7 @@ ui.background.change=Alterar papel de parede
 ui.background.reset=Redefinir papel de parede
 
 ui.chest.stealing=Roubo de Baú
+ui.chest.disable=Desativar %s
 
 ui.gameover.close=Ocultar esta tela
 

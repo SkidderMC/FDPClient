@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
+import net.minecraft.entity.player.EntityPlayer
 
 class FocusCommand : Command("focus", emptyArray()) {
 
@@ -16,22 +16,25 @@ class FocusCommand : Command("focus", emptyArray()) {
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
-        val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
-        if (killAura == null) return
-
         if (args.size == 3) {
             val focused = args[1]
             val target = args[2]
+            val entity=mc.theWorld.playerEntities.filter { it.name.equals(target,true) && !it.equals(mc.thePlayer) }.also {
+                if(it.isEmpty()){
+                    chat("§6Couldn't find anyone named §a${target.toLowerCase()}§6 in the world.")
+                    return
+                }
+            }[0]
 
             when (focused.toLowerCase()) {
                 "add" -> {
-                    killAura.focusEntityName.add(target.toLowerCase())
+                    LiquidBounce.combatManager.focusedPlayerList.add(entity)
                     chat("Successfully added §a${target.toLowerCase()}§3 into the focus list.")
                     return
                 }
                 "remove" -> {
-                    if (killAura.focusEntityName.contains(target.toLowerCase())) {
-                        killAura.focusEntityName.remove(target.toLowerCase())
+                    if (LiquidBounce.combatManager.focusedPlayerList.contains(entity)) {
+                        LiquidBounce.combatManager.focusedPlayerList.remove(entity)
                         chat("Successfully removed §a${target.toLowerCase()}§3 from the focus list.")
                         return
                     } else {
@@ -41,7 +44,7 @@ class FocusCommand : Command("focus", emptyArray()) {
                 }
             }
         } else if (args.size == 2 && args[1].equals("clear", true)) {
-            killAura.focusEntityName.clear()
+            LiquidBounce.combatManager.focusedPlayerList.clear()
             chat("Successfully cleared the focus list.")
             return
         }
@@ -58,7 +61,7 @@ class FocusCommand : Command("focus", emptyArray()) {
             1 -> listOf("clear", "add", "remove")
             2 -> if (args[0].equals("add", true) || args[0].equals("remove", true)) 
                     mc.theWorld.playerEntities
-                        .filter { !AntiBot.isBot(it) && it.name.startsWith(pref, true) }
+                        .filter { it.name.startsWith(pref, true) }
                         .map { it.name }
                         .toList()
                 else emptyList()

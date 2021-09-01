@@ -19,6 +19,7 @@ ui.background.change=Change wallpaper
 ui.background.reset=Reset wallpaper
 
 ui.chest.stealing=Stealing Chest
+ui.chest.disable=Disable %s
 
 ui.gameover.close=Hide This Screen
 

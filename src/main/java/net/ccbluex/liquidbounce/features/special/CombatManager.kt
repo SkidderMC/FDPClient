@@ -1,19 +1,18 @@
 package net.ccbluex.liquidbounce.features.special
 
-import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 
 class CombatManager : Listenable,MinecraftInstance() {
     var inCombat=false
     private val lastAttackTimer=MSTimer()
     var target: EntityLivingBase? = null
+    val focusedPlayerList=mutableListOf<EntityPlayer>()
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
@@ -50,6 +49,13 @@ class CombatManager : Listenable,MinecraftInstance() {
         lastAttackTimer.reset()
     }
 
+    @EventTarget
+    fun onWorld(event: WorldEvent){
+        inCombat=false
+        target=null
+        focusedPlayerList.clear()
+    }
+
     fun getNearByEntity(radius: Float):EntityLivingBase?{
         return try {
             mc.theWorld.loadedEntityList
@@ -60,7 +66,12 @@ class CombatManager : Listenable,MinecraftInstance() {
         }
     }
 
-    override fun handleEvents(): Boolean {
-        return true
+    fun isFocusEntity(entity: EntityPlayer):Boolean{
+        if(focusedPlayerList.isEmpty())
+            return true // no need 2 focus
+
+        return focusedPlayerList.contains(entity)
     }
+
+    override fun handleEvents() = true
 }

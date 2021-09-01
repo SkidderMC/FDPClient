@@ -43,6 +43,12 @@ public final class EntityUtils extends MinecraftInstance {
                         if(entityPlayer.isSpectator())
                             return false;
 
+                        if(entityPlayer.isPlayerSleeping())
+                            return false;
+
+                        if(!LiquidBounce.combatManager.isFocusEntity(entityPlayer))
+                            return false;
+
                         final Teams teams = LiquidBounce.moduleManager.getModule(Teams.class);
                         return !teams.getState() || !teams.isInYourTeam(entityPlayer);
                     }
