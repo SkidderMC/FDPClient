@@ -147,6 +147,7 @@ public class Fly extends Module {
     private final FloatValue aac520AppendTimer = new FloatValue("AAC5.2.0FastAppendTimer",0.4f,0.1f,0.7f);
     private final FloatValue aac520MaxTimer = new FloatValue("AAC5.2.0FastMaxTimer",1.2f,1f,3f);
     private final IntegerValue aac520Purse = new IntegerValue("AAC5.2.0Purse",7,3,20);
+    private final ListValue aac520PacketMode = new ListValue("AAC5.2.0PacketMode",new String[]{"Old","Rise"},"Old");
     private final BoolValue aac520UseC04 = new BoolValue("AAC5.2.0UseC04", false);
     private final BoolValue aac520view = new BoolValue("AAC5.2.0BetterView", false);
     private final BoolValue rssDropoff = new BoolValue("RSSmoothDropoffA", true);
@@ -1237,19 +1238,38 @@ public class Fly extends Module {
     private void sendAAC5Packets(){
         float yaw=mc.thePlayer.rotationYaw;
         float pitch=mc.thePlayer.rotationPitch;
-        for(C03PacketPlayer packet : aac5C03List){
-            if(packet.isMoving()){
-                PacketUtils.sendPacketNoEvent(packet);
-                if(packet.getRotating()){
-                    yaw=packet.yaw;
-                    pitch=packet.pitch;
+        if(aac520PacketMode.get().equalsIgnoreCase("Old")){
+            for(C03PacketPlayer packet : aac5C03List){
+                if(packet.isMoving()){
+                    PacketUtils.sendPacketNoEvent(packet);
+                    if(packet.getRotating()){
+                        yaw=packet.yaw;
+                        pitch=packet.pitch;
+                    }
+                    if(aac520UseC04.get()){
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,1e+159,packet.z, true));
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z, true));
+                    }else{
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,1e+159,packet.z, yaw, pitch, true));
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,packet.y,packet.z, yaw, pitch, true));
+                    }
                 }
-                if(aac520UseC04.get()){
-                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,1e+159,packet.z, true));
-                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z, true));
-                }else{
-                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,1e+159,packet.z, yaw, pitch, true));
-                    PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,packet.y,packet.z, yaw, pitch, true));
+            }
+        }else{
+            for(C03PacketPlayer packet : aac5C03List){
+                if(packet.isMoving()){
+                    PacketUtils.sendPacketNoEvent(packet);
+                    if(packet.getRotating()){
+                        yaw=packet.yaw;
+                        pitch=packet.pitch;
+                    }
+                    if(aac520UseC04.get()){
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,-1e+159,packet.z+10, true));
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z, true));
+                    }else{
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,-1e+159,packet.z+10, yaw, pitch, true));
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,packet.y,packet.z, yaw, pitch, true));
+                    }
                 }
             }
         }
