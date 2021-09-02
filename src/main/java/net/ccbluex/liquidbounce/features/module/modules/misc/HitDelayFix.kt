@@ -10,9 +10,5 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 
-@ModuleInfo(name = "HitDelayFix", category = ModuleCategory.MISC)
-class HitDelayFix : Module() {
-    init {
-        state = true
-    }
-} 
+@ModuleInfo(name = "HitDelayFix", category = ModuleCategory.MISC, defaultOn = true)
+class HitDelayFix : Module()
