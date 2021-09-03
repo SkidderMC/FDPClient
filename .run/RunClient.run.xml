@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="GradleStart" />
     <module name="FDPClient.main" />
-    <option name="VM_PARAMETERS" value="-Xmx4096m -Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.MixinLoader" />
+    <option name="VM_PARAMETERS" value="-Xmx4096m -Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.MixinLoader -Ddev-mode" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
     <method v="2">
       <option name="Make" enabled="true" />

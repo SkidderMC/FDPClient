@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.ui.ultralight
 
+import com.google.common.io.Files
 import com.labymedia.ultralight.UltralightJava
 import com.labymedia.ultralight.UltralightPlatform
 import com.labymedia.ultralight.UltralightRenderer
@@ -30,6 +31,8 @@ object UltralightEngine {
     const val ULTRALIGHT_NATIVE_VERSION = "0.4.6"
 
     val views=mutableListOf<View>()
+
+    val inDevMode=System.getProperty("dev-mode")!=null
 
     init {
         if(!pagesPath.exists())
@@ -98,6 +101,25 @@ object UltralightEngine {
     private fun checkPageResources(){
         if(File(pagesPath, "NO_UPDATE").exists()) {
             logger.warn("PASSED RESOURCE CHECK BY \"NO_UPDATE\" FILE")
+            return
+        }
+
+        if(inDevMode){
+            if(pagesPath.exists())
+                pagesPath.deleteRecursively()
+
+            pagesPath.mkdirs()
+
+            val projectDir=File(File("./").canonicalFile.parentFile,"ui")
+            val srcDir=File(projectDir,"src") // this should not have issues
+            val depsDir=File(projectDir,"deps")
+
+            if(!depsDir.exists())
+                throw NullPointerException("deps dir not exists, please run \"./gradlew ui:build\" first!")
+
+            FileUtils.copyDir(srcDir,pagesPath)
+            FileUtils.copyDir(depsDir,File(pagesPath,"lib"))
+
             return
         }
 
