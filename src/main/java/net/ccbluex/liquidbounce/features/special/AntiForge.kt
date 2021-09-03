@@ -5,14 +5,13 @@
  */
 package net.ccbluex.liquidbounce.features.special
 
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.minecraft.network.play.client.C17PacketCustomPayload
-import net.minecraft.network.PacketBuffer
 import io.netty.buffer.Unpooled
 import net.ccbluex.liquidbounce.event.EventTarget
-import java.lang.Exception
+import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.minecraft.network.PacketBuffer
+import net.minecraft.network.play.client.C17PacketCustomPayload
 
 object AntiForge : MinecraftInstance(), Listenable {
     var enabled = true

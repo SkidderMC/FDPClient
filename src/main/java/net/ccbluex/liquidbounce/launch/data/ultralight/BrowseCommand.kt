@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.command.commands
+package net.ccbluex.liquidbounce.launch.data.ultralight
 
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.ultralight.view.DynamicGuiView

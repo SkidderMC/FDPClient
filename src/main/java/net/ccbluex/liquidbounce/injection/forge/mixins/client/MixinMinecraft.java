@@ -9,12 +9,11 @@ import com.guimc.fuckpcl.PCLChecker;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
-import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
-import net.ccbluex.liquidbounce.ui.client.GuiMainMenu;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
+import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -98,8 +97,6 @@ public abstract class MixinMinecraft {
 
         if(displayHeight < 622)
             displayHeight = 622;
-
-        LiquidBounce.INSTANCE.initClient();
     }
 
     /**
@@ -121,7 +118,7 @@ public abstract class MixinMinecraft {
         if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
             Display.destroy();
             String warnStr="Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
-            JOptionPane.showMessageDialog(null, warnStr, "Alert", JOptionPane.ERROR_MESSAGE);
+            MiscUtils.showErrorPopup(warnStr);
             throw new AccessDeniedException(warnStr);
         }
         LiquidBounce.INSTANCE.startClient();
@@ -145,7 +142,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))
     private void displayGuiScreen(CallbackInfo callbackInfo) {
         if(currentScreen instanceof net.minecraft.client.gui.GuiMainMenu || (currentScreen != null && currentScreen.getClass().getName().startsWith("net.labymod") && currentScreen.getClass().getSimpleName().equals("ModGuiMainMenu"))) {
-            currentScreen = GuiMainMenu.INSTANCE;
+            currentScreen = LiquidBounce.mainMenu;
 
             ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
             currentScreen.setWorldAndResolution(Minecraft.getMinecraft(), scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight());

@@ -18,13 +18,13 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.Block
 import net.minecraft.block.BlockPane
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-import net.minecraft.block.Block 
 
 @ModuleInfo(name = "HighJump", category = ModuleCategory.MOVEMENT)
 class HighJump : Module() {

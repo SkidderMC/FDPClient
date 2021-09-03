@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "NoClip", category = ModuleCategory.MOVEMENT)
 class NoClip : Module() {

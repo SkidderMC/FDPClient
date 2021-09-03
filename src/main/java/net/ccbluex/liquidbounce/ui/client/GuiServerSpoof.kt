@@ -1,11 +1,11 @@
 package net.ccbluex.liquidbounce.ui.client
 
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.special.ServerSpoof
+import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
-import net.minecraft.client.gui.GuiButton
-import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.features.special.ServerSpoof
-import net.ccbluex.liquidbounce.LiquidBounce
 import org.lwjgl.input.Keyboard
 
 class GuiServerSpoof(private val prevGui: GuiScreen) : GuiScreen() {

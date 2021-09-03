@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.ui.ultralight.support
 
-import com.labymedia.ultralight.input.UltralightInputModifier
 import com.labymedia.ultralight.input.UltralightKey
 import com.labymedia.ultralight.input.UltralightMouseEventButton
 import org.lwjgl.input.Keyboard

@@ -21,7 +21,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
-import org.lwjgl.input.Keyboard;
 
 @ModuleInfo(name = "LiquidWalk", category = ModuleCategory.MOVEMENT)
 public class LiquidWalk extends Module {

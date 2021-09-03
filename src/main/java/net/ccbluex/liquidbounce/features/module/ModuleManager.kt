@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.special.AutoDisable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ReflectUtils
 import org.lwjgl.input.Keyboard
@@ -66,12 +67,7 @@ class ModuleManager : Listenable {
             registerModule(moduleClass.newInstance())
         } catch (e: IllegalAccessException) {
             // this module is a kotlin object
-            moduleClass.declaredFields.forEach {
-                if(it.name.equals("INSTANCE")){
-                    registerModule(it.get(null) as Module)
-                    return@forEach
-                }
-            }
+            registerModule(ClassUtils.getObjectInstance(moduleClass) as Module)
         } catch (e: Throwable){
             ClientUtils.getLogger().error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
         }

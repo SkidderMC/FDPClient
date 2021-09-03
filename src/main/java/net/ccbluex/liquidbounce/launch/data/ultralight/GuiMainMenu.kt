@@ -1,10 +1,6 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMC/FDPClient/
- */
-package net.ccbluex.liquidbounce.ui.client
+package net.ccbluex.liquidbounce.launch.data.ultralight
 
+import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
 import net.ccbluex.liquidbounce.ui.ultralight.view.DynamicGuiView
@@ -16,7 +12,7 @@ import net.minecraft.client.resources.I18n
 import net.minecraftforge.fml.client.GuiModList
 import java.io.File
 
-object GuiMainMenu : DynamicGuiView(Page(File(UltralightEngine.pagesPath,"mainmenu.html"))) {
+object GuiMainMenu : DynamicGuiView(Page(File(UltralightEngine.pagesPath, "mainmenu.html"))) {
     @JvmField
     var cancelledUpdate=false
     @JvmField

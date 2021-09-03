@@ -17,6 +17,9 @@ import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.MetricsLite
 import net.ccbluex.liquidbounce.file.config.ConfigManager
+import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
+import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
+import net.ccbluex.liquidbounce.launch.LaunchOption
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
@@ -25,11 +28,9 @@ import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
-import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
-import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.InventoryUtils
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.*
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
 
@@ -62,8 +63,9 @@ object LiquidBounce {
     lateinit var macroManager: MacroManager
     lateinit var configManager: ConfigManager
 
-    // HUD & KeybindManager
+    // Some UI things
     lateinit var hud: HUD
+    lateinit var mainMenu: GuiScreen
     lateinit var keyBindManager: KeyBindManager
 
     lateinit var metricsLite: MetricsLite
@@ -71,7 +73,10 @@ object LiquidBounce {
     // Menu Background
     var background: ResourceLocation? = null
 
+    private val dynamicLaunchOptions: Array<LaunchOption>
+
     init {
+        // check if this artifact is build from github actions
         val commitId=LiquidBounce::class.java.classLoader.getResourceAsStream("FDP_GIT_COMMIT_ID")
         CLIENT_VERSION=if (commitId==null){
             CLIENT_REAL_VERSION
@@ -79,13 +84,22 @@ object LiquidBounce {
             val str=IOUtils.toString(commitId,"utf-8").replace("\n","")
             "git-"+(str.substring(0, 7.coerceAtMost(str.length)))
         }
-    }
-
-    /***
-     * do things that need long time async
-     */
-    fun initClient(){
-        isStarting = true
+        // initialize dynamic launch options
+        val launchFilters=mutableListOf<EnumLaunchFilter>()
+        if(System.getProperty("fdp-legacy-ui")!=null){
+            launchFilters.add(EnumLaunchFilter.LEGACY_UI)
+        }else{
+            launchFilters.add(EnumLaunchFilter.ULTRALIGHT)
+        }
+        dynamicLaunchOptions=ReflectUtils.getReflects("${LaunchOption::class.java.`package`.name}.options", LaunchOption::class.java)
+            .filter {
+                val annotation=it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
+                if(annotation!=null){
+                    return@filter annotation.filters.toMutableList() == launchFilters
+                }
+                false
+            }
+            .map { try { it.newInstance() } catch (e: IllegalAccessException) { ClassUtils.getObjectInstance(it) as LaunchOption } }.toTypedArray()
     }
 
     /***
@@ -94,6 +108,7 @@ object LiquidBounce {
     fun startClient() {
         ClientUtils.logInfo("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
         val startTime=System.currentTimeMillis()
+        isStarting = true
 
         // Create file manager
         fileManager = FileManager()
@@ -102,11 +117,12 @@ object LiquidBounce {
         // Create event manager
         eventManager = EventManager()
 
-        // Load Ultralight renderer
-        UltralightEngine.init()
-
         // Load language
         LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
+
+        dynamicLaunchOptions.forEach {
+            it.head()
+        }
 
         // Register listeners
         eventManager.registerListener(RotationUtils())
@@ -169,6 +185,10 @@ object LiquidBounce {
 
         GuiCapeManager.load()
 
+        dynamicLaunchOptions.forEach {
+            it.after()
+        }
+
         // Set is starting status
         isStarting = false
         isLoadingConfig=false
@@ -187,5 +207,9 @@ object LiquidBounce {
         GuiCapeManager.save()
         configManager.save(true,true)
         fileManager.saveAllConfigs()
+
+        dynamicLaunchOptions.forEach {
+            it.stop()
+        }
     }
 }

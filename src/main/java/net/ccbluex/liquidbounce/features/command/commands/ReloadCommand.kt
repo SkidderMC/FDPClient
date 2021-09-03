@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.misc.KillInsults
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 
-class ReloadCommand : Command("reload", arrayOf("configreload")) {
+class ReloadCommand : Command("reload", emptyArray()) {
     /**
      * Execute commands with provided [args]
      */

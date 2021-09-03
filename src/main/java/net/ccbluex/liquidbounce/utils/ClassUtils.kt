@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils
 
+import net.ccbluex.liquidbounce.features.module.Module
+
 object ClassUtils {
 
     private val cachedClasses = mutableMapOf<String, Boolean>()
@@ -26,6 +28,16 @@ object ClassUtils {
 
             false
         }
+    }
+
+    @JvmStatic
+    fun getObjectInstance(clazz: Class<*>):Any{
+        clazz.declaredFields.forEach {
+            if(it.name.equals("INSTANCE")){
+                return it.get(null)
+            }
+        }
+        throw IllegalAccessException("This class not a kotlin object")
     }
 
 //    fun hasForge() = hasClass("net.minecraftforge.common.MinecraftForge")

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils;
 
-import net.ccbluex.liquidbounce.ui.client.GuiMainMenu;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
@@ -18,7 +18,7 @@ public final class ServerUtils extends MinecraftInstance {
         if(serverData == null)
             return;
 
-        mc.displayGuiScreen(new GuiConnecting(new GuiMultiplayer(GuiMainMenu.INSTANCE), mc, serverData));
+        mc.displayGuiScreen(new GuiConnecting(new GuiMultiplayer(LiquidBounce.mainMenu), mc, serverData));
     }
 
     public static String getRemoteIp() {

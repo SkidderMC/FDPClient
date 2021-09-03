@@ -17,6 +17,10 @@ import java.util.function.Consumer;
 
 public final class MiscUtils extends MinecraftInstance {
 
+    public static void showErrorPopup(final String message) {
+        JOptionPane.showMessageDialog(null, message, "Alert", JOptionPane.ERROR_MESSAGE);
+    }
+
     public static void showErrorPopup(final String title, final String message) {
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
     }

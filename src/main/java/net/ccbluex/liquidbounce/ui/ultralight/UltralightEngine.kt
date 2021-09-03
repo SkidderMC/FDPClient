@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.ui.ultralight
 
-import com.google.common.io.Files
 import com.labymedia.ultralight.UltralightJava
 import com.labymedia.ultralight.UltralightPlatform
 import com.labymedia.ultralight.UltralightRenderer
@@ -42,14 +41,7 @@ object UltralightEngine {
             cachePath.mkdirs()
     }
 
-    fun init(){
-        // download ultralight natives and resources from web
-        checkResources()
-        checkPageResources()
-
-        // then load it
-        UltralightJava.load(resourcePath.toPath())
-
+    fun initEngine(){
         platform = UltralightPlatform.instance()
         platform.setConfig(
             UltralightConfig()
@@ -76,7 +68,16 @@ object UltralightEngine {
         renderer.logMemoryUsage()
     }
 
-    private fun checkResources(){
+    fun initResources(){
+        // download ultralight natives and resources from web
+        checkNativeResources()
+        checkPageResources()
+
+        // then load it
+        UltralightJava.load(resourcePath.toPath())
+    }
+
+    private fun checkNativeResources(){
         val versionFile = File(resourcePath, "VERSION")
 
         // Check if library version is matching the resources version

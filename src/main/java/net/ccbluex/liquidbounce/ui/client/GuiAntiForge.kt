@@ -5,11 +5,11 @@
  */
 package net.ccbluex.liquidbounce.ui.client
 
-import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.gui.GuiButton
-import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 import java.io.IOException
 
