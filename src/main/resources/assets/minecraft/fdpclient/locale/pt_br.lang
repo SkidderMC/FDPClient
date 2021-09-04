@@ -692,7 +692,7 @@ module.LiquidWalk.name=LiquidWalk
 module.LiquidWalk.description=Permite que você ande sobre a água
 module.LiquidWalk.value.Mode.name=Modo
 module.LiquidWalk.value.NoJump.name=NãoPular
-module.LiquidWalk.value.AACFlyMotion.name=AACFlyAltura
+module.LiquidWalk.value.JumpMotion.name=JumpAltura
 
 module.LongJump.name=LongJump
 module.LongJump.description=Permite que você vá mais longe

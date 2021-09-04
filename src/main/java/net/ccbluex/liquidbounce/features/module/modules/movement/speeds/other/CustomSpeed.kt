@@ -24,7 +24,8 @@ class CustomSpeed : SpeedMode("Custom") {
                     if(groundTick>=speed.customGroundStay.get()){
                         if(speed.launchSpeedValue.get())
                             MovementUtils.strafe(speed.customLaunchSpeedValue.get())
-                        mc.thePlayer.motionY = speed.customYValue.get().toDouble()
+                        if(speed.customYValue.get()!=0f)
+                            mc.thePlayer.motionY = speed.customYValue.get().toDouble()
                     }else if(speed.groundResetXZValue.get()){
                         mc.thePlayer.motionX = 0.0
                         mc.thePlayer.motionZ = 0.0

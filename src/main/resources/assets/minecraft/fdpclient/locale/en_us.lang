@@ -704,7 +704,7 @@ module.LiquidWalk.name=LiquidWalk
 module.LiquidWalk.description=Allows you to walk on water
 module.LiquidWalk.value.Mode.name=Mode
 module.LiquidWalk.value.NoJump.name=NoJump
-module.LiquidWalk.value.AACFlyMotion.name=AACFlyMotion
+module.LiquidWalk.value.JumpMotion.name=JumpMotion
 
 module.LongJump.name=LongJump
 module.LongJump.description=Allows you to jump further

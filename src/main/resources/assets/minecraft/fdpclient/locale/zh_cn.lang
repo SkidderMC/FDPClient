@@ -693,7 +693,6 @@ module.LiquidWalk.name=水上行走
 module.LiquidWalk.description=让你在液体上行走
 module.LiquidWalk.value.Mode.name=模式
 module.LiquidWalk.value.NoJump.name=无跳跃
-module.LiquidWalk.value.AACFlyMotion.name=AAC飞行速度
 
 module.LongJump.name=远跳
 module.LongJump.description=让你跳得更远
