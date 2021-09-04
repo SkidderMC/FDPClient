@@ -32,15 +32,15 @@ import java.awt.Color
 class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
 
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Rainbow")
+    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow"), "Rainbow")
     private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
     private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
-    private val tagColorModeValue = ListValue("Tag-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
+    private val tagColorModeValue = ListValue("Tag-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow"), "Custom")
     private val tagColorRedValue = IntegerValue("Tag-R", 195, 0, 255)
     private val tagColorGreenValue = IntegerValue("Tag-G", 195, 0, 255)
     private val tagColorBlueValue = IntegerValue("Tag-B", 195, 0, 255)
-    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Rainbow")
+    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow"), "Rainbow")
     private val rectColorRedValue = IntegerValue("Rect-R", 255, 0, 255)
     private val rectColorGreenValue = IntegerValue("Rect-G", 255, 0, 255)
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
@@ -48,18 +48,19 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
     private val saturationValue = FloatValue("Random-Saturation", 0.9f, 0f, 1f)
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tags = BoolValue("Tags", true)
+    private val tagsStyle = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "Default"), "-")
     private val shadow = BoolValue("ShadowText", false)
     private val split = BoolValue("SplitName", false)
     private val slideInAnimation = BoolValue("SlideInAnimation", true)
     private val noRenderModules = BoolValue("NoRenderModules", true)
-    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
+    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 100, 0, 255)
     private val backgroundExpand = IntegerValue("Background-Expand",2,0,10)
     private val rainbowSpeed = IntegerValue("RainbowSpeed",1,1,10)
-    private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline"), "None")
+    private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "None")
     private val upperCaseValue = BoolValue("UpperCase", false)
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
@@ -187,10 +188,45 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                                         rectColor)
                                     if (module == modules[modules.size - 1]) {
                                         RenderUtils.drawRect(xPos - 3, yPos + textHeight, 0.0F, yPos + textHeight + 1,
-                                            rectColor)
+                                            rectColor)     
+                             "special" -> {
+                                 if (module == modules[0]) {
+                                        RenderUtils.drawRect(xPos - 2, module.arrayY, 0F, module.arrayY - 1, rectColor)
+                                    }
+                                    if (module == modules[modules.size - 1]) {
+                                        RenderUtils.drawRect(xPos - 2, module.arrayY + textHeight, 0F, module.arrayY + textHeight + 1, rectColor)
                                     }
                                 }
-                            }
+                                "top", -> {
+                                    if (module == modules[0]) {
+                                        RenderUtils.drawRect(xPos - 2, module.arrayY, 0F, module.arrayY - 1, rectColor)
+                                    }
+                       }           
+       fun getModName(mod: Module): String {
+        var modTag : String = ""
+        if (tags.get() && mod.tag != null) {
+            // add space
+            modTag += " "
+
+            // check and add gray prefix if possible
+            if (!tagsArrayColor.get()) 
+                modTag += "§7"
+
+            // tag prefix, ignore default value
+            if (!tagsStyle.get().equals("default", true)) 
+                modTag += tagsStyleValue.get().get(0).toString() + if (tagsStyle.get().equals("-", true) || tagsStyle.get().equals("|", true)) " " else ""
+
+            // main tag value
+            modTag += mod.tag
+
+            // tag suffix, ignore default, -, | values
+            if (!tagsStyle.get().equals("default", true) 
+            && !tagsStyle.get().equals("-", true) 
+            && !tagsStyle.get().equals("|", true)) 
+                modTag += tagsStyle.get().get(1).toString()
+
+        }
+                                
                         }
                     }
                 }
