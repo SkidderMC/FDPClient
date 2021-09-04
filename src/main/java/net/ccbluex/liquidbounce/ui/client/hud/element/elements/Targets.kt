@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets", single = true)
 class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux","Rise"), "Rise")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Exhibition","Flux","Rise"), "Rise")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed",10,5,20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed",20,5,40)
@@ -102,6 +102,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             "novoline" -> drawNovo(prevTarget!!,nowAnimHP)
             "astolfo" -> drawAstolfo(prevTarget!!,nowAnimHP)
             "liquid" -> drawLiquid(prevTarget!!,nowAnimHP)
+            "Exhibition" -> drawExhibition(prevTarget!!,nowAnimHP)
             "flux" -> drawFlux(prevTarget!!,nowAnimHP)
             "rise" -> drawRise(prevTarget!!,nowAnimHP)
         }
@@ -179,11 +180,79 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             RenderUtils.drawHead(playerInfo.locationSkin, 2, 2, 30, 30)
         }
     }
+    
+    private fun drawExhibition(target: EntityLivingBase, easingHealth: Float){
+        "Exhibition" -> {
+                    // Draw the rectangle 
+                    RenderUtils.drawRect(-3.5F, -3.5F, 143.5F, 48.5F, Color.black.rgb)
+                    RenderUtils.drawRect(-3F, -3F, 143F, 48F, Color(59, 59, 59).rgb)
+                    RenderUtils.drawBorder(-1.5F, -1.5F, 141.5F, 46.5F, 3.25F, Color(39, 39, 39, 170).rgb)
+                    RenderUtils.drawRect(0F, 0F, 140F, 45F, Color(19, 19, 19).rgb)
+
+                    RenderUtils.drawRect(2.5F, 2.5F, 42.5F, 42.5F, Color(59, 59, 59).rgb)
+                    RenderUtils.drawRect(3F, 3F, 42F, 42F, Color(19, 19, 19).rgb)
+
+                    GL11.glColor4f(1f, 1f, 1f, 1f)
+                    RenderUtils.drawEntityOnScreen(22, 40, 15, target)
+
+                    val font = exhiFontValue.get()
+                    font.drawString(target.name, 46, 4, -1)
+
+                    val barLength = 60F * (target.health / target.maxHealth).coerceIn(0F, 1F)
+                    RenderUtils.drawRect(45F, 15F, 45F + barLength, 18F, BlendUtils.getHealthColor(target.health, target.maxHealth).rgb)
+
+                    for (i in 0..9) {
+                        RenderUtils.drawBorder(45F + i * 6F, 15F, 45F + (i + 1F) * 6F, 18F, 0.25F, Color.black.rgb)
+                    }
+
+                    GL11.glPushMatrix()
+                    GL11.glTranslatef(46F, 20F, 0F)
+                    GL11.glScalef(0.5f, 0.5f, 0.5f)
+                    Fonts.minecraftFont.drawString("HP: ${target.health.toInt()} | Dist: ${mc.thePlayer.getDistanceToEntityBox(target).toInt()}", 0, 0, -1)
+                    GL11.glPopMatrix()
+
+                    GlStateManager.resetColor()
+
+                    GL11.glPushMatrix()
+                    GL11.glColor4f(1f, 1f, 1f, 1f)
+                    RenderHelper.enableGUIStandardItemLighting()
+
+                    val renderItem = mc.renderItem
+
+                    var x = 45
+                    var y = 26
+
+                    for (index in 3 downTo 0) {
+                        val stack = target.inventory.armorInventory[index] ?: continue
+
+                        if (stack.getItem() == null)
+                            continue
+
+                        renderItem.renderItemIntoGUI(stack, x, y)
+                        renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
+
+                        x += 18
+                    }
+
+                    val mainStack = target.heldItem
+                    if (mainStack != null && mainStack.getItem() != null) {
+                        renderItem.renderItemIntoGUI(mainStack, x, y)
+                        renderItem.renderItemOverlays(mc.fontRendererObj, mainStack, x, y)
+                    }
+
+                    RenderHelper.disableStandardItemLighting()
+                    GlStateManager.enableAlpha()
+                    GlStateManager.disableBlend()
+                    GlStateManager.disableLighting()
+                    GlStateManager.disableCull()
+                    GL11.glPopMatrix()
+                }
+            }
 
     private fun drawRise(target: EntityLivingBase, easingHealth: Float){
         val font=fontValue.get()
 
-        RenderUtils.drawCircleRect(0f,0f,150f,50f,5f,Color(0,0,0,130).rgb)
+        RenderUtils.drawCircleRect(0f,0f,150f,55f,5f,Color(0,0,0,130).rgb)
 
         val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
         if (playerInfo != null) {
@@ -257,7 +326,8 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             "flux" -> Border(0F,0F,(38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
                 .coerceAtLeast(70)
                 .toFloat(),34F)
-            "rise" -> Border(0F,0F,150F,50F)
+            "rise" -> Border(0F,0F,150F,55F)
+            "Exhibition" -> Border(0F, 0F, 140F, 45F)
             else -> null
         }
     }
