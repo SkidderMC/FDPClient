@@ -23,7 +23,7 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "LiquidWalk", category = ModuleCategory.MOVEMENT)
 class LiquidWalk : Module() {
-    val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Twilight", "Matrix", "Dolphin", "Swim"), "Vanilla")
+    val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Twilight", "Matrix", "Dolphin", "Legit"), "Vanilla")
     private val noJumpValue = BoolValue("NoJump", false)
     private val jumpMotionValue = FloatValue("JumpMotion", 0.5f, 0.1f, 1f)
         .displayable { modeValue.get().equals("Jump", ignoreCase = true) || modeValue.get().equals("AACFly", ignoreCase = true) }
@@ -110,15 +110,18 @@ class LiquidWalk : Module() {
                 if (!mc.thePlayer.onGround && BlockUtils.getBlock(blockPos) === Blocks.water || mc.thePlayer.isInWater) {
                     mc.thePlayer.motionY *= 0.0
                     mc.thePlayer.jumpMovementFactor = 0.08f
-                    if (mc.thePlayer.fallDistance > 0) return else if (mc.thePlayer.isInWater) mc.gameSettings.keyBindJump.pressed =
-                        true
+                    if (mc.thePlayer.fallDistance > 0){
+                        return
+                    } else if (mc.thePlayer.isInWater) {
+                        mc.gameSettings.keyBindJump.pressed = true
+                    }
                 }
             }
             "horizon1.4.6" -> {
+                mc.gameSettings.keyBindJump.pressed = mc.thePlayer.isInWater
                 if (mc.thePlayer.isInWater) {
                     MovementUtils.strafe()
-                    mc.gameSettings.keyBindJump.pressed = true
-                    if (MovementUtils.isMoving()) if (!mc.thePlayer.onGround) {
+                    if (MovementUtils.isMoving() && !mc.thePlayer.onGround) {
                         mc.thePlayer.motionY += 0.13
                     }
                 }
