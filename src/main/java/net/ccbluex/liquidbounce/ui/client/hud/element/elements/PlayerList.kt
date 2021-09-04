@@ -26,7 +26,7 @@ import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 /**
- * A target hud
+ * A player list
  */
 @ElementInfo(name = "PlayerList")
 class PlayerList : Element() {
@@ -46,20 +46,19 @@ class PlayerList : Element() {
     private val bggreenValue = IntegerValue("Background-Green", 0, 0, 255)
     private val bgblueValue = IntegerValue("Background-Blue", 0, 0, 255)
     private val bgalphaValue = IntegerValue("Background-Alpha", 120, 0, 255)
-    private val rainbowList = ListValue("Rainbow", arrayOf("Off", "Slowly", "Off")
+    private val rainbowList = ListValue("Rainbow", arrayOf("Normal", "Custom", "Slowly", "Off"), "Off")
     private val saturationValue = FloatValue("Saturation", 0.9f, 0f, 1f)
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
-    private val cRainbowSecValue = IntegerValue("Seconds", 2, 1, 10)
     private val distanceValue = IntegerValue("Line-Distance", 0, 0, 400)
     private val gradientAmountValue = IntegerValue("Gradient-Amount", 25, 1, 50)
 
-    override fun drawElement(): Border {
+    override fun drawElement(partialTicks: Float): Border {
         val reverse = reverseValue.get()
         val font = fontValue.get()
         val fontOffset = fontOffsetValue.get()
-        val rainbowType = rainbowList.get()
+        val rainbowType = rainbowList.get().toLowerCase()
 
-        var nameLength = font.getStringWidth("Name (0)").toFloat()
+        var nameLength: Float
         var hpLength = font.getStringWidth("Health").toFloat()
         var distLength = font.getStringWidth("Distance").toFloat()
 
@@ -68,7 +67,7 @@ class PlayerList : Element() {
         val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get()).rgb
         val bgColor = Color(bgredValue.get(), bggreenValue.get(), bgblueValue.get(), bgalphaValue.get())
 
-        var playerList: MutableList<EntityPlayer> = mc.theWorld.playerEntities.filter { !AntiBot.isBot(it) && it != mc.thePlayer }.toMutableList()
+        var playerList = mc.theWorld.playerEntities.filter { !AntiBot.isBot(it) && it != mc.thePlayer }.toMutableList()
 
         nameLength = font.getStringWidth("Name (${playerList.size})").toFloat()
 
@@ -94,17 +93,21 @@ class PlayerList : Element() {
         if (lineValue.get()) {
             val barLength = (nameLength + hpLength + distLength + 50F).toDouble()
 
-            for (i in 0..(gradientAmountValue.get()-1)) {
+            loop@ for (i in 0 until gradientAmountValue.get()) {
                 val barStart = i.toDouble() / gradientAmountValue.get().toDouble() * barLength
                 val barEnd = (i + 1).toDouble() / gradientAmountValue.get().toDouble() * barLength
                 RenderUtils.drawGradientSideways(barStart, -1.0, barEnd, 0.0, 
                 when (rainbowType) {
-                    "Slowly" -> ColorUtils.Slowly(System.nanoTime(), i * distanceValue.get(), saturationValue.get(), brightnessValue.get())!!.rgb
-             
+                    "normal" -> ColorUtils.rainbow(0).rgb
+                    "custom" -> color
+                    "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), i * distanceValue.get(), saturationValue.get(), brightnessValue.get()).rgb
+                    else -> continue@loop
                 },
                 when (rainbowType) {
-                    "Slowly" -> ColorUtils.Slowly(System.nanoTime(), (i + 1) * distanceValue.get(), saturationValue.get(), brightnessValue.get())!!.rgb
-         
+                    "normal" -> ColorUtils.rainbow(distanceValue.get()).rgb
+                    "custom" -> color
+                    "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), (i + 1) * distanceValue.get(), saturationValue.get(), brightnessValue.get()).rgb
+                    else -> continue@loop
                 })
             }
         }

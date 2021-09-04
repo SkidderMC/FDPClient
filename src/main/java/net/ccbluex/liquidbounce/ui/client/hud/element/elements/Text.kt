@@ -149,7 +149,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
         val rectColor = when(rectColorModeValue.get().toLowerCase()){
             "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
-            "skyrainbow" -> RenderUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+            "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()),100,rainbowIndex.get()).rgb
             else -> Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
         }
@@ -172,7 +172,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
         fontRenderer.drawString(displayText, 0F, 0F, when(colorModeValue.get().toLowerCase()){
             "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
-            "skyrainbow" -> RenderUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+            "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "anotherrainbow" -> ColorUtils.fade(color,100,rainbowIndex.get()).rgb
             else -> color.rgb
         }, shadow.get())

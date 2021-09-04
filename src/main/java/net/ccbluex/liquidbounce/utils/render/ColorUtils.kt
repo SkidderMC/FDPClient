@@ -11,6 +11,7 @@ import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -169,13 +170,12 @@ object ColorUtils {
         val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
         return Color(currentColor.red / 255.0F * 1.0F, currentColor.green / 255.0F * 1.0F, currentColor.blue / 255.0F * 1.0F, alpha)
     }
-    
-    @JvmStatic
-    fun astolfoRainbow(int delay,int offset, int index) {
-        double rainbowDelay = Math.ceil(System.currentTimeMillis() + (long)(delay * index)) / offset;
-        return Color.getHSBColor((double)((float)((rainbowDelay %= 360.0) / 360.0)) < 0.5 ? -((float)(rainbowDelay / 360.0)) : (float)(rainbowDelay / 360.0), 0.5F, 1.0F).getRGB();
-    }
 
+    @JvmStatic
+    fun skyRainbow(var2: Int, bright: Float, st: Float, speed: Double): Color {
+        var v1 = ceil(System.currentTimeMillis() / speed + var2 * 109L) / 5
+        return Color.getHSBColor(if ((360.0.also { v1 %= it } / 360.0)<0.5){ -(v1 / 360.0).toFloat() } else { (v1 / 360.0).toFloat() }, st, bright)
+    }
 
     @JvmStatic
     fun fade(color: Color, index: Int, count: Int): Color {

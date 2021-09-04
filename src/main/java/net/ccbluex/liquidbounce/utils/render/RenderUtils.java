@@ -880,11 +880,6 @@ public final class RenderUtils extends MinecraftInstance {
             glDisable(cap);
     }
 
-    public static Color skyRainbow(int var2, float bright, float st, double speed) {
-        double v1 = Math.ceil((System.currentTimeMillis()/speed) + (var2 * 109L)) / 5;
-        return Color.getHSBColor((double) ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright);
-    }
-
     public static void drawRect(final double x, final double y, final double x2, final double y2, final int color) {
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);

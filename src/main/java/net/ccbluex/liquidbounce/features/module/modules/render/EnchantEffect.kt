@@ -19,7 +19,7 @@ class EnchantEffect : Module() {
     fun getColor():Color{
         return when(modeValue.get().toLowerCase()){
             "rainbow" -> ColorUtils.rainbow()
-            "anotherrainbow" -> RenderUtils.skyRainbow(10,0.9F,1F,1.0)
+            "anotherrainbow" -> ColorUtils.skyRainbow(10,0.9F,1F,1.0)
             else -> Color(redValue.get(),greenValue.get(),blueValue.get())
         }
     }
