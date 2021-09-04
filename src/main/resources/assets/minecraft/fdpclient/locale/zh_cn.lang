@@ -519,6 +519,7 @@ module.Fucker.value.SwitchDelay.name=切换延时
 module.Fucker.value.Rotations.name=转头
 module.Fucker.value.Surroundings.name=破坏周围
 module.Fucker.value.NoHit.name=无点击
+module.Fucker.value.Bypass.name=绕过
 
 module.Gapple.name=金苹果
 module.Gapple.description=自动吃金苹果

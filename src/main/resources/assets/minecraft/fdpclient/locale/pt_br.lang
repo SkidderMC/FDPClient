@@ -518,6 +518,7 @@ module.Fucker.value.SwitchDelay.name=SwitchDelay
 module.Fucker.value.Rotations.name=Rotações
 module.Fucker.value.Surroundings.name=Arredores
 module.Fucker.value.NoHit.name=NãoHita
+module.Fucker.value.Bypass.name=Ignorar
 
 module.Gapple.name=Maças
 module.Gapple.description=Comer Maças

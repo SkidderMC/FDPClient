@@ -15,11 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.isFullBlock
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
+import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.extensions.getBlock
 import net.ccbluex.liquidbounce.utils.extensions.getEyeVec3
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -27,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
+import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.util.BlockPos
@@ -51,6 +48,7 @@ object Fucker : Module() {
     private val rotationsValue = BoolValue("Rotations", true)
     private val surroundingsValue = BoolValue("Surroundings", true)
     private val noHitValue = BoolValue("NoHit", false)
+    private val bypassValue = BoolValue("Bypass", false)
 
 
     /**
@@ -61,6 +59,7 @@ object Fucker : Module() {
     private var oldPos: BlockPos? = null
     private var blockHitDelay = 0
     private val switchTimer = MSTimer()
+    private var isRealBlock = false
     var currentDamage = 0F
 
     @EventTarget
@@ -74,8 +73,8 @@ object Fucker : Module() {
 
         val targetId = blockValue.get()
 
-        if (pos == null || Block.getIdFromBlock(getBlock(pos)) != targetId ||
-                getCenterDistance(pos!!) > rangeValue.get())
+        if (pos == null || Block.getIdFromBlock(BlockUtils.getBlock(pos)) != targetId ||
+            BlockUtils.getCenterDistance(pos!!) > rangeValue.get())
             pos = find(targetId)
 
         // Reset current breaking when there is no target block
@@ -128,7 +127,7 @@ object Fucker : Module() {
 
         when {
             // Destory block
-            actionValue.get().equals("destroy", true) || surroundings -> {
+            actionValue.get().equals("destroy", true) || surroundings || !isRealBlock -> {
                 // Auto Tool
                 val autoTool = LiquidBounce.moduleManager[AutoTool::class.java]
                 if (autoTool.state)
@@ -191,17 +190,18 @@ object Fucker : Module() {
             }
 
             // Use block
-            actionValue.get().equals("use", true) -> if (mc.playerController.onPlayerRightClick(
-                            mc.thePlayer, mc.theWorld, mc.thePlayer.heldItem, pos, EnumFacing.DOWN,
-                            Vec3(currentPos.x.toDouble(), currentPos.y.toDouble(), currentPos.z.toDouble()))) {
-                if (swingValue.get().equals("Normal")) {
-                    mc.thePlayer.swingItem()
-                } else if (swingValue.get().equals("Packet")) {
-                    mc.netHandler.addToSendQueue(C0APacketAnimation())
+            actionValue.get().equals("use", true) ->{
+                if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.heldItem, pos, EnumFacing.DOWN,
+                        Vec3(currentPos.x.toDouble(), currentPos.y.toDouble(), currentPos.z.toDouble()))) {
+                    if (swingValue.get().equals("Normal")) {
+                        mc.thePlayer.swingItem()
+                    } else if (swingValue.get().equals("Packet")) {
+                        mc.netHandler.addToSendQueue(C0APacketAnimation())
+                    }
+                    blockHitDelay = 4
+                    currentDamage = 0F
+                    pos = null
                 }
-                blockHitDelay = 4
-                currentDamage = 0F
-                pos = null
             }
         }
     }
@@ -214,12 +214,25 @@ object Fucker : Module() {
     /**
      * Find new target block by [targetID]
      */
-    private fun find(targetID: Int) = searchBlocks(rangeValue.get().toInt() + 1)
+    private fun find(targetID: Int) : BlockPos? {
+        val block=BlockUtils.searchBlocks(rangeValue.get().toInt() + 1)
             .filter {
-                Block.getIdFromBlock(it.value) == targetID && getCenterDistance(it.key) <= rangeValue.get()
+                Block.getIdFromBlock(it.value) == targetID && BlockUtils.getCenterDistance(it.key) <= rangeValue.get()
                         && (isHitable(it.key) || surroundingsValue.get())
             }
-            .minBy { getCenterDistance(it.key) }?.key
+            .minBy { BlockUtils.getCenterDistance(it.key) }?.key ?: return null
+
+        if(bypassValue.get()){
+            val upBlock=block.up()
+            if(BlockUtils.getBlock(upBlock)!=Blocks.air){
+                isRealBlock=false
+                return upBlock
+            }
+        }
+
+        isRealBlock=true
+        return block
+    }
 
     /**
      * Check if block is hitable (or allowed to hit through walls)
@@ -234,12 +247,12 @@ object Fucker : Module() {
 
                 movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
             }
-            "around" -> !isFullBlock(blockPos.down()) || !isFullBlock(blockPos.up()) || !isFullBlock(blockPos.north())
-                    || !isFullBlock(blockPos.east()) || !isFullBlock(blockPos.south()) || !isFullBlock(blockPos.west())
+            "around" -> !BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north())
+                    || !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())
             else -> true
         }
     }
 
     override val tag: String
-        get() = getBlockName(blockValue.get())
+        get() = BlockUtils.getBlockName(blockValue.get())
 }
