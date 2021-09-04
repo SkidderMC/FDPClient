@@ -169,6 +169,13 @@ object ColorUtils {
         val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
         return Color(currentColor.red / 255.0F * 1.0F, currentColor.green / 255.0F * 1.0F, currentColor.blue / 255.0F * 1.0F, alpha)
     }
+    
+    @JvmStatic
+    fun astolfoRainbow(int delay,int offset, int index) {
+        double rainbowDelay = Math.ceil(System.currentTimeMillis() + (long)(delay * index)) / offset;
+        return Color.getHSBColor((double)((float)((rainbowDelay %= 360.0) / 360.0)) < 0.5 ? -((float)(rainbowDelay / 360.0)) : (float)(rainbowDelay / 360.0), 0.5F, 1.0F).getRGB();
+    }
+
 
     @JvmStatic
     fun fade(color: Color, index: Int, count: Int): Color {
