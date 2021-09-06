@@ -10,19 +10,12 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.zip.ZipInputStream
 
-
 object FileUtils {
     @JvmStatic
     fun unpackFile(file: File, name: String) {
         val fos = FileOutputStream(file)
         IOUtils.copy(FileUtils::class.java.classLoader.getResourceAsStream(name), fos)
         fos.close()
-    }
-
-    @JvmStatic
-    fun downloadFile(file: File, url: URL) {
-        ClientUtils.logWarn("Downloading $url to $file")
-        Files.copy(url.openStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
     }
 
     @JvmStatic

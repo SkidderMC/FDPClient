@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.ultralight.support.FileSystemAdapter
 import net.ccbluex.liquidbounce.ui.ultralight.view.View
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.FileUtils
+import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import org.apache.logging.log4j.LogManager
 import java.io.File
 import java.net.URL
@@ -91,7 +92,7 @@ object UltralightEngine {
 
         // download the natives
         val resourcesZip = File(resourcePath, "resources.zip")
-        FileUtils.downloadFile(resourcesZip, URL("${LiquidBounce.CLIENT_STORAGE}ultralight/$ULTRALIGHT_NATIVE_VERSION/${ClientUtils.osType.friendlyName}-x64.zip"))
+        HttpUtils.download("${LiquidBounce.CLIENT_STORAGE}ultralight/$ULTRALIGHT_NATIVE_VERSION/${ClientUtils.osType.friendlyName}-x64.zip", resourcesZip)
         FileUtils.extractZip(resourcesZip, resourcePath)
         resourcesZip.delete()
 
