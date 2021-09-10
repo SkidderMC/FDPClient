@@ -516,7 +516,7 @@ public class Fly extends Module {
                     }
                 }
             case "aac5.2.0-vanilla":
-                if(aac520view.get()&&modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")){
+                if(aac520view.get()&&modeValue.equals("AAC5.2.0-Vanilla")){
                     clonedPlayer.inventory.copyInventory(mc.thePlayer.inventory);
                     clonedPlayer.setHealth(mc.thePlayer.getHealth());
                     clonedPlayer.rotationYaw=mc.thePlayer.rotationYaw;
@@ -911,7 +911,7 @@ public class Fly extends Module {
 
     @EventTarget
     public void onMotion(final MotionEvent event) {
-        if(modeValue.get().equalsIgnoreCase("boosthypixel")) {
+        if(modeValue.equals("boosthypixel")) {
             if(event.isPre()){
                 hypixelTimer.update();
 
@@ -1037,7 +1037,7 @@ public class Fly extends Module {
                     mc.timer.timerSpeed = 1.3F;
                 }
                 aac5nextFlag=true;
-            }else if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla")&&aac520view.get()) {
+            }else if(modeValue.equals("AAC5.2.0-Vanilla")&&aac520view.get()) {
                 clonedPlayer.setPosition(s08.getX(), s08.getY(), s08.getZ());
             }else if(verusFlyable) {
                 verusFlyable = false;
@@ -1060,14 +1060,14 @@ public class Fly extends Module {
             if(mode.contains("AAC5.2.0"))
                 event.cancelEvent();
 
-            if(modeValue.get().equalsIgnoreCase("AAC5.2.0-Vanilla") || modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth")){
+            if(modeValue.equals("AAC5.2.0-Vanilla") || modeValue.equals("AAC5.2.0-Smooth")){
                 double f=mc.thePlayer.width/2.0;
                 // need to no collide else will flag
                 if(aac5nextFlag || !mc.theWorld.checkBlockCollision(new AxisAlignedBB(packetPlayer.x - f, packetPlayer.y, packetPlayer.z - f, packetPlayer.x + f, packetPlayer.y + mc.thePlayer.height, packetPlayer.z + f))){
                     aac5C03List.add(packetPlayer);
                     aac5nextFlag=false;
                     event.cancelEvent();
-                    if(!(modeValue.get().equalsIgnoreCase("AAC5.2.0-Smooth") && !flyTimer.hasTimePassed(1000))&&aac5C03List.size()>aac520Purse.get()) {
+                    if(!(modeValue.equals("AAC5.2.0-Smooth") && !flyTimer.hasTimePassed(1000))&&aac5C03List.size()>aac520Purse.get()) {
                         sendAAC5Packets();
                     }
                 }
@@ -1234,7 +1234,7 @@ public class Fly extends Module {
     private void sendAAC5Packets(){
         float yaw=mc.thePlayer.rotationYaw;
         float pitch=mc.thePlayer.rotationPitch;
-        if(aac520PacketMode.get().equalsIgnoreCase("Old")){
+        if(aac520PacketMode.get().equals("Old")){
             for(C03PacketPlayer packet : aac5C03List){
                 if(packet.isMoving()){
                     PacketUtils.sendPacketNoEvent(packet);
@@ -1243,10 +1243,10 @@ public class Fly extends Module {
                         pitch=packet.pitch;
                     }
                     if(aac520UseC04.get()){
-                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,1e+159,packet.z, true));
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,1e+308,packet.z, true));
                         PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(packet.x,packet.y,packet.z, true));
                     }else{
-                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,1e+159,packet.z, yaw, pitch, true));
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,1e+308,packet.z, yaw, pitch, true));
                         PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(packet.x,packet.y,packet.z, yaw, pitch, true));
                     }
                 }

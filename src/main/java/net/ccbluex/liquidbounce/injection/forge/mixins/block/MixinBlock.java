@@ -98,8 +98,8 @@ public abstract class MixinBlock {
             final NoFall noFall = LiquidBounce.moduleManager.getModule(NoFall.class);
             final Criticals criticals = LiquidBounce.moduleManager.getModule(Criticals.class);
 
-            if (noFall.getState() && noFall.modeValue.get().equalsIgnoreCase("NoGround") ||
-                    criticals.getState() && criticals.getModeValue().get().equalsIgnoreCase("NoGround")) {
+            if (noFall.getState() && noFall.modeValue.equals("NoGround") ||
+                    criticals.getState() && criticals.getModeValue().equals("NoGround")) {
                 f /= 5F;
             }
         }

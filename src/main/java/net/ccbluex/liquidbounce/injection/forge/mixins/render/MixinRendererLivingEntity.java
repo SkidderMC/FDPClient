@@ -89,7 +89,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 float gamma = mc.gameSettings.gammaSetting;
                 mc.gameSettings.gammaSetting = 100000F;
 
-                if (esp.getModeValue().get().equalsIgnoreCase("wireframe")) {
+                if (esp.getModeValue().equals("wireframe")) {
                     GL11.glPushMatrix();
                     GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
                     GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);

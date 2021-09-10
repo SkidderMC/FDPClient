@@ -31,7 +31,7 @@ import java.util.TimerTask;
 public class NoFall extends Module {
     public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage"}, "SpoofGround");
 
-    private final IntegerValue phaseOffsetValue = (IntegerValue) new IntegerValue("PhaseOffset",1,0,5).displayable(() -> modeValue.get().equalsIgnoreCase("Phase"));
+    private final IntegerValue phaseOffsetValue = (IntegerValue) new IntegerValue("PhaseOffset",1,0,5).displayable(() -> modeValue.equals("Phase"));
 
     private int state;
     private boolean jumped;
@@ -230,7 +230,7 @@ public class NoFall extends Module {
 
     @EventTarget
     public void onMotion(final MotionEvent event){
-        if(modeValue.get().equalsIgnoreCase("AACv4")&&event.isPre()){
+        if(modeValue.equals("AACv4")&&event.isPre()){
             if (!inVoid()) {
                 if (aac4Fakelag) {
                     aac4Fakelag = false;
@@ -317,7 +317,7 @@ public class NoFall extends Module {
         if(BlockUtils.collideBlock(mc.thePlayer.getEntityBoundingBox(), block -> block instanceof BlockLiquid) || BlockUtils.collideBlock(new AxisAlignedBB(mc.thePlayer.getEntityBoundingBox().maxX, mc.thePlayer.getEntityBoundingBox().maxY, mc.thePlayer.getEntityBoundingBox().maxZ, mc.thePlayer.getEntityBoundingBox().minX, mc.thePlayer.getEntityBoundingBox().minY - 0.01D, mc.thePlayer.getEntityBoundingBox().minZ), block -> block instanceof BlockLiquid))
             return;
 
-        if (modeValue.get().equalsIgnoreCase("laac")) {
+        if (modeValue.equals("laac")) {
             if (!jumped && !mc.thePlayer.onGround && !mc.thePlayer.isOnLadder() && !mc.thePlayer.isInWater() && !mc.thePlayer.isInWeb && mc.thePlayer.motionY < 0D) {
                 event.setX(0);
                 event.setZ(0);
