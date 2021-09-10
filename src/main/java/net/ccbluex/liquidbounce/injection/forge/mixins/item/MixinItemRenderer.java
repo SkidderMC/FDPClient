@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.MathHelper;
@@ -114,11 +115,11 @@ public abstract class MixinItemRenderer {
         if (this.itemToRender != null) {
             final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
 
-            if (this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
+            if (this.itemToRender.getItem() instanceof ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
-            } else if (abstractclientplayer.getItemInUseCount() > 0 || (itemToRender.getItem() instanceof ItemSword
+            } else if (abstractclientplayer.isUsingItem() || ((itemToRender.getItem() instanceof ItemSword || animations.getAnythingBlock().get())
                     && ((killAura.getAutoBlockValue().get().equalsIgnoreCase("Fake")&&killAura.getTarget()!=null) || killAura.getBlockingStatus()))) {
-                EnumAction enumaction = killAura.getBlockingStatus() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
+                EnumAction enumaction = killAura.getBlockingStatus() || animations.getAnythingBlock().get() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
                 switch(enumaction) {
                     case NONE:
                         this.transformFirstPersonItem(f, 0.0F);
