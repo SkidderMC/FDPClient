@@ -800,6 +800,12 @@ module.NoSlow.value.CustomOnGround.name=CustomOnGround
 module.NoSlow.value.CustomDelay.name=CustomDelay
 module.NoSlow.value.PacketMode.name=PacketMode
 module.NoSlow.value.Soulsand.name=Soulsand
+module.NoSlow.value.Teleport.name=Teleport
+module.NoSlow.value.TeleportMode.name=TeleportMode
+module.NoSlow.value.TeleportNoApply.name=TeleportNoApply
+module.NoSlow.value.Teleport-CustomSpeed.name=Teleport-CustomSpeed
+module.NoSlow.value.Teleport-CustomY.name=Teleport-CustomY
+module.NoSlow.value.Teleport-DecreasePercent.name=Teleport-DecreasePercent
 
 module.NoSlowBreak.name=NoSlowBreak
 module.NoSlowBreak.description=Automatically adjusts breaking speed when using modules that influence it

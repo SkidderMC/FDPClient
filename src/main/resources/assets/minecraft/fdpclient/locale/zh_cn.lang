@@ -788,6 +788,12 @@ module.NoSlow.value.CustomOnGround.name=自定义在地面
 module.NoSlow.value.CustomDelay.name=自定义延时
 module.NoSlow.value.PacketMode.name=发包模式
 module.NoSlow.value.Soulsand.name=灵魂沙
+module.NoSlow.value.Teleport.name=传送
+module.NoSlow.value.TeleportMode.name=传送模式
+module.NoSlow.value.TeleportNoApply.name=传送无接受包
+module.NoSlow.value.Teleport-CustomSpeed.name=传送-自定义速度
+module.NoSlow.value.Teleport-CustomY.name=传送-自定义Y
+module.NoSlow.value.Teleport-DecreasePercent.name=传送-减少百分比
 
 module.NoSlowBreak.name=挖掘不减速
 module.NoSlowBreak.description=防止挖掘被打断

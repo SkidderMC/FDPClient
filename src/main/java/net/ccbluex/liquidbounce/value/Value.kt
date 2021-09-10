@@ -48,6 +48,14 @@ abstract class Value<T>(val name: String, protected var value: T) {
 
     fun get() = value
 
+    override fun equals(other: Any?): Boolean {
+        other ?: return false
+        if(value is String && other is String){
+            return (value as String).equals(other, true)
+        }
+        return value?.equals(other) ?: false
+    }
+
     fun setDefault(){
         value=default
     }
