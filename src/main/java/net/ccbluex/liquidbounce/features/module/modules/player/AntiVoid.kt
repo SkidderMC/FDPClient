@@ -22,9 +22,9 @@ class AntiVoid : Module() {
     private val fallModeValue=ListValue("FallCheckMode", arrayOf("GroundDist","PredictFall","FallDist"),"FallDist")
     private val maxFallDistValue=FloatValue("MaxFallDistance",10F,5F,20F)
     private val resetMotion=BoolValue("ResetMotion",false)
-    private val startFallDistValue=FloatValue("BlinkStartFallDistance",2F,0F,5F).displayable { modeValue.get().equals("Blink",true) }
-    private val autoScaffold=BoolValue("BlinkAutoScaffold",true).displayable { modeValue.get().equals("Blink",true) }
-    private val voidOnly=BoolValue("OnlyVoid", true).displayable { modeValue.get().equals("TestHypixel",true) }
+    private val startFallDistValue=FloatValue("BlinkStartFallDistance",2F,0F,5F).displayable { modeValue.equals("Blink") }
+    private val autoScaffold=BoolValue("BlinkAutoScaffold",true).displayable { modeValue.equals("Blink") }
+    private val voidOnly=BoolValue("OnlyVoid", true).displayable { modeValue.equals("TestHypixel") }
 
     private val packetCache=ArrayList<C03PacketPlayer>()
     private var blink=false

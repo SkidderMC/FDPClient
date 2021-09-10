@@ -44,7 +44,7 @@ class Criticals : Module() {
     var jState = 0
     var aacLastState = false
     override fun onEnable() {
-        if (modeValue.get().equals("NoGround", ignoreCase = true))
+        if (modeValue.equals("NoGround"))
             mc.thePlayer.jump()
         jState = 0
     }

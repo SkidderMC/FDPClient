@@ -122,7 +122,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
             GlStateManager.resetColor()
 
             var listColor=textColor
-            if(!serverValue.get().equals("none",true)){
+            if(!serverValue.equals("none")){
                 for(domain in allowedDomains){
                     if(name.contains(domain,true)){
                         name=when(serverValue.get().toLowerCase()){

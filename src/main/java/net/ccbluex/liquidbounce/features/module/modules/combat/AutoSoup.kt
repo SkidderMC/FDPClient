@@ -46,7 +46,7 @@ class AutoSoup : Module() {
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(soupInHotbar - 36))
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer
                     .getSlot(soupInHotbar).stack))
-            if (bowlValue.get().equals("Drop", true))
+            if (bowlValue.equals("Drop"))
                 mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM,
                         BlockPos.ORIGIN, EnumFacing.DOWN))
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
@@ -55,7 +55,7 @@ class AutoSoup : Module() {
         }
 
         val bowlInHotbar = InventoryUtils.findItem(36, 45, Items.bowl)
-        if (bowlValue.get().equals("Move", true) && bowlInHotbar != -1) {
+        if (bowlValue.equals("Move") && bowlInHotbar != -1) {
             if (openInventoryValue.get() && mc.currentScreen !is GuiInventory)
                 return
 

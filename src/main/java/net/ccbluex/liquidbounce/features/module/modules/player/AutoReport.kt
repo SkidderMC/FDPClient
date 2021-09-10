@@ -45,7 +45,7 @@ class AutoReport : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
-        if(modeValue.get().equals("All",true)&&delayTimer.hasTimePassed(allDelayValue.get().toLong())){
+        if(modeValue.equals("All")&&delayTimer.hasTimePassed(allDelayValue.get().toLong())){
             for(entity in mc.theWorld.loadedEntityList){
                 if(isTarget(entity)){
                     if(doReport(entity as EntityPlayer)&&allDelayValue.get()!=0)

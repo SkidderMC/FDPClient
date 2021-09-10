@@ -94,7 +94,7 @@ class NoWeb : Module() {
         }
     }
     fun onJump(event : JumpEvent){
-        if(modeValue.get().equals("AACv4", true))
+        if(modeValue.equals("AACv4"))
             event.cancelEvent()
     }
 

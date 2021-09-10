@@ -35,9 +35,9 @@ class AntiFireBall : Module() {
 
                 mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
-                if (swingValue.get().equals("Normal")) {
+                if (swingValue.equals("Normal")) {
                     mc.thePlayer.swingItem()
-                } else if (swingValue.get().equals("Packet")) {
+                } else if (swingValue.equals("Packet")) {
                     mc.netHandler.addToSendQueue(C0APacketAnimation())
                 }
 

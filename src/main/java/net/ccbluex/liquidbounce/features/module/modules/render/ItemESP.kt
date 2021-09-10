@@ -28,7 +28,7 @@ import java.awt.Color
 class ItemESP : Module() {
     private val modeValue =
         ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "ShaderOutline", "ShaderGlow"), "Box")
-    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.get().equals("Outline",true) }
+    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
     private val colorRedValue = IntegerValue("R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("G", 255, 0, 255)
     private val colorBlueValue = IntegerValue("B", 0, 0, 255)
@@ -53,7 +53,7 @@ class ItemESP : Module() {
 
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
-        val shader = (if (modeValue.get().equals("shaderoutline", ignoreCase = true)) OutlineShader.OUTLINE_SHADER else if (modeValue.get().equals("shaderglow", ignoreCase = true)) GlowShader.GLOW_SHADER else null)
+        val shader = (if (modeValue.equals("shaderoutline")) OutlineShader.OUTLINE_SHADER else if (modeValue.equals("shaderglow")) GlowShader.GLOW_SHADER else null)
             ?: return
         val partialTicks = event.partialTicks
 

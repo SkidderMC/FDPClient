@@ -111,7 +111,7 @@ object AntiBot : Module() {
             return true
 
         if (tabValue.get()) {
-            val equals = tabModeValue.get().equals("Equals", ignoreCase = true)
+            val equals = tabModeValue.equals("Equals")
             val targetName = stripColor(entity.displayName!!.formattedText)
 
             if (targetName != null) {

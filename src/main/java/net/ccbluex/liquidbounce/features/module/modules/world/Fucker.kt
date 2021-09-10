@@ -127,7 +127,7 @@ object Fucker : Module() {
 
         when {
             // Destory block
-            actionValue.get().equals("destroy", true) || surroundings || !isRealBlock -> {
+            actionValue.equals("destroy") || surroundings || !isRealBlock -> {
                 // Auto Tool
                 val autoTool = LiquidBounce.moduleManager[AutoTool::class.java]
                 if (autoTool.state)
@@ -138,9 +138,9 @@ object Fucker : Module() {
                     // CivBreak style block breaking
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
                             currentPos, EnumFacing.DOWN))
-                    if (swingValue.get().equals("Normal")) {
+                    if (swingValue.equals("Normal")) {
                         mc.thePlayer.swingItem()
-                    } else if (swingValue.get().equals("Packet")) {
+                    } else if (swingValue.equals("Packet")) {
                         mc.netHandler.addToSendQueue(C0APacketAnimation())
                     }
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
@@ -158,9 +158,9 @@ object Fucker : Module() {
 
                     if (mc.thePlayer.capabilities.isCreativeMode ||
                             block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, pos) >= 1.0F) {
-                        if (swingValue.get().equals("Normal")) {
+                        if (swingValue.equals("Normal")) {
                             mc.thePlayer.swingItem()
-                        } else if (swingValue.get().equals("Packet")) {
+                        } else if (swingValue.equals("Packet")) {
                             mc.netHandler.addToSendQueue(C0APacketAnimation())
                         }
                         mc.playerController.onPlayerDestroyBlock(pos, EnumFacing.DOWN)
@@ -171,9 +171,9 @@ object Fucker : Module() {
                     }
                 }
 
-                if (swingValue.get().equals("Normal")) {
+                if (swingValue.equals("Normal")) {
                     mc.thePlayer.swingItem()
-                } else if (swingValue.get().equals("Packet")) {
+                } else if (swingValue.equals("Packet")) {
                     mc.netHandler.addToSendQueue(C0APacketAnimation())
                 }
                 currentDamage += block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, currentPos)
@@ -190,12 +190,12 @@ object Fucker : Module() {
             }
 
             // Use block
-            actionValue.get().equals("use", true) ->{
+            actionValue.equals("use") ->{
                 if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.heldItem, pos, EnumFacing.DOWN,
                         Vec3(currentPos.x.toDouble(), currentPos.y.toDouble(), currentPos.z.toDouble()))) {
-                    if (swingValue.get().equals("Normal")) {
+                    if (swingValue.equals("Normal")) {
                         mc.thePlayer.swingItem()
-                    } else if (swingValue.get().equals("Packet")) {
+                    } else if (swingValue.equals("Packet")) {
                         mc.netHandler.addToSendQueue(C0APacketAnimation())
                     }
                     blockHitDelay = 4

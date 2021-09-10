@@ -21,7 +21,7 @@ class Animations : Module() {
     )
 
     val modeValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Slide")
-    val timeValue = IntegerValue("InvTime",500,100,500).displayable { !modeValue.get().equals("None",true) }
+    val timeValue = IntegerValue("InvTime",500,100,500).displayable { !modeValue.equals("None") }
     val translateX = FloatValue("TranslateX", 0.0f, 0.0f, 1.5f)
     val translateY = FloatValue("TranslateY", 0.0f, 0.0f, 0.5f)
     val translateZ = FloatValue("TranslateZ", 0.0f, 0.0f, -2.0f)

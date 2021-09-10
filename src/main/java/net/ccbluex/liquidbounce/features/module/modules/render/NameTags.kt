@@ -36,8 +36,8 @@ class NameTags : Module() {
     private val fontValue = FontValue("Font", Fonts.font40)
     private val borderValue = BoolValue("Border", true)
     private val hackerValue = BoolValue("Hacker", true)
-    private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.get().equals("Jello",true) }
-    private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.get().equals("Jello",true) }
+    private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
+    private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.equals("Jello") }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
 
     @EventTarget
@@ -46,7 +46,7 @@ class NameTags : Module() {
             if(EntityUtils.isSelected(entity, false)) {
                 renderNameTag(entity as EntityLivingBase,
                     if(hackerValue.get()&&(LiquidBounce.moduleManager.getModule(HackerDetector::class.java)).isHacker(entity))
-                    { "§c" }else{ "" } + if(!modeValue.get().equals("Liquid",ignoreCase = true)&&AntiBot.isBot(entity)){ "§e" }else{ "" }
+                    { "§c" }else{ "" } + if(!modeValue.equals("Liquid")&&AntiBot.isBot(entity)){ "§e" }else{ "" }
                             + if (clearNamesValue.get()){ entity.name } else { entity.getDisplayName().unformattedText })
             }
         }

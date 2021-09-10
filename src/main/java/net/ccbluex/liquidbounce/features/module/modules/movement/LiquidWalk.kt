@@ -26,7 +26,7 @@ class LiquidWalk : Module() {
     val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Twilight", "Matrix", "Dolphin", "Legit"), "Vanilla")
     private val noJumpValue = BoolValue("NoJump", false)
     private val jumpMotionValue = FloatValue("JumpMotion", 0.5f, 0.1f, 1f)
-        .displayable { modeValue.get().equals("Jump", ignoreCase = true) || modeValue.get().equals("AACFly", ignoreCase = true) }
+        .displayable { modeValue.equals("Jump") || modeValue.equals("AACFly") }
 
     private var nextTick = false
 
@@ -169,7 +169,7 @@ class LiquidWalk : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (mc.thePlayer == null || !modeValue.get().equals("NCP", ignoreCase = true))
+        if (mc.thePlayer == null || !modeValue.equals("NCP"))
             return
 
         if (event.packet is C03PacketPlayer) {

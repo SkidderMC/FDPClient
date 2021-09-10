@@ -40,7 +40,7 @@ class AutoPlay : Module(){
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if(modeValue.get().equals("RedeSky",true)){
+        if(modeValue.equals("RedeSky")){
             if(clicking&&(packet is C0EPacketClickWindow||packet is C07PacketPlayerDigging)){
                 event.cancelEvent()
                 return

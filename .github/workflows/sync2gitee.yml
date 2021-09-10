@@ -7,16 +7,12 @@ name: sync2gitee
 
 on:
   push:
-  schedule:
-    # UTC 17:00 -> CST (China) 1:00 see https://datetime360.com/cn/utc-cst-china-time/
-    - cron: '1 17 * * *'
 
 jobs:
   run:
     name: Sync GitHub to Gitee
     runs-on: ubuntu-latest
     steps:
-
       - name: Get current repository name
         id: info
         uses: actions/github-script@v3.1

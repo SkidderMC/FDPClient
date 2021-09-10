@@ -32,7 +32,7 @@ class Step : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC4.4.0", "Spartan", "Rewinside"), "NCP")
 
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
-    private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.get().equals("Jump", true) }
+    private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
 
     /**
@@ -62,10 +62,10 @@ class Step : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if(modeValue.get().equals("AAC4.4.0", ignoreCase = true) && !(mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
+        if(modeValue.equals("AAC4.4.0") && !(mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
             mc.thePlayer.stepHeight = 0.6F
             //chat("cancelStepA"+lastTickOnGround+mc.thePlayer.isCollidedHorizontally+mc.thePlayer.onGround)
-        }else if(modeValue.get().equals("AAC4.4.0", ignoreCase = true)) mc.thePlayer.stepHeight = 2.0F
+        }else if(modeValue.equals("AAC4.4.0")) mc.thePlayer.stepHeight = 2.0F
         //chat("WTF?"+wasTimer)
         if(wasTimer) {
             wasTimer = false
@@ -348,7 +348,7 @@ class Step : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (packet is C03PacketPlayer && isStep && modeValue.get().equals("OldNCP", ignoreCase = true)) {
+        if (packet is C03PacketPlayer && isStep && modeValue.equals("OldNCP")) {
             packet.y += 0.07
             isStep = false
         }

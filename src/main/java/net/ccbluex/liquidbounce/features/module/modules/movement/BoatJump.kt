@@ -22,7 +22,7 @@ class BoatJump : Module() {
     private val mode=ListValue("Mode", arrayOf("Boost","Launch"),"Boost")
     private val hBoost=FloatValue("HBoost",3F,0F,6F)
     private val vBoost=FloatValue("VBoost",3F,0F,6F)
-    private val launchRadius=FloatValue("LaunchRadius",4F,3F,10F).displayable { mode.get().equals("Launch",true) }
+    private val launchRadius=FloatValue("LaunchRadius",4F,3F,10F).displayable { mode.equals("Launch") }
     private val delay=IntegerValue("Delay",200,100,500)
     private val autoHit=BoolValue("AutoHit",true)
 

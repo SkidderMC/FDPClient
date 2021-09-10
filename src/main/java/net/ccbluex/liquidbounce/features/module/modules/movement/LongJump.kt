@@ -27,28 +27,28 @@ class LongJump : Module() {
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
     // redesky
-    private val rsJumpMovementValue = FloatValue("RedeSkyJumpMovement",0.13F,0.05F,0.25F).displayable { modeValue.get().equals("RedeSky",true) }
-    private val rsMotionYValue = FloatValue("RedeSkyMotionY",0.81F,0.05F,1F).displayable { modeValue.get().equals("RedeSky",true) }
-    private val rsMoveReducerValue = BoolValue("RedeSkyMovementReducer", true).displayable { modeValue.get().equals("RedeSky",true) }
-    private val rsReduceMovementValue = FloatValue("RedeSkyReduceMovement",0.08F,0.05F,0.25F).displayable { modeValue.get().equals("RedeSky",true) }
-    private val rsMotYReducerValue = BoolValue("RedeSkyMotionYReducer", true).displayable { modeValue.get().equals("RedeSky",true) }
-    private val rsReduceYMotionValue = FloatValue("RedeSkyReduceYMotion",0.15F,0.01F,0.20F).displayable { modeValue.get().equals("RedeSky",true) }
-    private val rsUseTimerValue = BoolValue("RedeSkyTimer", true).displayable { modeValue.get().equals("RedeSky",true) }
-    private val rsTimerValue = FloatValue("RedeSkyTimer",0.30F,0.1F,1F).displayable { modeValue.get().equals("RedeSky",true) }
+    private val rsJumpMovementValue = FloatValue("RedeSkyJumpMovement",0.13F,0.05F,0.25F).displayable { modeValue.equals("RedeSky") }
+    private val rsMotionYValue = FloatValue("RedeSkyMotionY",0.81F,0.05F,1F).displayable { modeValue.equals("RedeSky") }
+    private val rsMoveReducerValue = BoolValue("RedeSkyMovementReducer", true).displayable { modeValue.equals("RedeSky") }
+    private val rsReduceMovementValue = FloatValue("RedeSkyReduceMovement",0.08F,0.05F,0.25F).displayable { modeValue.equals("RedeSky") }
+    private val rsMotYReducerValue = BoolValue("RedeSkyMotionYReducer", true).displayable { modeValue.equals("RedeSky") }
+    private val rsReduceYMotionValue = FloatValue("RedeSkyReduceYMotion",0.15F,0.01F,0.20F).displayable { modeValue.equals("RedeSky") }
+    private val rsUseTimerValue = BoolValue("RedeSkyTimer", true).displayable { modeValue.equals("RedeSky") }
+    private val rsTimerValue = FloatValue("RedeSkyTimer",0.30F,0.1F,1F).displayable { modeValue.equals("RedeSky") }
 
     // redesky2
-    private val rs2AirSpeedValue = FloatValue("RedeSky2AirSpeed",0.1F,0.05F,0.25F).displayable { modeValue.get().equals("RedeSky2",true) }
-    private val rs2MinAirSpeedValue = FloatValue("RedeSky2MinAirSpeed",0.08F,0.05F,0.25F).displayable { modeValue.get().equals("RedeSky2",true) }
-    private val rs2ReduceAirSpeedValue = FloatValue("RedeSky2ReduceAirSpeed",0.16F,0.05F,0.25F).displayable { modeValue.get().equals("RedeSky2",true) }
-    private val rs2AirSpeedReducerValue = BoolValue("RedeSky2AirSpeedReducer", true).displayable { modeValue.get().equals("RedeSky2",true) }
-    private val rs2YMotionValue = FloatValue("RedeSky2YMotion",0.08F,0.01F,0.20F).displayable { modeValue.get().equals("RedeSky2",true) }
-    private val rs2MinYMotionValue = FloatValue("RedeSky2MinYMotion",0.04F,0.01F,0.20F).displayable { modeValue.get().equals("RedeSky2",true) }
-    private val rs2ReduceYMotionValue = FloatValue("RedeSky2ReduceYMotion",0.15F,0.01F,0.20F).displayable { modeValue.get().equals("RedeSky2",true) }
-    private val rs2YMotionReducerValue = BoolValue("RedeSky2YMotionReducer", true).displayable { modeValue.get().equals("RedeSky2",true) }
-    private val rs3JumpTimeValue= IntegerValue("RedeSky3JumpTime",500,300,1500).displayable { modeValue.get().equals("RedeSky3",true) }
-    private val rs3BoostValue= FloatValue("RedeSky3Boost",1F,0.3F,1.5F).displayable { modeValue.get().equals("RedeSky3",true) }
-    private val rs3HeightValue= FloatValue("RedeSky3Height",1F,0.3F,1.5F).displayable { modeValue.get().equals("RedeSky3",true) }
-    private val rs3TimerValue = FloatValue("RedeSky3Timer",1F,0.1F,5F).displayable { modeValue.get().equals("RedeSky3",true) }
+    private val rs2AirSpeedValue = FloatValue("RedeSky2AirSpeed",0.1F,0.05F,0.25F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2MinAirSpeedValue = FloatValue("RedeSky2MinAirSpeed",0.08F,0.05F,0.25F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2ReduceAirSpeedValue = FloatValue("RedeSky2ReduceAirSpeed",0.16F,0.05F,0.25F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2AirSpeedReducerValue = BoolValue("RedeSky2AirSpeedReducer", true).displayable { modeValue.equals("RedeSky2") }
+    private val rs2YMotionValue = FloatValue("RedeSky2YMotion",0.08F,0.01F,0.20F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2MinYMotionValue = FloatValue("RedeSky2MinYMotion",0.04F,0.01F,0.20F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2ReduceYMotionValue = FloatValue("RedeSky2ReduceYMotion",0.15F,0.01F,0.20F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2YMotionReducerValue = BoolValue("RedeSky2YMotionReducer", true).displayable { modeValue.equals("RedeSky2") }
+    private val rs3JumpTimeValue= IntegerValue("RedeSky3JumpTime",500,300,1500).displayable { modeValue.equals("RedeSky3") }
+    private val rs3BoostValue= FloatValue("RedeSky3Boost",1F,0.3F,1.5F).displayable { modeValue.equals("RedeSky3") }
+    private val rs3HeightValue= FloatValue("RedeSky3Height",1F,0.3F,1.5F).displayable { modeValue.equals("RedeSky3") }
+    private val rs3TimerValue = FloatValue("RedeSky3Timer",1F,0.1F,5F).displayable { modeValue.equals("RedeSky3") }
 
     // settings
     private val autoJumpValue = BoolValue("AutoJump", true)

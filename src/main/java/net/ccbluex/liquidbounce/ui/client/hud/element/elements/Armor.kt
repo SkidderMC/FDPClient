@@ -56,7 +56,7 @@ class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
             GL11.glPopMatrix()
         }
 
-        return if (modeValue.get().equals("Horizontal", true))
+        return if (modeValue.equals("Horizontal"))
             Border(0F, 0F, 72F, 17F)
         else
             Border(0F, 0F, 18F, 72F)

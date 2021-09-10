@@ -48,14 +48,6 @@ abstract class Value<T>(val name: String, protected var value: T) {
 
     fun get() = value
 
-    override fun equals(other: Any?): Boolean {
-        other ?: return false
-        if(value is String && other is String){
-            return (value as String).equals(other, true)
-        }
-        return value?.equals(other) ?: false
-    }
-
     fun setDefault(){
         value=default
     }
@@ -69,4 +61,22 @@ abstract class Value<T>(val name: String, protected var value: T) {
 
     protected open fun onChange(oldValue: T, newValue: T) {}
     protected open fun onChanged(oldValue: T, newValue: T) {}
+
+    // this is better api for ListValue and TextValue
+
+    override fun equals(other: Any?):Boolean {
+        other ?: return false
+        if(value is String && other is String){
+            return (value as String).equals(other, true)
+        }
+        return value?.equals(other) ?: false
+    }
+
+    fun contains(text: String/*, ignoreCase: Boolean*/):Boolean {
+        return if(value is String){
+            (value as String).contains(text, true)
+        }else{
+            false
+        }
+    }
 }

@@ -38,11 +38,11 @@ class ESP : Module() {
         arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "CSGO", "Outline", "ShaderOutline", "ShaderGlow", "Jello"),
         "Jello"
     )
-    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.get().equals("Outline",true) }
-    val wireframeWidth = FloatValue("WireFrame-Width", 2f, 0.5f, 5f).displayable { modeValue.get().equals("WireFrame",true) }
-    private val shaderOutlineRadius = FloatValue("ShaderOutline-Radius", 1.35f, 1f, 2f).displayable { modeValue.get().equals("ShaderOutline",true) }
-    private val shaderGlowRadius = FloatValue("ShaderGlow-Radius", 2.3f, 2f, 3f).displayable { modeValue.get().equals("ShaderGlow",true) }
-    private val CSGOWidth = FloatValue("CSGO-Width", 2f, 0.5f, 5f).displayable { modeValue.get().equals("CSGO",true) }
+    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
+    val wireframeWidth = FloatValue("WireFrame-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("WireFrame") }
+    private val shaderOutlineRadius = FloatValue("ShaderOutline-Radius", 1.35f, 1f, 2f).displayable { modeValue.equals("ShaderOutline") }
+    private val shaderGlowRadius = FloatValue("ShaderGlow-Radius", 2.3f, 2f, 3f).displayable { modeValue.equals("ShaderGlow") }
+    private val CSGOWidth = FloatValue("CSGO-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("CSGO") }
     private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorTeam.get() }
     private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorTeam.get() }
     private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorTeam.get() }

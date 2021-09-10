@@ -108,10 +108,10 @@ class KillAura : Module() {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
         }
-    }.displayable { !autoBlockValue.get().equals("Off",true) }
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"),"AfterTick").displayable { !autoBlockValue.get().equals("Off",true) }
-    private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true).displayable { !autoBlockValue.get().equals("Off",true) }
-    private val blockRate = IntegerValue("BlockRate", 100, 1, 100).displayable { !autoBlockValue.get().equals("Off",true) }
+    }.displayable { !autoBlockValue.equals("Off") }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"),"AfterTick").displayable { !autoBlockValue.equals("Off") }
+    private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true).displayable { !autoBlockValue.equals("Off") }
+    private val blockRate = IntegerValue("BlockRate", 100, 1, 100).displayable { !autoBlockValue.equals("Off") }
 
     // Raycast
     private val raycastValue = BoolValue("RayCast", true)
@@ -139,7 +139,7 @@ class KillAura : Module() {
 
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { maxTurnSpeed.get()>0f }
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && maxTurnSpeed.get()>0f }
-    private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.get().equals("Off",true) }
+    private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
     private val randomCenterValue = BoolValue("RandomCenter", false).displayable { maxTurnSpeed.get()>0f }
     private val outborderValue = BoolValue("Outborder", false).displayable { maxTurnSpeed.get()>0f }
     private val hitableValue = BoolValue("AlwaysHitable",true).displayable { maxTurnSpeed.get()>0f }
@@ -167,8 +167,8 @@ class KillAura : Module() {
     private val fakeSwingValue = BoolValue("FakeSwing", true).displayable { failRateValue.get()!=0f }
     private val noInventoryAttackValue = BoolValue("NoInvAttack", false)
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500)
-    private val switchDelayValue = IntegerValue("SwitchDelay",300 ,1, 2000).displayable { targetModeValue.get().equals("Switch",true) }
-    private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.get().equals("Multi",true) }
+    private val switchDelayValue = IntegerValue("SwitchDelay",300 ,1, 2000).displayable { targetModeValue.equals("Switch") }
+    private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
 
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
@@ -239,7 +239,7 @@ class KillAura : Module() {
 
         if (!event.isPre()) {
             // AutoBlock
-            if (!autoBlockValue.get().equals("off",true) && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.get().equals("AfterAttack",true)||discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)>maxRange }.isNotEmpty()) && canBlock) {
+            if (!autoBlockValue.equals("off") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")||discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)>maxRange }.isNotEmpty()) && canBlock) {
                 val target=discoveredTargets[0]
                 if(mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get())
                     startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target)<maxRange))
@@ -254,7 +254,7 @@ class KillAura : Module() {
             return
         }
 
-        if (rotationStrafeValue.get().equals("Off", true))
+        if (rotationStrafeValue.equals("Off"))
             update()
 
         if (target != null && currentTarget != null) {
@@ -270,7 +270,7 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        if (rotationStrafeValue.get().equals("Off", true) && !mc.thePlayer.isRiding)
+        if (rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding)
             return
 
         update()
@@ -332,7 +332,7 @@ class KillAura : Module() {
         // Target
         currentTarget = target
 
-        if (!targetModeValue.get().equals("Switch", ignoreCase = true) && EntityUtils.isSelected(currentTarget, true))
+        if (!targetModeValue.equals("Switch") && EntityUtils.isSelected(currentTarget, true))
             target = currentTarget
     }
 
@@ -360,7 +360,7 @@ class KillAura : Module() {
             return
         }
 
-        if (!rotationStrafeValue.get().equals("Off", true) && !mc.thePlayer.isRiding)
+        if (!rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding)
             return
 
         if (mc.thePlayer.isRiding)
@@ -599,7 +599,7 @@ class KillAura : Module() {
             }
         } else {
             // Attack
-            if (!targetModeValue.get().equals("Multi", ignoreCase = true)) {
+            if (!targetModeValue.equals("Multi")) {
                 attackEntity(currentTarget!!)
             } else {
                 inRangeDiscoveredTargets.forEachIndexed { index, entity ->
@@ -608,7 +608,7 @@ class KillAura : Module() {
                 }
             }
 
-            if(targetModeValue.get().equals("Switch", true)){
+            if(targetModeValue.equals("Switch")){
                 if(switchTimer.hasTimePassed(switchDelayValue.get().toLong())){
                     prevTargetEntities.add(if (aacValue.get()) target!!.entityId else currentTarget!!.entityId)
                     switchTimer.reset()
@@ -636,7 +636,7 @@ class KillAura : Module() {
         // Settings
         val hurtTime = hurtTimeValue.get()
         val fov = fovValue.get()
-        val switchMode = targetModeValue.get().equals("Switch", ignoreCase = true)
+        val switchMode = targetModeValue.equals("Switch")
 
         // Find possible targets
         discoveredTargets.clear()
@@ -690,7 +690,7 @@ class KillAura : Module() {
      */
     private fun attackEntity(entity: EntityLivingBase) {
         // Stop blocking
-        if (!autoBlockPacketValue.get().equals("Vanilla",true)&&(mc.thePlayer.isBlocking || blockingStatus)) {
+        if (!autoBlockPacketValue.equals("Vanilla")&&(mc.thePlayer.isBlocking || blockingStatus)) {
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
         }
@@ -737,8 +737,8 @@ class KillAura : Module() {
         }
 
         // Start blocking after attack
-        if (mc.thePlayer.isBlocking || (!autoBlockValue.get().equals("off",true) && canBlock)) {
-            if(autoBlockPacketValue.get().equals("AfterTick",true))
+        if (mc.thePlayer.isBlocking || (!autoBlockValue.equals("off") && canBlock)) {
+            if(autoBlockPacketValue.equals("AfterTick"))
                 return
 
             if (!(blockRate.get() > 0 && Random().nextInt(100) <= blockRate.get()))
@@ -818,7 +818,7 @@ class KillAura : Module() {
      * Start blocking
      */
     private fun startBlocking(interactEntity: Entity, interact: Boolean) {
-        if(autoBlockValue.get().equals("range",true) && mc.thePlayer.getDistanceToEntityBox(interactEntity)>autoBlockRangeValue.get())
+        if(autoBlockValue.equals("range") && mc.thePlayer.getDistanceToEntityBox(interactEntity)>autoBlockRangeValue.get())
             return
 
         if(blockingStatus)
@@ -899,7 +899,7 @@ class KillAura : Module() {
      */
     override val tag: String
         get() = "${minCPS.get()}-${maxCPS.get()}, " +
-                "$maxRange${if(!autoBlockValue.get().equals("Off",true)){"-${autoBlockRangeValue.get()}"}else{""}}-${discoverRangeValue.get()}, " +
-                "${if(targetModeValue.get().equals("Switch",true)){ "SW" }else{targetModeValue.get().substring(0,1).toUpperCase()}}, " +
+                "$maxRange${if(!autoBlockValue.equals("Off")){"-${autoBlockRangeValue.get()}"}else{""}}-${discoverRangeValue.get()}, " +
+                "${if(targetModeValue.equals("Switch")){ "SW" }else{targetModeValue.get().substring(0,1).toUpperCase()}}, " +
                 priorityValue.get().substring(0,1).toUpperCase()
 }
