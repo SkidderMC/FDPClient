@@ -68,21 +68,26 @@ class Speed : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        if (MovementUtils.isMoving())
+            mc.thePlayer.isSprinting = true
+
         mode.onMotion(event)
-        if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE || (mc.thePlayer.isInWater() &&noWater.get())) return
-        if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
+
+        if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE || (mc.thePlayer.isInWater && noWater.get()))
+            return
+
         mode.onPreMotion()
     }
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater() &&noWater.get())) return
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) return
         mode.onMove(event)
     }
 
     @EventTarget
     fun onTick(event: TickEvent) {
-        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater() &&noWater.get())) return
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) return
         mode.onTick()
     }
 

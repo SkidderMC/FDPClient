@@ -928,7 +928,7 @@ class Scaffold : Module() {
     }
 
     val canSprint: Boolean
-        get() = when(sprintValue.get().toLowerCase()) {
+        get() = MovementUtils.isMoving() && when(sprintValue.get().toLowerCase()) {
             "always","dynamic" -> true
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround
