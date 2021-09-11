@@ -50,6 +50,7 @@ class Speed : Module() {
     val resetXZValue = BoolValue("CustomResetXZ", false).displayable { modeValue.equals("Custom") }
     val resetYValue = BoolValue("CustomResetY", false).displayable { modeValue.equals("Custom") }
     val launchSpeedValue = BoolValue("CustomDoLaunchSpeed", true).displayable { modeValue.equals("Custom") }
+    val noWater = BoolValue("NoWater", true)
     val portMax = FloatValue("AACPort-Length", 1F, 1F, 20F).displayable { modeValue.equals("AACPort") }
     val redeSkyHopGSpeed = FloatValue("RedeSkyHop-GSpeed", 0.3f, 0.1f, 0.7f).displayable { modeValue.equals("RedeSkyHop") }
     val redeSkyHeight = FloatValue("RedeSkyHeight", 0.45f, 0.30f, 0.55f).displayable { modeValue.contains("RedeSkyHop") }
@@ -60,7 +61,7 @@ class Speed : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer.isSneaking) return
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater() &&noWater.get())) return
         if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
         mode.onUpdate()
     }
@@ -68,20 +69,20 @@ class Speed : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         mode.onMotion(event)
-        if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE) return
+        if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE || (mc.thePlayer.isInWater() &&noWater.get())) return
         if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
         mode.onPreMotion()
     }
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if (mc.thePlayer.isSneaking) return
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater() &&noWater.get())) return
         mode.onMove(event)
     }
 
     @EventTarget
     fun onTick(event: TickEvent) {
-        if (mc.thePlayer.isSneaking) return
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater() &&noWater.get())) return
         mode.onTick()
     }
 
