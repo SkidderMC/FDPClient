@@ -230,7 +230,7 @@ public class NoFall extends Module {
 
     @EventTarget
     public void onMotion(final MotionEvent event){
-        if(modeValue.equals("AACv4")&&event.isPre()){
+        if(modeValue.equals("AACv4")&&event.getEventState() == EventState.PRE){
             if (!inVoid()) {
                 if (aac4Fakelag) {
                     aac4Fakelag = false;

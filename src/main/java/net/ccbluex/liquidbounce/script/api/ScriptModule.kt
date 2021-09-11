@@ -96,9 +96,6 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
     
     @EventTarget
     fun onClientShutdown(clientShutdownEvent: ClientShutdownEvent) = callEvent("clientShutdown")
-    
-    @EventTarget
-    fun onEntityMovement(entityMovementEvent: EntityMovementEvent) = callEvent("entityMovement", entityMovementEvent)
    
     @EventTarget
     fun onPushOut(pushOutEvent: PushOutEvent) = callEvent("pushOut", pushOutEvent)
@@ -125,16 +122,10 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
     fun onStep(stepEvent: StepEvent) = callEvent("step", stepEvent)
 
     @EventTarget
-    fun onStepConfirm(stepConfirmEvent: StepConfirmEvent) = callEvent("stepConfirm")
-
-    @EventTarget
     fun onWorld(worldEvent: WorldEvent) = callEvent("world", worldEvent)
     
     @EventTarget
     fun onClickWindow(clickWindowEvent: ClickWindowEvent) = callEvent("clickWindow", clickWindowEvent)
-
-    @EventTarget
-    fun onSession(sessionEvent: SessionEvent) = callEvent("session")
 
     @EventTarget
     fun onClickBlock(clickBlockEvent: ClickBlockEvent) = callEvent("clickBlock", clickBlockEvent)

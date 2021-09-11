@@ -912,7 +912,7 @@ public class Fly extends Module {
     @EventTarget
     public void onMotion(final MotionEvent event) {
         if(modeValue.equals("boosthypixel")) {
-            if(event.isPre()){
+            if(event.getEventState() == EventState.PRE){
                 hypixelTimer.update();
 
                 if (hypixelTimer.hasTimePassed(2)) {
@@ -1197,6 +1197,9 @@ public class Fly extends Module {
 
     @EventTarget
     public void onStep(final StepEvent e) {
+        if(e.getEventState()!=EventState.PRE)
+            return;
+
         final String mode = modeValue.get();
 
         if (mode.equalsIgnoreCase("Hypixel") || mode.equalsIgnoreCase("BoostHypixel") ||

@@ -38,7 +38,7 @@ class AntiBlind : Module() {
     }
 
     @EventTarget(ignoreCondition = true)
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(event: UpdateEvent) {
         if (state || LiquidBounce.moduleManager.getModule(XRay::class.java).state) {
             when (bright.get().toLowerCase()) {
                 "gamma" -> if (mc.gameSettings.gammaSetting <= 100f) mc.gameSettings.gammaSetting++
@@ -51,7 +51,7 @@ class AntiBlind : Module() {
     }
 
     @EventTarget(ignoreCondition = true)
-    fun onShutdown(event: ClientShutdownEvent?) {
+    fun onShutdown(event: ClientShutdownEvent) {
         onDisable()
     }
 }

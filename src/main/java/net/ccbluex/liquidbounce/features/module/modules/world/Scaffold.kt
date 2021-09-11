@@ -406,7 +406,7 @@ class Scaffold : Module() {
         }
 
         // Update and search for new block
-        if (event.isPre()) update()
+        if (event.eventState == EventState.PRE) update()
 
         // Place block
         if (placeModeValue.equals(eventState.stateName)) place()

@@ -2,10 +2,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.MotionEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.SlowDownEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -66,14 +63,14 @@ class NoSlow : Module() {
         if(onGround && !mc.thePlayer.onGround) {
             return
         }
-        if(sendC07 && event.isPre()) {
+        if(sendC07 && event.eventState == EventState.PRE) {
             if(delay && msTimer.hasTimePassed(delayValue)) {
                 mc.netHandler.addToSendQueue(digging)
             } else if(!delay) {
                 mc.netHandler.addToSendQueue(digging)
             }
         }
-        if(sendC08 && !event.isPre()) {
+        if(sendC08 && event.eventState == EventState.POST) {
             if(delay && msTimer.hasTimePassed(delayValue) && !watchDog) {
                 mc.netHandler.addToSendQueue(blockPlace)
                 msTimer.reset()
@@ -94,7 +91,7 @@ class NoSlow : Module() {
 
 //        val heldItem = mc.thePlayer.heldItem
         if(modeValue.get().toLowerCase() == "aac5") {
-            if (!event.isPre() && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking() || killAura.blockingStatus)) {
+            if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking() || killAura.blockingStatus)) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
             }
             return

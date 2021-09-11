@@ -491,7 +491,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, 0.0D, z));
 
             if (this.stepHeight > 0.0F && flag1 && (d3 != x || d5 != z)) {
-                StepEvent stepEvent = new StepEvent(this.stepHeight);
+                StepEvent stepEvent = new StepEvent(this.stepHeight, EventState.PRE);
                 LiquidBounce.eventManager.callEvent(stepEvent);
                 double d11 = x;
                 double d7 = y;
@@ -572,7 +572,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                     z = d8;
                     this.setEntityBoundingBox(axisalignedbb3);
                 } else {
-                    LiquidBounce.eventManager.callEvent(new StepConfirmEvent());
+                    LiquidBounce.eventManager.callEvent(new StepEvent(-1f, EventState.POST));
                 }
             }
 

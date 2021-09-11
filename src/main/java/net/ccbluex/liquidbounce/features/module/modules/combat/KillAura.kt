@@ -185,7 +185,6 @@ class KillAura : Module() {
 
     // Target
     var target: EntityLivingBase? = null
-    private val markTimer=MSTimer()
     private var currentTarget: EntityLivingBase? = null
     private var hitable = false
     private val prevTargetEntities = mutableListOf<Int>()
@@ -236,7 +235,7 @@ class KillAura : Module() {
         if (mc.thePlayer.isRiding)
             return
 
-        if (!event.isPre()) {
+        if (event.eventState == EventState.POST) {
             // AutoBlock
             if (!autoBlockValue.equals("off") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")||discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)>maxRange }.isNotEmpty()) && canBlock) {
                 val target=discoveredTargets[0]
@@ -575,15 +574,15 @@ class KillAura : Module() {
     /**
      * Handle entity move
      */
-    @EventTarget
-    fun onEntityMove(event: EntityMovementEvent) {
-        val movedEntity = event.movedEntity
-
-        if (target == null || movedEntity != currentTarget)
-            return
-
-        updateHitable()
-    }
+//    @EventTarget
+//    fun onEntityMove(event: EntityMovementEvent) {
+//        val movedEntity = event.movedEntity
+//
+//        if (target == null || movedEntity != currentTarget)
+//            return
+//
+//        updateHitable()
+//    }
 
     /**
      * Attack enemy
@@ -703,15 +702,17 @@ class KillAura : Module() {
      * Attack [entity]
      */
     private fun attackEntity(entity: EntityLivingBase) {
+        // Call attack event
+        val event=AttackEvent(entity)
+        LiquidBounce.eventManager.callEvent(event)
+        if(event.isCancelled)
+            return
+
         // Stop blocking
         if (!autoBlockPacketValue.equals("Vanilla")&&(mc.thePlayer.isBlocking || blockingStatus)) {
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
         }
-
-        // Call attack event
-        LiquidBounce.eventManager.callEvent(AttackEvent(entity))
-        markTimer.reset()
 
         // Attack target
         val swing=swingValue.get()
