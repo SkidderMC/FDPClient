@@ -171,8 +171,9 @@ class KillAura : Module() {
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
 
     // Visuals
-    private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
+    private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","Route","Sims","None"),"FDP")
     private val fakeSharpValue = BoolValue("FakeSharp", true)
+    private val RouteRadiusValue = FloatValue("CircleRadius", 1.0F,0.5F, 3.0F)
     private val circleValue=BoolValue("Circle",true)
     private val circleRed = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
     private val circleGreen = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
@@ -499,6 +500,26 @@ class KillAura : Module() {
                         drawPercent=1-drawPercent
                     }else{
                         drawPercent-=1
+                    }
+                    "Route" -> {
+                        if (espAnimation > target!!.eyeHeight + 0.4 || espAnimation < 0) {
+                        isUp = !isUp
+                        }
+                        if (isUp) {
+                             espAnimation += 0.05 * 60 / Minecraft.getDebugFPS()
+                        } else {
+                             espAnimation -= 0.05 * 60 / Minecraft.getDebugFPS()
+                        }
+                        if (isUp) {
+                             esp(target!!, event.partialTicks, RouteRadiusValue.get())
+                        } else {
+                             esp(target!!, event.partialTicks, RouteRadiusValue.get())
+                        }
+                    }
+                    "Sims" -> RenderUtils.drawPlatform(
+                        target!!,
+                        if (hitable) Color(37, 126, 255, 70) else Color(255, 0, 0, 70)
+                    )
                     }
                     drawPercent=EaseUtils.easeInOutQuad(drawPercent)
                     val points = mutableListOf<Vec3>()
