@@ -6,10 +6,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
-import net.ccbluex.liquidbounce.launch.options.LegacyUiLaunchOption;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.Panel;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.Element;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ModuleElement;
+import net.ccbluex.liquidbounce.launch.options.LegacyUiLaunchOption;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 
 import java.io.*;

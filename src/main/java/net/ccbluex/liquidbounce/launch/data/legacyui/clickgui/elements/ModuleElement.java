@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.launch.options.LegacyUiLaunchOption;
 import net.minecraft.client.audio.PositionedSoundRecord;

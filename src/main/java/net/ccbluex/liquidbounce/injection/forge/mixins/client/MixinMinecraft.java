@@ -40,7 +40,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.swing.*;
 import java.io.File;
 import java.nio.file.AccessDeniedException;
 

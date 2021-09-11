@@ -47,7 +47,6 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
-// TODO: Recode KillAura mark
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
 
@@ -173,7 +172,6 @@ class KillAura : Module() {
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
     private val fakeSharpValue = BoolValue("FakeSharp", true)
-    private val RouteRadiusValue = FloatValue("CircleRadius", 1.0F,0.5F, 3.0F)
     private val circleValue=BoolValue("Circle",true)
     private val circleRed = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
     private val circleGreen = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }

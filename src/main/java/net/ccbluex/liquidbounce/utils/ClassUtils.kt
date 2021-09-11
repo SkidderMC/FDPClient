@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.features.module.Module
-
 object ClassUtils {
 
     private val cachedClasses = mutableMapOf<String, Boolean>()

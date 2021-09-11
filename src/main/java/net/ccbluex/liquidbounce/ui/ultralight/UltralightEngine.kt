@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.utils.FileUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import org.apache.logging.log4j.LogManager
 import java.io.File
-import java.net.URL
 
 object UltralightEngine {
     lateinit var platform: UltralightPlatform

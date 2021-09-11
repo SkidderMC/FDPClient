@@ -7,9 +7,9 @@
 package net.ccbluex.liquidbounce.utils.misc
 
 import com.google.common.io.ByteStreams
+import java.io.DataOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.DataOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
