@@ -13,40 +13,46 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.network.play.client.C07PacketPlayerDigging
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.client.C09PacketHeldItemChange
-import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
+import net.minecraft.util.IChatComponent
 import java.util.*
 
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
 class AutoPlay : Module(){
     private var clickState=0
-    private val modeValue=ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora"), "RedeSky")
-    private val silentValue=BoolValue("Silent",true)
+    private val modeValue=ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel"), "RedeSky")
     private val delayValue=IntegerValue("JoinDelay",3,0,7)
 
     private var clicking=false
+    private var queued=false
 
     override fun onEnable() {
         clickState=0
         clicking=false
+        queued=false
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if(modeValue.equals("RedeSky")){
-            if(clicking&&(packet is C0EPacketClickWindow||packet is C07PacketPlayerDigging)){
-                event.cancelEvent()
-                return
+        when(modeValue.get().toLowerCase()){
+            "redesky" -> {
+                if(clicking&&(packet is C0EPacketClickWindow||packet is C07PacketPlayerDigging)){
+                    event.cancelEvent()
+                    return
+                }
+                if(clickState==2 && packet is S2DPacketOpenWindow){
+                    event.cancelEvent()
+                }
             }
-            if(silentValue.get() && clickState==2 && packet is S2DPacketOpenWindow){
-                event.cancelEvent()
+            "hypixel" -> {
+                if(clickState==1 && packet is S2DPacketOpenWindow){
+                    event.cancelEvent()
+                }
             }
         }
 
@@ -78,8 +84,8 @@ class AutoPlay : Module(){
                         },500L)
                     }
                 }
-                "blocksmc" -> {
-                    if(clickState==0 && windowId==0 && slot==43 && itemName.contains("paper",ignoreCase = true) && displayName.contains("Play Again",ignoreCase = true)){
+                "blocksmc","hypixel" -> {
+                    if(clickState==0 && windowId==0 && slot==43 && itemName.contains("paper",ignoreCase = true)){
                         queueAutoPlay {
                             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
                             repeat(2){
@@ -87,6 +93,10 @@ class AutoPlay : Module(){
                             }
                         }
                         clickState=1
+                    }
+                    if(modeValue.equals("hypixel") && clickState==1 && windowId!=0 && itemName.equals("item.fireworks",ignoreCase = true)){
+                        mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId, slot, 0, 0, item, 1919))
+                        mc.netHandler.addToSendQueue(C0DPacketCloseWindow(windowId))
                     }
                 }
             }
@@ -114,11 +124,28 @@ class AutoPlay : Module(){
                         },1500)
                     }
                 }
+                "hypixel" -> {
+                    fun process(component: IChatComponent){
+                        val value=component.chatStyle.chatClickEvent?.value
+                        if(value!=null && value.startsWith("/play",true)){
+                            queueAutoPlay {
+                                mc.thePlayer.sendChatMessage(value)
+                            }
+                        }
+                        component.siblings.forEach {
+                            process(it)
+                        }
+                    }
+                    process(packet.chatComponent)
+                }
             }
         }
     }
 
     private fun queueAutoPlay(runnable: () -> Unit){
+        if(queued)
+            return
+        queued=true
         AutoDisable.handleGameEnd()
         if(this.state){
             Timer().schedule(object : TimerTask() {
