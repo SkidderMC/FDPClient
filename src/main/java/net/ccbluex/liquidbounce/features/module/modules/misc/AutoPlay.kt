@@ -163,6 +163,7 @@ class AutoPlay : Module(){
     fun onWorld(event: WorldEvent){
         clicking=false
         clickState=0
+        queued=false
     }
 
     override fun handleEvents() = true
