@@ -21,7 +21,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "LiquidWalk", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "Jesus", category = ModuleCategory.MOVEMENT)
 class LiquidWalk : Module() {
     val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Twilight", "Matrix", "Dolphin", "Legit"), "Vanilla")
     private val noJumpValue = BoolValue("NoJump", false)
