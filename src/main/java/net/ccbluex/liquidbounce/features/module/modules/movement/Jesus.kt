@@ -23,7 +23,7 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "Jesus", category = ModuleCategory.MOVEMENT)
 class LiquidWalk : Module() {
-    val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Twilight", "Matrix", "Dolphin", "Legit"), "Vanilla")
+    val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Spartan", "Twilight", "Matrix", "Dolphin", "Legit"), "Vanilla")
     private val noJumpValue = BoolValue("NoJump", false)
     private val jumpMotionValue = FloatValue("JumpMotion", 0.5f, 0.1f, 1f)
         .displayable { modeValue.equals("Jump") || modeValue.equals("AACFly") }
@@ -90,6 +90,22 @@ class LiquidWalk : Module() {
                     mc.thePlayer.motionX *= 1.15
                     mc.thePlayer.motionZ *= 1.15
                 }
+             }
+            "spartan" -> if (mc.thePlayer.isInWater) {
+                if (mc.thePlayer.isCollidedHorizontally) {
+                    mc.thePlayer.motionY += 0.15
+                    return
+                }
+                val block = getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ))
+                val blockUp = getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.1, mc.thePlayer.posZ))
+                if (blockUp is BlockLiquid) {
+                    mc.thePlayer.motionY = 0.1
+                } else if (block is BlockLiquid) {
+                    mc.thePlayer.motionY = 0.0
+                }
+                mc.thePlayer.onGround = true
+                mc.thePlayer.motionX *= 1.085
+                mc.thePlayer.motionZ *= 1.085
             }
             "aac3.3.11" -> {
                 if (mc.thePlayer.isInWater) {
