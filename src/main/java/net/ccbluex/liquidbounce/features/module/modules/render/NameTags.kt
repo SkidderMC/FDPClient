@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.player.HackerDetector
+import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -50,6 +51,29 @@ class NameTags : Module() {
                             + if (clearNamesValue.get()){ entity.name } else { entity.getDisplayName().unformattedText })
             }
         }
+    }
+
+    private fun getPlayerName(entity: EntityLivingBase): String {
+        val name = entity.displayName.formattedText
+        var pre = ""
+        val teams = LiquidBounce.moduleManager.getModule(Teams::class.java)
+        if (LiquidBounce.fileManager.friendsConfig.isFriend(entity.name)) {
+            pre = "$pre§b[Friend] "
+        }
+        if (teams.isInYourTeam(entity)) {
+            pre = "$pre§a[TEAM] "
+        }
+        if (AntiBot.isBot(entity)) {
+            pre = "$pre§e[BOT] "
+        }
+        if (!AntiBot.isBot(entity) && !teams.isInYourTeam(entity)) {
+            pre = if (LiquidBounce.fileManager.friendsConfig.isFriend(entity.name)) {
+                "§b[Friend] §c"
+            } else {
+                "§c"
+            }
+        }
+        return name + pre
     }
 
     private fun renderNameTag(entity: EntityLivingBase, tag: String) {
