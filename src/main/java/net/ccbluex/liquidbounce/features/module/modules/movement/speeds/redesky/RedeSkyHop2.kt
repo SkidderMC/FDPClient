@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 class RedeSkyHop2 : SpeedMode("RedeSkyHop2") {
     private var delay=0;
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         if(MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) {
                 mc.thePlayer.jump()

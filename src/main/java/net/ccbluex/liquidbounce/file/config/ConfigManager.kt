@@ -3,9 +3,9 @@ package net.ccbluex.liquidbounce.file.config
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.Target
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.value.*
@@ -135,23 +135,23 @@ class ConfigManager {
                     }
 
                     "targetPlayer", "targetPlayers" -> {
-                        EntityUtils.targetPlayer = args[1].equals("true", ignoreCase = true)
+                        Target.player.set(args[1].equals("true", ignoreCase = true))
                     }
 
                     "targetMobs" -> {
-                        EntityUtils.targetMobs = args[1].equals("true", ignoreCase = true)
+                        Target.mob.set(args[1].equals("true", ignoreCase = true))
                     }
 
                     "targetAnimals" -> {
-                        EntityUtils.targetAnimals = args[1].equals("true", ignoreCase = true)
+                        Target.animal.set(args[1].equals("true", ignoreCase = true))
                     }
 
                     "targetInvisible" -> {
-                        EntityUtils.targetInvisible = args[1].equals("true", ignoreCase = true)
+                        Target.invisible.set(args[1].equals("true", ignoreCase = true))
                     }
 
                     "targetDead" -> {
-                        EntityUtils.targetDead = args[1].equals("true", ignoreCase = true)
+                        Target.dead.set(args[1].equals("true", ignoreCase = true))
                     }
 
                     else -> {

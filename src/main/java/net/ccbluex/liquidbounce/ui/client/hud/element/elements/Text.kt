@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
@@ -48,15 +48,17 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
-    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "OtherRainbow", "SkyRainbow"), "Custom")
+    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val shadow = BoolValue("Shadow", false)
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
-    private val rect = BoolValue("Rect", false)
+    val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
+    val rectValue = ListValue("Rect", arrayOf("Normal","OneTap","Skeet","None"),"None")
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed",10,1,10)
+    private val rainbowIndex = IntegerValue("RainbowIndex",1,1,20)
     private var fontValue = FontValue("Font", Fonts.font40)
 
     private var editMode = false
@@ -145,18 +147,33 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
         val fontRenderer = fontValue.get()
 
-        if(rect.get()){
-            val rectColor = Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
-            val expand = fontRenderer.FONT_HEIGHT*rectExpandValue.get()
-
-            RenderUtils.drawRect(-expand,-expand,fontRenderer.getStringWidth(displayText)+expand,fontRenderer.FONT_HEIGHT+expand,rectColor)
+        val rectColor = when(rectColorModeValue.get().toLowerCase()){
+            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
+            "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+            "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()),100,rainbowIndex.get()).rgb
+            else -> Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
+        }
+        val expand = fontRenderer.FONT_HEIGHT*rectExpandValue.get()
+        when(rectValue.get().toLowerCase()){
+            "normal" -> {
+                RenderUtils.drawRect(-expand,-expand,fontRenderer.getStringWidth(displayText)+expand,fontRenderer.FONT_HEIGHT+expand,rectColor)
+            }
+            "onetap" -> {
+                RenderUtils.drawRect(-4.0f, -8.0f, (fontRenderer.getStringWidth(displayText) + 3).toFloat(), fontRenderer.FONT_HEIGHT.toFloat(), Color(43, 43, 43).rgb)
+                RenderUtils.drawGradientSideways(-3.0, -7.0, fontRenderer.getStringWidth(displayText) + 2.0, -3.0, Color(rectColor).darker().rgb, rectColor)
+            }
+            "skeet" -> {
+                RenderUtils.drawRect(-11.0, -11.0, (fontRenderer.getStringWidth(displayText) + 10).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 8.0, Color(0, 0, 0).rgb)
+                RenderUtils.drawOutLineRect(-10.0, -10.0, (fontRenderer.getStringWidth(displayText) + 9).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 7.0, 8.0, Color(59, 59, 59).rgb, Color(59, 59, 59).rgb)
+                RenderUtils.drawOutLineRect(-9.0, -9.0, (fontRenderer.getStringWidth(displayText) + 8).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 6.0, 4.0, Color(59, 59, 59).rgb, Color(40, 40, 40).rgb)
+                RenderUtils.drawOutLineRect(-4.0, -4.0, (fontRenderer.getStringWidth(displayText) + 3).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 1.0, 1.0, Color(18, 18, 18).rgb, Color(0, 0, 0).rgb)
+            }
         }
 
         fontRenderer.drawString(displayText, 0F, 0F, when(colorModeValue.get().toLowerCase()){
-            "rainbow" -> ColorUtils.rainbow(400000000L).rgb
-            "skyrainbow" -> RenderUtils.skyRainbow(1, 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-            "otherrainbow" -> RenderUtils.arrayRainbow(rainbowSpeed.get()).rgb
-            "anotherrainbow" -> ColorUtils.fade(color,100,1).rgb
+            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
+            "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+            "anotherrainbow" -> ColorUtils.fade(color,100,rainbowIndex.get()).rgb
             else -> color.rgb
         }, shadow.get())
 

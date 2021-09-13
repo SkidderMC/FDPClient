@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
@@ -18,7 +18,7 @@ public class MixinBlockSoulSand {
 
     @Inject(method = "onEntityCollidedWithBlock", at = @At("HEAD"), cancellable = true)
     private void onEntityCollidedWithBlock(CallbackInfo callbackInfo) {
-        final NoSlow noSlow = (NoSlow) LiquidBounce.moduleManager.getModule(NoSlow.class);
+        final NoSlow noSlow = LiquidBounce.moduleManager.getModule(NoSlow.class);
 
         if(noSlow.getState() && noSlow.getSoulsandValue().get())
             callbackInfo.cancel();

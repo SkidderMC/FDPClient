@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
 
-@ModuleInfo(name = "Breadcrumbs", description = "Leaves a trail behind you.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "Breadcrumbs", category = ModuleCategory.RENDER)
 class Breadcrumbs : Module() {
     private val colorRedValue = IntegerValue("R", 255, 0, 255)
     private val colorGreenValue = IntegerValue("G", 255, 0, 255)

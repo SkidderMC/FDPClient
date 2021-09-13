@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
@@ -13,16 +13,19 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 class CustomSpeed : SpeedMode("Custom") {
     private var groundTick=0
 
-    override fun onMotion() {
+    override fun onPreMotion() {
+        val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)
+
         if (MovementUtils.isMoving()) {
-            val speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed? ?: return
-            mc.timer.timerSpeed = speed.customTimerValue.get()
+            mc.timer.timerSpeed = if(mc.thePlayer.motionY>0){ speed.customUpTimerValue.get() } else { speed.customDownTimerValue.get() }
 
             when {
                 mc.thePlayer.onGround -> {
                     if(groundTick>=speed.customGroundStay.get()){
-                        MovementUtils.strafe(speed.customSpeedValue.get())
-                        mc.thePlayer.motionY = speed.customYValue.get().toDouble()
+                        if(speed.launchSpeedValue.get())
+                            MovementUtils.strafe(speed.customLaunchSpeedValue.get())
+                        if(speed.customYValue.get()!=0f)
+                            mc.thePlayer.motionY = speed.customYValue.get().toDouble()
                     }else if(speed.groundResetXZValue.get()){
                         mc.thePlayer.motionX = 0.0
                         mc.thePlayer.motionZ = 0.0
@@ -34,17 +37,24 @@ class CustomSpeed : SpeedMode("Custom") {
                     when(speed.customStrafeValue.get().toLowerCase()){
                         "strafe" -> MovementUtils.strafe(speed.customSpeedValue.get())
                         "boost" -> MovementUtils.strafe()
+                        "plus" -> MovementUtils.move(speed.customSpeedValue.get()*0.1f)
+                        "plusonlyup" -> if(mc.thePlayer.motionY>0){
+                            MovementUtils.move(speed.customSpeedValue.get()*0.1f)
+                        }else{
+                            MovementUtils.strafe()
+                        }
                     }
+                    mc.thePlayer.motionY += speed.customAddYMotionValue.get() * 0.03
                 }
             }
-        } else {
-            mc.thePlayer.motionZ = 0.0
+        } else if (speed.resetXZValue.get()) {
             mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionZ = 0.0
         }
     }
 
     override fun onEnable() {
-        val speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
+        val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)
         if (speed.resetXZValue.get()) {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0

@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
@@ -34,7 +34,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
     @Inject(method = "doRender", at = @At("HEAD"))
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        final Chams chams = (Chams) LiquidBounce.moduleManager.getModule(Chams.class);
+        final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
 
         if (chams.getState() && chams.getTargetsValue().get() && EntityUtils.isSelected(entity, false)) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
@@ -44,7 +44,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
     @Inject(method = "doRender", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        final Chams chams = (Chams) LiquidBounce.moduleManager.getModule(Chams.class);
+        final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
 
         if (chams.getState() && chams.getTargetsValue().get() && EntityUtils.isSelected(entity, false)) {
             GL11.glPolygonOffset(1.0F, 1000000F);
@@ -64,7 +64,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Overwrite
     protected <T extends EntityLivingBase> void renderModel(T entitylivingbaseIn, float p_77036_2_, float p_77036_3_, float p_77036_4_, float p_77036_5_, float p_77036_6_, float scaleFactor) {
         boolean visible = !entitylivingbaseIn.isInvisible();
-        final TrueSight trueSight = (TrueSight) LiquidBounce.moduleManager.getModule(TrueSight.class);
+        final TrueSight trueSight = LiquidBounce.moduleManager.getModule(TrueSight.class);
         boolean semiVisible = !visible && (!entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) || (trueSight.getState() && trueSight.getEntitiesValue().get()));
 
         if(visible || semiVisible) {
@@ -80,7 +80,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 GlStateManager.alphaFunc(516, 0.003921569F);
             }
 
-            final ESP esp = (ESP) LiquidBounce.moduleManager.getModule(ESP.class);
+            final ESP esp = LiquidBounce.moduleManager.getModule(ESP.class);
             if(esp.getState() && EntityUtils.isSelected(entitylivingbaseIn, false)) {
                 Minecraft mc = Minecraft.getMinecraft();
                 boolean fancyGraphics = mc.gameSettings.fancyGraphics;
@@ -89,7 +89,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 float gamma = mc.gameSettings.gammaSetting;
                 mc.gameSettings.gammaSetting = 100000F;
 
-                if (esp.getModeValue().get().equalsIgnoreCase("wireframe")) {
+                if (esp.getModeValue().equals("wireframe")) {
                     GL11.glPushMatrix();
                     GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
                     GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);

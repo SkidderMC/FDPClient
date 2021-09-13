@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp
 
@@ -12,7 +12,7 @@ import net.minecraft.util.MathHelper
 class NCPYPort : SpeedMode("NCPYPort") {
     private var jumps = 0
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (mc.thePlayer.isOnLadder || mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || !MovementUtils.isMoving() || mc.thePlayer.isInWater) return
 
         if (jumps >= 4 && mc.thePlayer.onGround) jumps = 0

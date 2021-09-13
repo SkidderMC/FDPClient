@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.misc;
 
@@ -9,11 +9,13 @@ import java.util.Random;
 
 public final class RandomUtils {
 
+    private static Random random=new Random();
+
     public static int nextInt(final int startInclusive, final int endExclusive) {
         if (endExclusive - startInclusive <= 0)
             return startInclusive;
 
-        return startInclusive + new Random().nextInt(endExclusive - startInclusive);
+        return startInclusive + random.nextInt(endExclusive - startInclusive);
     }
 
     public static double nextDouble(final double startInclusive, final double endInclusive) {
@@ -45,7 +47,7 @@ public final class RandomUtils {
     public static String random(final int length, final char[] chars) {
         final StringBuilder stringBuilder = new StringBuilder();
         for(int i = 0; i < length; i++)
-            stringBuilder.append(chars[new Random().nextInt(chars.length)]);
+            stringBuilder.append(chars[random.nextInt(chars.length)]);
         return stringBuilder.toString();
     }
 }

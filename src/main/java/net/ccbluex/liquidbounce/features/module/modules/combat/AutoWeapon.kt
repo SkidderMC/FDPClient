@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
@@ -21,9 +21,9 @@ import net.minecraft.item.ItemTool
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 
-@ModuleInfo(name = "AutoWeapon", description = "Automatically selects the best weapon in your hotbar.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "AutoWeapon", category = ModuleCategory.COMBAT)
 class AutoWeapon : Module() {
-
+    private val onlySwordValue = BoolValue("OnlySword", false)
     private val silentValue = BoolValue("SpoofItem", false)
     private val ticksValue = IntegerValue("SpoofTicks", 10, 1, 20)
     private var attackEnemy = false
@@ -44,7 +44,7 @@ class AutoWeapon : Module() {
             // Find best weapon in hotbar (#Kotlin Style)
             val (slot, _) = (0..8)
                     .map { Pair(it, mc.thePlayer.inventory.getStackInSlot(it)) }
-                    .filter { it.second != null && (it.second.item is ItemSword || it.second.item is ItemTool) }
+                    .filter { it.second != null && (it.second.item is ItemSword || (it.second.item is ItemTool&&!onlySwordValue.get()))}
                     .maxBy {
                         (it.second.attributeModifiers["generic.attackDamage"].first()?.amount
                                 ?: 0.0) + 1.25 * ItemUtils.getEnchantment(it.second, Enchantment.sharpness)
@@ -69,7 +69,7 @@ class AutoWeapon : Module() {
     }
 
     @EventTarget
-    fun onUpdate(update: UpdateEvent) {
+    fun onUpdate(event: UpdateEvent) {
         // Switch back to old item after some time
         if (spoofedSlot > 0) {
             if (spoofedSlot == 1)

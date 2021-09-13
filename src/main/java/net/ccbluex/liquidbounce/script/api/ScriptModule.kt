@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.script.api
 
@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.value.Value
 
 @Suppress("unused")
-@ModuleInfo(name = "ScriptModule", description = "Empty", category = ModuleCategory.MISC)
+@ModuleInfo(name = "ScriptModule", category = ModuleCategory.MISC)
 class ScriptModule(private val moduleObject: JSObject) : Module() {
 
     private val events = HashMap<String, JSObject>()
@@ -32,7 +32,7 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
 
         val categoryString = moduleObject.getMember("category") as String
         for (category in ModuleCategory.values())
-            if (categoryString.equals(category.displayName, true))
+            if (categoryString.equals(category.configName, true))
                 this.category = category
 
         if (moduleObject.hasMember("settings")) {
@@ -96,9 +96,6 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
     
     @EventTarget
     fun onClientShutdown(clientShutdownEvent: ClientShutdownEvent) = callEvent("clientShutdown")
-    
-    @EventTarget
-    fun onEntityMovement(entityMovementEvent: EntityMovementEvent) = callEvent("entityMovement", entityMovementEvent)
    
     @EventTarget
     fun onPushOut(pushOutEvent: PushOutEvent) = callEvent("pushOut", pushOutEvent)
@@ -125,16 +122,10 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
     fun onStep(stepEvent: StepEvent) = callEvent("step", stepEvent)
 
     @EventTarget
-    fun onStepConfirm(stepConfirmEvent: StepConfirmEvent) = callEvent("stepConfirm")
-
-    @EventTarget
     fun onWorld(worldEvent: WorldEvent) = callEvent("world", worldEvent)
     
     @EventTarget
     fun onClickWindow(clickWindowEvent: ClickWindowEvent) = callEvent("clickWindow", clickWindowEvent)
-
-    @EventTarget
-    fun onSession(sessionEvent: SessionEvent) = callEvent("session")
 
     @EventTarget
     fun onClickBlock(clickBlockEvent: ClickBlockEvent) = callEvent("clickBlock", clickBlockEvent)

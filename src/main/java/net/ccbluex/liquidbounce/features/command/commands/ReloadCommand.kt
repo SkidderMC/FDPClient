@@ -1,18 +1,18 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.command.CommandManager
-import net.ccbluex.liquidbounce.features.module.modules.misc.AutoAbuse
-import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
+import net.ccbluex.liquidbounce.features.module.modules.misc.KillInsults
+import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 
-class ReloadCommand : Command("reload", arrayOf("configreload")) {
+class ReloadCommand : Command("reload", emptyArray()) {
     /**
      * Execute commands with provided [args]
      */
@@ -34,7 +34,8 @@ class ReloadCommand : Command("reload", arrayOf("configreload")) {
         Fonts.loadFonts()
         chat("§c§lReloading modules...")
         LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig,false)
-        AutoAbuse.loadFile()
+        KillInsults.loadFile()
+        GuiCapeManager.load()
         chat("§c§lReloading accounts...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.accountsConfig)
         chat("§c§lReloading friends...")
@@ -43,11 +44,9 @@ class ReloadCommand : Command("reload", arrayOf("configreload")) {
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.xrayConfig)
         chat("§c§lReloading HUD...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.hudConfig)
-        chat("§c§lReloading ClickGUI...")
-        LiquidBounce.clickGui = ClickGui()
-        LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.clickGuiConfig)
         chat("Reloaded.")
         LiquidBounce.isStarting = false
         LiquidBounce.isLoadingConfig = false
+        System.gc()
     }
 }

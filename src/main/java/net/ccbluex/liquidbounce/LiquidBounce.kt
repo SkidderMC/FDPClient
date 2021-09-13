@@ -5,33 +5,32 @@
  */
 package net.ccbluex.liquidbounce
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
+import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.CombatManager
 import net.ccbluex.liquidbounce.features.special.PacketFixer
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
-import net.ccbluex.liquidbounce.features.special.macro.MacroManager
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.MetricsLite
 import net.ccbluex.liquidbounce.file.config.ConfigManager
+import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
+import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
+import net.ccbluex.liquidbounce.launch.LaunchOption
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
-import net.ccbluex.liquidbounce.ui.click.ClickGuiManager
-import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
+import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.other.TipSoundManager
-import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.InventoryUtils
-import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils
-import net.ccbluex.liquidbounce.utils.misc.betterfps.BetterFPSCore
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
+import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
+import net.ccbluex.liquidbounce.utils.*
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
 
@@ -40,12 +39,16 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "FDPClient"
     const val COLORED_NAME = "§c§lFDP§6§lClient"
-    @JvmField
-    val CLIENT_VERSION: String
+    const val CLIENT_REAL_VERSION = "v2.0.0-PRE1"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
+    const val CLIENT_WEBSITE="GetFDP.Today"
+    const val CLIENT_STORAGE = "https://res.getfdp.today/"
     const val MINECRAFT_VERSION = "1.8.9"
 
-    val enableUpdateAlert: Boolean
+    // 自动读取客户端版本
+    @JvmField
+    val CLIENT_VERSION: String
+
     var isStarting = true
     var isLoadingConfig = true
 
@@ -60,63 +63,43 @@ object LiquidBounce {
     lateinit var macroManager: MacroManager
     lateinit var configManager: ConfigManager
 
-    // HUD & ClickGUI & KeybindManager
+    // Some UI things
     lateinit var hud: HUD
-    lateinit var clickGui: ClickGui
+    lateinit var mainMenu: GuiScreen
     lateinit var keyBindManager: KeyBindManager
-    lateinit var clickGuiManager: ClickGuiManager
 
     lateinit var metricsLite: MetricsLite
-
-    // Update information
-    var latestVersion = ""
-    lateinit var updatelog: JsonArray
-    var website = "null"
-    var updateMessage="Press \"Download\" button to download the latest version!"
-    var displayedUpdateScreen=false
 
     // Menu Background
     var background: ResourceLocation? = null
 
-    // Better FPS
-    lateinit var betterFPSCore: BetterFPSCore
+    private val dynamicLaunchOptions: Array<LaunchOption>
 
     init {
+        // check if this artifact is build from github actions
         val commitId=LiquidBounce::class.java.classLoader.getResourceAsStream("FDP_GIT_COMMIT_ID")
         CLIENT_VERSION=if (commitId==null){
-            "v1.3.0"
+            CLIENT_REAL_VERSION
         }else{
             val str=IOUtils.toString(commitId,"utf-8").replace("\n","")
             "git-"+(str.substring(0, 7.coerceAtMost(str.length)))
         }
-        enableUpdateAlert=commitId==null
-    }
-
-    /***
-     * do things that need long time async
-     */
-    fun initClient(){
-        betterFPSCore = BetterFPSCore()
-        isStarting = true
-
-        updatelog=JsonArray()
-
-        // check update
-        Thread {
-            val get = HttpUtils.get("https://fdp.liulihaocai.workers.dev/")
-
-            val jsonObj = JsonParser()
-                .parse(get).asJsonObject
-
-            latestVersion = jsonObj.get("version").asString
-            website = jsonObj.get("website").asString
-            updatelog = jsonObj.getAsJsonArray("updatelog")
-            if(jsonObj.has("updatemsg"))
-                updateMessage=jsonObj.get("updatemsg").asString
-
-            if(latestVersion== CLIENT_VERSION || !enableUpdateAlert)
-                latestVersion = ""
-        }.start()
+        // initialize dynamic launch options
+        val launchFilters=mutableListOf<EnumLaunchFilter>()
+        if(System.getProperty("fdp-legacy-ui")!=null){
+            launchFilters.add(EnumLaunchFilter.LEGACY_UI)
+        }else{
+            launchFilters.add(EnumLaunchFilter.ULTRALIGHT)
+        }
+        dynamicLaunchOptions=ReflectUtils.getReflects("${LaunchOption::class.java.`package`.name}.options", LaunchOption::class.java)
+            .filter {
+                val annotation=it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
+                if(annotation!=null){
+                    return@filter annotation.filters.toMutableList() == launchFilters
+                }
+                false
+            }
+            .map { try { it.newInstance() } catch (e: IllegalAccessException) { ClassUtils.getObjectInstance(it) as LaunchOption } }.toTypedArray()
     }
 
     /***
@@ -125,25 +108,30 @@ object LiquidBounce {
     fun startClient() {
         ClientUtils.logInfo("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
         val startTime=System.currentTimeMillis()
+        isStarting = true
 
         // Create file manager
         fileManager = FileManager()
         configManager = ConfigManager()
 
-        // Crate event manager
+        // Create event manager
         eventManager = EventManager()
+
+        // Load language
+        LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
+
+        dynamicLaunchOptions.forEach {
+            it.head()
+        }
 
         // Register listeners
         eventManager.registerListener(RotationUtils())
-        eventManager.registerListener(AntiForge())
+        eventManager.registerListener(AntiForge)
         eventManager.registerListener(InventoryUtils())
-        eventManager.registerListener(ServerSpoof())
+        eventManager.registerListener(ServerSpoof)
 
         // Create command manager
         commandManager = CommandManager()
-
-        // ClickGui Manager
-        clickGuiManager = ClickGuiManager()
 
         macroManager = MacroManager()
         eventManager.registerListener(macroManager)
@@ -175,13 +163,7 @@ object LiquidBounce {
         // Load configs
         configManager.loadLegacySupport()
         configManager.loadConfigSet()
-
-        // ClickGUI
-        clickGui = ClickGui()
-        fileManager.loadConfigs(fileManager.clickGuiConfig, fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig)
-
-        // Init All after load modules
-        clickGuiManager.initAll()
+        fileManager.loadConfigs(fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig)
 
         // KeyBindManager
         keyBindManager=KeyBindManager()
@@ -201,6 +183,12 @@ object LiquidBounce {
 
         eventManager.registerListener(PacketFixer())
 
+        GuiCapeManager.load()
+
+        dynamicLaunchOptions.forEach {
+            it.after()
+        }
+
         // Set is starting status
         isStarting = false
         isLoadingConfig=false
@@ -216,8 +204,12 @@ object LiquidBounce {
         eventManager.callEvent(ClientShutdownEvent())
 
         // Save all available configs
+        GuiCapeManager.save()
         configManager.save(true,true)
         fileManager.saveAllConfigs()
-    }
 
+        dynamicLaunchOptions.forEach {
+            it.stop()
+        }
+    }
 }

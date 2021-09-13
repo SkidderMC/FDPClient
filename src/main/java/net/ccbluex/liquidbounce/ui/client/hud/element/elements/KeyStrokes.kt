@@ -48,7 +48,7 @@ class KeyStrokes : Element(5.0,25.0,1.25F, Side.default()) {
     override fun drawElement(partialTicks: Float): Border {
         val backGroundColor=Color(backGroundRedValue.get(),backGroundGreenValue.get(),backGroundBlueValue.get(),backGroundAlphaValue.get())
         val textColor=if(outlineRainbow.get()){
-            ColorUtils.rainbow(textAlphaValue.get())
+            ColorUtils.rainbowWithAlpha(textAlphaValue.get())
         }else{
             Color(textRedValue.get(),textGreenValue.get(),textBlueValue.get(),textAlphaValue.get())
         }

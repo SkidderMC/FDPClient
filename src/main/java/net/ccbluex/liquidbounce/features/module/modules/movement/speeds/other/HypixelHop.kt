@@ -13,13 +13,12 @@ class HypixelHop : SpeedMode("HypixelHop") {
     var stage: Int = 1
 
     fun getBaseMoveSpeed(): Double {
-        var baseSpeed = 0.30
-        if (mc.thePlayer.isPotionActive(Potion.moveSpeed))
-            MovementUtils.strafe(0.52F)
-        return baseSpeed
+        var baseSpeed = 0.30F
+        return baseSpeed.toDouble()
     }
     fun getJumpEffect(): Int {
-        return if (mc.thePlayer.isPotionActive(Potion.jump)) mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1 else 0
+        return if (mc.thePlayer.isPotionActive(Potion.jump))
+            mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1 else 0
     }
     fun setMotion(e: MoveEvent, speed: Double) {
         var forward = mc.thePlayer.movementInput.moveForward.toDouble()
@@ -47,7 +46,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 }
             }
             e.x =
-                forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f))
+                    forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f))
             e.z = (forward * speed * Math.sin(Math.toRadians(yaw + 90.0f))
                     - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f)))
         }
@@ -61,9 +60,10 @@ class HypixelHop : SpeedMode("HypixelHop") {
     override fun onDisable() {
         speed = getBaseMoveSpeed()
         stage = 2
+        mc.timer.timerSpeed=1F
     }
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         val thePlayer = mc.thePlayer ?: return
         val xDist: Double = thePlayer.posX - thePlayer.prevPosX
         val zDist: Double = thePlayer.posZ - thePlayer.prevPosZ
@@ -71,6 +71,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
 
         if(mc.thePlayer.onGround){
             MovementUtils.strafe(0.49F)
+            mc.thePlayer.motionY=0.418
         }
     }
 
@@ -79,6 +80,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
 
     override fun onMove(event: MoveEvent) {
         val thePlayer = mc.thePlayer ?: return
+        mc.timer.timerSpeed=1.1F
 
         if (stage > 0 && !thePlayer.isInWater) {
             val stoptick = 0
@@ -86,15 +88,11 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 speed = getBaseMoveSpeed()
                 return
             }
-            if(thePlayer.onGround && isMoving()){
-                mc.timer.timerSpeed = 5.0F
-            }
-            else{mc.timer.timerSpeed=1.1F}
             if (stage == 1 && thePlayer.onGround && isMoving())
                 stage += 1
 
             if (stage == 2 && thePlayer.onGround && isMoving()) {
-                event.y = (0.399999986886975+ getJumpEffect() * .1).also {
+                event.y = (-0.3+ getJumpEffect() * .1).also {
                     mc.thePlayer!!.motionY = it
                 }
 
@@ -143,9 +141,9 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 slowdown = thePlayer.fallDistance > 0.0
 
                 if (!mc.theWorld!!.getCollidingBoundingBoxes(
-                        thePlayer,
-                        thePlayer.entityBoundingBox.offset(0.0, thePlayer.motionY, 0.0)
-                    ).isEmpty() || thePlayer.isCollidedVertically && thePlayer.onGround
+                                thePlayer,
+                                thePlayer.entityBoundingBox.offset(0.0, thePlayer.motionY, 0.0)
+                        ).isEmpty() || thePlayer.isCollidedVertically && thePlayer.onGround
                 ) {
                     stage = 1
                 }

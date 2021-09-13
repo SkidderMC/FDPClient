@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
@@ -18,11 +18,11 @@ import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C16PacketClientStatus
 import org.lwjgl.input.Keyboard
 
-@ModuleInfo(name = "InventoryMove", description = "Allows you to walk while an inventory is opened.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "InventoryMove", category = ModuleCategory.MOVEMENT)
 class InventoryMove : Module() {
 
     private val noDetectableValue = BoolValue("NoDetectable", false)
-    private val bypassValue = BoolValue("Bypass", true)
+    private val bypassValue = BoolValue("Bypass", false)
     private val rotateValue = BoolValue("Rotate", true)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
 

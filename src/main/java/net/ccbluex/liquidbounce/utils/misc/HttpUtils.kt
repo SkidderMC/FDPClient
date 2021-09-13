@@ -1,13 +1,15 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 
 package net.ccbluex.liquidbounce.utils.misc
 
+import com.google.common.io.ByteStreams
 import java.io.DataOutputStream
-import java.io.IOException
+import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -27,7 +29,7 @@ object HttpUtils {
         HttpURLConnection.setFollowRedirects(true)
     }
 
-    fun make(url: String, method: String, data: String,
+    fun make(url: String, method: String, data: String="",
              agent: String = DEFAULT_AGENT): HttpURLConnection {
         val httpConnection = URL(url).openConnection() as HttpURLConnection
 
@@ -49,7 +51,6 @@ object HttpUtils {
         return httpConnection
     }
 
-    @Throws(IOException::class)
     fun request(url: String, method: String, data: String="",
                 agent: String = DEFAULT_AGENT): String {
         val connection = make(url, method, data, agent)
@@ -57,19 +58,16 @@ object HttpUtils {
         return connection.inputStream.reader().readText()
     }
 
-    @Throws(IOException::class)
     fun requestStream(url: String, method: String,
                       agent: String = DEFAULT_AGENT): InputStream? {
         val connection = make(url, method, agent)
 
         return connection.inputStream
     }
+    
+    fun download(url: String, file: File) = FileOutputStream(file).use { ByteStreams.copy(make(url, "GET").inputStream, it) }
 
-    @Throws(IOException::class)
-    @JvmStatic
     fun get(url: String) = request(url, "GET")
 
-    @Throws(IOException::class)
-    @JvmStatic
     fun post(url: String, data: String) = request(url, "POST", data=data)
 }

@@ -1,0 +1,399 @@
+<html>
+
+<head>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta charset="UTF-8">
+    <!--Made by 2734583@qq.com-->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="./lib/mdui/mdui.min.css" />
+    <script src="./lib/mdui/mdui.min.js"></script>
+    <script src="./lib/jquery/jquery.min.js"></script>
+    <script src="./js/moduleBridge.js"></script>
+    <script src="./js/utils.js"></script>
+</head>
+
+<body>
+<style>
+        body {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -khtml-user-select: none;
+            user-select: none;
+            background: rgba(0, 0, 0, 0);
+        }
+
+        #list {
+            width: 100%;
+        }
+
+        .card {
+            box-shadow: 0 0 20px rgb(0 0 0 / 15%);
+            transform: scale(0.6);
+            transition: all 0.6s;
+            opacity: 0;
+            border-radius: 10px;
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+        }
+
+        #logo {
+            display: inline-block;
+            width: calc( 100% - 31px);
+            font-size: 20px;
+            font-weight: 400;
+            padding: 30px 10px 15px 30px;
+            margin: -8px;
+            background: rgb(245, 245, 245);
+        }
+
+        .l2 {
+            margin-left: -15px;
+        }
+
+        #mts {
+            transition: all 0.35s;
+        }
+
+        #ms {
+            height: calc( 100% - 68px);
+            transition: all 0.3s;
+            display: none;
+            opacity: 0;
+            margin-top: 8px;
+        }
+
+        #description {
+            color: #8b8b8b;
+            font-size: 14px;
+            font-weight: 400;
+            margin-right: 20px;
+            display: inline-block;
+            margin-top: 5px;
+            float: right;
+        }
+
+        #mss {
+            margin-top: 8px;
+            transition: all 0.3s;
+            opacity: 0;
+            display: none;
+            width: 50%;
+            height: calc( 100% - 68px);
+            background: #fdfdfd;
+        }
+
+        #ms {
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+        .l1 {
+            background: #f9f9f9;
+            height: 100%;
+            margin-top: 8px;
+        }
+
+        label.mdui-checkbox {
+            float: right;
+            margin-right: 20px;
+        }
+
+        .mdui-slider {
+            position: relative;
+            display: inline-block;
+            float: right;
+            width: 55%;
+            margin-right: 20px;
+            height: 36px;
+        }
+
+        #mss {
+            overflow-y: scroll;
+            overflow-x: hidden;
+            padding-right: 0;
+            margin-right: 10px;
+            width: calc(66.6667% - 80px);
+            display: block;
+        }
+
+        .lss {
+            transition: all 0.3s;
+            opacity: 0;
+            margin-right: -20px;
+        }
+
+        .lla {
+            transition: all 0.3s;
+        }
+    </style>
+<div class="mdui-card card">
+    <div id="list">
+        <p id="logo">FDPClient
+            <a id="description"></a>
+        </p>
+        <div class="mdui-row">
+            <div class="mdui-col-xs-4" id="mts">
+                <ul class="mdui-list l1">
+
+                </ul>
+            </div>
+            <div class="mdui-col-xs-4" id="ms">
+                <div class="mdui-list l2">
+                    <label class="mdui-list-item mdui-ripple">
+                        <div class="mdui-list-item-content">AimBot</div>
+                        <div class="mdui-checkbox">
+                            <input type="checkbox"/>
+                            <i class="mdui-checkbox-icon"></i>
+                        </div>
+                    </label>
+                    <label class="mdui-list-item mdui-ripple">
+                        <div class="mdui-list-item-content">AntiBot</div>
+                        <div class="mdui-checkbox">
+                            <input type="checkbox" checked/>
+                            <i class="mdui-checkbox-icon"></i>
+                        </div>
+                    </label>
+                    <label class="mdui-list-item mdui-ripple" Mname="Killaura" Mtype="Combat" onclick="clickModule()">
+                        <div class="mdui-list-item-content">Killaura</div>
+                        <div class="mdui-checkbox">
+                            <input type="checkbox"/>
+                            <i class="mdui-checkbox-icon"></i>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="mdui-col-xs-1" id="mss"><br>
+                <div class="mdui-list l3">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        var modules = getCategoryJson()
+
+        function startOPED(sss, a) {
+            $("#mss").css("background", "rgba(0,0,0,0)");
+            setTimeout(function() {
+                $(sss).css("margin-right", "-50px");
+                $(sss).css("opacity", "0");
+                $(sss).css("heidth", "0");
+                setTimeout(function() {
+                    $(sss).css("display", "none");
+                }, 290);
+            }, ((a + 1) * 100) - ((a / 4) * 100) * Math.abs((a / 10) - 1));
+        }
+        $(".l1").mousedown(function(e) {
+            if (3 == e.which) {
+                ClickGUI.openCategory = -1
+                ClickGUI.openModule = -1
+                $("#mts .mdui-list-item-content").css("transform", "scale(1)");
+                setTimeout(function() {
+                    $("#mts .mdui-list-item-content").css("display", "inline");
+                }, 200);
+                $("#mts .mdui-list-item-content").css("font-size", "16px");
+                $("#mts").css("width", "");
+                $("#ms").css("opacity", "0");
+                $("#ms").css("overflow-y", "none");
+                $("#ms").css("width", "0");
+                setTimeout(function() {
+                    $("#ms").css("display", "none");
+                }, 230);
+                $(".lla").each(function(a) {
+                    startOPED(this, a);
+                });
+            }
+        });
+        for (var i = 0; i < modules.length; i++) {
+            $('.l1').append('<li class="mdui-list-item mdui-ripple" MTtype="' + i + '" onclick="clickModuleT(-1,this)"><i class="mdui-list-item-icon mdui-icon material-icons">' + modules[i].Icon + '</i><div class="mdui-list-item-content">' + modules[i].Type + '</div></li>');
+        }
+        //渐显
+        setTimeout(function() {
+            $(".card").css("opacity", "1");
+        }, 100);
+        setTimeout(function() {
+            $(".card").css("transform", "scale(1)");
+        }, 100);
+
+        function add(a) {
+            $(document.body).append('<script>' + a + "<\/script>");
+        }
+        // 当模块Category被点击
+        function clickModuleT(mt, a) {
+            if (mt == -1 && a != undefined) {
+                mt = $(a).attr("MTtype")
+            }
+            ClickGUI.openCategory = Number(mt)
+            $("#ms").css("opacity", "0");
+            setTimeout(function() {
+                $('.l2').html("");
+                for (var i = 0; i < modules[mt].modules.length; i++) {
+                    if (modules[mt].modules[i].Hide || modules[mt].modules[i].Hide == null) {
+                        var isE = modules[mt].modules[i].Enable ? 'checked' : "";
+                        $('.l2').append('<label id="M-' + modules[mt].name + "-" + modules[mt].modules[i].Name + '" class="lss mdui-list-item mdui-ripple" Mname="' + modules[mt].modules[i].Name + '" Mtype="' + modules[mt].Type + '"><div class="mdui-list-item-content">' + modules[mt].modules[i].Name + '</div><div class="mdui-checkbox"><input type="checkbox" ' + isE + '/><i class="mdui-checkbox-icon"></i></div></label>');
+                        add('setTimeout(function(){$(\'#M-\'+modules[' + mt + '].name+"-"+modules[' + mt + '].modules[' + i + '].Name).css("opacity","1");$(\'#M-\'+modules[' + mt + '].name+"-"+modules[' + mt + '].modules[' + i + '].Name).css("margin-right","0");},' + ((i + 1) * 100) + ');$(\'#M-\'+modules[' + mt + '].name+"-"+modules[' + mt + '].modules[' + i + '].Name).mouseenter(function(){mouseEventHandle(' + mt + ',' + i + ',true);}).mouseleave(function(){mouseEventHandle(' + mt + ',' + i + ',false);}).mousedown(function(e){if(3 == e.which){clickModule(' + mt + ',' + i + ');}else if(1 == e.which){rc(' + mt + ',' + i + ');}});');
+                    }
+                }
+                $("#ms").css("width", "");
+                $("#mss").css("background", "#fdfdfd");
+                $("#ms").css("overflow-y", "scroll");
+                $("#mts .mdui-list-item-content").css("transform", "scale(0)");
+                $("#mts .mdui-list-item-content").css("font-size", "10");
+                setTimeout(function() {
+                    $("#mts .mdui-list-item-content").css("display", "none");
+                }, 100);
+                $("#mts").css("width", "70px");
+                $("#ms").css("display", "block");
+                setTimeout(function() {
+                    $("#ms").css("opacity", "1");
+                }, 230);
+            }, 250);
+        }
+        var overCount = 0
+            // 显示模块 简介
+        function mouseEventHandle(mt, i, isOver) {
+            if (isOver) {
+                overCount++
+            } else {
+                overCount--
+            }
+            if (overCount == 0) {
+                $("#description").html("")
+            } else {
+                $("#description").html(modules[mt].modules[i].Description)
+            }
+        }
+        // 设置模块 开关
+        function rc(mt, i) {
+            var module = getModule(modules[mt].modules[i].Key)
+            module.toggle()
+            modules[mt].modules[i].Enable = module.getState()
+            if (modules[mt].modules[i].Enable) {
+                $('#M-' + modules[mt].name + "-" + modules[mt].modules[i].Name + ' div input').removeAttr("checked");
+            } else {
+                $('#M-' + modules[mt].name + "-" + modules[mt].modules[i].Name + ' div input').attr("checked", "true");
+            }
+        }
+        // 设置 模式
+        function mssChange(a, mt, i, is) {
+            // console.log(a,mt,i,is);
+            setModuleValue(modules[mt].modules[i].Key, modules[mt].modules[i].Setting[is].Key, String(a))
+            modules[mt].modules[i].Setting[is].Val = a;
+            refresh(mt, i)
+        }
+        // 设置 布尔
+        function mssBChange(a, mt, i, is) {
+            // console.log(a.checked,mt,i,is);
+            setModuleValue(modules[mt].modules[i].Key, modules[mt].modules[i].Setting[is].Key, Boolean(a.checked))
+            modules[mt].modules[i].Setting[is].Val = a.checked;
+            refresh(mt, i)
+        }
+        // 设置 数字
+        function mssIChange(a, mt, i, is) {
+            // console.log(a.value,mt,i,is);
+            var value;
+            if (modules[mt].modules[i].Setting[is].Step == 1) {
+                value = new Integer(a.value)
+            } else {
+                value = new Float(a.value)
+            }
+            setModuleValue(modules[mt].modules[i].Key, modules[mt].modules[i].Setting[is].Key, value)
+            modules[mt].modules[i].Setting[is].Val = a.value;
+            refresh(mt, i)
+        }
+        // 设置 文字
+        function mssTChange(value, mt, i, is) {
+            setModuleValue(modules[mt].modules[i].Key, modules[mt].modules[i].Setting[is].Key, String(value))
+            modules[mt].modules[i].Setting[is].Val = value;
+            // refresh(mt, i)
+        }
+        // 当模块被右键点击
+        function clickModule(mt, i) {
+            ClickGUI.openModule = Number(i)
+            $("#mss").css("opacity", "0");
+            $("#mss").css("width", "calc( 66.666666666666% - 80px)");
+            $("#mss").css("display", "block");
+            setTimeout(function() {
+                $('.l3').html("");
+                for (var is = 0; is < modules[mt].modules[i].Setting.length; is++) {
+                    if (modules[mt].modules[i].Setting[is].isVisable()) {
+                        if (modules[mt].modules[i].Setting[is].Type == "Mode") {
+                            var ops = '<option value="1">' + modules[mt].modules[i].Setting[is].Val + '</option>';
+                            for (var aa = 0; aa < modules[mt].modules[i].Setting[is].Vals.length; aa++) {
+                                if (modules[mt].modules[i].Setting[is].Val != modules[mt].modules[i].Setting[is].Vals[aa])
+                                    ops = ops + '<option value="' + (aa + 2) + '">' + modules[mt].modules[i].Setting[is].Vals[aa] + '</option>';
+                            }
+                            $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><select style="float: right;margin-right: 20px;display: inline-block;" class="mdui-select" onchange="mssChange(this.options[this.options.selectedIndex].text,' + mt + ',' + i + ',' + is + ')" mdui-select="{position: \'bottom\'}">' + ops + '</select></li>');
+                        }
+                        if (modules[mt].modules[i].Setting[is].Type == "Text") {
+                            $('.l3').append('<li class="lla"><div style="position: relative;margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><div class="mdui-textfield" style="float: right;margin: 6px 20px 6px 15px;padding: 0;width: 50%;display: inline-block;"><input class="mdui-textfield-input" value="' + modules[mt].modules[i].Setting[is].Val + '" type="text" oninput="mssTChange($(this).val(),' + mt + ',' + i + ',' + is + ')"/></div></li>');
+                        }
+                        if (modules[mt].modules[i].Setting[is].Type == "Bool") {
+                            var isE = modules[mt].modules[i].Setting[is].Val ? 'checked' : "";
+                            $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><label class="mdui-checkbox"><input type="checkbox" onclick="mssBChange(this,' + mt + ',' + i + ',' + is + ')" ' + isE + '/><i class="mdui-checkbox-icon"></i></label></li>');
+                        }
+                        if (modules[mt].modules[i].Setting[is].Type == "Num") {
+                            $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><label class="mdui-slider mdui-slider-discrete"><input id="Int-' + mt + '-' + i + '-' + is + '" type="range" step="' + modules[mt].modules[i].Setting[is].Step + '" min="' + modules[mt].modules[i].Setting[is].MinVal + '" max="' + modules[mt].modules[i].Setting[is].MaxVal + '" onchange="mssIChange(this,' + mt + ',' + i + ',' + is + ')"/></label></li>');
+                            $('#Int-' + mt + '-' + i + '-' + is)[0].value = modules[mt].modules[i].Setting[is].Val;
+                        }
+                        mdui.mutation();
+                    }
+                }
+                $("#mss").css("opacity", "1");
+            }, 250);
+        }
+        //刷新模块信息（displayable）
+        function refresh(mt, i) {
+            ClickGUI.openModule = Number(i)
+            modules[mt].modules[i] = getDataJson(getModule(modules[mt].modules[i].Name))
+            $("#mss").css("width", "calc( 66.666666666666% - 80px)");
+            $("#mss").css("display", "block");
+            $('.l3').html("");
+            for (var is = 0; is < modules[mt].modules[i].Setting.length; is++) {
+                if (modules[mt].modules[i].Setting[is].isVisable()) {
+                    if (modules[mt].modules[i].Setting[is].Type == "Mode") {
+                        var ops = '<option value="1">' + modules[mt].modules[i].Setting[is].Val + '</option>';
+                        for (var aa = 0; aa < modules[mt].modules[i].Setting[is].Vals.length; aa++) {
+                            if (modules[mt].modules[i].Setting[is].Val != modules[mt].modules[i].Setting[is].Vals[aa])
+                                ops = ops + '<option value="' + (aa + 2) + '">' + modules[mt].modules[i].Setting[is].Vals[aa] + '</option>';
+                        }
+                        $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><select style="float: right;margin-right: 20px;display: inline-block;" class="mdui-select" onchange="mssChange(this.options[this.options.selectedIndex].text,' + mt + ',' + i + ',' + is + ')" mdui-select="{position: \'bottom\'}">' + ops + '</select></li>');
+                    }
+                    if (modules[mt].modules[i].Setting[is].Type == "Text") {
+                        $('.l3').append('<li class="lla"><div style="position: relative;margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><div class="mdui-textfield" style="float: right;margin: 6px 20px 6px 15px;padding: 0;width: 50%;display: inline-block;"><input class="mdui-textfield-input" value="' + modules[mt].modules[i].Setting[is].Val + '" type="text"/></div></li>');
+                    }
+                    if (modules[mt].modules[i].Setting[is].Type == "Bool") {
+                        var isE = modules[mt].modules[i].Setting[is].Val ? 'checked' : "";
+                        $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><label class="mdui-checkbox"><input type="checkbox" onclick="mssBChange(this,' + mt + ',' + i + ',' + is + ')" ' + isE + '/><i class="mdui-checkbox-icon"></i></label></li>');
+                    }
+                    if (modules[mt].modules[i].Setting[is].Type == "Num") {
+                        $('.l3').append('<li class="lla"><div style="margin-left: 15px;display: inline-block;" class="mdui-list-item-content">' + modules[mt].modules[i].Setting[is].Name + '</div><label class="mdui-slider mdui-slider-discrete"><input id="Int-' + mt + '-' + i + '-' + is + '" type="range" step="' + modules[mt].modules[i].Setting[is].Step + '" min="' + modules[mt].modules[i].Setting[is].MinVal + '" max="' + modules[mt].modules[i].Setting[is].MaxVal + '" onchange="mssIChange(this,' + mt + ',' + i + ',' + is + ')"/></label></li>');
+                        $('#Int-' + mt + '-' + i + '-' + is)[0].value = modules[mt].modules[i].Setting[is].Val;
+                    }
+                    mdui.mutation();
+                }
+            }
+            $("#mss").css("opacity", "1");
+        }
+        document.oncontextmenu = function(e) {
+            return false;
+        }
+        if (ClickGUI.openCategory != -1) {
+            clickModuleT(ClickGUI.openCategory)
+            if (ClickGUI.openModule != -1) {
+                clickModule(ClickGUI.openCategory, ClickGUI.openModule)
+            }
+        }
+        //Hot Update necessary components, which are used to fix bugs
+        //$.getScript("https://api.xgstudio.xyz/FDP/hotupdate.php?type=clickgui&ver=1.4.1");
+    </script>
+<!--务必保留本段版权信息，FDP原创设计UI! Be sure to keep the copyright information of this paragraph, FDP original design UI!-->
+<p style="color: rgba(255, 255, 255, 0.3);position: fixed;bottom: -5px;font-size: 10px;right: 3px;text-align: right;">Made by 2734583@qq.com<br>Powered by Material Design<br>Running in FDPClient</p>
+</body>
+
+</html>

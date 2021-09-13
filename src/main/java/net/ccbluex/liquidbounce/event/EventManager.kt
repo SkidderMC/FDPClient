@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.event
 
@@ -20,15 +20,19 @@ class EventManager : MinecraftInstance() {
     fun registerListener(listener: Listenable) {
         for (method in listener.javaClass.declaredMethods) {
             if (method.isAnnotationPresent(EventTarget::class.java) && method.parameterTypes.size == 1) {
-                if (!method.isAccessible)
-                    method.isAccessible = true
+                try {
+                    if (!method.isAccessible)
+                        method.isAccessible = true
 
-                val eventClass = method.parameterTypes[0] as Class<out Event>
-                val eventTarget = method.getAnnotation(EventTarget::class.java)
+                    val eventClass = method.parameterTypes[0] as Class<out Event>
+                    val eventTarget = method.getAnnotation(EventTarget::class.java)
 
-                val invokableEventTargets = registry.getOrDefault(eventClass, ArrayList())
-                invokableEventTargets.add(EventHook(listener, method, eventTarget))
-                registry[eventClass] = invokableEventTargets
+                    val invokableEventTargets = registry.getOrDefault(eventClass, ArrayList())
+                    invokableEventTargets.add(EventHook(listener, method, eventTarget))
+                    registry[eventClass] = invokableEventTargets
+                }catch (t: Throwable){
+                    t.printStackTrace()
+                }
             }
         }
     }
@@ -53,10 +57,10 @@ class EventManager : MinecraftInstance() {
      */
     fun callEvent(event: Event) {
         if(event is Render2DEvent||event is Render3DEvent){
-            val legitSpoof=LiquidBounce.moduleManager[LegitSpoof::class.java] as LegitSpoof
+            val legitSpoof=LiquidBounce.moduleManager[LegitSpoof::class.java]
             if(legitSpoof.state&&legitSpoof.render.get()){
                 if(event is Render2DEvent) {
-                    val hud=LiquidBounce.moduleManager[HUD::class.java] as HUD
+                    val hud=LiquidBounce.moduleManager[HUD::class.java]
                     if(hud.state)
                         hud.onRender2D(event)
                 }

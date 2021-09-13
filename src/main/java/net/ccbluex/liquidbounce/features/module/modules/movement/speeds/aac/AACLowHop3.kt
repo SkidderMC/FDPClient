@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac
 
@@ -18,7 +18,7 @@ class AACLowHop3 : SpeedMode("AACLowHop3") {
         firstJump = true
     }
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.hurtTime <= 0) {
                 if (mc.thePlayer.onGround) {

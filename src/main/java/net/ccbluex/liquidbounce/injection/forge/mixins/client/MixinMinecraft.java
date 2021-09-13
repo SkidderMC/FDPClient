@@ -1,17 +1,19 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
+import com.guimc.fuckpcl.PCLChecker;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
-import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
-import net.ccbluex.liquidbounce.ui.client.GuiMainMenu;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.RotationUtils;
+import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -22,16 +24,24 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.io.File;
+import java.nio.file.AccessDeniedException;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
@@ -72,6 +82,13 @@ public abstract class MixinMinecraft {
     @Shadow
     public GameSettings gameSettings;
 
+    @Shadow
+    private Entity renderViewEntity;
+
+    @Shadow
+    @Final
+    public File mcDataDir;
+
     @Inject(method = "run", at = @At("HEAD"))
     private void init(CallbackInfo callbackInfo) {
         if(displayWidth < 1067)
@@ -79,14 +96,42 @@ public abstract class MixinMinecraft {
 
         if(displayHeight < 622)
             displayHeight = 622;
-
-        LiquidBounce.INSTANCE.initClient();
     }
+
+    /**
+     * @author liuli
+     */
+//    @Overwrite
+//    public void drawSplashScreen(TextureManager textureManagerInstance) {
+//
+//    }
+//
+//    @Inject(method = "startGame", at = @At(value = "HEAD"))
+//    private void startGameHEAD(CallbackInfo ci) throws IllegalAccessException {
+//        SplashProgress.finish();
+//        disableForgeSplash(true);
+//    }
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
-    private void startGame(CallbackInfo callbackInfo) {
+    private void startGame(CallbackInfo callbackInfo) throws Exception {
+        if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
+            Display.destroy();
+            String warnStr="Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
+            MiscUtils.showErrorPopup(warnStr);
+            throw new AccessDeniedException(warnStr);
+        }
         LiquidBounce.INSTANCE.startClient();
+//        disableForgeSplash(false);
     }
+
+//    private void disableForgeSplash(boolean stat) throws IllegalAccessException {
+//        for(Field field:SplashProgress.class.getDeclaredFields()){
+//            if(field.getName().equalsIgnoreCase("enabled")){
+//                field.setAccessible(true);
+//                field.set(null,stat);
+//            }
+//        }
+//    }
 
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
@@ -96,7 +141,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))
     private void displayGuiScreen(CallbackInfo callbackInfo) {
         if(currentScreen instanceof net.minecraft.client.gui.GuiMainMenu || (currentScreen != null && currentScreen.getClass().getName().startsWith("net.labymod") && currentScreen.getClass().getSimpleName().equals("ModGuiMainMenu"))) {
-            currentScreen = new GuiMainMenu();
+            currentScreen = LiquidBounce.mainMenu;
 
             ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
             currentScreen.setWorldAndResolution(Minecraft.getMinecraft(), scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight());
@@ -147,9 +192,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "clickMouse", at = @At("HEAD"))
     private void clickMouse(CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
-
-        if (LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
-            leftClickCounter = 0;
+        leftClickCounter = 0; // fix hit delay lol
     }
 
     @Inject(method = "middleClickMouse", at = @At("HEAD"))
@@ -161,7 +204,7 @@ public abstract class MixinMinecraft {
     private void rightClickMouse(final CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT);
 
-        final FastPlace fastPlace = (FastPlace) LiquidBounce.moduleManager.getModule(FastPlace.class);
+        final FastPlace fastPlace = LiquidBounce.moduleManager.getModule(FastPlace.class);
 
         if (fastPlace.getState())
             rightClickDelayTimer = fastPlace.getSpeedValue().get();
@@ -170,6 +213,23 @@ public abstract class MixinMinecraft {
     @Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At("HEAD"))
     private void loadWorld(WorldClient p_loadWorld_1_, String p_loadWorld_2_, final CallbackInfo callbackInfo) {
         LiquidBounce.eventManager.callEvent(new WorldEvent(p_loadWorld_1_));
+    }
+
+    @Inject(method = "getRenderViewEntity", at = @At("HEAD"))
+    public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir){
+        if(renderViewEntity instanceof EntityLivingBase && RotationUtils.serverRotation!=null){
+            final Rotations rotations=LiquidBounce.moduleManager.getModule(Rotations.class);
+            final EntityLivingBase entityLivingBase=(EntityLivingBase) renderViewEntity;
+            final float yaw=RotationUtils.serverRotation.getYaw();
+            if(rotations.getHeadValue().get()){
+                entityLivingBase.rotationYawHead=yaw;
+                entityLivingBase.prevRotationYawHead=yaw;
+            }
+            if(rotations.getBodyValue().get()){
+                entityLivingBase.renderYawOffset=yaw;
+                entityLivingBase.prevRenderYawOffset=yaw;
+            }
+        }
     }
 
     /**

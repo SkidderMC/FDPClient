@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
@@ -15,12 +15,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 
-@ModuleInfo(name = "LightningDetect", description = "Check lightning spawn at.", category = ModuleCategory.WORLD, array = false)
+@ModuleInfo(name = "LightningDetect", category = ModuleCategory.WORLD, array = false, defaultOn = true)
 class LightningDetect : Module() {
-    init {
-        state=true
-    }
-
     @EventTarget
     fun onPacket(event: PacketEvent) {
         if (event.packet is S2CPacketSpawnGlobalEntity) {

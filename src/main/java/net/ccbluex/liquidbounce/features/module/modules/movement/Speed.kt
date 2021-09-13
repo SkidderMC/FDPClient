@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
@@ -11,69 +11,24 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.redesky.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.ReflectUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import org.lwjgl.input.Keyboard
 
-@ModuleInfo(name = "Speed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
+@ModuleInfo(name = "Speed", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, keyBind = Keyboard.KEY_V)
 class Speed : Module() {
-    private val speedModes = arrayOf( // NCP
-        NCPBHop(),
-        NCPFHop(),
-        SNCPBHop(),
-        NCPHop(),
-        YPort(),
-        YPort2(),
-        NCPYPort(),
-        Boost(),
-        Frame(),
-        MiJump(),
-        OnGround(),  // AAC
-        AACBHop(),
-        AAC2BHop(),
-        AAC3BHop(),
-        AAC4BHop(),
-        AAC5BHop(),
-        AAC6BHop(),
-        AAC7BHop(),
-        AACHop3313(),
-        AACHop350(),
-        AACLowHop(),
-        AACLowHop2(),
-        AACLowHop3(),
-        AACGround(),
-        AACGround2(),
-        AACYPort(),
-        AACYPort2(),
-        AACPort(),
-        OldAACBHop(),  // Spartan
-        SpartanYPort(),  // Spectre
-        SpectreLowHop(),
-        SpectreBHop(),
-        SpectreOnGround(),
-        TeleportCubeCraft(),  // Server
-        HiveHop(),
-        HypixelHop(),
-        MineplexGround(),  // Other
-        SlowHop(),
-        CustomSpeed(),  // RedeSky
-        RedeSkyHop(),
-        RedeSkyHop2(),
-        RedeSkyHop3(),
-        RedeSkyHopOld(),
-        RedeSkyGround(),
-        Matrix(),
-        VerusYPort(),
-        MineplexBHop()
-    )
+    val modes=ReflectUtils.getReflects("${this.javaClass.`package`.name}.speeds",SpeedMode::class.java)
+        .map { it.newInstance() as SpeedMode }
+        .sortedBy { it.modeName }
 
-    val modeValue: ListValue = object : ListValue("Mode", modes, "NCPBHop") {
+    val mode: SpeedMode
+        get() = modes.filter { it.modeName.equals(modeValue.get(),true) }[0]
+
+    val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "NCPBHop") {
         override fun onChange(oldValue: String, newValue: String) {
             if (state) onDisable()
         }
@@ -83,75 +38,77 @@ class Speed : Module() {
         }
     }
 
-    val customSpeedValue = FloatValue("CustomSpeed", 1.6f, 0.2f, 2f)
-    val customYValue = FloatValue("CustomY", 0f, 0f, 4f)
-    val customTimerValue = FloatValue("CustomTimer", 1f, 0.1f, 2f)
-    val customStrafeValue = ListValue("CustomStrafe", arrayOf("Strafe","Boost","Non-Strafe"),"Boost")
-    val customGroundStay = IntegerValue("CustomGroundStay",0,0,10)
-    val groundResetXZValue = BoolValue("CustomGroundResetXZ", false)
-    val resetXZValue = BoolValue("CustomResetXZ", false)
-    val resetYValue = BoolValue("CustomResetY", false)
-    val portMax = FloatValue("AAC-PortLength", 1F, 1F, 20F)
-    val redeSkyHopGSpeed = FloatValue("RedeSkyHop-GSpeed", 0.3f, 0.1f, 0.7f)
-    val redeSkyHeight = FloatValue("RedeSkyHeight", 0.45f, 0.30f, 0.55f)
-    val redeSkyHopTimer = FloatValue("RedeSkyHop-Timer", 6f, 1.1f, 10f)
-    val redeSkyHop3Speed = FloatValue("RedeSkyHop3-Speed", 0.07f, 0.01f, 0.1f)
-    val aacGroundTimerValue = FloatValue("AACGround-Timer", 3f, 1.1f, 10f)
-    val cubecraftPortLengthValue = FloatValue("CubeCraft-PortLength", 1f, 0.1f, 2f)
-    val mineplexGroundSpeedValue = FloatValue("MineplexGround-Speed", 0.5f, 0.1f, 1f)
+    val customSpeedValue = FloatValue("CustomSpeed", 1.6f, 0.2f, 2f).displayable { modeValue.equals("Custom") }
+    val customLaunchSpeedValue = FloatValue("CustomLaunchSpeed", 1.6f, 0.2f, 2f).displayable { modeValue.equals("Custom") }
+    val customAddYMotionValue = FloatValue("CustomAddYMotion", 0f, 0f, 2f).displayable { modeValue.equals("Custom") }
+    val customYValue = FloatValue("CustomY", 0f, 0f, 4f).displayable { modeValue.equals("Custom") }
+    val customUpTimerValue = FloatValue("CustomUpTimer", 1f, 0.1f, 2f).displayable { modeValue.equals("Custom") }
+    val customDownTimerValue = FloatValue("CustomDownTimer", 1f, 0.1f, 2f).displayable { modeValue.equals("Custom") }
+    val customStrafeValue = ListValue("CustomStrafe", arrayOf("Strafe","Boost","Plus","PlusOnlyUp","Non-Strafe"),"Boost").displayable { modeValue.equals("Custom") }
+    val customGroundStay = IntegerValue("CustomGroundStay",0,0,10).displayable { modeValue.equals("Custom") }
+    val groundResetXZValue = BoolValue("CustomGroundResetXZ", false).displayable { modeValue.equals("Custom") }
+    val resetXZValue = BoolValue("CustomResetXZ", false).displayable { modeValue.equals("Custom") }
+    val resetYValue = BoolValue("CustomResetY", false).displayable { modeValue.equals("Custom") }
+    val launchSpeedValue = BoolValue("CustomDoLaunchSpeed", true).displayable { modeValue.equals("Custom") }
+    val noWater = BoolValue("NoWater", true)
+    val portMax = FloatValue("AACPort-Length", 1F, 1F, 20F).displayable { modeValue.equals("AACPort") }
+    val redeSkyHopGSpeed = FloatValue("RedeSkyHop-GSpeed", 0.3f, 0.1f, 0.7f).displayable { modeValue.equals("RedeSkyHop") }
+    val redeSkyHeight = FloatValue("RedeSkyHeight", 0.45f, 0.30f, 0.55f).displayable { modeValue.contains("RedeSkyHop") }
+    val redeSkyHopTimer = FloatValue("RedeSkyHop-Timer", 6f, 1.1f, 10f).displayable { modeValue.contains("RedeSkyHop") }
+    val redeSkyHop3Speed = FloatValue("RedeSkyHop3-Speed", 0.07f, 0.01f, 0.1f).displayable { modeValue.equals("RedeSkyHop3") }
+    val aacGroundTimerValue = FloatValue("AACGround-Timer", 3f, 1.1f, 10f).displayable { modeValue.equals("AACGround") }
+    val cubecraftPortLengthValue = FloatValue("TeleportCubeCraft-PortLength", 1f, 0.1f, 2f).displayable { modeValue.equals("TeleportCubeCraft") }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
-        if (mc.thePlayer.isSneaking) return
+    fun onUpdate(event: UpdateEvent) {
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater() &&noWater.get())) return
         if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
-        mode?.onUpdate()
+        mode.onUpdate()
     }
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE) return
-        if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
-        mode?.onMotion()
+        if (MovementUtils.isMoving())
+            mc.thePlayer.isSprinting = true
+
+        mode.onMotion(event)
+
+        if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE || (mc.thePlayer.isInWater && noWater.get()))
+            return
+
+        mode.onPreMotion()
     }
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if (mc.thePlayer.isSneaking) return
-        mode?.onMove(event)
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) return
+        mode.onMove(event)
     }
 
     @EventTarget
     fun onTick(event: TickEvent) {
-        if (mc.thePlayer.isSneaking) return
-        mode?.onTick()
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) return
+        mode.onTick()
+    }
+
+    @EventTarget
+    fun onJump(event: JumpEvent) {
+        if(mode.noJump)
+            event.cancelEvent()
     }
 
     override fun onEnable() {
         if (mc.thePlayer == null) return
         mc.timer.timerSpeed = 1f
-        mode?.onEnable()
+        mode.onEnable()
     }
 
     override fun onDisable() {
         if (mc.thePlayer == null) return
         mc.timer.timerSpeed = 1f
-        mode?.onDisable()
+        mode.onDisable()
     }
 
     override val tag: String
         get() = modeValue.get()
-
-    private val mode: SpeedMode?
-        get() {
-            val mode = modeValue.get()
-            for (speedMode in speedModes) if (speedMode.modeName.equals(mode, ignoreCase = true)) return speedMode
-            return null
-        }
-
-    private val modes: Array<String>
-        get() {
-            val list: MutableList<String> = ArrayList()
-            for (speedMode in speedModes) list.add(speedMode.modeName)
-            return list.toTypedArray()
-        }
 }

@@ -17,12 +17,12 @@ import net.minecraft.util.Vec3
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "BoatJump", description = "Insane jump xdddd.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "BoatJump", category = ModuleCategory.MOVEMENT)
 class BoatJump : Module() {
     private val mode=ListValue("Mode", arrayOf("Boost","Launch"),"Boost")
     private val hBoost=FloatValue("HBoost",3F,0F,6F)
     private val vBoost=FloatValue("VBoost",3F,0F,6F)
-    private val launchRadius=FloatValue("LaunchRadius",4F,3F,10F)
+    private val launchRadius=FloatValue("LaunchRadius",4F,3F,10F).displayable { mode.equals("Launch") }
     private val delay=IntegerValue("Delay",200,100,500)
     private val autoHit=BoolValue("AutoHit",true)
 

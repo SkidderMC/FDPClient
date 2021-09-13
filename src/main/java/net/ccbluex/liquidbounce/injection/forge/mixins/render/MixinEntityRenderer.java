@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
@@ -64,7 +64,7 @@ public abstract class MixinEntityRenderer {
 
     @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)
     private void injectHurtCameraEffect(CallbackInfo callbackInfo) {
-        HurtCam hurtCam=(HurtCam)LiquidBounce.moduleManager.getModule(HurtCam.class);
+        HurtCam hurtCam= LiquidBounce.moduleManager.getModule(HurtCam.class);
         String mode=hurtCam.getModeValue().get();
 
         if(!mode.equalsIgnoreCase("Vanilla")) {
@@ -151,6 +151,9 @@ public abstract class MixinEntityRenderer {
         if (LiquidBounce.moduleManager.getModule(Tracers.class).getState()) GL11.glPopMatrix();
     }
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     public void getMouseOver(float p_getMouseOver_1_) {
         Entity entity = this.mc.getRenderViewEntity();
@@ -158,7 +161,7 @@ public abstract class MixinEntityRenderer {
             this.mc.mcProfiler.startSection("pick");
             this.mc.pointedEntity = null;
 
-            final Reach reach = (Reach) LiquidBounce.moduleManager.getModule(Reach.class);
+            final Reach reach = LiquidBounce.moduleManager.getModule(Reach.class);
 
             double d0 = reach.getState() ? reach.getMaxRange() : (double) this.mc.playerController.getBlockReachDistance();
             this.mc.objectMouseOver = entity.rayTrace(reach.getState() ? reach.getBuildReachValue().get() : d0, p_getMouseOver_1_);

@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
@@ -10,9 +10,9 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -23,14 +23,12 @@ import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.server.S12PacketEntityVelocity
-import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
-import net.minecraft.world.Explosion
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "Velocity", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
 
     /**
@@ -38,27 +36,41 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4", "RedeSkyPacket",
-            "Reverse", "SmoothReverse", "Jump", "Phase", "PacketPhase", "Glitch", "Legit"), "Simple")
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
+                                                      "Redesky1", "Redesky2", 
+                                                      "AAC5.2.0", "AAC5.2.0Combat",
+                                                      "Matrix",
+                                                      "Reverse", "SmoothReverse", 
+                                                      "Jump", 
+                                                      "Phase", "PacketPhase", "Glitch", "Spoof",
+                                                      "Legit"), "Simple")
 
     // Reverse
-    private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F)
-    private val reverse2StrengthValue = FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F)
+    private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F).displayable { modeValue.equals("Reverse") }
+    private val reverse2StrengthValue = FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F).displayable { modeValue.equals("SmoothReverse") }
 
     // AAC Push
-    private val aacPushXZReducerValue = FloatValue("AACPushXZReducer", 2F, 1F, 3F)
-    private val aacPushYReducerValue = BoolValue("AACPushYReducer", true)
+    private val aacPushXZReducerValue = FloatValue("AACPushXZReducer", 2F, 1F, 3F).displayable { modeValue.equals("AACPush") }
+    private val aacPushYReducerValue = BoolValue("AACPushYReducer", true).displayable { modeValue.equals("AACPush") }
 
     // phase
     private val phaseHeightValue = FloatValue("PhaseHeight",0.5F,0F,1F)
+        .displayable { modeValue.contains("Phase") }
     private val phaseOnlyGround = BoolValue("PhaseOnlyGround",true)
+        .displayable { modeValue.contains("Phase") }
 
     // legit
-    private val legitStrafeValue = BoolValue("LegitStrafe",false)
-    private val legitFaceValue = BoolValue("LegitFace",true)
+    private val legitStrafeValue = BoolValue("LegitStrafe",false).displayable { modeValue.equals("Legit") }
+    private val legitFaceValue = BoolValue("LegitFace",true).displayable { modeValue.equals("Legit") }
 
-    private val rspAlwaysValue = BoolValue("RedeSkyPacketAlwaysReduce",true)
-    private val rspDengerValue = BoolValue("RedeSkyPacketOnlyDanger",false)
+    private val rspAlwaysValue = BoolValue("RedeskyAlwaysReduce",true)
+        .displayable { modeValue.contains("RedeSky") }
+    private val rspDengerValue = BoolValue("RedeskyOnlyDanger",false)
+        .displayable { modeValue.contains("RedeSky") }
+    
+
+    private val onlyGroundValue = BoolValue("OnlyGround",false)
+    private val onlyCombatValue = BoolValue("OnlyCombat",false)
 
     /**
      * VALUES
@@ -75,7 +87,13 @@ class Velocity : Module() {
 
     // Legit
     private var pos:BlockPos?=null
-
+    
+    private var redeCount = 24
+    
+    private var templateX = 0
+    private var templateY = 0
+    private var templateZ = 0
+    
     override val tag: String
         get() = modeValue.get()
 
@@ -85,7 +103,11 @@ class Velocity : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if(redeCount<24) redeCount++
         if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb)
+            return
+
+        if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
 
         when (modeValue.get().toLowerCase()) {
@@ -121,20 +143,45 @@ class Velocity : Module() {
                 }
             }
 
-            "aac" -> if (velocityInput && velocityTimer.hasTimePassed(80L)) {
-                mc.thePlayer.motionX *= horizontalValue.get()
-                mc.thePlayer.motionZ *= horizontalValue.get()
-                //mc.thePlayer.motionY *= verticalValue.get() ?
-                velocityInput = false
-            }
-
-            "aacv4" -> {
-                if (mc.thePlayer.hurtTime>0 && !mc.thePlayer.onGround){
+            "aac4reduce" -> {
+                if (mc.thePlayer.hurtTime>0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(80L)){
                     mc.thePlayer.motionX *= 0.62
                     mc.thePlayer.motionZ *= 0.62
                 }
+                if(velocityInput && (mc.thePlayer.hurtTime<4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
+                    velocityInput = false
+                }
             }
-
+            
+            "aac5reduce" -> {
+                if (mc.thePlayer.hurtTime>1 && velocityInput){
+                    mc.thePlayer.motionX *= 0.81
+                    mc.thePlayer.motionZ *= 0.81
+                }
+                if(velocityInput && (mc.thePlayer.hurtTime<5 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
+                    velocityInput = false
+                }
+            }
+            
+            "aac5.2.0combat" -> {
+                if(LiquidBounce.moduleManager[Fly::class.java].state) return
+                if (mc.thePlayer.hurtTime>0 && velocityInput){
+                    velocityInput = false
+                    mc.thePlayer.motionX = 0.0
+                    mc.thePlayer.motionZ = 0.0
+                    mc.thePlayer.motionY = 0.0
+                    mc.thePlayer.jumpMovementFactor = -0.002f
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
+                }
+                if(velocityTimer.hasTimePassed(80L) && velocityInput) {
+                    velocityInput = false
+                    mc.thePlayer.motionX = templateX/8000.0
+                    mc.thePlayer.motionZ = templateZ/8000.0
+                    mc.thePlayer.motionY = templateY/8000.0
+                    mc.thePlayer.jumpMovementFactor = -0.002f
+                }
+            }
+            
             "aacpush" -> {
                 if (jump) {
                     if (mc.thePlayer.onGround)
@@ -146,7 +193,7 @@ class Velocity : Module() {
 
                     // Reduce Y
                     if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get()
-                            && !LiquidBounce.moduleManager[Speed::class.java]!!.state)
+                            && !LiquidBounce.moduleManager[Speed::class.java].state)
                         mc.thePlayer.motionY -= 0.014999993
                 }
 
@@ -158,7 +205,23 @@ class Velocity : Module() {
                     mc.thePlayer.motionZ /= reduce
                 }
             }
-
+           "Matrix" -> {
+                if (mc.thePlayer.hurtTime > 0) {
+                if (mc.thePlayer.onGround) {
+                    if (mc.thePlayer.hurtTime <= 6) {
+                        mc.thePlayer.motionX *= 0.70
+                        mc.thePlayer.motionZ *= 0.70
+                    } 
+                    if (mc.thePlayer.hurtTime <= 5) {
+                        mc.thePlayer.motionX *= 0.80
+                        mc.thePlayer.motionZ *= 0.80
+                    }
+                } else if (mc.thePlayer.hurtTime <= 10) {
+                    mc.thePlayer.motionX *= 0.60
+                    mc.thePlayer.motionZ *= 0.60
+               }
+            }}
+        
             "glitch" -> {
                 mc.thePlayer.noClip = velocityInput
 
@@ -184,8 +247,10 @@ class Velocity : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        val packet = event.packet
+        if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
+            return
 
+        val packet = event.packet
         if (packet is S12PacketEntityVelocity) {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer)
                 return
@@ -205,7 +270,19 @@ class Velocity : Module() {
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
 
-                "aac", "reverse", "smoothreverse", "aaczero" -> velocityInput = true
+                "aac4reduce" -> {
+                    velocityInput = true
+                    packet.motionX = (packet.getMotionX() * 0.6).toInt()
+                    packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
+                }
+
+                "aac5.2.0" -> {
+                    if(LiquidBounce.moduleManager[Fly::class.java].state) return
+                    event.cancelEvent()
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
+                }
+                
+                "aac5reduce", "reverse", "smoothreverse", "aaczero" -> velocityInput = true
 
                 "phase" -> {
                     if (!mc.thePlayer.onGround&&phaseOnlyGround.get())
@@ -217,6 +294,20 @@ class Velocity : Module() {
                     packet.motionX = 0
                     packet.motionY = 0
                     packet.motionZ = 0
+                }
+                
+                "aac5.2.0combat" -> {
+                    if(LiquidBounce.moduleManager[Fly::class.java].state) return
+                    event.cancelEvent()
+                    velocityInput = true
+                    templateX = packet.motionX
+                    templateZ = packet.motionZ
+                    templateY = packet.motionY
+                }
+                
+                "spoof" -> {
+                    event.cancelEvent()
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.motionX/8000.0, packet.motionY/8000.0, packet.motionZ/8000.0, false))
                 }
 
                 "packetphase" -> {
@@ -245,8 +336,25 @@ class Velocity : Module() {
                 "legit" -> {
                     pos=BlockPos(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
                 }
+                
+                "redesky2" -> {
+                    if(packet.getMotionX()==0&&packet.getMotionZ()==0){ // ignore horizonal velocity
+                        return
+                    }
+                    
+                    val target=LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager.get(KillAura::class.java).rangeValue.get()+1) ?: return
+                    mc.thePlayer.motionX=0.0
+                    mc.thePlayer.motionZ=0.0
+                    packet.motionX = 0
+                    packet.motionZ = 0
+                    for(i in 0..redeCount){
+                        mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(target,C02PacketUseEntity.Action.ATTACK))
+                        mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
+                    }
+                    if(redeCount>12) redeCount -= 5
+                }
 
-                "redeskypacket" -> {
+                "redesky1" -> {
                     if(packet.getMotionX()==0&&packet.getMotionZ()==0){ // ignore horizonal velocity
                         return
                     }
@@ -257,7 +365,7 @@ class Velocity : Module() {
                             return
                     }
 
-                    val target=LiquidBounce.combatManager.getNearByEntity((LiquidBounce.moduleManager.get(KillAura::class.java) as KillAura).rangeValue.get()) ?: return
+                    val target=LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager.get(KillAura::class.java).rangeValue.get()) ?: return
                     if(rspAlwaysValue.get()){
                         mc.thePlayer.motionX=0.0
                         mc.thePlayer.motionZ=0.0
@@ -302,6 +410,9 @@ class Velocity : Module() {
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
+        if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
+            return
+
         when (modeValue.get().toLowerCase()) {
             "legit" -> {
                 if(pos==null||mc.thePlayer.hurtTime<=0)
@@ -347,7 +458,10 @@ class Velocity : Module() {
 
     @EventTarget
     fun onJump(event: JumpEvent) {
-        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb)
+        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || (onlyGroundValue.get() && !mc.thePlayer.onGround))
+            return
+
+        if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
 
         when (modeValue.get().toLowerCase()) {

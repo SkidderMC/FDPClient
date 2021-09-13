@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/UnlegitMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -16,7 +21,7 @@ import java.math.BigDecimal
 import java.util.*
 import kotlin.math.abs
 
-@ModuleInfo(name = "DamageParticle", description = "Allows you to see targets damage.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "DamageParticle", category = ModuleCategory.RENDER)
 class DamageParticle : Module() {
     private val healthData=HashMap<Int,Float>()
     private val particles=ArrayList<SingleParticle>()
@@ -33,7 +38,7 @@ class DamageParticle : Module() {
                     healthData[entity.entityId] = entity.health
                     if(lastHealth==entity.health) continue
 
-                    val prefix=if(lastHealth>entity.health){"§c"}else{"§a"}
+                    val prefix=if(lastHealth>entity.health){"§c❤"}else{"§a§l❤"}
                     particles.add(SingleParticle(prefix+BigDecimal(abs(lastHealth-entity.health).toDouble()).setScale(1,BigDecimal.ROUND_HALF_UP).toDouble()
                         ,entity.posX - 0.5 + Random(System.currentTimeMillis()).nextInt(5).toDouble() * 0.1
                         ,entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0

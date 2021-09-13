@@ -1,19 +1,18 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud
 
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.ReflectUtils
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
-import org.reflections.Reflections
 import kotlin.math.max
 import kotlin.math.min
 
@@ -24,24 +23,22 @@ open class HUD : MinecraftInstance() {
 
     companion object {
 
-        val elements = Reflections("${HUD::class.java.`package`.name}.element.elements")
-            .getSubTypesOf(Element::class.java).toTypedArray()
+        val elements = ReflectUtils.getReflects("${HUD::class.java.`package`.name}.element.elements",Element::class.java)
+            .toTypedArray()
 
         /**
          * Create default HUD
          */
         @JvmStatic
         fun createDefault(): HUD {
-            val text1=Text(scale = 1.5F,x=4.0,y=4.0)
-            text1.displayString.set("F")
-            text1.colorModeValue.set("AnotherRainbow")
-            val text2=Text(scale = 1.5F,x = 4.0+(Fonts.font40.getStringWidth("F")),y=4.0)
-            text2.displayString.set("DP Client")
+            val text1=Text(x=15.0,y=15.0)
+            text1.displayString.set("FDPClient | %serverIp% | %fps% FPS")
+            text1.colorModeValue.set("Rainbow")
+            text1.rectValue.set("OneTap")
+            text1.rectColorModeValue.set("Rainbow")
 
             return HUD()
                 .addElement(text1)
-                .addElement(text2)
-                .addElement(KeyStrokes())
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())
                 .addElement(Armor())
@@ -170,7 +167,6 @@ open class HUD : MinecraftInstance() {
      */
     fun addElement(element: Element): HUD {
         elements.add(element)
-        element.updateElement()
         return this
     }
 

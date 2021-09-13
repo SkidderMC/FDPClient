@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.render;
 
@@ -121,6 +121,14 @@ public final class RenderUtils extends MinecraftInstance {
         glColor4f(1F, 1F, 1F, 1F);
     }
 
+    // hey where's drawBorder
+//    public static void drawExhiRect(float x, float y, float x2, float y2) {
+//        drawRect(x - 3.5F, y - 3.5F, x2 + 3.5F, y2 + 3.5F, Color.black.getRGB());
+//        drawRect(x - 3F, y - 3F, x2 + 3F, y2 + 3F, new Color(50, 50, 50).getRGB());
+//        drawBorder(x - 1.5F, y - 1.5F, x2 + 1.5F, y2 + 1.5F, 2.5F, new Color(26, 26, 26).getRGB());
+//        drawRect(x, y, x2, y2, new Color(18, 18, 18).getRGB());
+//    }
+
     public static void renderCircle(double x, double y, double radius, int color) {
         renderCircle(x, y, 0, 360, radius - 1, color);
     }
@@ -150,32 +158,66 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         GlStateManager.color(var6, var7, var8, var11);
 
-        if (var11 > 0.5F) {
-            glEnable(GL_BLEND);
-            glEnable(GL_LINE_SMOOTH);
-            glEnable(GL_POINT_SMOOTH);
-            glLineWidth(2);
-            glBegin(GL11.GL_LINE_STRIP);
-            for(double i = end; i >= start; i-= 4) {
-                double ldx = Math.cos(i * Math.PI / 180.0) * (w * 1.001);
-                double ldy = Math.sin(i * Math.PI / 180.0) * (h * 1.001);
-                glVertex2d(x + ldx, y + ldy);
-            }
-            glEnd();
-            glDisable(GL_BLEND);
-            glDisable(GL_LINE_SMOOTH);
-            glDisable(GL_POINT_SMOOTH);
-        }
-
         GL11.glBegin(GL11.GL_TRIANGLE_FAN);
 
-        for(double i = end; i >= start; i-= 4) {
+        GL11.glVertex2d(x, y);
+        for(double i = end; i >= start; i-=4) {
             double ldx = Math.cos(i * Math.PI / 180.0) * w;
             double ldy = Math.sin(i * Math.PI / 180.0) * h;
             GL11.glVertex2d(x + ldx, y + ldy);
         }
+        GL11.glVertex2d(x, y);
 
         GL11.glEnd();
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
+    public static void quickRenderCircle(double x, double y, double start, double end, double w, double h) {
+        if (start > end) {
+            double temp = end;
+            end = start;
+            start = temp;
+        }
+
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+        GL11.glVertex2d(x, y);
+        for(double i = end; i >= start; i-=4) {
+            double ldx = Math.cos(i * Math.PI / 180.0) * w;
+            double ldy = Math.sin(i * Math.PI / 180.0) * h;
+            GL11.glVertex2d(x + ldx, y + ldy);
+        }
+        GL11.glVertex2d(x, y);
+        GL11.glEnd();
+    }
+
+    public static void drawCircleRect(float x, float y, float x1, float y1, float radius, int color){
+        GlStateManager.color(0, 0, 0);
+        GL11.glColor4f(0, 0, 0, 0);
+
+        float var11 = (color >> 24 & 255) / 255.0F;
+        float var6 = (color >> 16 & 255) / 255.0F;
+        float var7 = (color >> 8 & 255) / 255.0F;
+        float var8 = (color & 255) / 255.0F;
+
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(var6, var7, var8, var11);
+
+        // 圆角
+        quickRenderCircle(x1-radius,y1-radius,0,90,radius,radius);
+        quickRenderCircle(x+radius,y1-radius,90,180,radius,radius);
+        quickRenderCircle(x+radius,y+radius,180,270,radius,radius);
+        quickRenderCircle(x1-radius,y+radius,270,360,radius,radius);
+
+        // 矩形
+        quickDrawRect(x+radius,y+radius,x1-radius,y1-radius);
+        quickDrawRect(x,y+radius,x+radius,y1-radius);
+        quickDrawRect(x1-radius,y+radius,x1,y1-radius);
+        quickDrawRect(x+radius,y,x1-radius,y+radius);
+        quickDrawRect(x+radius,y1-radius,x1-radius,y1);
 
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
@@ -220,6 +262,34 @@ public final class RenderUtils extends MinecraftInstance {
         glEnable(2848);
         glShadeModel(7425);
 
+        glBegin(7);
+        glColor4f(f1, f2, f3, f);
+        glVertex2d(left, top);
+        glVertex2d(left, bottom);
+
+        glColor4f(f5, f6, f7, f4);
+        glVertex2d(right, bottom);
+        glVertex2d(right, top);
+        glEnd();
+
+        glEnable(3553);
+        glDisable(3042);
+        glDisable(2848);
+        glShadeModel(7424);
+        glColor4f(1f,1f,1f,1f);
+    }
+
+    public static void quickDrawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
+        float f = (col1 >> 24 & 0xFF) / 255.0F;
+        float f1 = (col1 >> 16 & 0xFF) / 255.0F;
+        float f2 = (col1 >> 8 & 0xFF) / 255.0F;
+        float f3 = (col1 & 0xFF) / 255.0F;
+
+        float f4 = (col2 >> 24 & 0xFF) / 255.0F;
+        float f5 = (col2 >> 16 & 0xFF) / 255.0F;
+        float f6 = (col2 >> 8 & 0xFF) / 255.0F;
+        float f7 = (col2 & 0xFF) / 255.0F;
+
         glPushMatrix();
         glBegin(7);
         glColor4f(f1, f2, f3, f);
@@ -231,11 +301,6 @@ public final class RenderUtils extends MinecraftInstance {
         glVertex2d(right, top);
         glEnd();
         glPopMatrix();
-
-        glEnable(3553);
-        glDisable(3042);
-        glDisable(2848);
-        glShadeModel(7424);
     }
 
     public static void drawBlockBox(final BlockPos blockPos, final Color color, final boolean outline, final boolean box, final float outlineWidth) {
@@ -345,7 +410,7 @@ public final class RenderUtils extends MinecraftInstance {
         if (outline) {
             glLineWidth(outlineWidth);
             enableGlCap(GL_LINE_SMOOTH);
-            glColor(color.getRed(), color.getGreen(), color.getBlue(), 95);
+            glColor(color.getRed(), color.getGreen(), color.getBlue(), box?170:255);
             drawSelectionBoundingBox(axisAlignedBB);
         }
 
@@ -789,12 +854,6 @@ public final class RenderUtils extends MinecraftInstance {
         glScissor((int) (x * factor), (int) ((scaledResolution.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
     }
 
-    /**
-     * GL CAP MANAGER
-     *
-     * TODO: Remove gl cap manager and replace by something better
-     */
-
     public static void resetCaps() {
         glCapMap.forEach(RenderUtils::setGlState);
     }
@@ -827,11 +886,6 @@ public final class RenderUtils extends MinecraftInstance {
             glEnable(cap);
         else
             glDisable(cap);
-    }
-
-    public static Color skyRainbow(int var2, float bright, float st, double speed) {
-        double v1 = Math.ceil((System.currentTimeMillis()/speed) + (var2 * 109L)) / 5;
-        return Color.getHSBColor((double) ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright);
     }
 
     public static void drawRect(final double x, final double y, final double x2, final double y2, final int color) {
@@ -929,6 +983,8 @@ public final class RenderUtils extends MinecraftInstance {
         mc.getTextureManager().bindTexture(skin);
         RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
                 64F, 64F);
+        RenderUtils.drawScaledCustomSizeModalRect(x, y, 40F, 8F, 8, 8, width, height,
+                64F, 64F);
     }
 
     public static void drawColorRect(double left, double top, double right, double bottom, Color color1, Color color2, Color color3, Color color4) {
@@ -999,9 +1055,29 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glPopMatrix();
     }
 
-    private static final long startTime=System.currentTimeMillis();
+    public static void drawOutLineRect(double x, double y, double x1, double y1, double width, int internalColor, int borderColor) {
+        drawRect(x + width, y + width, x1 - width, y1 - width, internalColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x + width, y, x1 - width, y + width, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x, y, x + width, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x1 - width, y, x1, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x + width, y1 - width, x1 - width, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    }
 
-    public static Color arrayRainbow(int offset){
-        return new Color(Color.HSBtoRGB((float) ((double) ((System.currentTimeMillis()-startTime)/10000F)+ Math.sin((double) (((System.currentTimeMillis()-startTime)/100F)%50) + offset) / 50.0 * 1.6) % 1.0f, 0.5f, 1.0f));
+    public static void drawOutLineRect(int x, int y, int x1, int y1, int width, int internalColor, int borderColor) {
+        drawRect(x + width, y + width, x1 - width, y1 - width, internalColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x + width, y, x1 - width, y + width, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x, y, x + width, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x1 - width, y, x1, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        drawRect(x + width, y1 - width, x1 - width, y1, borderColor);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

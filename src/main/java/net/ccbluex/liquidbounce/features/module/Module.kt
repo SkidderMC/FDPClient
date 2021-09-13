@@ -1,25 +1,30 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.ToggleSound
+import net.ccbluex.liquidbounce.script.api.ScriptModule
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
+import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
-import java.lang.StringBuilder
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
     var name: String
+    var localizedName=""
+        get()=field.ifEmpty { name }
     var description: String
     var category: ModuleCategory
     var keyBind = Keyboard.CHAR_NONE
@@ -36,14 +41,17 @@ open class Module : MinecraftInstance(), Listenable {
             if (!LiquidBounce.isStarting)
                 LiquidBounce.configManager.smartSave()
         }
-    private val canEnable: Boolean
+    val canEnable: Boolean
     var autoDisable: EnumAutoDisableType
     val moduleCommand: Boolean
     val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
     var splicedName=""
         get() {
+//            val translatedName=LanguageManager.replace(localizedName)
+//            if(field.replace(" ","") != translatedName){
+//                field=StringUtils.toCompleteString(RegexUtils.match(translatedName, "[A-Z][a-z]*"))
+//            }
             if(field.isEmpty()){
-                // TODO: Use Regex to split it
                 val sb=StringBuilder()
                 val arr=name.toCharArray()
                 for(i in arr.indices){
@@ -54,16 +62,13 @@ open class Module : MinecraftInstance(), Listenable {
                     sb.append(char)
                 }
                 field=sb.toString()
-                println(field)
             }
             return field
         }
 
-    var slideStep = 0F
-
     init {
         name = moduleInfo.name
-        description = moduleInfo.description
+        description = "%module.$name.description%"
         category = moduleInfo.category
         keyBind = moduleInfo.keyBind
         array = moduleInfo.array
@@ -72,8 +77,17 @@ open class Module : MinecraftInstance(), Listenable {
         moduleCommand = moduleInfo.moduleCommand
     }
 
+    fun onLoad(){
+        if(this !is ScriptModule){
+            localizedName="%module.$name.name%"
+            values.forEach {
+                it.localedName="%module.$name.value.${it.name}.name%"
+            }
+        }
+    }
+
     // Current state of module
-    var state = moduleInfo.defaultOn
+    var state = false
         set(value) {
             if (field == value) return
 
@@ -84,22 +98,26 @@ open class Module : MinecraftInstance(), Listenable {
             if (!LiquidBounce.isStarting) {
                 if(value){
                     ToggleSound.playSound(true)
-                    LiquidBounce.hud.addNotification(Notification(name,"Enabled $name", NotifyType.SUCCESS))
+                    LiquidBounce.hud.addNotification(Notification("%notify.module.title%",LanguageManager.getAndFormat("notify.module.enable",localizedName), NotifyType.SUCCESS))
                 }else{
                     ToggleSound.playSound(false)
-                    LiquidBounce.hud.addNotification(Notification(name,"Disabled $name", NotifyType.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("%notify.module.title%",LanguageManager.getAndFormat("notify.module.disable",localizedName), NotifyType.ERROR))
                 }
             }
 
             // Call on enabled or disabled
-            if (value) {
-                onEnable()
+            try {
+                if (value) {
+                    if (canEnable)
+                        field = true
 
-                if (canEnable)
-                    field = true
-            } else {
-                onDisable()
-                field = false
+                    onEnable()
+                } else {
+                    field = false
+                    onDisable()
+                }
+            }catch (e: Throwable){
+                e.printStackTrace()
             }
 
             // Save module state
@@ -109,7 +127,40 @@ open class Module : MinecraftInstance(), Listenable {
 
     // HUD
     val hue = Math.random().toFloat()
-    var slide = 0F
+    var slideAnimation: Animation?=null
+    var slide = 0f
+        get(){
+            if(slideAnimation!=null){
+                field=slideAnimation!!.value.toFloat()
+                if(slideAnimation!!.state==Animation.EnumAnimationState.STOPPED){
+                    slideAnimation=null
+                }
+            }
+            return field
+        }
+        set(value){
+            if(slideAnimation==null || (slideAnimation!=null&&slideAnimation!!.to!=value.toDouble())){
+                slideAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START,field.toDouble(),value.toDouble(),300L)
+                    .start()
+            }
+        }
+    var yPosAnimation: Animation?=null
+    var yPos = 0f
+        get(){
+            if(yPosAnimation!=null){
+                field=yPosAnimation!!.value.toFloat()
+                if(yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED){
+                    yPosAnimation=null
+                }
+            }
+            return field
+        }
+        set(value){
+            if(yPosAnimation==null || (yPosAnimation!=null&&yPosAnimation!!.to!=value.toDouble())){
+                yPosAnimation=Animation(EaseUtils.EnumEasingType.CUBIC,EaseUtils.EnumEasingOrder.FAST_AT_START_AND_END,field.toDouble(),value.toDouble(),300L)
+                                .start()
+            }
+        }
 
     // Tag
     open val tag: String?
@@ -130,9 +181,7 @@ open class Module : MinecraftInstance(), Listenable {
         state = !state
     }
 
-    fun chat(msg: String){
-        ClientUtils.displayAlert(msg)
-    }
+    protected fun chat(msg: String) = ClientUtils.displayAlert(msg)
 
     /**
      * Called when module toggled

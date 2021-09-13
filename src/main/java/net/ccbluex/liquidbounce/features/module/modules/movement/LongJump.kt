@@ -21,33 +21,36 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "LongJump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
+@ModuleInfo(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
 class LongJump : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC", "BlocksMC2", "HYT4v4", "Custom"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC", "BlocksMC2", "HYT4v4"), "NCP")
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
-    //redesky
-    private val rsJumpMovementValue = FloatValue("RedeSkyJumpMovement",0.13F,0.05F,0.25F)
-    private val rsMotionYValue = FloatValue("RedeSkyMotionY",0.81F,0.05F,1F)
-    private val rsMoveReducerValue = BoolValue("RedeSkyMovementReducer", true)
-    private val rsReduceMovementValue = FloatValue("RedeSkyReduceMovement",0.08F,0.05F,0.25F)
-    private val rsMotYReducerValue = BoolValue("RedeSkyMotionYReducer", true)
-    private val rsReduceYMotionValue = FloatValue("RedeSkyReduceYMotion",0.15F,0.01F,0.20F)
-    private val rsUseTimerValue = BoolValue("RedeSkyTimer", true)
-    private val rsTimerValue = FloatValue("RedeSkyTimer",0.30F,0.1F,1F)
-    //redesky2
-    private val rs2AirSpeedValue = FloatValue("RedeSky2AirSpeed",0.1F,0.05F,0.25F)
-    private val rs2MinAirSpeedValue = FloatValue("RedeSky2MinAirSpeed",0.08F,0.05F,0.25F)
-    private val rs2ReduceAirSpeedValue = FloatValue("RedeSky2ReduceAirSpeed",0.16F,0.05F,0.25F)
-    private val rs2AirSpeedReducerValue = BoolValue("RedeSky2AirSpeedReducer", true)
-    private val rs2YMotionValue = FloatValue("RedeSky2YMotion",0.08F,0.01F,0.20F)
-    private val rs2MinYMotionValue = FloatValue("RedeSky2MinYMotion",0.04F,0.01F,0.20F)
-    private val rs2ReduceYMotionValue = FloatValue("RedeSky2ReduceYMotion",0.15F,0.01F,0.20F)
-    private val rs2YMotionReducerValue = BoolValue("RedeSky2YMotionReducer", true)
-    private val rs3JumpTimeValue= IntegerValue("RedeSky3JumpTime",500,300,1500)
-    private val rs3BoostValue= FloatValue("RedeSky3Boost",1F,0.3F,1.5F)
-    private val rs3HeightValue= FloatValue("RedeSky3Height",1F,0.3F,1.5F)
-    private val rs3TimerValue = FloatValue("RedeSky3Timer",1F,0.1F,5F)
+    // redesky
+    private val rsJumpMovementValue = FloatValue("RedeSkyJumpMovement",0.13F,0.05F,0.25F).displayable { modeValue.equals("RedeSky") }
+    private val rsMotionYValue = FloatValue("RedeSkyMotionY",0.81F,0.05F,1F).displayable { modeValue.equals("RedeSky") }
+    private val rsMoveReducerValue = BoolValue("RedeSkyMovementReducer", true).displayable { modeValue.equals("RedeSky") }
+    private val rsReduceMovementValue = FloatValue("RedeSkyReduceMovement",0.08F,0.05F,0.25F).displayable { modeValue.equals("RedeSky") }
+    private val rsMotYReducerValue = BoolValue("RedeSkyMotionYReducer", true).displayable { modeValue.equals("RedeSky") }
+    private val rsReduceYMotionValue = FloatValue("RedeSkyReduceYMotion",0.15F,0.01F,0.20F).displayable { modeValue.equals("RedeSky") }
+    private val rsUseTimerValue = BoolValue("RedeSkyTimer", true).displayable { modeValue.equals("RedeSky") }
+    private val rsTimerValue = FloatValue("RedeSkyTimer",0.30F,0.1F,1F).displayable { modeValue.equals("RedeSky") }
+
+    // redesky2
+    private val rs2AirSpeedValue = FloatValue("RedeSky2AirSpeed",0.1F,0.05F,0.25F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2MinAirSpeedValue = FloatValue("RedeSky2MinAirSpeed",0.08F,0.05F,0.25F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2ReduceAirSpeedValue = FloatValue("RedeSky2ReduceAirSpeed",0.16F,0.05F,0.25F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2AirSpeedReducerValue = BoolValue("RedeSky2AirSpeedReducer", true).displayable { modeValue.equals("RedeSky2") }
+    private val rs2YMotionValue = FloatValue("RedeSky2YMotion",0.08F,0.01F,0.20F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2MinYMotionValue = FloatValue("RedeSky2MinYMotion",0.04F,0.01F,0.20F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2ReduceYMotionValue = FloatValue("RedeSky2ReduceYMotion",0.15F,0.01F,0.20F).displayable { modeValue.equals("RedeSky2") }
+    private val rs2YMotionReducerValue = BoolValue("RedeSky2YMotionReducer", true).displayable { modeValue.equals("RedeSky2") }
+    private val rs3JumpTimeValue= IntegerValue("RedeSky3JumpTime",500,300,1500).displayable { modeValue.equals("RedeSky3") }
+    private val rs3BoostValue= FloatValue("RedeSky3Boost",1F,0.3F,1.5F).displayable { modeValue.equals("RedeSky3") }
+    private val rs3HeightValue= FloatValue("RedeSky3Height",1F,0.3F,1.5F).displayable { modeValue.equals("RedeSky3") }
+    private val rs3TimerValue = FloatValue("RedeSky3Timer",1F,0.1F,5F).displayable { modeValue.equals("RedeSky3") }
+
+    // settings
     private val autoJumpValue = BoolValue("AutoJump", true)
     private val autoCloseValue = BoolValue("AutoClose", true)
     private var jumped = false
@@ -56,10 +59,6 @@ class LongJump : Module() {
     private var teleported = false
     private var canMineplexBoost = false
     private var timer=MSTimer()
-    //Custom
-    private val customLongValue=FloatValue("CustomLong",1F,0.5F,10F)
-    private val customHeightValue=FloatValue("CustomHeight",1F,0F,3F)
-    private val customTimerValue=FloatValue("CustomTimer",1F,0.1F,3F)
     var airTicks=0
 
     override fun onEnable() {
@@ -222,17 +221,17 @@ class LongJump : Module() {
                         MovementUtils.strafe(MovementUtils.getSpeed() * 1.114514f)
                         mc.timer.timerSpeed = 0.917555f
                     }
+                    
+                    "redeskytest" -> {
+                        mc.thePlayer.motionY = 0.42
+                        MovementUtils.strafe(MovementUtils.getSpeed() * 1.12f)
+                        mc.timer.timerSpeed = 0.8f
+                    }
 
                     "hyt4v4" -> {
                         mc.thePlayer.motionY += 0.031470000997
                         MovementUtils.strafe(MovementUtils.getSpeed() * 1.0114514f)
                         mc.timer.timerSpeed = 1.0114514f
-                    }
-
-                    "custom" -> {
-                        mc.thePlayer.motionY += customHeightValue.get()/2F
-                        MovementUtils.strafe(customLongValue.get()/2F)
-                        mc.timer.timerSpeed = customTimerValue.get()
                     }
                 }
             }

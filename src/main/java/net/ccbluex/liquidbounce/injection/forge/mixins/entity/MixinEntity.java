@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
@@ -167,6 +167,8 @@ public abstract class MixinEntity {
     @Shadow
     public abstract boolean isInsideOfMaterial(Material materialIn);
 
+    @Shadow public abstract boolean equals(Object p_equals_1_);
+
     public int getNextStepDistance() {
         return nextStepDistance;
     }
@@ -193,7 +195,7 @@ public abstract class MixinEntity {
 
     @Inject(method = "getCollisionBorderSize", at = @At("HEAD"), cancellable = true)
     private void getCollisionBorderSize(final CallbackInfoReturnable<Float> callbackInfoReturnable) {
-        final HitBox hitBox = (HitBox) LiquidBounce.moduleManager.getModule(HitBox.class);
+        final HitBox hitBox = LiquidBounce.moduleManager.getModule(HitBox.class);
 
         if (hitBox.getState()&&EntityUtils.isSelected(((Entity)((Object)this)),true))
             callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());

@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/UnlegitMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -13,7 +18,7 @@ import net.minecraft.entity.projectile.EntityFireball
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation
 
-@ModuleInfo(name = "AntiFireBall", description = "Auto hit the fireball entity to let it back.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "AntiFireBall", category = ModuleCategory.COMBAT)
 class AntiFireBall : Module() {
     private val timer = MSTimer()
 
@@ -30,9 +35,9 @@ class AntiFireBall : Module() {
 
                 mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
-                if (swingValue.get().equals("Normal")) {
+                if (swingValue.equals("Normal")) {
                     mc.thePlayer.swingItem()
-                } else if (swingValue.get().equals("Packet")) {
+                } else if (swingValue.equals("Packet")) {
                     mc.netHandler.addToSendQueue(C0APacketAnimation())
                 }
 

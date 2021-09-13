@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.font;
 
@@ -26,8 +26,8 @@ public class Fonts {
     @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
     public static GameFontRenderer font40;
 
-    @FontDetails(fontName = "Bold", fontSize = 40, fileName = "medium.ttf")
-    public static GameFontRenderer fontBold40;
+//    @FontDetails(fontName = "Huge", fontSize = 60, fileName = "regular.ttf")
+//    public static GameFontRenderer font60;
 
     @FontDetails(fontName = "Minecraft Font")
     public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
@@ -92,69 +92,44 @@ public class Fonts {
 
     private static void initFonts() {
         try {
-            initSingleFont("regular.ttf");
-            initSingleFont("medium.ttf");
+            initSingleFont("regular.ttf","assets/minecraft/fdpclient/font/regular.ttf");
         }catch(IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void initSingleFont(String name) throws IOException {
-        FileUtils.unpackFile(new File(LiquidBounce.fileManager.fontsDir, name),name);
+    private static void initSingleFont(String name, String resourcePath) throws IOException {
+        File file=new File(LiquidBounce.fileManager.fontsDir, name);
+        if(!file.exists())
+            FileUtils.unpackFile(file, resourcePath);
     }
 
     public static FontRenderer getFontRenderer(final String name, final int size) {
-        for(final Field field : Fonts.class.getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-
-                final Object o = field.get(null);
-
-                if(o instanceof FontRenderer) {
-                    final FontDetails fontDetails = field.getAnnotation(FontDetails.class);
-
-                    if(fontDetails.fontName().equals(name) && fontDetails.fontSize() == size)
-                        return (FontRenderer) o;
-                }
-            }catch(final IllegalAccessException e) {
-                e.printStackTrace();
-            }
+        if(name.equals("Minecraft")){
+            return minecraftFont;
         }
 
-        for (final GameFontRenderer liquidFontRenderer : CUSTOM_FONT_RENDERERS) {
-            final Font font = liquidFontRenderer.getDefaultFont().getFont();
+        for (final FontRenderer fontRenderer : getFonts()) {
+            if(fontRenderer instanceof GameFontRenderer){
+                GameFontRenderer liquidFontRenderer=(GameFontRenderer) fontRenderer;
+                final Font font = liquidFontRenderer.getDefaultFont().getFont();
 
-            if(font.getName().equals(name) && font.getSize() == size)
-                return liquidFontRenderer;
+                if(font.getName().equals(name) && font.getSize() == size)
+                    return liquidFontRenderer;
+            }
         }
 
         return minecraftFont;
     }
 
     public static Object[] getFontDetails(final FontRenderer fontRenderer) {
-        for(final Field field : Fonts.class.getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-
-                final Object o = field.get(null);
-
-                if(o.equals(fontRenderer)) {
-                    final FontDetails fontDetails = field.getAnnotation(FontDetails.class);
-
-                    return new Object[] {fontDetails.fontName(), fontDetails.fontSize()};
-                }
-            }catch(final IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-
         if (fontRenderer instanceof GameFontRenderer) {
             final Font font = ((GameFontRenderer) fontRenderer).getDefaultFont().getFont();
 
             return new Object[] {font.getName(), font.getSize()};
         }
 
-        return null;
+        return new Object[] {"Minecraft", -1};
     }
 
     public static List<FontRenderer> getFonts() {

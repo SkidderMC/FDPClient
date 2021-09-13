@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils
 
@@ -26,6 +26,16 @@ object ClassUtils {
 
             false
         }
+    }
+
+    @JvmStatic
+    fun getObjectInstance(clazz: Class<*>):Any{
+        clazz.declaredFields.forEach {
+            if(it.name.equals("INSTANCE")){
+                return it.get(null)
+            }
+        }
+        throw IllegalAccessException("This class not a kotlin object")
     }
 
 //    fun hasForge() = hasClass("net.minecraftforge.common.MinecraftForge")

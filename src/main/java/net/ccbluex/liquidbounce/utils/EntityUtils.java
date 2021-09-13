@@ -1,11 +1,12 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.client.Target;
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot;
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -26,16 +27,10 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 
 public final class EntityUtils extends MinecraftInstance {
 
-    public static boolean targetInvisible = false;
-    public static boolean targetPlayer = true;
-    public static boolean targetMobs = true;
-    public static boolean targetAnimals = false;
-    public static boolean targetDead = false;
-
     public static boolean isSelected(final Entity entity, final boolean canAttackCheck) {
-        if(entity instanceof EntityLivingBase && (targetDead || entity.isEntityAlive()) && entity != mc.thePlayer) {
-            if(targetInvisible || !entity.isInvisible()) {
-                if(targetPlayer && entity instanceof EntityPlayer) {
+        if(entity instanceof EntityLivingBase && (Target.INSTANCE.getDead().get() || entity.isEntityAlive()) && entity != mc.thePlayer) {
+            if(Target.INSTANCE.getInvisible().get() || !entity.isInvisible()) {
+                if(Target.INSTANCE.getPlayer().get() && entity instanceof EntityPlayer) {
                     final EntityPlayer entityPlayer = (EntityPlayer) entity;
 
                     if(canAttackCheck) {
@@ -48,14 +43,20 @@ public final class EntityUtils extends MinecraftInstance {
                         if(entityPlayer.isSpectator())
                             return false;
 
-                        final Teams teams = (Teams) LiquidBounce.moduleManager.getModule(Teams.class);
+                        if(entityPlayer.isPlayerSleeping())
+                            return false;
+
+                        if(!LiquidBounce.combatManager.isFocusEntity(entityPlayer))
+                            return false;
+
+                        final Teams teams = LiquidBounce.moduleManager.getModule(Teams.class);
                         return !teams.getState() || !teams.isInYourTeam(entityPlayer);
                     }
 
                     return true;
                 }
 
-                return targetMobs && isMob(entity) || targetAnimals && isAnimal(entity);
+                return Target.INSTANCE.getMob().get() && isMob(entity) || Target.INSTANCE.getAnimal().get() && isAnimal(entity);
 
             }
         }

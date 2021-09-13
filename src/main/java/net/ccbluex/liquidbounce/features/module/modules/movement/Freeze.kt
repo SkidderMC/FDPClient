@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-@ModuleInfo(name = "Freeze", description = "Allows you to stay stuck in mid air.", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.RESPAWN)
+@ModuleInfo(name = "Freeze", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.RESPAWN)
 class Freeze : Module() {
     private var motionX = 0.0
     private var motionY = 0.0
@@ -25,6 +25,9 @@ class Freeze : Module() {
     private var z = 0.0
 
     override fun onEnable() {
+        if (mc.thePlayer == null)
+            return
+
         x=mc.thePlayer.posX
         y=mc.thePlayer.posY
         z=mc.thePlayer.posZ

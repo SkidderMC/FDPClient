@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
@@ -67,7 +67,7 @@ public abstract class MixinBlock {
 
     @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
     private void shouldSideBeRendered(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        final XRay xray = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
+        final XRay xray = LiquidBounce.moduleManager.getModule(XRay.class);
 
         if(xray.getState())
             callbackInfoReturnable.setReturnValue(xray.getXrayBlocks().contains(this));
@@ -84,7 +84,7 @@ public abstract class MixinBlock {
         float f = callbackInfo.getReturnValue();
 
         // NoSlowBreak
-        final NoSlowBreak noSlowBreak = (NoSlowBreak) LiquidBounce.moduleManager.getModule(NoSlowBreak.class);
+        final NoSlowBreak noSlowBreak = LiquidBounce.moduleManager.getModule(NoSlowBreak.class);
         if (noSlowBreak.getState()) {
             if (noSlowBreak.getWaterValue().get() && playerIn.isInsideOfMaterial(Material.water) &&
                     !EnchantmentHelper.getAquaAffinityModifier(playerIn)) {
@@ -95,11 +95,11 @@ public abstract class MixinBlock {
                 f *= 5.0F;
             }
         } else if (playerIn.onGround) { // NoGround
-            final NoFall noFall = (NoFall) LiquidBounce.moduleManager.getModule(NoFall.class);
-            final Criticals criticals = (Criticals) LiquidBounce.moduleManager.getModule(Criticals.class);
+            final NoFall noFall = LiquidBounce.moduleManager.getModule(NoFall.class);
+            final Criticals criticals = LiquidBounce.moduleManager.getModule(Criticals.class);
 
-            if (noFall.getState() && noFall.modeValue.get().equalsIgnoreCase("NoGround") ||
-                    criticals.getState() && criticals.getModeValue().get().equalsIgnoreCase("NoGround")) {
+            if (noFall.getState() && noFall.modeValue.equals("NoGround") ||
+                    criticals.getState() && criticals.getModeValue().equals("NoGround")) {
                 f /= 5F;
             }
         }

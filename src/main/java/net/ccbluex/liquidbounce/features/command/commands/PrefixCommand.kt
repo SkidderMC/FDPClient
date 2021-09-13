@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
@@ -26,7 +26,7 @@ class PrefixCommand : Command("prefix", emptyArray()) {
         }
 
         LiquidBounce.commandManager.prefix = prefix.single()
-        LiquidBounce.configManager.smartSave()
+        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig)
 
         chat("Successfully changed command prefix to '§8$prefix§3'")
     }

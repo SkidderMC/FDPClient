@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
@@ -27,14 +27,14 @@ import org.lwjgl.opengl.GL11
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 
-@ModuleInfo(name = "Blink", description = "Suspends all movement packets.", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "Blink", category = ModuleCategory.PLAYER)
 class Blink : Module() {
     private val packets = LinkedBlockingQueue<Packet<*>>()
     private var fakePlayer: EntityOtherPlayerMP? = null
     private var disableLogger = false
     private val positions = LinkedList<DoubleArray>()
     private val pulseValue = BoolValue("Pulse", false)
-    private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000)
+    private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000).displayable { pulseValue.get() }
     private val pulseTimer = MSTimer()
 
     override fun onEnable() {

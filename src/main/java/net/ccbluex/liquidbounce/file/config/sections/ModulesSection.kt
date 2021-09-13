@@ -50,10 +50,13 @@ class ModulesSection : ConfigSection("modules") {
         LiquidBounce.moduleManager.modules.forEach {
             val moduleJson=JsonObject()
 
-            moduleJson.addProperty("state",it.state)
+            if(it.canEnable)
+                moduleJson.addProperty("state",it.state)
             moduleJson.addProperty("keybind",it.keyBind)
-            moduleJson.addProperty("array",it.array)
-            moduleJson.addProperty("autodisable",it.autoDisable.toString())
+            if(it.canEnable)
+                moduleJson.addProperty("array",it.array)
+            if(it.canEnable)
+                moduleJson.addProperty("autodisable",it.autoDisable.toString())
 
             val valuesJson=JsonObject()
             it.values.forEach { value ->

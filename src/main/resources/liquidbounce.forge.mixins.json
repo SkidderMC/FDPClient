@@ -8,6 +8,7 @@
     "block.MixinBlockAnvil",
     "block.MixinBlockModelRenderer",
     "block.MixinBlockSoulSand",
+    "client.MixinLanguageManager",
     "client.MixinMinecraft",
     "client.MixinResourcePackRepository",
     "entity.MixinAbstractClientPlayer",
@@ -51,5 +52,9 @@
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinVisGraph",
     "world.MixinWorldClient"
+  ],
+  "client": [
+    "gui.MixinGuiKeyBindingList",
+    "gui.MixinGuiSlot"
   ]
 }

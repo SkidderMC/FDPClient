@@ -1,11 +1,11 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.render
 
-import com.google.gson.JsonObject
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
@@ -18,6 +18,7 @@ import kotlin.math.min
 object ColorUtils {
 
     private val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
+    private val startTime=System.currentTimeMillis()
 
     @JvmField
     val hexColors = IntArray(16)
@@ -122,36 +123,58 @@ object ColorUtils {
     }
 
     @JvmStatic
+    fun hslRainbow(index: Int, lowest: Float=HUD.rainbowStart.get(), bigest: Float=HUD.rainbowStop.get(), indexOffset: Int=300, timeSplit: Int=HUD.rainbowSpeed.get(), saturation: Float=HUD.rainbowSaturation.get(), brightness: Float=HUD.rainbowBrightness.get()):Color{
+        return Color.getHSBColor((abs(((((System.currentTimeMillis()-startTime).toInt()+index*indexOffset)/timeSplit.toFloat())%2)-1)*(bigest-lowest))+lowest,saturation,brightness)
+    }
+
+    @JvmStatic
     fun rainbow(): Color {
-        val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + 400000L) / 10000000000F % 1, 1F, 1F))
-        return Color(currentColor.red / 255F * 1F, currentColor.green / 255f * 1F, currentColor.blue / 255F * 1F, currentColor.alpha / 255F)
+        return hslRainbow(1)
     }
 
     @JvmStatic
-    fun rainbow(offset: Long): Color {
-        val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 10000000000F % 1, 1F, 1F))
-        return Color(currentColor.red / 255F * 1F, currentColor.green / 255F * 1F, currentColor.blue / 255F * 1F,
-                currentColor.alpha / 255F)
+    fun rainbow(index: Int): Color {
+        return hslRainbow(index)
     }
 
     @JvmStatic
-    fun rainbow(alpha: Float) = rainbow(400000L, alpha)
+    fun rainbow(alpha: Float) = reAlpha(hslRainbow(1),alpha)
 
     @JvmStatic
-    fun rainbow(alpha: Int) = rainbow(400000L, alpha / 255)
+    fun rainbowWithAlpha(alpha: Int) = reAlpha(hslRainbow(1),alpha)
 
     @JvmStatic
-    fun rainbow(offset: Long, alpha: Int) = rainbow(offset, alpha.toFloat() / 255)
+    fun rainbow(index: Int, alpha: Int) = reAlpha(hslRainbow(index),alpha)
 
     @JvmStatic
-    fun rainbow(offset: Long, alpha: Float): Color {
-        val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 10000000000F % 1, 1F, 1F))
-        return Color(currentColor.red / 255F * 1F, currentColor.green / 255f * 1F, currentColor.blue / 255F * 1F, alpha)
-    }
+    fun rainbow(index: Int, alpha: Float) = reAlpha(hslRainbow(index),alpha)
 
     @JvmStatic
     fun reAlpha(color: Color,alpha: Int): Color{
         return Color(color.red,color.green,color.blue,alpha)
+    }
+
+    @JvmStatic
+    fun reAlpha(color: Color,alpha: Float): Color{
+        return Color(color.red/255f,color.green/255f,color.blue/255f,alpha)
+    }
+
+    @JvmStatic
+    fun slowlyRainbow(time: Long, count: Int, qd: Float, sq: Float): Color {
+        val color = Color(Color.HSBtoRGB((time.toFloat() + count * -3000000f) / 2 / 1.0E9f, qd, sq))
+        return Color(color.red / 255.0f * 1, color.green / 255.0f * 1, color.blue / 255.0f * 1, color.alpha / 255.0f)
+    }
+
+    @JvmStatic
+    fun twoRainbow(offset: Long,alpha: Float): Color {
+        val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
+        return Color(currentColor.red / 255.0F * 1.0F, currentColor.green / 255.0F * 1.0F, currentColor.blue / 255.0F * 1.0F, alpha)
+    }
+
+    @JvmStatic
+    fun skyRainbow(var2: Int, bright: Float, st: Float, speed: Double): Color {
+        var v1 = ceil(System.currentTimeMillis() / speed + var2 * 109L) / 5
+        return Color.getHSBColor(if ((360.0.also { v1 %= it } / 360.0)<0.5){ -(v1 / 360.0).toFloat() } else { (v1 / 360.0).toFloat() }, st, bright)
     }
 
     @JvmStatic
@@ -166,13 +189,6 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun fluxRainbow(delay: Int, timeOffset: Long, sa: Float): Color {
-        var rainbowState = ceil((System.currentTimeMillis() + timeOffset) / 8 + delay / 20.0)
-        rainbowState %= 360.0
-        return Color.getHSBColor((rainbowState / 360f).toFloat(), sa, 1f)
-    }
-
-    @JvmStatic
     fun antiColor(color: Color) = Color(255-color.red,255-color.green,255-color.blue,color.alpha)
 
     @JvmStatic
@@ -184,19 +200,5 @@ object ColorUtils {
     @JvmStatic
     fun darker(color: Color,percentage: Float):Color{
         return Color((color.red*percentage).toInt(),(color.green*percentage).toInt(),(color.blue*percentage).toInt(),(color.alpha*percentage).toInt())
-    }
-
-    @JvmStatic
-    fun decodeColorJsonFormat(json: JsonObject):Color{
-        return reAlpha(if(json.has("rainbow")){
-            when(json.get("rainbow").asString.toLowerCase()){
-                "normal" -> rainbow(400000000L * if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1})
-                "sky" -> RenderUtils.skyRainbow(if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1},0.9f,1f,5.0)
-                "other" -> RenderUtils.arrayRainbow(if(json.has("rainbow_index")){json.get("rainbow_index").asInt}else{1}+1)
-                else -> Color.WHITE
-            }
-        }else{
-            Color(json.get("red").asInt,json.get("green").asInt,json.get("blue").asInt)
-        },if(json.has("alpha")){json.get("alpha").asInt}else{160})
     }
 }

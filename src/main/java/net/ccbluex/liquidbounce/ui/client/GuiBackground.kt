@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client
 
@@ -29,25 +29,25 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
     private lateinit var particlesButton: GuiButton
 
     override fun initGui() {
-        enabledButton = GuiButton(1, width / 2 - 100, height / 4 + 35, "Enabled (${if (enabled) "On" else "Off"})")
+        enabledButton = GuiButton(1, width / 2 - 100, height / 4 + 35, "%ui.status% (${if (enabled) "%ui.on%" else "%ui.off%"})")
         buttonList.add(enabledButton)
-        particlesButton = GuiButton(2, width / 2 - 100, height / 4 + 50 + 25, "Particles (${if (particles) "On" else "Off"})")
+        particlesButton = GuiButton(2, width / 2 - 100, height / 4 + 50 + 25, "%ui.background.particles% (${if (particles) "%ui.on%" else "%ui.off%"})")
         buttonList.add(particlesButton)
-        buttonList.add(GuiButton(3, width / 2 - 100, height / 4 + 50 + 25 * 2, 98, 20, "Change wallpaper"))
-        buttonList.add(GuiButton(4, width / 2 + 2, height / 4 + 50 + 25 * 2, 98, 20, "Reset wallpaper"))
+        buttonList.add(GuiButton(3, width / 2 - 100, height / 4 + 50 + 25 * 2, 98, 20, "%ui.background.change%"))
+        buttonList.add(GuiButton(4, width / 2 + 2, height / 4 + 50 + 25 * 2, 98, 20, "%ui.background.reset%"))
 
-        buttonList.add(GuiButton(0, width / 2 - 100, height / 4 + 55 + 25 * 4 + 5, "Back"))
+        buttonList.add(GuiButton(0, width / 2 - 100, height / 4 + 55 + 25 * 4 + 5, "%ui.back%"))
     }
 
     override fun actionPerformed(button: GuiButton) {
         when (button.id) {
             1 -> {
                 enabled = !enabled
-                enabledButton.displayString = "Enabled (${if (enabled) "On" else "Off"})"
+                enabledButton.displayString = "%ui.status% (${if (enabled) "%ui.on%" else "%ui.off%"})"
             }
             2 -> {
                 particles = !particles
-                particlesButton.displayString = "Particles (${if (particles) "On" else "Off"})"
+                particlesButton.displayString = "%ui.background.particles% (${if (particles) "%ui.on%" else "%ui.off%"})"
             }
             3 -> {
                 val file = MiscUtils.openFileChooser() ?: return
@@ -71,11 +71,13 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
             }
             0 -> mc.displayGuiScreen(prevGui)
         }
+
+        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        Fonts.fontBold40.drawCenteredString("Background", this.width / 2F, height / 8F + 5F,
+        Fonts.font40.drawCenteredString("%ui.background%", this.width / 2F, height / 8F + 5F,
                 4673984, true)
 
         super.drawScreen(mouseX, mouseY, partialTicks)

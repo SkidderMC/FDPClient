@@ -1,15 +1,15 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.command
 
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import org.reflections.Reflections
+import net.ccbluex.liquidbounce.utils.ReflectUtils
 
 class CommandManager {
-    val commands = mutableListOf<Command>()
+    val commands = HashMap<String, Command>()
     var latestAutoComplete: Array<String> = emptyArray()
 
     var prefix = '.'
@@ -18,32 +18,22 @@ class CommandManager {
      * Register all default commands
      */
     fun registerCommands() {
-        Reflections("${this.javaClass.`package`.name}.commands")
-            .getSubTypesOf(Command::class.java).forEach(this::registerCommand)
+        ReflectUtils.getReflects("${this.javaClass.`package`.name}.commands",Command::class.java)
+            .forEach(this::registerCommand)
     }
 
     /**
      * Execute command by given [input]
      */
     fun executeCommands(input: String) {
-        for (command in commands) {
-            val args = input.split(" ").toTypedArray()
+        val args = input.split(" ").toTypedArray()
+        val command=commands[args[0].substring(1).toLowerCase()]
 
-            if (args[0].equals(prefix.toString() + command.command, ignoreCase = true)) {
-                command.execute(args)
-                return
-            }
-
-            for (alias in command.alias) {
-                if (!args[0].equals(prefix.toString() + alias, ignoreCase = true))
-                    continue
-
-                command.execute(args)
-                return
-            }
+        if(command!=null){
+            command.execute(args)
+        }else{
+            ClientUtils.displayChatMessage("§cCommand not found. Type ${prefix}help to view all commands.")
         }
-
-        ClientUtils.displayChatMessage("§cCommand not found. Type ${prefix}help to view all commands.")
     }
 
     /**
@@ -73,22 +63,7 @@ class CommandManager {
 
                 tabCompletions?.toTypedArray()
             } else {
-                val rawInput = input.substring(1)
-                commands
-                    .filter {
-                        it.command.startsWith(rawInput, true)
-                            || it.alias.any { alias -> alias.startsWith(rawInput, true) }
-                    }
-                    .map {
-                        val alias: String = if (it.command.startsWith(rawInput, true))
-                            it.command
-                        else {
-                            it.alias.first { alias -> alias.startsWith(rawInput, true) }
-                        }
-
-                        this.prefix + alias
-                    }
-                    .toTypedArray()
+                commands.map { ".${it.key}" }.filter { it.toLowerCase().startsWith(args[0].toLowerCase()) }.toTypedArray()
             }
         }
         return null
@@ -98,16 +73,18 @@ class CommandManager {
      * Get command instance by given [name]
      */
     fun getCommand(name: String): Command? {
-        return commands.find {
-            it.command.equals(name, ignoreCase = true)
-                || it.alias.any { alias -> alias.equals(name, true) }
-        }
+        return commands[name.toLowerCase()]
     }
 
     /**
      * Register [command] by just adding it to the commands registry
      */
-    fun registerCommand(command: Command) = commands.add(command)
+    fun registerCommand(command: Command){
+        commands[command.command.toLowerCase()] = command
+        command.alias.forEach {
+            commands[it.toLowerCase()] = command
+        }
+    }
 
 
 
@@ -125,5 +102,10 @@ class CommandManager {
     /**
      * Unregister [command] by just removing it from the commands registry
      */
-    fun unregisterCommand(command: Command?) = commands.remove(command)
+    fun unregisterCommand(command: Command){
+        commands.toList().forEach {
+            if(it.second == command)
+                commands.remove(it.first)
+        }
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.script
 
@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.script.api.*
 import net.ccbluex.liquidbounce.script.api.global.Chat
-import net.ccbluex.liquidbounce.script.api.global.Item
 import net.ccbluex.liquidbounce.script.api.global.Setting
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
@@ -24,7 +23,7 @@ import javax.script.ScriptEngineManager
 class Script(val scriptFile: File) : MinecraftInstance() {
 
     private var scriptEngine = ScriptEngineManager().getEngineByName("nashorn")
-    private val scriptText = scriptFile.readText()
+    private val scriptText = scriptFile.readText(Charsets.UTF_8)
 
     // Script information
     lateinit var scriptName: String
@@ -40,7 +39,6 @@ class Script(val scriptFile: File) : MinecraftInstance() {
         // Global classes
         scriptEngine.put("Chat", StaticClass.forClass(Chat::class.java))
         scriptEngine.put("Setting", StaticClass.forClass(Setting::class.java))
-        scriptEngine.put("Item", StaticClass.forClass(Item::class.java))
 
         // Global instances
         scriptEngine.put("mc", mc)
@@ -100,16 +98,6 @@ class Script(val scriptFile: File) : MinecraftInstance() {
         LiquidBounce.commandManager.registerCommand(command)
         registeredCommands += command
         callback.call(commandObject, command)
-    }
-
-    /**
-     * Registers a new creative inventory tab.
-     * @param tabObject JavaScript object containing information about the tab.
-     * @see ScriptTab
-     */
-    @Suppress("unused")
-    fun registerTab(tabObject: JSObject) {
-        ScriptTab(tabObject)
     }
 
     fun supportLegacyScripts() {

@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
@@ -30,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -81,14 +80,16 @@ public abstract class MixinGuiNewChat {
     private int line;
 
     private HUD hud;
-    private final HashMap<String,String> stringCache=new HashMap<>();
 
     private void checkHud(){
         if(hud==null){
-            hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+            hud = LiquidBounce.moduleManager.getModule(HUD.class);
         }
     }
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     public void printChatMessage(IChatComponent chatComponent) {
         checkHud();
@@ -115,6 +116,25 @@ public abstract class MixinGuiNewChat {
         printChatMessageWithOptionalDeletion(chatComponent, this.line);
     }
 
+    private String fixString(String str){
+        str=str.replaceAll("\uF8FF","");//remove air chars
+
+        StringBuilder sb=new StringBuilder();
+        for(char c:str.toCharArray()){
+            if((int) c >(33+65248)&& (int) c <(128+65248)){
+                sb.append(Character.toChars((int) c - 65248));
+            }else{
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
+    }
+
+
+    /**
+     * @author Liuli
+     */
     @Overwrite
     public void drawChat(int updateCounter) {
         checkHud();
@@ -166,19 +186,18 @@ public abstract class MixinGuiNewChat {
 
                                 if(hud.getChatAnimValue().get()&&!flag) {
                                     if (j1 <= 20) {
-                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(1 - (j1 / 20.0))), 0F, 0F);
+                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(1 - ((j1+mc.timer.renderPartialTicks) / 20.0))), 0F, 0F);
                                     }
                                     if (j1 >= 180) {
-                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart((j1 - 180) / 20.0)), 0F, 0F);
+                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(((j1+mc.timer.renderPartialTicks) - 180) / 20.0)), 0F, 0F);
                                     }
                                 }
 
                                 if(hud.getChatRectValue().get()) {
                                     RenderUtils.drawRect(i2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
                                 }
-                                String s = fixString(chatline.getChatComponent().getFormattedText());
                                 GlStateManager.enableBlend();
-                                (canFont?Fonts.font40:this.mc.fontRendererObj).drawString(s, (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24), false);
+                                (canFont?Fonts.font40:this.mc.fontRendererObj).drawString(chatline.getChatComponent().getFormattedText(), (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24), false);
                                 GlStateManager.disableAlpha();
                                 GlStateManager.disableBlend();
 
@@ -206,25 +225,6 @@ public abstract class MixinGuiNewChat {
                 GlStateManager.popMatrix();
             }
         }
-    }
-
-    private String fixString(String str){
-        if(stringCache.containsKey(str)) return stringCache.get(str);
-
-        str=str.replaceAll("\uF8FF","");//remove air chars
-
-        StringBuilder sb=new StringBuilder();
-        for(char c:str.toCharArray()){
-            if((int) c >(33+65248)&& (int) c <(128+65248)){
-                sb.append(Character.toChars((int) c - 65248));
-            }else{
-                sb.append(c);
-            }
-        }
-        String result=sb.toString();
-        stringCache.put(str,result);
-
-        return result;
     }
 
     @Inject(method = "getChatComponent", at = @At("HEAD"), cancellable = true)

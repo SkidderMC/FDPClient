@@ -18,10 +18,10 @@ import java.awt.Color
 import kotlin.math.abs
 
 // THANKS FUNC16 GIVE ME THIS IDEA!
-@ModuleInfo(name = "PrevFallPos", description = "Preview FallDown Pos", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "PrevFallPos", category = ModuleCategory.PLAYER)
 class PrevFallPos : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
-    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f)
+    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
     private val fallDist = FloatValue("FallDist",1.15F,0F,5F)
     private val colorRedValue = IntegerValue("R", 255, 0, 255)
     private val colorGreenValue = IntegerValue("G", 255, 0, 255)
@@ -54,7 +54,7 @@ class PrevFallPos : Module() {
     fun onRender3d(event: Render3DEvent){
         pos?:return
 
-        val color=if (colorRainbow.get()) ColorUtils.rainbow(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
+        val color=if (colorRainbow.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
         when (modeValue.get().toLowerCase()) {
             "box" -> {
                 RenderUtils.drawBlockBox(pos, color, true, true, outlineWidth.get())

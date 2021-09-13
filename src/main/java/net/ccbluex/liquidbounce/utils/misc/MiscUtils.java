@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.misc;
 
@@ -13,8 +13,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.Consumer;
 
 public final class MiscUtils extends MinecraftInstance {
+
+    public static void showErrorPopup(final String message) {
+        JOptionPane.showMessageDialog(null, message, "Alert", JOptionPane.ERROR_MESSAGE);
+    }
 
     public static void showErrorPopup(final String title, final String message) {
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
@@ -64,5 +69,10 @@ public final class MiscUtils extends MinecraftInstance {
         frame.dispose();
 
         return action == JFileChooser.APPROVE_OPTION ? fileChooser.getSelectedFile() : null;
+    }
+
+    public static <T> T make(T object, Consumer<T> consumer) {
+        consumer.accept(object);
+        return object;
     }
 }

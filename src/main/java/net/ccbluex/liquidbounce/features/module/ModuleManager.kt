@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module
 
@@ -9,16 +9,17 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.features.special.AutoDisable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.ReflectUtils
 import org.lwjgl.input.Keyboard
-import org.reflections.Reflections
-import java.util.*
 
 class ModuleManager : Listenable {
 
-    val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
+    val modules = mutableListOf<Module>()
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
 
     var pendingBindModule: Module?=null
@@ -33,10 +34,14 @@ class ModuleManager : Listenable {
     fun registerModules() {
         ClientUtils.getLogger().info("[ModuleManager] Loading modules...")
 
-        Reflections("${this.javaClass.`package`.name}.modules")
-            .getSubTypesOf(Module::class.java).forEach(this::registerModule)
+        ReflectUtils.getReflects("${this.javaClass.`package`.name}.modules",Module::class.java)
+            .forEach(this::registerModule)
 
         modules.forEach{ it.onInitialize() }
+
+        modules.forEach { it.onLoad() }
+
+        LiquidBounce.eventManager.registerListener(AutoDisable)
 
         ClientUtils.getLogger().info("[ModuleManager] Loaded ${modules.size} modules.")
     }
@@ -47,10 +52,9 @@ class ModuleManager : Listenable {
     fun registerModule(module: Module) {
         modules += module
         moduleClassMap[module.javaClass] = module
+        modules.sortBy { it.name }
 
-        if(module.moduleCommand) {
-            generateCommand(module)
-        }
+        generateCommand(module)
 
         LiquidBounce.eventManager.registerListener(module)
     }
@@ -63,12 +67,7 @@ class ModuleManager : Listenable {
             registerModule(moduleClass.newInstance())
         } catch (e: IllegalAccessException) {
             // this module is a kotlin object
-            moduleClass.declaredFields.forEach {
-                if(it.name.equals("INSTANCE")){
-                    registerModule(it.get(null) as Module)
-                    return@forEach
-                }
-            }
+            registerModule(ClassUtils.getObjectInstance(moduleClass) as Module)
         } catch (e: Throwable){
             ClientUtils.getLogger().error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
         }
@@ -87,6 +86,9 @@ class ModuleManager : Listenable {
      * Generate command for [module]
      */
     internal fun generateCommand(module: Module) {
+        if(!module.moduleCommand)
+            return
+
         val values = module.values
 
         if (values.isEmpty())

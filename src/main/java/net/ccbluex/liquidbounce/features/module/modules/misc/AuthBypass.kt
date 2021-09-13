@@ -30,7 +30,7 @@ import java.util.*
  * @author liulihaocai
  * FILHO DA PUTA CLIENT
  */
-@ModuleInfo(name = "AuthBypass", description = "Bypass auth when join server.", category = ModuleCategory.MISC)
+@ModuleInfo(name = "AuthBypass", category = ModuleCategory.MISC)
 class AuthBypass : Module(){
     private val delayValue= IntegerValue("Delay",1500,100,5000)
 
@@ -62,7 +62,7 @@ class AuthBypass : Module(){
 
         //load locale async
         Thread {
-            val localeJson=JsonParser().parse(IOUtils.toString(AuthBypass::class.java.classLoader.getResourceAsStream("br_items.json"),"utf-8")).asJsonObject
+            val localeJson=JsonParser().parse(IOUtils.toString(AuthBypass::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/item_names_in_pt_BR.json"),"utf-8")).asJsonObject
 
             brLangMap.clear()
             for((key,element) in localeJson.entrySet()){

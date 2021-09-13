@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
@@ -19,12 +19,12 @@ import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemPotion
 import net.minecraft.network.play.client.C03PacketPlayer
 
-@ModuleInfo(name = "FastUse", description = "Allows you to use items faster.", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "FastUse", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay", "DelayedInstant"), "DelayedInstant")
-    private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F)
-    private val durationValue = IntegerValue("InstantDelay", 14, 0, 35)
-    private val delayValue = IntegerValue("Delay", 0, 0, 300)
+    private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay", "DelayedInstant","MinemoraTest","NCP"), "DelayedInstant")
+    private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F).displayable { modeValue.equals("Timer") }
+    private val durationValue = IntegerValue("InstantDelay", 14, 0, 35).displayable { modeValue.equals("DelayedInstant") }
+    private val delayValue = IntegerValue("CustomDelay", 0, 0, 300).displayable { modeValue.equals("CustomDelay") }
 
     private val msTimer = MSTimer()
     private var usedTimer = false
@@ -50,7 +50,7 @@ class FastUse : Module() {
 
                     mc.playerController.onStoppedUsingItem(mc.thePlayer)
                 }
-                
+
                 "instant" -> {
                     repeat(35) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
@@ -62,6 +62,24 @@ class FastUse : Module() {
                 "timer" -> {
                     mc.timer.timerSpeed = timerValue.get()
                     usedTimer = true
+                }
+                
+                "NCP" -> if (mc.thePlayer.itemInUseDuration > 14) {
+                     repeat(20) {
+                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    }
+
+                    mc.playerController.onStoppedUsingItem(mc.thePlayer)
+                }
+
+                "MinemoraTest" -> {
+                    mc.timer.timerSpeed = 0.5F
+                    usedTimer = true
+                    if(mc.thePlayer.ticksExisted % 2 == 0){
+                        repeat(2) {
+                            mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                        }
+                    }
                 }
 
                 "customdelay" -> {

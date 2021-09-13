@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.event
 
@@ -9,6 +9,7 @@ import net.minecraft.block.Block
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.Packet
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
@@ -19,7 +20,14 @@ import net.minecraft.util.EnumFacing
  *
  * @param targetEntity Attacked entity
  */
-class AttackEvent(val targetEntity: Entity?) : Event()
+class AttackEvent(val targetEntity: Entity?) : CancellableEvent()
+
+/**
+ * Called when player killed other entity
+ *
+ * @param targetEntity Attacked entity
+ */
+class EntityKilledEvent(val targetEntity: EntityLivingBase) : Event()
 
 /**
  * Called when minecraft get bounding box of block
@@ -45,11 +53,6 @@ class ClickBlockEvent(val clickedBlock: BlockPos?, val enumFacing: EnumFacing?) 
 class ClientShutdownEvent : Event()
 
 /**
- * Called when an other entity moves
- */
-data class EntityMovementEvent(val movedEntity: Entity) : Event()
-
-/**
  * Called when player jumps
  *
  * @param motion jump motion (y motion)
@@ -68,11 +71,7 @@ class KeyEvent(val key: Int) : Event()
  *
  * @param eventState PRE or POST
  */
-class MotionEvent(val eventState: EventState) : Event() {
-    fun isPre() : Boolean {
-        return eventState == EventState.PRE
-    }
-}
+class MotionEvent(val eventState: EventState) : Event()
 
 /**
  * Called in "onLivingUpdate" when the player is using a use item.
@@ -117,6 +116,8 @@ class PacketEvent(val packet: Packet<*>, val type: Type) : CancellableEvent() {
         RECEIVE,
         SEND
     }
+
+    fun isServerSide() = type==Type.RECEIVE
 }
 
 /**
@@ -146,19 +147,9 @@ class RenderEntityEvent(val entity: Entity, val x: Double, val y: Double, val z:
 class ScreenEvent(val guiScreen: GuiScreen?) : Event()
 
 /**
- * Called when the session changes
- */
-class SessionEvent : Event()
-
-/**
  * Called when player is going to step
  */
-class StepEvent(var stepHeight: Float) : Event()
-
-/**
- * Called when player step is confirmed
- */
-class StepConfirmEvent : Event()
+class StepEvent(var stepHeight: Float, val eventState: EventState) : Event()
 
 /**
  * Called when a text is going to be rendered

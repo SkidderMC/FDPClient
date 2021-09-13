@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp
 
@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class OnGround : SpeedMode("OnGround") {
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (!MovementUtils.isMoving()) return
 
         if (mc.thePlayer.fallDistance > 3.994) return

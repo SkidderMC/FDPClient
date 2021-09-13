@@ -6,12 +6,12 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class RedeSkyHopOld: SpeedMode("RedeSkyHopOld") {
-    override fun onMotion() {
+    override fun onPreMotion() {
         if(MovementUtils.isMoving()){
             mc.thePlayer.isSprinting = true
             mc.timer.timerSpeed = 1F
             if (mc.thePlayer.onGround) {
-                val speedModule=LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
+                val speedModule=LiquidBounce.moduleManager.getModule(Speed::class.java)
 
                 mc.thePlayer.motionY=speedModule.redeSkyHeight.get().toDouble()
                 MovementUtils.strafe(MovementUtils.getSpeed()

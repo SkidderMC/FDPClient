@@ -221,6 +221,8 @@ object PacketUtils : MinecraftInstance() {
             netHandler.handleResourcePack(packet)
         }else if(packet is S49PacketUpdateEntityNBT) {
             netHandler.handleEntityNBT(packet)
+        }else{
+            throw IllegalArgumentException("Unable to match packet type to handle: ${packet.javaClass}")
         }
     }
 

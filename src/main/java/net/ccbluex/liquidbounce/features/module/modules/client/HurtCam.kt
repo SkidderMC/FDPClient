@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
@@ -20,15 +20,15 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import java.awt.Color
 
-@ModuleInfo(name = "HurtCam", description = "Change hurt cam effect.", category = ModuleCategory.CLIENT,canEnable = false)
+@ModuleInfo(name = "HurtCam", category = ModuleCategory.CLIENT,canEnable = false)
 class HurtCam : Module() {
-    val modeValue= ListValue("Mode", arrayOf("Vanilla","Cancel","FPS"),"Vanilla")
-    private val colorRedValue = IntegerValue("R", 255, 0, 255)
-    private val colorGreenValue = IntegerValue("G", 0, 0, 255)
-    private val colorBlueValue = IntegerValue("B", 0, 0, 255)
-    private val colorRainbow = BoolValue("Rainbow", false)
-    private val timeValue = IntegerValue("FPSTime", 1000, 0, 1500)
-    private val fpsHeightValue = IntegerValue("FPSHeight", 25, 10, 50)
+    val modeValue=ListValue("Mode", arrayOf("Vanilla","Cancel","FPS"),"Vanilla")
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { modeValue.equals("FPS") }
+    private val colorGreenValue = IntegerValue("G", 0, 0, 255).displayable { modeValue.equals("FPS") }
+    private val colorBlueValue = IntegerValue("B", 0, 0, 255).displayable { modeValue.equals("FPS") }
+    private val colorRainbow = BoolValue("Rainbow", false).displayable { modeValue.equals("FPS") }
+    private val timeValue = IntegerValue("FPSTime", 1000, 0, 1500).displayable { modeValue.equals("FPS") }
+    private val fpsHeightValue = IntegerValue("FPSHeight", 25, 10, 50).displayable { modeValue.equals("FPS") }
 
     private var hurt=0L
 

@@ -3,7 +3,6 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -17,14 +16,15 @@ import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "AntiVoid", description = "anti void", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val moveValue=ListValue("Move", arrayOf("Blink","TPBack","FlyFlag","GroundSpoof"),"Blink")
-    private val fallModeValue=ListValue("FallCheckMove", arrayOf("GroundDist","PredictFall","FallDist"),"FallDist")
+    private val modeValue=ListValue("Mode", arrayOf("Blink","TPBack","FlyFlag","GroundSpoof","TestHypixel"),"Blink")
+    private val fallModeValue=ListValue("FallCheckMode", arrayOf("GroundDist","PredictFall","FallDist"),"FallDist")
     private val maxFallDistValue=FloatValue("MaxFallDistance",10F,5F,20F)
     private val resetMotion=BoolValue("ResetMotion",false)
-    private val startFallDistValue=FloatValue("BlinkStartFallDistance",2F,0F,5F)
-    private val autoScaffold=BoolValue("BlinkAutoScaffold",true)
+    private val startFallDistValue=FloatValue("BlinkStartFallDistance",2F,0F,5F).displayable { modeValue.equals("Blink") }
+    private val autoScaffold=BoolValue("BlinkAutoScaffold",true).displayable { modeValue.equals("Blink") }
+    private val voidOnly=BoolValue("OnlyVoid", true).displayable { modeValue.equals("TestHypixel") }
 
     private val packetCache=ArrayList<C03PacketPlayer>()
     private var blink=false
@@ -62,8 +62,8 @@ class AntiVoid : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent){
-        when(moveValue.get().toLowerCase()){
+    fun onUpdate() {
+        when(modeValue.get().toLowerCase()){
             "groundspoof" -> {
                 canSpoof = willVoid(maxFallDistValue.get())
             }
@@ -125,7 +125,7 @@ class AntiVoid : Module() {
                         }
 
                         if(autoScaffold.get()){
-                            LiquidBounce.moduleManager.getModule(Scaffold::class.java)?.state=true
+                            LiquidBounce.moduleManager.getModule(Scaffold::class.java).state=true
                         }
 
                         packetCache.clear()
@@ -147,17 +147,30 @@ class AntiVoid : Module() {
     fun onPacket(event: PacketEvent){
         val packet=event.packet
 
-        when(moveValue.get().toLowerCase()){
+        when(modeValue.get().toLowerCase()) {
             "blink" -> {
-                if(blink && (packet is C03PacketPlayer)){
+                if (blink && (packet is C03PacketPlayer)) {
                     packetCache.add(packet)
                     event.cancelEvent()
                 }
             }
 
             "groundspoof" -> {
-                if(canSpoof&&(packet is C03PacketPlayer)){
-                    packet.onGround=true
+                if (canSpoof && (packet is C03PacketPlayer)) {
+                    packet.onGround = true
+                }
+            }
+
+            "testhypixel" -> {
+                if (packet is C03PacketPlayer) {
+                    if (voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get() && mc.thePlayer.motionY <= 0 && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
+                            0.0, 0.0, 0.0
+                        ).expand(0.0, 0.0, 0.0)).isEmpty() && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
+                            0.0, -10002.25, 0.0
+                        ).expand(0.0, -10003.75, 0.0)).isEmpty()) {
+                        packet.y+=11.0
+                    }
+                    if (!voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get()) packet.y+=11.0
                 }
             }
         }

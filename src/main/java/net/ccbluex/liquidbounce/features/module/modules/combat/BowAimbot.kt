@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
@@ -22,7 +22,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemBow
 import java.awt.Color
 
-@ModuleInfo(name = "BowAimbot", description = "Automatically aims at players when using a bow.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "BowAimbot", category = ModuleCategory.COMBAT)
 class BowAimbot : Module() {
 
     private val silentValue = BoolValue("Silent", true)
@@ -52,7 +52,7 @@ class BowAimbot : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (target != null && !priorityValue.get().equals("Multi", ignoreCase = true) && markValue.get())
+        if (target != null && !priorityValue.equals("Multi") && markValue.get())
             RenderUtils.drawPlatform(target, Color(37, 126, 255, 70))
     }
 

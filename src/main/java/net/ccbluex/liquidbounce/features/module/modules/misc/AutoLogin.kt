@@ -13,7 +13,7 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S45PacketTitle
 import java.util.*
 
-@ModuleInfo(name = "AutoLogin", description = "Automatic login into server.", category = ModuleCategory.MISC)
+@ModuleInfo(name = "AutoLogin", category = ModuleCategory.MISC)
 class AutoLogin : Module() {
     private val registerCommand= TextValue("Register","/register %p %p")
     private val loginCommand= TextValue("Login","/login %p")
@@ -39,6 +39,7 @@ class AutoLogin : Module() {
         val packet=event.packet
 
         if(title.get()&&packet is S45PacketTitle){
+            packet.message ?: return
             processMessage(packet.message.unformattedText)
         }
 
@@ -48,13 +49,17 @@ class AutoLogin : Module() {
     }
 
     private fun processMessage(msg: String){
-        val regCommand=registerCommand.get().split(" ")[0]
-        if(regCommand.isNotEmpty()&&msg.contains(regCommand,ignoreCase = true)){
-            delayedMessage(registerCommand.get().replace("%p",passwordValue.get()))
+        if(registerCommand.get().isNotBlank()) {
+            val regCommand = registerCommand.get().split(" ")[0]
+            if (regCommand.isNotEmpty() && msg.contains(regCommand, ignoreCase = true)) {
+                delayedMessage(registerCommand.get().replace("%p", passwordValue.get()))
+            }
         }
-        val logCommand=loginCommand.get().split(" ")[0]
-        if(logCommand.isNotEmpty()&&msg.contains(logCommand,ignoreCase = true)){
-            delayedMessage(loginCommand.get().replace("%p",passwordValue.get()))
+        if(loginCommand.get().isNotBlank()) {
+            val logCommand = loginCommand.get().split(" ")[0]
+            if (logCommand.isNotEmpty() && msg.contains(logCommand, ignoreCase = true)) {
+                delayedMessage(loginCommand.get().replace("%p", passwordValue.get()))
+            }
         }
     }
 

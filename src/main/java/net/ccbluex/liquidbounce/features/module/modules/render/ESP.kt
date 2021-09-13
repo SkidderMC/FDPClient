@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.WorldToScreen
 import net.ccbluex.liquidbounce.utils.render.shader.FramebufferShader
@@ -32,22 +31,22 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
 
-@ModuleInfo(name = "ESP", description = "Allows you to see targets through walls.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "ESP", category = ModuleCategory.RENDER)
 class ESP : Module() {
     val modeValue = ListValue(
         "Mode",
-        arrayOf("Box", "OtherBox", "WireFrame", "2D", "CSGO", "Outline", "ShaderOutline", "ShaderGlow", "Jello"),
+        arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "CSGO", "Outline", "ShaderOutline", "ShaderGlow", "Jello"),
         "Jello"
     )
-    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f)
-    val wireframeWidth = FloatValue("WireFrame-Width", 2f, 0.5f, 5f)
-    private val shaderOutlineRadius = FloatValue("ShaderOutline-Radius", 1.35f, 1f, 2f)
-    private val shaderGlowRadius = FloatValue("ShaderGlow-Radius", 2.3f, 2f, 3f)
-    private val CSGOWidth = FloatValue("CSGO-Width", 2f, 0.5f, 5f)
-    private val colorRedValue = IntegerValue("R", 255, 0, 255)
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255)
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255)
-    private val colorRainbow = BoolValue("Rainbow", false)
+    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
+    val wireframeWidth = FloatValue("WireFrame-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("WireFrame") }
+    private val shaderOutlineRadius = FloatValue("ShaderOutline-Radius", 1.35f, 1f, 2f).displayable { modeValue.equals("ShaderOutline") }
+    private val shaderGlowRadius = FloatValue("ShaderGlow-Radius", 2.3f, 2f, 3f).displayable { modeValue.equals("ShaderGlow") }
+    private val CSGOWidth = FloatValue("CSGO-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("CSGO") }
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorTeam.get() }
+    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorTeam.get() }
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorTeam.get() }
+    private val colorRainbow = BoolValue("Rainbow", false).displayable { !colorTeam.get() }
     private val colorTeam = BoolValue("Team", false)
 
     @EventTarget
@@ -56,8 +55,8 @@ class ESP : Module() {
         val mvMatrix = WorldToScreen.getMatrix(GL11.GL_MODELVIEW_MATRIX)
         val projectionMatrix = WorldToScreen.getMatrix(GL11.GL_PROJECTION_MATRIX)
 
-        val csgo = mode.equals("csgo", ignoreCase = true)
-        if (csgo) {
+        val need2dTranslate = mode.equals("csgo", ignoreCase = true) || mode.equals("real2d", ignoreCase = true)
+        if (need2dTranslate) {
             GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glDisable(GL11.GL_TEXTURE_2D)
@@ -97,7 +96,7 @@ class ESP : Module() {
                         RenderUtils.draw2D(entityLiving, posX, posY, posZ, color.rgb, Color.BLACK.rgb)
                     }
 
-                    "csgo" -> {
+                    "csgo","real2d" -> {
                         val renderManager = mc.renderManager
                         val timer = mc.timer
                         val bb = entityLiving.entityBoundingBox
@@ -136,23 +135,30 @@ class ESP : Module() {
 
                         //out of screen
                         if (!(minX == mc.displayWidth.toFloat() || minY == mc.displayHeight.toFloat() || maxX == 0f || maxY == 0f)) {
-                            val width = CSGOWidth.get() * ((maxY - minY) / 50)
-                            RenderUtils.drawRect(minX - width, minY - width, minX, maxY, color)
-                            RenderUtils.drawRect(maxX, minY - width, maxX + width, maxY + width, color)
-                            RenderUtils.drawRect(minX - width, maxY, maxX, maxY + width, color)
-                            RenderUtils.drawRect(minX - width, minY - width, maxX, minY, color)
+                            if(mode.equals("csgo", ignoreCase = true)){
+                                val width = CSGOWidth.get() * ((maxY - minY) / 50)
+                                RenderUtils.drawRect(minX - width, minY - width, minX, maxY, color)
+                                RenderUtils.drawRect(maxX, minY - width, maxX + width, maxY + width, color)
+                                RenderUtils.drawRect(minX - width, maxY, maxX, maxY + width, color)
+                                RenderUtils.drawRect(minX - width, minY - width, maxX, minY, color)
 
-                            //hp bar
-                            val hpSize = (maxY + width - minY) * (entityLiving.health / entityLiving.maxHealth)
-                            RenderUtils.drawRect(minX - width * 3, minY - width, minX - width * 2, maxY + width, Color.RED)
-                            RenderUtils.drawRect(minX - width * 3, maxY - hpSize, minX - width * 2, maxY + width, Color.GREEN)
+                                //hp bar
+                                val hpSize = (maxY + width - minY) * (entityLiving.health / entityLiving.maxHealth)
+                                RenderUtils.drawRect(minX - width * 3, minY - width, minX - width * 2, maxY + width, Color.GRAY)
+                                RenderUtils.drawRect(minX - width * 3, maxY - hpSize, minX - width * 2, maxY + width, ColorUtils.healthColor(entityLiving.health,entityLiving.maxHealth))
+                            }else if(mode.equals("real2d", ignoreCase = true)){
+                                RenderUtils.drawRect(minX - 1, minY - 1, minX, maxY, color)
+                                RenderUtils.drawRect(maxX, minY - 1, maxX + 1, maxY + 1, color)
+                                RenderUtils.drawRect(minX - 1, maxY, maxX, maxY + 1, color)
+                                RenderUtils.drawRect(minX - 1, minY - 1, maxX, minY, color)
+                            }
                         }
                     }
                 }
             }
         }
 
-        if (csgo) {
+        if (need2dTranslate) {
             GL11.glEnable(GL11.GL_DEPTH_TEST)
             GL11.glMatrixMode(GL11.GL_PROJECTION)
             GL11.glPopMatrix()
@@ -235,7 +241,7 @@ class ESP : Module() {
             //draw
             for ((key, value) in entityMap) {
                 shader.startDraw(partialTicks)
-                for (entity in value!!) {
+                for (entity in value) {
                     mc.renderManager.renderEntityStatic(entity, partialTicks, true)
                 }
                 shader.stopDraw(key, radius, 1f)
@@ -266,6 +272,6 @@ class ESP : Module() {
             }
         }
 
-        return if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+        return if (colorRainbow.get()) ColorUtils.rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
     }
 }

@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
@@ -12,9 +12,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbowWithAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -77,15 +76,13 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
     override fun drawElement(partialTicks: Float): Border? {
         updateAnimation()
 
-        AWTFontRenderer.assumeNonVolatile = true
-
         val fontRenderer = fontValue.get()
 
         // Color
         val color = if (!rectangleRainbow.get())
             Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
         else
-            rainbow(400000000L, alphaValue.get())
+            rainbowWithAlpha(alphaValue.get())
 
         val backgroundColor = Color(backgroundRedValue.get(), backgroundGreenValue.get(), backgroundBlueValue.get(),
                 backgroundAlphaValue.get())
@@ -93,7 +90,7 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
         val borderColor = if (!borderRainbow.get())
             Color(borderRedValue.get(), borderGreenValue.get(), borderBlueValue.get(), borderAlphaValue.get())
         else
-            rainbow(400000000L, borderAlphaValue.get())
+            rainbowWithAlpha(borderAlphaValue.get())
 
         // Draw
         val guiHeight = tabs.size * tabHeight.get()
@@ -150,8 +147,6 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
             }
             y += tabHeight.get()
         }
-
-        AWTFontRenderer.assumeNonVolatile = false
 
         return Border(1F, 0F, width.get(), guiHeight)
     }

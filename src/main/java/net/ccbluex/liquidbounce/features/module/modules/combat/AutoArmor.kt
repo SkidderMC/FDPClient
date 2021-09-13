@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
@@ -27,7 +27,7 @@ import net.minecraft.network.play.client.C16PacketClientStatus
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
-@ModuleInfo(name = "AutoArmor", description = "Automatically equips the best armor in your inventory.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "AutoArmor", category = ModuleCategory.COMBAT)
 class AutoArmor : Module() {
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 200, 0, 400) {
         override fun onChanged(oldValue: Int, newValue: Int) {

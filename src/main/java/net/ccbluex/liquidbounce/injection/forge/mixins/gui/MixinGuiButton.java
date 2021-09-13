@@ -45,6 +45,9 @@ public abstract class MixinGuiButton extends Gui {
    private double animation = 0.0;
    private long lastUpdate=System.currentTimeMillis();
 
+   /**
+    * @author liuli
+    */
    @Overwrite
    public void drawButton(Minecraft mc, int mouseX, int mouseY) {
       if(!visible)
@@ -75,8 +78,10 @@ public abstract class MixinGuiButton extends Gui {
       RenderUtils.drawRect(this.xPosition,this.yPosition,this.xPosition + width,this.yPosition + height, new Color(31,31,31,150).getRGB());
       double half=this.width / 2.0;
       double center=this.xPosition + half;
-      RenderUtils.drawRect(center - percent*(half), this.yPosition + this.height - 1, center + percent*(half), this.yPosition + this.height, Color.WHITE.getRGB());
-      Fonts.font40.drawCenteredString(this.displayString,this.xPosition + this.width / 2F,this.yPosition+this.height/2F-Fonts.font40.getHeight()/2F+1,Color.WHITE.getRGB(),false);
+      if(enabled)
+         RenderUtils.drawRect(center - percent*(half), this.yPosition + this.height - 1, center + percent*(half), this.yPosition + this.height, Color.WHITE.getRGB());
+      mc.fontRendererObj.drawString(this.displayString, this.xPosition + this.width / 2F - mc.fontRendererObj.getStringWidth(this.displayString) / 2F
+              ,this.yPosition+this.height/2F-Fonts.font40.getHeight()/2F+1, enabled?Color.WHITE.getRGB():Color.GRAY.getRGB(), false);
       lastUpdate=time;
    }
 }

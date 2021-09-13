@@ -1,19 +1,23 @@
 package net.ccbluex.liquidbounce.features.special
 
-import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 
 class CombatManager : Listenable,MinecraftInstance() {
-    var inCombat=false
     private val lastAttackTimer=MSTimer()
+
+    var inCombat=false
+        private set
     var target: EntityLivingBase? = null
+        private set
+    val attackedEntityList=mutableListOf<EntityLivingBase>()
+    val focusedPlayerList=mutableListOf<EntityPlayer>()
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
@@ -40,14 +44,34 @@ class CombatManager : Listenable,MinecraftInstance() {
                 target=null
             }
         }
+
+        // bypass java.util.ConcurrentModificationException
+        attackedEntityList.map { it }.forEach {
+            if (it.isDead) {
+                LiquidBounce.eventManager.callEvent(EntityKilledEvent(it))
+                attackedEntityList.remove(it)
+            }
+        }
     }
 
     @EventTarget
     fun onAttack(event: AttackEvent){
-        if(event.targetEntity is EntityLivingBase && EntityUtils.isSelected(event.targetEntity,true)){
-            target=event.targetEntity
+        val target=event.targetEntity
+
+        if(target is EntityLivingBase && EntityUtils.isSelected(target,true)){
+            this.target=target
+            if(!attackedEntityList.contains(target))
+                attackedEntityList.add(target)
         }
         lastAttackTimer.reset()
+    }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent){
+        inCombat=false
+        target=null
+        attackedEntityList.clear()
+        focusedPlayerList.clear()
     }
 
     fun getNearByEntity(radius: Float):EntityLivingBase?{
@@ -60,7 +84,12 @@ class CombatManager : Listenable,MinecraftInstance() {
         }
     }
 
-    override fun handleEvents(): Boolean {
-        return true
+    fun isFocusEntity(entity: EntityPlayer):Boolean{
+        if(focusedPlayerList.isEmpty())
+            return true // no need 2 focus
+
+        return focusedPlayerList.contains(entity)
     }
+
+    override fun handleEvents() = true
 }

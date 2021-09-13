@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 
@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.MathHelper;
@@ -30,9 +31,6 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ItemRenderer.class)
 public abstract class MixinItemRenderer {
-    private float lastSwingProgress=0;
-    private long hSwing=-1;
-
     @Shadow
     private float prevEquippedProgress;
 
@@ -78,6 +76,9 @@ public abstract class MixinItemRenderer {
 
     private Animations animations;
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     private void transformFirstPersonItem(float equipProgress, float swingProgress) {
         doItemRenderGLTranslate();
@@ -91,10 +92,13 @@ public abstract class MixinItemRenderer {
         doItemRenderGLScale();
     }
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
         if(animations==null){
-            animations = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
+            animations = LiquidBounce.moduleManager.getModule(Animations.class);
         }
 
         float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
@@ -108,13 +112,14 @@ public abstract class MixinItemRenderer {
         GlStateManager.enableRescaleNormal();
         GlStateManager.pushMatrix();
 
-        if(this.itemToRender != null) {
-            final KillAura killAura = (KillAura) LiquidBounce.moduleManager.getModule(KillAura.class);
+        if (this.itemToRender != null) {
+            final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
 
-            if(this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
+            if (this.itemToRender.getItem() instanceof ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
-            } else if (abstractclientplayer.getItemInUseCount() > 0 || (itemToRender.getItem() instanceof ItemSword && killAura.getBlockingStatus())) {
-                EnumAction enumaction = killAura.getBlockingStatus() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
+            } else if (abstractclientplayer.isUsingItem() || ((itemToRender.getItem() instanceof ItemSword || animations.getAnythingBlock().get())
+                    && ((killAura.getAutoBlockValue().equals("Fake")&&killAura.getTarget()!=null) || killAura.getBlockingStatus()))) {
+                EnumAction enumaction = killAura.getBlockingStatus() || animations.getAnythingBlock().get() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
                 switch(enumaction) {
                     case NONE:
                         this.transformFirstPersonItem(f, 0.0F);
@@ -398,9 +403,12 @@ public abstract class MixinItemRenderer {
         doItemRenderGLScale();
     }
 
+    /**
+     * @author Liuli
+     */
     @Overwrite
     private void renderFireInFirstPerson(float partialTicks) {
-        final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
+        final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();

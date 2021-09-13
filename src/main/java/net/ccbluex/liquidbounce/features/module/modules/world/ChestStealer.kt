@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
@@ -27,7 +27,7 @@ import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
 import kotlin.random.Random
 
-@ModuleInfo(name = "ChestStealer", description = "Automatically steals all items from a chest.", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "ChestStealer", category = ModuleCategory.WORLD)
 class ChestStealer : Module() {
     /**
      * OPTIONS
@@ -60,8 +60,8 @@ class ChestStealer : Module() {
     private val onlyItemsValue = BoolValue("OnlyItems", false)
     private val noCompassValue = BoolValue("NoCompass", false)
     private val autoCloseValue = BoolValue("AutoClose", true)
-    val silenceValue = BoolValue("Silence", true)
-    val silenceTitleValue = BoolValue("SilenceTitle", true)
+    val silentValue = BoolValue("Silent", true)
+    val silentTitleValue = BoolValue("SilentTitle", true)
 
     private val autoCloseMaxDelayValue: IntegerValue = object : IntegerValue("AutoCloseMaxDelay", 0, 0, 400) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -69,7 +69,7 @@ class ChestStealer : Module() {
             if (i > newValue) set(i)
             nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), this.get())
         }
-    }
+    }.displayable { autoCloseValue.get() } as IntegerValue
 
     private val autoCloseMinDelayValue: IntegerValue = object : IntegerValue("AutoCloseMinDelay", 0, 0, 400) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -77,10 +77,10 @@ class ChestStealer : Module() {
             if (i < newValue) set(i)
             nextCloseDelay = TimeUtils.randomDelay(this.get(), autoCloseMaxDelayValue.get())
         }
-    }
+    }.displayable { autoCloseValue.get() } as IntegerValue
 
-    private val closeOnFullValue = BoolValue("CloseOnFull", true)
-    private val chestTitleValue = BoolValue("ChestTitle", false)
+    private val closeOnFullValue = BoolValue("CloseOnFull", true).displayable { autoCloseValue.get() }
+    val chestTitleValue = BoolValue("ChestTitle", false)
 
     /**
      * VALUES
@@ -115,7 +115,7 @@ class ChestStealer : Module() {
             return
 
         // inventory cleaner
-        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java] as InventoryCleaner
+        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]
 
         // Is empty?
         if (!isEmpty(screen) && !(closeOnFullValue.get() && fullInventory)) {
@@ -174,7 +174,7 @@ class ChestStealer : Module() {
     }
 
     private fun isEmpty(chest: GuiChest): Boolean {
-        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java] as InventoryCleaner
+        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]
 
         for (i in 0 until chest.inventoryRows * 9) {
             val slot = chest.inventorySlots.inventorySlots[i]

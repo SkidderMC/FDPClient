@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S3FPacketCustomPayload
 
-@ModuleInfo(name = "AutoReport", description = "Auto report players", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "AutoReport", category = ModuleCategory.PLAYER)
 class AutoReport : Module() {
     private val modeValue=ListValue("Mode", arrayOf("Hit","All"),"Hit")
     private val commandValue=TextValue("Command","/reportar %name%")
@@ -45,7 +45,7 @@ class AutoReport : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
-        if(modeValue.get().equals("All",true)&&delayTimer.hasTimePassed(allDelayValue.get().toLong())){
+        if(modeValue.equals("All")&&delayTimer.hasTimePassed(allDelayValue.get().toLong())){
             for(entity in mc.theWorld.loadedEntityList){
                 if(isTarget(entity)){
                     if(doReport(entity as EntityPlayer)&&allDelayValue.get()!=0)
@@ -91,7 +91,7 @@ class AutoReport : Module() {
             if (entity.isSpectator)
                 return false
 
-            val teams = LiquidBounce.moduleManager.getModule(Teams::class.java) as Teams
+            val teams = LiquidBounce.moduleManager.getModule(Teams::class.java)
             return !teams.state || !teams.isInYourTeam(entity)
         }
 

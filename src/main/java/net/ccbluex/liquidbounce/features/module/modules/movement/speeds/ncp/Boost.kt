@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp
 
@@ -13,7 +13,7 @@ class Boost : SpeedMode("Boost") {
     private var motionDelay = 0
     private var ground = 0f
 
-    override fun onMotion() {
+    override fun onPreMotion() {
         var speed = 3.1981
         var offset = 4.69
         var shouldOffset = true

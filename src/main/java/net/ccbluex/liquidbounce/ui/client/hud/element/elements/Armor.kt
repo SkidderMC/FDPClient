@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
@@ -56,7 +56,7 @@ class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
             GL11.glPopMatrix()
         }
 
-        return if (modeValue.get().equals("Horizontal", true))
+        return if (modeValue.equals("Horizontal"))
             Border(0F, 0F, 72F, 17F)
         else
             Border(0F, 0F, 18F, 72F)

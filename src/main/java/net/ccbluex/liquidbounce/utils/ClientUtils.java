@@ -1,32 +1,40 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils;
 
 import com.google.gson.JsonObject;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.login.client.C01PacketEncryptionResponse;
-import net.minecraft.network.login.server.S01PacketEncryptionRequest;
 import net.minecraft.util.IChatComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
-import javax.crypto.SecretKey;
 import java.lang.reflect.Field;
-import java.security.PublicKey;
 
 public final class ClientUtils extends MinecraftInstance {
 
-    private static final Logger logger = LogManager.getLogger("LiquidBounce");
+    private static final Logger logger = LogManager.getLogger("FDPClient");
 
     private static Field fastRenderField;
 
+    public static final EnumOSType osType;
+
     static {
+        String os=System.getProperty("os.name").toLowerCase();
+        if(os.contains("win")){
+            osType=EnumOSType.WINDOWS;
+        }else if(os.contains("mac")){
+            osType=EnumOSType.MACOS;
+        }else if(os.contains("nix") || os.contains("nux") || os.contains("aix")){
+            osType=EnumOSType.LINUX;
+        }else {
+            osType=EnumOSType.UNKNOWN;
+        }
+
         try {
             fastRenderField = GameSettings.class.getDeclaredField("ofFastRender");
 
@@ -72,10 +80,6 @@ public final class ClientUtils extends MinecraftInstance {
         }
     }
 
-    public static void sendEncryption(final NetworkManager networkManager, final SecretKey secretKey, final PublicKey publicKey, final S01PacketEncryptionRequest encryptionRequest) {
-        networkManager.sendPacket(new C01PacketEncryptionResponse(secretKey, publicKey, encryptionRequest.getVerifyToken()), p_operationComplete_1_ -> networkManager.enableEncryption(secretKey));
-    }
-
     public static void displayAlert(final String message){
         displayChatMessage("§8["+LiquidBounce.COLORED_NAME+"§8] §f"+message);
     }
@@ -90,5 +94,18 @@ public final class ClientUtils extends MinecraftInstance {
         jsonObject.addProperty("text", message);
 
         mc.thePlayer.addChatMessage(IChatComponent.Serializer.jsonToComponent(jsonObject.toString()));
+    }
+
+    public enum EnumOSType {
+        WINDOWS("win"),
+        LINUX("linux"),
+        MACOS("mac"),
+        UNKNOWN("unk");
+
+        public final String friendlyName;
+
+        EnumOSType(String friendlyName){
+            this.friendlyName=friendlyName;
+        }
     }
 }

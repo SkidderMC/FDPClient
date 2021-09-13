@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
@@ -17,8 +17,9 @@ import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.TextValue
+import net.minecraft.client.gui.GuiChat
 
-@ModuleInfo(name = "Spammer", description = "Spams the chat with a given message.", category = ModuleCategory.MISC)
+@ModuleInfo(name = "Spammer", category = ModuleCategory.MISC)
 class Spammer : Module() {
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 1000, 0, 5000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -36,9 +37,11 @@ class Spammer : Module() {
         }
     }
 
-    private val modeValue = ListValue("Mode", arrayOf("Single","Abuse","OrderAbuse"),"Single")
+    private val modeValue = ListValue("Mode", arrayOf("Single","Insult","OrderInsult"),"Single")
     private val messageValue = TextValue("Message", "Buy %r Minecraft %r Legit %r and %r stop %r using %r cracked %r servers %r%r")
-    private val abuseMessageValue = TextValue("AbuseMessage", "[%s] %w [%s]")
+        .displayable { !modeValue.contains("insult") }
+    private val insultMessageValue = TextValue("InsultMessage", "[%s] %w [%s]")
+        .displayable { modeValue.contains("insult") }
 
     private val msTimer = MSTimer()
     private var delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
@@ -50,17 +53,20 @@ class Spammer : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if(mc.currentScreen!=null && mc.currentScreen is GuiChat)
+            return
+
         if (msTimer.hasTimePassed(delay)) {
             mc.thePlayer.sendChatMessage(when(modeValue.get().toLowerCase()){
-                "abuse" -> {
-                    replaceAbuse(AutoAbuse.getRandomOne())
+                "insult" -> {
+                    replaceAbuse(KillInsults.getRandomOne())
                 }
-                "orderabuse" -> {
+                "orderinsult" -> {
                     lastIndex++
-                    if(lastIndex>=(AutoAbuse.abuseWords!!.size()-1)){
+                    if(lastIndex>=(KillInsults.insultWords.size-1)){
                         lastIndex=0
                     }
-                    replaceAbuse(AutoAbuse.abuseWords!![lastIndex].asString)
+                    replaceAbuse(KillInsults.insultWords[lastIndex])
                 }
                 else -> replace(messageValue.get())
             })
@@ -70,7 +76,7 @@ class Spammer : Module() {
     }
 
     private fun replaceAbuse(str: String): String {
-        return replace(abuseMessageValue.get().replace("%w",str))
+        return replace(insultMessageValue.get().replace("%w",str))
     }
 
     private fun replace(str: String): String {

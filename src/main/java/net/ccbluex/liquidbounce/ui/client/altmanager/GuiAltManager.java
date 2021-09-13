@@ -1,15 +1,15 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiAdd;
-import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiChangeName;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiDirectLogin;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.login.LoginUtils;
 import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
 import net.ccbluex.liquidbounce.utils.login.UserUtils;
@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
+import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
@@ -31,10 +32,17 @@ import java.util.Random;
 public class GuiAltManager extends GuiScreen {
 
     private final GuiScreen prevGui;
-    public String status = "§7Idle...";
+    public String status = "§7%ui.alt.idle%";
     private GuiButton loginButton;
     private GuiButton randomAltButton;
     private GuiList altsList;
+    public static GuiTextField randomAltField;
+
+    static {
+        randomAltField = new GuiTextField(2, Fonts.font40, 0,0,0,0);
+        randomAltField.setText("F%nD%nP%n_%s%s%s");
+        randomAltField.setMaxStringLength(Integer.MAX_VALUE);
+    }
 
     public GuiAltManager(final GuiScreen prevGui) {
         this.prevGui = prevGui;
@@ -46,7 +54,7 @@ public class GuiAltManager extends GuiScreen {
 
         if (minecraftAccount.isCracked()) {
             LoginUtils.loginCracked(minecraftAccount.getName());
-            return "§cYour name is now §8" + minecraftAccount.getName() + "§c.";
+            return LanguageManager.INSTANCE.getAndFormat("ui.alt.nameChanged",minecraftAccount.getName());
         }
 
         LoginUtils.LoginResult result = LoginUtils.login(minecraftAccount.getName(), minecraftAccount.getPassword());
@@ -54,20 +62,20 @@ public class GuiAltManager extends GuiScreen {
             String userName = Minecraft.getMinecraft().getSession().getUsername();
             minecraftAccount.setAccountName(userName);
             LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig);
-            return "§cYour name is now §f§l" + userName + "§c.";
+            return LanguageManager.INSTANCE.getAndFormat("ui.alt.nameChanged",userName);
         }
 
         if (result == LoginUtils.LoginResult.WRONG_PASSWORD)
-            return "§cWrong password.";
+            return "§c%ui.alt.wrongPassword%";
 
         if (result == LoginUtils.LoginResult.NO_CONTACT)
-            return "§cCannot contact authentication server.";
+            return "§c%ui.alt.noContact%";
 
         if (result == LoginUtils.LoginResult.INVALID_ACCOUNT_DATA)
-            return "§cInvaild username or password.";
+            return "§c%ui.alt.invalidData%";
 
         if (result == LoginUtils.LoginResult.MIGRATED)
-            return "§cAccount migrated.";
+            return "§c%ui.alt.migrated%";
 
         return "";
     }
@@ -97,18 +105,21 @@ public class GuiAltManager extends GuiScreen {
         altsList.scrollBy(index * altsList.slotHeight);
 
         int j = 22;
-        this.buttonList.add(new GuiButton(1, width - 80, j + 24, 70, 20, "Add"));
-        this.buttonList.add(new GuiButton(2, width - 80, j + 24 * 2, 70, 20, "Remove"));
-        this.buttonList.add(new GuiButton(7, width - 80, j + 24 * 3, 70, 20, "Import"));
-        this.buttonList.add(new GuiButton(8, width - 80, j + 24 * 4, 70, 20, "Copy"));
+        this.buttonList.add(new GuiButton(1, width - 80, j + 24, 70, 20, "%ui.alt.add%"));
+        this.buttonList.add(new GuiButton(2, width - 80, j + 24 * 2, 70, 20, "%ui.alt.remove%"));
+        this.buttonList.add(new GuiButton(7, width - 80, j + 24 * 3, 70, 20, "%ui.alt.import%"));
+        this.buttonList.add(new GuiButton(8, width - 80, j + 24 * 4, 70, 20, "%ui.alt.copy%"));
 
-        this.buttonList.add(new GuiButton(0, width - 80, height - 65, 70, 20, "Back"));
+        this.buttonList.add(new GuiButton(0, width - 80, height - 65, 70, 20, "%ui.back%"));
 
-        this.buttonList.add(loginButton = new GuiButton(3, 5, j + 24, 90, 20, "Login"));
-        this.buttonList.add(randomAltButton = new GuiButton(4, 5, j + 24 * 2, 90, 20, "Random Alt"));
-        this.buttonList.add(new GuiButton(89, 5, j + 24 * 3, 90, 20, "Random Cracked"));
-        this.buttonList.add(new GuiButton(6, 5, j + 24 * 4, 90, 20, "Direct Login"));
-        this.buttonList.add(new GuiButton(88, 5, j + 24 * 5, 90, 20, "Change Name"));
+        this.buttonList.add(loginButton = new GuiButton(3, 5, j + 24, 90, 20, "%ui.alt.login%"));
+        this.buttonList.add(randomAltButton = new GuiButton(4, 5, j + 24 * 2, 90, 20, "%ui.disconnect.randomAlt%"));
+        this.buttonList.add(new GuiButton(89, 5, j + 24 * 3, 90, 20, "%ui.disconnect.randomOffline%"));
+        this.buttonList.add(new GuiButton(6, 5, j + 24 * 4, 90, 20, "%ui.alt.directLogin%"));
+        randomAltField.xPosition=5;
+        randomAltField.yPosition=j + 24 * 5;
+        randomAltField.width=90;
+        randomAltField.height=20;
     }
 
     @Override
@@ -117,11 +128,15 @@ public class GuiAltManager extends GuiScreen {
 
         altsList.drawScreen(mouseX, mouseY, partialTicks);
 
-        Fonts.font40.drawCenteredString("AltManager", width / 2, 6, 0xffffff);
-        Fonts.font35.drawCenteredString(LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size() + " Alts", width / 2, 18, 0xffffff);
+        Fonts.font40.drawCenteredString("%ui.altmanager%", width / 2, 6, 0xffffff);
+        Fonts.font35.drawCenteredString( LanguageManager.INSTANCE.getAndFormat("ui.alt.alts",LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size()), width / 2, 18, 0xffffff);
         Fonts.font35.drawCenteredString(status, width / 2, 32, 0xffffff);
-        Fonts.font35.drawStringWithShadow("§7User: §a" + mc.getSession().getUsername(), 6, 6, 0xffffff);
-        Fonts.font35.drawStringWithShadow("§7Type: §a" + (UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "Premium" : "Cracked"), 6, 15, 0xffffff);
+        Fonts.font35.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.username",mc.getSession().getUsername()), 6, 6, 0xffffff);
+        Fonts.font35.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.type",(UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "%ui.alt.type.premium%" : "%ui.alt.type.cracked%")), 6, 15, 0xffffff);
+
+        randomAltField.drawTextBox();
+        if(randomAltField.getText().isEmpty() && !randomAltField.isFocused())
+            drawCenteredString(Fonts.font40, "§7%ui.alt.randomAltField%", width / 2 - 55, 66, 0xffffff);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -141,9 +156,9 @@ public class GuiAltManager extends GuiScreen {
                 if (altsList.getSelectedSlot() != -1 && altsList.getSelectedSlot() < altsList.getSize()) {
                     LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.remove(altsList.getSelectedSlot());
                     LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig);
-                    status = "§aThe account has been removed.";
+                    status = "§a%ui.alt.removed%";
                 } else
-                    status = "§cSelect an account.";
+                    status = "§c%ui.alt.needSelect%";
                 break;
             case 3:
                 if (altsList.getSelectedSlot() != -1 && altsList.getSelectedSlot() < altsList.getSize()) {
@@ -151,18 +166,18 @@ public class GuiAltManager extends GuiScreen {
 
                     final Thread thread = new Thread(() -> {
                         final MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.get(altsList.getSelectedSlot());
-                        status = "§aLogging in...";
+                        status = "§a%ui.alt.loggingIn%";
                         status = login(minecraftAccount);
 
                         loginButton.enabled = randomAltButton.enabled = true;
                     }, "AltLogin");
                     thread.start();
                 } else
-                    status = "§cSelect an account.";
+                    status = "§c%ui.alt.needSelect%";
                 break;
             case 4:
                 if (LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size() <= 0) {
-                    status = "§cThe list is empty.";
+                    status = "§c%ui.alt.emptyList%";
                     return;
                 }
 
@@ -175,7 +190,7 @@ public class GuiAltManager extends GuiScreen {
 
                 final Thread thread = new Thread(() -> {
                     final MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.get(randomInteger);
-                    status = "§aLogging in...";
+                    status = "§a%ui.alt.loggingIn%";
                     status = login(minecraftAccount);
 
                     loginButton.enabled = randomAltButton.enabled = true;
@@ -218,7 +233,7 @@ public class GuiAltManager extends GuiScreen {
                 fileReader.close();
                 bufferedReader.close();
                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig);
-                status = "§aThe accounts were imported successfully.";
+                status = "§a%ui.alt.imported%";
                 break;
             case 8:
                 if (altsList.getSelectedSlot() != -1 && altsList.getSelectedSlot() < altsList.getSize()) {
@@ -228,12 +243,9 @@ public class GuiAltManager extends GuiScreen {
                         break;
 
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(minecraftAccount.getName() + ":" + minecraftAccount.getPassword()), null);
-                    status = "§aCopied account into your clipboard.";
+                    status = "§a%ui.alt.copied%";
                 } else
-                    status = "§cSelect an account.";
-                break;
-            case 88:
-                mc.displayGuiScreen(new GuiChangeName(this));
+                    status = "§c%ui.alt.needSelect%";
                 break;
             case 89:
                 new Thread(LoginUtils::randomCracked).start();
@@ -242,9 +254,22 @@ public class GuiAltManager extends GuiScreen {
     }
 
     @Override
+    public void updateScreen() {
+        randomAltField.updateCursorCounter();
+        super.updateScreen();
+    }
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+        randomAltField.mouseClicked(mouseX, mouseY, mouseButton);
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         switch (keyCode) {
             case Keyboard.KEY_ESCAPE:
+                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig);
                 mc.displayGuiScreen(prevGui);
                 return;
             case Keyboard.KEY_UP: {
@@ -274,6 +299,9 @@ public class GuiAltManager extends GuiScreen {
                 return;
             }
         }
+
+        if(randomAltField.isFocused())
+            randomAltField.textboxKeyTyped(typedChar, keyCode);
 
         super.keyTyped(typedChar, keyCode);
     }
@@ -322,13 +350,13 @@ public class GuiAltManager extends GuiScreen {
 
                     new Thread(() -> {
                         MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.get(altsList.getSelectedSlot());
-                        status = "§aLogging in...";
+                        status = "§a%ui.alt.loggingIn%";
                         status = "§c" + login(minecraftAccount);
 
                         loginButton.enabled = randomAltButton.enabled = true;
                     }, "AltManagerLogin").start();
                 } else
-                    status = "§cSelect an account.";
+                    status = "§c%ui.alt.needSelect%";
             }
         }
 
@@ -336,7 +364,7 @@ public class GuiAltManager extends GuiScreen {
         protected void drawSlot(int id, int x, int y, int var4, int var5, int var6) {
             final MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.get(id);
             Fonts.font40.drawCenteredString(minecraftAccount.getAccountName() == null ? minecraftAccount.getName() : minecraftAccount.getAccountName(), (width / 2), y + 2, Color.WHITE.getRGB(), true);
-            Fonts.font40.drawCenteredString(minecraftAccount.isCracked() ? "Cracked" : (minecraftAccount.getAccountName() == null ? "Premium" : minecraftAccount.getName()), (width / 2), y + 15, minecraftAccount.isCracked() ? Color.GRAY.getRGB() : (minecraftAccount.getAccountName() == null ? Color.GREEN.getRGB() : Color.LIGHT_GRAY.getRGB()), true);
+            Fonts.font40.drawCenteredString(minecraftAccount.isCracked() ? "%ui.alt.type.cracked%" : (minecraftAccount.getAccountName() == null ? "%ui.alt.type.premium%" : minecraftAccount.getName()), (width / 2), y + 15, minecraftAccount.isCracked() ? Color.GRAY.getRGB() : (minecraftAccount.getAccountName() == null ? Color.GREEN.getRGB() : Color.LIGHT_GRAY.getRGB()), true);
         }
 
         @Override

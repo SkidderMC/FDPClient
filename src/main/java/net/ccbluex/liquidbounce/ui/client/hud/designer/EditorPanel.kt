@@ -1,12 +1,11 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.designer
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.elements
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -83,7 +82,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         }
 
         // Draw panel
-        Gui.drawRect(x, y + 12, x + width, y + realHeight, Color(27, 34, 40).rgb)
+        Gui.drawRect(x, y + 12, x + width, y + realHeight, Color(0, 0, 0, 150).rgb)
         when {
             create -> drawCreate(mouseX, currMouseY)
             currentElement != null -> drawEditor(mouseX, currMouseY)
@@ -147,7 +146,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             realHeight += 10
         }
 
-        Gui.drawRect(x, y, x + width, y + 12, ClickGUI.generateColor().rgb)
+        Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
         Fonts.font35.drawString("§lCreate element", x + 2F, y + 3.5F, Color.WHITE.rgb)
     }
 
@@ -194,7 +193,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             realHeight += 10
         }
 
-        Gui.drawRect(x, y, x + width, y + 12, ClickGUI.generateColor().rgb)
+        Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
         Fonts.font35.drawString("§lEditor", x + 2F, y + 3.5f, Color.WHITE.rgb)
     }
 
@@ -425,7 +424,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         }
 
         // Header
-        Gui.drawRect(x, y, x + width, y + 12, ClickGUI.generateColor().rgb)
+        Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
         Fonts.font35.drawString("§l${element.name}", x + 2F, y + 3.5F, Color.WHITE.rgb)
 
         // Delete button

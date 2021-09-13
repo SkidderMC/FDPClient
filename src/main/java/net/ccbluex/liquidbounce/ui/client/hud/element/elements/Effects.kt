@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
@@ -22,8 +21,7 @@ import net.minecraft.potion.Potion
  * Shows a list of active potion effects
  */
 @ElementInfo(name = "Effects")
-class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
-              side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
+class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
 
     private val fontValue = FontValue("Font", Fonts.font35)
     private val shadow = BoolValue("Shadow", true)
@@ -36,8 +34,6 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
         var width = 0F
 
         val fontRenderer = fontValue.get()
-
-        assumeNonVolatile = true
 
         for (effect in mc.thePlayer.activePotionEffects) {
             val potion = Potion.potionTypes[effect.potionID]
@@ -59,21 +55,31 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
             val name = "${I18n.format(potion.name)} $number§f: §7${Potion.getDurationString(effect)}"
             val stringWidth = fontRenderer.getStringWidth(name).toFloat()
 
-            if (width < stringWidth)
-                width = stringWidth
+            if (side.horizontal == Side.Horizontal.RIGHT) {
+                if (width > -stringWidth)
+                    width = -stringWidth
+            } else {
+                if (width < stringWidth)
+                    width = stringWidth
+            }
 
-            fontRenderer.drawString(name, -stringWidth, y, potion.liquidColor, shadow.get())
-            y -= fontRenderer.FONT_HEIGHT
+            when (side.horizontal) {
+                Side.Horizontal.RIGHT -> fontRenderer.drawString(name, -stringWidth, y + if (side.vertical == Side.Vertical.UP) -fontRenderer.FONT_HEIGHT.toFloat() else 0F, potion.liquidColor, shadow.get())
+                 Side.Horizontal.LEFT, Side.Horizontal.MIDDLE -> fontRenderer.drawString(name, 0F, y + if (side.vertical == Side.Vertical.UP) -fontRenderer.FONT_HEIGHT.toFloat() else 0F, potion.liquidColor, shadow.get())
+            }
+
+            when (side.vertical) {
+                Side.Vertical.UP -> y -= fontRenderer.FONT_HEIGHT
+                Side.Vertical.DOWN -> y += fontRenderer.FONT_HEIGHT
+            }
         }
 
-        assumeNonVolatile = false
-
         if (width == 0F)
-            width = 40F
+            width = if (side.horizontal == Side.Horizontal.RIGHT) -40F else 40F
 
         if (y == 0F)
-            y = -10F
+            y = if (side.vertical == Side.Vertical.UP) -fontRenderer.FONT_HEIGHT.toFloat() else fontRenderer.FONT_HEIGHT.toFloat()
 
-        return Border(2F, fontRenderer.FONT_HEIGHT.toFloat(), -width - 2F, y + fontRenderer.FONT_HEIGHT - 2F)
+        return Border(0F, 0F, width, y)
     }
 }

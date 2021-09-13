@@ -1,9 +1,10 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.special.macro.Macro
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -40,7 +41,7 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
 
         RenderUtils.drawRect(0F,0F,width,height,keyColor)
         RenderUtils.drawRect(0F,height*0.9F,width,height,shadowColor)
-        (if(hasKeyBind){Fonts.fontBold40}else{Fonts.font40})
+        (if(hasKeyBind){Fonts.font40}else{Fonts.font40})
             .drawCenteredString(keyName,width*0.5F,height*0.9F*0.5F-(Fonts.font35.FONT_HEIGHT*0.5F)+3F
             ,if(hasKeyBind){usedColor}else{unusedColor},false)
 
@@ -61,7 +62,7 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
                 GL11.glPushMatrix()
                 GL11.glTranslatef(0F, yOffset, 0F)
 
-                Fonts.font40.drawString(module.name, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
+                Fonts.font40.drawString(module.localizedName, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
                 Fonts.font40.drawString(
                     "-", baseTabWidth - 12F - Fonts.font40.getStringWidth("-"), fontHeight, Color.RED.rgb, false
                 )
@@ -88,8 +89,8 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
         //覆盖多出来的部分
         RenderUtils.drawRect(0F,0F,baseTabWidth.toFloat(),12F+Fonts.font40.height+10F,Color.WHITE.rgb)
         RenderUtils.drawRect(0F,baseTabHeight-22F-Fonts.font40.height,baseTabWidth.toFloat(),baseTabHeight.toFloat(),Color.WHITE.rgb)
-        Fonts.font40.drawString("$keyDisplayName Key",12F,12F,Color.BLACK.rgb,false)
-        Fonts.font40.drawString("+ Add",baseTabWidth-12F-Fonts.font40.getStringWidth("+ Add")
+        Fonts.font40.drawString(LanguageManager.getAndFormat("ui.keybind.key",keyDisplayName),12F,12F,Color.BLACK.rgb,false)
+        Fonts.font40.drawString("%ui.keybind.add%",baseTabWidth-12F-Fonts.font40.getStringWidth("%ui.keybind.add%")
             ,baseTabHeight-12F-Fonts.font40.height,Color(0,191,255).rgb/*sky blue*/,false)
 
         GL11.glPopMatrix()
@@ -130,7 +131,7 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
             }
 
             if(scaledMouseY>22F+Fonts.font40.height
-                &&scaledMouseX>baseTabWidth-12F-Fonts.font40.getStringWidth("+ Add")){
+                &&scaledMouseX>baseTabWidth-12F-Fonts.font40.getStringWidth("%ui.keybind.add%")){
                 if(scaledMouseY>baseTabHeight-22F-Fonts.font40.height){
                     keyBindMgr.popUI=KeySelectUI(this)
                 }else{

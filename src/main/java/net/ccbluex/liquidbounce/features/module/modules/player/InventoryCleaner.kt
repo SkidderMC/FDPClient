@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
@@ -29,7 +29,7 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C16PacketClientStatus
 
 
-@ModuleInfo(name = "InventoryCleaner", description = "Automatically throws away useless items.", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "InventoryCleaner", category = ModuleCategory.PLAYER)
 class InventoryCleaner : Module() {
 
     /**
@@ -60,15 +60,15 @@ class InventoryCleaner : Module() {
     private val itemDelayValue = IntegerValue("ItemDelay", 0, 0, 5000)
 
     private val items = arrayOf("None", "Ignore", "Sword", "Bow", "Pickaxe", "Axe", "Food", "Block", "Water", "Gapple", "Pearl", "Potion")
-    private val sortSlot1Value = ListValue("SortSlot-1", items, "Sword")
-    private val sortSlot2Value = ListValue("SortSlot-2", items, "Bow")
-    private val sortSlot3Value = ListValue("SortSlot-3", items, "Pickaxe")
-    private val sortSlot4Value = ListValue("SortSlot-4", items, "Axe")
-    private val sortSlot5Value = ListValue("SortSlot-5", items, "None")
-    private val sortSlot6Value = ListValue("SortSlot-6", items, "None")
-    private val sortSlot7Value = ListValue("SortSlot-7", items, "Food")
-    private val sortSlot8Value = ListValue("SortSlot-8", items, "Block")
-    private val sortSlot9Value = ListValue("SortSlot-9", items, "Block")
+    private val sortSlot1Value = ListValue("SortSlot-1", items, "Sword").displayable { sortValue.get() }
+    private val sortSlot2Value = ListValue("SortSlot-2", items, "Gapple").displayable { sortValue.get() }
+    private val sortSlot3Value = ListValue("SortSlot-3", items, "Potion").displayable { sortValue.get() }
+    private val sortSlot4Value = ListValue("SortSlot-4", items, "Pickaxe").displayable { sortValue.get() }
+    private val sortSlot5Value = ListValue("SortSlot-5", items, "Axe").displayable { sortValue.get() }
+    private val sortSlot6Value = ListValue("SortSlot-6", items, "None").displayable { sortValue.get() }
+    private val sortSlot7Value = ListValue("SortSlot-7", items, "Block").displayable { sortValue.get() }
+    private val sortSlot8Value = ListValue("SortSlot-8", items, "Pearl").displayable { sortValue.get() }
+    private val sortSlot9Value = ListValue("SortSlot-9", items, "Food").displayable { sortValue.get() }
 
     /**
      * VALUES

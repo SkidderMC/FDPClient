@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module
 
@@ -85,7 +85,7 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
                     is IntegerValue -> value.set(args[2].toInt())
                     is FloatValue -> value.set(args[2].toFloat())
                     is ListValue -> {
-                        if (!value.contains(args[2])) {
+                        if (!value.containsValue(args[2])) {
                             chatSyntax("$moduleName ${args[1].toLowerCase()} <${value.values.joinToString(separator = "/").toLowerCase()}>")
                             return
                         }

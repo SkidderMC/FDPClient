@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager.sub;
 
@@ -14,9 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.elements.GuiPasswordField;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.TabUtils;
 import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -45,9 +43,9 @@ public class GuiAdd extends GuiScreen {
 
     public void initGui() {
         Keyboard.enableRepeatEvents(true);
-        buttonList.add(addButton = new GuiButton(1, width / 2 - 100, height / 4 + 72, "Add"));
-        buttonList.add(clipboardButton = new GuiButton(2, width / 2 - 100, height / 4 + 96, "Clipboard"));
-        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, "Back"));
+        buttonList.add(addButton = new GuiButton(1, width / 2 - 100, height / 4 + 72, "%ui.alt.add%"));
+        buttonList.add(clipboardButton = new GuiButton(2, width / 2 - 100, height / 4 + 96, "%ui.alt.clipBoardLogin%"));
+        buttonList.add(new GuiButton(0, width / 2 - 100, height / 4 + 120, "%ui.back%"));
         username = new GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20);
         username.setFocused(true);
         username.setMaxStringLength(Integer.MAX_VALUE);
@@ -58,19 +56,18 @@ public class GuiAdd extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawBackground(0);
-        Gui.drawRect(30, 30, width - 30, height - 30, Integer.MIN_VALUE);
 
-        drawCenteredString(Fonts.font40, "Add Account", width / 2, 34, 0xffffff);
+        drawCenteredString(Fonts.font40, "%ui.alt.add%", width / 2, 34, 0xffffff);
         drawCenteredString(Fonts.font35, status == null ? "" : status, width / 2, height / 4 + 60, 0xffffff);
 
         username.drawTextBox();
         password.drawTextBox();
 
         if(username.getText().isEmpty() && !username.isFocused())
-            drawCenteredString(Fonts.font40, "§7Username / E-Mail", width / 2 - 55, 66, 0xffffff);
+            drawCenteredString(Fonts.font40, "§7%ui.alt.loginUsername%", width / 2 - 55, 66, 0xffffff);
 
         if(password.getText().isEmpty() && !password.isFocused())
-            drawCenteredString(Fonts.font40, "§7Password", width / 2 - 74, 91, 0xffffff);
+            drawCenteredString(Fonts.font40, "§7%ui.alt.loginPassword%", width / 2 - 74, 91, 0xffffff);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -85,7 +82,7 @@ public class GuiAdd extends GuiScreen {
                 break;
             case 1:
                 if (LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.stream().anyMatch(account -> account.getName().equals(username.getText()))) {
-                    status = "§cThe account has already been added.";
+                    status = "§c%ui.alt.alreadyAdded%";
                     break;
                 }
 
@@ -98,13 +95,13 @@ public class GuiAdd extends GuiScreen {
                     final String[] accountData = clipboardData.split(":", 2);
 
                     if (!clipboardData.contains(":") || accountData.length != 2) {
-                        status = "§cInvalid clipboard data. (Use: E-Mail:Password)";
+                        status = "§c%ui.alt.invalidClipData%";
                         return;
                     }
 
                     addAccount(accountData[0], accountData[1]);
                 }catch(final UnsupportedFlavorException e) {
-                    status = "§cClipboard flavor unsupported!";
+                    status = "§c%ui.alt.readFailed%";
                     ClientUtils.getLogger().error("Failed to read data from clipboard.", e);
                 }
                 break;
@@ -119,9 +116,6 @@ public class GuiAdd extends GuiScreen {
             case Keyboard.KEY_ESCAPE:
                 mc.displayGuiScreen(prevGui);
                 return;
-            case Keyboard.KEY_TAB:
-                TabUtils.tab(username, password);
-                return;
             case Keyboard.KEY_RETURN:
                 actionPerformed(addButton);
                 return;
@@ -132,6 +126,7 @@ public class GuiAdd extends GuiScreen {
 
         if(password.isFocused())
             password.textboxKeyTyped(typedChar, keyCode);
+
         super.keyTyped(typedChar, keyCode);
     }
 
@@ -159,7 +154,7 @@ public class GuiAdd extends GuiScreen {
     private void addAccount(final String name, final String password) {
         if (LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.stream()
                 .anyMatch(account -> account.getName().equals(name))) {
-            status = "§cThe account has already been added.";
+            status = "§c%ui.alt.alreadyAdded%";
             return;
         }
 
@@ -169,7 +164,7 @@ public class GuiAdd extends GuiScreen {
 
         new Thread(() -> {
             if (!account.isCracked()) {
-                status = "§aChecking...";
+                status = "§a%ui.alt.checking%";
 
                 try {
                     final YggdrasilUserAuthentication userAuthentication = (YggdrasilUserAuthentication)
@@ -182,7 +177,7 @@ public class GuiAdd extends GuiScreen {
                     userAuthentication.logIn();
                     account.setAccountName(userAuthentication.getSelectedProfile().getName());
                 } catch (NullPointerException | AuthenticationException e) {
-                    status = "§cThe account doesn't work.";
+                    status = "§c%ui.alt.notWorking%";
                     addButton.enabled = clipboardButton.enabled = true;
                     return;
                 }
@@ -192,7 +187,7 @@ public class GuiAdd extends GuiScreen {
             LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.add(account);
             LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig);
 
-            status = "§aThe account has been added.";
+            status = "§a%ui.alt.alreadyAdded%";
             prevGui.status = status;
             mc.displayGuiScreen(prevGui);
         }).start();

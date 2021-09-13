@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.block
 
@@ -100,14 +100,14 @@ object BlockUtils : MinecraftInstance() {
      * Check if [axisAlignedBB] has collidable blocks using custom [collide] check
      */
     @JvmStatic
-    fun collideBlock(axisAlignedBB: AxisAlignedBB, collide: Collidable): Boolean {
+    fun collideBlock(axisAlignedBB: AxisAlignedBB, collide: (Block?) -> Boolean): Boolean {
         for (x in MathHelper.floor_double(mc.thePlayer.entityBoundingBox.minX) until
                 MathHelper.floor_double(mc.thePlayer.entityBoundingBox.maxX) + 1) {
             for (z in MathHelper.floor_double(mc.thePlayer.entityBoundingBox.minZ) until
                     MathHelper.floor_double(mc.thePlayer.entityBoundingBox.maxZ) + 1) {
                 val block = getBlock(BlockPos(x.toDouble(), axisAlignedBB.minY, z.toDouble()))
 
-                if (!collide.collideBlock(block))
+                if (!collide(block))
                     return false
             }
         }
@@ -119,7 +119,7 @@ object BlockUtils : MinecraftInstance() {
      * Check if [axisAlignedBB] has collidable blocks using custom [collide] check
      */
     @JvmStatic
-    fun collideBlockIntersects(axisAlignedBB: AxisAlignedBB, collide: Collidable): Boolean {
+    fun collideBlockIntersects(axisAlignedBB: AxisAlignedBB, collide: (Block?) -> Boolean): Boolean {
         for (x in MathHelper.floor_double(mc.thePlayer.entityBoundingBox.minX) until
                 MathHelper.floor_double(mc.thePlayer.entityBoundingBox.maxX) + 1) {
             for (z in MathHelper.floor_double(mc.thePlayer.entityBoundingBox.minZ) until
@@ -127,7 +127,7 @@ object BlockUtils : MinecraftInstance() {
                 val blockPos = BlockPos(x.toDouble(), axisAlignedBB.minY, z.toDouble())
                 val block = getBlock(blockPos)
 
-                if (collide.collideBlock(block)) {
+                if (collide(block)) {
                     val boundingBox = block?.getCollisionBoundingBox(mc.theWorld, blockPos, getState(blockPos))
                             ?: continue
 
@@ -141,12 +141,4 @@ object BlockUtils : MinecraftInstance() {
 
     @JvmStatic
     fun floorVec3(vec3: Vec3) = Vec3(floor(vec3.xCoord),floor(vec3.yCoord),floor(vec3.zCoord))
-
-    interface Collidable {
-
-        /**
-         * Check if [block] is collidable
-         */
-        fun collideBlock(block: Block?): Boolean
-    }
 }

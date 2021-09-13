@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 
-@ModuleInfo(name = "AntiBlind", description = "Cancels blindness effects.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "AntiBlind", category = ModuleCategory.RENDER)
 class AntiBlind : Module() {
     val confusionEffect = BoolValue("Confusion", true)
     val pumpkinEffect = BoolValue("Pumpkin", true)
@@ -38,8 +38,8 @@ class AntiBlind : Module() {
     }
 
     @EventTarget(ignoreCondition = true)
-    fun onUpdate(event: UpdateEvent?) {
-        if (state || LiquidBounce.moduleManager.getModule(XRay::class.java)!!.state) {
+    fun onUpdate(event: UpdateEvent) {
+        if (state || LiquidBounce.moduleManager.getModule(XRay::class.java).state) {
             when (bright.get().toLowerCase()) {
                 "gamma" -> if (mc.gameSettings.gammaSetting <= 100f) mc.gameSettings.gammaSetting++
                 "nightvision" -> mc.thePlayer.addPotionEffect(PotionEffect(Potion.nightVision.id, 1337, 1))
@@ -51,7 +51,7 @@ class AntiBlind : Module() {
     }
 
     @EventTarget(ignoreCondition = true)
-    fun onShutdown(event: ClientShutdownEvent?) {
+    fun onShutdown(event: ClientShutdownEvent) {
         onDisable()
     }
 }

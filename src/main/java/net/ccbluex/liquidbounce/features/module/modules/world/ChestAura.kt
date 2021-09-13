@@ -1,15 +1,12 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.MotionEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -31,7 +28,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.util.*
 
-@ModuleInfo(name = "ChestAura", description = "Automatically opens chests around you.", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "ChestAura", category = ModuleCategory.WORLD)
 object ChestAura : Module() {
 
     private val rangeValue = FloatValue("Range", 5F, 1F, 6F)
@@ -52,13 +49,13 @@ object ChestAura : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (LiquidBounce.moduleManager[Blink::class.java]!!.state)
+        if (LiquidBounce.moduleManager[Blink::class.java].state)
             return
 
         if(onlyOnGround.get() && !mc.thePlayer.onGround)
             return
 
-        if(event.isPre()){
+        if(event.eventState == EventState.PRE){
                 if (mc.currentScreen is GuiContainer)
                     return
 

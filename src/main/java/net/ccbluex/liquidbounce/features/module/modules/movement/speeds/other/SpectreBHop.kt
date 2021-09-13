@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class SpectreBHop : SpeedMode("SpectreBHop") {
-    override fun onMotion() {
+    override fun onPreMotion() {
         if (!MovementUtils.isMoving() || mc.thePlayer.movementInput.jump) return
         if (mc.thePlayer.onGround) {
             MovementUtils.strafe(1.1f)

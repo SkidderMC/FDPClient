@@ -1,17 +1,19 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.misc;
 
 import java.util.Arrays;
 
 public final class StringUtils {
-    public static String toCompleteString(final String[] args, final int start) {
-        if(args.length <= start) return "";
+    public static String toCompleteString(final String[] args) {
+        return toCompleteString(args, 0);
+    }
 
-        return String.join(" ", Arrays.copyOfRange(args, start, args.length));
+    public static String toCompleteString(final String[] args, final int start) {
+        return toCompleteString(args, start, " ");
     }
 
     public static String toCompleteString(final String[] args, final int start, final String join) {

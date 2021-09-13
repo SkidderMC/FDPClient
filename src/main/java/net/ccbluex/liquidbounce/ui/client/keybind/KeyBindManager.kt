@@ -43,8 +43,8 @@ class KeyBindManager : GuiScreen() {
         val mcWidth=((width*0.8f)-(width*0.2f)).toInt()
 
         GL11.glPushMatrix()
-        RenderUtils.drawText("KeyBind Manager", Fonts.fontBold40, (width * 0.21).toInt(), (height * 0.2).toInt(), 2f, Color.WHITE.rgb, false)
-        GL11.glTranslatef(width*0.2f,height * 0.2f + Fonts.fontBold40.height * 2.3f,0F)
+        RenderUtils.drawText("%ui.keybind.title%", Fonts.font40, (width * 0.21).toInt(), (height * 0.2).toInt(), 2f, Color.WHITE.rgb, false)
+        GL11.glTranslatef(width*0.2f,height * 0.2f + Fonts.font40.height * 2.3f,0F)
         val scale=mcWidth/baseWidth.toFloat()
         //用scale可以方便些
         GL11.glScalef(scale,scale,scale)
@@ -71,7 +71,7 @@ class KeyBindManager : GuiScreen() {
                     popUI!!.onStroll(width, height, mouseX, mouseY, wheel)
                 } else if (nowDisplayKey != null) {
                     val scaledMouseX = (mouseX - width * 0.2f) / scale
-                    val scaledMouseY = (mouseY - (height * 0.2f + Fonts.fontBold40.height * 2.3f)) / scale
+                    val scaledMouseY = (mouseY - (height * 0.2f + Fonts.font40.height * 2.3f)) / scale
 
                     nowDisplayKey!!.stroll(scaledMouseX, scaledMouseY, wheel)
                 }
@@ -86,7 +86,7 @@ class KeyBindManager : GuiScreen() {
         if(popUI==null) {
             val scale = ((width * 0.8f) - (width * 0.2f)) / baseWidth
             val scaledMouseX = (mouseX - width * 0.2f) / scale
-            val scaledMouseY = (mouseY - (height * 0.2f + Fonts.fontBold40.height * 2.3f)) / scale
+            val scaledMouseY = (mouseY - (height * 0.2f + Fonts.font40.height * 2.3f)) / scale
 
             if (nowDisplayKey == null) {
                 //click out of area

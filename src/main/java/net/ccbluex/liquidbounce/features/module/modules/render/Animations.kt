@@ -8,7 +8,8 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 
-@ModuleInfo(name = "Animations", description = "Render sword while blocking and inventory animation", category = ModuleCategory.RENDER)
+
+@ModuleInfo(name = "Animations", category = ModuleCategory.RENDER)
 class Animations : Module() {
     val presetValue = ListValue(
         "Preset", arrayOf(
@@ -19,16 +20,18 @@ class Animations : Module() {
         "SlideDown"
     )
 
-    val moveValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Slide")
-    val timeValue = IntegerValue("InvTime",500,100,500)
-    var translateX = FloatValue("TranslateX", 0.0f, 0.0f, 1.5f)
-    var translateY = FloatValue("TranslateY", 0.0f, 0.0f, 0.5f)
-    var translateZ = FloatValue("TranslateZ", 0.0f, 0.0f, -2.0f)
+    val modeValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Slide")
+    val timeValue = IntegerValue("InvTime",500,100,500).displayable { !modeValue.equals("None") }
+    val translateX = FloatValue("TranslateX", 0.0f, 0.0f, 1.5f)
+    val translateY = FloatValue("TranslateY", 0.0f, 0.0f, 0.5f)
+    val translateZ = FloatValue("TranslateZ", 0.0f, 0.0f, -2.0f)
     val itemPosX = FloatValue("ItemPosX", 0.56F, -1.0F, 1.0F)
     val itemPosY = FloatValue("ItemPosY", -0.52F, -1.0F, 1.0F)
     val itemPosZ = FloatValue("ItemPosZ", -0.71999997F, -1.0F, 1.0F)
-    var itemScale = FloatValue("ItemScale", 0.4f, 0.0f, 2.0f)
-    var swingAnim = BoolValue("SwingAnim",false)
+    val itemScale = FloatValue("ItemScale", 0.4f, 0.0f, 2.0f)
+    val swingAnim = BoolValue("SwingAnim",false)
+    val swingSpeed = FloatValue("SwingSpeed", 1f, 0.5f, 5.0f)
+    val anythingBlock = BoolValue("AnythingBlock",false)
 
     override val tag: String
         get() = presetValue.get()
