@@ -177,6 +177,9 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      * @param throughWalls throughWalls option
      * @return center
      */
+    
+    //TODO : searchCenter Big Update lol(Better Center calculate method & Jitter Support(Better Random Center)) / Co丶Dynamic : Wait until Mid-Autumn Festival
+    
     public static VecRotation searchCenter(final AxisAlignedBB bb, final boolean outborder, final boolean random, final boolean predict, final boolean throughWalls) {
         if(outborder) {
             final Vec3 vec3 = new Vec3(bb.minX + (bb.maxX - bb.minX) * (x * 0.3 + 1.0), bb.minY + (bb.maxY - bb.minY) * (y * 0.3 + 1.0), bb.minZ + (bb.maxZ - bb.minZ) * (z * 0.3 + 1.0));
@@ -198,7 +201,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                         final VecRotation currentVec = new VecRotation(vec3, rotation);
 
                         if (vecRotation == null || (random ? getRotationDifference(currentVec.getRotation(), randomRotation) < getRotationDifference(vecRotation.getRotation(), randomRotation) : getRotationDifference(currentVec.getRotation()) < getRotationDifference(vecRotation.getRotation())))
-                            vecRotation = currentVec;
+                            vecRotation = currentVec; 
                     }
                 }
             }
