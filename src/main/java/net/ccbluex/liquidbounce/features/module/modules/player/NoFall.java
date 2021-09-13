@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
@@ -29,13 +30,18 @@ import java.util.TimerTask;
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 public class NoFall extends Module {
-    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage"}, "SpoofGround");
-
+    public final ListValue modeValue = new ListValue("Mode", new String[]{"SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage"}, "SpoofGround");
+    private final FloatValue minFallDistance = new FloatValue("MinMLGHeight", 5F, 2F, 50F);
+    private final BoolValue voidCheck = new BoolValue("Void-Check", true);
     private final IntegerValue phaseOffsetValue = (IntegerValue) new IntegerValue("PhaseOffset",1,0,5).displayable(() -> modeValue.equals("Phase"));
 
     private int state;
     private boolean jumped;
     private final TickTimer spartanTimer = new TickTimer();
+    private final TickTimer mlgTimer = new TickTimer();
+    private VecRotation currentMlgRotation;
+    private int currentMlgItemIndex;
+    private BlockPos currentMlgBlock;
 
     private boolean aac4Fakelag=false;
     private boolean packetModify =false;
@@ -75,6 +81,8 @@ public class NoFall extends Module {
         if(BlockUtils.collideBlock(mc.thePlayer.getEntityBoundingBox(), block -> block instanceof BlockLiquid) ||
                 BlockUtils.collideBlock(new AxisAlignedBB(mc.thePlayer.getEntityBoundingBox().maxX, mc.thePlayer.getEntityBoundingBox().maxY, mc.thePlayer.getEntityBoundingBox().maxZ, mc.thePlayer.getEntityBoundingBox().minX, mc.thePlayer.getEntityBoundingBox().minY - 0.01D, mc.thePlayer.getEntityBoundingBox().minZ), block -> block instanceof BlockLiquid))
             return;
+        
+        if (!LiquidBounce.moduleManager.getModule(Fly.class).getState() && voidCheck.get() && !MovementUtils.isBlockUnder()) return;
 
         switch(modeValue.get().toLowerCase()) {
             case "packet": {
@@ -268,7 +276,10 @@ public class NoFall extends Module {
 
     @EventTarget
     public void onPacket(final PacketEvent event) {
+        final Packet<?> packet = event.getPacket();
         final String mode = modeValue.get();
+        
+        if (!LiquidBounce.moduleManager.getModule(Fly.class).getState() && voidCheck.get() && !MovementUtils.isBlockUnder()) return;
 
         if (event.getPacket() instanceof C03PacketPlayer) {
             final C03PacketPlayer packet = (C03PacketPlayer) event.getPacket();
@@ -316,6 +327,8 @@ public class NoFall extends Module {
     public void onMove(MoveEvent event) {
         if(BlockUtils.collideBlock(mc.thePlayer.getEntityBoundingBox(), block -> block instanceof BlockLiquid) || BlockUtils.collideBlock(new AxisAlignedBB(mc.thePlayer.getEntityBoundingBox().maxX, mc.thePlayer.getEntityBoundingBox().maxY, mc.thePlayer.getEntityBoundingBox().maxZ, mc.thePlayer.getEntityBoundingBox().minX, mc.thePlayer.getEntityBoundingBox().minY - 0.01D, mc.thePlayer.getEntityBoundingBox().minZ), block -> block instanceof BlockLiquid))
             return;
+        
+        if (!LiquidBounce.moduleManager.getModule(Fly.class).getState() && voidCheck.get() && !MovementUtils.isBlockUnder()) return;
 
         if (modeValue.equals("laac")) {
             if (!jumped && !mc.thePlayer.onGround && !mc.thePlayer.isOnLadder() && !mc.thePlayer.isInWater() && !mc.thePlayer.isInWeb && mc.thePlayer.motionY < 0D) {
@@ -353,6 +366,101 @@ public class NoFall extends Module {
             }
         }
         return false;
+    }
+    
+    @EventTarget
+    public void onMotionUpdate(MotionEvent event) {
+        if (!modeValue.get().equalsIgnoreCase("MLG"))
+            return;
+
+        if (!LiquidBounce.moduleManager.getModule(Fly.class).getState() && voidCheck.get() && !MovementUtils.isBlockUnder()) return;
+
+        if (event.getEventState() == EventState.PRE) {
+            currentMlgRotation = null;
+            mlgTimer.update();
+
+            if (!mlgTimer.hasTimePassed(10))
+                return;
+
+            if (mc.thePlayer.fallDistance > minFallDistance.get()) {
+                FallingPlayer fallingPlayer = new FallingPlayer(
+                        mc.thePlayer.posX,
+                        mc.thePlayer.posY,
+                        mc.thePlayer.posZ,
+                        mc.thePlayer.motionX,
+                        mc.thePlayer.motionY,
+                        mc.thePlayer.motionZ,
+                        mc.thePlayer.rotationYaw,
+                        mc.thePlayer.moveStrafing,
+                        mc.thePlayer.moveForward
+                );
+
+                double maxDist = mc.playerController.getBlockReachDistance() + 1.5;
+
+                FallingPlayer.CollisionResult collision = fallingPlayer.findCollision((int) Math.ceil((1.0 / mc.thePlayer.motionY) * (-maxDist)));
+
+                if (collision == null)
+                    return;
+
+                boolean ok = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.eyeHeight, mc.thePlayer.posZ).distanceTo(new Vec3(collision.getPos()).addVector(0.5, 0.5, 0.5)) < mc.playerController.getBlockReachDistance() + Math.sqrt(0.75);
+
+                if (mc.thePlayer.motionY < (collision.getPos().getY() + 1) - mc.thePlayer.posY) {
+                    ok = true;
+                }
+
+                if (!ok)
+                    return;
+
+                int index = -1;
+
+                for (int i = 36; i < 45; i++) {
+                    ItemStack itemStack = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
+
+                    if (itemStack != null && (itemStack.getItem() == Items.water_bucket || itemStack.getItem() instanceof ItemBlock && ((ItemBlock) itemStack.getItem()).getBlock() == Blocks.web)) {
+                        index = i - 36;
+
+                        if (mc.thePlayer.inventory.currentItem == index)
+                            break;
+                    }
+                }
+
+                if (index == -1)
+                    return;
+
+                currentMlgItemIndex = index;
+                currentMlgBlock = collision.getPos();
+
+                if (mc.thePlayer.inventory.currentItem != index) {
+                    PacketUtils.sendPacketNoEvent(new C09PacketHeldItemChange(index));
+                }
+
+                currentMlgRotation = RotationUtils.faceBlock(collision.getPos());
+                currentMlgRotation.getRotation().toPlayer(mc.thePlayer);
+            }
+        } else if (currentMlgRotation != null) {
+            ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(currentMlgItemIndex + 36).getStack();
+
+            if (stack.getItem() instanceof ItemBucket) {
+                mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, stack);
+            } else {
+                Vec3i dirVec = EnumFacing.UP.getDirectionVec();
+
+                if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, currentMlgBlock, EnumFacing.UP, new Vec3(dirVec.getX() * 0.5, dirVec.getY() * 0.5, dirVec.getZ() * 0.5).add(new Vec3(currentMlgBlock)))) {
+                    mlgTimer.reset();
+                }
+            }
+
+            if (mc.thePlayer.inventory.currentItem != currentMlgItemIndex)
+                PacketUtils.sendPacketNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+      }
+
+    @EventTarget(ignoreCondition = true)
+    public void onJump(final JumpEvent event) {
+        jumped = true;
+    }
+
+    public void onDisable(){
+        mc.timer.timerSpeed = 1.0F;
     }
 
     @Override
