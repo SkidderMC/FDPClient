@@ -452,11 +452,7 @@ public class NoFall extends Module {
 
             if (mc.thePlayer.inventory.currentItem != currentMlgItemIndex)
                 PacketUtils.sendPacketNoEvent(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-      }
-
-    @EventTarget(ignoreCondition = true)
-    public void onJump(final JumpEvent event) {
-        jumped = true;
+        }
     }
 
     public void onDisable(){
