@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
+import net.ccbluex.liquidbounce.utils.VecRotation;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
@@ -27,7 +28,6 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
-import net.minecraft.util.*;
 
 import java.util.ArrayList;
 import java.util.Timer;
