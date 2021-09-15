@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.VecRotation;
+import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
@@ -282,7 +283,6 @@ public class NoFall extends Module {
 
     @EventTarget
     public void onPacket(final PacketEvent event) {
-        final Packet<?> packet = event.getPacket();
         final String mode = modeValue.get();
         
         if (!LiquidBounce.moduleManager.getModule(Fly.class).getState() && voidCheck.get() && !MovementUtils.isBlockUnder()) return;
@@ -383,6 +383,7 @@ public class NoFall extends Module {
 
         if (event.getEventState() == EventState.PRE) {
             currentMlgRotation = null;
+            currentMlgBlock = null;
             mlgTimer.update();
 
             if (!mlgTimer.hasTimePassed(10))
@@ -403,14 +404,14 @@ public class NoFall extends Module {
 
                 double maxDist = mc.playerController.getBlockReachDistance() + 1.5;
 
-                FallingPlayer.CollisionResult collision = fallingPlayer.findCollision((int) Math.ceil((1.0 / mc.thePlayer.motionY) * (-maxDist)));
+                currentMlgBlock = fallingPlayer.findCollision((int) Math.ceil((1.0 / mc.thePlayer.motionY) * (-maxDist))).getPos();
 
-                if (collision == null)
+                if (currentMlgBlock == null)
                     return;
 
-                boolean ok = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.eyeHeight, mc.thePlayer.posZ).distanceTo(new Vec3(collision.getPos()).addVector(0.5, 0.5, 0.5)) < mc.playerController.getBlockReachDistance() + Math.sqrt(0.75);
+                boolean ok = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.eyeHeight, mc.thePlayer.posZ).distanceTo(new Vec3(currentMlgBlock).addVector(0.5, 0.5, 0.5)) < mc.playerController.getBlockReachDistance() + Math.sqrt(0.75);
 
-                if (mc.thePlayer.motionY < (collision.getPos().getY() + 1) - mc.thePlayer.posY) {
+                if (mc.thePlayer.motionY < (currentMlgBlock.getY() + 1) - mc.thePlayer.posY) {
                     ok = true;
                 }
 
@@ -434,13 +435,13 @@ public class NoFall extends Module {
                     return;
 
                 currentMlgItemIndex = index;
-                currentMlgBlock = collision.getPos();
+                
 
                 if (mc.thePlayer.inventory.currentItem != index) {
                     PacketUtils.sendPacketNoEvent(new C09PacketHeldItemChange(index));
                 }
 
-                currentMlgRotation = RotationUtils.faceBlock(collision.getPos());
+                currentMlgRotation = RotationUtils.faceBlock(currentMlgBlock);
                 currentMlgRotation.getRotation().toPlayer(mc.thePlayer);
             }
         } else if (currentMlgRotation != null) {
