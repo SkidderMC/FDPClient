@@ -30,6 +30,8 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.item.*;
 import net.minecraft.util.*;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 
 import java.util.ArrayList;
 import java.util.Timer;
