@@ -25,9 +25,10 @@ import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Vec3;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.play.client.C09PacketHeldItemChange;
+import net.minecraft.item.*;
+import net.minecraft.util.*;
 
 import java.util.ArrayList;
 import java.util.Timer;
