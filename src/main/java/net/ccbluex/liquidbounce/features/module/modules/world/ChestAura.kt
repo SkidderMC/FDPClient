@@ -65,21 +65,21 @@ object ChestAura : Module() {
                         mc.thePlayer.posZ)
 
                 currentBlock = BlockUtils.searchBlocks(radius.toInt())
-                        .filter {
-                            it.value is BlockChest && !clickedBlocks.contains(it.key)
-                                    && BlockUtils.getCenterDistance(it.key) < rangeValue.get()
-                        }
-                        .filter {
-                            if (throughWallsValue.get())
-                                return@filter true
+                    .filter {
+                        it.value is BlockChest && !clickedBlocks.contains(it.key)
+                                && BlockUtils.getCenterDistance(it.key) < rangeValue.get()
+                    }
+                    .filter {
+                        if (throughWallsValue.get())
+                            return@filter true
 
-                            val blockPos = it.key
-                            val movingObjectPosition = mc.theWorld.rayTraceBlocks(eyesPos,
-                                    blockPos.getVec(), false, true, false)
+                        val blockPos = it.key
+                        val movingObjectPosition = mc.theWorld.rayTraceBlocks(eyesPos,
+                            blockPos.getVec(), false, true, false)
 
-                            movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
-                        }
-                        .minBy { BlockUtils.getCenterDistance(it.key) }?.key
+                        movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
+                    }
+                    .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key
 
                 if (rotations.get())
                     RotationUtils.setTargetRotation((RotationUtils.faceBlock(currentBlock ?: return)

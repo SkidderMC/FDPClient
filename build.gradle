@@ -1,172 +1,147 @@
-version = "v1"
-group = "org.unlegitmc.fdp"
-
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-
-        maven { url 'https://maven.minecraftforge.net/' }
-        maven { url 'https://plugins.gradle.org/m2' }
-        maven { url 'https://repo.spongepowered.org/maven' }
-        maven { url 'https://jitpack.io' }
-    }
-
-    dependencies {
-        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: '1.3.72'
-        classpath group: 'com.github.liulihaocai', name: 'ForgeGradle', version: 'd974a94268'
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.6-SNAPSHOT'
-        classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: '4.0.4'
-    }
-}
-
-// Languages
-apply plugin: 'java'
-apply plugin: 'kotlin'
-
-// IDE
-apply plugin: 'idea'
-
-// Minecraft
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'org.spongepowered.mixin'
-
-// Jar packaging
-apply plugin: 'com.github.johnrengelman.shadow'
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-compileJava.options.encoding = 'UTF-8'
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-}
-
-idea {
-    module {
-        inheritOutputDirs = true
-    }
-}
-
-archivesBaseName = 'FDPClient'
-
-minecraft {
-    version = '1.8.9-11.15.1.2318-1.8.9'
-    runDir = 'run'
-    mappings = 'stable_22'
-    makeObfSourceJar = true
+plugins {
+	id "java"
+	id "idea"
+	id "org.jetbrains.kotlin.jvm" version "1.5.30"
+	id "com.github.johnrengelman.shadow" version "6.1.0"
+	id "net.minecraftforge.gradle.forge" version "86b2392"
+	id "org.spongepowered.mixin" version "451e8b3"
 }
 
 repositories {
-    mavenLocal()
+	mavenLocal()
     mavenCentral()
+    maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+	maven { url = "https://jitpack.io/" }
+}
 
-    maven { url 'https://jitpack.io' }
-    maven { url 'https://repo.spongepowered.org/maven/' }
+ext.kotlin_version = "1.5.30"
+
+version = "2.0.0"
+group = "org.unlegitmc.fdp"
+archivesBaseName = "FDPClient"
+
+sourceCompatibility = targetCompatibility = 1.8
+compileJava.options.encoding = "UTF-8"
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+    mappings = "stable_22"
+    makeObfSourceJar = false
+	clientJvmArgs += "-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader"
+	clientRunArgs += "--mixin mixins.liquidbounce.json"
+    clientJvmArgs += "-Xmx4096m"
+    clientJvmArgs += "-Ddev-mode"
+    clientJvmArgs += "-Dfdp-legacy-ui"
+}
+
+configurations {
+    include
+    implementation.extendsFrom(include)
 }
 
 dependencies {
-    compile('org.spongepowered:mixin:0.7.10-SNAPSHOT') {
-        exclude module: 'launchwrapper'
+    include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+        transitive = false
+        exclude module: "guava"
+        exclude module: "commons-io"
+        exclude module: "gson"
+        exclude module: "launchwrapper"
+        exclude module: "log4j-core"
     }
+	
+	annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+	
+	include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+	include "com.labymedia:ultralight-java-base:0.4.12"
+	include "com.labymedia:ultralight-java-databind:0.4.12"
+    include "org.reflections:reflections:0.9.12"
+    include "com.github.unlegitmc:fuckpcl:1.1"
 
-    implementation group: 'org.reflections', name: 'reflections', version: '0.9.12'
-    implementation group: 'com.github.UnlegitMC', name: 'FuckPCL', version: '1.1'
-
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.3.72'
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk7', version: '1.3.72'
-
-    implementation group: 'com.labymedia', name: 'ultralight-java-base', version: '0.4.6'
-    implementation group: 'com.labymedia', name: 'ultralight-java-databind', version: '0.4.6'
     implementation project(":ui")
+	
     // GPUDriver need the GLFW windowId to run, but LWJGL2 dont support GLFW
-//    implementation group: 'com.labymedia', name: 'ultralight-java-gpu', version: '0.4.6'
-
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-}
-
-processResources {
-    inputs.property 'version', project.version
-    inputs.property 'mcversion', project.minecraft.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-
-    rename '(.+_at.cfg)', 'META-INF/$1'
-}
-
-mixin {
-    add sourceSets.main, 'liquidbounce.mixins.refmap.json'
-}
-
-jar {
-    manifest.attributes(
-            'MixinConfigs': 'liquidbounce.forge.mixins.json',
-            'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-            'TweakOrder': 0,
-            'FMLCorePluginContainsFMLMod': 'net.ccbluex.liquidbounce.injection.forge.MixinLoader',
-            'FMLCorePlugin': 'net.ccbluex.liquidbounce.injection.forge.TransformerLoader',
-            'FMLAT': 'liquidbounce_at.cfg',
-            'Manifest-Version': 1.0
-    )
+    // implementation group: "com.labymedia", name: "ultralight-java-gpu", version: "0.4.6"
+    
+	implementation fileTree(include: ["*.jar"], dir: "libs")
 }
 
 shadowJar {
-    dependencies {
-        include(dependency('org.spongepowered:mixin'))
-        include(dependency('org.slf4j:slf4j-api'))
-        include(dependency('log4j:log4j:1.2.17'))
-        include(dependency('org.scijava:native-lib-loader'))
-        include(dependency('com.kohlschutter.junixsocket:junixsocket-common'))
-        include(dependency('com.kohlschutter.junixsocket:junixsocket-native-common'))
+	archiveClassifier.set("")
+    configurations = [project.configurations.include]
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+	
+	exclude "LICENSE.txt"
+    exclude "pack.mcmeta"
+    exclude "dummyThing"
+    exclude "**/module-info.class"
+    exclude "*.so"
+    exclude "*.dylib"
+    exclude "*.dll"
+    exclude "*.jnilib"
+    exclude "ibxm/**"
+    exclude "com/jcraft/**"
+    exclude "org/lwjgl/**"
+    exclude "net/java/**"
 
-        include(dependency('org.reflections:reflections'))
-        // depend of reflections
-        include(dependency('org.javassist:javassist'))
+    exclude "META-INF/proguard/**"
+    exclude "META-INF/maven/**"
+    exclude "META-INF/versions/**"
+    exclude "META-INF/com.android.tools/**"
+}
 
-        include(dependency('com.github.UnlegitMC:FuckPCL'))
-
-        // irc
-        include(dependency('com.github.UnlegitMC:KittehIRCClientLib'))
-        include(dependency('net.engio:mbassador'))
-
-        // kotlin
-        include(dependency('org.jetbrains.kotlin:kotlin-stdlib'))
-        include(dependency('org.jetbrains.kotlin:kotlin-stdlib-jdk7'))
-        include(dependency('org.jetbrains:annotations'))
-
-        // ultralight
-        include(dependency('com.labymedia:ultralight-java-base'))
-        include(dependency('com.labymedia:ultralight-java-databind'))
-        include(project(":ui"))
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+	
+    filesMatching("mcmod.info") {
+        expand "version": project.version, "mcversion": project.minecraft.version
     }
-
-    exclude 'dummyThing'
-    exclude 'LICENSE.txt'
-    exclude 'LICENSE'
-    exclude 'NOTICE'
-
-    // Ultralight native files are going to be downloaded from CCBlueX's cloud
-    exclude "native-binaries/*"
-
-    classifier = ''
+	
+	rename "(.+_at.cfg)", "META-INF/\$1"
 }
 
-reobf { shadowJar { mappingType = 'SEARGE' } }
-tasks.reobfShadowJar.mustRunAfter shadowJar
-
-configurations {
-    external
-    compile.extendsFrom external
+task moveResources {
+    doLast {
+        ant.move file: "${buildDir}/resources/main",
+            todir: "${buildDir}/classes/java"
+    }
 }
 
-build.dependsOn shadowJar
+moveResources.dependsOn(processResources)
+classes.dependsOn(moveResources)
+
+jar {
+    manifest.attributes(
+            "FMLCorePlugin": "net.ccbluex.liquidbounce.injection.forge.TransformerLoader",
+            "FMLCorePluginContainsFMLMod": true,
+            "ForceLoadAsMod": true,
+            "MixinConfigs": "mixins.liquidbounce.json",
+            "ModSide": "CLIENT",
+            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+            "TweakOrder": "0",
+			"FMLAT": "liquidbounce_at.cfg",
+    )
+
+    enabled = false
+}
+
+mixin {
+	disableRefMapWarning = true
+	defaultObfuscationEnv searge
+    add sourceSets.main, "mixins.liquidbounce.refmap.json"
+}
+
+reobf {
+    shadowJar {
+        mappingType = "SEARGE"
+    }
+}
+
+tasks.reobfJar.dependsOn(shadowJar)

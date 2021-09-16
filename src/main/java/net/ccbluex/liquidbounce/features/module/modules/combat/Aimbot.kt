@@ -42,7 +42,7 @@ class Aimbot : Module() {
                 EntityUtils.isSelected(it, true) && mc.thePlayer.canEntityBeSeen(it) &&
                         mc.thePlayer.getDistanceToEntityBox(it) <= range && RotationUtils.getRotationDifference(it) <= fovValue.get()
             }
-            .minBy { RotationUtils.getRotationDifference(it) } ?: return
+            .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
 
         if (!lockValue.get() && RotationUtils.isFaced(entity, range.toDouble()))
             return

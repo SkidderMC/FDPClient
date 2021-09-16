@@ -63,9 +63,9 @@ class BowAimbot : Module() {
         }
 
         return when (priorityMode.toUpperCase()) {
-            "DISTANCE" -> targets.minBy { mc.thePlayer.getDistanceToEntity(it) }
-            "DIRECTION" -> targets.minBy { RotationUtils.getRotationDifference(it) }
-            "HEALTH" -> targets.minBy { (it as EntityLivingBase).health }
+            "DISTANCE" -> targets.minByOrNull { mc.thePlayer.getDistanceToEntity(it) }
+            "DIRECTION" -> targets.minByOrNull { RotationUtils.getRotationDifference(it) }
+            "HEALTH" -> targets.minByOrNull { (it as EntityLivingBase).health }
             else -> null
         }
     }

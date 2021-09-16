@@ -8,10 +8,20 @@ package net.ccbluex.liquidbounce.injection.forge;
 import net.ccbluex.liquidbounce.injection.transformers.ForgeNetworkTransformer;
 import net.ccbluex.liquidbounce.script.remapper.injection.transformers.AbstractJavaLinkerTransformer;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Map;
 
+@IFMLLoadingPlugin.MCVersion("1.8.9")
 public class TransformerLoader implements IFMLLoadingPlugin {
+
+    public TransformerLoader() {
+        MixinBootstrap.init();
+        Mixins.addConfiguration("mixins.liquidbounce.json");
+        MixinEnvironment.getDefaultEnvironment().setSide(MixinEnvironment.Side.CLIENT);
+    }
 
     /**
      * Return a list of classes that implements the IClassTransformer interface

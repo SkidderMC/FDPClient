@@ -215,12 +215,12 @@ object Fucker : Module() {
      * Find new target block by [targetID]
      */
     private fun find(targetID: Int) : BlockPos? {
-        val block=BlockUtils.searchBlocks(rangeValue.get().toInt() + 1)
+        val block= BlockUtils.searchBlocks(rangeValue.get().toInt() + 1)
             .filter {
                 Block.getIdFromBlock(it.value) == targetID && BlockUtils.getCenterDistance(it.key) <= rangeValue.get()
                         && (isHitable(it.key) || surroundingsValue.get())
             }
-            .minBy { BlockUtils.getCenterDistance(it.key) }?.key ?: return null
+            .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key ?: return null
 
         if(bypassValue.get()){
             val upBlock=block.up()
