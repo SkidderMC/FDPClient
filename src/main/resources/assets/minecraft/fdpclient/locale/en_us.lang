@@ -701,7 +701,7 @@ module.LegitSpoof.value.Title.name=Title
 module.LightningDetect.name=LightningDetect
 module.LightningDetect.description=Check lightning spawn at
 
-module.LiquidWalk.name=LiquidWalk
+module.LiquidWalk.name=Jesus
 module.LiquidWalk.description=Allows you to walk on water
 module.LiquidWalk.value.Mode.name=Mode
 module.LiquidWalk.value.NoJump.name=NoJump

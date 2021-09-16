@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.JumpEvent;
-import net.ccbluex.liquidbounce.features.module.modules.movement.LiquidWalk;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
@@ -93,10 +93,10 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
     private void onJumpSection(CallbackInfo callbackInfo) {
-        final LiquidWalk liquidWalk = LiquidBounce.moduleManager.getModule(LiquidWalk.class);
+        final Jesus jesus = LiquidBounce.moduleManager.getModule(Jesus.class);
 
-        if(liquidWalk.getState() && !isJumping && !isSneaking() && isInWater() &&
-                liquidWalk.getModeValue().equals("Legit")) {
+        if(jesus.getState() && !isJumping && !isSneaking() && isInWater() &&
+                jesus.getModeValue().equals("Legit")) {
             this.updateAITick();
         }
     }
