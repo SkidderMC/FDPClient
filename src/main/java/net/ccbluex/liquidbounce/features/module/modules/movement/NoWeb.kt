@@ -53,7 +53,7 @@ class NoWeb : Module() {
                 mc.thePlayer.jumpMovementFactor = 0.02958f
                 mc.thePlayer.motionY -= 0.00775
                 if (mc.thePlayer.onGround) {
-                    mc.thePlayer.jump()
+                    //mc.thePlayer.jump()
                     mc.thePlayer.motionY = 0.4050
                     mc.timer.timerSpeed = 1.35F
                 }
@@ -100,7 +100,7 @@ class NoWeb : Module() {
         }
     }
     fun onJump(event : JumpEvent){
-        if(modeValue.equals("AACv4"))
+        if(modeValue.equals("AAC4"))
             event.cancelEvent()
     }
 
