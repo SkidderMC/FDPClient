@@ -63,7 +63,7 @@ dependencies {
 
     include project(":ui")
 
-     implementation fileTree(include: ["*.jar"], dir: "libs")
+    include fileTree(include: ["*.jar"], dir: "libs")
 }
 
 shadowJar {
