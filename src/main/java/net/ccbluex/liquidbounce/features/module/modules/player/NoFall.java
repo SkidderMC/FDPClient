@@ -286,7 +286,8 @@ public class NoFall extends Module {
     @EventTarget
     public void onPacket(final PacketEvent event) {
         final String mode = modeValue.get();
-        
+
+        if (mc.thePlayer == null) return;
         if (!LiquidBounce.moduleManager.getModule(Fly.class).getState() && voidCheck.get() && inVoid()) return;
 
         if (event.getPacket() instanceof C03PacketPlayer) {
