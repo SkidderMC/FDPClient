@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RunClient" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="1.8 (2)" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="GradleStart" />
+    <module name="FDPClient.main" />
+    <option name="PROGRAM_PARAMETERS" value="--mixin mixins.liquidbounce.json" />
+    <option name="VM_PARAMETERS" value="-Xmx2048m -Xms2048m -Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader -Ddev-mode -Dfdp-legacy-ui" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
