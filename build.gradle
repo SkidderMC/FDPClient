@@ -34,11 +34,8 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
-	clientJvmArgs += "-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader"
+    clientJvmArgs += ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true", "-Dmixin.dumpTargetOnFailure=true", "-Xmx4096", "-Ddev-mode", "-Dfdp-legacy-ui"]
 	clientRunArgs += "--mixin mixins.liquidbounce.json"
-    clientJvmArgs += "-Xmx4096m"
-    clientJvmArgs += "-Ddev-mode"
-    clientJvmArgs += "-Dfdp-legacy-ui"
 }
 
 configurations {
