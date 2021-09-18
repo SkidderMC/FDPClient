@@ -84,8 +84,27 @@ class InventoryCleaner : Module() {
                 mc.thePlayer.openContainer != null && mc.thePlayer.openContainer.windowId != 0)
             return
 
-        if (sortValue.get())
-            sortHotbar()
+        var invOpened=false
+        val openInventory = mc.currentScreen !is GuiInventory && simulateInventory.get()
+
+        if (sortValue.get()){
+            for (index in 0..8) {
+                val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index)) ?: continue
+
+                if (bestItem != index) {
+                    if (openInventory && !invOpened) {
+                        invOpened=true
+                        mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                    }
+
+                    mc.playerController.windowClick(0, if (bestItem < 9) bestItem + 36 else bestItem, index,
+                        2, mc.thePlayer)
+
+                    delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+                    break
+                }
+            }
+        }
 
         while (InventoryUtils.CLICK_TIMER.hasTimePassed(delay)) {
             val garbageItems = items(9, if (hotbarValue.get()) 45 else 36)
@@ -100,17 +119,18 @@ class InventoryCleaner : Module() {
             val garbageItem = garbageItems.firstOrNull() ?: break
 
             // Drop all useless items
-            val openInventory = mc.currentScreen !is GuiInventory && simulateInventory.get()
-
-            if (openInventory)
+            if (openInventory && !invOpened) {
+                invOpened=true
                 mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+            }
 
             mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 4, 4, mc.thePlayer)
 
-            if (openInventory)
-                mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
-
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+        }
+
+        if (invOpened) {
+            mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
         }
     }
 
@@ -176,35 +196,6 @@ class InventoryCleaner : Module() {
         } catch (ex: Exception) {
             ClientUtils.getLogger().error("(InventoryCleaner) Failed to check item: ${itemStack.unlocalizedName}.", ex)
             true
-        }
-    }
-
-    /**
-     * INVENTORY SORTER
-     */
-
-    /**
-     * Sort hotbar
-     */
-    private fun sortHotbar() {
-        for (index in 0..8) {
-            val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index)) ?: continue
-
-            if (bestItem != index) {
-                val openInventory = mc.currentScreen !is GuiInventory && simulateInventory.get()
-
-                if (openInventory)
-                    mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
-
-                mc.playerController.windowClick(0, if (bestItem < 9) bestItem + 36 else bestItem, index,
-                        2, mc.thePlayer)
-
-                if (openInventory)
-                    mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
-
-                delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
-                break
-            }
         }
     }
 

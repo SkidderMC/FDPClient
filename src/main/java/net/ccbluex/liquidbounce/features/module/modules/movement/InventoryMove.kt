@@ -18,6 +18,7 @@ import net.minecraft.client.gui.GuiIngameMenu
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.network.play.server.S2DPacketOpenWindow
@@ -31,9 +32,13 @@ class InventoryMove : Module() {
     private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "None"), "None")
     private val rotateValue = BoolValue("Rotate", true)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
+    val noSprint = ListValue("NoSprint", arrayOf("Real", "PacketSpoof", "None"), "None")
 
     private val blinkPacketList=mutableListOf<C03PacketPlayer>()
-    private var invOpen=false
+    var lastInvOpen=false
+        private set
+    var invOpen=false
+        private set
 
     private fun updateKeyState(){
         if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)) {
@@ -66,15 +71,16 @@ class InventoryMove : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onMotion(event: MotionEvent) {
         updateKeyState()
 
-        if(bypassValue.equals("Blink") && blinkPacketList.isNotEmpty() && !invOpen){
-            blinkPacketList.forEach {
-                PacketUtils.sendPacketNoEvent(it)
+        if(event.eventState==EventState.PRE){
+            if(bypassValue.equals("Blink") && blinkPacketList.isNotEmpty() && !lastInvOpen){
+                blinkPacketList.forEach {
+                    PacketUtils.sendPacketNoEvent(it)
+                }
+                blinkPacketList.clear()
             }
-            blinkPacketList.clear()
-            chat("SEND")
         }
     }
 
@@ -93,6 +99,26 @@ class InventoryMove : Module() {
     fun onPacket(event: PacketEvent){
         val packet=event.packet
 
+        lastInvOpen=invOpen
+        if(packet is S2DPacketOpenWindow || (packet is C16PacketClientStatus && packet.status==C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT)){
+            invOpen=true
+            if(noSprint.equals("PacketSpoof")){
+                if(mc.thePlayer.isSprinting)
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
+                if(mc.thePlayer.isSneaking)
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
+            }
+        }
+        if(packet is S2EPacketCloseWindow || packet is C0DPacketCloseWindow){
+            invOpen=false
+            if(noSprint.equals("PacketSpoof")){
+                if(mc.thePlayer.isSprinting)
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+                if(mc.thePlayer.isSneaking)
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING))
+            }
+        }
+
         when(bypassValue.get().lowercase()){
             "noopenpacket" -> {
                 if(packet is C16PacketClientStatus && packet.status==C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT){
@@ -100,16 +126,9 @@ class InventoryMove : Module() {
                 }
             }
             "blink" -> {
-                if(packet is S2DPacketOpenWindow || (packet is C16PacketClientStatus && packet.status==C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT)){
-                    invOpen=true
-                }
-                if(packet is S2EPacketCloseWindow || packet is C0DPacketCloseWindow){
-                    invOpen=false
-                }
-                if(packet is C03PacketPlayer && invOpen){
+                if(packet is C03PacketPlayer && lastInvOpen){
                     blinkPacketList.add(packet)
                     event.cancelEvent()
-                    chat("PACKET")
                 }
             }
         }
@@ -130,6 +149,7 @@ class InventoryMove : Module() {
             mc.gameSettings.keyBindSprint.pressed = false
 
         blinkPacketList.clear()
+        lastInvOpen=false
         invOpen=false
     }
 }

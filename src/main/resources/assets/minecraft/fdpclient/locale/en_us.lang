@@ -630,6 +630,7 @@ module.InventoryMove.value.NoDetectable.name=NoDetectable
 module.InventoryMove.value.Bypass.name=Bypass
 module.InventoryMove.value.Rotate.name=Rotate
 module.InventoryMove.value.NoMoveClicks.name=NoMoveClicks
+module.InventoryMove.value.NoSprint.name=NoSprint
 
 module.ItemESP.name=ItemESP
 module.ItemESP.description=Allows you to see items through walls
@@ -984,6 +985,7 @@ module.Sprint.value.Blindness.name=Blindness
 module.Sprint.value.Food.name=Food
 module.Sprint.value.CheckServerSide.name=CheckServerSide
 module.Sprint.value.CheckServerSideOnlyGround.name=CheckServerSideOnlyGround
+module.Sprint.value.NoPacket.name=NoPacket
 
 module.Step.name=Step
 module.Step.description=Allows you to step up blocks

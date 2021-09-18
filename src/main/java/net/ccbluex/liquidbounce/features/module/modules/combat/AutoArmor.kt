@@ -52,9 +52,37 @@ class AutoArmor : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (!InventoryUtils.CLICK_TIMER.hasTimePassed(delay) ||
-            mc.thePlayer.openContainer != null && mc.thePlayer.openContainer.windowId != 0
-        ) return
+        if (!InventoryUtils.CLICK_TIMER.hasTimePassed(delay) || mc.thePlayer.openContainer != null && mc.thePlayer.openContainer.windowId != 0)
+            return
+
+        var invOpened=false
+        val openInventory = simulateInventory.get() && mc.currentScreen !is GuiInventory
+
+        /**
+         * Shift+Left clicks the specified item
+         *
+         * @param item        Slot of the item to click
+         * @param isArmorSlot
+         * @return True if it is unable to move the item
+         */
+        fun move(item: Int, isArmorSlot: Boolean): Boolean {
+            if (!isArmorSlot && item < 9 && hotbarValue.get() && mc.currentScreen !is GuiInventory) {
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(item))
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(item).stack))
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+                return true
+            } else if (!(noMoveValue.get() && MovementUtils.isMoving()) && (!invOpenValue.get() || mc.currentScreen is GuiInventory) && item != -1) {
+                if (openInventory && !invOpened) {
+                    invOpened=true
+                    mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                }
+                mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, if (isArmorSlot) item else if (item < 9) item + 36 else item, 0, 1, mc.thePlayer)
+                delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+                return true
+            }
+            return false
+        }
 
         // Find best armor
         val armorPieces = IntStream.range(0, 36)
@@ -82,31 +110,10 @@ class AutoArmor : Module() {
                 if (mc.thePlayer.inventory.armorItemInSlot(armorSlot) == null && move(armorPiece.slot, false)) return
             }
         }
-    }
 
-    /**
-     * Shift+Left clicks the specified item
-     *
-     * @param item        Slot of the item to click
-     * @param isArmorSlot
-     * @return True if it is unable to move the item
-     */
-    private fun move(item: Int, isArmorSlot: Boolean): Boolean {
-        if (!isArmorSlot && item < 9 && hotbarValue.get() && mc.currentScreen !is GuiInventory) {
-            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(item))
-            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(item).stack))
-            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-            delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
-            return true
-        } else if (!(noMoveValue.get() && MovementUtils.isMoving()) && (!invOpenValue.get() || mc.currentScreen is GuiInventory) && item != -1) {
-            val openInventory = simulateInventory.get() && mc.currentScreen !is GuiInventory
-            if (openInventory) mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
-            mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, if (isArmorSlot) item else if (item < 9) item + 36 else item, 0, 1, mc.thePlayer)
-            delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
-            if (openInventory) mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
-            return true
+        if (invOpened) {
+            mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
         }
-        return false
     }
 
     companion object {
