@@ -690,10 +690,10 @@ module.LegitSpoof.value.Title.name=原版标题
 module.LightningDetect.name=雷击检测
 module.LightningDetect.description=检测雷击位置
 
-module.LiquidWalk.name=水上行走
-module.LiquidWalk.description=让你在液体上行走
-module.LiquidWalk.value.Mode.name=模式
-module.LiquidWalk.value.NoJump.name=无跳跃
+module.Jesus.name=耶稣 # lol
+module.Jesus.description=让你在液体上行走
+module.Jesus.value.Mode.name=模式
+module.Jesus.value.NoJump.name=无跳跃
 
 module.LongJump.name=远跳
 module.LongJump.description=让你跳得更远

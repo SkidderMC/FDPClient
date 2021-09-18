@@ -1,17 +1,17 @@
 plugins {
-	id "java"
-	id "idea"
-	id "org.jetbrains.kotlin.jvm" version "1.5.30"
-	id "com.github.johnrengelman.shadow" version "6.1.0"
-	id "net.minecraftforge.gradle.forge" version "86b2392"
-	id "org.spongepowered.mixin" version "451e8b3"
+    id "java"
+    id "idea"
+    id "org.jetbrains.kotlin.jvm" version "1.5.30"
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "net.minecraftforge.gradle.forge" version "ddb1eb0"
+    id "org.spongepowered.mixin" version "ae2a80e"
 }
 
 repositories {
-	mavenLocal()
+    mavenLocal()
     mavenCentral()
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
-	maven { url = "https://jitpack.io/" }
+    maven { url = "https://jitpack.io/" }
 }
 
 ext.kotlin_version = "1.5.30"
@@ -35,7 +35,7 @@ minecraft {
     mappings = "stable_22"
     makeObfSourceJar = false
     clientJvmArgs += ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true", "-Dmixin.dumpTargetOnFailure=true", "-Xmx4096", "-Ddev-mode", "-Dfdp-legacy-ui"]
-	clientRunArgs += "--mixin mixins.liquidbounce.json"
+    clientRunArgs += "--mixin mixins.liquidbounce.json"
 }
 
 configurations {
@@ -52,62 +52,49 @@ dependencies {
         exclude module: "launchwrapper"
         exclude module: "log4j-core"
     }
-	
-	annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
-	
-	include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-	include "com.labymedia:ultralight-java-base:0.4.12"
-	include "com.labymedia:ultralight-java-databind:0.4.12"
+
+    annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+
+    include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    include "com.labymedia:ultralight-java-base:0.4.6"
+    include "com.labymedia:ultralight-java-databind:0.4.6"
     include "org.reflections:reflections:0.9.12"
     include "com.github.unlegitmc:fuckpcl:1.1"
 
-    implementation project(":ui")
-	
-    // GPUDriver need the GLFW windowId to run, but LWJGL2 dont support GLFW
-    // implementation group: "com.labymedia", name: "ultralight-java-gpu", version: "0.4.6"
-    
-	implementation fileTree(include: ["*.jar"], dir: "libs")
+    include project(":ui")
+
+     implementation fileTree(include: ["*.jar"], dir: "libs")
 }
 
 shadowJar {
-	archiveClassifier.set("")
+    archiveClassifier.set("")
     configurations = [project.configurations.include]
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
-	
-	exclude "LICENSE.txt"
-    exclude "pack.mcmeta"
-    exclude "dummyThing"
-    exclude "**/module-info.class"
-    exclude "*.so"
-    exclude "*.dylib"
-    exclude "*.dll"
-    exclude "*.jnilib"
-    exclude "ibxm/**"
-    exclude "com/jcraft/**"
-    exclude "org/lwjgl/**"
-    exclude "net/java/**"
 
-    exclude "META-INF/proguard/**"
+    // Ultralight native files are going to be downloaded from our cloud
+    exclude "native-binaries/*"
+
+    exclude "LICENSE.txt"
+
     exclude "META-INF/maven/**"
     exclude "META-INF/versions/**"
-    exclude "META-INF/com.android.tools/**"
 }
 
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
-	
+
     filesMatching("mcmod.info") {
         expand "version": project.version, "mcversion": project.minecraft.version
     }
-	
-	rename "(.+_at.cfg)", "META-INF/\$1"
+
+    rename "(.+_at.cfg)", "META-INF/\$1"
 }
 
 task moveResources {
     doLast {
         ant.move file: "${buildDir}/resources/main",
-            todir: "${buildDir}/classes/java"
+                todir: "${buildDir}/classes/java"
     }
 }
 
@@ -123,15 +110,15 @@ jar {
             "ModSide": "CLIENT",
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "TweakOrder": "0",
-			"FMLAT": "liquidbounce_at.cfg",
+            "FMLAT": "liquidbounce_at.cfg",
     )
 
     enabled = false
 }
 
 mixin {
-	disableRefMapWarning = true
-	defaultObfuscationEnv searge
+    disableRefMapWarning = true
+    defaultObfuscationEnv searge
     add sourceSets.main, "mixins.liquidbounce.refmap.json"
 }
 

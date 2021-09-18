@@ -689,11 +689,11 @@ module.LegitSpoof.value.Title.name=Título
 module.LightningDetect.name=LightningDetect
 module.LightningDetect.description=Verificar geração de relâmpagos em
 
-module.LiquidWalk.name=LiquidWalk
-module.LiquidWalk.description=Permite que você ande sobre a água
-module.LiquidWalk.value.Mode.name=Modo
-module.LiquidWalk.value.NoJump.name=NãoPular
-module.LiquidWalk.value.JumpMotion.name=JumpAltura
+module.Jesus.name=Jesus
+module.Jesus.description=Permite que você ande sobre a água
+module.Jesus.value.Mode.name=Modo
+module.Jesus.value.NoJump.name=NãoPular
+module.Jesus.value.JumpMotion.name=JumpAltura
 
 module.LongJump.name=LongJump
 module.LongJump.description=Permite que você vá mais longe
