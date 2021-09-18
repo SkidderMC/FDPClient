@@ -264,6 +264,7 @@ module.AutoTool.description=Automatically selects the best tool in your inventor
 
 module.AutoWeapon.name=AutoWeapon
 module.AutoWeapon.description=Automatically selects the best weapon in your hotbar
+module.AutoWeapon.value.OnlySword.name=OnlySword
 module.AutoWeapon.value.SpoofItem.name=SpoofItem
 module.AutoWeapon.value.SpoofTicks.name=SpoofTicks
 
@@ -400,6 +401,10 @@ module.Clip.value.Vertical.name=Vertical
 module.Criticals.name=Criticals
 module.Criticals.description=Automatically deals critical hits
 module.Criticals.value.Mode.name=Mode
+module.Criticals.value.MotionMode.name=MotionMode
+module.Criticals.value.HoverMode.name=HoverMode
+module.Criticals.value.HoverNoFall.name=HoverNoFall
+module.Criticals.value.HoverOnlyCombat.name=HoverOnlyCombat
 module.Criticals.value.Delay.name=Delay
 module.Criticals.value.HurtTime.name=HurtTime
 module.Criticals.value.UseC06Packet.name=UseC06Packet
@@ -666,6 +671,7 @@ module.KillAura.value.RayCast.name=RayCast
 module.KillAura.value.RayCastIgnored.name=RayCastIgnored
 module.KillAura.value.LivingRayCast.name=LivingRayCast
 module.KillAura.value.AAC.name=AAC
+module.KillAura.value.AAC-Pitch.name=AACPitch
 module.KillAura.value.MaxTurnSpeed.name=MaxTurnSpeed
 module.KillAura.value.MinTurnSpeed.name=MinTurnSpeed
 module.KillAura.value.SilentRotation.name=SilentRotation
@@ -673,7 +679,7 @@ module.KillAura.value.Strafe.name=Strafe
 module.KillAura.value.StrafeOnlyGround.name=StrafeOnlyGround
 module.KillAura.value.RandomCenter.name=RandomCenter
 module.KillAura.value.Outborder.name=Outborder
-module.KillAura.value.AlwaysHitable.name=AlwaysHitable
+module.KillAura.value.AlwaysHitable.name=AlwaysHittable
 module.KillAura.value.FOV.name=FOV
 module.KillAura.value.Predict.name=Predict
 module.KillAura.value.MaxPredictSize.name=MaxPredictSize
@@ -692,6 +698,7 @@ module.KillAura.value.CircleGreen.name=CircleGreen
 module.KillAura.value.CircleBlue.name=CircleBlue
 module.KillAura.value.CircleAlpha.name=CircleAlpha
 module.KillAura.value.CircleAccuracy.name=CircleAccuracy
+module.KillAura.value.SwitchDelay.name=SwitchDelay
 
 module.LegitSpoof.name=LegitSpoof
 module.LegitSpoof.description=Hack? No im legit
@@ -701,11 +708,11 @@ module.LegitSpoof.value.Title.name=Title
 module.LightningDetect.name=LightningDetect
 module.LightningDetect.description=Check lightning spawn at
 
-module.LiquidWalk.name=Jesus
-module.LiquidWalk.description=Allows you to walk on water
-module.LiquidWalk.value.Mode.name=Mode
-module.LiquidWalk.value.NoJump.name=NoJump
-module.LiquidWalk.value.JumpMotion.name=JumpMotion
+module.Jesus.name=Jesus
+module.Jesus.description=Allows you to walk on water
+module.Jesus.value.Mode.name=Mode
+module.Jesus.value.NoJump.name=NoJump
+module.Jesus.value.JumpMotion.name=JumpMotion
 
 module.LongJump.name=LongJump
 module.LongJump.description=Allows you to jump further
@@ -815,6 +822,7 @@ module.NoSlowBreak.value.Water.name=Water
 module.NoWeb.name=NoWeb
 module.NoWeb.description=Prevents you from getting slowed down in webs
 module.NoWeb.value.Mode.name=Mode
+module.NoWeb.value.HorizonSpeed.name=HorizonSpeed
 
 module.Parkour.name=Parkour
 module.Parkour.description=Automatically jumps when reaching the edge of a block
@@ -966,6 +974,7 @@ module.Speed.value.RedeSkyHop-Timer.name=RedeSkyHop-Timer
 module.Speed.value.RedeSkyHop3-Speed.name=RedeSkyHop3-Speed
 module.Speed.value.AACGround-Timer.name=AACGround-Timer
 module.Speed.value.CubeCraft-PortLength.name=CubeCraft-PortLength
+module.Speed.value.NoWater.name=DisableInWater
 
 module.Sprint.name=Sprint
 module.Sprint.description=Automatically sprints all the time
@@ -998,6 +1007,7 @@ module.Strafe.description=Allows you to freely move in mid air
 
 module.SuperKnockback.name=SuperKnockback
 module.SuperKnockback.description=Increases knockback dealt to other entities
+module.SuperKnockback.value.Mode.name=Mode
 module.SuperKnockback.value.HurtTime.name=HurtTime
 module.SuperKnockback.value.Delay.name=Delay
 module.SuperKnockback.value.OnlyMove.name=OnlyMove
