@@ -18,7 +18,6 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.client.C16PacketClientStatus
-import java.util.*
 
 object InventoryUtils : MinecraftInstance(), Listenable {
     val CLICK_TIMER = MSTimer()

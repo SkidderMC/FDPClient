@@ -62,8 +62,8 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
 }
 
 class Notification(val title: String, val content: String, val type: NotifyType, val time: Int=1500, val animeTime: Int=500) {
-    val width=100.coerceAtLeast(Fonts.font35.getStringWidth(this.title)
-                    .coerceAtLeast(Fonts.font35.getStringWidth(this.content)) + 10)
+    val width=100.coerceAtLeast(Fonts.font18.getStringWidth(this.title)
+                    .coerceAtLeast(Fonts.font18.getStringWidth(this.content)) + 10)
     val height=30
 
     var fadeState = FadeState.IN
@@ -137,8 +137,8 @@ class Notification(val title: String, val content: String, val type: NotifyType,
         RenderUtils.drawRect(0F,0F,width.toFloat(),height.toFloat(),Color(0,0,0,144))
         RenderUtils.drawRect(0F,height-2F,
             max(width-width*((nowTime-displayTime)/(animeTime*2F+time)),0F),height.toFloat(),type.renderColor)
-        Fonts.font35.drawString(title,4F,4F,Color.WHITE.rgb)
-        Fonts.font35.drawString(content,4F,17F,Color.WHITE.rgb)
+        Fonts.font18.drawString(title,4F,4F,Color.WHITE.rgb)
+        Fonts.font18.drawString(content,4F,17F,Color.WHITE.rgb)
 
         return false
     }

@@ -21,7 +21,7 @@ open class PopUI(val title:String) {
         GL11.glScalef(scale,scale,scale)
 
         RenderUtils.drawRect(0F,0F,baseWidth.toFloat(),baseHeight.toFloat(),Color.WHITE.rgb)
-        Fonts.font40.drawString(title,8F,8F, Color.DARK_GRAY.rgb)
+        Fonts.font20.drawString(title,8F,8F, Color.DARK_GRAY.rgb)
         render()
 
         GL11.glPopMatrix()

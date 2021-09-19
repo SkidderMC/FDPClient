@@ -81,7 +81,7 @@ public abstract class MixinGuiButton extends Gui {
       if(enabled)
          RenderUtils.drawRect(center - percent*(half), this.yPosition + this.height - 1, center + percent*(half), this.yPosition + this.height, Color.WHITE.getRGB());
       mc.fontRendererObj.drawString(this.displayString, this.xPosition + this.width / 2F - mc.fontRendererObj.getStringWidth(this.displayString) / 2F
-              ,this.yPosition+this.height/2F-Fonts.font40.getHeight()/2F+1, enabled?Color.WHITE.getRGB():Color.GRAY.getRGB(), false);
+              ,this.yPosition+this.height/2F-Fonts.font20.getHeight()/2F+1, enabled?Color.WHITE.getRGB():Color.GRAY.getRGB(), false);
       lastUpdate=time;
    }
 }

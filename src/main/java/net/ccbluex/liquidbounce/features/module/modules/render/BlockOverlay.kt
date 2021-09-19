@@ -90,12 +90,12 @@ class BlockOverlay : Module() {
             RenderUtils.drawBorderedRect(
                     scaledResolution.scaledWidth / 2 - 2F,
                     scaledResolution.scaledHeight / 2 + 5F,
-                    scaledResolution.scaledWidth / 2 + Fonts.font40.getStringWidth(info) + 2F,
+                    scaledResolution.scaledWidth / 2 + Fonts.font20.getStringWidth(info) + 2F,
                     scaledResolution.scaledHeight / 2 + 16F,
                     3F, Color.BLACK.rgb, Color.BLACK.rgb
             )
             GlStateManager.resetColor()
-            Fonts.font40.drawString(info, scaledResolution.scaledWidth / 2, scaledResolution.scaledHeight / 2 + 7,
+            Fonts.font20.drawString(info, scaledResolution.scaledWidth / 2, scaledResolution.scaledHeight / 2 + 7,
                     Color.WHITE.rgb)
         }
     }

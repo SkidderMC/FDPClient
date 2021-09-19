@@ -7,13 +7,10 @@ package net.ccbluex.liquidbounce.utils;
 
 import com.google.gson.JsonObject;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.IChatComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
-
-import java.lang.reflect.Field;
 
 public final class ClientUtils extends MinecraftInstance {
 

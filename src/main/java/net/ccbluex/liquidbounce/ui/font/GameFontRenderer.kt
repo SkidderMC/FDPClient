@@ -155,7 +155,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                                 (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
                                 FONT_HEIGHT / 16F)
 
-                    width += currentFont.getStringWidth(words)
+                    width += currentFont.getStringWidth(words) / 2
                 }
             }
         } else

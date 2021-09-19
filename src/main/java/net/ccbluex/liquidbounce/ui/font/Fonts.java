@@ -20,11 +20,11 @@ import java.util.List;
 
 public class Fonts {
 
-    @FontDetails(fontName = "Small", fontSize = 35, fileName = "regular.ttf")
-    public static GameFontRenderer font35;
+    @FontDetails(fontName = "Small", fontSize = 18, fileName = "regular.ttf")
+    public static GameFontRenderer font18;
 
-    @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
-    public static GameFontRenderer font40;
+    @FontDetails(fontName = "Medium", fontSize = 20, fileName = "regular.ttf")
+    public static GameFontRenderer font20;
 
 //    @FontDetails(fontName = "Huge", fontSize = 60, fileName = "regular.ttf")
 //    public static GameFontRenderer font60;

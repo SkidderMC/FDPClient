@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.client.Minecraft

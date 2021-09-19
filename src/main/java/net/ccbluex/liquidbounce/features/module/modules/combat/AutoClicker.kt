@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.minecraft.client.settings.KeyBinding
 import kotlin.random.Random
 
 @ModuleInfo(name = "AutoClicker", category = ModuleCategory.COMBAT)

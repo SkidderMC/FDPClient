@@ -18,16 +18,16 @@ import java.awt.Color
 class KeySelectUI(val info: KeyInfo) : PopUI("%ui.keybind.select%") {
     private var str=""
     private var modules=LiquidBounce.moduleManager.modules.toList()
-    private val singleHeight=4F+Fonts.font35.height
+    private val singleHeight=4F+Fonts.font18.height
     private var stroll=0
     private var maxStroll=modules.size*singleHeight
-    private val height=8F+Fonts.font40.height+Fonts.font35.height+0.5F
+    private val height=8F+Fonts.font20.height+Fonts.font18.height+0.5F
 
     override fun render(){
         //modules
         var yOffset=height-stroll+5F
         if(str.startsWith(".")){
-            Fonts.font35.drawString("%ui.keybind.addMacro%",8F,singleHeight+yOffset,Color.BLACK.rgb,false)
+            Fonts.font18.drawString("%ui.keybind.addMacro%",8F,singleHeight+yOffset,Color.BLACK.rgb,false)
         }else{
             for(module in modules){
                 if(yOffset>(height-singleHeight)&&(yOffset-singleHeight)<190) {
@@ -35,7 +35,7 @@ class KeySelectUI(val info: KeyInfo) : PopUI("%ui.keybind.select%") {
                     GL11.glTranslatef(0F, yOffset, 0F)
 
                     val name=module.localizedName
-                    Fonts.font35.drawString(if(str.isNotEmpty()){
+                    Fonts.font18.drawString(if(str.isNotEmpty()){
                         "§0"+name.substring(0,str.length)+"§7"+name.substring(str.length,name.length)
                     }else{ "§0$name" },8F,singleHeight*0.5F,Color.BLACK.rgb,false)
 
@@ -44,11 +44,11 @@ class KeySelectUI(val info: KeyInfo) : PopUI("%ui.keybind.select%") {
                 yOffset+=singleHeight
             }
         }
-        RenderUtils.drawRect(0F,8F+Fonts.font40.height,baseWidth.toFloat(),height+5F,Color.WHITE.rgb)
+        RenderUtils.drawRect(0F,8F+Fonts.font20.height,baseWidth.toFloat(),height+5F,Color.WHITE.rgb)
         RenderUtils.drawRect(0F,baseHeight-singleHeight,baseWidth.toFloat(),baseHeight.toFloat(),Color.WHITE.rgb)
 
         //search bar
-        Fonts.font35.drawString(str.ifEmpty { "%ui.keybind.search%" },8F,8F+Fonts.font40.height+4F, Color.LIGHT_GRAY.rgb,false)
+        Fonts.font18.drawString(str.ifEmpty { "%ui.keybind.search%" },8F,8F+Fonts.font20.height+4F, Color.LIGHT_GRAY.rgb,false)
         RenderUtils.drawRect(8F,height+2F,baseWidth-8F
             ,height+3F,Color.LIGHT_GRAY.rgb)
     }

@@ -41,8 +41,8 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
 
         RenderUtils.drawRect(0F,0F,width,height,keyColor)
         RenderUtils.drawRect(0F,height*0.9F,width,height,shadowColor)
-        (if(hasKeyBind){Fonts.font40}else{Fonts.font40})
-            .drawCenteredString(keyName,width*0.5F,height*0.9F*0.5F-(Fonts.font35.FONT_HEIGHT*0.5F)+3F
+        (if(hasKeyBind){Fonts.font20}else{Fonts.font20})
+            .drawCenteredString(keyName,width*0.5F,height*0.9F*0.5F-(Fonts.font18.FONT_HEIGHT*0.5F)+3F
             ,if(hasKeyBind){usedColor}else{unusedColor},false)
 
         GL11.glPopMatrix()
@@ -55,16 +55,16 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
         RenderUtils.drawRect(0F,0F,baseTabWidth.toFloat(),baseTabHeight.toFloat(),Color.WHITE.rgb)
 
         //render modules
-        val fontHeight=10F-Fonts.font40.height*0.5F
-        var yOffset=(12F+Fonts.font40.height+10F)-stroll
+        val fontHeight=10F-Fonts.font20.height*0.5F
+        var yOffset=(12F+Fonts.font20.height+10F)-stroll
         for(module in modules){
             if(yOffset>0&&(yOffset-20)<100) {
                 GL11.glPushMatrix()
                 GL11.glTranslatef(0F, yOffset, 0F)
 
-                Fonts.font40.drawString(module.localizedName, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
-                Fonts.font40.drawString(
-                    "-", baseTabWidth - 12F - Fonts.font40.getStringWidth("-"), fontHeight, Color.RED.rgb, false
+                Fonts.font20.drawString(module.localizedName, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
+                Fonts.font20.drawString(
+                    "-", baseTabWidth - 12F - Fonts.font20.getStringWidth("-"), fontHeight, Color.RED.rgb, false
                 )
 
                 GL11.glPopMatrix()
@@ -76,9 +76,9 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
                 GL11.glPushMatrix()
                 GL11.glTranslatef(0F, yOffset, 0F)
 
-                Fonts.font40.drawString(macro.command, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
-                Fonts.font40.drawString(
-                    "-", baseTabWidth - 12F - Fonts.font40.getStringWidth("-"), fontHeight, Color.RED.rgb, false
+                Fonts.font20.drawString(macro.command, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
+                Fonts.font20.drawString(
+                    "-", baseTabWidth - 12F - Fonts.font20.getStringWidth("-"), fontHeight, Color.RED.rgb, false
                 )
 
                 GL11.glPopMatrix()
@@ -87,11 +87,11 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
         }
 
         //覆盖多出来的部分
-        RenderUtils.drawRect(0F,0F,baseTabWidth.toFloat(),12F+Fonts.font40.height+10F,Color.WHITE.rgb)
-        RenderUtils.drawRect(0F,baseTabHeight-22F-Fonts.font40.height,baseTabWidth.toFloat(),baseTabHeight.toFloat(),Color.WHITE.rgb)
-        Fonts.font40.drawString(LanguageManager.getAndFormat("ui.keybind.key",keyDisplayName),12F,12F,Color.BLACK.rgb,false)
-        Fonts.font40.drawString("%ui.keybind.add%",baseTabWidth-12F-Fonts.font40.getStringWidth("%ui.keybind.add%")
-            ,baseTabHeight-12F-Fonts.font40.height,Color(0,191,255).rgb/*sky blue*/,false)
+        RenderUtils.drawRect(0F,0F,baseTabWidth.toFloat(),12F+Fonts.font20.height+10F,Color.WHITE.rgb)
+        RenderUtils.drawRect(0F,baseTabHeight-22F-Fonts.font20.height,baseTabWidth.toFloat(),baseTabHeight.toFloat(),Color.WHITE.rgb)
+        Fonts.font20.drawString(LanguageManager.getAndFormat("ui.keybind.key",keyDisplayName),12F,12F,Color.BLACK.rgb,false)
+        Fonts.font20.drawString("%ui.keybind.add%",baseTabWidth-12F-Fonts.font20.getStringWidth("%ui.keybind.add%")
+            ,baseTabHeight-12F-Fonts.font20.height,Color(0,191,255).rgb/*sky blue*/,false)
 
         GL11.glPopMatrix()
     }
@@ -130,12 +130,12 @@ class KeyInfo(val posX: Float,val posY: Float,val width: Float,val height: Float
                 return
             }
 
-            if(scaledMouseY>22F+Fonts.font40.height
-                &&scaledMouseX>baseTabWidth-12F-Fonts.font40.getStringWidth("%ui.keybind.add%")){
-                if(scaledMouseY>baseTabHeight-22F-Fonts.font40.height){
+            if(scaledMouseY>22F+Fonts.font20.height
+                &&scaledMouseX>baseTabWidth-12F-Fonts.font20.getStringWidth("%ui.keybind.add%")){
+                if(scaledMouseY>baseTabHeight-22F-Fonts.font20.height){
                     keyBindMgr.popUI=KeySelectUI(this)
                 }else{
-                    var yOffset=(12F+Fonts.font40.height+10F)-stroll
+                    var yOffset=(12F+Fonts.font20.height+10F)-stroll
                     for(module in modules) {
                         if(scaledMouseY>(yOffset+5)&&scaledMouseY<(yOffset+15)){
                             module.keyBind=Keyboard.KEY_NONE
