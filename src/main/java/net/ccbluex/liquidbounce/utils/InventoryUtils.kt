@@ -15,7 +15,9 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.network.play.client.C16PacketClientStatus
 import java.util.*
 
 object InventoryUtils : MinecraftInstance(), Listenable {
@@ -25,8 +27,6 @@ object InventoryUtils : MinecraftInstance(), Listenable {
         Blocks.anvil, Blocks.sand, Blocks.web, Blocks.torch, Blocks.crafting_table, Blocks.furnace, Blocks.waterlily,
         Blocks.dispenser, Blocks.stone_pressure_plate, Blocks.wooden_pressure_plate, Blocks.red_flower, Blocks.flower_pot, Blocks.yellow_flower,
         Blocks.noteblock, Blocks.dropper, Blocks.standing_banner, Blocks.wall_banner)
-
-    var invOpened=false
 
     fun findItem(startSlot: Int, endSlot: Int, item: Item): Int {
         for (i in startSlot until endSlot) {
@@ -78,6 +78,14 @@ object InventoryUtils : MinecraftInstance(), Listenable {
             INV_TIMER.reset()
         if (packet is C08PacketPlayerBlockPlacement)
             CLICK_TIMER.reset()
+    }
+
+    fun openPacket(){
+        mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+    }
+
+    fun closePacket(){
+        mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
     }
 
     override fun handleEvents() = true

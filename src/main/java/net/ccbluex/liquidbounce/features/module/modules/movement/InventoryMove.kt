@@ -99,7 +99,6 @@ class InventoryMove : Module() {
                 if(mc.thePlayer.isSneaking)
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
             }
-            chat("OPEN ${mc.thePlayer.ticksExisted}")
         }
         if(packet is S2EPacketCloseWindow || packet is C0DPacketCloseWindow){
             invOpen=false
@@ -109,7 +108,6 @@ class InventoryMove : Module() {
                 if(mc.thePlayer.isSneaking)
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING))
             }
-            chat("CLOSE ${mc.thePlayer.ticksExisted}")
         }
 
         when(bypassValue.get().lowercase()){
