@@ -102,8 +102,7 @@ class Blink : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val breadcrumbs = LiquidBounce.moduleManager.getModule(Breadcrumbs::class.java) as Breadcrumbs?
-        val color = breadcrumbs!!.getColor()
+        val breadcrumbs = LiquidBounce.moduleManager.getModule(Breadcrumbs::class.java)
         synchronized(positions) {
             GL11.glPushMatrix()
             GL11.glDisable(GL11.GL_TEXTURE_2D)
@@ -113,7 +112,7 @@ class Blink : Module() {
             GL11.glDisable(GL11.GL_DEPTH_TEST)
             mc.entityRenderer.disableLightmap()
             GL11.glBegin(GL11.GL_LINE_STRIP)
-            RenderUtils.glColor(color)
+            RenderUtils.glColor(breadcrumbs.color)
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ
