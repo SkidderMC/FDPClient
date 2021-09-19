@@ -70,9 +70,11 @@ shadowJar {
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
 
     // Ultralight native files are going to be downloaded from our cloud
-    exclude "native-binaries/*"
+    exclude "native-binaries/**"
 
     exclude "LICENSE.txt"
+
+    exclude "com/sun/jna/**"
 
     exclude "META-INF/maven/**"
     exclude "META-INF/versions/**"
