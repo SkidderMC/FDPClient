@@ -163,9 +163,6 @@ object LiquidBounce {
         // Set HUD
         hud = HUD.createDefault()
 
-        // Disable optifine fastrender
-        ClientUtils.disableFastRender()
-
         // bstats.org user count display
         metricsLite=MetricsLite(11076)
 

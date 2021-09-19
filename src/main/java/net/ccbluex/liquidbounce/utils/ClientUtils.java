@@ -19,8 +19,6 @@ public final class ClientUtils extends MinecraftInstance {
 
     private static final Logger logger = LogManager.getLogger("FDPClient");
 
-    private static Field fastRenderField;
-
     public static final EnumOSType osType;
 
     static {
@@ -33,14 +31,6 @@ public final class ClientUtils extends MinecraftInstance {
             osType=EnumOSType.LINUX;
         }else {
             osType=EnumOSType.UNKNOWN;
-        }
-
-        try {
-            fastRenderField = GameSettings.class.getDeclaredField("ofFastRender");
-
-            if(!fastRenderField.isAccessible())
-                fastRenderField.setAccessible(true);
-        }catch(final NoSuchFieldException ignored) {
         }
     }
 
@@ -66,18 +56,6 @@ public final class ClientUtils extends MinecraftInstance {
 
     public static void setTitle(){
         Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_VERSION + " | Mc " + LiquidBounce.MINECRAFT_VERSION);
-    }
-
-    public static void disableFastRender() {
-        try {
-            if(fastRenderField != null) {
-                if(!fastRenderField.isAccessible())
-                    fastRenderField.setAccessible(true);
-
-                fastRenderField.setBoolean(mc.gameSettings, false);
-            }
-        }catch(final IllegalAccessException ignored) {
-        }
     }
 
     public static void displayAlert(final String message){
