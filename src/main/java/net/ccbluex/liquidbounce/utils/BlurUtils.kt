@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11
  * @author potion, liuli
  */
 object BlurUtils : MinecraftInstance() {
-    private val blurShader = ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, ResourceLocation("shaders/post/blur.json"))
+    private val blurShader = ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, ResourceLocation("fdpclient/blur.json"))
     private var lastScale = 0
     private var lastScaleWidth = 0
     private var lastScaleHeight = 0
@@ -22,13 +22,12 @@ object BlurUtils : MinecraftInstance() {
     }
 
     private fun setShaderConfigs(intensity: Float, blurWidth: Float, blurHeight: Float, opacity: Float) {
-        val shaderManager=blurShader.listShaders[0].shaderManager
-        shaderManager.getShaderUniform("Radius").set(intensity)
-        shaderManager.getShaderUniform("Radius").set(intensity)
-//		shaderManager.getShaderUniform("Opacity").set(opacity);
-//		shaderManager.getShaderUniform("Opacity").set(opacity);
-        shaderManager.getShaderUniform("BlurDir")[blurWidth] = blurHeight
-        shaderManager.getShaderUniform("BlurDir")[blurHeight] = blurWidth
+        blurShader.listShaders[0].shaderManager.getShaderUniform("Radius").set(intensity)
+        blurShader.listShaders[1].shaderManager.getShaderUniform("Radius").set(intensity)
+//		blurShader.listShaders[0].shaderManager.getShaderUniform("Opacity").set(opacity);
+//		blurShader.listShaders[1].shaderManager.getShaderUniform("Opacity").set(opacity);
+        blurShader.listShaders[0].shaderManager.getShaderUniform("BlurDir")[blurWidth] = blurHeight
+        blurShader.listShaders[1].shaderManager.getShaderUniform("BlurDir")[blurHeight] = blurWidth
     }
 
     fun blurArea(x: Int, y: Int, width: Int, height: Int, intensity: Float, blurWidth: Float, blurHeight: Float) {

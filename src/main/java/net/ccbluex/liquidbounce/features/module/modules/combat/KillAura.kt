@@ -172,7 +172,7 @@ class KillAura : Module() {
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
     private val fakeSharpValue = BoolValue("FakeSharp", true)
-    private val circleValue=BoolValue("Circle",true)
+    private val circleValue=BoolValue("Circle",false)
     private val circleRed = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
     private val circleGreen = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
     private val circleBlue = IntegerValue("CircleBlue", 255, 0, 255).displayable { circleValue.get() }

@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
+import net.ccbluex.liquidbounce.utils.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -107,7 +108,7 @@ public abstract class MixinGuiScreen {
             Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
 
 //            if (LiquidBounce.INSTANCE.getBackground() == null) {
-//                BlurUtils.blurAll(60f);
+//                BlurUtils.INSTANCE.blurAll(60f);
 //            }
             GlStateManager.resetColor();
 
