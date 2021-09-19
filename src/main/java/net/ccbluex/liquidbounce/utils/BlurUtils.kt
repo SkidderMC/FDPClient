@@ -4,8 +4,6 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.client.shader.Framebuffer
-import net.minecraft.client.shader.Shader
 import net.minecraft.client.shader.ShaderGroup
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
@@ -14,40 +12,23 @@ import org.lwjgl.opengl.GL11
  * @author potion, liuli
  */
 object BlurUtils : MinecraftInstance() {
-    private val shader = ResourceLocation("shaders/post/blur.json")
-
-    private val blurShader: ShaderGroup = ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, shader)
-    private var listShaders: List<Shader>
-    private var buffer: Framebuffer
+    private val blurShader = ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, ResourceLocation("shaders/post/blur.json"))
     private var lastScale = 0
     private var lastScaleWidth = 0
     private var lastScaleHeight = 0
 
-    init {
-        val field = blurShader.javaClass.getDeclaredField("listShaders")
-        field.isAccessible = true
-        listShaders = field.get(blurShader) as List<Shader>
-
-        blurShader.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
-        val field1 = blurShader.javaClass.getDeclaredField("mainFramebuffer")
-        field1.isAccessible = true
-        buffer = field1[blurShader] as Framebuffer
-    }
-
     private fun initFboAndShader() {
         blurShader.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
-        val field = blurShader.javaClass.getDeclaredField("mainFramebuffer")
-        field.isAccessible = true
-        buffer = field[blurShader] as Framebuffer
     }
 
     private fun setShaderConfigs(intensity: Float, blurWidth: Float, blurHeight: Float, opacity: Float) {
-        listShaders[0].shaderManager.getShaderUniform("Radius").set(intensity)
-        listShaders[1].shaderManager.getShaderUniform("Radius").set(intensity)
-//		listShaders[0].shaderManager.getShaderUniform("Opacity").set(opacity);
-//		listShaders[1].shaderManager.getShaderUniform("Opacity").set(opacity);
-        listShaders[0].shaderManager.getShaderUniform("BlurDir")[blurWidth] = blurHeight
-        listShaders[1].shaderManager.getShaderUniform("BlurDir")[blurHeight] = blurWidth
+        val shaderManager=blurShader.listShaders[0].shaderManager
+        shaderManager.getShaderUniform("Radius").set(intensity)
+        shaderManager.getShaderUniform("Radius").set(intensity)
+//		shaderManager.getShaderUniform("Opacity").set(opacity);
+//		shaderManager.getShaderUniform("Opacity").set(opacity);
+        shaderManager.getShaderUniform("BlurDir")[blurWidth] = blurHeight
+        shaderManager.getShaderUniform("BlurDir")[blurHeight] = blurWidth
     }
 
     fun blurArea(x: Int, y: Int, width: Int, height: Int, intensity: Float, blurWidth: Float, blurHeight: Float) {
@@ -62,11 +43,11 @@ object BlurUtils : MinecraftInstance() {
         lastScaleWidth = factor2
         lastScaleHeight = factor3
         if (OpenGlHelper.isFramebufferEnabled()) {
-            buffer.framebufferClear()
+            blurShader.mainFramebuffer.framebufferClear()
             GL11.glScissor(x * factor, mc.displayHeight - y * factor - height * factor, width * factor, height * factor)
             GL11.glEnable(3089)
             setShaderConfigs(intensity, blurWidth, blurHeight, 1.0f)
-            buffer.bindFramebuffer(true)
+            blurShader.mainFramebuffer.bindFramebuffer(true)
             blurShader.loadShaderGroup(mc.timer.renderPartialTicks)
             mc.framebuffer.bindFramebuffer(true)
             GL11.glDisable(3089)
@@ -88,11 +69,11 @@ object BlurUtils : MinecraftInstance() {
         lastScale = factor
         lastScaleWidth = factor2
         lastScaleHeight = factor3
-        buffer.framebufferClear()
+        blurShader.mainFramebuffer.framebufferClear()
         GL11.glScissor(x * factor, mc.displayHeight - y * factor - height * factor, width * factor, height * factor)
         GL11.glEnable(3089)
         setShaderConfigs(intensity, 1.0f, 0.0f, 1.0f)
-        buffer.bindFramebuffer(true)
+        blurShader.mainFramebuffer.bindFramebuffer(true)
         blurShader.loadShaderGroup(mc.timer.renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
         GL11.glDisable(3089)
@@ -122,7 +103,7 @@ object BlurUtils : MinecraftInstance() {
         )
         GL11.glEnable(3089)
         setShaderConfigs(intensity, blurWidth, blurHeight, 1.0f)
-        buffer.bindFramebuffer(true)
+        blurShader.mainFramebuffer.bindFramebuffer(true)
         blurShader.loadShaderGroup(mc.timer.renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
         GL11.glDisable(3089)
@@ -147,7 +128,7 @@ object BlurUtils : MinecraftInstance() {
         )
         GL11.glEnable(3089)
         setShaderConfigs(intensity, blurWidth, blurHeight, opacity)
-        buffer.bindFramebuffer(true)
+        blurShader.mainFramebuffer.bindFramebuffer(true)
         blurShader.loadShaderGroup(mc.timer.renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
         GL11.glDisable(3089)
@@ -172,7 +153,7 @@ object BlurUtils : MinecraftInstance() {
         )
         GL11.glEnable(3089)
         setShaderConfigs(intensity, blurWidth, blurHeight, 1.0f)
-        buffer.bindFramebuffer(true)
+        blurShader.mainFramebuffer.bindFramebuffer(true)
         blurShader.loadShaderGroup(mc.timer.renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
         GL11.glDisable(3089)
@@ -192,7 +173,7 @@ object BlurUtils : MinecraftInstance() {
         GL11.glScissor(x * factor, mc.displayHeight - y * factor - height * factor, width * factor, height * factor)
         GL11.glEnable(3089)
         setShaderConfigs(intensity, 1.0f, 0.0f, 1.0f)
-        buffer.bindFramebuffer(true)
+        blurShader.mainFramebuffer.bindFramebuffer(true)
         blurShader.loadShaderGroup(mc.timer.renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
         GL11.glDisable(3089)
@@ -210,7 +191,7 @@ object BlurUtils : MinecraftInstance() {
         lastScaleWidth = factor2
         lastScaleHeight = factor3
         setShaderConfigs(intensity, 0.5f, 0.5f, 1.0f)
-        buffer.bindFramebuffer(true)
+        blurShader.mainFramebuffer.bindFramebuffer(true)
         blurShader.loadShaderGroup(mc.timer.renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
     }
@@ -227,7 +208,7 @@ object BlurUtils : MinecraftInstance() {
         lastScaleWidth = factor2
         lastScaleHeight = factor3
         setShaderConfigs(intensity, 0.0f, 1.0f, opacity)
-        buffer.bindFramebuffer(true)
+        blurShader.mainFramebuffer.bindFramebuffer(true)
         blurShader.loadShaderGroup(mc.timer.renderPartialTicks)
         mc.framebuffer.bindFramebuffer(true)
     }
