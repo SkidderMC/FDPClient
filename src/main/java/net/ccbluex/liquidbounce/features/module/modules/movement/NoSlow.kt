@@ -90,17 +90,17 @@ class NoSlow : Module() {
             return
 
 //        val heldItem = mc.thePlayer.heldItem
-        if(modeValue.get().toLowerCase() == "aac5") {
+        if(modeValue.get().lowercase() == "aac5") {
             if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking() || killAura.blockingStatus)) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
             }
             return
         }
-        if(modeValue.get().toLowerCase() != "aac5") {
+        if(modeValue.get().lowercase() != "aac5") {
             if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
                 return
             }
-            when(modeValue.get().toLowerCase()) {
+            when(modeValue.get().lowercase()) {
                 "anticheat" -> {
                     this.sendPacket(event,true,false,false,0,false,false)
                     if(mc.thePlayer.ticksExisted % 2 == 0) {
@@ -177,7 +177,7 @@ class NoSlow : Module() {
             lastMotionX=mc.thePlayer.motionX
             lastMotionY=mc.thePlayer.motionY
             lastMotionZ=mc.thePlayer.motionZ
-            when(teleportModeValue.get().toLowerCase()){
+            when(teleportModeValue.get().lowercase()){
                 "vanillanosetback" -> {
                     val x = packet.x - mc.thePlayer.posX
                     val y = packet.y - mc.thePlayer.posY
@@ -195,7 +195,7 @@ class NoSlow : Module() {
             if(teleportNoApplyValue.get()){
                 event.cancelEvent()
             }
-            when(teleportModeValue.get().toLowerCase()){
+            when(teleportModeValue.get().lowercase()){
                 "vanilla", "vanillanosetback" -> {
                     mc.thePlayer.motionX=lastMotionX
                     mc.thePlayer.motionY=lastMotionY

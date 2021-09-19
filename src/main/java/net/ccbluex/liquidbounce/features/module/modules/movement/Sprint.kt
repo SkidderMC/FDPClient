@@ -46,7 +46,7 @@ class Sprint : Module() {
         if (allDirectionsValue.get()) {
             mc.thePlayer.isSprinting = true
             if(RotationUtils.getRotationDifference(Rotation((MovementUtils.getDirection() * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch)) > 30){
-                when(allDirectionsBypassValue.get().toLowerCase()){
+                when(allDirectionsBypassValue.get().lowercase()){
                     "rotate" -> RotationUtils.setTargetRotation(Rotation((MovementUtils.getDirection() * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch),10)
                     "toggle" -> {
                         mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))

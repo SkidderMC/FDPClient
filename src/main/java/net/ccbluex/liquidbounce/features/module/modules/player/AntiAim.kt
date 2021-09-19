@@ -25,7 +25,7 @@ class AntiAim : Module() {
         if(mc.thePlayer.isSwingInProgress||mc.thePlayer.isUsingItem)
             return
 
-        when (yawMode.get().toLowerCase()) {
+        when (yawMode.get().lowercase()) {
             "spin" -> {
                 yaw += 20.0f
                 if (yaw > 180.0f) {
@@ -46,7 +46,7 @@ class AntiAim : Module() {
             }
         }
 
-        when (pitchMode.get().toLowerCase()) {
+        when (pitchMode.get().lowercase()) {
             "up" -> {
                 pitch = -90.0f
             }

@@ -42,7 +42,7 @@ class Jesus : Module() {
 
         val blockPos = mc.thePlayer.position.down()
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "ncp" -> {
                 if (isLiquidBlock() && mc.thePlayer.isInsideOfMaterial(Material.air)){
                     mc.thePlayer.motionY = 0.08
@@ -158,7 +158,7 @@ class Jesus : Module() {
         if(!mc.thePlayer.isInWater)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "aacfly" -> {
                 event.y = jumpMotionValue.get().toDouble()
                 mc.thePlayer.motionY = jumpMotionValue.get().toDouble()
@@ -176,7 +176,7 @@ class Jesus : Module() {
             return
 
         if (event.block is BlockLiquid && !isLiquidBlock() && !mc.thePlayer.isSneaking) {
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase()) {
                 "ncp","vanilla","jump" -> {
                     event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), (event.x + 1).toDouble(), (event.y + 1).toDouble(), (event.z + 1).toDouble())
                 }

@@ -8,7 +8,7 @@ import java.nio.file.Files
 class ConfigCommand : Command("config", arrayOf("cfg")) {
     override fun execute(args: Array<String>) {
         if(args.size>1){
-            when(args[1].toLowerCase()){
+            when(args[1].lowercase()){
                 "create" -> {
                     if(args.size>2){
                         val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
@@ -161,7 +161,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
 
         return when (args.size) {
             1 -> listOf("current", "copy", "create", "load", "forceload", "delete", "rename", "reload", "list", "save"/*, "toLegacy"*/).filter { it.startsWith(args[0], true) }
-            2 -> when (args[0].toLowerCase()) {
+            2 -> when (args[0].lowercase()) {
                     "delete", "load", "forceload", "rename", "copy" -> {
                         (LiquidBounce.fileManager.configsDir.listFiles() ?: return emptyList())
                             .filter { it.isFile }

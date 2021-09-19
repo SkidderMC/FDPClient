@@ -217,7 +217,7 @@ object EaseUtils {
         fun toFriendlyName():String{
             val name=toString()
 
-            return name.substring(0,1).toUpperCase()+name.substring(1,name.length).toLowerCase()
+            return name.substring(0,1).uppercase()+name.substring(1,name.length).lowercase()
         }
     }
 

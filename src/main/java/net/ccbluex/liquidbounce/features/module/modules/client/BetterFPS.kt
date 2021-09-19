@@ -24,7 +24,7 @@ class BetterFPS : Module() {
     val sinMode = ListValue("SinMode", arrayOf("Vanilla", "Taylor", "LibGDX", "RivensFull", "RivensHalf", "Rivens", "Java", "1.16"), "Vanilla")
     val cosMode = ListValue("CosMode", arrayOf("Vanilla", "Taylor", "LibGDX", "RivensFull", "RivensHalf", "Rivens", "Java", "1.16"), "Vanilla")
 
-    fun sin(value: Float) = when (sinMode.get().toLowerCase()) {
+    fun sin(value: Float) = when (sinMode.get().lowercase()) {
         "taylor" -> taylor.sin(value)
         "libgdx" -> libGDX.sin(value)
         "rivensfull" -> rivensFull.sin(value)
@@ -35,7 +35,7 @@ class BetterFPS : Module() {
         else -> null
     }
 
-    fun cos(value: Float) = when (cosMode.get().toLowerCase()) {
+    fun cos(value: Float) = when (cosMode.get().lowercase()) {
         "taylor" -> taylor.cos(value)
         "libgdx" -> libGDX.cos(value)
         "rivensfull" -> rivensFull.cos(value)

@@ -27,8 +27,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.*
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
-import net.minecraft.network.play.client.C0DPacketCloseWindow
-import net.minecraft.network.play.client.C16PacketClientStatus
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
@@ -240,7 +238,7 @@ class InventoryCleaner : Module() {
             .filter { i: Int ->
                 val itemStack = mc.thePlayer.inventory.getStackInSlot(i)
                 (itemStack != null && itemStack.item is ItemArmor
-                        && (i < 9 || System.currentTimeMillis() - (itemStack as Any as IItemStack).itemDelay >= itemDelayValue.get()))
+                        && (i < 9 || System.currentTimeMillis() - (itemStack as IItemStack).itemDelay >= itemDelayValue.get()))
             }
             .mapToObj { i: Int -> ArmorPiece(mc.thePlayer.inventory.getStackInSlot(i), i) }
             .collect(Collectors.groupingBy { obj: ArmorPiece -> obj.armorType })
@@ -257,7 +255,7 @@ class InventoryCleaner : Module() {
     private fun findBetterItem(targetSlot: Int, slotStack: ItemStack?): Int? {
         val type = type(targetSlot)
 
-        when (type.toLowerCase()) {
+        when (type.lowercase()) {
             "sword", "pickaxe", "axe" -> {
                 val currentType: Class<out Item> = when {
                     type.equals("Sword", ignoreCase = true) -> ItemSword::class.java

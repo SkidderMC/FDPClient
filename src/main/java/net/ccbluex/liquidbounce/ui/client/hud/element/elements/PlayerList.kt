@@ -51,7 +51,7 @@ class PlayerList : Element() {
         val reverse = reverseValue.get()
         val font = fontValue.get()
         val fontOffset = fontOffsetValue.get()
-        val rainbowType = rainbowList.get().toLowerCase()
+        val rainbowType = rainbowList.get().lowercase()
 
         var nameLength: Float
         var hpLength = font.getStringWidth("Health").toFloat()
@@ -67,7 +67,7 @@ class PlayerList : Element() {
         nameLength = font.getStringWidth("Name (${playerList.size})").toFloat()
 
         when (sortValue.get()) {
-            "Alphabet" -> playerList.sortWith(compareBy { it.name.toLowerCase() })
+            "Alphabet" -> playerList.sortWith(compareBy { it.name.lowercase() })
             "Distance" -> playerList.sortWith(Comparator{ a, b -> mc.thePlayer.getDistanceToEntityBox(a).compareTo(mc.thePlayer.getDistanceToEntityBox(b)) })
             else -> playerList.sortWith(Comparator{ a, b -> a.health.compareTo(b.health) })
         }
@@ -113,7 +113,7 @@ class PlayerList : Element() {
         font.drawString("Distance", 5F + nameLength + 10F, 3F, -1, shadowValue.get())
         font.drawString("Health", 5F + nameLength + distLength + 20F, 3F, -1, shadowValue.get())
 
-        playerList.forEachIndexed { index, player ->
+        playerList.forEachIndexed { _, player ->
             RenderUtils.drawRect(0F, height, nameLength + hpLength + distLength + 50F, height + 2F + font.FONT_HEIGHT.toFloat(), bgColor.rgb)
 
             font.drawString(player.name, 5F, height + 1F + fontOffset, -1, shadowValue.get())

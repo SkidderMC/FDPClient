@@ -79,7 +79,7 @@ class ESP : Module() {
             if (EntityUtils.isSelected(entity, true)) {
                 val entityLiving = entity as EntityLivingBase
                 val color = getColor(entityLiving)
-                when (mode.toLowerCase()) {
+                when (mode.lowercase()) {
                     "box", "otherbox" -> RenderUtils.drawEntityBox(entity, color, !mode.equals("otherbox", ignoreCase = true), true, outlineWidth.get())
 
                     "outline" -> RenderUtils.drawEntityBox(entity, color, true, false, outlineWidth.get())
@@ -170,7 +170,7 @@ class ESP : Module() {
 
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
-        val mode = modeValue.get().toLowerCase()
+        val mode = modeValue.get().lowercase()
         val partialTicks = event.partialTicks
 
         if (mode.equals("jello", ignoreCase = true)) {

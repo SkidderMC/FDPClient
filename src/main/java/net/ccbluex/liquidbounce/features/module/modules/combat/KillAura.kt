@@ -277,7 +277,7 @@ class KillAura : Module() {
             return
 
         if (discoveredTargets.isNotEmpty() && RotationUtils.targetRotation != null) {
-            when (rotationStrafeValue.get().toLowerCase()) {
+            when (rotationStrafeValue.get().lowercase()) {
                 "strict" -> {
                     val (yaw) = RotationUtils.targetRotation ?: return
                     var strafe = event.strafe
@@ -424,7 +424,7 @@ class KillAura : Module() {
             attackDelay = getAttackDelay(minCPS.get(), maxCPS.get())
         }
 
-        when(markValue.get().toLowerCase()){
+        when(markValue.get().lowercase()){
             "liquid" -> {
                 discoveredTargets.forEach {
                     RenderUtils.drawPlatform(it, if (it.hurtTime<=0) Color(37, 126, 255, 170) else Color(255, 0, 0, 170))
@@ -666,7 +666,7 @@ class KillAura : Module() {
         }
 
         // Sort targets by priority
-        when (priorityValue.get().toLowerCase()) {
+        when (priorityValue.get().lowercase()) {
             "distance" -> discoveredTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) } // Sort by distance
             "health" -> discoveredTargets.sortBy { it.health } // Sort by health
             "direction" -> discoveredTargets.sortBy { RotationUtils.getRotationDifference(it) } // Sort by FOV
@@ -914,6 +914,6 @@ class KillAura : Module() {
     override val tag: String
         get() = "${minCPS.get()}-${maxCPS.get()}, " +
                 "$maxRange${if(!autoBlockValue.equals("Off")){"-${autoBlockRangeValue.get()}"}else{""}}-${discoverRangeValue.get()}, " +
-                "${if(targetModeValue.equals("Switch")){ "SW" }else{targetModeValue.get().substring(0,1).toUpperCase()}}, " +
-                priorityValue.get().substring(0,1).toUpperCase()
+                "${if(targetModeValue.equals("Switch")){ "SW" }else{targetModeValue.get().substring(0,1).uppercase()}}, " +
+                priorityValue.get().substring(0,1).uppercase()
 }

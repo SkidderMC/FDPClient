@@ -71,7 +71,7 @@ class Criticals : Module() {
                 }
             }
 
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase()) {
                 "packet" -> {
                     sendCriticalPacket(yOffset=0.0625,ground = true)
                     sendCriticalPacket(ground = false)
@@ -153,7 +153,7 @@ class Criticals : Module() {
                 "visual" -> mc.thePlayer.onCriticalHit(entity)
 
                 "motion" -> {
-                    when (motionValue.get().toLowerCase()) {
+                    when (motionValue.get().lowercase()) {
                         "jump" -> mc.thePlayer.motionY = 0.42
                         "lowjump" -> mc.thePlayer.motionY = 0.3425
                         "redeskylowhop" -> mc.thePlayer.motionY = 0.35
@@ -175,7 +175,7 @@ class Criticals : Module() {
         val packet = event.packet
 
         if (packet is C03PacketPlayer){
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase()) {
                 "noground" -> packet.onGround = false
                 "hover" -> {
                     if(hoverCombat.get() && !LiquidBounce.combatManager.inCombat) return
@@ -188,7 +188,7 @@ class Criticals : Module() {
                         event.cancelEvent()
                         return
                     }
-                    when (hoverValue.get().toLowerCase()) {
+                    when (hoverValue.get().lowercase()) {
                         "2b2t" -> {
                             if(mc.thePlayer.onGround){
                                 packet.onGround=false

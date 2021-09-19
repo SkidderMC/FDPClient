@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation
 import java.awt.image.BufferedImage
 
 class Cape(val name: String, val image: BufferedImage) {
-    val resource=ResourceLocation("fdp/cape/${name.toLowerCase().replace(" ","_")}")
+    val resource=ResourceLocation("fdp/cape/${name.lowercase().replace(" ","_")}")
 
     init {
         val mc=Minecraft.getMinecraft()

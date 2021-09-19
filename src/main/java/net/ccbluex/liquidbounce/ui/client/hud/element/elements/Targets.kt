@@ -85,7 +85,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             getHealth(prevTarget)
         }
 
-        when(switchModeValue.get().toLowerCase()){
+        when(switchModeValue.get().lowercase()){
             "zoom" -> {
                 val border=getTBorder() ?: return null
                 GL11.glScaled(displayPercent,displayPercent,displayPercent)
@@ -98,7 +98,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             }
         }
 
-        when(modeValue.get().toLowerCase()){
+        when(modeValue.get().lowercase()){
             "novoline" -> drawNovo(prevTarget!!,nowAnimHP)
             "astolfo" -> drawAstolfo(prevTarget!!,nowAnimHP)
             "liquid" -> drawLiquid(prevTarget!!,nowAnimHP)
@@ -316,7 +316,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
     }
 
     private fun getTBorder():Border?{
-        return when(modeValue.get().toLowerCase()){
+        return when(modeValue.get().lowercase()){
             "novoline" -> Border(0F,0F,140F,40F)
             "astolfo" -> Border(0F,0F,140F,60F)
             "liquid" -> Border(0F,0F

@@ -85,7 +85,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
 
             var displayString = getModuleName(module)+if(module.tag!=null){if(tags.get()){" "+module.tag}else{""}}else{""}
 
-            if(upperCaseValue.get()) displayString=displayString.toUpperCase()
+            if(upperCaseValue.get()) displayString=displayString.uppercase()
 
             module.width = fontRenderer.getStringWidth(displayString)
 
@@ -128,7 +128,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                         yPos,
                         if (rectMode.equals("right", true)) -3F else 0F,
                         yPos + textHeight,
-                        when(backgroundColorMode.toLowerCase()) {
+                        when(backgroundColorMode.lowercase()) {
                             "rainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
@@ -138,10 +138,10 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                         }
                     )
 
-                    val mName=if(upperCaseValue.get()){getModuleName(module).toUpperCase()}else{getModuleName(module)}
-                    val mTag=if(module.tag!=null){" "+if(upperCaseValue.get()){module.tag!!.toUpperCase()}else{module.tag}}else{""}
+                    val mName=if(upperCaseValue.get()){getModuleName(module).uppercase()}else{getModuleName(module)}
+                    val mTag=if(module.tag!=null){" "+if(upperCaseValue.get()){module.tag!!.uppercase()}else{module.tag}}else{""}
                     fontRenderer.drawString(mName, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY,
-                        when(colorMode.toLowerCase()) {
+                        when(colorMode.lowercase()) {
                             "rainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
@@ -151,7 +151,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                         }, textShadow)
                     if(tags.get()){
                         fontRenderer.drawString(mTag, xPos - (if (rectMode.equals("right", true)) 3 else 0) + fontRenderer.getStringWidth(mName), yPos + textY,
-                            ColorUtils.antiColor(when(tagColorModeValue.get().toLowerCase()) {
+                            ColorUtils.antiColor(when(tagColorModeValue.get().lowercase()) {
                                 "rainbow" -> ColorUtils.antiColor(ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()))
                                 "random" -> Color(moduleColor)
                                 "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
@@ -162,7 +162,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                     }
 
                     if (!rectMode.equals("none", true)) {
-                        val rectColor = when(rectColorMode.toLowerCase()) {
+                        val rectColor = when(rectColorMode.lowercase()) {
                             "rainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
@@ -171,7 +171,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                             else -> rectCustomColor.rgb
                         }
 
-                        when(rectMode.toLowerCase()) {
+                        when(rectMode.lowercase()) {
                             "left" -> RenderUtils.drawRect(xPos - 5, yPos, xPos - 2, yPos + textHeight,
                                 rectColor)
                             "right" -> RenderUtils.drawRect(-3F, yPos, 0F,
@@ -223,7 +223,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                         yPos,
                         xPos + module.width + if (rectMode.equals("right", true)) 5 else 2 + backgroundExpand.get(),
                         yPos + textHeight,
-                        when(backgroundColorMode.toLowerCase()) {
+                        when(backgroundColorMode.lowercase()) {
                             "rainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
@@ -233,9 +233,9 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                         }
                     )
 
-                    val mName=if(upperCaseValue.get()){getModuleName(module).toUpperCase()}else{getModuleName(module)}
-                    val mTag=if(module.tag!=null){" "+if(upperCaseValue.get()){module.tag!!.toUpperCase()}else{module.tag}}else{""}
-                    fontRenderer.drawString(mName, xPos, yPos + textY, when(colorMode.toLowerCase()) {
+                    val mName=if(upperCaseValue.get()){getModuleName(module).uppercase()}else{getModuleName(module)}
+                    val mTag=if(module.tag!=null){" "+if(upperCaseValue.get()){module.tag!!.uppercase()}else{module.tag}}else{""}
+                    fontRenderer.drawString(mName, xPos, yPos + textY, when(colorMode.lowercase()) {
                         "rainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                         "random" -> moduleColor
                         "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
@@ -245,7 +245,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                     }, textShadow)
 
                     fontRenderer.drawString(mTag, xPos+fontRenderer.getStringWidth(mName), yPos + textY,
-                        ColorUtils.antiColor(when(tagColorModeValue.get().toLowerCase()) {
+                        ColorUtils.antiColor(when(tagColorModeValue.get().lowercase()) {
                             "rainbow" -> ColorUtils.antiColor(ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()))
                             "random" -> Color(moduleColor)
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
@@ -255,7 +255,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                         }).rgb, textShadow)
 
                     if (!rectMode.equals("none", true)) {
-                        val rectColor = when(rectColorMode.toLowerCase()) {
+                        val rectColor = when(rectColorMode.lowercase()) {
                             "rainbow" -> ColorUtils.hslRainbow(index+1,indexOffset=100*rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb

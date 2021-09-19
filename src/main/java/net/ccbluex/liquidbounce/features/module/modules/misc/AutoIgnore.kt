@@ -28,7 +28,7 @@ class AutoIgnore : Module() {
         if(event.packet is C01PacketChatMessage){
             val msg=event.packet.message
             if(msg.startsWith("/ignorar remover ",ignoreCase = true)){
-                blockedPlayer.remove((msg.replace("/ignorar remover ","").toLowerCase()))
+                blockedPlayer.remove((msg.replace("/ignorar remover ","").lowercase()))
             }
         }
 
@@ -37,7 +37,7 @@ class AutoIgnore : Module() {
             if(msg.contains("Mensagem de",ignoreCase = true)){
                 val nowTime=System.currentTimeMillis()
                 val name=msg.split(":")[0].replace("Mensagem de ","")
-                if(blockedPlayer.contains(name.toLowerCase())){
+                if(blockedPlayer.contains(name.lowercase())){
                     event.cancelEvent()
                     return
                 }
@@ -56,7 +56,7 @@ class AutoIgnore : Module() {
                 if(chatVL[name]!!>vlValue.get()){
                     mc.thePlayer.sendChatMessage("/ignorar add $name")
                     LiquidBounce.hud.addNotification(Notification(this.name,"$name ignored for spamming...",NotifyType.INFO,time = 1500))
-                    blockedPlayer.add(name.toLowerCase())
+                    blockedPlayer.add(name.lowercase())
                     event.cancelEvent()
                 }
             }

@@ -82,7 +82,7 @@ object KillInsults : Module() {
         if(target !is EntityPlayer)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "clear" -> {
                 sendInsultWords("L ${target.name}", target.name)
             }

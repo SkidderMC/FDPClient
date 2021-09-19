@@ -55,7 +55,7 @@ class PrevFallPos : Module() {
         pos?:return
 
         val color=if (colorRainbow.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "box" -> {
                 RenderUtils.drawBlockBox(pos, color, true, true, outlineWidth.get())
             }

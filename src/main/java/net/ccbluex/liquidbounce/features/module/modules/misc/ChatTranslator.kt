@@ -36,7 +36,7 @@ class ChatTranslator : Module() {
 
     private fun getLink(msg: String):String{
         val message=msg.replace(" ","%20")
-        return when(apiValue.get().toLowerCase()){
+        return when(apiValue.get().lowercase()){
             "google" -> "http://translate.google.cn/translate_a/single?client=gtx&dt=t&dj=1&ie=UTF-8&sl=auto&tl=" + (if (languageValue.equals("chinese")) "zh_cn" else "en_us") + "&q=$message"
             "bing" -> "http://api.microsofttranslator.com/v2/Http.svc/Translate?appId=A4D660A48A6A97CCA791C34935E4C02BBB1BEC1C&from=&to=" + (if (languageValue.equals("chinese")) "zh" else "en") + "&text=$message"
             "youdao" -> "http://fanyi.youdao.com/translate?&doctype=json&type=AUTO&i=$message"
@@ -45,7 +45,7 @@ class ChatTranslator : Module() {
     }
 
     private fun getResult(data:String):String{
-        when(apiValue.get().toLowerCase()){
+        when(apiValue.get().lowercase()){
             "google" -> {
                 val json = JsonParser().parse(data).asJsonObject
                 return json.get("sentences").asJsonArray.get(0).asJsonObject.get("trans").asString

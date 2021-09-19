@@ -68,7 +68,7 @@ class LongJump : Module() {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1F
-        when(modeValue.get().toLowerCase()){
+        when(modeValue.get().lowercase()){
             "redesky2" -> {
                 mc.thePlayer.speedInAir = 0.02F
             }
@@ -99,7 +99,7 @@ class LongJump : Module() {
                 return
             }
             run {
-                when (mode.toLowerCase()) {
+                when (mode.lowercase()) {
                     "ncp" -> {
                         MovementUtils.strafe(MovementUtils.getSpeed() * if (canBoost) ncpBoostValue.get() else 1f)
                         canBoost = false
@@ -272,7 +272,7 @@ class LongJump : Module() {
         timer.reset()
 
         if (state) {
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase()) {
                 "mineplex" -> event.motion = event.motion * 4.08f
                 "mineplex2" -> {
                     if (mc.thePlayer!!.isCollidedHorizontally) {

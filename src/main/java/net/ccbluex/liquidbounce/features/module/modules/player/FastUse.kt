@@ -42,7 +42,7 @@ class FastUse : Module() {
         val usingItem = mc.thePlayer.itemInUse.item
 
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase()) {
                 "delayedinstant" -> if (mc.thePlayer.itemInUseDuration > durationValue.get()) {
                     repeat(36-mc.thePlayer.itemInUseDuration) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))

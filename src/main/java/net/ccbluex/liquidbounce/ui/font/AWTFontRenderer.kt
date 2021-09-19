@@ -94,7 +94,7 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
         GlStateManager.popMatrix()
     }
 
-    private fun getFontDirName() = "${font.fontName.replace(" ","_").toLowerCase()}${if(font.isBold){"-bold"}else{""}}${if(font.isItalic){"-italic"}else{""}}-${font.size}"
+    private fun getFontDirName() = "${font.fontName.replace(" ","_").lowercase()}${if(font.isBold){"-bold"}else{""}}${if(font.isItalic){"-italic"}else{""}}-${font.size}"
 
     /**
      * Draw char from texture to display

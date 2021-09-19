@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
-import net.ccbluex.liquidbounce.features.module.modules.player.HackerDetector
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
+import net.ccbluex.liquidbounce.features.module.modules.player.HackerDetector
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -113,7 +113,7 @@ class NameTags : Module() {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         // Draw nametag
-        when(modeValue.get().toLowerCase()) {
+        when(modeValue.get().lowercase()) {
             "simple" -> {
                 val healthPercent = (entity.health / entity.maxHealth).coerceAtMost(1F)
                 val width = fontRenderer.getStringWidth(tag).coerceAtLeast(30) / 2

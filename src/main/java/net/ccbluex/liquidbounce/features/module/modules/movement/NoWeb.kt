@@ -31,7 +31,7 @@ class NoWeb : Module() {
         if (!mc.thePlayer.isInWeb)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "none" -> mc.thePlayer.isInWeb = false
             "oldaac" -> {
                 mc.thePlayer.jumpMovementFactor = 0.59f

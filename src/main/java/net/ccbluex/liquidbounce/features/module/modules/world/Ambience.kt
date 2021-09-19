@@ -28,7 +28,7 @@ class Ambience : Module() {
 
     @EventTarget
     fun onUpdate(event : UpdateEvent) {
-        when (timeModeValue.get().toLowerCase()) {
+        when (timeModeValue.get().lowercase()) {
             "normal" -> {
                 if (i < 24000)
                     i += changeWorldTimeSpeedValue.get()
@@ -41,7 +41,7 @@ class Ambience : Module() {
             }
         }
 
-        when(weatherModeValue.get().toLowerCase()){
+        when(weatherModeValue.get().lowercase()){
             "sun" -> {
                 mc.theWorld.setRainStrength(0f)
                 mc.theWorld.setThunderStrength(0f)

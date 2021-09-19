@@ -242,13 +242,13 @@ class Scaffold : Module() {
         //if(!mc.thePlayer.onGround) tolleyStayTick=0
         //    else tolleyStayTick++
         //if(tolleyStayTick>100) tolleyStayTick=100
-        if(towerStatus && towerModeValue.get().toLowerCase()!="aac3.3.9" && towerModeValue.get().toLowerCase()!="aac4.4constant" && towerModeValue.get().toLowerCase()!="aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
+        if(towerStatus && towerModeValue.get().lowercase()!="aac3.3.9" && towerModeValue.get().lowercase()!="aac4.4constant" && towerModeValue.get().lowercase()!="aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if(!towerStatus) mc.timer.timerSpeed = timerValue.get()
         if (towerStatus || mc.thePlayer.isCollidedHorizontally) {
             canSameY = false
             lastGroundY = mc.thePlayer.posY.toInt()
         } else {
-            when(sameYValue.get().toLowerCase()){
+            when(sameYValue.get().lowercase()){
                 "simple" -> {
                     canSameY = true
                 }
@@ -278,7 +278,7 @@ class Scaffold : Module() {
                 }
                 PacketUtils.sendPacketNoEvent(c08)
             }
-            when(extraClickValue.get().toLowerCase()){
+            when(extraClickValue.get().lowercase()){
                 "emptyc08" -> sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
                 "afterplace" -> {
                     if(afterPlaceC08!=null){
@@ -381,7 +381,7 @@ class Scaffold : Module() {
         towerStatus = (!stopWhenBlockAbove.get() || BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 2, mc.thePlayer.posZ)) is BlockAir)
         if(towerStatus) {
             //further checks
-            when(towerActiveValue.get().toLowerCase()) {
+            when(towerActiveValue.get().lowercase()) {
                 "off" -> towerStatus = false
                 "always" -> {
                     towerStatus = (mc.gameSettings.keyBindLeft.isKeyDown
@@ -425,7 +425,7 @@ class Scaffold : Module() {
     }
 
     private fun move() {
-        when (towerModeValue.get().toLowerCase()) {
+        when (towerModeValue.get().lowercase()) {
             "none" -> {
                  if (mc.thePlayer.onGround) {
                     fakeJump()
@@ -611,7 +611,7 @@ class Scaffold : Module() {
 
         if(!rotationsValue.equals("None")){
             val rayTraceInfo=mc.thePlayer.rayTraceWithServerSideRotation(5.0)
-            when(hitableCheck.get().toLowerCase()){
+            when(hitableCheck.get().lowercase()){
                 "simple" -> {
                     if(!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)){
                         return
@@ -658,7 +658,7 @@ class Scaffold : Module() {
             }
             lastPlace=2
             lastPlaceBlock=targetPlace!!.blockPos.add(targetPlace!!.enumFacing.directionVec)
-            when(extraClickValue.get().toLowerCase()){
+            when(extraClickValue.get().lowercase()){
                 "afterplace" -> {
                     // fake click
                     val blockPos=targetPlace!!.blockPos
@@ -812,7 +812,7 @@ class Scaffold : Module() {
         if (placeRotation == null) return false
         if (rotationsValue.get() != "None") {
             var rotation: Rotation? = null
-            when (rotationsValue.get().toLowerCase()) {
+            when (rotationsValue.get().lowercase()) {
                 "aac" -> {
                     if (!towerStatus) {
                         rotation = Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
@@ -928,7 +928,7 @@ class Scaffold : Module() {
     }
 
     val canSprint: Boolean
-        get() = MovementUtils.isMoving() && when(sprintValue.get().toLowerCase()) {
+        get() = MovementUtils.isMoving() && when(sprintValue.get().lowercase()) {
             "always","dynamic" -> true
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround

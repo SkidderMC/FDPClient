@@ -17,7 +17,7 @@ class PanicCommand : Command("panic", emptyArray()) {
         val list=mutableListOf<String>()
         list.add("all")
         list.add("norender")
-        list.addAll(ModuleCategory.values().map { it.configName.toLowerCase() })
+        list.addAll(ModuleCategory.values().map { it.configName.lowercase() })
         selections=list.toTypedArray()
     }
 
@@ -29,7 +29,7 @@ class PanicCommand : Command("panic", emptyArray()) {
         val msg: String
 
         if (args.size > 1 && args[1].isNotEmpty()) {
-            when (args[1].toLowerCase()) {
+            when (args[1].lowercase()) {
                 "all" -> msg = "all"
 
                 "nonrender" -> {

@@ -49,7 +49,7 @@ class BoatJump : Module() {
         }else if(jumpState==2&&!mc.thePlayer.isRiding){
             val radiansYaw=mc.thePlayer.rotationYaw * Math.PI / 180
 
-            when(mode.get().toLowerCase()){
+            when(mode.get().lowercase()){
                 "boost" -> {
                     mc.thePlayer.motionX = hBoost.get() * -sin(radiansYaw)
                     mc.thePlayer.motionZ = hBoost.get() * cos(radiansYaw)
