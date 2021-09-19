@@ -11,14 +11,12 @@ import net.ccbluex.liquidbounce.ui.ultralight.UltralightEngine
 
 @LaunchFilterInfo([EnumLaunchFilter.ULTRALIGHT])
 class UltralightLaunchOption : LaunchOption() {
-    override fun head() {
+    override fun start() {
         UltralightEngine.initResources()
         UltralightEngine.initEngine()
 
         LiquidBounce.mainMenu=GuiMainMenu
-    }
 
-    override fun after() {
         LiquidBounce.commandManager.registerCommand(BrowseCommand())
         LiquidBounce.moduleManager.registerModule(ClickGUIModule)
     }

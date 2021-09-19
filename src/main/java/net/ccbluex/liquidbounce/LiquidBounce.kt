@@ -73,7 +73,17 @@ object LiquidBounce {
     // Menu Background
     var background: ResourceLocation? = null
 
+    private val launchFilters = mutableListOf<EnumLaunchFilter>()
     private val dynamicLaunchOptions: Array<LaunchOption>
+        get() = ReflectUtils.getReflects("${LaunchOption::class.java.`package`.name}.options", LaunchOption::class.java)
+            .filter {
+                val annotation=it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
+                if(annotation!=null){
+                    return@filter annotation.filters.toMutableList() == launchFilters
+                }
+                false
+            }
+            .map { try { it.newInstance() } catch (e: IllegalAccessException) { ClassUtils.getObjectInstance(it) as LaunchOption } }.toTypedArray()
 
     init {
         // check if this artifact is build from github actions
@@ -84,22 +94,13 @@ object LiquidBounce {
             val str=IOUtils.toString(commitId,"utf-8").replace("\n","")
             "git-"+(str.substring(0, 7.coerceAtMost(str.length)))
         }
+
         // initialize dynamic launch options
-        val launchFilters=mutableListOf<EnumLaunchFilter>()
         if(System.getProperty("fdp-legacy-ui")!=null){
             launchFilters.add(EnumLaunchFilter.LEGACY_UI)
         }else{
             launchFilters.add(EnumLaunchFilter.ULTRALIGHT)
         }
-        dynamicLaunchOptions=ReflectUtils.getReflects("${LaunchOption::class.java.`package`.name}.options", LaunchOption::class.java)
-            .filter {
-                val annotation=it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
-                if(annotation!=null){
-                    return@filter annotation.filters.toMutableList() == launchFilters
-                }
-                false
-            }
-            .map { try { it.newInstance() } catch (e: IllegalAccessException) { ClassUtils.getObjectInstance(it) as LaunchOption } }.toTypedArray()
     }
 
     /***
@@ -119,10 +120,6 @@ object LiquidBounce {
 
         // Load language
         LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
-
-        dynamicLaunchOptions.forEach {
-            it.head()
-        }
 
         // Register listeners
         eventManager.registerListener(RotationUtils())
@@ -160,17 +157,11 @@ object LiquidBounce {
 
         tipSoundManager = TipSoundManager()
 
-        // Load configs
-        configManager.loadLegacySupport()
-        configManager.loadConfigSet()
-        fileManager.loadConfigs(fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig)
-
         // KeyBindManager
         keyBindManager=KeyBindManager()
 
         // Set HUD
         hud = HUD.createDefault()
-        fileManager.loadConfig(fileManager.hudConfig)
 
         // Disable optifine fastrender
         ClientUtils.disableFastRender()
@@ -186,8 +177,13 @@ object LiquidBounce {
         GuiCapeManager.load()
 
         dynamicLaunchOptions.forEach {
-            it.after()
+            it.start()
         }
+
+        // Load configs
+        configManager.loadLegacySupport()
+        configManager.loadConfigSet()
+        fileManager.loadConfigs(fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig, fileManager.hudConfig)
 
         // Set is starting status
         isStarting = false
