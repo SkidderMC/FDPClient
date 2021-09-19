@@ -5,9 +5,12 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
+import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.minecraft.client.Minecraft
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MovingObjectPosition
@@ -60,3 +63,9 @@ fun Entity.rayTraceWithServerSideRotation(blockReachDistance: Double): MovingObj
 fun EntityPlayer.getEyeVec3(): Vec3 {
     return Vec3(this.posX, this.entityBoundingBox.minY + this.getEyeHeight(), this.posZ)
 }
+
+val EntityLivingBase.renderHurtTime: Float
+    get() = this.hurtTime - if(this.hurtTime!=0) { Minecraft.getMinecraft().timer.renderPartialTicks } else { 0f }
+
+val EntityLivingBase.hurtPercent: Float
+    get() = (this.renderHurtTime)/10

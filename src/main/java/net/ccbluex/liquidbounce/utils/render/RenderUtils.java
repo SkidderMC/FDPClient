@@ -987,6 +987,14 @@ public final class RenderUtils extends MinecraftInstance {
                 64F, 64F);
     }
 
+    public static void quickDrawHead(ResourceLocation skin, int x, int y, int width, int height) {
+        mc.getTextureManager().bindTexture(skin);
+        RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
+                64F, 64F);
+        RenderUtils.drawScaledCustomSizeModalRect(x, y, 40F, 8F, 8, 8, width, height,
+                64F, 64F);
+    }
+
     public static void drawColorRect(double left, double top, double right, double bottom, Color color1, Color color2, Color color3, Color color4) {
         GL11.glEnable(3042);
         GL11.glDisable(3553);
