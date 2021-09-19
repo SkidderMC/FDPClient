@@ -89,7 +89,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
                 "zdp" -> return mc.thePlayer.posZ.toString()
                 "velocity" -> return DECIMAL_FORMAT.format(sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ))
                 "ping" -> return EntityUtils.getPing(mc.thePlayer).toString()
-                "speed" -> return DECIMAL_FORMAT.format(MovementUtils.getBlocksPerSecond())
+                "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
             }
         }
 

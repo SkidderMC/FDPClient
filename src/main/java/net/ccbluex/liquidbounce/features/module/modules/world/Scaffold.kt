@@ -81,7 +81,7 @@ class Scaffold : Module() {
     private val blocksToEagleValue = IntegerValue("BlocksToEagle", 0, 0, 10).displayable { !eagleValue.equals("OFF") }
     
     // Expand
-    private val expandLengthValue = IntegerValue("ExpandLength", 5, 1, 6)
+    private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
 
     // Rotations
     private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2","Custom"), "AAC")

@@ -73,15 +73,6 @@ class InventoryMove : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         updateKeyState()
-
-        if(event.eventState==EventState.PRE){
-            if(bypassValue.equals("Blink") && blinkPacketList.isNotEmpty() && !lastInvOpen){
-                blinkPacketList.forEach {
-                    PacketUtils.sendPacketNoEvent(it)
-                }
-                blinkPacketList.clear()
-            }
-        }
     }
 
     @EventTarget
@@ -108,6 +99,7 @@ class InventoryMove : Module() {
                 if(mc.thePlayer.isSneaking)
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
             }
+            chat("OPEN ${mc.thePlayer.ticksExisted}")
         }
         if(packet is S2EPacketCloseWindow || packet is C0DPacketCloseWindow){
             invOpen=false
@@ -117,6 +109,7 @@ class InventoryMove : Module() {
                 if(mc.thePlayer.isSneaking)
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING))
             }
+            chat("CLOSE ${mc.thePlayer.ticksExisted}")
         }
 
         when(bypassValue.get().lowercase()){
@@ -126,9 +119,18 @@ class InventoryMove : Module() {
                 }
             }
             "blink" -> {
-                if(packet is C03PacketPlayer && lastInvOpen){
-                    blinkPacketList.add(packet)
-                    event.cancelEvent()
+                if(packet is C03PacketPlayer) {
+                    if (lastInvOpen) {
+                        blinkPacketList.add(packet)
+                        event.cancelEvent()
+                    } else if (blinkPacketList.isNotEmpty()) {
+                        blinkPacketList.add(packet)
+                        event.cancelEvent()
+                        blinkPacketList.forEach {
+                            PacketUtils.sendPacketNoEvent(it)
+                        }
+                        blinkPacketList.clear()
+                    }
                 }
             }
         }

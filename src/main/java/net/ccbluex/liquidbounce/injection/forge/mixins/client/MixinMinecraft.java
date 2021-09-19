@@ -98,9 +98,6 @@ public abstract class MixinMinecraft {
             displayHeight = 622;
     }
 
-    /**
-     * @author liuli
-     */
 //    @Overwrite
 //    public void drawSplashScreen(TextureManager textureManagerInstance) {
 //
@@ -113,7 +110,7 @@ public abstract class MixinMinecraft {
 //    }
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
-    private void startGame(CallbackInfo callbackInfo) throws Exception {
+    private void startGame(CallbackInfo callbackInfo) throws AccessDeniedException {
         if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
             Display.destroy();
             String warnStr="Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
