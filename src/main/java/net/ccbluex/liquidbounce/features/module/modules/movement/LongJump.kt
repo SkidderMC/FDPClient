@@ -52,7 +52,7 @@ class LongJump : Module() {
 
     // settings
     private val autoJumpValue = BoolValue("AutoJump", true)
-    private val autoCloseValue = BoolValue("AutoClose", true)
+    private val autoDisableValue = BoolValue("AutoDisable", true)
     private var jumped = false
     private var hasJumped=false
     private var canBoost = false
@@ -239,7 +239,7 @@ class LongJump : Module() {
 
         if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving()) {
             jumped = true
-            if(hasJumped&&autoCloseValue.get()){
+            if(hasJumped&&autoDisableValue.get()){
                 state=false
                 return
             }
