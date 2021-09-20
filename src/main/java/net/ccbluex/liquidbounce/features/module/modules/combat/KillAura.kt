@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -25,6 +26,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -41,11 +43,15 @@ import net.minecraft.util.Vec3
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
+import org.lwjgl.util.glu.Cylinder
+import org.lwjgl.util.glu.GLU
+import sun.audio.AudioPlayer.player
 import java.awt.Color
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
+
 
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
@@ -442,17 +448,17 @@ class KillAura : Module() {
                 }
             }
             "fdp" -> {
-                val drawTime = (System.currentTimeMillis() % 1500).toInt()
-                val drawMode=drawTime>750
-                var drawPercent=drawTime/750.0
-                //true when goes up
-                if(!drawMode){
-                    drawPercent=1-drawPercent
-                }else{
-                    drawPercent-=1
-                }
-                drawPercent=EaseUtils.easeInOutQuad(drawPercent)
                 discoveredTargets.forEach {
+                    val drawTime = (System.currentTimeMillis() % 1500).toInt()
+                    val drawMode=drawTime>750
+                    var drawPercent=drawTime/750.0
+                    //true when goes up
+                    if(!drawMode){
+                        drawPercent=1-drawPercent
+                    }else{
+                        drawPercent-=1
+                    }
+                    drawPercent=EaseUtils.easeInOutQuad(drawPercent)
                     GL11.glPushMatrix()
                     GL11.glDisable(3553)
                     GL11.glEnable(2848)
@@ -472,12 +478,14 @@ class KillAura : Module() {
                     val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                     val y = (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
                     val z = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    mc.entityRenderer.disableLightmap()
                     GL11.glLineWidth((radius*5f).toFloat())
                     GL11.glBegin(3)
-                    for (i in 0..360) {
-                        val rainbow = Color(Color.HSBtoRGB((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)).toFloat() % 1.0f, 0.7f, 1.0f))
-                        GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
-                        GL11.glVertex3d(x + radius * cos(i * 6.283185307179586 / 45.0), y, z + radius * sin(i * 6.283185307179586 / 45.0))
+                    for (i in 0..360 step 5) {
+                        val rainbow = Color.getHSBColor(if(i<180){ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(i/180f) }
+                            else{ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(-(i-360)/180f) }, 0.7f, 1.0f)
+                        RenderUtils.glColor(rainbow)
+                        GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
                     }
                     GL11.glEnd()
 

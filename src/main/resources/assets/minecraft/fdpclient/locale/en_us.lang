@@ -448,3 +448,6 @@ module.Crosshair.description=Change a better crosshair
 module.Damage.name=Damage
 module.Damage.description=Allows you to damage yourself
 
+module.ChinaHat.name=ChinaHat
+module.ChinaHat.description=A beautiful hat
+
