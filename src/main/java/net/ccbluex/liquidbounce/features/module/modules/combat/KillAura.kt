@@ -802,7 +802,7 @@ class KillAura : Module() {
             "custom" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation,
                 (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
             "smooth" -> RotationUtils.rotationSmooth(RotationUtils.serverRotation, directRotation, rotationSmoothValue.get())
-            else -> RotationUtils.getRotations(mc.thePlayer)
+            else -> return true
         }
 
         if (silentRotationValue.get())
