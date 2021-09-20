@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.item.ArmorComparator
 import net.ccbluex.liquidbounce.utils.item.ArmorPiece
 import net.ccbluex.liquidbounce.utils.item.ItemUtils
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -53,6 +54,7 @@ class InventoryCleaner : Module() {
 
     private val invOpenValue = BoolValue("InvOpen", false)
     private val simulateInventory = BoolValue("SimulateInventory", true)
+    private val simulateDelayValue = IntegerValue("SimulateInventoryDelay", 0, 0, 1000).displayable { simulateInventory.get() }
     private val noMoveValue = BoolValue("NoMove", false)
     private val ignoreVehiclesValue = BoolValue("IgnoreVehicles", false)
     private val hotbarValue = BoolValue("Hotbar", true)
@@ -79,17 +81,21 @@ class InventoryCleaner : Module() {
 
     private var invOpened=false
     private var delay = 0L
+    private val simDelayTimer=MSTimer()
 
     override fun onDisable() {
         if(invOpened)
             InventoryUtils.closePacket()
     }
 
-    private fun checkOpen(){
+    private fun checkOpen(): Boolean{
         if (!invOpened && openInventory) {
             invOpened=true
             InventoryUtils.openPacket()
+            simDelayTimer.reset()
+            return true
         }
+        return !simDelayTimer.hasTimePassed(simulateDelayValue.get().toLong())
     }
 
     @EventTarget
@@ -110,7 +116,8 @@ class InventoryCleaner : Module() {
                 val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index)) ?: continue
 
                 if (bestItem != index) {
-                    checkOpen()
+                    if(checkOpen())
+                        return
 
                     mc.playerController.windowClick(0, if (bestItem < 9) bestItem + 36 else bestItem, index,
                         2, mc.thePlayer)
@@ -152,7 +159,8 @@ class InventoryCleaner : Module() {
             val garbageItem = garbageItems.firstOrNull()
             if(garbageItem!=null){
                 // Drop all useless items
-                checkOpen()
+                if(checkOpen())
+                    return
 
                 mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 4, 4, mc.thePlayer)
 
@@ -427,7 +435,8 @@ class InventoryCleaner : Module() {
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             return true
         } else if (!(noMoveValue.get() && MovementUtils.isMoving()) && (!invOpenValue.get() || mc.currentScreen is GuiInventory) && item != -1) {
-            checkOpen()
+            if(checkOpen())
+                return true
             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, if (isArmorSlot) item else if (item < 9) item + 36 else item, 0, 1, mc.thePlayer)
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             return true

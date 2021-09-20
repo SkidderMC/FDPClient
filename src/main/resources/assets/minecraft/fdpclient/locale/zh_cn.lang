@@ -88,245 +88,102 @@ module.category.exploit=漏洞
 
 module.Aimbot.name=自动瞄准
 module.Aimbot.description=自动瞄准你身边的目标
-module.Aimbot.value.Range.name=半径
-module.Aimbot.value.TurnSpeed.name=转头速度
-module.Aimbot.value.FOV.name=视野
-module.Aimbot.value.Center.name=瞄准中心
-module.Aimbot.value.Lock.name=锁定
-module.Aimbot.value.OnClick.name=在点击时
-module.Aimbot.value.Jitter.name=抖动
 
 module.Ambience.name=环境
 module.Ambience.description=改变世界环境
-module.Ambience.value.TimeMode.name=时间模式
-module.Ambience.value.WeatherMode.name=天气模式
-module.Ambience.value.CustomTime.name=自定义时间
-module.Ambience.value.ChangeWorldTimeSpeed.name=时间改变速度
-module.Ambience.value.WeatherStrength.name=天气强度
 
 module.Animations.name=动画
 module.Animations.description=渲染物品栏和防砍动画
-module.Animations.value.Preset.name=预设
-module.Animations.value.InvMode.name=物品栏模式
-module.Animations.value.InvTime.name=物品栏时间
-module.Animations.value.TranslateX.name=移动X
-module.Animations.value.TranslateY.name=移动Y
-module.Animations.value.TranslateZ.name=移动Z
-module.Animations.value.ItemPosX.name=物品X坐标
-module.Animations.value.ItemPosY.name=物品Y坐标
-module.Animations.value.ItemPosZ.name=物品Z坐标
-module.Animations.value.ItemScale.name=物品大小
-module.Animations.value.SwingAnim.name=挥手动画
-module.Animations.value.SwingSpeed.name=挥手速度
 
 module.AntiAim.name=大陀螺
 module.AntiAim.description=像CS.GO一样的陀螺
-module.AntiAim.value.YawMove.name=偏航模式
-module.AntiAim.value.PitchMode.name=俯仰模式
-module.AntiAim.value.SlientRotate.name=静默转头
 
 module.AntiBlind.name=防失明
 module.AntiBlind.description=移除失明效果
-module.AntiBlind.value.Confusion.name=药水
-module.AntiBlind.value.Pumpkin.name=南瓜
-module.AntiBlind.value.Fire.name=火
-module.AntiBlind.value.Bright.name=亮度
 
 module.AntiBot.name=防假人
 module.AntiBot.description=防止杀戮光环攻击假人
-module.AntiBot.value.Tab.name=玩家列表
-module.AntiBot.value.TabMode.name=玩家列表模式
-module.AntiBot.value.EntityID.name=实体ID
-module.AntiBot.value.Color.name=颜色
-module.AntiBot.value.LivingTime.name=存活时间
-module.AntiBot.value.LivingTimeTicks.name=存活刻数
-module.AntiBot.value.Ground.name=地面
-module.AntiBot.value.Air.name=空中
-module.AntiBot.value.InvalidGround.name=不正确地面
-module.AntiBot.value.Swing.name=挥手
-module.AntiBot.value.Health.name=血量
-module.AntiBot.value.Derp.name=转头
-module.AntiBot.value.WasInvisible.name=隐身过
-module.AntiBot.value.Armor.name=盔甲
-module.AntiBot.value.Ping.name=延迟
-module.AntiBot.value.NeedHit.name=需要点击
-module.AntiBot.value.DuplicateInWorld.name=世界中重复
-module.AntiBot.value.DuplicateInTab.name=玩家列表中重复
 
 module.AntiFireBall.name=防火焰弹
 module.AntiFireBall.description=自动将火焰弹打回去
-module.AntiFireBall.value.Swing.name=挥手
-module.AntiFireBall.value.Rotation.name=转头
 
 module.AntiStuck.name=防卡回弹
 module.AntiStuck.description=自动帮你解除卡住的状态
-module.AntiStuck.value.Flags.name=拉回次数
 
 module.AntiVanish.name=防消失
 module.AntiVanish.description=防止玩家消失
 
 module.AntiVoid.name=防掉虚空
 module.AntiVoid.description=防止你掉入虚空
-module.AntiVoid.value.Mode.name=模式
-module.AntiVoid.value.FallCheckMode.name=掉落检查模式
-module.AntiVoid.value.MaxFallDistance.name=最大掉落距离
-module.AntiVoid.value.ResetMotion.name=重置移动
-module.AntiVoid.value.BlinkStartFallDistance.name=眨眼开始掉落距离
-module.AntiVoid.value.BlinkAutoScaffold.name=眨眼自动开搭路
 
 module.AuthBypass.name=绕过验证
 module.AuthBypass.description=自动绕过服务器的假人验证
-module.AuthBypass.value.Delay.name=延时
 
 module.KillInsults.name=自动骂人
 module.KillInsults.description=自动骂你杀的人
-module.KillInsults.value.Mode.name=模式
-module.KillInsults.value.WaterMark.name=客户端标记
 
 module.AutoAdvertise.name=自动广告
 module.AutoAdvertise.description=保持这个开启，我们需要你的帮助！
 
 module.AutoArmor.name=自动穿甲
 module.AutoArmor.description=自动穿戴盔甲
-module.AutoArmor.value.MaxDelay.name=最大延迟
-module.AutoArmor.value.MinDelay.name=最小延迟
-module.AutoArmor.value.InvOpen.name=仅在开启物品栏时
-module.AutoArmor.value.SimulateInventory.name=模拟物品栏打开
-module.AutoArmor.value.NoMove.name=仅在不移动时
-module.AutoArmor.value.ItemDelay.name=物品延时
-module.AutoArmor.value.Hotbar.name=快捷栏
 
 module.AutoBow.name=自动射箭
 module.AutoBow.description=当弓拉满时自动射箭
-module.AutoBow.value.WaitForBowAimbot.name=等待自瞄弓
 
 module.AutoClicker.name=连点器
 module.AutoClicker.description=当按下鼠标按键时自动点击
-module.AutoClicker.value.MaxCPS.name=最大CPS
-module.AutoClicker.value.MinCPS.name=最小CPS
-module.AutoClicker.value.Right.name=右键
-module.AutoClicker.value.Left.name=左键
-module.AutoClicker.value.Jitter.name=抖动
 
 module.AutoDisable.name=自动关闭
 module.AutoDisable.description=自动在特定情况下关闭功能
 
 module.AutoIgnore.name=自动屏蔽
 module.AutoIgnore.description=自动屏蔽刷屏(仅Redesky)
-module.AutoIgnore.value.MinDelay.name=最小延时
-module.AutoIgnore.value.IgnoreVL.name=屏蔽VL
 
 module.AutoLogin.name=自动登录
 module.AutoLogin.description=自动帮你登入服务器
-module.AutoLogin.value.Register.name=注册指令
-module.AutoLogin.value.Login.name=登录指令
-module.AutoLogin.value.Password.name=密码
-module.AutoLogin.value.Delay.name=延时
-module.AutoLogin.value.Title.name=监听标题
-module.AutoLogin.value.Chat.name=监听聊天
 
 module.AutoPlay.name=自动游玩
 module.AutoPlay.description=在游戏结束时自动加入下一局
-module.AutoPlay.value.Server.name=服务器
-module.AutoPlay.value.Silent.name=静默
-module.AutoPlay.value.JoinDelay.name=加入延时
 
 module.AutoPot.name=自动药水
 module.AutoPot.description=自动为你饮用或丢出药水
-module.AutoPot.value.Health.name=生命值
-module.AutoPot.value.Delay.name=延时
-module.AutoPot.value.ThrowTick.name=喷药转头等待刻
-module.AutoPot.value.SelectSlot.name=指定物品格
-module.AutoPot.value.OpenInv.name=当物品栏打开
-module.AutoPot.value.SimulateInventory.name=模拟物品栏开启
-module.AutoPot.value.Regen.name=回血
-module.AutoPot.value.Utility.name=有用的
-module.AutoPot.value.NotCombat.name=需不在战斗状态
 
 module.AutoReport.name=自动举报
 module.AutoReport.description=自动举报其他玩家
-module.AutoReport.value.Mode.name=模式
-module.AutoReport.value.Command.name=指令
-module.AutoReport.value.Tip.name=提示
-module.AutoReport.value.AllDelay.name=全体模式延时
-module.AutoReport.value.BlockBooks.name=阻止书本提示
 
 module.AutoSoup.name=自动喝汤
 module.AutoSoup.description=当生命值低时自动喝汤
-module.AutoSoup.value.Health.name=生命值
-module.AutoSoup.value.Delay.name=延时
-module.AutoSoup.value.OpenInv.name=当物品栏打开
-module.AutoSoup.value.SimulateInventory.name=模拟物品栏开启
-module.AutoSoup.value.Bowl.name=碗
 
 module.AutoTool.name=自动工具
 module.AutoTool.description=自动选择最好的工具
 
 module.AutoWeapon.name=自动武器
 module.AutoWeapon.description=自动选择快捷栏中最好的武器
-module.AutoWeapon.value.SpoofItem.name=欺骗物品
-module.AutoWeapon.value.SpoofTicks.name=欺骗刻
 
 module.BetterFPS.name=更好的FPS
 module.BetterFPS.description=使数学计算更快
-module.BetterFPS.value.SinMode.name=正弦模式
-module.BetterFPS.value.CosMode.name=余弦模式
 
 module.BetterFont.name=更好的字体
 module.BetterFont.description=使游戏内字体更好看
 
 module.Blink.name=闪现
 module.Blink.description=暂停发包
-module.Blink.value.Pulse.name=脉冲
-module.Blink.value.PulseDelay.name=脉冲延时
 
 module.BlockESP.name=方块透视
 module.BlockESP.description=允许透视看见指定的方块
-module.BlockESP.value.Mode.name=模式
-module.BlockESP.value.Outline-Width.name=边框-宽度
-module.BlockESP.value.Block.name=方块
-module.BlockESP.value.Radius.name=半径
-module.BlockESP.value.R.name=红
-module.BlockESP.value.G.name=绿
-module.BlockESP.value.B.name=蓝
-module.BlockESP.value.Rainbow.name=彩虹色
 
 module.BlockOverlay.name=方块边框
 module.BlockOverlay.description=更换原版方块边框设计
-module.BlockOverlay.value.Red.name=红
-module.BlockOverlay.value.Green.name=绿
-module.BlockOverlay.value.Blue.name=蓝
-module.BlockOverlay.value.Alpha.name=透明度
-module.BlockOverlay.value.LineWidth.name=线宽
-module.BlockOverlay.value.Rainbow.name=彩虹
-module.BlockOverlay.value.Info.name=方块信息
 
 module.BoatJump.name=船跳
 module.BoatJump.description=允许你使用船远跳
-module.BoatJump.value.Mode.name=模式
-module.BoatJump.value.HBoost.name=横向加速
-module.BoatJump.value.VBoost.name=垂直加速
-module.BoatJump.value.LaunchRadius.name=起飞半径
-module.BoatJump.value.Delay.name=延时
-module.BoatJump.value.AutoHit.name=自动坐船
 
 module.BowAimbot.name=弓箭自瞄
 module.BowAimbot.description=自动使你的弓瞄准目标
-module.BowAimbot.value.Silent.name=静默
-module.BowAimbot.value.Predict.name=预测
-module.BowAimbot.value.ThroughWalls.name=穿墙
-module.BowAimbot.value.PredictSize.name=预测大小
-module.BowAimbot.value.Priority.name=优先度
-module.BowAimbot.value.Mark.name=标记
 
 module.Breadcrumbs.name=足迹
 module.Breadcrumbs.description=在你身后留下足迹
-module.Breadcrumbs.value.R.name=红
-module.Breadcrumbs.value.G.name=绿
-module.Breadcrumbs.value.B.name=蓝
-module.Breadcrumbs.value.Rainbow.name=彩虹色
-module.Breadcrumbs.value.Fade.name=消失
-module.Breadcrumbs.value.FadeTime.name=消失时间
 
 module.CameraClip.name=相机穿墙
 module.CameraClip.description=在第三人称时不会受到墙壁的限制
@@ -336,725 +193,248 @@ module.CapeManager.description=管理你的披风
 
 module.Chams.name=变色
 module.Chams.description=允许你隔墙看到目标
-module.Chams.value.Targets.name=实体
-module.Chams.value.Chests.name=箱子
-module.Chams.value.Items.name=物品
 
 module.ChatBypass.name=聊天绕过
 module.ChatBypass.description=绕过聊天限制
-module.ChatBypass.value.Mode.name=模式
-module.ChatBypass.value.Chance.name=触发机率
-module.ChatBypass.value.MinUnicode.name=最小Unicode
-module.ChatBypass.value.MaxUnicode.name=最大Unicode
 
 module.ChatTranslator.name=聊天翻译
 module.ChatTranslator.description=自动将聊天翻译为你的语言
-module.ChatTranslator.value.Language.name=语言
-module.ChatTranslator.value.API.name=接口
 
 module.ChestAura.name=箱子光环
 module.ChestAura.description=自动开启你周围的箱子
-module.ChestAura.value.Range.name=距离
-module.ChestAura.value.Delay.name=延时
-module.ChestAura.value.ThroughWalls.name=穿墙
-module.ChestAura.value.VisualSwing.name=挥手
-module.ChestAura.value.Rotations.name=转头
-module.ChestAura.value.DiscoverDelay.name=发现延时
-module.ChestAura.value.DiscoverDelayValue.name=发现延时值
-module.ChestAura.value.OnlyOnGround.name=仅在地面时
-module.ChestAura.value.NotOpened.name=未被开启过
-module.ChestAura.value.DoubleClick.name=双击
 
 module.ChestStealer.name=自动拿取
 module.ChestStealer.description=自动从箱子拿取物品
-module.ChestStealer.value.MaxDelay.name=最大延迟
-module.ChestStealer.value.MinDelay.name=最小延迟
-module.ChestStealer.value.ChestOpenDelay.name=箱子开启延迟
-module.ChestStealer.value.TakeRandomized.name=随机拾取
-module.ChestStealer.value.OnlyItems.name=仅物品
-module.ChestStealer.value.NoCompass.name=指南针排除
-module.ChestStealer.value.AutoClose.name=自动关闭
-module.ChestStealer.value.Silent.name=静默
-module.ChestStealer.value.SilentTitle.name=静默标题
-module.ChestStealer.value.AutoCloseMaxDelay.name=自动关闭最大延迟
-module.ChestStealer.value.AutoCloseMinDelay.name=自动关闭最小延迟
-module.ChestStealer.value.CloseOnFull.name=物品栏满时关闭
-module.ChestStealer.value.ChestTitle.name=箱子标题
 
 module.ClickGUI.name=设置界面
 module.ClickGUI.description=打开设置界面
-module.ClickGUI.value.Style.name=主题
-module.ClickGUI.value.Scale.name=大小
-module.ClickGUI.value.MaxElements.name=最大元素
-module.ClickGUI.value.R.name=红
-module.ClickGUI.value.G.name=绿
-module.ClickGUI.value.B.name=蓝
-module.ClickGUI.value.Rainbow.name=彩虹
 
 module.Clip.name=瞬移
 module.Clip.description=允许你闪现过方块
-module.Clip.value.Mode.name=模式
-module.Clip.value.Horizontal.name=横向
-module.Clip.value.Vertical.name=垂直
 
 module.Criticals.name=刀刀暴击
 module.Criticals.description=自动打出暴击伤害
-module.Criticals.value.Mode.name=模式
-module.Criticals.value.Delay.name=延迟
-module.Criticals.value.HurtTime.name=伤害时间
-module.Criticals.value.UseC06Packet.name=使用C06包
-module.Criticals.value.DebugMessage.name=调试消息
-module.Criticals.value.RedeNofall.name=Redesky无掉落伤害
 
 module.DamageParticle.name=伤害粒子
 module.DamageParticle.description=允许你查看目标掉血
-module.DamageParticle.value.AliveTicks.name=存在时间
-module.DamageParticle.value.Size.name=大小
 
 module.Disabler.name=禁用器
 module.Disabler.description=禁用
-module.Disabler.value.Mode.name=模式
-module.Disabler.value.Debug.name=调试
-module.Disabler.value.MemetrixWithAAC5.name=矩阵和AAC5
-module.Disabler.value.FakeLagPosition.name=假网卡坐标包
-module.Disabler.value.FakeLagBlock.name=假网卡方块包
-module.Disabler.value.FakeLagAttack.name=假网卡攻击包
-module.Disabler.value.FakeLagC03Spoof.name=假网卡C03欺骗
-module.Disabler.value.LagDelay.name=假网卡延时
-module.Disabler.value.LagDuration.name=假网卡时间
 
 module.ESP.name=透视
 module.ESP.description=允许你隔墙透视目标
-module.ESP.value.Mode.name=模式
-module.ESP.value.Outline-Width.name=外框-宽度
-module.ESP.value.WireFrame-Width.name=线框-宽度
-module.ESP.value.ShaderOutline-Radius.name=作色器外框-半径
-module.ESP.value.ShaderGlow-Radius.name=着色器发光-半径
-module.ESP.value.CSGO-Width.name=CSGO-宽度
-module.ESP.value.R.name=红
-module.ESP.value.G.name=绿
-module.ESP.value.B.name=蓝
-module.ESP.value.Rainbow.name=彩虹色
-module.ESP.value.Team.name=队伍颜色
 
 module.Eagle.name=自动蹲搭
 module.Eagle.description=让你在方块边缘自动蹲下
 
 module.EnchantEffect.name=附魔效果
 module.EnchantEffect.description=更改附魔效果颜色
-module.EnchantEffect.value.Red.name=红
-module.EnchantEffect.value.Green.name=绿
-module.EnchantEffect.value.Blue.name=蓝
-module.EnchantEffect.value.Mode.name=模式
 
 module.FakeDead.name=假死
-module.FakeDead.name.value.FakeDeathTime.name=假死时间
-module.FakeDead.name.value.FakeGetHurt.name=假受伤
 
 module.FastBreak.name=快速挖掘
 module.FastBreak.description=让你更快地挖掘方块
-module.FastBreak.value.BreakDamage.name=挖掘进度
 
 module.FastPlace.name=快速放置
 module.FastPlace.description=让你更快地放置方块
-module.FastPlace.value.Speed.name=速度
 
 module.FastUse.name=快速使用
 module.FastUse.description=让你更快地使用物品
-module.FastUse.value.Mode.name=模式
-module.FastUse.value.Timer.name=变速齿轮
-module.FastUse.value.InstantDelay.name=瞬间使用延迟
-module.FastUse.value.Delay.name=延时
 
 module.Fly.name=飞行
 module.Fly.description=让你在生存模式下飞行
-module.Fly.value.Mode.name=模式
-module.Fly.value.VanillaSpeed.name=原版速度
-module.Fly.value.VanillaKickBypass.name=绕过原版踢出
-module.Fly.value.NCPMotion.name=NCPMotion
-module.Fly.value.AAC1.9.10-Speed.name=AAC1.9.10-速度
-module.Fly.value.AAC3.0.5-Fast.name=AAC3.0.5-高速
-module.Fly.value.AAC3.3.12-Motion.name=AAC3.3.12-Motion
-module.Fly.value.AAC3.3.13-Motion.name=AAC3.3.13-Motion
-module.Fly.value.Hypixel-Boost.name=Hypixel-Boost
-module.Fly.value.Hypixel-BoostDelay.name=Hypixel-Boost延迟
-module.Fly.value.Hypixel-BoostTimer.name=Hypixel-BoostTimer
-module.Fly.value.HypixelNew-Speed.name=HypixelNew-速度
-module.Fly.value.MineplexSpeed.name=Mineplex速度
-module.Fly.value.NeruxVace-Ticks.name=NeruxVace-刻
-module.Fly.value.RSCollideSpeed.name=RSCollide速度
-module.Fly.value.RSCollideBoost.name=RSCollideBoost
-module.Fly.value.RSCollideMaxSpeed.name=RSCollide最高速度
-module.Fly.value.RSCollideTimer.name=RSCollideTimer
-module.Fly.value.RSSmoothSpeed.name=RSSmooth速度
-module.Fly.value.RSSmoothChangeSpeed.name=RSSmooth速度
-module.Fly.value.RSSmoothMotion.name=RSSmoothMotion
-module.Fly.value.RSSmoothTimer.name=RSSmoothTimer
-module.Fly.value.RSSmoothDropoff.name=RSSmoothDropoff
-module.Fly.value.RSSmoothDropoffA.name=RSSmoothDropoffA
-module.Fly.value.MotionReset.name=速度重置
-module.Fly.value.Mark.name=标记
-module.Fly.value.FakeDamage.name=假伤害
 
 module.FreeCam.name=灵魂出窍
 module.FreeCam.description=让你移出你的身体
-module.FreeCam.value.Speed.name=速度
-module.FreeCam.value.Fly.name=飞行
-module.FreeCam.value.NoClip.name=穿墙
-module.FreeCam.value.RecordMotion.name=记录速度
-module.FreeCam.value.C03Spoof.name=C03欺骗
 
 module.Freeze.name=冻结
 module.Freeze.description=让你卡在半空
 
 module.Fucker.name=方块挖掘器
 module.Fucker.description=挖掘你身边的指定方块
-module.Fucker.value.Block.name=方块
-module.Fucker.value.Swing.name=挥手
-module.Fucker.value.ThroughWalls.name=穿墙
-module.Fucker.value.Range.name=距离
-module.Fucker.value.Action.name=行为
-module.Fucker.value.Instant.name=瞬间
-module.Fucker.value.SwitchDelay.name=切换延时
-module.Fucker.value.Rotations.name=转头
-module.Fucker.value.Surroundings.name=破坏周围
-module.Fucker.value.NoHit.name=无点击
-module.Fucker.value.Bypass.name=绕过
 
 module.Gapple.name=金苹果
 module.Gapple.description=自动吃金苹果
-module.Gapple.value.Mode.name=模式
-module.Gapple.value.Health.name=血量
-module.Gapple.value.Delay.name=延时
-module.Gapple.value.NoAbsorption.name=无伤害吸收
 
 module.GhostHand.name=鬼手
 module.GhostHand.description=让你隔墙与交互方块
-module.GhostHand.value.Block.name=方块
-module.GhostHand.value.Radius.name=半径
 
 module.HUD.name=界面
 module.HUD.description=开关界面
-module.HUD.value.BetterHotbar.name=更好的快捷栏
-module.HUD.value.HotbarAlpha.name=快捷栏透明度
-module.HUD.value.Blur.name=模糊效果
-module.HUD.value.InventoryParticle.name=物品栏粒子
-module.HUD.value.FontChat.name=聊天栏字体
-module.HUD.value.ChatRect.name=聊天栏背景
-module.HUD.value.ChatCombine.name=聊天合并
-module.HUD.value.ChatAnimation.name=聊天栏动画
 
 module.HackerDetector.name=黑客检测
 module.HackerDetector.description=检测其他黑客
-module.HackerDetector.value.Combat.name=战斗
-module.HackerDetector.value.Movement.name=移动
-module.HackerDetector.value.Debug.name=调试
-module.HackerDetector.value.Notify.name=通知
-module.HackerDetector.value.AutoReport.name=自动举报
-module.HackerDetector.value.VL.name=VL
 
 module.HealthWarn.name=低血量提示
 module.HealthWarn.description=在你低血量时弹出提示
-module.HealthWarn.value.Health.name=血量
 
 module.HighJump.name=高跳
 module.HighJump.description=让你跳的更高
-module.HighJump.value.Height.name=高度
-module.HighJump.value.Mode.name=模式
-module.HighJump.value.OnlyGlassPane.name=仅玻璃板
-module.HighJump.value.StableMotion.name=稳定速度
 
 module.HitBox.name=碰撞箱
 module.HitBox.description=让目标实体的碰撞箱更大
-module.HitBox.value.Size.name=大小
 
 module.HudDesigner.name=界面编辑器
 module.HudDesigner.description=打开界面编辑器
 
 module.HurtCam.name=伤害动画
 module.HurtCam.description=改变伤害动画
-module.HurtCam.value.Mode.name=模式
-module.HurtCam.value.R.name=红
-module.HurtCam.value.G.name=绿
-module.HurtCam.value.B.name=蓝
-module.HurtCam.value.Rainbow.name=彩虹
-module.HurtCam.value.FPSTime.name=FPS模式时间
-module.HurtCam.value.FPSHeight.name=FPS模式高度
 
 module.InfiniteAura.name=百米大刀
 module.InfiniteAura.description=从远处攻击目标
-module.InfiniteAura.value.Mode.name=模式
-module.InfiniteAura.value.Targets.name=目标数
-module.InfiniteAura.value.CPS.name=CPS
-module.InfiniteAura.value.Distance.name=距离
-module.InfiniteAura.value.MoveDistance.name=移动距离
-module.InfiniteAura.value.NoRegen.name=无回血
-module.InfiniteAura.value.Swing.name=挥手
-module.InfiniteAura.value.PathRender.name=渲染路径
 
 module.InventoryCleaner.name=物品栏整理
 module.InventoryCleaner.description=自动扔掉物品栏中的垃圾并整理物品栏
-module.InventoryCleaner.value.MaxDelay.name=最大延迟
-module.InventoryCleaner.value.MinDelay.name=最小延迟
-module.InventoryCleaner.value.InvOpen.name=当物品栏打开
-module.InventoryCleaner.value.SimulateInventory.name=模拟物品栏打开
-module.InventoryCleaner.value.NoMove.name=仅在不移动时
-module.InventoryCleaner.value.IgnoreVehicles.name=无视载具
-module.InventoryCleaner.value.Hotbar.name=快捷栏
-module.InventoryCleaner.value.RandomSlot.name=随机格
-module.InventoryCleaner.value.Sort.name=整理
-module.InventoryCleaner.value.ItemDelay.name=物品延时
-module.InventoryCleaner.value.SortSlot-1.name=整理快捷格-1
-module.InventoryCleaner.value.SortSlot-2.name=整理快捷格-2
-module.InventoryCleaner.value.SortSlot-3.name=整理快捷格-3
-module.InventoryCleaner.value.SortSlot-4.name=整理快捷格-4
-module.InventoryCleaner.value.SortSlot-5.name=整理快捷格-5
-module.InventoryCleaner.value.SortSlot-6.name=整理快捷格-6
-module.InventoryCleaner.value.SortSlot-7.name=整理快捷格-7
-module.InventoryCleaner.value.SortSlot-8.name=整理快捷格-8
-module.InventoryCleaner.value.SortSlot-9.name=整理快捷格-9
 
 module.InventoryMove.name=物品栏移动
 module.InventoryMove.description=让你能够在打开UI时行走
-module.InventoryMove.value.NoDetectable.name=检测不到
-module.InventoryMove.value.Bypass.name=绕过
-module.InventoryMove.value.Rotate.name=旋转
-module.InventoryMove.value.NoMoveClicks.name=无移动点击
 
 module.ItemESP.name=物品透视
 module.ItemESP.description=让你能够隔墙看见物品
-module.ItemESP.value.Mode.name=模式
-module.ItemESP.value.Outline-Width.name=边框-宽度
-module.ItemESP.value.R.name=红
-module.ItemESP.value.G.name=绿
-module.ItemESP.value.B.name=蓝
-module.ItemESP.value.Rainbow.name=彩虹色
 
 module.KeyBindManager.name=按键绑定管理器
 module.KeyBindManager.description=打开按键绑定管理器
 
 module.Kick.name=踢出
 module.Kick.description=让你能够把自己踢出服务器
-module.Kick.value.Mode.name=模式
 
 module.KillAura.name=杀戮光环
 module.KillAura.description=自动攻击你身边的目标
-module.KillAura.value.MaxCPS.name=最大CPS
-module.KillAura.value.MinCPS.name=最小CPS
-module.KillAura.value.HurtTime.name=伤害时间
-module.KillAura.value.1.9CombatDelay.name=高版本战斗延迟
-module.KillAura.value.Range.name=距离
-module.KillAura.value.ThroughWallsRange.name=隔墙距离
-module.KillAura.value.DiscoverRange.name=发现距离
-module.KillAura.value.RangeSprintReducement.name=距离疾跑减少
-module.KillAura.value.Priority.name=优先
-module.KillAura.value.TargetMode.name=攻击模式
-module.KillAura.value.Swing.name=挥手
-module.KillAura.value.KeepSprint.name=保持疾跑
-module.KillAura.value.AutoBlock.name=自动防砍
-module.KillAura.value.AutoBlockRange.name=自动防砍距离
-module.KillAura.value.AutoBlockPacket.name=自动防砍发包
-module.KillAura.value.InteractAutoBlock.name=自动防砍交互
-module.KillAura.value.AutoBlockFacing.name=自动防砍视角
-module.KillAura.value.BlockRate.name=防砍机率
-module.KillAura.value.RayCast.name=射线投射
-module.KillAura.value.RayCastIgnored.name=射线投射忽略
-module.KillAura.value.LivingRayCast.name=活体射线投射
-module.KillAura.value.AAC.name=AAC
-module.KillAura.value.MaxTurnSpeed.name=最大转头速度
-module.KillAura.value.MinTurnSpeed.name=最小转头速度
-module.KillAura.value.SilentRotation.name=静默转头
-module.KillAura.value.Strafe.name=灵活动作
-module.KillAura.value.StrafeOnlyGround.name=仅在地上灵活动作
-module.KillAura.value.RandomCenter.name=随机中心
-module.KillAura.value.Outborder.name=瞄出边界
-module.KillAura.value.AlwaysHitable.name=永远可攻击
-module.KillAura.value.FOV.name=视野
-module.KillAura.value.Predict.name=预判
-module.KillAura.value.MaxPredictSize.name=最大预判大小
-module.KillAura.value.MinPredictSize.name=最小预判大小
-module.KillAura.value.FailRate.name=失败机率
-module.KillAura.value.FakeSwing.name=假挥手
-module.KillAura.value.NoInvAttack.name=无物品栏攻击
-module.KillAura.value.NoInvDelay.name=无物品栏攻击延时
-module.KillAura.value.SwitchChangeAtkTimes.name=交换模式改变目标攻击次数
-module.KillAura.value.LimitedMultiTargets.name=限制多目标模式目标数
-module.KillAura.value.Mark.name=标记
-module.KillAura.value.FakeSharp.name=假锋利
 
 module.LegitSpoof.name=普通玩家伪装
 module.LegitSpoof.description=伪装为普通玩家
-module.LegitSpoof.value.Render.name=无渲染
-module.LegitSpoof.value.Title.name=原版标题
 
 module.LightningDetect.name=雷击检测
 module.LightningDetect.description=检测雷击位置
 
 module.Jesus.name=水上行走
 module.Jesus.description=让你在液体上行走
-module.Jesus.value.Mode.name=模式
-module.Jesus.value.NoJump.name=无跳跃
 
 module.LongJump.name=远跳
 module.LongJump.description=让你跳得更远
-module.LongJump.value.Mode.name=模式
-module.LongJump.value.NCPBoost.name=NCPBoost
-module.LongJump.value.RedeSkyJumpMovement.name=RedeSkyJumpMovement
-module.LongJump.value.RedeSkyMotionY.name=RedeSkyMotionY
-module.LongJump.value.RedeSkyMovementReducer.name=RedeSkyMovementReducer
-module.LongJump.value.RedeSkyReduceMovement.name=RedeSkyReduceMovement
-module.LongJump.value.RedeSkyMotionYReducer.name=RedeSkyMotionYReducer
-module.LongJump.value.RedeSkyReduceYMotion.name=RedeSkyReduceYMotion
-module.LongJump.value.RedeSkyTimer.name=RedeSkyTimer
-module.LongJump.value.RedeSkyTimer.name=RedeSkyTimer
-module.LongJump.value.RedeSky2AirSpeed.name=RedeSky2AirSpeed
-module.LongJump.value.RedeSky2MinAirSpeed.name=RedeSky2MinAirSpeed
-module.LongJump.value.RedeSky2ReduceAirSpeed.name=RedeSky2ReduceAirSpeed
-module.LongJump.value.RedeSky2AirSpeedReducer.name=RedeSky2AirSpeedReducer
-module.LongJump.value.RedeSky2YMotion.name=RedeSky2YMotion
-module.LongJump.value.RedeSky2MinYMotion.name=RedeSky2MinYMotion
-module.LongJump.value.RedeSky2ReduceYMotion.name=RedeSky2ReduceYMotion
-module.LongJump.value.RedeSky2YMotionReducer.name=RedeSky2YMotionReducer
-module.LongJump.value.RedeSky3JumpTime.name=RedeSky3JumpTime
-module.LongJump.value.RedeSky3Boost.name=RedeSky3Boost
-module.LongJump.value.RedeSky3Height.name=RedeSky3Height
-module.LongJump.value.RedeSky3Timer.name=RedeSky3Timer
-module.LongJump.value.CustomLong.name=CustomLong
-module.LongJump.value.CustomHeight.name=CustomHeight
-module.LongJump.value.CustomTimer.name=CustomTimer
-module.LongJump.value.AutoJump.name=自动跳跃
-module.LongJump.value.AutoClose.name=自动关闭
 
 module.MessageSpam.name=消息刷屏
 module.MessageSpam.description=刷屏你发出的消息(仅Redesky)
-module.MessageSpam.value.Times.name=次数
-module.MessageSpam.value.Delay.name=延时
 
 module.MidClick.name=中键点击
 module.MidClick.description=让你通过中键把点击的玩家设为好友
 
 module.NameProtect.name=名称保护
 module.NameProtect.description=客户端改变玩家名字
-module.NameProtect.value.AllPlayers.name=所有玩家
-module.NameProtect.value.SkinProtect.name=皮肤保护
-module.NameProtect.value.FakeName.name=假名
-module.NameProtect.value.PlayerName.name=其他玩家假名
 
 module.NameTags.name=名称标签
 module.NameTags.description=改变名称标签的样式让你能持续看到
-module.NameTags.value.Mode.name=模式
-module.NameTags.value.Health.name=血量
-module.NameTags.value.Ping.name=延时
-module.NameTags.value.Distance.name=距离
-module.NameTags.value.Armor.name=盔甲
-module.NameTags.value.ClearNames.name=清晰名称
-module.NameTags.value.Font.name=字体
-module.NameTags.value.Border.name=外框
-module.NameTags.value.Hacker.name=黑客
-module.NameTags.value.JelloHPColor.name=Jello血量栏颜色
-module.NameTags.value.JelloAlpha.name=Jello透明度
-module.NameTags.value.Scale.name=大小
 
 module.NoBob.name=无视角摇晃
 module.NoBob.description=禁止视角摇晃效果
 
 module.NoFOV.name=无视野变化
 module.NoFOV.description=禁止视野变化效果
-module.NoFOV.value.FOV.name=FOV
 
 module.NoFall.name=无掉落伤害
 module.NoFall.description=抵消你的掉落伤害
-module.NoFall.value.Mode.name=模式
-module.NoFall.value.PhaseOffset.name=穿墙弥补
 
 module.NoJumpDelay.name=无跳跃延时
 module.NoJumpDelay.description=移除跳跃延时
 
 module.NoRotateSet.name=无视角重置
 module.NoRotateSet.description=防止服务器设置头部方向
-module.NoRotateSet.value.Confirm.name=接受
-module.NoRotateSet.value.ConfirmIllegalRotation.name=接受不正常转头
-module.NoRotateSet.value.NoZero.name=无零
 
 module.NoSlow.name=无减速效果
 module.NoSlow.description=取消使用物品的减速
-module.NoSlow.value.BlockForwardMultiplier.name=防砍向前速度
-module.NoSlow.value.BlockStrafeMultiplier.name=防砍向后速度
-module.NoSlow.value.ConsumeForwardMultiplier.name=使用物品向前速度
-module.NoSlow.value.ConsumeStrafeMultiplier.name=使用物品向后速度
-module.NoSlow.value.BowForwardMultiplier.name=弓向前速度
-module.NoSlow.value.BowStrafeMultiplier.name=弓向后速度
-module.NoSlow.value.CustomOnGround.name=自定义在地面
-module.NoSlow.value.CustomDelay.name=自定义延时
-module.NoSlow.value.PacketMode.name=发包模式
-module.NoSlow.value.Soulsand.name=灵魂沙
-module.NoSlow.value.Teleport.name=传送
-module.NoSlow.value.TeleportMode.name=传送模式
-module.NoSlow.value.TeleportNoApply.name=传送无接受包
-module.NoSlow.value.Teleport-CustomSpeed.name=传送-自定义速度
-module.NoSlow.value.Teleport-CustomY.name=传送-自定义Y
-module.NoSlow.value.Teleport-DecreasePercent.name=传送-减少百分比
 
 module.NoSlowBreak.name=挖掘不减速
 module.NoSlowBreak.description=防止挖掘被打断
-module.NoSlowBreak.value.Air.name=空气
-module.NoSlowBreak.value.Water.name=水中
 
 module.NoWeb.name=无蜘蛛网减速
 module.NoWeb.description=防止你在蜘蛛网中减速
-module.NoWeb.value.Mode.name=模式
 
 module.Parkour.name=跑酷辅助
 module.Parkour.description=自动在方块边界跳跃
 
 module.Phase.name=穿墙
 module.Phase.description=让你能够在方块中行走
-module.Phase.value.Mode.name=模式
 
 module.PingSpoof.name=虚假延迟
 module.PingSpoof.description=对服务器欺骗你的延迟
-module.PingSpoof.value.MaxDelay.name=最大延迟
-module.PingSpoof.value.MinDelay.name=最小延迟
-module.PingSpoof.value.Cancel.name=取消发包
 
 module.Plugins.name=插件列表
 module.Plugins.description=允许你查看服务器使用的插件列表
 
 module.PointerESP.name=指针透视
 module.PointerESP.description=在准星边显示指针透视
-module.PointerESP.value.Mode.name=模式
-module.PointerESP.value.Red.name=红
-module.PointerESP.value.Green.name=绿
-module.PointerESP.value.Blue.name=蓝
-module.PointerESP.value.Alpha.name=透明度
 
 module.PrevFallPos.name=预测摔落点
 module.PrevFallPos.description=让你提前知道玩家的掉落点
-module.PrevFallPos.value.Mode.name=模式
-module.PrevFallPos.value.Outline-Width.name=边框-宽度
-module.PrevFallPos.value.FallDist.name=掉落距离
-module.PrevFallPos.value.R.name=红
-module.PrevFallPos.value.G.name=绿
-module.PrevFallPos.value.B.name=蓝
-module.PrevFallPos.value.A.name=透明度
-module.PrevFallPos.value.Rainbow.name=彩虹
 
 module.Projectiles.name=抛射物轨迹
 module.Projectiles.description=让你查看抛射物落点
-module.Projectiles.value.DynamicBowPower.name=动态弓蓄力
 
 module.Reach.name=长臂猿
 module.Reach.description=增加手的长度
-module.Reach.value.CombatReach.name=战斗手长
-module.Reach.value.BuildReach.name=建造手长
 
 module.Regen.name=快速回血
 module.Regen.description=大大提升你的回血速度
-module.Regen.value.Mode.name=模式
-module.Regen.value.Health.name=血量
-module.Regen.value.Food.name=食物
-module.Regen.value.Speed.name=速度
-module.Regen.value.NoAir.name=仅在地面
-module.Regen.value.PotionEffect.name=药水效果
 
 module.Rotations.name=转头
 module.Rotations.description=转头设置
-module.Rotations.value.Head.name=头部
-module.Rotations.value.Body.name=身体
-module.Rotations.value.SensitivityFixed.name=灵敏度修复
-module.Rotations.value.NaNCheck.name=空检测
 
 module.SafeWalk.name=安全行走
 module.SafeWalk.description=像潜行一般防止你掉入虚空
-module.SafeWalk.value.AirSafe.name=空中安全行走
-module.SafeWalk.value.OnlyPredictVoid.name=预测虚空
 
 module.Scaffold.name=自动搭路
 module.Scaffold.description=自动在你脚下放方块
-module.Scaffold.value.MaxDelay.name=最大延时
-module.Scaffold.value.MinDelay.name=最小延时
-module.Scaffold.value.PlaceableDelay.name=可放置延时
-module.Scaffold.value.AutoBlock.name=自动拿方块
-module.Scaffold.value.Sprint.name=疾跑
-module.Scaffold.value.Swing.name=挥手
-module.Scaffold.value.Search.name=搜索
-module.Scaffold.value.Down.name=向下搭路
-module.Scaffold.value.PlaceTiming.name=放置时机
-module.Scaffold.value.Eagle.name=老鹰
-module.Scaffold.value.BlocksToEagle.name=触发老鹰需要的方块
-module.Scaffold.value.ExpandLength.name=扩展长度
-module.Scaffold.value.Rotations.name=转头
-module.Scaffold.value.AACYawOffset.name=AAC偏航角偏移
-module.Scaffold.value.SilentRotation.name=静默转头
-module.Scaffold.value.MinRotationSpeed.name=最小转头速度
-module.Scaffold.value.MaxRotationSpeed.name=最大转头速度
-module.Scaffold.value.KeepRotationTick.name=保持转头时间
-module.Scaffold.value.ZitterMode.name=抖动模式
-module.Scaffold.value.ZitterSpeed.name=抖动速度
-module.Scaffold.value.ZitterStrength.name=抖动力度
-module.Scaffold.value.Timer.name=变速齿轮
-module.Scaffold.value.SpeedModifier.name=移动速度更改
-module.Scaffold.value.TowerMode.name=搭高模式
-module.Scaffold.value.StopTowerWhenBlockAbove.name=在头顶有方块时停止搭高
-module.Scaffold.value.TowerActivation.name=搭高触发条件
-module.Scaffold.value.TowerTimer.name=搭高变速齿轮
-module.Scaffold.value.SameY.name=同一Y轴
-module.Scaffold.value.SafeWalk.name=安全行走
-module.Scaffold.value.HitableCheck.name=可点击检测
-module.Scaffold.value.ExtraClick.name=额外点击
-module.Scaffold.value.ExtraClickMaxDelay.name=额外点击最大延迟
-module.Scaffold.value.ExtraClickMinDelay.name=额外点击最小延迟
-module.Scaffold.value.TowerJumpMotion.name=搭高跳跃高度
-module.Scaffold.value.TowerJumpDelay.name=搭高跳跃延时
-module.Scaffold.value.TowerStableMotion.name=搭高稳定移动
-module.Scaffold.value.TowerPlusMotion.name=搭高增加移动
-module.Scaffold.value.TowerPlusMaxMotion.name=搭高增加最大移动速度
-module.Scaffold.value.TowerConstantMotion.name=搭高持续移动
-module.Scaffold.value.TowerConstantMotionJumpGround.name=搭高持续移动地上跳跃
-module.Scaffold.value.TowerTeleportHeight.name=搭高传送高度
-module.Scaffold.value.TowerTeleportDelay.name=搭高传送延迟
-module.Scaffold.value.TowerTeleportGround.name=搭高传送地面
-module.Scaffold.value.TowerTeleportNoMotion.name=搭高传送无移动
-module.Scaffold.value.MotionSpeedSet.name=移动速度更改
-module.Scaffold.value.MotionSpeed.name=移动速度
-module.Scaffold.value.Counter.name=计数器
-module.Scaffold.value.Mark.name=标记
 
 module.ServerCrasher.name=崩服器
 module.ServerCrasher.description=让你能够使服务器崩溃
-module.ServerCrasher.value.Mode.name=模式
 
 module.Spammer.name=自动刷屏
 module.Spammer.description=自动在聊天栏刷屏
-module.Spammer.value.MaxDelay.name=最大延迟
-module.Spammer.value.MinDelay.name=最小延迟
-module.Spammer.value.Mode.name=模式
-module.Spammer.value.Message.name=消息
-module.Spammer.value.InsultMessage.name=骂人消息
 
 module.Speed.name=速度
 module.Speed.description=让你移动更快
-module.Speed.value.Mode.name=模式
-module.Speed.value.CustomSpeed.name=顺滑速度
-module.Speed.value.CustomLaunchSpeed.name=CustomLaunchSpeed
-module.Speed.value.CustomAddYMotion.name=CustomAddYMotion
-module.Speed.value.CustomY.name=CustomY
-module.Speed.value.CustomUpTimer.name=CustomUpTimer
-module.Speed.value.CustomDownTimer.name=CustomDownTimer
-module.Speed.value.CustomStrafe.name=CustomStrafe
-module.Speed.value.CustomGroundStay.name=CustomGroundStay
-module.Speed.value.CustomGroundResetXZ.name=CustomGroundResetXZ
-module.Speed.value.CustomResetXZ.name=CustomResetXZ
-module.Speed.value.CustomResetY.name=CustomResetY
-module.Speed.value.CustomDoLaunchSpeed.name=CustomDoLaunchSpeed
-module.Speed.value.AAC-PortLength.name=AAC-PortLength
-module.Speed.value.RedeSkyHop-GSpeed.name=RedeSkyHop-GSpeed
-module.Speed.value.RedeSkyHeight.name=RedeSkyHeight
-module.Speed.value.RedeSkyHop-Timer.name=RedeSkyHop-Timer
-module.Speed.value.RedeSkyHop3-Speed.name=RedeSkyHop3-Speed
-module.Speed.value.AACGround-Timer.name=AACGround-Timer
-module.Speed.value.CubeCraft-PortLength.name=CubeCraft-PortLength
 
 module.Sprint.name=自动疾跑
 module.Sprint.description=自动在移动时疾跑
-module.Sprint.value.AllDirections.name=全方向
-module.Sprint.value.AllDirectionsBypass.name=全方向绕过
-module.Sprint.value.Blindness.name=失明
-module.Sprint.value.Food.name=食物
-module.Sprint.value.CheckServerSide.name=服务端侧检测
-module.Sprint.value.CheckServerSideOnlyGround.name=仅在地面服务端侧检测
 
 module.Step.name=步伐
 module.Step.description=让你能够快速跨上方块
-module.Step.value.Mode.name=模式
-module.Step.value.Height.name=高度
-module.Step.value.JumpHeight.name=跳跃高度
-module.Step.value.Delay.name=延迟
 
 module.StorageESP.name=容器透视
 module.StorageESP.description=让你能够隔墙看见容器
-module.StorageESP.value.Mode.name=模式
-module.StorageESP.value.Outline-Width.name=边框-宽度
-module.StorageESP.value.Chest.name=箱子
-module.StorageESP.value.EnderChest.name=末影箱
-module.StorageESP.value.Furnace.name=熔炉
-module.StorageESP.value.Dispenser.name=发射器
-module.StorageESP.value.Hopper.name=漏洞
 
 module.Strafe.name=灵活动作
 module.Strafe.description=让你在半空中能够自由移动
 
 module.SuperKnockback.name=超级击退
 module.SuperKnockback.description=增加你打出的击退
-module.SuperKnockback.value.HurtTime.name=伤害时间
-module.SuperKnockback.value.Delay.name=延迟
-module.SuperKnockback.value.OnlyMove.name=仅移动
 
 module.Target.name=目标
 module.Target.description=目标设置
-module.Target.value.Player.name=玩家
-module.Target.value.Animal.name=友好生物
-module.Target.value.Mob.name=敌对生物
-module.Target.value.Invisible.name=隐身
-module.Target.value.Dead.name=死亡
 
 module.TargetStrafe.name=目标移动
 module.TargetStrafe.description=自动让你绕着目标移动
-module.TargetStrafe.value.GodMode.name=第三视角
-module.TargetStrafe.value.Render.name=渲染
-module.TargetStrafe.value.radius.name=半径
-module.TargetStrafe.value.KeyMode.name=按键模式
-module.TargetStrafe.value.radiusMode.name=半径模式
 
 module.Teams.name=队伍
 module.Teams.description=阻止杀戮光环攻击队友
-module.Teams.value.ScoreboardTeam.name=记分板队伍
-module.Teams.value.Color.name=颜色
-module.Teams.value.GommeSW.name=Gomme空岛战争
-module.Teams.value.ArmorColor.name=装备颜色
 
 module.Teleport.name=传送
 module.Teleport.description=让你能够传送
-module.Teleport.value.IgnoreNoCollision.name=无视碰撞箱
-module.Teleport.value.Mode.name=模式
-module.Teleport.value.Button.name=Button
 
 module.Timer.name=变速齿轮
 module.Timer.description=改变游戏速度
-module.Timer.value.Speed.name=速度
-module.Timer.value.OnMove.name=仅移动时
 
 module.ToggleSound.name=开启音效
 module.ToggleSound.description=在开关模块时播放音效
-module.ToggleSound.value.Mode.name=模式
 
 module.Tracers.name=连线透视
 module.Tracers.description=绘制一条线到目标
-module.Tracers.value.Thickness.name=粗细
-module.Tracers.value.DistanceColor.name=距离颜色
 
 module.TrueSight.name=反隐身
 module.TrueSight.description=让你能够看见隐身的实体和屏障方块
-module.TrueSight.value.Barriers.name=屏障方块
-module.TrueSight.value.Entities.name=隐身实体
 
 module.Velocity.name=反击退
 module.Velocity.description=更改你受到的击退
-module.Velocity.value.Horizontal.name=横向
-module.Velocity.value.Vertical.name=垂直
-module.Velocity.value.Mode.name=模式
-module.Velocity.value.ReverseStrength.name=ReverseStrength
-module.Velocity.value.SmoothReverseStrength.name=SmoothReverseStrength
-module.Velocity.value.AACPushXZReducer.name=AACPushXZReducer
-module.Velocity.value.AACPushYReducer.name=AACPushYReducer
-module.Velocity.value.PhaseHeight.name=PhaseHeight
-module.Velocity.value.PhaseOnlyGround.name=PhaseOnlyGround
-module.Velocity.value.LegitStrafe.name=LegitStrafe
-module.Velocity.value.LegitFace.name=LegitFace
-module.Velocity.value.RedeskyAlwaysReduce.name=RedeskyAlwaysReduce
-module.Velocity.value.RedeskyOnlyDanger.name=RedeskyOnlyDanger
-module.Velocity.value.OnlyGround.name=仅地面
-module.Velocity.value.OnlyCombat.name=仅战斗
 
 module.XRay.name=矿物透视
 module.XRay.description=允许你透视指定的方块/矿物
@@ -1064,20 +444,7 @@ module.IRC.description=让你能够和其他用户聊天
 
 module.Crosshair.name=准星
 module.Crosshair.description=显示一个更好的准星
-module.Crosshair.value.Color.name=颜色
-module.Crosshair.value.Red.name=红
-module.Crosshair.value.Green.name=绿
-module.Crosshair.value.Blue.name=蓝
-module.Crosshair.value.Alpha.name=透明度
-module.Crosshair.value.Saturation.name=饱和度
-module.Crosshair.value.Brightness.name=亮度
-module.Crosshair.value.Width.name=宽度
-module.Crosshair.value.Length.name=长度
-module.Crosshair.value.Gap.name=间距
-module.Crosshair.value.Dynamic.name=动态
-module.Crosshair.value.HitMarker.name=攻击指示
 
 module.Damage.name=自伤
 module.Damage.description=允许你对自己造成伤害
-module.Damage.value.Mode.name=模式
-module.Damage.value.Damage.name=伤害
+

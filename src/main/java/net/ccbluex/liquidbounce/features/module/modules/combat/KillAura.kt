@@ -137,7 +137,7 @@ class KillAura : Module() {
         }
     }.displayable { rotationModeValue.equals("Custom") } as FloatValue
 
-    private val rotationSmoothValue = FloatValue("RotationSmooth", 1f, 1f, 10f)
+    private val rotationSmoothValue = FloatValue("RotationSmooth", 1f, 1f, 10f).displayable { rotationModeValue.equals("Smooth") }
 
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }

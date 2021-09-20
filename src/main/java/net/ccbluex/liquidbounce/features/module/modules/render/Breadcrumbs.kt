@@ -47,8 +47,8 @@ class Breadcrumbs : Module() {
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glDisable(GL11.GL_DEPTH_TEST)
             mc.entityRenderer.disableLightmap()
-            GL11.glBegin(GL11.GL_LINE_STRIP)
             GL11.glLineWidth(1F)
+            GL11.glBegin(GL11.GL_LINE_STRIP)
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ
