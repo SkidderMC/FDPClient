@@ -112,6 +112,29 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
             this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
 
+            final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
+            if (chams.getState() && chams.getTargetsValue().get() && EntityUtils.isSelected(entitylivingbaseIn, false)) {
+                GL11.glPushMatrix();
+                GL11.glPushAttrib(1048575);
+                GL11.glDisable(2929);
+                GL11.glDisable(3553);
+                GL11.glEnable(3042);
+                GL11.glBlendFunc(770, 771);
+                GL11.glDisable(2896);
+                GL11.glPolygonMode(1032, 6914);
+                chams.setColor();
+
+                this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+
+                GL11.glEnable(2896);
+                GL11.glDisable(3042);
+                GL11.glEnable(3553);
+                GL11.glEnable(2929);
+                GL11.glColor3d(1.0, 1.0, 1.0);
+                GL11.glPopAttrib();
+                GL11.glPopMatrix();
+            }
+
             if(semiVisible) {
                 GlStateManager.disableBlend();
                 GlStateManager.alphaFunc(516, 0.1F);

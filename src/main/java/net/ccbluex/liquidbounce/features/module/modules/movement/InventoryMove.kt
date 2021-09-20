@@ -92,6 +92,7 @@ class InventoryMove : Module() {
 
         lastInvOpen=invOpen
         if(packet is S2DPacketOpenWindow || (packet is C16PacketClientStatus && packet.status==C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT)){
+            chat("S2D ${packet is S2DPacketOpenWindow}")
             invOpen=true
             if(noSprint.equals("PacketSpoof")){
                 if(mc.thePlayer.isSprinting)
@@ -101,6 +102,7 @@ class InventoryMove : Module() {
             }
         }
         if(packet is S2EPacketCloseWindow || packet is C0DPacketCloseWindow){
+            chat("S2E ${packet is S2EPacketCloseWindow}")
             invOpen=false
             if(noSprint.equals("PacketSpoof")){
                 if(mc.thePlayer.isSprinting)
@@ -132,6 +134,13 @@ class InventoryMove : Module() {
                 }
             }
         }
+    }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent){
+        blinkPacketList.clear()
+        invOpen=false
+        lastInvOpen=false
     }
 
     override fun onDisable() {
