@@ -119,33 +119,36 @@ class KillAura : Module() {
 
     // Bypass
     private val aacValue = BoolValue("AAC", true)
-    private val aacPitchValue = IntegerValue("AAC-Pitch", 15, 0, 90)
 
-    // Turn Speed
-    private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f) {
+    // Rotations
+    private val rotationModeValue = ListValue("RotationMode", arrayOf("Custom", "Smooth", "None"), "Custom")
+
+    private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minTurnSpeed.get()
             if (v > newValue) set(v)
         }
-    }
+    }.displayable { rotationModeValue.equals("Custom") } as FloatValue
 
-    private val minTurnSpeed: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 0f, 180f) {
+    private val minTurnSpeed: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 1f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxTurnSpeed.get()
             if (v < newValue) set(v)
         }
-    }
+    }.displayable { rotationModeValue.equals("Custom") } as FloatValue
 
-    private val silentRotationValue = BoolValue("SilentRotation", true).displayable { maxTurnSpeed.get()>0f }
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && maxTurnSpeed.get()>0f }
+    private val rotationSmoothValue = FloatValue("RotationSmooth", 1f, 1f, 10f)
+
+    private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
     private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
-    private val randomCenterValue = BoolValue("RandomCenter", false).displayable { maxTurnSpeed.get()>0f }
-    private val outborderValue = BoolValue("Outborder", false).displayable { maxTurnSpeed.get()>0f }
-    private val hitableValue = BoolValue("AlwaysHitable",true).displayable { maxTurnSpeed.get()>0f }
+    private val randomCenterValue = BoolValue("RandomCenter", false).displayable { !rotationModeValue.equals("None") }
+    private val outborderValue = BoolValue("Outborder", false).displayable { !rotationModeValue.equals("None") }
+    private val hitableValue = BoolValue("AlwaysHitable",true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
-    private val predictValue = BoolValue("Predict", true).displayable { maxTurnSpeed.get()>0f }
+    private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
 
     private val maxPredictSize: FloatValue = object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -767,7 +770,7 @@ class KillAura : Module() {
      * Update killaura rotations to enemy
      */
     private fun updateRotations(entity: Entity): Boolean {
-        if(maxTurnSpeed.get() <= 0F)
+        if(rotationModeValue.equals("None"))
             return true
 
         var boundingBox = entity.entityBoundingBox
@@ -779,7 +782,7 @@ class KillAura : Module() {
                 (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
             )
 
-        val (_, rotation) = RotationUtils.searchCenter(
+        val (_, directRotation) = RotationUtils.searchCenter(
             boundingBox,
             outborderValue.get() && !attackTimer.hasTimePassed(attackDelay / 2),
             randomCenterValue.get(),
@@ -787,13 +790,17 @@ class KillAura : Module() {
             mc.thePlayer.getDistanceToEntityBox(entity) < throughWallsRangeValue.get()
         ) ?: return false
 
-        val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation,
-            (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
+        val rotation = when(rotationModeValue.get().lowercase()) {
+            "custom" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation,
+                (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
+            "smooth" -> RotationUtils.rotationSmooth(RotationUtils.serverRotation, directRotation, rotationSmoothValue.get())
+            else -> RotationUtils.getRotations(mc.thePlayer)
+        }
 
         if (silentRotationValue.get())
-            RotationUtils.setTargetRotation(limitedRotation, if (aacValue.get()) 90 - aacPitchValue.get() else 0)
+            RotationUtils.setTargetRotation(rotation, if (aacValue.get()) 15 else 0)
         else
-            limitedRotation.toPlayer(mc.thePlayer)
+            rotation.toPlayer(mc.thePlayer)
 
         return true
     }
@@ -824,7 +831,7 @@ class KillAura : Module() {
                 && !EntityUtils.isFriend(raycastedEntity))
                 currentTarget = raycastedEntity
 
-            hitable = if(maxTurnSpeed.get() > 0F) currentTarget == raycastedEntity else true
+            hitable = if(!rotationModeValue.equals("None")) currentTarget == raycastedEntity else true
         } else
             hitable = RotationUtils.isFaced(currentTarget, reach)
     }

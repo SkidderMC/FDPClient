@@ -424,6 +424,14 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     }
 
     /**
+     * skid from https://github.com/danielkrupinski/Osiris
+     */
+    public static Rotation rotationSmooth(Rotation currentRotation, Rotation targetRotation, float smooth) {
+        return new Rotation(currentRotation.getYaw()+((targetRotation.getYaw()-currentRotation.getYaw())/smooth),
+                currentRotation.getPitch()+((targetRotation.getPitch()-currentRotation.getPitch())/smooth));
+    }
+
+    /**
      * @return YESSSS!!!
      */
     @Override
