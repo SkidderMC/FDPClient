@@ -98,7 +98,7 @@ public abstract class MixinMinecraft {
             MiscUtils.showErrorPopup(warnStr);
             throw new AccessDeniedException(warnStr);
         }
-        LiquidBounce.INSTANCE.startClient();
+        LiquidBounce.INSTANCE.initClient();
     }
 
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))

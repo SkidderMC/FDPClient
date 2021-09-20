@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
+import net.ccbluex.liquidbounce.launch.data.GuiLaunchOptionSelectMenu
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
@@ -73,7 +74,7 @@ object LiquidBounce {
     // Menu Background
     var background: ResourceLocation? = null
 
-    private val launchFilters = mutableListOf<EnumLaunchFilter>()
+    val launchFilters = mutableListOf<EnumLaunchFilter>()
     private val dynamicLaunchOptions: Array<LaunchOption>
         get() = ReflectUtils.getReflects("${LaunchOption::class.java.`package`.name}.options", LaunchOption::class.java)
             .filter {
@@ -96,20 +97,20 @@ object LiquidBounce {
         }
 
         // initialize dynamic launch options
-        if(System.getProperty("fdp-legacy-ui")!=null){
-            launchFilters.add(EnumLaunchFilter.LEGACY_UI)
-        }else{
-            launchFilters.add(EnumLaunchFilter.ULTRALIGHT)
-        }
+//        if(System.getProperty("fdp-legacy-ui")!=null){
+//            launchFilters.add(EnumLaunchFilter.LEGACY_UI)
+//        }else{
+//            launchFilters.add(EnumLaunchFilter.ULTRALIGHT)
+//        }
+        mainMenu=GuiLaunchOptionSelectMenu()
     }
 
-    /***
+    /**
      * Execute if client will be started
      */
-    fun startClient() {
-        ClientUtils.logInfo("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
+    fun initClient() {
+        ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
         val startTime=System.currentTimeMillis()
-        isStarting = true
 
         // Create file manager
         fileManager = FileManager()
@@ -173,6 +174,13 @@ object LiquidBounce {
 
         GuiCapeManager.load()
 
+        ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis()-startTime)}ms!")
+    }
+
+    /**
+     * Execute if client ui type is selected
+     */
+    fun startClient() {
         dynamicLaunchOptions.forEach {
             it.start()
         }
@@ -186,23 +194,25 @@ object LiquidBounce {
         isStarting = false
         isLoadingConfig=false
 
-        ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started in ${(System.currentTimeMillis()-startTime)}ms!")
+        ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started!")
     }
 
     /**
      * Execute if client will be stopped
      */
     fun stopClient() {
-        // Call client shutdown
-        eventManager.callEvent(ClientShutdownEvent())
+        if(!isStarting && !isLoadingConfig) {
+            // Call client shutdown
+            eventManager.callEvent(ClientShutdownEvent())
 
-        // Save all available configs
-        GuiCapeManager.save()
-        configManager.save(true,true)
-        fileManager.saveAllConfigs()
+            // Save all available configs
+            GuiCapeManager.save()
+            configManager.save(true, true)
+            fileManager.saveAllConfigs()
 
-        dynamicLaunchOptions.forEach {
-            it.stop()
+            dynamicLaunchOptions.forEach {
+                it.stop()
+            }
         }
     }
 }
