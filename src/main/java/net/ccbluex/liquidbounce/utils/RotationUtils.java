@@ -378,6 +378,8 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         targetRotation = rotation;
         RotationUtils.keepLength = keepLength;
     }
+    
+    //public static void setTargetRotationReverse(final Rotation rotation, final int revTick, final int revDelay)
 
     /**
      * Reset your target rotation
