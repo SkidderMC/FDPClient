@@ -820,9 +820,9 @@ class KillAura : Module() {
         var calculateSpeed = when(rotationSmoothModeValue.get()) {
             "Custom" -> diffAngle/rotationSmoothValue.get()
             "Line" -> (diffAngle/180) * maxTurnSpeed.get() + (1-diffAngle/180) * minTurnSpeed.get()
-            "Quad" -> pow((diffAngle/180),2) * maxTurnSpeed.get() + (1-pow((diffAngle/180),2)) * minTurnSpeed.get()
+            "Quad" -> Math.pow((diffAngle/180),2) * maxTurnSpeed.get() + (1-Math.pow((diffAngle/180),2)) * minTurnSpeed.get()
             "Sine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeed.get() + (cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * minTurnSpeed.get()
-            "QuadSine" -> pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeed.get() + (1-pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5)) * minTurnSpeed.get()
+            "QuadSine" -> Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeed.get() + (1-Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5)) * minTurnSpeed.get()
             else -> 180.0
         }
         
