@@ -331,7 +331,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         
         final Rotation randomRotation = toRotation(randomVec3, predict);
         
-        
+        /*
         for(double xSearch = 0.00D; xSearch < 1.00D; xSearch += 0.05D) {
             for (double ySearch = 0.00D; ySearch < 1.00D; ySearch += 0.05D) {
                 for (double zSearch = 0.00D; zSearch < 1.00D; zSearch += 0.05D) {
@@ -347,6 +347,8 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                 }
             }
         }
+        I Give Up :sadface: */
+        vecRotation =  new VecRotation(randomVec3, randomRotation);
         
         return vecRotation;
     }
