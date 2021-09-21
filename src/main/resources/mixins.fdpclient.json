@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.7.11",
   "package": "net.ccbluex.liquidbounce.injection.forge.mixins",
-  "refmap": "mixins.liquidbounce.refmap.json",
+  "refmap": "mixins.fdpclient.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "block.MixinBlock",

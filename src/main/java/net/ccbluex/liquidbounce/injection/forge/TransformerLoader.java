@@ -19,7 +19,7 @@ public class TransformerLoader implements IFMLLoadingPlugin {
 
     public TransformerLoader() {
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.liquidbounce.json");
+        Mixins.addConfiguration("mixins.fdpclient.json");
         MixinEnvironment.getDefaultEnvironment().setSide(MixinEnvironment.Side.CLIENT);
     }
 
