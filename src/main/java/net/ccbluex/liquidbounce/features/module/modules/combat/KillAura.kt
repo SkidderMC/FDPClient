@@ -806,29 +806,29 @@ class KillAura : Module() {
         RotationUtils.calculateCenter(
             rModes,
             randomCenterModeValue.get(),
-            randomCenterRangeValue.get(),
+            (randomCenterRangeValue.get()).toDouble(),
             boundingBox,
             predictValue.get() && rotationModeValue.get() != "Test",
             mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
         ) ?: return false
         
         var calculateSpeed = when(rotationSmoothModeValue.get()) {
-            "Custom" -> (RotationUtils.serverRotation.getYaw()-directRotation.getYaw())/rotationSmoothValue.get()
-            "Line" -> RotationUtils.getAngleDifference(RotationUtils.serverRotation.getYaw(), directRotation.getYaw()) / 180.0 * maxTurnSpeed.get() +
-                        (1 - RotationUtils.getAngleDifference(RotationUtils.serverRotation.getYaw(), directRotation.getYaw()) / 180.0) * minTurnSpeed.get()
-            "Quad" -> (RotationUtils.getAngleDifference(RotationUtils.serverRotation.getYaw(), directRotation.getYaw()) / 180.0)*(RotationUtils.getAngleDifference(RotationUtils.serverRotation.getYaw(), directRotation.getYaw()) / 180.0) * maxTurnSpeed.get() +
-                        (1 - (RotationUtils.getAngleDifference(RotationUtils.serverRotation.getYaw(), directRotation.getYaw()) / 180.0)*(RotationUtils.getAngleDifference(RotationUtils.serverRotation.getYaw(), directRotation.getYaw()) / 180.0)) * minTurnSpeed.get()
-            "Sine", "QuadSine" -> RotationUtils.getAngleDifference(RotationUtils.serverRotation.getYaw(), directRotation.getYaw()) / 180.0 * maxTurnSpeed.get() +
-                        (1 - RotationUtils.getAngleDifference(RotationUtils.serverRotation.getYaw(), directRotation.getYaw()) / 180.0) * minTurnSpeed.get()
+            "Custom" -> (RotationUtils.serverRotation.yaw-directRotation.yaw)/rotationSmoothValue.get()
+            "Line" -> RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0 * maxTurnSpeed.get() +
+                        (1 - RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0) * minTurnSpeed.get()
+            "Quad" -> (RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0)*(RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0) * maxTurnSpeed.get() +
+                        (1 - (RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0)*(RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0)) * minTurnSpeed.get()
+            "Sine", "QuadSine" -> RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0 * maxTurnSpeed.get() +
+                        (1 - RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0) * minTurnSpeed.get()
             else -> 180.0
         }
         
         val rotation = when(rotationModeValue.get()) {
             "LiquidBounce", "ForceCenter" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation,
                 (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
-            "LockView" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, 180.0)
-            "SmoothCenter", "SmoothLiquid" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, calculateSpeed)
-            "Test" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, calculateSpeed)
+            "LockView" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (180.0).toFloat())
+            "SmoothCenter", "SmoothLiquid" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (calculateSpeed).toFloat())
+            "Test" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (calculateSpeed).toFloat())
             else -> return true
         }
 
