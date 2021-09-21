@@ -70,7 +70,7 @@ object ColorUtils {
 
     @JvmStatic
     fun colorCode(code: String, alpha: Int=255): Color {
-        when(code.toLowerCase()){
+        when(code.lowercase()){
             "0" -> {
                 return Color(0,0,0,alpha)
             }

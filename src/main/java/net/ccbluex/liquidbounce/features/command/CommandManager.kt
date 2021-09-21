@@ -27,7 +27,7 @@ class CommandManager {
      */
     fun executeCommands(input: String) {
         val args = input.split(" ").toTypedArray()
-        val command=commands[args[0].substring(1).toLowerCase()]
+        val command=commands[args[0].substring(1).lowercase()]
 
         if(command!=null){
             command.execute(args)
@@ -63,7 +63,7 @@ class CommandManager {
 
                 tabCompletions?.toTypedArray()
             } else {
-                commands.map { ".${it.key}" }.filter { it.toLowerCase().startsWith(args[0].toLowerCase()) }.toTypedArray()
+                commands.map { ".${it.key}" }.filter { it.lowercase().startsWith(args[0].lowercase()) }.toTypedArray()
             }
         }
         return null
@@ -73,16 +73,16 @@ class CommandManager {
      * Get command instance by given [name]
      */
     fun getCommand(name: String): Command? {
-        return commands[name.toLowerCase()]
+        return commands[name.lowercase()]
     }
 
     /**
      * Register [command] by just adding it to the commands registry
      */
     fun registerCommand(command: Command){
-        commands[command.command.toLowerCase()] = command
+        commands[command.command.lowercase()] = command
         command.alias.forEach {
-            commands[it.toLowerCase()] = command
+            commands[it.lowercase()] = command
         }
     }
 

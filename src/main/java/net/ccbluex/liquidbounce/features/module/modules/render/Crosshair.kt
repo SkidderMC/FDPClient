@@ -92,7 +92,7 @@ class Crosshair : Module() {
 
     private val crosshairColor: Color
         get() =
-            when (colorModeValue.get().toLowerCase()) {
+            when (colorModeValue.get().lowercase()) {
                 "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
                 "slowly" -> ColorUtils.reAlpha(ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get()),colorAlphaValue.get())
                 "rainbow" -> ColorUtils.rainbowWithAlpha(colorAlphaValue.get())

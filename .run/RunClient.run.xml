@@ -4,7 +4,8 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="GradleStart" />
     <module name="FDPClient.main" />
-    <option name="VM_PARAMETERS" value="-Xmx4096m -Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.MixinLoader -Ddev-mode -Dfdp-legacy-ui" />
+    <option name="PROGRAM_PARAMETERS" value="--mixin mixins.liquidbounce.json" />
+    <option name="VM_PARAMETERS" value="-Xmx1024m -Xms1024m -Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader -Ddev-mode" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
     <method v="2">
       <option name="Make" enabled="true" />

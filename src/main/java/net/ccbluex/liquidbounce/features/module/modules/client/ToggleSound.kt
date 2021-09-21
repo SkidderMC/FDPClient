@@ -13,7 +13,7 @@ object ToggleSound : Module() {
     private val moveValue = ListValue("Mode", arrayOf("None","Click","Custom"),"Click")
 
     fun playSound(enable: Boolean){
-        when(moveValue.get().toLowerCase()){
+        when(moveValue.get().lowercase()){
             "click" -> {
                 mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.click"), 1F))
             }

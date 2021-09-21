@@ -11,15 +11,6 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 
 abstract class Value<T>(val name: String, protected var value: T) {
     val default=value
-    var localedName=""
-        get() = if(canLocalized&&field.isNotEmpty()) { field } else { name }
-
-    private var canLocalized=true
-
-    fun cantLocalized():Value<T>{
-        canLocalized=false
-        return this
-    }
 
     private var displayableFunc: () -> Boolean = { true }
 

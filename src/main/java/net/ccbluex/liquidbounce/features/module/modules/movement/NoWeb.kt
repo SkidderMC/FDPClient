@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 @ModuleInfo(name = "NoWeb", category = ModuleCategory.MOVEMENT)
 class NoWeb : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside","Horizon", "Spartan", "AAC4", "OldMatrix"), "None")
+    private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside","Horizon", "Spartan", "AAC4", "AAC5", "OldMatrix"), "None")
     private val horizonSpeed = FloatValue("HorizonSpeed", 0.1F, 0.01F, 0.8F)
     
      private var usedTimer = false
@@ -31,7 +31,7 @@ class NoWeb : Module() {
         if (!mc.thePlayer.isInWeb)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "none" -> mc.thePlayer.isInWeb = false
             "oldaac" -> {
                 mc.thePlayer.jumpMovementFactor = 0.59f
@@ -53,7 +53,7 @@ class NoWeb : Module() {
                 mc.thePlayer.jumpMovementFactor = 0.02958f
                 mc.thePlayer.motionY -= 0.00775
                 if (mc.thePlayer.onGround) {
-                    mc.thePlayer.jump()
+                    //mc.thePlayer.jump()
                     mc.thePlayer.motionY = 0.4050
                     mc.timer.timerSpeed = 1.35F
                 }
@@ -85,6 +85,12 @@ class NoWeb : Module() {
                     mc.thePlayer.motionY = 0.2425
                 }
             }
+            "aac5" -> {
+                mc.thePlayer.jumpMovementFactor = 0.42f
+
+                if (mc.thePlayer.onGround)
+                    mc.thePlayer.jump()
+            }
             "rewinside" -> {
                 mc.thePlayer.jumpMovementFactor = 0.42f
 
@@ -94,7 +100,7 @@ class NoWeb : Module() {
         }
     }
     fun onJump(event : JumpEvent){
-        if(modeValue.equals("AACv4"))
+        if(modeValue.equals("AAC4"))
             event.cancelEvent()
     }
 

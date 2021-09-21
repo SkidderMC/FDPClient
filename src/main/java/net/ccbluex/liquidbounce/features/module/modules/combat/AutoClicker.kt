@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.minecraft.client.settings.KeyBinding
 import kotlin.random.Random
 
 @ModuleInfo(name = "AutoClicker", category = ModuleCategory.COMBAT)
@@ -53,18 +52,16 @@ class AutoClicker : Module() {
     @EventTarget
     fun onRender(event: Render3DEvent) {
         // Left click
-        if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() &&
-                leftLastSwing.hasTimePassed(leftDelay) && mc.playerController.curBlockDamageMP == 0F) {
-            KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
+        if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && leftLastSwing.hasTimePassed(leftDelay)) {
+            mc.clickMouse()
 
             leftLastSwing.reset()
             leftDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
         }
 
         // Right click
-        if (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() &&
-                rightLastSwing.hasTimePassed(rightDelay)) {
-            KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+        if (mc.gameSettings.keyBindUseItem.isKeyDown && rightValue.get() && rightLastSwing.hasTimePassed(rightDelay)) {
+            mc.rightClickMouse()
 
             rightLastSwing.reset()
             rightDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())

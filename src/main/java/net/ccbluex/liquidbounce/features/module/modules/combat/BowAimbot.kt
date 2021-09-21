@@ -62,10 +62,10 @@ class BowAimbot : Module() {
                     (throughWalls || mc.thePlayer.canEntityBeSeen(it))
         }
 
-        return when (priorityMode.toUpperCase()) {
-            "DISTANCE" -> targets.minBy { mc.thePlayer.getDistanceToEntity(it) }
-            "DIRECTION" -> targets.minBy { RotationUtils.getRotationDifference(it) }
-            "HEALTH" -> targets.minBy { (it as EntityLivingBase).health }
+        return when (priorityMode.uppercase()) {
+            "DISTANCE" -> targets.minByOrNull { mc.thePlayer.getDistanceToEntity(it) }
+            "DIRECTION" -> targets.minByOrNull { RotationUtils.getRotationDifference(it) }
+            "HEALTH" -> targets.minByOrNull { (it as EntityLivingBase).health }
             else -> null
         }
     }

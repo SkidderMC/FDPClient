@@ -59,7 +59,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed",10,1,10)
     private val rainbowIndex = IntegerValue("RainbowIndex",1,1,20)
-    private var fontValue = FontValue("Font", Fonts.font40)
+    private var fontValue = FontValue("Font", Fonts.font20)
 
     private var editMode = false
     private var editTicks = 0
@@ -89,7 +89,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
                 "zdp" -> return mc.thePlayer.posZ.toString()
                 "velocity" -> return DECIMAL_FORMAT.format(sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ))
                 "ping" -> return EntityUtils.getPing(mc.thePlayer).toString()
-                "speed" -> return DECIMAL_FORMAT.format(MovementUtils.getBlocksPerSecond())
+                "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
             }
         }
 
@@ -147,14 +147,14 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
         val fontRenderer = fontValue.get()
 
-        val rectColor = when(rectColorModeValue.get().toLowerCase()){
+        val rectColor = when(rectColorModeValue.get().lowercase()){
             "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
             "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()),100,rainbowIndex.get()).rgb
             else -> Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
         }
         val expand = fontRenderer.FONT_HEIGHT*rectExpandValue.get()
-        when(rectValue.get().toLowerCase()){
+        when(rectValue.get().lowercase()){
             "normal" -> {
                 RenderUtils.drawRect(-expand,-expand,fontRenderer.getStringWidth(displayText)+expand,fontRenderer.FONT_HEIGHT+expand,rectColor)
             }
@@ -170,7 +170,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
             }
         }
 
-        fontRenderer.drawString(displayText, 0F, 0F, when(colorModeValue.get().toLowerCase()){
+        fontRenderer.drawString(displayText, 0F, 0F, when(colorModeValue.get().lowercase()){
             "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
             "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "anotherrainbow" -> ColorUtils.fade(color,100,rainbowIndex.get()).rgb

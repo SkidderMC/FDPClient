@@ -53,7 +53,7 @@ object LanguageManager {
     }
 
     fun switchLanguage(languageStr: String){
-        val languageCode=languageStr.toLowerCase()
+        val languageCode=languageStr.lowercase()
 
         if(LanguageManager::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/locale/$languageCode.lang")==null) {
             ClientUtils.logWarn("Language $languageCode not exist!")

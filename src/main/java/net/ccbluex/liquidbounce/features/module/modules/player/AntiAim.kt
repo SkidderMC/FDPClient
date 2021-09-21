@@ -22,10 +22,7 @@ class AntiAim : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent){
-        if(mc.thePlayer.isSwingInProgress||mc.thePlayer.isUsingItem)
-            return
-
-        when (yawMode.get().toLowerCase()) {
+        when (yawMode.get().lowercase()) {
             "spin" -> {
                 yaw += 20.0f
                 if (yaw > 180.0f) {
@@ -36,7 +33,7 @@ class AntiAim : Module() {
                 }
             }
             "jitter" -> {
-                yaw = if (mc.thePlayer.ticksExisted % 2 === 0) 90F else -90F
+                yaw = mc.thePlayer.rotationYaw + if (mc.thePlayer.ticksExisted % 2 === 0) 90F else -90F
             }
             "back" -> {
                 yaw = mc.thePlayer.rotationYaw + 180f
@@ -46,7 +43,7 @@ class AntiAim : Module() {
             }
         }
 
-        when (pitchMode.get().toLowerCase()) {
+        when (pitchMode.get().lowercase()) {
             "up" -> {
                 pitch = -90.0f
             }

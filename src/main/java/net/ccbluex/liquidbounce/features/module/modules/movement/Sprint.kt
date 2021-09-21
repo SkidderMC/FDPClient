@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -26,6 +27,7 @@ class Sprint : Module() {
     val foodValue = BoolValue("Food", true)
     val checkServerSide = BoolValue("CheckServerSide", false)
     val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false).displayable { checkServerSide.get() }
+    private val noPacket = BoolValue("NoPacket", false)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -44,7 +46,7 @@ class Sprint : Module() {
         if (allDirectionsValue.get()) {
             mc.thePlayer.isSprinting = true
             if(RotationUtils.getRotationDifference(Rotation((MovementUtils.getDirection() * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch)) > 30){
-                when(allDirectionsBypassValue.get().toLowerCase()){
+                when(allDirectionsBypassValue.get().lowercase()){
                     "rotate" -> RotationUtils.setTargetRotation(Rotation((MovementUtils.getDirection() * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch),10)
                     "toggle" -> {
                         mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))
@@ -53,6 +55,15 @@ class Sprint : Module() {
                     "minemora" -> mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000013, mc.thePlayer.posZ)
                 }
             }
+        }
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent){
+        val packet=event.packet
+
+        if(noPacket.get() && packet is C0BPacketEntityAction && (packet.action==C0BPacketEntityAction.Action.START_SPRINTING || packet.action==C0BPacketEntityAction.Action.STOP_SPRINTING)){
+            event.cancelEvent()
         }
     }
 }

@@ -6,40 +6,6 @@ import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.server.*
 
 object PacketUtils : MinecraftInstance() {
-    //    private static Method flushOutboundQueueMethod;
-    //    private static Method dispatchPacketMethod;
-    //    private static Field readWriteLockField;
-    //    private static Field outboundPacketsQueueField;
-    //    private static Class inboundHandlerTuplePacketListenerClass;
-    //
-    //    static {
-    //        Class<? extends NetworkManager> clazz=NetworkManager.class;
-    //        for (Class clazz1:clazz.getDeclaredClasses()){
-    //            if(clazz1.getName().contains("InboundHandlerTuplePacketListener")){
-    //                inboundHandlerTuplePacketListenerClass=clazz1;
-    //            }
-    //        }
-    //
-    //        for(Method method:clazz.getDeclaredMethods()){
-    //            if(method.getName().equals("func_150733_h")){
-    //                method.setAccessible(true);
-    //                flushOutboundQueueMethod=method;
-    //            }else if(method.getName().equals("func_150732_b")){
-    //                method.setAccessible(true);
-    //                dispatchPacketMethod=method;
-    //            }
-    //        }
-    //
-    //        for (Field field:clazz.getDeclaredFields()){
-    //            if(field.getName().equals("field_181680_j")){
-    //                field.setAccessible(true);
-    //                readWriteLockField=field;
-    //            }else if(field.getName().equals("field_150745_j")){
-    //                field.setAccessible(true);
-    //                outboundPacketsQueueField=field;
-    //            }
-    //        }
-    //    }
     private val packets = ArrayList<Packet<INetHandlerPlayServer>>()
 
     @JvmStatic
@@ -55,24 +21,6 @@ object PacketUtils : MinecraftInstance() {
     fun sendPacketNoEvent(packet: Packet<INetHandlerPlayServer>) {
         packets.add(packet)
         mc.netHandler.addToSendQueue(packet)
-        //        NetworkManager networkManager=mc.thePlayer.sendQueue.getNetworkManager();
-//        try {
-//            if(networkManager.isChannelOpen()){
-//                flushOutboundQueueMethod.invoke(networkManager);
-//                dispatchPacketMethod.invoke(networkManager, packet, null);
-//            }else{
-//                ReentrantReadWriteLock readWriteLock= (ReentrantReadWriteLock) readWriteLockField.get(networkManager);
-//                readWriteLock.writeLock().lock();
-//                try {
-//                    ((Queue)outboundPacketsQueueField.get(networkManager))
-//                            .add(inboundHandlerTuplePacketListenerClass.getConstructors()[0].newInstance(packet, null));
-//                } finally {
-//                    readWriteLock.writeLock().unlock();
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     @JvmStatic

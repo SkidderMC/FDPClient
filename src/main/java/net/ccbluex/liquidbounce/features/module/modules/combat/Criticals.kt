@@ -28,7 +28,7 @@ import net.minecraft.stats.StatList
 class Criticals : Module() {
 
     val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "Hypixel", "Hypixel2","AACPacket", "AAC4.3.11OldHYT", "NoGround", "Visual", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "Motion", "Hover"), "packet")
-    val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump"), "Jump")
+    val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
     val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
     val hoverNoFall = BoolValue("HoverNoFall",true)
     val hoverCombat = BoolValue("HoverOnlyCombat",true)
@@ -71,7 +71,7 @@ class Criticals : Module() {
                 }
             }
 
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase()) {
                 "packet" -> {
                     sendCriticalPacket(yOffset=0.0625,ground = true)
                     sendCriticalPacket(ground = false)
@@ -114,7 +114,7 @@ class Criticals : Module() {
                     sendCriticalPacket(ground = false)
                 }
 
-                // Minemora criticals to try
+                // Minemora criticals without test
                 "testminemora" -> {
                     sendCriticalPacket(yOffset=0.0114514,ground = false)
                     sendCriticalPacket(yOffset=0.0010999999940395355,ground = false)
@@ -153,7 +153,7 @@ class Criticals : Module() {
                 "visual" -> mc.thePlayer.onCriticalHit(entity)
 
                 "motion" -> {
-                    when (motionValue.get().toLowerCase()) {
+                    when (motionValue.get().lowercase()) {
                         "jump" -> mc.thePlayer.motionY = 0.42
                         "lowjump" -> mc.thePlayer.motionY = 0.3425
                         "redeskylowhop" -> mc.thePlayer.motionY = 0.35
@@ -161,6 +161,10 @@ class Criticals : Module() {
                             mc.thePlayer.motionY = 0.1
                             mc.thePlayer.fallDistance = 0.1f
                             mc.thePlayer.onGround = false
+                        }
+                        "minemoratest" -> {
+                            mc.timer.timerSpeed = 0.82f
+                            mc.thePlayer.motionY = 0.124514
                         }
                     }
                 }
@@ -175,8 +179,13 @@ class Criticals : Module() {
         val packet = event.packet
 
         if (packet is C03PacketPlayer){
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase()) {
                 "noground" -> packet.onGround = false
+                "motion" -> {
+                    when (motionValue.get().lowercase()) {
+                        "minemoratest" -> if(!LiquidBounce.combatManager.inCombat) mc.timer.timerSpeed = 1.00f
+                    }
+                }
                 "hover" -> {
                     if(hoverCombat.get() && !LiquidBounce.combatManager.inCombat) return
                     if(packet is C05PacketPlayerLook) {
@@ -188,7 +197,7 @@ class Criticals : Module() {
                         event.cancelEvent()
                         return
                     }
-                    when (hoverValue.get().toLowerCase()) {
+                    when (hoverValue.get().lowercase()) {
                         "2b2t" -> {
                             if(mc.thePlayer.onGround){
                                 packet.onGround=false

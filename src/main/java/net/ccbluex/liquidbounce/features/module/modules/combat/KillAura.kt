@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -25,6 +26,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -41,11 +43,15 @@ import net.minecraft.util.Vec3
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
+import org.lwjgl.util.glu.Cylinder
+import org.lwjgl.util.glu.GLU
+import sun.audio.AudioPlayer.player
 import java.awt.Color
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
+
 
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
@@ -119,33 +125,36 @@ class KillAura : Module() {
 
     // Bypass
     private val aacValue = BoolValue("AAC", true)
-    private val aacPitchValue = IntegerValue("AAC-Pitch", 15, 0, 90)
 
-    // Turn Speed
-    private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f) {
+    // Rotations
+    private val rotationModeValue = ListValue("RotationMode", arrayOf("Custom", "Smooth", "None"), "Custom")
+
+    private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minTurnSpeed.get()
             if (v > newValue) set(v)
         }
-    }
+    }.displayable { rotationModeValue.equals("Custom") } as FloatValue
 
-    private val minTurnSpeed: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 0f, 180f) {
+    private val minTurnSpeed: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 1f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxTurnSpeed.get()
             if (v < newValue) set(v)
         }
-    }
+    }.displayable { rotationModeValue.equals("Custom") } as FloatValue
 
-    private val silentRotationValue = BoolValue("SilentRotation", true).displayable { maxTurnSpeed.get()>0f }
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && maxTurnSpeed.get()>0f }
+    private val rotationSmoothValue = FloatValue("RotationSmooth", 1f, 1f, 10f).displayable { rotationModeValue.equals("Smooth") }
+
+    private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
     private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
-    private val randomCenterValue = BoolValue("RandomCenter", false).displayable { maxTurnSpeed.get()>0f }
-    private val outborderValue = BoolValue("Outborder", false).displayable { maxTurnSpeed.get()>0f }
-    private val hitableValue = BoolValue("AlwaysHitable",true).displayable { maxTurnSpeed.get()>0f }
+    private val randomCenterValue = BoolValue("RandomCenter", false).displayable { !rotationModeValue.equals("None") }
+    private val outborderValue = BoolValue("Outborder", false).displayable { !rotationModeValue.equals("None") }
+    private val hitableValue = BoolValue("AlwaysHitable",true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
-    private val predictValue = BoolValue("Predict", true).displayable { maxTurnSpeed.get()>0f }
+    private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
 
     private val maxPredictSize: FloatValue = object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -172,7 +181,7 @@ class KillAura : Module() {
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
     private val fakeSharpValue = BoolValue("FakeSharp", true)
-    private val circleValue=BoolValue("Circle",true)
+    private val circleValue=BoolValue("Circle",false)
     private val circleRed = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
     private val circleGreen = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
     private val circleBlue = IntegerValue("CircleBlue", 255, 0, 255).displayable { circleValue.get() }
@@ -277,7 +286,7 @@ class KillAura : Module() {
             return
 
         if (discoveredTargets.isNotEmpty() && RotationUtils.targetRotation != null) {
-            when (rotationStrafeValue.get().toLowerCase()) {
+            when (rotationStrafeValue.get().lowercase()) {
                 "strict" -> {
                     val (yaw) = RotationUtils.targetRotation ?: return
                     var strafe = event.strafe
@@ -424,7 +433,7 @@ class KillAura : Module() {
             attackDelay = getAttackDelay(minCPS.get(), maxCPS.get())
         }
 
-        when(markValue.get().toLowerCase()){
+        when(markValue.get().lowercase()){
             "liquid" -> {
                 discoveredTargets.forEach {
                     RenderUtils.drawPlatform(it, if (it.hurtTime<=0) Color(37, 126, 255, 170) else Color(255, 0, 0, 170))
@@ -439,17 +448,17 @@ class KillAura : Module() {
                 }
             }
             "fdp" -> {
-                val drawTime = (System.currentTimeMillis() % 1500).toInt()
-                val drawMode=drawTime>750
-                var drawPercent=drawTime/750.0
-                //true when goes up
-                if(!drawMode){
-                    drawPercent=1-drawPercent
-                }else{
-                    drawPercent-=1
-                }
-                drawPercent=EaseUtils.easeInOutQuad(drawPercent)
                 discoveredTargets.forEach {
+                    val drawTime = (System.currentTimeMillis() % 1500).toInt()
+                    val drawMode=drawTime>750
+                    var drawPercent=drawTime/750.0
+                    //true when goes up
+                    if(!drawMode){
+                        drawPercent=1-drawPercent
+                    }else{
+                        drawPercent-=1
+                    }
+                    drawPercent=EaseUtils.easeInOutQuad(drawPercent)
                     GL11.glPushMatrix()
                     GL11.glDisable(3553)
                     GL11.glEnable(2848)
@@ -469,12 +478,14 @@ class KillAura : Module() {
                     val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                     val y = (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
                     val z = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    mc.entityRenderer.disableLightmap()
                     GL11.glLineWidth((radius*5f).toFloat())
                     GL11.glBegin(3)
-                    for (i in 0..360) {
-                        val rainbow = Color(Color.HSBtoRGB((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)).toFloat() % 1.0f, 0.7f, 1.0f))
-                        GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
-                        GL11.glVertex3d(x + radius * cos(i * 6.283185307179586 / 45.0), y, z + radius * sin(i * 6.283185307179586 / 45.0))
+                    for (i in 0..360 step 5) {
+                        val rainbow = Color.getHSBColor(if(i<180){ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(i/180f) }
+                            else{ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(-(i-360)/180f) }, 0.7f, 1.0f)
+                        RenderUtils.glColor(rainbow)
+                        GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
                     }
                     GL11.glEnd()
 
@@ -666,7 +677,7 @@ class KillAura : Module() {
         }
 
         // Sort targets by priority
-        when (priorityValue.get().toLowerCase()) {
+        when (priorityValue.get().lowercase()) {
             "distance" -> discoveredTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) } // Sort by distance
             "health" -> discoveredTargets.sortBy { it.health } // Sort by health
             "direction" -> discoveredTargets.sortBy { RotationUtils.getRotationDifference(it) } // Sort by FOV
@@ -767,7 +778,7 @@ class KillAura : Module() {
      * Update killaura rotations to enemy
      */
     private fun updateRotations(entity: Entity): Boolean {
-        if(maxTurnSpeed.get() <= 0F)
+        if(rotationModeValue.equals("None"))
             return true
 
         var boundingBox = entity.entityBoundingBox
@@ -779,7 +790,7 @@ class KillAura : Module() {
                 (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
             )
 
-        val (_, rotation) = RotationUtils.searchCenter(
+        val (_, directRotation) = RotationUtils.searchCenter(
             boundingBox,
             outborderValue.get() && !attackTimer.hasTimePassed(attackDelay / 2),
             randomCenterValue.get(),
@@ -787,13 +798,17 @@ class KillAura : Module() {
             mc.thePlayer.getDistanceToEntityBox(entity) < throughWallsRangeValue.get()
         ) ?: return false
 
-        val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation,
-            (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
+        val rotation = when(rotationModeValue.get().lowercase()) {
+            "custom" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation,
+                (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
+            "smooth" -> RotationUtils.rotationSmooth(RotationUtils.serverRotation, directRotation, rotationSmoothValue.get())
+            else -> return true
+        }
 
         if (silentRotationValue.get())
-            RotationUtils.setTargetRotation(limitedRotation, if (aacValue.get()) 90 - aacPitchValue.get() else 0)
+            RotationUtils.setTargetRotation(rotation, if (aacValue.get()) 15 else 0)
         else
-            limitedRotation.toPlayer(mc.thePlayer)
+            rotation.toPlayer(mc.thePlayer)
 
         return true
     }
@@ -824,7 +839,7 @@ class KillAura : Module() {
                 && !EntityUtils.isFriend(raycastedEntity))
                 currentTarget = raycastedEntity
 
-            hitable = if(maxTurnSpeed.get() > 0F) currentTarget == raycastedEntity else true
+            hitable = if(!rotationModeValue.equals("None")) currentTarget == raycastedEntity else true
         } else
             hitable = RotationUtils.isFaced(currentTarget, reach)
     }
@@ -914,6 +929,6 @@ class KillAura : Module() {
     override val tag: String
         get() = "${minCPS.get()}-${maxCPS.get()}, " +
                 "$maxRange${if(!autoBlockValue.equals("Off")){"-${autoBlockRangeValue.get()}"}else{""}}-${discoverRangeValue.get()}, " +
-                "${if(targetModeValue.equals("Switch")){ "SW" }else{targetModeValue.get().substring(0,1).toUpperCase()}}, " +
-                priorityValue.get().substring(0,1).toUpperCase()
+                "${if(targetModeValue.equals("Switch")){ "SW" }else{targetModeValue.get().substring(0,1).uppercase()}}, " +
+                priorityValue.get().substring(0,1).uppercase()
 }

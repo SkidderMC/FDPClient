@@ -110,7 +110,7 @@ class Velocity : Module() {
         if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "jump" -> if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
                 mc.thePlayer.motionY = 0.42
             }
@@ -257,7 +257,7 @@ class Velocity : Module() {
 
             velocityTimer.reset()
 
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase()) {
                 "simple" -> {
                     val horizontal = horizontalValue.get()
                     val vertical = verticalValue.get()
@@ -413,7 +413,7 @@ class Velocity : Module() {
         if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "legit" -> {
                 if(pos==null||mc.thePlayer.hurtTime<=0)
                     return
@@ -464,7 +464,7 @@ class Velocity : Module() {
         if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "aacpush" -> {
                 jump = true
 

@@ -34,7 +34,7 @@ class CustomSpeed : SpeedMode("Custom") {
                 }
                 else -> {
                     groundTick=0
-                    when(speed.customStrafeValue.get().toLowerCase()){
+                    when(speed.customStrafeValue.get().lowercase()){
                         "strafe" -> MovementUtils.strafe(speed.customSpeedValue.get())
                         "boost" -> MovementUtils.strafe()
                         "plus" -> MovementUtils.move(speed.customSpeedValue.get()*0.1f)

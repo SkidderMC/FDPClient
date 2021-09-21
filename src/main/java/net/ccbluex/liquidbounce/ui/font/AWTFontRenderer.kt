@@ -29,7 +29,7 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
     private val cacheDir=File(LiquidBounce.fileManager.cacheDir,getFontDirName())
 
     val height: Int
-        get() = (fontHeight - 8) / 2
+        get() = fontHeight / 2
 
     init {
         if(!cacheDir.exists())
@@ -59,7 +59,7 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
      * @param color of the text
      */
     fun drawString(text: String, x: Double, y: Double, color: Int) {
-        val scale = 0.25
+        val scale = 0.5
 
         GlStateManager.pushMatrix()
         GlStateManager.scale(scale, scale, scale)
@@ -94,7 +94,7 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
         GlStateManager.popMatrix()
     }
 
-    private fun getFontDirName() = "${font.fontName.replace(" ","_").toLowerCase()}${if(font.isBold){"-bold"}else{""}}${if(font.isItalic){"-italic"}else{""}}-${font.size}"
+    private fun getFontDirName() = "${font.fontName.replace(" ","_").lowercase()}${if(font.isBold){"-bold"}else{""}}${if(font.isItalic){"-italic"}else{""}}-${font.size}"
 
     /**
      * Draw char from texture to display
@@ -137,7 +137,7 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
             }
         }
 
-        return width/2
+        return width
     }
 
     private fun putHints(graphics: Graphics2D){
@@ -149,10 +149,10 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
     private fun charInfo(char: String):String{
         val charArr=char.toCharArray()
         if(char.length==1){
-            return "char-${charArr[0].toInt()}"
+            return "char-${charArr[0].code}"
         }else if(char.length==2&&charArr[0] in '\ud800'..'\udfff'&&charArr[1] in '\ud800'..'\udfff'){
-            val first=(charArr[0].toInt()-0xd800)*0x400
-            val second=charArr[1].toInt()-0xdc00
+            val first=(charArr[0].code-0xd800)*0x400
+            val second= charArr[1].code-0xdc00
             return "char-${first+second+0x10000}"
         }
         throw IllegalStateException("The char $char not UTF-8 or UTF-16")
@@ -174,7 +174,7 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
     private fun renderCharImage(char: String): FontChar {
         var charWidth = fontMetrics.stringWidth(char) + 8
         if (charWidth <= 0)
-            charWidth = 7
+            charWidth = 8
 
         val fontImage = BufferedImage(charWidth, fontHeight, BufferedImage.TYPE_INT_ARGB)
         val graphics = fontImage.graphics as Graphics2D
@@ -225,8 +225,8 @@ class AWTFontRenderer(val font: Font, initialize: Boolean = true) {
      * 预初始化字符图片
      */
     private fun prepareCharImages(start: Char, stop: Char){
-        val startAscii=start.toInt().coerceAtMost(stop.toInt())
-        val stopAscii=stop.toInt().coerceAtLeast(start.toInt())
+        val startAscii=start.code.coerceAtMost(stop.code)
+        val stopAscii=stop.code.coerceAtLeast(start.code)
 
         for (ascii in startAscii until stopAscii){
             loadChar("${ascii.toChar()}")

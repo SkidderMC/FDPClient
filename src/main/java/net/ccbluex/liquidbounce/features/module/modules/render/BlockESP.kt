@@ -76,7 +76,7 @@ class BlockESP : Module() {
     fun onRender3D(event: Render3DEvent?) {
         synchronized(posList) {
             for (blockPos in posList) {
-                when (modeValue.get().toLowerCase()) {
+                when (modeValue.get().lowercase()) {
                     "box" -> {
                         RenderUtils.drawBlockBox(blockPos, color, true, true, outlineWidth.get())
                     }

@@ -62,7 +62,7 @@ class InfiniteAura : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent){
         if(!timer.hasTimePassed(getDelay().toLong())) return
-        when(modeValue.get().toLowerCase()){
+        when(modeValue.get().lowercase()){
             "aura" -> {
                 if(thread == null || !thread!!.isAlive) {
                     thread = Thread {

@@ -56,7 +56,7 @@ class HurtCam : Module() {
     fun onPacket(event: PacketEvent){
         val packet=event.packet
 
-        when(modeValue.get().toLowerCase()){
+        when(modeValue.get().lowercase()){
             "fps" -> {
                 if(packet is S19PacketEntityStatus){
                     if(packet.opCode.toInt()==2&&packet.getEntity(mc.theWorld).equals(mc.thePlayer)){

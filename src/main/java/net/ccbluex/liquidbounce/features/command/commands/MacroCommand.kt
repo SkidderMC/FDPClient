@@ -10,10 +10,10 @@ class MacroCommand : Command("macro", arrayOf("m")) {
     override fun execute(args: Array<String>) {
         if (args.size > 1) {
             val arg1=args[1]
-            when(arg1.toLowerCase()){
+            when(arg1.lowercase()){
                 "add" -> {
                     if (args.size > 3) {
-                        val key = Keyboard.getKeyIndex(args[2].toUpperCase())
+                        val key = Keyboard.getKeyIndex(args[2].uppercase())
                         if(key!=Keyboard.KEY_NONE){
                             var comm=StringUtils.toCompleteString(args, 3)
                             if(!comm.startsWith(".")) comm=".$comm"
@@ -33,7 +33,7 @@ class MacroCommand : Command("macro", arrayOf("m")) {
                         if(args[2].startsWith(".")){
                             LiquidBounce.macroManager.macros.filter { it.command == StringUtils.toCompleteString(args, 2) }
                         }else{
-                            val key = Keyboard.getKeyIndex(args[2].toUpperCase())
+                            val key = Keyboard.getKeyIndex(args[2].uppercase())
                             LiquidBounce.macroManager.macros.filter { it.key==key }
                         }.forEach {
                             LiquidBounce.macroManager.macros.remove(it)

@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -21,9 +22,9 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "LiquidWalk", category = ModuleCategory.MOVEMENT)
-class LiquidWalk : Module() {
-    val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Twilight", "Matrix", "Dolphin", "Legit"), "Vanilla")
+@ModuleInfo(name = "Jesus", category = ModuleCategory.MOVEMENT)
+class Jesus : Module() {
+    val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Spartan", "Twilight", "Matrix", "Dolphin", "Legit"), "Vanilla")
     private val noJumpValue = BoolValue("NoJump", false)
     private val jumpMotionValue = FloatValue("JumpMotion", 0.5f, 0.1f, 1f)
         .displayable { modeValue.equals("Jump") || modeValue.equals("AACFly") }
@@ -41,7 +42,7 @@ class LiquidWalk : Module() {
 
         val blockPos = mc.thePlayer.position.down()
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "ncp" -> {
                 if (isLiquidBlock() && mc.thePlayer.isInsideOfMaterial(Material.air)){
                     mc.thePlayer.motionY = 0.08
@@ -90,6 +91,22 @@ class LiquidWalk : Module() {
                     mc.thePlayer.motionX *= 1.15
                     mc.thePlayer.motionZ *= 1.15
                 }
+             }
+            "spartan" -> if (mc.thePlayer.isInWater) {
+                if (mc.thePlayer.isCollidedHorizontally) {
+                    mc.thePlayer.motionY += 0.15
+                    return
+                }
+                val block = getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ))
+                val blockUp = getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.1, mc.thePlayer.posZ))
+                if (blockUp is BlockLiquid) {
+                    mc.thePlayer.motionY = 0.1
+                } else if (block is BlockLiquid) {
+                    mc.thePlayer.motionY = 0.0
+                }
+                mc.thePlayer.onGround = true
+                mc.thePlayer.motionX *= 1.085
+                mc.thePlayer.motionZ *= 1.085
             }
             "aac3.3.11" -> {
                 if (mc.thePlayer.isInWater) {
@@ -141,7 +158,7 @@ class LiquidWalk : Module() {
         if(!mc.thePlayer.isInWater)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase()) {
             "aacfly" -> {
                 event.y = jumpMotionValue.get().toDouble()
                 mc.thePlayer.motionY = jumpMotionValue.get().toDouble()
@@ -159,7 +176,7 @@ class LiquidWalk : Module() {
             return
 
         if (event.block is BlockLiquid && !isLiquidBlock() && !mc.thePlayer.isSneaking) {
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase()) {
                 "ncp","vanilla","jump" -> {
                     event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), (event.x + 1).toDouble(), (event.y + 1).toDouble(), (event.z + 1).toDouble())
                 }

@@ -1,3 +1,25 @@
+pluginManagement {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+		maven { url = "https://maven.minecraftforge.net/" }
+		maven { url = "https://jitpack.io/" }
+		maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
+	}
+	resolutionStrategy {
+		eachPlugin {
+			switch (requested.id.id) {
+				case "net.minecraftforge.gradle.forge":
+					useModule("com.github.asbyth:ForgeGradle:${requested.version}")
+					break
+				case "org.spongepowered.mixin":
+					useModule("com.github.xcfrg:mixingradle:${requested.version}")
+					break
+			}
+		}
+	}
+}
+
 rootProject.name = 'FDPClient'
 
 include 'ui'

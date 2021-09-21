@@ -32,7 +32,7 @@ import java.awt.Color
  *
  * Allows to move and customize minecraft scoreboard
  */
-@ElementInfo(name = "Scoreboard", force = true)
+@ElementInfo(name = "Scoreboard")
 class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                         side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)) : Element(x, y, scale, side) {
 
@@ -125,7 +125,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
             if(!serverValue.equals("none")){
                 for(domain in allowedDomains){
                     if(name.contains(domain,true)){
-                        name=when(serverValue.get().toLowerCase()){
+                        name=when(serverValue.get().lowercase()){
                             "clientname" -> LiquidBounce.COLORED_NAME
                             "website" -> LiquidBounce.CLIENT_WEBSITE
                             else -> "null"

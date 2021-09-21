@@ -215,12 +215,12 @@ object Fucker : Module() {
      * Find new target block by [targetID]
      */
     private fun find(targetID: Int) : BlockPos? {
-        val block=BlockUtils.searchBlocks(rangeValue.get().toInt() + 1)
+        val block= BlockUtils.searchBlocks(rangeValue.get().toInt() + 1)
             .filter {
                 Block.getIdFromBlock(it.value) == targetID && BlockUtils.getCenterDistance(it.key) <= rangeValue.get()
                         && (isHitable(it.key) || surroundingsValue.get())
             }
-            .minBy { BlockUtils.getCenterDistance(it.key) }?.key ?: return null
+            .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key ?: return null
 
         if(bypassValue.get()){
             val upBlock=block.up()
@@ -238,7 +238,7 @@ object Fucker : Module() {
      * Check if block is hitable (or allowed to hit through walls)
      */
     private fun isHitable(blockPos: BlockPos): Boolean {
-        return when (throughWallsValue.get().toLowerCase()) {
+        return when (throughWallsValue.get().lowercase()) {
             "raycast" -> {
                 val eyesPos = mc.thePlayer.getEyeVec3()
                 val movingObjectPosition = mc.theWorld.rayTraceBlocks(eyesPos,

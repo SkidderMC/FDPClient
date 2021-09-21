@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -16,25 +17,26 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
-@ElementInfo(name = "Targets", single = true)
+@ElementInfo(name = "Targets")
 class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid"/*,"Exhibition"*/,"Flux","Rise"), "Rise")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux","Rise"), "Rise")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed",10,5,20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed",20,5,40)
-    private val fontValue = FontValue("Font", Fonts.font40)
+    private val fontValue = FontValue("Font", Fonts.font20)
 
     private var prevTarget:EntityLivingBase?=null
     private var lastHealth=20F
     private var lastChangeHealth=20F
     private var changeTime=System.currentTimeMillis()
-    private var displayPercent=0.0
+    private var displayPercent=0f
     private var lastUpdate = System.currentTimeMillis()
     private val decimalFormat = DecimalFormat("0.0")
 
@@ -45,7 +47,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
     override fun drawElement(partialTicks: Float): Border? {
         var target=LiquidBounce.combatManager.target
         val time=System.currentTimeMillis()
-        val pct = (time - lastUpdate) / (switchAnimSpeedValue.get()*50.0)
+        val pct = (time - lastUpdate) / (switchAnimSpeedValue.get()*50f)
         lastUpdate=System.currentTimeMillis()
 
         if (mc.currentScreen is GuiHudDesigner) {
@@ -61,14 +63,14 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
                 displayPercent += pct
             }
             if (displayPercent > 1) {
-                displayPercent = 1.0
+                displayPercent = 1f
             }
         } else {
             if (displayPercent > 0) {
                 displayPercent -= pct
             }
             if (displayPercent < 0) {
-                displayPercent = 0.0
+                displayPercent = 0f
                 prevTarget=null
                 return getTBorder()
             }
@@ -85,24 +87,23 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             getHealth(prevTarget)
         }
 
-        when(switchModeValue.get().toLowerCase()){
+        when(switchModeValue.get().lowercase()){
             "zoom" -> {
                 val border=getTBorder() ?: return null
-                GL11.glScaled(displayPercent,displayPercent,displayPercent)
+                GL11.glScalef(displayPercent,displayPercent,displayPercent)
                 GL11.glTranslatef(((border.x2 * 0.5f * (1-displayPercent))/displayPercent).toFloat(), ((border.y2 * 0.5f * (1-displayPercent))/displayPercent).toFloat(), 0f)
             }
             "slide" -> {
-                val percent=EaseUtils.easeInQuint(1-displayPercent)
+                val percent=EaseUtils.easeInQuint(1.0-displayPercent)
                 val xAxis=ScaledResolution(mc).scaledWidth-renderX
                 GL11.glTranslated(xAxis*percent,0.0,0.0)
             }
         }
 
-        when(modeValue.get().toLowerCase()){
+        when(modeValue.get().lowercase()){
             "novoline" -> drawNovo(prevTarget!!,nowAnimHP)
             "astolfo" -> drawAstolfo(prevTarget!!,nowAnimHP)
             "liquid" -> drawLiquid(prevTarget!!,nowAnimHP)
-//            "exhibition" -> drawExhibition(prevTarget!!,nowAnimHP)
             "flux" -> drawFlux(prevTarget!!,nowAnimHP)
             "rise" -> drawRise(prevTarget!!,nowAnimHP)
         }
@@ -146,7 +147,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
     }
 
     private fun drawLiquid(target: EntityLivingBase, easingHealth: Float){
-        val width = (38 + target.name.let(Fonts.font40::getStringWidth))
+        val width = (38 + target.name.let(Fonts.font20::getStringWidth))
             .coerceAtLeast(118)
             .toFloat()
         // Draw rect box
@@ -167,99 +168,45 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
                 (getHealth(target) / target.maxHealth) * width, 36F, Color(44, 201, 144).rgb)
 
 
-        target.name.let { Fonts.font40.drawString(it, 36, 3, 0xffffff) }
-        Fonts.font35.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 36, 15, 0xffffff)
+        target.name.let { Fonts.font20.drawString(it, 36, 3, 0xffffff) }
+        Fonts.font18.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 36, 15, 0xffffff)
 
         // Draw info
         val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
         if (playerInfo != null) {
-            Fonts.font35.drawString("Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
+            Fonts.font18.drawString("Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
                 36, 24, 0xffffff)
 
             // Draw head
             RenderUtils.drawHead(playerInfo.locationSkin, 2, 2, 30, 30)
         }
     }
-    
-//    private fun drawExhibition(target: EntityLivingBase, easingHealth: Float){
-//        // Draw the rectangle
-//        RenderUtils.drawRect(-3.5F, -3.5F, 143.5F, 48.5F, Color.black.rgb)
-//        RenderUtils.drawRect(-3F, -3F, 143F, 48F, Color(59, 59, 59).rgb)
-//        RenderUtils.drawBorder(-1.5F, -1.5F, 141.5F, 46.5F, 3.25F, Color(39, 39, 39, 170).rgb)
-//        RenderUtils.drawRect(0F, 0F, 140F, 45F, Color(19, 19, 19).rgb)
-//
-//        RenderUtils.drawRect(2.5F, 2.5F, 42.5F, 42.5F, Color(59, 59, 59).rgb)
-//        RenderUtils.drawRect(3F, 3F, 42F, 42F, Color(19, 19, 19).rgb)
-//
-//        GL11.glColor4f(1f, 1f, 1f, 1f)
-//        RenderUtils.drawEntityOnScreen(22, 40, 15, target)
-//
-//        val font = fontValue.get()
-//        font.drawString(target.name, 46, 4, -1)
-//
-//        val barLength = 60F * (target.health / target.maxHealth).coerceIn(0F, 1F)
-//        RenderUtils.drawRect(45F, 15F, 45F + barLength, 18F, ColorUtils.healthColor(target.health, target.maxHealth).rgb)
-//
-//        for (i in 0..9) {
-//            RenderUtils.drawBorder(45F + i * 6F, 15F, 45F + (i + 1F) * 6F, 18F, 0.25F, Color.black.rgb)
-//        }
-//
-//        GL11.glPushMatrix()
-//        GL11.glTranslatef(46F, 20F, 0F)
-//        GL11.glScalef(0.5f, 0.5f, 0.5f)
-//        Fonts.minecraftFont.drawString("HP: ${target.health.toInt()} | Dist: ${mc.thePlayer.getDistanceToEntityBox(target).toInt()}", 0, 0, -1)
-//        GL11.glPopMatrix()
-//
-//        GlStateManager.resetColor()
-//
-//        GL11.glPushMatrix()
-//        GL11.glColor4f(1f, 1f, 1f, 1f)
-//        RenderHelper.enableGUIStandardItemLighting()
-//
-//        val renderItem = mc.renderItem
-//
-//        var x = 45
-//        var y = 26
-//
-//        for (index in 3 downTo 0) {
-//            val stack = target.inventory.armorInventory[index] ?: continue
-//
-//            if (stack.getItem() == null)
-//                continue
-//
-//            renderItem.renderItemIntoGUI(stack, x, y)
-//            renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
-//
-//            x += 18
-//        }
-//
-//        val mainStack = target.heldItem
-//        if (mainStack?.item != null) {
-//            renderItem.renderItemIntoGUI(mainStack, x, y)
-//            renderItem.renderItemOverlays(mc.fontRendererObj, mainStack, x, y)
-//        }
-//
-//        RenderHelper.disableStandardItemLighting()
-//        GlStateManager.enableAlpha()
-//        GlStateManager.disableBlend()
-//        GlStateManager.disableLighting()
-//        GlStateManager.disableCull()
-//        GL11.glPopMatrix()
-//    }
 
     private fun drawRise(target: EntityLivingBase, easingHealth: Float){
         val font=fontValue.get()
 
-        RenderUtils.drawCircleRect(0f,0f,150f,55f,5f,Color(0,0,0,130).rgb)
+        RenderUtils.drawCircleRect(0f,0f,150f,50f,5f,Color(0,0,0,130).rgb)
 
-        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
-        if (playerInfo != null) {
-            val hurtPercent=(target.hurtTime-mc.timer.renderPartialTicks)/10
-            GL11.glColor4f(1f, 1-hurtPercent, 1-hurtPercent, 1f)
-            mc.textureManager.bindTexture(playerInfo.locationSkin)
-            RenderUtils.drawScaledCustomSizeModalRect(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
-            RenderUtils.drawScaledCustomSizeModalRect(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
+        val skin = mc.netHandler.getPlayerInfo(target.uniqueID)?.locationSkin ?: DefaultPlayerSkin.getDefaultSkinLegacy()
+        val hurtPercent=target.hurtPercent
+        val scale=if(hurtPercent==0f){ 1f }
+        else if(hurtPercent<0.5f){
+            1-(0.2f*hurtPercent*2)
+        }else{
+            0.8f+(0.2f*(hurtPercent-0.5f)*2)
         }
+        val size=30
+
+        GL11.glPushMatrix()
+        GL11.glTranslatef(5f, 5f, 0f)
+        // 受伤的缩放效果
+        GL11.glScalef(scale, scale, scale)
+        GL11.glTranslatef(((size * 0.5f * (1-scale))/scale), ((size * 0.5f * (1-scale))/scale), 0f)
+        // 受伤的红色效果
+        GL11.glColor4f(1f, 1-hurtPercent, 1-hurtPercent, 1f)
+        // 绘制头部图片
+        RenderUtils.quickDrawHead(skin, 0, 0, size, size)
+        GL11.glPopMatrix()
 
         font.drawString("Name ${target.name}", 40, 11,Color.WHITE.rgb)
         font.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))} Hurt ${target.hurtTime}", 40, 11+font.FONT_HEIGHT,Color.WHITE.rgb)
@@ -287,7 +234,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
     }
 
     private fun drawFlux(target: EntityLivingBase, nowAnimHP: Float){
-        val width = (38 + target.name.let(Fonts.font40::getStringWidth))
+        val width = (38 + target.name.let(Fonts.font20::getStringWidth))
             .coerceAtLeast(70)
             .toFloat()
 
@@ -302,10 +249,10 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         RenderUtils.drawRect(2F, 28F, 2+(target.totalArmorValue / 20F) * (width-4), 30F, Color(77, 128, 255).rgb)
 
         // draw text
-        Fonts.font40.drawString(target.name,22,3,Color.WHITE.rgb)
+        Fonts.font20.drawString(target.name,22,3,Color.WHITE.rgb)
         GL11.glPushMatrix()
         GL11.glScaled(0.7,0.7,0.7)
-        Fonts.font35.drawString("Health: ${decimalFormat.format(getHealth(target))}",22/0.7F,(4+Fonts.font40.height)/0.7F,Color.WHITE.rgb)
+        Fonts.font18.drawString("Health: ${decimalFormat.format(getHealth(target))}",22/0.7F,(4+Fonts.font20.height)/0.7F,Color.WHITE.rgb)
         GL11.glPopMatrix()
 
         // Draw head
@@ -316,12 +263,12 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
     }
 
     private fun getTBorder():Border?{
-        return when(modeValue.get().toLowerCase()){
+        return when(modeValue.get().lowercase()){
             "novoline" -> Border(0F,0F,140F,40F)
             "astolfo" -> Border(0F,0F,140F,60F)
             "liquid" -> Border(0F,0F
-                ,(38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(),36F)
-            "flux" -> Border(0F,0F,(38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
+                ,(38 + mc.thePlayer.name.let(Fonts.font20::getStringWidth)).coerceAtLeast(118).toFloat(),36F)
+            "flux" -> Border(0F,0F,(38 + mc.thePlayer.name.let(Fonts.font20::getStringWidth))
                 .coerceAtLeast(70)
                 .toFloat(),34F)
             "rise" -> Border(0F,0F,150F,55F)

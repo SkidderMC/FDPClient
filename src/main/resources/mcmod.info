@@ -1,13 +1,13 @@
 [
   {
-    "modid": "liquidbounce",
-    "name": "LiquidBounce",
+    "modid": "fdpclient",
+    "name": "FDPClient",
     "description": "",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "https://liquidbounce.net",
+    "url": "https://getfdp.today",
     "updateUrl": "",
-    "authorList": ["CCBlueX"],
+    "authorList": ["CCBlueX", "UnlegitMC"],
     "credits": "",
     "logoFile": "",
     "screenshots": [],

@@ -25,10 +25,10 @@ object Rotations : Module() {
 //    }
 //
 //    fun toEnumType():EaseUtils.EnumEasingType{
-//        return EaseUtils.EnumEasingType.valueOf(rotationHumanizeType.get().toUpperCase())
+//        return EaseUtils.EnumEasingType.valueOf(rotationHumanizeType.get().uppercase())
 //    }
 //
 //    fun toEnumOrder():EaseUtils.EnumEasingOrder{
-//        return EaseUtils.EnumEasingOrder.valueOf(rotationHumanizeOrder.get().toUpperCase())
+//        return EaseUtils.EnumEasingOrder.valueOf(rotationHumanizeOrder.get().uppercase())
 //    }
 }

@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
+import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.features.module.modules.player.HackerDetector
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
@@ -33,7 +34,7 @@ class NameTags : Module() {
     private val distanceValue = BoolValue("Distance", false)
     private val armorValue = BoolValue("Armor", true)
     private val clearNamesValue = BoolValue("ClearNames", true)
-    private val fontValue = FontValue("Font", Fonts.font40)
+    private val fontValue = FontValue("Font", Fonts.font20)
     private val borderValue = BoolValue("Border", true)
     private val hackerValue = BoolValue("Hacker", true)
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
@@ -50,6 +51,29 @@ class NameTags : Module() {
                             + if (clearNamesValue.get()){ entity.name } else { entity.getDisplayName().unformattedText })
             }
         }
+    }
+
+    private fun getPlayerName(entity: EntityLivingBase): String {
+        val name = entity.displayName.formattedText
+        var pre = ""
+        val teams = LiquidBounce.moduleManager.getModule(Teams::class.java)
+        if (LiquidBounce.fileManager.friendsConfig.isFriend(entity.name)) {
+            pre = "$pre§b[Friend] "
+        }
+        if (teams.isInYourTeam(entity)) {
+            pre = "$pre§a[TEAM] "
+        }
+        if (AntiBot.isBot(entity)) {
+            pre = "$pre§e[BOT] "
+        }
+        if (!AntiBot.isBot(entity) && !teams.isInYourTeam(entity)) {
+            pre = if (LiquidBounce.fileManager.friendsConfig.isFriend(entity.name)) {
+                "§b[Friend] §c"
+            } else {
+                "§c"
+            }
+        }
+        return name + pre
     }
 
     private fun renderNameTag(entity: EntityLivingBase, tag: String) {
@@ -89,7 +113,7 @@ class NameTags : Module() {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         // Draw nametag
-        when(modeValue.get().toLowerCase()) {
+        when(modeValue.get().lowercase()) {
             "simple" -> {
                 val healthPercent = (entity.health / entity.maxHealth).coerceAtMost(1F)
                 val width = fontRenderer.getStringWidth(tag).coerceAtLeast(30) / 2

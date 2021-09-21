@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
+import net.ccbluex.liquidbounce.utils.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -87,6 +88,7 @@ public abstract class MixinGuiScreen {
             callbackInfo.cancel();
         }
     }
+
     /**
      * @author CCBlueX
      */
@@ -97,26 +99,18 @@ public abstract class MixinGuiScreen {
 
         if(GuiBackground.Companion.getEnabled()) {
             if (LiquidBounce.INSTANCE.getBackground() == null) {
-//                GL11.glDisable(GL11.GL_DEPTH_TEST);
-//                GL11.glEnable(GL11.GL_BLEND);
-//                GL11.glDepthMask(false);
-//                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
                 RenderUtils.glColor(ColorUtils.hslRainbow(1,0.41f,0.58f,300,4000, 0.7f,1f));
                 mc.getTextureManager().bindTexture(new ResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/misc/bg.png"));
-                Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
-//                GL11.glDepthMask(true);
-//                GL11.glDisable(GL11.GL_BLEND);
-//                GL11.glEnable(GL11.GL_DEPTH_TEST);
-                GlStateManager.resetColor();
             }else{
-                final ScaledResolution scaledResolution = new ScaledResolution(mc);
-                final int width = scaledResolution.getScaledWidth();
-                final int height = scaledResolution.getScaledHeight();
-
                 mc.getTextureManager().bindTexture(LiquidBounce.INSTANCE.getBackground());
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
             }
+
+            Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
+
+//            if (LiquidBounce.INSTANCE.getBackground() == null) {
+//                BlurUtils.INSTANCE.blurAll(60f);
+//            }
+            GlStateManager.resetColor();
 
             if (GuiBackground.Companion.getParticles())
                 ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);

@@ -42,7 +42,7 @@ class AntiVoid : Module() {
         if(mc.thePlayer.onGround)
             return false
 
-        return when(fallModeValue.get().toLowerCase()){
+        return when(fallModeValue.get().lowercase()){
             "grounddist" -> {
                 val collide = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, 0.0, 0.0, 0.0, 0F, 0F, 0F).findCollision(60)
                 return collide==null||(mc.thePlayer.posY-collide.y)>distance
@@ -63,7 +63,7 @@ class AntiVoid : Module() {
 
     @EventTarget
     fun onUpdate() {
-        when(modeValue.get().toLowerCase()){
+        when(modeValue.get().lowercase()){
             "groundspoof" -> {
                 canSpoof = willVoid(maxFallDistValue.get())
             }
@@ -147,7 +147,7 @@ class AntiVoid : Module() {
     fun onPacket(event: PacketEvent){
         val packet=event.packet
 
-        when(modeValue.get().toLowerCase()) {
+        when(modeValue.get().lowercase()) {
             "blink" -> {
                 if (blink && (packet is C03PacketPlayer)) {
                     packetCache.add(packet)

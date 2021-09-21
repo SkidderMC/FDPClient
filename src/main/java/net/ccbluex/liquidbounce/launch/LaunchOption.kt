@@ -5,17 +5,12 @@ package net.ccbluex.liquidbounce.launch
  */
 abstract class LaunchOption {
     /**
-     * called when startClient head
+     * called when startClient
      */
-    open fun head() {}
+    open fun start() {}
 
     /**
-     * called when startClient complete
-     */
-    open fun after() {}
-
-    /**
-     * called when stopClient complete
+     * called when stopClient
      */
     open fun stop() {}
 }

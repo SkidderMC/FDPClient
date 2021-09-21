@@ -57,7 +57,7 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
                     Files.copy(file.toPath(), FileOutputStream(LiquidBounce.fileManager.backgroundFile))
 
                     val image = ImageIO.read(FileInputStream(LiquidBounce.fileManager.backgroundFile))
-                    LiquidBounce.background = ResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/background.png")
+                    LiquidBounce.background = ResourceLocation(LiquidBounce.CLIENT_NAME.lowercase() + "/background.png")
                     mc.textureManager.loadTexture(LiquidBounce.background, DynamicTexture(image))
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -77,7 +77,7 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        Fonts.font40.drawCenteredString("%ui.background%", this.width / 2F, height / 8F + 5F,
+        Fonts.font20.drawCenteredString("%ui.background%", this.width / 2F, height / 8F + 5F,
                 4673984, true)
 
         super.drawScreen(mouseX, mouseY, partialTicks)

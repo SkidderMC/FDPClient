@@ -27,7 +27,7 @@ import kotlin.math.sqrt
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     private val msTimer = MSTimer()
-    private val modeValue = ListValue("PacketMode", arrayOf("AntiCheat","Custom","WatchDog","NoCheatPlus","NoPacket","AAC","AAC5"), "AntiCheat")
+    private val modeValue = ListValue("PacketMode", arrayOf("AntiCheat","Custom","WatchDog","Watchdog2","NCP","NoPacket","AAC","AAC5"), "AntiCheat")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -90,17 +90,17 @@ class NoSlow : Module() {
             return
 
 //        val heldItem = mc.thePlayer.heldItem
-        if(modeValue.get().toLowerCase() == "aac5") {
+        if(modeValue.get().lowercase() == "aac5") {
             if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking() || killAura.blockingStatus)) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
             }
             return
         }
-        if(modeValue.get().toLowerCase() != "aac5") {
+        if(modeValue.get().lowercase() != "aac5") {
             if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
                 return
             }
-            when(modeValue.get().toLowerCase()) {
+            when(modeValue.get().lowercase()) {
                 "anticheat" -> {
                     this.sendPacket(event,true,false,false,0,false,false)
                     if(mc.thePlayer.ticksExisted % 2 == 0) {
@@ -125,8 +125,15 @@ class NoSlow : Module() {
                     sendPacket(event,true,true,true,customDelayValue.get().toLong(),customOnGround.get())
                 }
 
-                "nocheatplus" -> {
+                "ncp" -> {
                     sendPacket(event,true,true,false,0,false)
+                }
+                
+                "watchdog2" -> {
+                    if (event.eventState == EventState.PRE)
+                        mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+                    else
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0.0f, 0.0f, 0.0f))
                 }
 
                 "watchdog" -> {
@@ -170,7 +177,7 @@ class NoSlow : Module() {
             lastMotionX=mc.thePlayer.motionX
             lastMotionY=mc.thePlayer.motionY
             lastMotionZ=mc.thePlayer.motionZ
-            when(teleportModeValue.get().toLowerCase()){
+            when(teleportModeValue.get().lowercase()){
                 "vanillanosetback" -> {
                     val x = packet.x - mc.thePlayer.posX
                     val y = packet.y - mc.thePlayer.posY
@@ -188,7 +195,7 @@ class NoSlow : Module() {
             if(teleportNoApplyValue.get()){
                 event.cancelEvent()
             }
-            when(teleportModeValue.get().toLowerCase()){
+            when(teleportModeValue.get().lowercase()){
                 "vanilla", "vanillanosetback" -> {
                     mc.thePlayer.motionX=lastMotionX
                     mc.thePlayer.motionY=lastMotionY

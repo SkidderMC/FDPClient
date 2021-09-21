@@ -39,7 +39,7 @@ public class GuiAltManager extends GuiScreen {
     public static GuiTextField randomAltField;
 
     static {
-        randomAltField = new GuiTextField(2, Fonts.font40, 0,0,0,0);
+        randomAltField = new GuiTextField(2, Fonts.font20, 0,0,0,0);
         randomAltField.setText("F%nD%nP%n_%s%s%s");
         randomAltField.setMaxStringLength(Integer.MAX_VALUE);
     }
@@ -128,15 +128,15 @@ public class GuiAltManager extends GuiScreen {
 
         altsList.drawScreen(mouseX, mouseY, partialTicks);
 
-        Fonts.font40.drawCenteredString("%ui.altmanager%", width / 2, 6, 0xffffff);
-        Fonts.font35.drawCenteredString( LanguageManager.INSTANCE.getAndFormat("ui.alt.alts",LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size()), width / 2, 18, 0xffffff);
-        Fonts.font35.drawCenteredString(status, width / 2, 32, 0xffffff);
-        Fonts.font35.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.username",mc.getSession().getUsername()), 6, 6, 0xffffff);
-        Fonts.font35.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.type",(UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "%ui.alt.type.premium%" : "%ui.alt.type.cracked%")), 6, 15, 0xffffff);
+        Fonts.font20.drawCenteredString("%ui.altmanager%", width / 2, 6, 0xffffff);
+        Fonts.font18.drawCenteredString( LanguageManager.INSTANCE.getAndFormat("ui.alt.alts",LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size()), width / 2, 18, 0xffffff);
+        Fonts.font18.drawCenteredString(status, width / 2, 32, 0xffffff);
+        Fonts.font18.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.username",mc.getSession().getUsername()), 6, 6, 0xffffff);
+        Fonts.font18.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.type",(UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "%ui.alt.type.premium%" : "%ui.alt.type.cracked%")), 6, 15, 0xffffff);
 
         randomAltField.drawTextBox();
         if(randomAltField.getText().isEmpty() && !randomAltField.isFocused())
-            drawCenteredString(Fonts.font40, "§7%ui.alt.randomAltField%", width / 2 - 55, 66, 0xffffff);
+            drawCenteredString(Fonts.font20, "§7%ui.alt.randomAltField%", width / 2 - 55, 66, 0xffffff);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -363,8 +363,8 @@ public class GuiAltManager extends GuiScreen {
         @Override
         protected void drawSlot(int id, int x, int y, int var4, int var5, int var6) {
             final MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.get(id);
-            Fonts.font40.drawCenteredString(minecraftAccount.getAccountName() == null ? minecraftAccount.getName() : minecraftAccount.getAccountName(), (width / 2), y + 2, Color.WHITE.getRGB(), true);
-            Fonts.font40.drawCenteredString(minecraftAccount.isCracked() ? "%ui.alt.type.cracked%" : (minecraftAccount.getAccountName() == null ? "%ui.alt.type.premium%" : minecraftAccount.getName()), (width / 2), y + 15, minecraftAccount.isCracked() ? Color.GRAY.getRGB() : (minecraftAccount.getAccountName() == null ? Color.GREEN.getRGB() : Color.LIGHT_GRAY.getRGB()), true);
+            Fonts.font20.drawCenteredString(minecraftAccount.getAccountName() == null ? minecraftAccount.getName() : minecraftAccount.getAccountName(), (width / 2), y + 2, Color.WHITE.getRGB(), true);
+            Fonts.font20.drawCenteredString(minecraftAccount.isCracked() ? "%ui.alt.type.cracked%" : (minecraftAccount.getAccountName() == null ? "%ui.alt.type.premium%" : minecraftAccount.getName()), (width / 2), y + 15, minecraftAccount.isCracked() ? Color.GRAY.getRGB() : (minecraftAccount.getAccountName() == null ? Color.GREEN.getRGB() : Color.LIGHT_GRAY.getRGB()), true);
         }
 
         @Override

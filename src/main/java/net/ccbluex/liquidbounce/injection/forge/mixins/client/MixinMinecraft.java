@@ -9,6 +9,7 @@ import com.guimc.fuckpcl.PCLChecker;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
+import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
@@ -89,49 +90,16 @@ public abstract class MixinMinecraft {
     @Final
     public File mcDataDir;
 
-    @Inject(method = "run", at = @At("HEAD"))
-    private void init(CallbackInfo callbackInfo) {
-        if(displayWidth < 1067)
-            displayWidth = 1067;
-
-        if(displayHeight < 622)
-            displayHeight = 622;
-    }
-
-    /**
-     * @author liuli
-     */
-//    @Overwrite
-//    public void drawSplashScreen(TextureManager textureManagerInstance) {
-//
-//    }
-//
-//    @Inject(method = "startGame", at = @At(value = "HEAD"))
-//    private void startGameHEAD(CallbackInfo ci) throws IllegalAccessException {
-//        SplashProgress.finish();
-//        disableForgeSplash(true);
-//    }
-
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
-    private void startGame(CallbackInfo callbackInfo) throws Exception {
+    private void startGame(CallbackInfo callbackInfo) throws AccessDeniedException {
         if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
             Display.destroy();
             String warnStr="Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
             MiscUtils.showErrorPopup(warnStr);
             throw new AccessDeniedException(warnStr);
         }
-        LiquidBounce.INSTANCE.startClient();
-//        disableForgeSplash(false);
+        LiquidBounce.INSTANCE.initClient();
     }
-
-//    private void disableForgeSplash(boolean stat) throws IllegalAccessException {
-//        for(Field field:SplashProgress.class.getDeclaredFields()){
-//            if(field.getName().equalsIgnoreCase("enabled")){
-//                field.setAccessible(true);
-//                field.set(null,stat);
-//            }
-//        }
-//    }
 
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
@@ -192,7 +160,8 @@ public abstract class MixinMinecraft {
     @Inject(method = "clickMouse", at = @At("HEAD"))
     private void clickMouse(CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
-        leftClickCounter = 0; // fix hit delay lol
+        if(LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
+            leftClickCounter = 0; // fix hit delay lol
     }
 
     @Inject(method = "middleClickMouse", at = @At("HEAD"))
@@ -256,13 +225,5 @@ public abstract class MixinMinecraft {
                 this.playerController.resetBlockRemoving();
             }
         }
-    }
-
-    /**
-     * @author
-     */
-    @Overwrite
-    public int getLimitFramerate() {
-        return this.theWorld == null && this.currentScreen != null ? 60 : this.gameSettings.limitFramerate;
     }
 }

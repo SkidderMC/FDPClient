@@ -71,7 +71,7 @@ function getDataJson(module) {
             json.Setting.push(select)
         }
         var lastJson = json.Setting[json.Setting.length - 1]
-        lastJson.Name = translate(value.getLocaledName())
+        lastJson.Name = translate(value.getName())
         lastJson.Key = value.getName()
         lastJson.isVisable = value.getDisplayable
     })

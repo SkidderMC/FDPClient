@@ -27,7 +27,7 @@ class BindCommand : Command("bind", emptyArray()) {
 
             if (args.size > 2) {
                 // Find key by name and change
-                val key = Keyboard.getKeyIndex(args[2].toUpperCase())
+                val key = Keyboard.getKeyIndex(args[2].uppercase())
                 module.keyBind = key
 
                 // Response to user

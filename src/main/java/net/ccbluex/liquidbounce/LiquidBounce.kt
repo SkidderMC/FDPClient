@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
+import net.ccbluex.liquidbounce.launch.data.GuiLaunchOptionSelectMenu
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
@@ -39,7 +40,7 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "FDPClient"
     const val COLORED_NAME = "§c§lFDP§6§lClient"
-    const val CLIENT_REAL_VERSION = "v2.0.0-PRE1"
+    const val CLIENT_REAL_VERSION = "v2.0.0-PRE2"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE="GetFDP.Today"
     const val CLIENT_STORAGE = "https://res.getfdp.today/"
@@ -73,7 +74,17 @@ object LiquidBounce {
     // Menu Background
     var background: ResourceLocation? = null
 
+    val launchFilters = mutableListOf<EnumLaunchFilter>()
     private val dynamicLaunchOptions: Array<LaunchOption>
+        get() = ReflectUtils.getReflects("${LaunchOption::class.java.`package`.name}.options", LaunchOption::class.java)
+            .filter {
+                val annotation=it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
+                if(annotation!=null){
+                    return@filter annotation.filters.toMutableList() == launchFilters
+                }
+                false
+            }
+            .map { try { it.newInstance() } catch (e: IllegalAccessException) { ClassUtils.getObjectInstance(it) as LaunchOption } }.toTypedArray()
 
     init {
         // check if this artifact is build from github actions
@@ -84,31 +95,22 @@ object LiquidBounce {
             val str=IOUtils.toString(commitId,"utf-8").replace("\n","")
             "git-"+(str.substring(0, 7.coerceAtMost(str.length)))
         }
+
         // initialize dynamic launch options
-        val launchFilters=mutableListOf<EnumLaunchFilter>()
-        if(System.getProperty("fdp-legacy-ui")!=null){
-            launchFilters.add(EnumLaunchFilter.LEGACY_UI)
-        }else{
-            launchFilters.add(EnumLaunchFilter.ULTRALIGHT)
-        }
-        dynamicLaunchOptions=ReflectUtils.getReflects("${LaunchOption::class.java.`package`.name}.options", LaunchOption::class.java)
-            .filter {
-                val annotation=it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
-                if(annotation!=null){
-                    return@filter annotation.filters.toMutableList() == launchFilters
-                }
-                false
-            }
-            .map { try { it.newInstance() } catch (e: IllegalAccessException) { ClassUtils.getObjectInstance(it) as LaunchOption } }.toTypedArray()
+//        if(System.getProperty("fdp-legacy-ui")!=null){
+//            launchFilters.add(EnumLaunchFilter.LEGACY_UI)
+//        }else{
+//            launchFilters.add(EnumLaunchFilter.ULTRALIGHT)
+//        }
+        mainMenu=GuiLaunchOptionSelectMenu()
     }
 
-    /***
+    /**
      * Execute if client will be started
      */
-    fun startClient() {
-        ClientUtils.logInfo("Starting $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
+    fun initClient() {
+        ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
         val startTime=System.currentTimeMillis()
-        isStarting = true
 
         // Create file manager
         fileManager = FileManager()
@@ -120,14 +122,10 @@ object LiquidBounce {
         // Load language
         LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
 
-        dynamicLaunchOptions.forEach {
-            it.head()
-        }
-
         // Register listeners
         eventManager.registerListener(RotationUtils())
         eventManager.registerListener(AntiForge)
-        eventManager.registerListener(InventoryUtils())
+        eventManager.registerListener(InventoryUtils)
         eventManager.registerListener(ServerSpoof)
 
         // Create command manager
@@ -160,20 +158,11 @@ object LiquidBounce {
 
         tipSoundManager = TipSoundManager()
 
-        // Load configs
-        configManager.loadLegacySupport()
-        configManager.loadConfigSet()
-        fileManager.loadConfigs(fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig)
-
         // KeyBindManager
         keyBindManager=KeyBindManager()
 
         // Set HUD
         hud = HUD.createDefault()
-        fileManager.loadConfig(fileManager.hudConfig)
-
-        // Disable optifine fastrender
-        ClientUtils.disableFastRender()
 
         // bstats.org user count display
         metricsLite=MetricsLite(11076)
@@ -185,31 +174,45 @@ object LiquidBounce {
 
         GuiCapeManager.load()
 
+        ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis()-startTime)}ms!")
+    }
+
+    /**
+     * Execute if client ui type is selected
+     */
+    fun startClient() {
         dynamicLaunchOptions.forEach {
-            it.after()
+            it.start()
         }
+
+        // Load configs
+        configManager.loadLegacySupport()
+        configManager.loadConfigSet()
+        fileManager.loadConfigs(fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig, fileManager.hudConfig)
 
         // Set is starting status
         isStarting = false
         isLoadingConfig=false
 
-        ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started in ${(System.currentTimeMillis()-startTime)}ms!")
+        ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started!")
     }
 
     /**
      * Execute if client will be stopped
      */
     fun stopClient() {
-        // Call client shutdown
-        eventManager.callEvent(ClientShutdownEvent())
+        if(!isStarting && !isLoadingConfig) {
+            // Call client shutdown
+            eventManager.callEvent(ClientShutdownEvent())
 
-        // Save all available configs
-        GuiCapeManager.save()
-        configManager.save(true,true)
-        fileManager.saveAllConfigs()
+            // Save all available configs
+            GuiCapeManager.save()
+            configManager.save(true, true)
+            fileManager.saveAllConfigs()
 
-        dynamicLaunchOptions.forEach {
-            it.stop()
+            dynamicLaunchOptions.forEach {
+                it.stop()
+            }
         }
     }
 }

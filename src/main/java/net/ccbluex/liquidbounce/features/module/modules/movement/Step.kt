@@ -29,7 +29,7 @@ class Step : Module() {
      * OPTIONS
      */
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC4.4.0", "Spartan", "Rewinside"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0", "Spartan", "Rewinside"), "NCP")
 
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
     private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") }
@@ -64,9 +64,7 @@ class Step : Module() {
     fun onUpdate(event: UpdateEvent) {
         if(modeValue.equals("AAC4.4.0") && !(mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
             mc.thePlayer.stepHeight = 0.6F
-            //chat("cancelStepA"+lastTickOnGround+mc.thePlayer.isCollidedHorizontally+mc.thePlayer.onGround)
         }else if(modeValue.equals("AAC4.4.0")) mc.thePlayer.stepHeight = 2.0F
-        //chat("WTF?"+wasTimer)
         if(wasTimer) {
             wasTimer = false
             mc.thePlayer.motionX *= 0.92
@@ -100,7 +98,25 @@ class Step : Module() {
                 mc.thePlayer.onGround = true
             } else
                 isStep = false
+            
+            mode.equals("aac3.6.4", true) -> if (mc.thePlayer.isCollidedHorizontally
+                && MovementUtils.isMoving()) {
+                if (mc.thePlayer.onGround && couldStep()) {
+                    mc.thePlayer.motionX *= 1.12
+                    mc.thePlayer.motionZ *= 1.12
+                    mc.thePlayer.jump()
+                    isAACStep = true
+                }
 
+                if (isAACStep) {
+                    mc.thePlayer.motionY -= 0.015
+
+                    if(!mc.thePlayer.isUsingItem && mc.thePlayer.movementInput.moveStrafe == 0F)
+                        mc.thePlayer.jumpMovementFactor = 0.3F
+                }
+            } else
+                isAACStep = false
+            
             mode.equals("aac3.3.4", true) -> if (mc.thePlayer.isCollidedHorizontally
                 && MovementUtils.isMoving()) {
                 if (mc.thePlayer.onGround && couldStep()) {
@@ -172,7 +188,6 @@ class Step : Module() {
                             (event.stepHeight>1.0-0.015625 && event.stepHeight<1.0+0.015625)||
                             (event.stepHeight>1.5-0.015625 && event.stepHeight<1.5+0.015625)||
                             (event.stepHeight>2.0-0.015625 && event.stepHeight<2.0+0.015625))) {
-                    //chat("cancelStepB"+event.stepHeight)
                     event.stepHeight=0F
                     return
                 }
@@ -258,7 +273,6 @@ class Step : Module() {
 
                     mode.equals("AAC4.4.0", ignoreCase = true) -> {
                         val rstepHeight = mc.thePlayer.entityBoundingBox.minY - stepY
-                        //chat("onStepConfirm"+rstepHeight)
                         fakeJump()
                         when {
                             rstepHeight>1.0-0.015625 && rstepHeight<1.0+0.015625 -> {
@@ -360,8 +374,8 @@ class Step : Module() {
 
     private fun couldStep(): Boolean {
         val yaw = MovementUtils.getDirection()
-        val x = -sin(yaw) * 0.4
-        val z = cos(yaw) * 0.4
+        val x = -sin(yaw) * 0.32
+        val z = cos(yaw) * 0.32
 
         return mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(x, 1.001335979112147, z))
             .isEmpty()

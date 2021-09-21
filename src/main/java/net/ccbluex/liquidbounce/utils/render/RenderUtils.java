@@ -824,10 +824,10 @@ public final class RenderUtils extends MinecraftInstance {
         setGlCap(GL_BLEND, true);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        final int width = Fonts.font35.getStringWidth(string) / 2;
+        final int width = Fonts.font18.getStringWidth(string) / 2;
 
-        Gui.drawRect(-width - 1, -1, width + 1, Fonts.font35.FONT_HEIGHT, Integer.MIN_VALUE);
-        Fonts.font35.drawString(string, -width, 1.5F, Color.WHITE.getRGB(), true);
+        Gui.drawRect(-width - 1, -1, width + 1, Fonts.font18.FONT_HEIGHT, Integer.MIN_VALUE);
+        Fonts.font18.drawString(string, -width, 1.5F, Color.WHITE.getRGB(), true);
 
         resetCaps();
         glColor4f(1F, 1F, 1F, 1F);
@@ -980,6 +980,14 @@ public final class RenderUtils extends MinecraftInstance {
 
     public static void drawHead(ResourceLocation skin, int x, int y, int width, int height) {
         GL11.glColor4f(1F, 1F, 1F, 1F);
+        mc.getTextureManager().bindTexture(skin);
+        RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
+                64F, 64F);
+        RenderUtils.drawScaledCustomSizeModalRect(x, y, 40F, 8F, 8, 8, width, height,
+                64F, 64F);
+    }
+
+    public static void quickDrawHead(ResourceLocation skin, int x, int y, int width, int height) {
         mc.getTextureManager().bindTexture(skin);
         RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
                 64F, 64F);

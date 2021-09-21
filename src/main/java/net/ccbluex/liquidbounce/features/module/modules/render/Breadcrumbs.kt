@@ -18,7 +18,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.util.*
 
 @ModuleInfo(name = "Breadcrumbs", category = ModuleCategory.RENDER)
 class Breadcrumbs : Module() {
@@ -29,21 +28,18 @@ class Breadcrumbs : Module() {
     private val fade = BoolValue("Fade",true)
     private val fadeTime = IntegerValue("FadeTime",5,1,20)
 
-    private val positions = LinkedList<DoubleArray>()
-    private val loadTime=System.currentTimeMillis()
+    private val points = mutableListOf<BreadcrumbPoint>()
     private var head=0
 
-    fun getColor(): Color {
-        return if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
-    }
+    val color: Color
+        get() = if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val color = getColor()
         val fTime=fadeTime.get()*1000
-        val fadeSec=(System.currentTimeMillis()-fTime-loadTime).toInt()
+        val fadeSec=System.currentTimeMillis()-fTime
 
-        synchronized(positions) {
+        synchronized(points) {
             GL11.glPushMatrix()
             GL11.glDisable(GL11.GL_TEXTURE_2D)
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
@@ -51,22 +47,22 @@ class Breadcrumbs : Module() {
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glDisable(GL11.GL_DEPTH_TEST)
             mc.entityRenderer.disableLightmap()
+            GL11.glLineWidth(1F)
             GL11.glBegin(GL11.GL_LINE_STRIP)
-            RenderUtils.glColor(color)
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ
-            for (i in head until positions.size) {
-                val pos=positions[i]
-                if(fade.get()) {
-                    val pct=((pos[3] - fadeSec) / fTime).toFloat()
+            for (point in points) {
+                val alpha=if(fade.get()) {
+                    val pct=(point.time - fadeSec).toFloat() / fTime
                     if(pct<0||pct>1){
-                        head=i
+                        head=points.indexOf(point)
                         continue
                     }
-                    RenderUtils.glColor(color, pct)
-                }
-                GL11.glVertex3d(pos[0] - renderPosX, pos[1] - renderPosY, pos[2] - renderPosZ)
+                    pct
+                }else{ 1f }
+                RenderUtils.glColor(point.color, alpha)
+                GL11.glVertex3d(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
             }
             GL11.glColor4d(1.0,1.0,1.0,1.0)
             GL11.glEnd()
@@ -80,15 +76,15 @@ class Breadcrumbs : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        synchronized(positions) {
-            positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ,(System.currentTimeMillis()-loadTime).toDouble()))
+        synchronized(points) {
+            points.add(BreadcrumbPoint(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ, System.currentTimeMillis(), color))
         }
     }
 
     @EventTarget
     fun onWorld(event: WorldEvent){
-        synchronized(positions) {
-            positions.clear()
+        synchronized(points) {
+            points.clear()
             head=0
         }
     }
@@ -99,9 +95,11 @@ class Breadcrumbs : Module() {
     }
 
     override fun onDisable() {
-        synchronized(positions) {
-            positions.clear()
+        synchronized(points) {
+            points.clear()
             head=0
         }
     }
+
+    class BreadcrumbPoint(val x: Double, val y: Double, val z: Double, val time: Long, val color: Color)
 }

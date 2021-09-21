@@ -5,9 +5,6 @@
  */
 package net.ccbluex.liquidbounce.event
 
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
-import net.ccbluex.liquidbounce.features.module.modules.client.LegitSpoof
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 
 class EventManager : MinecraftInstance() {
@@ -56,18 +53,6 @@ class EventManager : MinecraftInstance() {
      * @param event to call
      */
     fun callEvent(event: Event) {
-        if(event is Render2DEvent||event is Render3DEvent){
-            val legitSpoof=LiquidBounce.moduleManager[LegitSpoof::class.java]
-            if(legitSpoof.state&&legitSpoof.render.get()){
-                if(event is Render2DEvent) {
-                    val hud=LiquidBounce.moduleManager[HUD::class.java]
-                    if(hud.state)
-                        hud.onRender2D(event)
-                }
-                return
-            }
-        }
-
         val targets = registry[event.javaClass] ?: return
 
         for (invokableEventTarget in targets) {

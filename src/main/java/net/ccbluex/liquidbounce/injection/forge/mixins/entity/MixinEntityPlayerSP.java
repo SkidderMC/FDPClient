@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
+import net.ccbluex.liquidbounce.features.module.modules.movement.InventoryMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
@@ -318,9 +319,12 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         if ((scaffold.getState() && !scaffold.getCanSprint()) || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.targetRotation != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30))
             this.setSprinting(false);
 
-        if (this.isSprinting() && ((!(sprint.getState() && sprint.getAllDirectionsValue().get()) && this.movementInput.moveForward < f) || this.isCollidedHorizontally || !flag3)) {
+        if (this.isSprinting() && ((!(sprint.getState() && sprint.getAllDirectionsValue().get()) && this.movementInput.moveForward < f) || this.isCollidedHorizontally || !flag3))
             this.setSprinting(false);
-        }
+        
+        final InventoryMove inventoryMove = LiquidBounce.moduleManager.getModule(InventoryMove.class);
+        if(inventoryMove.getNoSprint().equals("Real") && inventoryMove.getInvOpen())
+            this.setSprinting(false);
 
         //aac may check it :(
         if (this.capabilities.allowFlying) {

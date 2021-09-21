@@ -27,7 +27,7 @@ class Gapple : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        when(modeValue.get().toLowerCase()){
+        when(modeValue.get().lowercase()){
             "once" -> {
                 doEat(true)
                 state = false
