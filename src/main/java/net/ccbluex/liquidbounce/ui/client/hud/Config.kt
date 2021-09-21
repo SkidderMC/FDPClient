@@ -88,14 +88,6 @@ class Config {
                     ClientUtils.getLogger().error("Error while loading custom hud element from config.", e)
                 }
             }
-
-            // Add forced elements when missing
-            for (elementClass in elements) {
-                if (elementClass.getAnnotation(ElementInfo::class.java).force
-                        && hud.elements.none { it.javaClass == elementClass }) {
-                    hud.addElement(elementClass.newInstance())
-                }
-            }
         } catch (e: Exception) {
             ClientUtils.getLogger().error("Error while loading custom hud config.", e)
             return createDefault()

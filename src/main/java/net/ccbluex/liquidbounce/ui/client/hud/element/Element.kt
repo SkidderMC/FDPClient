@@ -120,7 +120,7 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, var scale: Floa
  * Element info
  */
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-annotation class ElementInfo(val name: String, val single: Boolean = false, val force: Boolean = false)
+annotation class ElementInfo(val name: String)
 
 /**
  * CustomHUD Side

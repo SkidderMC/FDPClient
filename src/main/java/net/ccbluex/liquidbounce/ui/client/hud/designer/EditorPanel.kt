@@ -117,9 +117,6 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         for (element in elements) {
             val info = element.getAnnotation(ElementInfo::class.java) ?: continue
 
-            if (info.single && LiquidBounce.hud.elements.any { it.javaClass == element })
-                continue
-
             val name = info.name
             Fonts.font18.drawString(name, x + 2, y + height, Color.WHITE.rgb)
 
@@ -428,13 +425,11 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         Fonts.font18.drawString("§l${element.name}", x + 2F, y + 3.5F, Color.WHITE.rgb)
 
         // Delete button
-        if (!element.info.force) {
-            val deleteWidth = x + width - Fonts.font18.getStringWidth("§lDelete") - 2F
-            Fonts.font18.drawString("§lDelete", deleteWidth, y + 3.5F, Color.WHITE.rgb)
-            if (Mouse.isButtonDown(0) && !mouseDown && mouseX >= deleteWidth && mouseX <= x + width && mouseY >= y
-                    && mouseY <= y + 10)
-                LiquidBounce.hud.removeElement(element)
-        }
+        val deleteWidth = x + width - Fonts.font18.getStringWidth("§lDelete") - 2F
+        Fonts.font18.drawString("§lDelete", deleteWidth, y + 3.5F, Color.WHITE.rgb)
+        if (Mouse.isButtonDown(0) && !mouseDown && mouseX >= deleteWidth && mouseX <= x + width && mouseY >= y
+            && mouseY <= y + 10)
+            LiquidBounce.hud.removeElement(element)
     }
 
     /**

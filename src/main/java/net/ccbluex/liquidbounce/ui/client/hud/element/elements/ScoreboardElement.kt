@@ -32,7 +32,7 @@ import java.awt.Color
  *
  * Allows to move and customize minecraft scoreboard
  */
-@ElementInfo(name = "Scoreboard", force = true)
+@ElementInfo(name = "Scoreboard")
 class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                         side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)) : Element(x, y, scale, side) {
 

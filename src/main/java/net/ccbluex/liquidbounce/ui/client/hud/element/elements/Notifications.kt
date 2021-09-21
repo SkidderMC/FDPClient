@@ -21,7 +21,7 @@ import kotlin.math.max
 /**
  * CustomHUD Notification element
  */
-@ElementInfo(name = "Notifications", single = true)
+@ElementInfo(name = "Notifications")
 class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
                     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
 

@@ -24,7 +24,7 @@ import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
-@ElementInfo(name = "Targets", single = true)
+@ElementInfo(name = "Targets")
 class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
     private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux","Rise"), "Rise")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom"), "Slide")
