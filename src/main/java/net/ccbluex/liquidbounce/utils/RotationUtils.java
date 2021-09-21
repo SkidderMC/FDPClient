@@ -331,9 +331,9 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         for(double xSearch = 0.00D; xSearch < 1.00D; xSearch += 0.1D) {
             for (double ySearch = 0.00D; ySearch < 1.00D; ySearch += 0.1D) {
                 for (double zSearch = 0.00D; zSearch < 1.00D; zSearch += 0.1D) {
-                    final Vec3 vec3 = new Vec3((vecRotation.getX() - ((randMode == "Horizonal") ? 0.0D : (xPrecent * (vecRotation.getX() - bb.minX) + minRange * randomRange * xSearch)),
-                                                vecRotation.getY() - ((randMode == "Vertical") ? 0.0D : (yPrecent * (vecRotation.getY() - bb.minY) + minRange * randomRange * ySearch)),
-                                                vecRotation.getZ() - ((randMode == "Horizonal") ? 0.0D : (zPrecent * (vecRotation.getZ() - bb.minZ) + minRange * randomRange * zSearch));
+                    final Vec3 vec3 = new Vec3(vecRotation.getX() - ((randMode == "Horizonal") ? 0.0D : (xPrecent * (vecRotation.getX() - bb.minX) + minRange * randomRange * xSearch)),
+                                               vecRotation.getY() - ((randMode == "Vertical") ? 0.0D : (yPrecent * (vecRotation.getY() - bb.minY) + minRange * randomRange * ySearch)),
+                                               vecRotation.getZ() - ((randMode == "Horizonal") ? 0.0D : (zPrecent * (vecRotation.getZ() - bb.minZ) + minRange * randomRange * zSearch)));
                     final Rotation rotation = toRotation(vec3, predict);
                     if(throughWalls || isVisible(vec3)) {
                         final VecRotation currentVec = new VecRotation(vec3, rotation);
