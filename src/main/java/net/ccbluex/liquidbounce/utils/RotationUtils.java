@@ -332,9 +332,9 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         final Rotation randomRotation = toRotation(randomVec3, predict);
         
         
-        for(double xSearch = 0.00D; xSearch < 1.00D; xSearch += 0.1D) {
-            for (double ySearch = 0.00D; ySearch < 1.00D; ySearch += 0.1D) {
-                for (double zSearch = 0.00D; zSearch < 1.00D; zSearch += 0.1D) {
+        for(double xSearch = 0.00D; xSearch < 1.00D; xSearch += 0.05D) {
+            for (double ySearch = 0.00D; ySearch < 1.00D; ySearch += 0.05D) {
+                for (double zSearch = 0.00D; zSearch < 1.00D; zSearch += 0.05D) {
                     final Vec3 vec3 = new Vec3(curVec3.xCoord - ((randMode == "Horizonal") ? 0.0D : (xPrecent * (curVec3.xCoord - bb.minX) + minRange * randomRange * xSearch)),
                                                curVec3.yCoord - ((randMode == "Vertical") ? 0.0D : (yPrecent * (curVec3.yCoord - bb.minY) + minRange * randomRange * ySearch)),
                                                curVec3.zCoord - ((randMode == "Horizonal") ? 0.0D : (zPrecent * (curVec3.zCoord - bb.minZ) + minRange * randomRange * zSearch)));
