@@ -316,16 +316,16 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         final double zPrecent = minRange * randomRange / zRange;
         
         Vec3 randomVec3 = new Vec3(
-                                 curVec3.getX() - xPrecent * (curVec3.getX() - bb.minX) + rand1,
-                                 curVec3.getY() - yPrecent * (curVec3.getY() - bb.minY) + rand2,
-                                 curVec3.getZ() - zPrecent * (curVec3.getZ() - bb.minZ) + rand3
+                                 curVec3.xCoord - xPrecent * (curVec3.xCoord - bb.minX) + rand1,
+                                 curVec3.yCoord - yPrecent * (curVec3.yCoord - bb.minY) + rand2,
+                                 curVec3.zCoord - zPrecent * (curVec3.zCoord - bb.minZ) + rand3
                                 );
         switch(randMode) {
             case "Horizonal":
-                randomVec3.addVector(0.0D, yPrecent * (curVec3.getY() - bb.minY) - rand2, 0.0D);
+                randomVec3.addVector(0.0D, yPrecent * (curVec3.yCoord - bb.minY) - rand2, 0.0D);
                 break;
             case "Vertical":
-                randomVec3.addVector(xPrecent * (curVec3.getX() - bb.minX) - rand1, 0.0D, zPrecent * (curVec3.getZ() - bb.minZ) - rand3);
+                randomVec3.addVector(xPrecent * (curVec3.xCoord - bb.minX) - rand1, 0.0D, zPrecent * (curVec3.zCoord - bb.minZ) - rand3);
                 break;
         }
         
@@ -335,9 +335,9 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         for(double xSearch = 0.00D; xSearch < 1.00D; xSearch += 0.1D) {
             for (double ySearch = 0.00D; ySearch < 1.00D; ySearch += 0.1D) {
                 for (double zSearch = 0.00D; zSearch < 1.00D; zSearch += 0.1D) {
-                    final Vec3 vec3 = new Vec3(curVec3.getX() - ((randMode == "Horizonal") ? 0.0D : (xPrecent * (curVec3.getX() - bb.minX) + minRange * randomRange * xSearch)),
-                                               curVec3.getY() - ((randMode == "Vertical") ? 0.0D : (yPrecent * (curVec3.getY() - bb.minY) + minRange * randomRange * ySearch)),
-                                               curVec3.getZ() - ((randMode == "Horizonal") ? 0.0D : (zPrecent * (curVec3.getZ() - bb.minZ) + minRange * randomRange * zSearch)));
+                    final Vec3 vec3 = new Vec3(curVec3.xCoord - ((randMode == "Horizonal") ? 0.0D : (xPrecent * (curVec3.xCoord - bb.minX) + minRange * randomRange * xSearch)),
+                                               curVec3.yCoord - ((randMode == "Vertical") ? 0.0D : (yPrecent * (curVec3.yCoord - bb.minY) + minRange * randomRange * ySearch)),
+                                               curVec3.zCoord - ((randMode == "Horizonal") ? 0.0D : (zPrecent * (curVec3.zCoord - bb.minZ) + minRange * randomRange * zSearch)));
                     final Rotation rotation = toRotation(vec3, predict);
                     if(throughWalls || isVisible(vec3)) {
                         final VecRotation currentVec = new VecRotation(vec3, rotation);
