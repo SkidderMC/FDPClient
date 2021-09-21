@@ -51,6 +51,7 @@ import java.util.*
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
+import kotlin.math.pow
 
 
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
@@ -812,14 +813,16 @@ class KillAura : Module() {
             mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
         ) ?: return false
         
+        var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+        if(diffAngle<0) diffAngle = -diffAngle
+        if(diffAngle>180.0) diffAngle = 180.0
+        
         var calculateSpeed = when(rotationSmoothModeValue.get()) {
-            "Custom" -> (RotationUtils.serverRotation.yaw-directRotation.yaw)/rotationSmoothValue.get()
-            "Line" -> RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0 * maxTurnSpeed.get() +
-                        (1 - RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0) * minTurnSpeed.get()
-            "Quad" -> (RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0)*(RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0) * maxTurnSpeed.get() +
-                        (1 - (RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0)*(RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0)) * minTurnSpeed.get()
-            "Sine", "QuadSine" -> RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0 * maxTurnSpeed.get() +
-                        (1 - RotationUtils.getAngleDifference(RotationUtils.serverRotation.yaw, directRotation.yaw) / 180.0) * minTurnSpeed.get()
+            "Custom" -> diffAngle/rotationSmoothValue.get()
+            "Line" -> (diffAngle/180) * maxTurnSpeed.get() + (1-diffAngle/180) * minTurnSpeed.get()
+            "Quad" -> pow((diffAngle/180),2) * maxTurnSpeed.get() + (1-pow((diffAngle/180),2)) * minTurnSpeed.get()
+            "Sine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeed.get() + (cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * minTurnSpeed.get()
+            "QuadSine" -> pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeed.get() + (1-pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5)) * minTurnSpeed.get()
             else -> 180.0
         }
         
