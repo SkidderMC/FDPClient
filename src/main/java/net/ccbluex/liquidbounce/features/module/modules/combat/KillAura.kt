@@ -144,12 +144,12 @@ class KillAura : Module() {
         }
     }
 
-    private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom").displayable { rotationModeValue.equals("Smooth") }
+    private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom")
     
-    private val rotationSmoothValue = FloatValue("CustomSmooth", 1f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") }
+    private val rotationSmoothValue = FloatValue("CustomSmooth", 1f, 1f, 10f)
     
     private val randomCenterModeValue = ListValue("RandomCenter", arrayOf("Off", "Cubic", "Horizonal", "Vertical"), "Off")
-    private val randomCenterRangeValue = FloatValue("RandomRange", 0.2f, 0.0f, 1.2f).displayable { rotationSmoothModeValue.equals("Custom") }
+    private val randomCenterRangeValue = FloatValue("RandomRange", 0.2f, 0.0f, 1.2f)
     
     
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
