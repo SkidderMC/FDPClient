@@ -51,6 +51,7 @@ import java.util.*
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
+import kotlin.math.pow
 
 
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
@@ -127,28 +128,34 @@ class KillAura : Module() {
     private val aacValue = BoolValue("AAC", true)
 
     // Rotations
-    private val rotationModeValue = ListValue("RotationMode", arrayOf("Custom", "Smooth", "None"), "Custom")
+    private val rotationModeValue = ListValue("RotationMode", arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView"), "LiquidBounce")
 
     private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minTurnSpeed.get()
             if (v > newValue) set(v)
         }
-    }.displayable { rotationModeValue.equals("Custom") } as FloatValue
+    }
 
     private val minTurnSpeed: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 1f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxTurnSpeed.get()
             if (v < newValue) set(v)
         }
-    }.displayable { rotationModeValue.equals("Custom") } as FloatValue
+    }
 
-    private val rotationSmoothValue = FloatValue("RotationSmooth", 1f, 1f, 10f).displayable { rotationModeValue.equals("Smooth") }
-
+    private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom")
+    
+    private val rotationSmoothValue = FloatValue("CustomSmooth", 1f, 1f, 10f)
+    
+    private val randomCenterModeValue = ListValue("RandomCenter", arrayOf("Off", "Cubic", "Horizonal", "Vertical"), "Off")
+    private val randomCenterRangeValue = FloatValue("RandomRange", 0.2f, 0.0f, 1.2f)
+    
+    
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
     private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
-    private val randomCenterValue = BoolValue("RandomCenter", false).displayable { !rotationModeValue.equals("None") }
+    //private val randomCenterValue = BoolValue("RandomCenter", false).displayable { !rotationModeValue.equals("None") }
     private val outborderValue = BoolValue("Outborder", false).displayable { !rotationModeValue.equals("None") }
     private val hitableValue = BoolValue("AlwaysHitable",true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
@@ -783,25 +790,48 @@ class KillAura : Module() {
 
         var boundingBox = entity.entityBoundingBox
 
-        if (predictValue.get())
+        if (predictValue.get() && rotationModeValue.get() != "Test")
             boundingBox = boundingBox.offset(
                 (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
                 (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
                 (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
             )
-
-        val (_, directRotation) = RotationUtils.searchCenter(
+        var rModes = when(rotationModeValue.get()) {
+            "LiquidBounce", "SmoothLiquid" -> "LiquidBounce"
+            "ForceCenter", "SmoothCenter" -> "CenterLine"
+            "LockView" -> "CenterSimple"
+            "Test" -> "HalfUp"
+            else -> "LiquidBounce"
+        }
+        val (_, directRotation) = 
+        RotationUtils.calculateCenter(
+            rModes,
+            randomCenterModeValue.get(),
+            (randomCenterRangeValue.get()).toDouble(),
             boundingBox,
-            outborderValue.get() && !attackTimer.hasTimePassed(attackDelay / 2),
-            randomCenterValue.get(),
-            predictValue.get(),
-            mc.thePlayer.getDistanceToEntityBox(entity) < throughWallsRangeValue.get()
+            predictValue.get() && rotationModeValue.get() != "Test",
+            mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
         ) ?: return false
-
-        val rotation = when(rotationModeValue.get().lowercase()) {
-            "custom" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation,
+        
+        var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+        if(diffAngle<0) diffAngle = -diffAngle
+        if(diffAngle>180.0) diffAngle = 180.0
+        
+        var calculateSpeed = when(rotationSmoothModeValue.get()) {
+            "Custom" -> diffAngle/rotationSmoothValue.get()
+            "Line" -> (diffAngle/180) * maxTurnSpeed.get() + (1-diffAngle/180) * minTurnSpeed.get()
+            "Quad" -> Math.pow((diffAngle/180.0), 2.0) * maxTurnSpeed.get() + (1-Math.pow((diffAngle/180.0), 2.0)) * minTurnSpeed.get()
+            "Sine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeed.get() + (cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * minTurnSpeed.get()
+            "QuadSine" -> Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0) * maxTurnSpeed.get() + (1-Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0)) * minTurnSpeed.get()
+            else -> 180.0
+        }
+        
+        val rotation = when(rotationModeValue.get()) {
+            "LiquidBounce", "ForceCenter" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation,
                 (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
-            "smooth" -> RotationUtils.rotationSmooth(RotationUtils.serverRotation, directRotation, rotationSmoothValue.get())
+            "LockView" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (180.0).toFloat())
+            "SmoothCenter", "SmoothLiquid" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (calculateSpeed).toFloat())
+            "Test" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (calculateSpeed).toFloat())
             else -> return true
         }
 
