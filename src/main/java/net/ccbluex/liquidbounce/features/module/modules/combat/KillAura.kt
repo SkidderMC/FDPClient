@@ -126,10 +126,12 @@ class KillAura : Module() {
 
     // Bypass
     private val aacValue = BoolValue("AAC", true)
-
+    //TODO: Divide AAC Opinion into three separated opinions
+    
     // Rotations
     private val rotationModeValue = ListValue("RotationMode", arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView"), "LiquidBounce")
-
+    //TODO: RotationMode Bypass Intave
+    
     private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minTurnSpeed.get()
@@ -146,7 +148,7 @@ class KillAura : Module() {
 
     private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom")
     
-    private val rotationSmoothValue = FloatValue("CustomSmooth", 1f, 1f, 10f)
+    private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") }
     
     private val randomCenterModeValue = ListValue("RandomCenter", arrayOf("Off", "Cubic", "Horizonal", "Vertical"), "Off")
     private val randomCenterRangeValue = FloatValue("RandomRange", 0.2f, 0.0f, 1.2f)
@@ -156,13 +158,15 @@ class KillAura : Module() {
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
     private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
     //private val randomCenterValue = BoolValue("RandomCenter", false).displayable { !rotationModeValue.equals("None") }
-    private val outborderValue = BoolValue("Outborder", false).displayable { !rotationModeValue.equals("None") }
+    //private val outborderValue = BoolValue("Outborder", false).displayable { !rotationModeValue.equals("None") }
     private val hitableValue = BoolValue("AlwaysHitable",true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
     private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
-
+    
+    //TODO: Player Motion Predict(Multiply *2)
+    
     private val maxPredictSize: FloatValue = object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minPredictSize.get()
@@ -181,6 +185,8 @@ class KillAura : Module() {
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f)
     private val fakeSwingValue = BoolValue("FakeSwing", true).displayable { failRateValue.get()!=0f }
     private val noInventoryAttackValue = BoolValue("NoInvAttack", false)
+    //TODO: NoInvAttack Spoof Mode (AAC (OldAAC maybe AAC3 I think) Mode)
+    
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500)
     private val switchDelayValue = IntegerValue("SwitchDelay",300 ,1, 2000).displayable { targetModeValue.equals("Switch") }
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
