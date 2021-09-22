@@ -71,7 +71,8 @@ class Velocity : Module() {
 
     private val onlyGroundValue = BoolValue("OnlyGround",false)
     private val onlyCombatValue = BoolValue("OnlyCombat",false)
-
+    private val onlyHitVelocityValue = BoolValue("OnlyHitVelocity",false)
+    private val noFireValue = BoolValue("noFire",false)
     /**
      * VALUES
      */
@@ -109,7 +110,8 @@ class Velocity : Module() {
 
         if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
-
+            if(onlyHitVelocityValue.get() && mc.thePlayer.motionY<0.05) return;
+            if(noFire.get() && mc.thePlayer.isBurning) return;
         when (modeValue.get().lowercase()) {
             "jump" -> if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
                 mc.thePlayer.motionY = 0.42
@@ -254,7 +256,8 @@ class Velocity : Module() {
         if (packet is S12PacketEntityVelocity) {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer)
                 return
-
+            if(onlyHitVelocityValue.get() && packet.getMotionY()<0.05) return;
+            if(noFire.get() && mc.thePlayer.isBurning) return;
             velocityTimer.reset()
 
             when (modeValue.get().lowercase()) {
