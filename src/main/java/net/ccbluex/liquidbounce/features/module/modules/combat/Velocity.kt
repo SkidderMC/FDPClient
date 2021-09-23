@@ -39,7 +39,7 @@ class Velocity : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
                                                       "Redesky1", "Redesky2", 
                                                       "AAC5.2.0", "AAC5.2.0Combat",
-                                                      "Matrix",
+                                                      "MatrixReduce", "MatrixSimple", "MatrixGround",
                                                       "Reverse", "SmoothReverse", 
                                                       "Jump", 
                                                       "Phase", "PacketPhase", "Glitch", "Spoof",
@@ -94,6 +94,8 @@ class Velocity : Module() {
     private var templateX = 0
     private var templateY = 0
     private var templateZ = 0
+    
+    private var isMatrixOnGround = false
     
     override val tag: String
         get() = modeValue.get()
@@ -207,22 +209,28 @@ class Velocity : Module() {
                     mc.thePlayer.motionZ /= reduce
                 }
             }
-           "Matrix" -> {
+           "matrixreduce" -> {
                 if (mc.thePlayer.hurtTime > 0) {
-                if (mc.thePlayer.onGround) {
-                    if (mc.thePlayer.hurtTime <= 6) {
-                        mc.thePlayer.motionX *= 0.70
-                        mc.thePlayer.motionZ *= 0.70
-                    } 
-                    if (mc.thePlayer.hurtTime <= 5) {
-                        mc.thePlayer.motionX *= 0.80
-                        mc.thePlayer.motionZ *= 0.80
+                    if (mc.thePlayer.onGround) {
+                        if (mc.thePlayer.hurtTime <= 6) {
+                            mc.thePlayer.motionX *= 0.70
+                            mc.thePlayer.motionZ *= 0.70
+                        } 
+                        if (mc.thePlayer.hurtTime <= 5) {
+                            mc.thePlayer.motionX *= 0.80
+                            mc.thePlayer.motionZ *= 0.80
+                        }
+                    } else if (mc.thePlayer.hurtTime <= 10) {
+                        mc.thePlayer.motionX *= 0.60
+                        mc.thePlayer.motionZ *= 0.60
                     }
-                } else if (mc.thePlayer.hurtTime <= 10) {
-                    mc.thePlayer.motionX *= 0.60
-                    mc.thePlayer.motionZ *= 0.60
-               }
-            }}
+                }
+           }
+           
+           "matrixground" -> {
+               isMatrixOnGround = mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()
+               if(isMatrixOnGround) mc.thePlayer.onGround = false
+           }
         
             "glitch" -> {
                 mc.thePlayer.noClip = velocityInput
@@ -271,6 +279,22 @@ class Velocity : Module() {
                     packet.motionX = (packet.getMotionX() * horizontal).toInt()
                     packet.motionY = (packet.getMotionY() * vertical).toInt()
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
+                }
+                
+                "matrixsimple" -> {
+                    packet.motionX = (packet.getMotionX() * 0.36).toInt()
+                    packet.motionZ = (packet.getMotionZ() * 0.36).toInt()
+                    if(mc.thePlayer.onGround) {
+                        packet.motionX = (packet.getMotionX() * 0.9).toInt()
+                        packet.motionZ = (packet.getMotionZ() * 0.9).toInt()
+                    }
+                }
+                
+                "matrixground" -> {
+                    packet.motionX = (packet.getMotionX() * 0.36).toInt()
+                    packet.motionZ = (packet.getMotionZ() * 0.36).toInt()
+                    if(isMatrixOnGround)
+                        packet.motionY = (-627.7).toInt()
                 }
 
                 "aac4reduce" -> {
