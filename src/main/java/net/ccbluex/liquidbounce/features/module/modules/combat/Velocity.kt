@@ -36,7 +36,7 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "Vanilla", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
                                                       "Redesky1", "Redesky2", 
                                                       "AAC5.2.0", "AAC5.2.0Combat",
                                                       "MatrixReduce", "MatrixSimple", "MatrixGround",
@@ -280,7 +280,9 @@ class Velocity : Module() {
                     packet.motionY = (packet.getMotionY() * vertical).toInt()
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
-                
+                                "vanilla" -> {
+                        event.cancelEvent()
+                }
                 "matrixsimple" -> {
                     packet.motionX = (packet.getMotionX() * 0.36).toInt()
                     packet.motionZ = (packet.getMotionZ() * 0.36).toInt()
