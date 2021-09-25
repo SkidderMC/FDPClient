@@ -71,7 +71,7 @@ class Velocity : Module() {
 
     private val onlyGroundValue = BoolValue("OnlyGround",false)
     private val onlyCombatValue = BoolValue("OnlyCombat",false)
-    private val onlyHitVelocityValue = BoolValue("OnlyHitVelocity",false)
+    //private val onlyHitVelocityValue = BoolValue("OnlyHitVelocity",false)
     private val noFireValue = BoolValue("noFire",false)
     /**
      * VALUES
@@ -113,7 +113,8 @@ class Velocity : Module() {
         if((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat))
             return
             //if(onlyHitVelocityValue.get() && mc.thePlayer.motionY<0.05) return；
-            if(noFireValue.get() && mc.thePlayer.isBurning) return
+        if(noFireValue.get() && mc.thePlayer.isBurning) return
+        
         when (modeValue.get().lowercase()) {
             "jump" -> if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
                 mc.thePlayer.motionY = 0.42
@@ -264,7 +265,7 @@ class Velocity : Module() {
         if (packet is S12PacketEntityVelocity) {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer)
                 return
-            if(onlyHitVelocityValue.get() && packet.getMotionY()<400.0) return
+            //if(onlyHitVelocityValue.get() && packet.getMotionY()<400.0) return
             if(noFireValue.get() && mc.thePlayer.isBurning) return
             velocityTimer.reset()
 
@@ -280,8 +281,8 @@ class Velocity : Module() {
                     packet.motionY = (packet.getMotionY() * vertical).toInt()
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
-                                "vanilla" -> {
-                        event.cancelEvent()
+                "vanilla" -> {
+                    event.cancelEvent()
                 }
                 "matrixsimple" -> {
                     packet.motionX = (packet.getMotionX() * 0.36).toInt()
@@ -295,8 +296,11 @@ class Velocity : Module() {
                 "matrixground" -> {
                     packet.motionX = (packet.getMotionX() * 0.36).toInt()
                     packet.motionZ = (packet.getMotionZ() * 0.36).toInt()
-                    if(isMatrixOnGround)
-                        packet.motionY = (-627.7).toInt()
+                    if(isMatrixOnGround) {
+                        packet.motionY = (-628.7).toInt()
+                        packet.motionX = (packet.getMotionX() * 0.6).toInt()
+                        packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
+                    }
                 }
 
                 "aac4reduce" -> {
