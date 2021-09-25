@@ -336,7 +336,7 @@ class Velocity : Module() {
                 
                 "spoof" -> {
                     event.cancelEvent()
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.motionX/8000.0, packet.motionY/8000.0, packet.motionZ/8000.0, false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX+packet.motionX/8000.0, mc.thePlayer.posY+packet.motionY/8000.0, mc.thePlayer.posZ+packet.motionZ/8000.0, false))
                 }
 
                 "packetphase" -> {
