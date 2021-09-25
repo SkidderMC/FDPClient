@@ -29,7 +29,7 @@ import net.minecraft.util.EnumFacing
 @ModuleInfo(name = "HighJump", category = ModuleCategory.MOVEMENT)
 class HighJump : Module() {
     private val heightValue = FloatValue("Height", 2f, 1.1f, 7f)
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "StableMotion", "Damage", "AACv3", "DAC", "Mineplex", "Martrix","MatrixWater"), "Vanilla")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "StableMotion", "Damage", "AACv3", "DAC", "Mineplex", "Matrix","MatrixWater"), "Vanilla")
     private val glassValue = BoolValue("OnlyGlassPane", false)
     private val stableMotionValue = FloatValue("StableMotion", 0.42f, 0.1f, 1f).displayable { modeValue.equals("StableMotion") }
     private var jumpY = 114514.0
@@ -89,7 +89,7 @@ class HighJump : Module() {
                     }
                 }
             }
-            "martrix" -> {
+            "matrix" -> {
                 if (martrixWasTimer) {
                     mc.timer.timerSpeed = 1.00f
                     martrixWasTimer = false
