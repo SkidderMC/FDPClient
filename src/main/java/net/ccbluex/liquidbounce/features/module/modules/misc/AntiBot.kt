@@ -195,7 +195,7 @@ object AntiBot : Module() {
                 if (entity.isInvisible && !invisible.contains(entity.entityId))
                     invisible.add(entity.entityId)
 
-                if (!notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer!!.getDistanceToEntity(entity) > alwaysRadiusValue.get())
+                if ((!livingTimeValue.get() || entity.ticksExisted > livingTimeTicksValue.get()) && !notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer!!.getDistanceToEntity(entity) > alwaysRadiusValue.get())
                     notAlwaysInRadius.add(entity.entityId);
             }
         }
