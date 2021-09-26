@@ -21,7 +21,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "FastUse", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay", "DelayedInstant","MinemoraTest","NCP"), "DelayedInstant")
+    private val modeValue = ListValue("Mode", arrayOf("Instant", "Timer", "CustomDelay", "DelayedInstant","MinemoraTest","NCP","AAC"), "DelayedInstant")
     private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F).displayable { modeValue.equals("Timer") }
     private val durationValue = IntegerValue("InstantDelay", 14, 0, 35).displayable { modeValue.equals("DelayedInstant") }
     private val delayValue = IntegerValue("CustomDelay", 0, 0, 300).displayable { modeValue.equals("CustomDelay") }
@@ -58,13 +58,22 @@ class FastUse : Module() {
 
                     mc.playerController.onStoppedUsingItem(mc.thePlayer)
                 }
-
+                "aac" -> {
+                    mc.timer.timerSpeed = 0.49F
+                    usedTimer = true
+                    if (mc.thePlayer.itemInUseDuration > 14) {
+                    repeat(23) {
+                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    }
+                }
+                    mc.playerController.onStoppedUsingItem(mc.thePlayer)
+                }
                 "timer" -> {
                     mc.timer.timerSpeed = timerValue.get()
                     usedTimer = true
                 }
                 
-                "NCP" -> if (mc.thePlayer.itemInUseDuration > 14) {
+                "ncp" -> if (mc.thePlayer.itemInUseDuration > 14) {
                      repeat(20) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                     }
@@ -72,7 +81,7 @@ class FastUse : Module() {
                     mc.playerController.onStoppedUsingItem(mc.thePlayer)
                 }
 
-                "MinemoraTest" -> {
+                "minemoratest" -> {
                     mc.timer.timerSpeed = 0.5F
                     usedTimer = true
                     if(mc.thePlayer.ticksExisted % 2 == 0){
@@ -92,6 +101,16 @@ class FastUse : Module() {
             }
         }
     }
+
+    // @EventTarget
+    // fun onMove(event: MoveEvent?) {
+    //     if (event == null) return
+
+    //     if (!mc.thePlayer.isUsingItem || !modeValue.get().lowercase()=="aac") return
+    //     val usingItem1 = mc.thePlayer.itemInUse.item
+    //     if ((usingItem1 is ItemFood || usingItem1 is ItemBucketMilk || usingItem1 is ItemPotion))
+    //         event.zero()
+    // }
 
     override fun onDisable() {
         if (usedTimer) {
