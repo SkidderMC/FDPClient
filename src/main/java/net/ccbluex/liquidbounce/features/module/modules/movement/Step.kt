@@ -30,7 +30,8 @@ class Step : Module() {
      */
 
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0", "Spartan", "Rewinside"), "NCP")
-
+    //TODO : MotionStep Bypass Matrix(maybe I can covert it to packet step :/ Matrix moment) and WatchCat / Skid NCP( already patched in *New* NCP (Fork) ) Step from Skidma
+    
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
     private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
@@ -53,7 +54,7 @@ class Step : Module() {
 
     override fun onDisable() {
         mc.thePlayer ?: return
-
+ 
         // Change step height back to default (0.5 is default)
         mc.thePlayer.stepHeight = 0.6F
         if(wasTimer) mc.timer.timerSpeed = 1.0F
