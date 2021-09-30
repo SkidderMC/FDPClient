@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils
 
+import net.ccbluex.liquidbounce.value.Value
+
 object ClassUtils {
 
     private val cachedClasses = mutableMapOf<String, Boolean>()
@@ -38,6 +40,9 @@ object ClassUtils {
         throw IllegalAccessException("This class not a kotlin object")
     }
 
-//    fun hasForge() = hasClass("net.minecraftforge.common.MinecraftForge")
-
+    @JvmStatic
+    fun getValues(clazz: Class<*>, instance: Any) = clazz.declaredFields.map { valueField ->
+        valueField.isAccessible = true
+        valueField[instance]
+    }.filterIsInstance<Value<*>>()
 }

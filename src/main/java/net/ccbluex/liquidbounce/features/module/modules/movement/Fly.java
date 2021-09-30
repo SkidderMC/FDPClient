@@ -208,7 +208,6 @@ public class Fly extends Module {
     private boolean aac5FlyClip=false;
     private boolean aac5FlyStart=false;
     private boolean aac5nextFlag=false;
-    private double aac5LastFlag=0;
 
     private float launchYaw=0;
     private float launchPitch=0;

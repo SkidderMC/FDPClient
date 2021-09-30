@@ -7,9 +7,16 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds
 
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.MoveEvent
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.value.Value
 
 abstract class SpeedMode(val modeName: String) : MinecraftInstance() {
+    protected val valuePrefix="$modeName-"
+
+    open val values: List<Value<*>>
+        get() = ClassUtils.getValues(this.javaClass, this)
+
     open fun onEnable() {}
     open fun onDisable() {}
 

@@ -9,13 +9,15 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.value.FloatValue
 
 class AACGround2 : SpeedMode("AACGround2") {
+    private val timerValue = FloatValue("${valuePrefix}Timer", 3f, 1.1f, 10f)
+
     override fun onUpdate() {
         if (!MovementUtils.isMoving()) return
 
-        mc.timer.timerSpeed =
-            (LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed?)!!.aacGroundTimerValue.get()
+        mc.timer.timerSpeed = timerValue.get()
 
         MovementUtils.strafe(0.02f)
     }

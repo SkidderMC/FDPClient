@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element
 
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.Value
@@ -64,10 +65,7 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, var scale: Floa
      * Get all values of element
      */
     open val values: List<Value<*>>
-        get() = javaClass.declaredFields.map { valueField ->
-            valueField.isAccessible = true
-            valueField[this]
-        }.filterIsInstance<Value<*>>()
+        get() = ClassUtils.getValues(this.javaClass, this)
 
     /**
      * Called when element created

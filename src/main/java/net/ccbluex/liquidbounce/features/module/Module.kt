@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.script.api.ScriptModule
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.Animation
@@ -201,21 +202,15 @@ open class Module : MinecraftInstance(), Listenable {
     open fun onInitialize() {}
 
     /**
-     * Get module by [valueName]
-     */
-    open fun getValue(valueName: String) = javaClass.declaredFields.map { valueField ->
-        valueField.isAccessible = true
-        valueField[this]
-    }.filterIsInstance<Value<*>>().find { it.name.equals(valueName, ignoreCase = true) }
-
-    /**
      * Get all values of module
      */
     open val values: List<Value<*>>
-        get() = javaClass.declaredFields.map { valueField ->
-            valueField.isAccessible = true
-            valueField[this]
-        }.filterIsInstance<Value<*>>()
+        get() = ClassUtils.getValues(this.javaClass, this)
+
+    /**
+     * Get module by [valueName]
+     */
+    open fun getValue(valueName: String) = values.find { it.name.equals(valueName, ignoreCase = true) }
 
     /**
      * Events should be handled when module is enabled
