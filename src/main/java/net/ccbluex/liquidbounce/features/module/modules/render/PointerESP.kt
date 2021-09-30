@@ -29,6 +29,7 @@ class PointerESP : Module() {
     private val greenValue = IntegerValue("Green",140,0,255)
     private val blueValue = IntegerValue("Blue",255,0,255)
     private val alphaValue = IntegerValue("Alpha",255,0,255)
+    private val sizeValue = IntegerValue("Size", 100, 50, 200)
 
     @EventTarget
     fun onRender2D(event : Render2DEvent) {
@@ -36,9 +37,9 @@ class PointerESP : Module() {
         val color=Color(redValue.get(),greenValue.get(),blueValue.get(),alphaValue.get())
 
         GlStateManager.pushMatrix()
-        val size = 50
-        val xOffset = sr.scaledWidth / 2 - 24.5
-        val yOffset = sr.scaledHeight / 2 - 25.2
+        val size = 50 + sizeValue.get()
+        val xOffset = sr.scaledWidth / 2 - 24.5 - sizeValue.get() / 2.0
+        val yOffset = sr.scaledHeight / 2 - 25.2 - sizeValue.get() / 2.0
         val playerOffsetX = mc.thePlayer.posX
         val playerOffSetZ = mc.thePlayer.posZ
 
