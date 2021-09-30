@@ -5,13 +5,11 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
-import java.awt.Color
 
 @ModuleInfo(name = "ChinaHat", category = ModuleCategory.RENDER)
 class ChinaHat : Module() {
