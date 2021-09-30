@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.potion.Potion
@@ -22,12 +23,26 @@ import net.minecraft.potion.Potion
 @ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
 class Sprint : Module() {
     val allDirectionsValue = BoolValue("AllDirections", true)
-    private val allDirectionsBypassValue=ListValue("AllDirectionsBypass",arrayOf("Rotate","Toggle","Minemora","None"),"None").displayable { allDirectionsValue.get() }
+    private val allDirectionsBypassValue=ListValue("AllDirectionsBypass",arrayOf("Rotate","Toggle","Minemora","Spoof","LimitSpeed","None"),"None").displayable { allDirectionsValue.get() }
     private val blindnessValue = BoolValue("Blindness", true)
     val foodValue = BoolValue("Food", true)
     val checkServerSide = BoolValue("CheckServerSide", false)
     val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false).displayable { checkServerSide.get() }
     private val noPacket = BoolValue("NoPacket", false)
+    private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed",0.22f, 0f, 0.2f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
+
+    private var spoofStat=false
+        set(value) {
+            if(field!=value){
+                if(value){
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))
+                }else{
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.START_SPRINTING))
+                }
+                chat("STAT $value")
+                field=value
+            }
+        }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -53,6 +68,14 @@ class Sprint : Module() {
                         mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.START_SPRINTING))
                     }
                     "minemora" -> mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000013, mc.thePlayer.posZ)
+                    "limitspeed" -> {
+                        MovementUtils.strafe(allDirectionsLimitSpeedValue.get())
+                    }
+                    "spoof" -> spoofStat=true
+                }
+            }else{
+                when(allDirectionsBypassValue.get().lowercase()){
+                    "spoof" -> spoofStat=false
                 }
             }
         }
