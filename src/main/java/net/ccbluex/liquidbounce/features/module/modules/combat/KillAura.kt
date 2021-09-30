@@ -281,7 +281,9 @@ class KillAura : Module() {
         if (rotationStrafeValue.equals("Off"))
             update()
 
-        if (target != null && currentTarget != null && ( (attackTimingValue.get()=="Pre" && event.eventState == EventState.PRE) || (attackTimingValue.get()=="Post" && event.eventState == EventState.POST) || attackTimingValue.get()=="Both" || attackTimingValue.get()=="All")) {
+        if (target != null && currentTarget != null && ((attackTimingValue.equals("Pre") && event.eventState == EventState.PRE)
+                    || (attackTimingValue.equals("Post") && event.eventState == EventState.POST)
+                    || attackTimingValue.equals("Both") || attackTimingValue.get().equals("All"))) {
             while (clicks > 0) {
                 runAttack()
                 clicks--
@@ -390,7 +392,7 @@ class KillAura : Module() {
         if (mc.thePlayer.isRiding)
             update()
 
-        if (target != null && currentTarget != null && attackTimingValue.get()=="All") {
+        if (target != null && currentTarget != null && attackTimingValue.equals("All")) {
             while (clicks > 0) {
                 runAttack()
                 clicks--

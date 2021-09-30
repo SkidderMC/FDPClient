@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -23,14 +24,9 @@ class HealthWarn : Module() {
     override fun onDisable() {
         canWarn = true
     }
-    
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
-        canWarn = true
-    }
 
     @EventTarget
-    fun onUpdate(event: MotionEvent){
+    fun onUpdate(event: UpdateEvent){
         if(mc.thePlayer.health <= healthValue.get()){
             if(canWarn){
                 LiquidBounce.hud.addNotification(
