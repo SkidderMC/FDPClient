@@ -111,7 +111,7 @@ class Blink : Module() {
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glDisable(GL11.GL_DEPTH_TEST)
             mc.entityRenderer.disableLightmap()
-            GL11.glLineWidth(1F)
+            GL11.glLineWidth(2F)
             GL11.glBegin(GL11.GL_LINE_STRIP)
             RenderUtils.glColor(breadcrumbs.color)
             val renderPosX = mc.renderManager.viewerPosX

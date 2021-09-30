@@ -47,21 +47,21 @@ class Breadcrumbs : Module() {
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glDisable(GL11.GL_DEPTH_TEST)
             mc.entityRenderer.disableLightmap()
-            GL11.glLineWidth(1F)
+            GL11.glLineWidth(2F)
             GL11.glBegin(GL11.GL_LINE_STRIP)
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ
-            for (point in points) {
-                val alpha=if(fade.get()) {
+            for (point in points.map { it }) {
+                RenderUtils.glColor(point.color, if(fade.get()) {
                     val pct=(point.time - fadeSec).toFloat() / fTime
                     if(pct<0||pct>1){
-                        head=points.indexOf(point)
+                        points.remove(point)
+                        head=points.indexOf(point) + 1
                         continue
                     }
                     pct
-                }else{ 1f }
-                RenderUtils.glColor(point.color, alpha)
+                }else{ 1f })
                 GL11.glVertex3d(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
             }
             GL11.glColor4d(1.0,1.0,1.0,1.0)
