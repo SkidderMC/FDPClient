@@ -40,8 +40,8 @@ object ChestAura : Module() {
     private val discoverDelayValue = IntegerValue("DiscoverDelayValue", 200, 50, 300)
     private val onlyOnGround = BoolValue("OnlyOnGround", true)
     private val notOpened = BoolValue("NotOpened", false)
-    private val doubleClick = BoolValue("DoubleClick", false) // this do redesky bypass
-
+    private val doubleClick = BoolValue("DoubleClick", false) // this bypass redesky
+    private val noCombating = BoolValue("NoCombating", true)
     private var currentBlock: BlockPos? = null
     private var underClick=false
 
@@ -55,6 +55,8 @@ object ChestAura : Module() {
         if(onlyOnGround.get() && !mc.thePlayer.onGround)
             return
 
+        if(noCombating.get() &&LiquidBounce.combatManager.inCombat)
+            return
         if(event.eventState == EventState.PRE){
                 if (mc.currentScreen is GuiContainer)
                     return
