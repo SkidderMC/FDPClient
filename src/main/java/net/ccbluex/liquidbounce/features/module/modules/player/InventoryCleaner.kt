@@ -121,22 +121,6 @@ class InventoryCleaner : Module() {
         if (!InventoryUtils.CLICK_TIMER.hasTimePassed(delay) || mc.currentScreen !is GuiInventory && invOpenValue.get())
             return
 
-        if (sortValue.get()){
-            for (index in 0..8) {
-                val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index)) ?: continue
-
-                if (bestItem != index) {
-                    if(checkOpen())
-                        return
-
-                    mc.playerController.windowClick(0, if (bestItem < 9) bestItem + 36 else bestItem, index, 2, mc.thePlayer)
-
-                    delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
-                    return
-                }
-            }
-        }
-
         if(armorValue.get()){
             // Find best armor
             val bestArmor=findBestArmor()
@@ -176,6 +160,22 @@ class InventoryCleaner : Module() {
                 delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
 
                 return
+            }
+        }
+
+        if (sortValue.get()){
+            for (index in 0..8) {
+                val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index)) ?: continue
+
+                if (bestItem != index) {
+                    if(checkOpen())
+                        return
+
+                    mc.playerController.windowClick(0, if (bestItem < 9) bestItem + 36 else bestItem, index, 2, mc.thePlayer)
+
+                    delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+                    return
+                }
             }
         }
 
@@ -434,20 +434,24 @@ class InventoryCleaner : Module() {
      * @return True if it is unable to move the item
      */
     private fun move(item: Int, isArmorSlot: Boolean): Boolean {
-        if (!isArmorSlot && item < 9 && hotbarValue.get() && mc.currentScreen !is GuiInventory) {
+        if (item == -1) {
+            return false
+        }else if (!isArmorSlot && item < 9 && hotbarValue.get() && mc.currentScreen !is GuiInventory) {
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(item))
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(item).stack))
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             return true
-        } else if (!(noMoveValue.get() && MovementUtils.isMoving()) && (!invOpenValue.get() || mc.currentScreen is GuiInventory) && item != -1) {
+        } else {
             if(checkOpen())
-                return true
+                return true // make sure to return
+            if(throwValue.get() && isArmorSlot){
+                mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, item, 0, 4, mc.thePlayer)
+            }
             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, if (isArmorSlot) item else if (item < 9) item + 36 else item, 0, 1, mc.thePlayer)
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             return true
         }
-        return false
     }
 
     /**
