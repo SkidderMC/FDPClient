@@ -150,7 +150,7 @@ class KillAura : Module() {
     private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") }
     
     private val randomCenterModeValue = ListValue("RandomCenter", arrayOf("Off", "Cubic", "Horizonal", "Vertical"), "Off")
-    private val randomCenterRangeValue = FloatValue("RandomRange", 0.2f, 0.0f, 1.2f)
+    private val randomCenRangeValue = FloatValue("RandomRange", 0.0f, 0.0f, 1.2f)
     
     
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
@@ -818,7 +818,7 @@ class KillAura : Module() {
         RotationUtils.calculateCenter(
             rModes,
             randomCenterModeValue.get(),
-            (randomCenterRangeValue.get()).toDouble(),
+            (randomCenRangeValue.get()).toDouble(),
             boundingBox,
             predictValue.get() && rotationModeValue.get() != "Test",
             mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
