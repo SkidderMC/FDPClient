@@ -19,15 +19,16 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.model.ModelPlayer
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector3f
 
 @ModuleInfo(name = "Skeletal", category = ModuleCategory.RENDER)
 class Skeletal : Module() {
-    private val redValue = IntegerValue("Red", 255, 0, 255).displayable { rainbowValue.get() }
-    private val greenValue = IntegerValue("Green", 255, 0, 255).displayable { rainbowValue.get() }
-    private val blueValue = IntegerValue("Blue", 255, 0, 255).displayable { rainbowValue.get() }
+    private val redValue = IntegerValue("Red", 255, 0, 255).displayable { !rainbowValue.get() }
+    private val greenValue = IntegerValue("Green", 255, 0, 255).displayable { !rainbowValue.get() }
+    private val blueValue = IntegerValue("Blue", 255, 0, 255).displayable { !rainbowValue.get() }
     private val rainbowValue = BoolValue("Rainbow", false)
     private val lineWidthValue = FloatValue("LineWidth", 2f, 1f, 5f)
     private val onlyEnemyValue = BoolValue("OnlyEnemy", false)
@@ -51,7 +52,7 @@ class Skeletal : Module() {
     @EventTarget
     fun onRender(event: Render3DEvent) {
         val map=playerModelMap
-            .filter { !(onlyEnemyValue.get() && EntityUtils.isSelected(it.key, true)) && (mc.gameSettings.thirdPersonView!=0 || mc.thePlayer.entityId!=it.key.entityId) }
+            .filter { (!onlyEnemyValue.get() || EntityUtils.isSelected(it.key, true)) && (mc.gameSettings.thirdPersonView!=0 || mc.thePlayer.entityId!=it.key.entityId) }
 
         if(map.isEmpty())
             return
@@ -67,17 +68,17 @@ class Skeletal : Module() {
         GL11.glDisable(3553)
         GL11.glEnable(2903)
         GL11.glDepthMask(true)
+        if(rainbowValue.get()){
+            RenderUtils.glColor(ColorUtils.rainbow())
+        }else{
+            GL11.glColor4f(redValue.get() / 255.0f, greenValue.get() / 255.0f, blueValue.get() / 255.0f, 1.0f)
+        }
         map.forEach { (player, model) ->
             if(!mc.theWorld.playerEntities.contains(player)){
                 playerModelMap.remove(player)
             }
             GL11.glPushMatrix()
             GL11.glLineWidth(lineWidthValue.get())
-            if(rainbowValue.get()){
-                RenderUtils.glColor(ColorUtils.rainbow())
-            }else{
-                GL11.glColor4f(redValue.get() / 255.0f, greenValue.get() / 255.0f, blueValue.get() / 255.0f, 1.0f)
-            }
             GL11.glTranslated(interpolate(player.posX, player.lastTickPosX, event.partialTicks.toDouble()) - mc.renderManager.renderPosX,
                 interpolate(player.posY, player.lastTickPosY, event.partialTicks.toDouble()) - mc.renderManager.renderPosY,
                 interpolate(player.posZ, player.lastTickPosZ, event.partialTicks.toDouble()) - mc.renderManager.renderPosZ)
@@ -153,13 +154,13 @@ class Skeletal : Module() {
             GL11.glVertex3d(0.375, 0.0, 0.0)
             GL11.glEnd()
             GL11.glPopMatrix()
-            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
             GL11.glPopMatrix()
         }
         GL11.glEnable(2848)
         GL11.glEnable(2929)
         GL11.glEnable(3553)
         GL11.glDisable(2903)
+        GlStateManager.resetColor()
         GL11.glDepthMask(false)
     }
 
