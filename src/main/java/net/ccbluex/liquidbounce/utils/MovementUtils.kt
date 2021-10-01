@@ -67,6 +67,12 @@ object MovementUtils : MinecraftInstance() {
     }
 
     @JvmStatic
+    fun limitSpeedByPercent(percent: Float) {
+        mc.thePlayer.motionX *= percent
+        mc.thePlayer.motionZ *= percent
+    }
+
+    @JvmStatic
     fun forward(length: Double) {
         val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
         mc.thePlayer.setPosition(mc.thePlayer.posX + -sin(yaw) * length, mc.thePlayer.posY, mc.thePlayer.posZ + cos(yaw) * length)

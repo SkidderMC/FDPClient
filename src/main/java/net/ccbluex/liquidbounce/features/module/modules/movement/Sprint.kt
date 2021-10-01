@@ -29,7 +29,7 @@ class Sprint : Module() {
     val checkServerSide = BoolValue("CheckServerSide", false)
     val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false).displayable { checkServerSide.get() }
     private val noPacket = BoolValue("NoPacket", false)
-    private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed",0.22f, 0f, 0.2f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
+    private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed",0.7f, 0.5f, 1f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
 
     private var spoofStat=false
         set(value) {
@@ -69,7 +69,7 @@ class Sprint : Module() {
                     }
                     "minemora" -> mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000013, mc.thePlayer.posZ)
                     "limitspeed" -> {
-                        MovementUtils.strafe(allDirectionsLimitSpeedValue.get())
+                        MovementUtils.limitSpeedByPercent(allDirectionsLimitSpeedValue.get())
                     }
                     "spoof" -> spoofStat=true
                 }
