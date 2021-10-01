@@ -165,5 +165,9 @@ class AutoPlay : Module(){
         queued=false
     }
 
+
+    override val tag: String
+        get() = modeValue.get()
+
     override fun handleEvents() = true
 }
