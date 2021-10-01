@@ -451,3 +451,6 @@ module.Damage.description=Allows you to damage yourself
 module.ChinaHat.name=ChinaHat
 module.ChinaHat.description=A beautiful hat
 
+module.Skeletal.name=Skeletal
+module.Skeletal.description=ESP like skeletons
+
