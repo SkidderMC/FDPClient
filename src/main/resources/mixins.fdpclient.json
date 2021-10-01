@@ -56,6 +56,7 @@
   ],
   "client": [
     "gui.MixinGuiKeyBindingList",
-    "gui.MixinGuiSlot"
+    "gui.MixinGuiSlot",
+    "render.MixinModelPlayer"
   ]
 }

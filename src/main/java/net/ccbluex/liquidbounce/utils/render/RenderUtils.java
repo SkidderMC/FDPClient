@@ -719,8 +719,24 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.color(red, green, blue, alpha);
     }
 
-    private static void glColor(final int hex) {
+    public static void glColor(final int hex) {
         final float alpha = (hex >> 24 & 0xFF) / 255F;
+        final float red = (hex >> 16 & 0xFF) / 255F;
+        final float green = (hex >> 8 & 0xFF) / 255F;
+        final float blue = (hex & 0xFF) / 255F;
+
+        GlStateManager.color(red, green, blue, alpha);
+    }
+
+    public static void glColor(final int hex, final int alpha) {
+        final float red = (hex >> 16 & 0xFF) / 255F;
+        final float green = (hex >> 8 & 0xFF) / 255F;
+        final float blue = (hex & 0xFF) / 255F;
+
+        GlStateManager.color(red, green, blue, alpha / 255F);
+    }
+
+    public static void glColor(final int hex, final float alpha) {
         final float red = (hex >> 16 & 0xFF) / 255F;
         final float green = (hex >> 8 & 0xFF) / 255F;
         final float blue = (hex & 0xFF) / 255F;

@@ -77,7 +77,7 @@ class Breadcrumbs : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         synchronized(points) {
-            points.add(BreadcrumbPoint(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ, System.currentTimeMillis(), color))
+            points.add(BreadcrumbPoint(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ, System.currentTimeMillis(), color.rgb))
         }
     }
 
@@ -101,5 +101,5 @@ class Breadcrumbs : Module() {
         }
     }
 
-    class BreadcrumbPoint(val x: Double, val y: Double, val z: Double, val time: Long, val color: Color)
+    class BreadcrumbPoint(val x: Double, val y: Double, val z: Double, val time: Long, val color: Int)
 }
