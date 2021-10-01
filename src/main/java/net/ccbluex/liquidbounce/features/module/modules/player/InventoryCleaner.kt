@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -62,6 +63,7 @@ class InventoryCleaner : Module() {
     private val sortValue = BoolValue("Sort", true)
     private val throwValue = BoolValue("ThrowGarbage", true)
     private val armorValue = BoolValue("Armor", true)
+    private val noCombatValue = BoolValue("NoCombat", false)
     private val itemDelayValue = IntegerValue("ItemDelay", 0, 0, 5000)
 
     private val items = arrayOf("None", "Ignore", "Sword", "Bow", "Pickaxe", "Axe", "Food", "Block", "Water", "Gapple", "Pearl", "Potion")
@@ -80,18 +82,27 @@ class InventoryCleaner : Module() {
         get() = mc.currentScreen !is GuiInventory && simulateInventory.get()
 
     private var invOpened=false
+        set(value) {
+            if(value!=field){
+                if(value){
+                    InventoryUtils.openPacket()
+                }else{
+                    InventoryUtils.closePacket()
+                }
+            }
+            field=value
+        }
+
     private var delay = 0L
     private val simDelayTimer=MSTimer()
 
     override fun onDisable() {
-        if(invOpened)
-            InventoryUtils.closePacket()
+        invOpened=false
     }
 
     private fun checkOpen(): Boolean{
         if (!invOpened && openInventory) {
             invOpened=true
-            InventoryUtils.openPacket()
             simDelayTimer.reset()
             return true
         }
@@ -100,11 +111,10 @@ class InventoryCleaner : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if(noMoveValue.get() && MovementUtils.isMoving() || mc.thePlayer.openContainer != null && mc.thePlayer.openContainer.windowId != 0) {
-            if(invOpened) {
-                invOpened=false
-                InventoryUtils.closePacket()
-            }
+        if(noMoveValue.get() && MovementUtils.isMoving()
+            || mc.thePlayer.openContainer != null && mc.thePlayer.openContainer.windowId != 0
+            || (LiquidBounce.combatManager.inCombat && noCombatValue.get())) {
+            invOpened=false
             return
         }
 
@@ -119,8 +129,7 @@ class InventoryCleaner : Module() {
                     if(checkOpen())
                         return
 
-                    mc.playerController.windowClick(0, if (bestItem < 9) bestItem + 36 else bestItem, index,
-                        2, mc.thePlayer)
+                    mc.playerController.windowClick(0, if (bestItem < 9) bestItem + 36 else bestItem, index, 2, mc.thePlayer)
 
                     delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
                     return
@@ -170,10 +179,7 @@ class InventoryCleaner : Module() {
             }
         }
 
-        if(invOpened){
-            invOpened=false
-            InventoryUtils.closePacket()
-        }
+        invOpened=false
     }
 
     /**
