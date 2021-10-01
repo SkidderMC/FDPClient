@@ -322,10 +322,18 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                                 );
         switch(randMode) {
             case "Horizonal":
-                randomVec3.addVector(0.0D, yPrecent * (curVec3.yCoord - bb.minY) - rand2, 0.0D);
+                randomVec3 = new Vec3(
+                                 curVec3.xCoord - xPrecent * (curVec3.xCoord - bb.minX) + rand1,
+                                 curVec3.yCoord,
+                                 curVec3.zCoord - zPrecent * (curVec3.zCoord - bb.minZ) + rand3
+                                );
                 break;
             case "Vertical":
-                randomVec3.addVector(xPrecent * (curVec3.xCoord - bb.minX) - rand1, 0.0D, zPrecent * (curVec3.zCoord - bb.minZ) - rand3);
+                randomVec3 = new Vec3(
+                                 curVec3.xCoord,
+                                 curVec3.yCoord - yPrecent * (curVec3.yCoord - bb.minY) + rand2,
+                                 curVec3.zCoord
+                                );                
                 break;
         }
         
