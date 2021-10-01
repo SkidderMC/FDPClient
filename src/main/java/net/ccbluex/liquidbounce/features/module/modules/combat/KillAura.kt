@@ -43,6 +43,7 @@ import net.minecraft.util.Vec3
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
+import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
 import java.util.*
 import kotlin.math.cos
@@ -190,7 +191,7 @@ class KillAura : Module() {
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
 
     // Visuals
-    private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","None"),"FDP")
+    private val markValue = ListValue("Mark", arrayOf("Liquid","FDP","Block","Jello","Sims","None"),"FDP")
     private val fakeSharpValue = BoolValue("FakeSharp", true)
     private val circleValue=BoolValue("Circle",false)
     private val circleRed = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
@@ -446,22 +447,18 @@ class KillAura : Module() {
             attackDelay = getAttackDelay(minCPS.get(), maxCPS.get())
         }
 
-        when(markValue.get().lowercase()){
-            "liquid" -> {
-                discoveredTargets.forEach {
+        discoveredTargets.forEach {
+            when(markValue.get().lowercase()){
+                "liquid" -> {
                     RenderUtils.drawPlatform(it, if (it.hurtTime<=0) Color(37, 126, 255, 170) else Color(255, 0, 0, 170))
                 }
-            }
-            "block" -> {
-                discoveredTargets.forEach {
+                "block" -> {
                     val bb=it.entityBoundingBox
                     it.entityBoundingBox=bb.expand(0.2,0.2,0.2)
                     RenderUtils.drawEntityBox(it, if (it.hurtTime<=0) Color.GREEN else Color.RED, true, true, 4f)
                     it.entityBoundingBox=bb
                 }
-            }
-            "fdp" -> {
-                discoveredTargets.forEach {
+                "fdp" -> {
                     val drawTime = (System.currentTimeMillis() % 1500).toInt()
                     val drawMode=drawTime>750
                     var drawPercent=drawTime/750.0
@@ -496,7 +493,7 @@ class KillAura : Module() {
                     GL11.glBegin(3)
                     for (i in 0..360 step 5) {
                         val rainbow = Color.getHSBColor(if(i<180){ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(i/180f) }
-                            else{ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(-(i-360)/180f) }, 0.7f, 1.0f)
+                        else{ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(-(i-360)/180f) }, 0.7f, 1.0f)
                         RenderUtils.glColor(rainbow)
                         GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
                     }
@@ -510,9 +507,7 @@ class KillAura : Module() {
                     GL11.glEnable(3553)
                     GL11.glPopMatrix()
                 }
-            }
-            "jello" -> {
-                discoveredTargets.forEach {
+                "jello" -> {
                     val drawTime = (System.currentTimeMillis() % 2000).toInt()
                     val drawMode=drawTime>1000
                     var drawPercent=drawTime/1000.0
@@ -576,22 +571,31 @@ class KillAura : Module() {
                     GL11.glEnable(GL11.GL_TEXTURE_2D)
                     GL11.glPopMatrix()
                 }
+                "sims" -> {
+                    val radius = 0.15f
+                    val side = 4
+                    GL11.glPushMatrix()
+                    GL11.glTranslated(it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX,
+                        (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + it.height*1.1,
+                        it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ)
+                    GL11.glRotatef(-it.width, 0.0f, 1.0f, 0.0f)
+                    RenderUtils.glColor(if (it.hurtTime<=0) Color(80, 255, 80) else Color(255, 0, 0))
+                    RenderUtils.enableSmoothLine(1.5F)
+                    val c = Cylinder()
+                    GL11.glRotatef(-90.0f, 1.0f, 0.0f, 0.0f)
+                    c.draw(0F, radius, 0.3f, side, 1)
+                    c.drawStyle = 100012
+                    GL11.glTranslated(0.0, 0.0, 0.3)
+                    c.draw(radius, 0f, 0.3f, side, 1)
+                    GL11.glRotatef(90.0f, 0.0f, 0.0f, 1.0f)
+                    GL11.glTranslated(0.0, 0.0, -0.3)
+                    c.draw(0F, radius, 0.3f, side, 1)
+                    GL11.glTranslated(0.0, 0.0, 0.3)
+                    c.draw(radius, 0F, 0.3f, side, 1)
+                    RenderUtils.disableSmoothLine()
+                    GL11.glPopMatrix()
+                }
             }
-//            "route" -> {
-//                if (espAnimation > target!!.eyeHeight + 0.4 || espAnimation < 0) {
-//                    isUp = !isUp
-//                }
-//                if (isUp) {
-//                    espAnimation += 0.05 * 60 / Minecraft.getDebugFPS()
-//                } else {
-//                    espAnimation -= 0.05 * 60 / Minecraft.getDebugFPS()
-//                }
-//                if (isUp) {
-//                    esp(target!!, event.partialTicks, RouteRadiusValue.get())
-//                } else {
-//                    esp(target!!, event.partialTicks, RouteRadiusValue.get())
-//                }
-//            }
         }
     }
 
