@@ -38,6 +38,7 @@ class InfiniteAura : Module() {
     private val distValue=IntegerValue("Distance",30,20,100)
     private val moveDistanceValue=FloatValue("MoveDistance",5F,2F,15F)
     private val noRegen=BoolValue("NoRegen",true)
+    private val tpBack=BoolValue("TPBack",true)
     private val doSwing=BoolValue("Swing",true).displayable { modeValue.equals("Aura") }
     private val path=BoolValue("PathRender",true)
 
@@ -138,10 +139,13 @@ class InfiniteAura : Module() {
             mc.netHandler.addToSendQueue(C0APacketAnimation())
         }
         mc.playerController.attackEntity(mc.thePlayer,entity)
-
+        if(tpBack.get()){
         for(i in path.size-1 downTo 0){
             val vec=path[i]
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec.xCoord,vec.yCoord,vec.zCoord,true))
+        }
+        }else{
+        	mc.thePlayer.setPositionAndUpdate(path[path.size-1].xCoord, path[path.size-1].yCoord, path[path.size-1].zCoord);
         }
     }
 
