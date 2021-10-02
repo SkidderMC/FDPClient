@@ -46,6 +46,7 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 @ModuleInfo(name = "Scaffold", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_G)
@@ -401,7 +402,7 @@ class Scaffold : Module() {
         if(towerStatus) move()
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepLengthValue.get()>0 && lockRotation != null && silentRotationValue.get()) {
-            val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation, getSpeed())
+            val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation, rotationSpeed)
             RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
         }
 
@@ -556,8 +557,9 @@ class Scaffold : Module() {
 
     private fun update() {
         if (if (!autoBlockValue.equals("off")) InventoryUtils.findAutoBlockBlock() == -1 else mc.thePlayer.heldItem == null ||
-                    !(mc.thePlayer.heldItem.item is ItemBlock && !InventoryUtils.isBlockListBlock(mc.thePlayer.heldItem.item as ItemBlock))
-        ) return
+                    !(mc.thePlayer.heldItem.item is ItemBlock && !InventoryUtils.isBlockListBlock(mc.thePlayer.heldItem.item as ItemBlock)))
+            return
+
         findBlock(expandLengthValue.get()>1)
     }
 
@@ -565,32 +567,33 @@ class Scaffold : Module() {
      * Search for new target block
      */
     private fun findBlock(expand: Boolean) {
-        val blockPosition = if (shouldGoDown) if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) BlockPos(
-            mc.thePlayer.posX,
-            mc.thePlayer.posY - 0.6,
-            mc.thePlayer.posZ
-        ) else BlockPos(
-            mc.thePlayer.posX, mc.thePlayer.posY - 0.6, mc.thePlayer.posZ
-        ).down() else if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5 && !canSameY) BlockPos(
-            mc.thePlayer
-        ) else if(canSameY && lastGroundY<=mc.thePlayer.posY) BlockPos(
-            mc.thePlayer.posX, lastGroundY-1.0, mc.thePlayer.posZ) else BlockPos(
-            mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ
-        ).down()
+        val blockPosition = if (shouldGoDown) {
+            if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) {
+                BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.6, mc.thePlayer.posZ)
+            } else {
+                BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.6, mc.thePlayer.posZ).down()
+            }
+        } else if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5 && !canSameY) {
+            BlockPos(mc.thePlayer)
+        } else if(canSameY && lastGroundY<=mc.thePlayer.posY) {
+            BlockPos(mc.thePlayer.posX, lastGroundY-1.0, mc.thePlayer.posZ)
+        } else {
+            BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ).down()
+        }
         if (!expand && (!BlockUtils.isReplaceable(blockPosition) || search(blockPosition, !shouldGoDown))) return
         if (expand) {
             for (i in 0 until expandLengthValue.get()) {
-                if (search(
-                        blockPosition.add(
-                            if (mc.thePlayer.horizontalFacing == EnumFacing.WEST) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.EAST) i else 0,
-                            0,
-                            if (mc.thePlayer.horizontalFacing == EnumFacing.NORTH) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.SOUTH) i else 0
-                        ), false
-                    )
-                ) return
+                if (search(blockPosition.add(if (mc.thePlayer.horizontalFacing == EnumFacing.WEST) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.EAST) i else 0,
+                        0, if (mc.thePlayer.horizontalFacing == EnumFacing.NORTH) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.SOUTH) i else 0), false))
+                    return
             }
         } else if (searchValue.get()) {
-            for (x in -1..1) for (z in -1..1) if (search(blockPosition.add(x, 0, z), !shouldGoDown)) return
+            for (x in -1..1) {
+                for (z in -1..1) {
+                    if (search(blockPosition.add(x, 0, z), !shouldGoDown))
+                        return
+                }
+            }
         }
     }
 
@@ -708,15 +711,42 @@ class Scaffold : Module() {
         if (safeWalkValue.equals("air") || mc.thePlayer.onGround) event.isSafeWalk = true
     }
 
+    private val barrier=ItemStack(Item.getItemById(166), 0, 0)
+
     /**
      * Scaffold visuals
      *
      * @param event
      */
     @EventTarget
-    fun onRender2D(event: Render2DEvent?) {
+    fun onRender2D(event: Render2DEvent) {
         if (counterDisplayValue.get()) {
-            drawTip()
+            GlStateManager.pushMatrix()
+            val info = LanguageManager.getAndFormat("ui.scaffold.blocks",blocksAmount)
+            val scaledResolution = ScaledResolution(mc)
+            val width = scaledResolution.scaledWidth
+            val height = scaledResolution.scaledHeight
+            val slot = InventoryUtils.findAutoBlockBlock()
+            var stack: ItemStack = barrier
+            if (slot != -1) {
+                if(mc.thePlayer.inventory.getCurrentItem()!=null) {
+                    val handItem = mc.thePlayer.inventory.getCurrentItem().item
+                    if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
+                        stack = mc.thePlayer.inventory.getCurrentItem()
+                    }
+                }
+                if(stack==barrier) {
+                    stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
+                    if (stack == null) {
+                        stack = barrier
+                    }
+                }
+            }
+            RenderHelper.enableGUIStandardItemLighting()
+            mc.renderItem.renderItemIntoGUI(stack, width / 2 - Fonts.font20.getStringWidth(info), (height * 0.6 - Fonts.font20.FONT_HEIGHT * 0.5).toInt())
+            RenderHelper.disableStandardItemLighting()
+            Fonts.font20.drawCenteredString(info, width / 2f, height * 0.6f, Color.WHITE.rgb, false)
+            GlStateManager.popMatrix()
         }
     }
 
@@ -726,7 +756,7 @@ class Scaffold : Module() {
      * @param event
      */
     @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
+    fun onRender3D(event: Render3DEvent) {
         if (!markValue.get()) return
         for (i in 0 until (expandLengthValue.get() + 1)) {
             val blockPos = BlockPos(
@@ -810,51 +840,49 @@ class Scaffold : Module() {
             }
         }
         if (placeRotation == null) return false
-        if (rotationsValue.get() != "None") {
-            var rotation: Rotation? = null
-            when (rotationsValue.get().lowercase()) {
+        if (!rotationsValue.equals("None")) {
+            val rotation = when (rotationsValue.get().lowercase()) {
                 "aac" -> {
                     if (!towerStatus) {
-                        rotation = Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
+                        Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
                     }else{
-                        rotation = placeRotation.rotation
+                        placeRotation.rotation
                     }
                 }
                 "vanilla" -> {
-                    rotation = placeRotation.rotation
+                    placeRotation.rotation
                 }
                 "test1" -> {
-                    var caluyaw = (java.lang.Math.round(placeRotation.rotation.yaw / 45) * 45).toFloat()
+                    val caluyaw = ((placeRotation.rotation.yaw / 45).roundToInt() * 45).toFloat()
                     //Co丶Dynamic : Wo Shi Sha Bi
-                    rotation = Rotation(caluyaw, placeRotation.rotation.pitch)
+                    Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
                 "test2" -> {
-                    rotation = Rotation(((MovementUtils.getDirection() * 180f / Math.PI).toFloat() + 135).toFloat(), placeRotation.rotation.pitch)
+                    Rotation(((MovementUtils.getDirection() * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
                 }
                 "custom" -> {
-                    rotation = Rotation(mc.thePlayer.rotationYaw + customYaw.get(), customPitch.get().toFloat())
+                    Rotation(mc.thePlayer.rotationYaw + customYaw.get(), customPitch.get().toFloat())
                 }
+                else -> return false // this should not happen
             }
-            if (rotation != null) {
-                /*if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || lastTickOnGround ||
-                    (!mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(
-                            -mc.thePlayer.motionX,
-                            0.98*(mc.thePlayer.motionY-0.08),
-                            -mc.thePlayer.motionZ
-                            )).isEmpty() && mc.thePlayer.motionY<=0)
-                  ))
-                    rotation = Rotation(
-                        mc.thePlayer.rotationYaw + tolleyYawValue.get(),
-                        placeRotation.rotation.pitch
-                    )*/
-                if (silentRotationValue.get()) {
-                    val limitedRotation =
-                        RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation, getSpeed())
-                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
-                } else {
-                    mc.thePlayer.rotationYaw = rotation.yaw
-                    mc.thePlayer.rotationPitch = rotation.pitch
-                }
+            /*if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || lastTickOnGround ||
+                (!mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(
+                        -mc.thePlayer.motionX,
+                        0.98*(mc.thePlayer.motionY-0.08),
+                        -mc.thePlayer.motionZ
+                        )).isEmpty() && mc.thePlayer.motionY<=0)
+              ))
+                rotation = Rotation(
+                    mc.thePlayer.rotationYaw + tolleyYawValue.get(),
+                    placeRotation.rotation.pitch
+                )*/
+            if (silentRotationValue.get()) {
+                val limitedRotation =
+                    RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation, rotationSpeed)
+                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+            } else {
+                mc.thePlayer.rotationYaw = rotation.yaw
+                mc.thePlayer.rotationPitch = rotation.pitch
             }
             lockRotation = rotation
             //lastTickOnGround=mc.thePlayer.onGround
@@ -866,7 +894,7 @@ class Scaffold : Module() {
     /**
      * @return hotbar blocks amount
      */
-    val blocksAmount: Int
+    private val blocksAmount: Int
         get() {
             var amount = 0
             for (i in 36..44) {
@@ -877,54 +905,24 @@ class Scaffold : Module() {
             return amount
         }
 
-    fun drawTip() {
-        GlStateManager.pushMatrix()
-        val info = LanguageManager.getAndFormat("ui.scaffold.blocks",blocksAmount)
-        val scaledResolution = ScaledResolution(mc)
-        val width = scaledResolution.scaledWidth
-        val height = scaledResolution.scaledHeight
-        val slot = InventoryUtils.findAutoBlockBlock()
-        var stack: ItemStack? = barrier
-        if (slot != -1) {
-            if(mc.thePlayer.inventory.getCurrentItem()!=null) {
-                val handItem = mc.thePlayer.inventory.getCurrentItem().item
-                if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
-                    stack = mc.thePlayer.inventory.getCurrentItem()
-                }
-            }
-            if(stack==barrier) {
-                stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
-                if (stack == null) {
-                    stack = barrier
-                }
-            }
-        }
-        RenderHelper.enableGUIStandardItemLighting()
-        mc.renderItem.renderItemIntoGUI(stack, width / 2 - Fonts.font20.getStringWidth(info), (height * 0.6 - Fonts.font20.FONT_HEIGHT * 0.5).toInt())
-        RenderHelper.disableStandardItemLighting()
-        Fonts.font20.drawCenteredString(info, width / 2f, height * 0.6f, Color.WHITE.rgb, false)
-        GlStateManager.popMatrix()
-    }
+    private val rotationSpeed: Float
+        get() = (Math.random() * (maxRotationSpeedValue.get() - minRotationSpeedValue.get()) + minRotationSpeedValue.get()).toFloat()
 
-    fun getSpeed():Float{
-        return (Math.random() * (maxRotationSpeedValue.get() - minRotationSpeedValue.get()) + minRotationSpeedValue.get()).toFloat()
-    }
-    
-    fun roundYaw(rYaw: Float):Float{
-        var lrYaw = rYaw
-        while(lrYaw>360) {
-            lrYaw -= 360
-        }
-        while(lrYaw<-360) {
-            lrYaw += 360
-        }
-        return lrYaw
-    }
+//    fun roundYaw(rYaw: Float):Float{
+//        var lrYaw = rYaw
+//        while(lrYaw>360) {
+//            lrYaw -= 360
+//        }
+//        while(lrYaw<-360) {
+//            lrYaw += 360
+//        }
+//        return lrYaw
+//    }
     
     @EventTarget
     fun onJump(event: JumpEvent) {
         if (towerStatus)
-            event.cancelEvent();
+            event.cancelEvent()
     }
 
     val canSprint: Boolean
@@ -937,6 +935,4 @@ class Scaffold : Module() {
 
     override val tag: String
         get() = if(towerStatus){ "Tower" }else{ "Normal" }
-
-    private val barrier = ItemStack(Item.getItemById(166), 0, 0)
 }
