@@ -338,7 +338,7 @@ class KillAura : Module() {
     }
 
     fun update() {
-        if (cancelRun || (noInventoryAttackValue.get() && (mc.currentScreen is GuiContainer ||
+        if (cancelRun || (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer ||
                     System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())))
             return
 
@@ -848,9 +848,17 @@ class KillAura : Module() {
 
         if (silentRotationValue.get()) {
             if(rotationRevTickValue.get()>0 && rotationRevValue.get()) {
-                RotationUtils.setTargetRotationReverse(rotation, (keepDirectionValue.get()? keepDirectionTickValue.get() : 0), rotationRevTickValue.get())
+                if(keepDirectionValue.get()) {
+                    RotationUtils.setTargetRotationReverse(rotation, 0, rotationRevTickValue.get())
+                }else{
+                    RotationUtils.setTargetRotationReverse(rotation, keepDirectionTickValue.get(), rotationRevTickValue.get())
+                }
             }else{
-                RotationUtils.setTargetRotation(rotation, (keepDirectionValue.get()? keepDirectionTickValue.get() : 0))
+                if(keepDirectionValue.get()) {
+                    RotationUtils.setTargetRotation(rotation, keepDirectionTickValue.get())
+                }else{
+                    RotationUtils.setTargetRotation(rotation, 0)
+                }
             }
         }else{
             rotation.toPlayer(mc.thePlayer)
