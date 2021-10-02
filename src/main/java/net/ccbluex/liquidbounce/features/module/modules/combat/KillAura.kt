@@ -155,10 +155,10 @@ class KillAura : Module() {
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
     private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
-    private val RotationRevValue = BoolValue("RotationReverse", false).displayable { !rotationModeValue.equals("None") }
-    private val RotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable { !rotationModeValue.equals("None") }
-    private val KeepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
-    private val KeepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
+    private val rotationRevValue = BoolValue("RotationReverse", false).displayable { !rotationModeValue.equals("None") }
+    private val rotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable { !rotationModeValue.equals("None") }
+    private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
+    private val keepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
     private val hitableValue = BoolValue("AlwaysHitable",true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
@@ -847,10 +847,10 @@ class KillAura : Module() {
         }
 
         if (silentRotationValue.get()) {
-            if(RotationRevTickValue.get()>0 && RotationRevValue.get()) {
-                RotationUtils.setTargetRotationReverse(rotation, ((KeepDirectionValue.get())? KeepDirectionTickValue.get() : 0), RotationRevTickValue.get())
+            if(rotationRevTickValue.get()>0 && rotationRevValue.get()) {
+                RotationUtils.setTargetRotationReverse(rotation, (keepDirectionValue.get()? keepDirectionTickValue.get() : 0), rotationRevTickValue.get())
             }else{
-                RotationUtils.setTargetRotation(rotation, ((KeepDirectionValue.get())? KeepDirectionTickValue.get() : 0))
+                RotationUtils.setTargetRotation(rotation, (keepDirectionValue.get()? keepDirectionTickValue.get() : 0))
             }
         }else{
             rotation.toPlayer(mc.thePlayer)
