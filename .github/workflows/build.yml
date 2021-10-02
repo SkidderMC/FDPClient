@@ -42,5 +42,5 @@ jobs:
             github.rest.repos.createCommitComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                commit_sha: ${{ github.event.head_commit.id }},
+                commit_sha: "${{ github.event.head_commit.id }}",
                 body: msg });
