@@ -273,7 +273,7 @@ class KillAura : Module() {
             return
         }
 
-        if (rotationStrafeValue.equals("Off"))
+        //if (rotationStrafeValue.equals("Off"))
             update()
 
         if (target != null && currentTarget != null && ((attackTimingValue.equals("Pre") && event.eventState == EventState.PRE)
@@ -294,7 +294,7 @@ class KillAura : Module() {
         if (rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding)
             return
 
-        update()
+        //update()
 
         if(strafeOnlyGroundValue.get()&&!mc.thePlayer.onGround)
             return
@@ -328,7 +328,7 @@ class KillAura : Module() {
                     event.cancelEvent()
                 }
                 "silent" -> {
-                    update()
+                    //update()
 
                     RotationUtils.targetRotation.applyStrafeToPlayer(event)
                     event.cancelEvent()
