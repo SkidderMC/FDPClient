@@ -24,6 +24,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     private static Random random = new Random();
 
     private static int keepLength;
+    private static int revTick;
 
     public static Rotation targetRotation;
     public static Rotation serverRotation = new Rotation(0F, 0F);
@@ -474,8 +475,12 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         if(targetRotation != null) {
             keepLength--;
 
-            if (keepLength <= 0)
-                reset();
+            if (keepLength <= 0) {
+                if(revTick>0) {
+                    revTick--;
+                    reset();
+                }else reset();
+            }
         }
 
         if(random.nextGaussian() > 0.8D) x = Math.random();
@@ -527,16 +532,29 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         rotation.fixedSensitivity(mc.gameSettings.mouseSensitivity);
         targetRotation = rotation;
         RotationUtils.keepLength = keepLength;
+        RotationUtils.revTick = 0;
     }
     
-    //public static void setTargetRotationReverse(final Rotation rotation, final int revTick, final int revDelay)
+    public static void setTargetRotationReverse(final Rotation rotation, final int keepLength, final int revTick) {
+        if(Double.isNaN(rotation.getYaw()) || Double.isNaN(rotation.getPitch())
+                || rotation.getPitch() > 90 || rotation.getPitch() < -90)
+            return;
 
+        rotation.fixedSensitivity(mc.gameSettings.mouseSensitivity);
+        targetRotation = rotation;
+        RotationUtils.keepLength = keepLength;
+        RotationUtils.revTick = revTick+1;
+    }
+    
     /**
      * Reset your target rotation
      */
     public static void reset() {
         keepLength = 0;
-        targetRotation = null;
+        if(revTick>0) {
+            targetRotation = new Rotation(targetRotation.getYaw()-getAngleDifference(targetRotation.getYaw(), mc.thePlayer.rotationYaw)/revTick
+                                        , targetRotation.getPitch()-getAngleDifference(targetRotation.getPitch(), mc.thePlayer.rotationPitch)/revTick);
+        }else targetRotation = null;
     }
 
     public static Rotation getRotations(Entity ent) {
