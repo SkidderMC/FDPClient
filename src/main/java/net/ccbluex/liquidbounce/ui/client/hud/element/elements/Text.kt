@@ -90,7 +90,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
                 "velocity" -> return DECIMAL_FORMAT.format(sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ))
                 "ping" -> return EntityUtils.getPing(mc.thePlayer).toString()
                 "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
-                "attackDist" -> return if(LiquidBounce.combatManager.target!=null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString() else "Hasn't attacked"
+                "attackDist" -> return if(LiquidBounce.combatManager.target!=null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString()+" Blocks" else "Hasn't attacked"
             }
         }
 
