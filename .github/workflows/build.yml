@@ -1,11 +1,10 @@
-name: build-ci
+name: build
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -21,8 +20,27 @@ jobs:
         run: echo "${{ github.event.head_commit.id }}" > src/main/resources/FDP_GIT_COMMIT_ID
       - name: Build
         run: ./gradlew setupCiWorkspace && ./gradlew build
+      - name: Rename build artifacts
+        run: mv build/libs/FDPClient-2.0.0.jar build/libs/FDPClient-${{ github.event.head_commit.id }}.jar
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: FDPClient
-          path: build/libs/FDPClient-2.0.0.jar
+          path: build/libs/FDPClient-${{ github.event.head_commit.id }}.jar
+      - name: Publish build artifacts
+        run: curl -F "file=@build/libs/FDPClient-${{ github.event.head_commit.id }}.jar" https://api.anonfiles.com/upload > result.txt
+      - name: Comment artifact download link
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const fs=require("fs");
+            var json=JSON.parse(fs.readFileSync("result.txt").toString())
+            var msg="**Sorry!** File upload failed"
+            if(json.status){
+                msg=json.data.file.url.short
+            }
+            github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: ${{ github.event.head_commit.id }},
+                body: msg });
