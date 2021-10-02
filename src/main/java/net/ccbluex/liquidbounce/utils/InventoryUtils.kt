@@ -49,7 +49,7 @@ object InventoryUtils : MinecraftInstance(), Listenable {
             if (itemStack != null && itemStack.item is ItemBlock) {
                 val itemBlock = itemStack.item as ItemBlock
                 val block = itemBlock.getBlock()
-                if (canPlaceBlock(block))
+                if (canPlaceBlock(block) && itemStack.stackSize > 0)
                     return i
             }
         }
