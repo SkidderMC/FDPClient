@@ -106,17 +106,16 @@ class KillAura : Module() {
     private val keepSprintValue = BoolValue("KeepSprint", true)
 
     // AutoBlock
-    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"),"Off")
+    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range"/*, "Fake"*/, "Off"),"Off")
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
         }
-    }.displayable { !autoBlockValue.equals("Off") }
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"),"AfterTick").displayable { !autoBlockValue.equals("Off") }
-    private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true).displayable { !autoBlockValue.equals("Off") }
-    private val blockRate = IntegerValue("BlockRate", 100, 1, 100).displayable { !autoBlockValue.equals("Off") }
-    // private val badPacketFixValue = BoolValue("badPacketFix", true).displayable { !autoBlockValue.equals("Off") }
+    }.displayable { autoBlockValue.equals("Range") }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"),"AfterTick").displayable { autoBlockValue.equals("Range") }
+    private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true).displayable { autoBlockValue.equals("Range") }
+    private val blockRate = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
 
     // Raycast
     private val raycastValue = BoolValue("RayCast", true)
@@ -128,7 +127,7 @@ class KillAura : Module() {
     //TODO: Divide AAC Opinion into three separated opinions
     
     // Rotations
-    private val rotationModeValue = ListValue("RotationMode", arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView" /*,"b62"*/), "LiquidBounce")
+    private val rotationModeValue = ListValue("RotationMode", arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView"), "LiquidBounce")
     //TODO: RotationMode Bypass Intave
     
     private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
@@ -258,7 +257,7 @@ class KillAura : Module() {
 
         if (event.eventState == EventState.POST) {
             // AutoBlock
-            if (!autoBlockValue.equals("off") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")||discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)>maxRange }.isNotEmpty()) && canBlock) {
+            if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")||discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)>maxRange }.isNotEmpty()) && canBlock) {
                 val target=discoveredTargets[0]
                 if(mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get())
                     startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target)<maxRange))
@@ -781,7 +780,7 @@ class KillAura : Module() {
         }
 
         // Start blocking after attack
-        if (mc.thePlayer.isBlocking || (!autoBlockValue.equals("off") && canBlock)) {
+        if (mc.thePlayer.isBlocking || (autoBlockValue.equals("Range") && canBlock)) {
             if(autoBlockPacketValue.equals("AfterTick"))
                 return
 
@@ -889,7 +888,7 @@ class KillAura : Module() {
      * Start blocking
      */
     private fun startBlocking(interactEntity: Entity, interact: Boolean) {
-        if(autoBlockValue.equals("range") && mc.thePlayer.getDistanceToEntityBox(interactEntity)>autoBlockRangeValue.get())
+        if(autoBlockValue.equals("Range") && mc.thePlayer.getDistanceToEntityBox(interactEntity)>autoBlockRangeValue.get())
             return
 
         if(blockingStatus)
