@@ -39,6 +39,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -129,10 +130,12 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     private float lastReportedPitch;
 
     /**
-     * @author CCBlueX
+     * @author CCBlueX, liulihaocai
+     *
+     * use inject to make sure this works with ViaForge mod
      */
-    @Overwrite
-    public void onUpdateWalkingPlayer() {
+    @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
+    public void onUpdateWalkingPlayer(CallbackInfo ci) {
         try {
             LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.PRE));
 
@@ -211,6 +214,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         } catch (final Exception e) {
             e.printStackTrace();
         }
+
+        ci.cancel();
     }
 
     @Inject(method = "pushOutOfBlocks", at = @At("HEAD"), cancellable = true)

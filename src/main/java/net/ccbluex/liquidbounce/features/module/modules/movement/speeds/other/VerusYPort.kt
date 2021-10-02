@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class VerusYPort : SpeedMode("VerusYPort") {
 	override fun onMove(event: MoveEvent) {
-		if (!mc.thePlayer.isInWeb && !mc.thePlayer.isInLava() && !mc.thePlayer.isInWater() && !mc.thePlayer.isOnLadder() && mc.thePlayer.ridingEntity == null) {
+		if (!mc.thePlayer.isInWeb && !mc.thePlayer.isInLava && !mc.thePlayer.isInWater && !mc.thePlayer.isOnLadder && mc.thePlayer.ridingEntity == null) {
 			if (MovementUtils.isMoving()) {
 				mc.gameSettings.keyBindJump.pressed = false
 				if (mc.thePlayer.onGround) {
