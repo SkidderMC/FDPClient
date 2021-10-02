@@ -155,8 +155,10 @@ class KillAura : Module() {
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Slient").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
     private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround",true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
-    //private val randomCenterValue = BoolValue("RandomCenter", false).displayable { !rotationModeValue.equals("None") }
-    //private val outborderValue = BoolValue("Outborder", false).displayable { !rotationModeValue.equals("None") }
+    private val RotationRevValue = BoolValue("RotationReverse", false).displayable { !rotationModeValue.equals("None") }
+    private val RotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable { !rotationModeValue.equals("None") }
+    private val KeepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
+    private val KeepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
     private val hitableValue = BoolValue("AlwaysHitable",true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
@@ -182,8 +184,7 @@ class KillAura : Module() {
     // Bypass
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f)
     private val fakeSwingValue = BoolValue("FakeSwing", true).displayable { failRateValue.get()!=0f }
-    private val noInventoryAttackValue = BoolValue("NoInvAttack", false)
-    //TODO: NoInvAttack Spoof Mode (AAC (OldAAC maybe AAC3 I think) Mode)
+    private val noInventoryAttackValue = ListValue("NoInvAttack", arrayOf("Spoof", "CancelRun", "Off"),"Off")
     
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500)
     private val switchDelayValue = IntegerValue("SwitchDelay",300 ,1, 2000).displayable { targetModeValue.equals("Switch") }
@@ -371,7 +372,7 @@ class KillAura : Module() {
             return
         }
 
-        if (noInventoryAttackValue.get() && (mc.currentScreen is GuiContainer ||
+        if (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer ||
                     System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())) {
             target = null
             currentTarget = null
@@ -621,7 +622,7 @@ class KillAura : Module() {
         // Settings
         val failRate = failRateValue.get()
         val swing = swingValue.get()
-        val openInventory = aacValue.get() && mc.currentScreen is GuiInventory
+        val openInventory = noInventoryAttackValue.equals("Spoof") && mc.currentScreen is GuiInventory
         val failHit = failRate > 0 && Random().nextInt(100) <= failRate
 
         // Close inventory when open
@@ -845,11 +846,15 @@ class KillAura : Module() {
             else -> return true
         }
 
-        if (silentRotationValue.get())
-            RotationUtils.setTargetRotation(rotation, if (aacValue.get()) 15 else 0)
-        else
+        if (silentRotationValue.get()) {
+            if(RotationRevTickValue.get()>0 && RotationRevValue.get()) {
+                RotationUtils.setTargetRotationReverse(rotation, ((KeepDirectionValue.get())? KeepDirectionTickValue.get() : 0), RotationRevTickValue.get())
+            }else{
+                RotationUtils.setTargetRotation(rotation, ((KeepDirectionValue.get())? KeepDirectionTickValue.get() : 0))
+            }
+        }else{
             rotation.toPlayer(mc.thePlayer)
-
+        }
         return true
     }
 
