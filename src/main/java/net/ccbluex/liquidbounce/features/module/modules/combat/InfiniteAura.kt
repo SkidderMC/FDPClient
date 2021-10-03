@@ -145,7 +145,7 @@ class InfiniteAura : Module() {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec.xCoord,vec.yCoord,vec.zCoord,true))
         }
         }else{
-        	mc.thePlayer.setPositionAndUpdate(path[path.size-1].xCoord, path[path.size-1].yCoord, path[path.size-1].zCoord);
+        	mc.thePlayer.setPositionAndUpdate(path[path.size].xCoord, path[path.size].yCoord, path[path.size].zCoord);
         }
     }
 
