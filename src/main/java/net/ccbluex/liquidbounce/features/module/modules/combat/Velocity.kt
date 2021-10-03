@@ -229,7 +229,7 @@ class Velocity : Module() {
            }
            
            "matrixground" -> {
-               isMatrixOnGround = mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown()
+               isMatrixOnGround = mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown
                if(isMatrixOnGround) mc.thePlayer.onGround = false
            }
         

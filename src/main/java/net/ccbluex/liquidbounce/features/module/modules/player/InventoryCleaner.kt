@@ -131,7 +131,7 @@ class InventoryCleaner : Module() {
                 val armorPiece = bestArmor[i] ?: continue
                 val armorSlot = 3 - i
                 val oldArmor:ItemStack? = mc.thePlayer.inventory.armorItemInSlot(armorSlot)
-                if (oldArmor == null || oldArmor.item !is ItemArmor || ItemUtils.compareArmor(ArmorPiece(oldArmor!!, -1), armorPiece, nbtedArmorPriority.get()) < 0) {
+                if (oldArmor == null || oldArmor.item !is ItemArmor || ItemUtils.compareArmor(ArmorPiece(oldArmor, -1), armorPiece, nbtedArmorPriority.get()) < 0) {
                     if (oldArmor != null &&move(8 - armorSlot, true)) {
                         return
                     }
@@ -168,7 +168,7 @@ class InventoryCleaner : Module() {
 
         if (sortValue.get()){
             for (index in 0..8) {
-                val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index) ?: continue) ?: continue
+                val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index)) ?: continue
 
                 if (bestItem != index) {
                     if(checkOpen())
@@ -209,13 +209,10 @@ class InventoryCleaner : Module() {
                     }
                 }
 
-                val damage = (itemStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount
-                    ?: 0.0) + ItemUtils.getWeaponEnchantFactor(itemStack, nbtedWeaponPriority.get())
+                val damage = (itemStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount ?: 0.0) + ItemUtils.getWeaponEnchantFactor(itemStack, nbtedWeaponPriority.get())
 
                 items(0, 45).none { (_, stack) ->
-                    stack != itemStack && stack.javaClass == itemStack.javaClass
-                            && damage <= (stack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount
-                        ?: 0.0) + ItemUtils.getWeaponEnchantFactor(stack, nbtedWeaponPriority.get())
+                    stack != itemStack && stack.javaClass == itemStack.javaClass && damage <= (stack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount ?: 0.0) + ItemUtils.getWeaponEnchantFactor(stack, nbtedWeaponPriority.get())
                 }
             } else if (item is ItemBow) {
                 val currPower = ItemUtils.getEnchantment(itemStack, Enchantment.power)
@@ -268,7 +265,7 @@ class InventoryCleaner : Module() {
         return bestArmor
     }
 
-    private fun findBetterItem(targetSlot: Int, slotStack: ItemStack): Int? {
+    private fun findBetterItem(targetSlot: Int, slotStack: ItemStack?): Int? {
         val type = type(targetSlot)
 
         when (type.lowercase()) {
@@ -280,7 +277,7 @@ class InventoryCleaner : Module() {
                     else -> return null
                 }
 
-                var bestWeapon = if (slotStack.item?.javaClass == currentType) {
+                var bestWeapon = if (slotStack?.item?.javaClass == currentType) {
                     targetSlot
                 } else {
                     -1
@@ -306,9 +303,9 @@ class InventoryCleaner : Module() {
             }
 
             "bow" -> {
-                var bestBow = if (slotStack.item is ItemBow) targetSlot else -1
+                var bestBow = if (slotStack?.item is ItemBow) targetSlot else -1
                 var bestPower = if (bestBow != -1) {
-                    ItemUtils.getEnchantment(slotStack, Enchantment.power)
+                    ItemUtils.getEnchantment(slotStack!!, Enchantment.power)
                 } else {
                     0
                 }
@@ -328,11 +325,7 @@ class InventoryCleaner : Module() {
                     }
                 }
 
-                return if (bestBow != -1) {
-                    bestBow
-                } else {
-                    null
-                }
+                return if (bestBow != -1) bestBow else null
             }
 
             "food" -> {
@@ -340,7 +333,7 @@ class InventoryCleaner : Module() {
                     val item = stack?.item
 
                     if (item is ItemFood && item !is ItemAppleGold && !type(index).equals("Food", ignoreCase = true)) {
-                        val replaceCurr = slotStack.item !is ItemFood
+                        val replaceCurr = slotStack == null || slotStack.item !is ItemFood
 
                         return if (replaceCurr) index else null
                     }
@@ -353,7 +346,7 @@ class InventoryCleaner : Module() {
 
                     if (item is ItemBlock && !InventoryUtils.isBlockListBlock(item) &&
                         !type(index).equals("Block", ignoreCase = true)) {
-                        val replaceCurr = slotStack.item !is ItemBlock
+                        val replaceCurr = slotStack == null || slotStack.item !is ItemBlock
 
                         return if (replaceCurr) index else null
                     }
@@ -365,7 +358,7 @@ class InventoryCleaner : Module() {
                     val item = stack?.item
 
                     if (item is ItemBucket && item.isFull == Blocks.flowing_water && !type(index).equals("Water", ignoreCase = true)) {
-                        val replaceCurr = slotStack.item !is ItemBucket || (slotStack.item as ItemBucket).isFull != Blocks.flowing_water
+                        val replaceCurr = slotStack == null || slotStack.item !is ItemBucket || (slotStack.item as ItemBucket).isFull != Blocks.flowing_water
 
                         return if (replaceCurr) index else null
                     }
@@ -377,7 +370,7 @@ class InventoryCleaner : Module() {
                     val item = stack?.item
 
                     if (item is ItemAppleGold && !type(index).equals("Gapple", ignoreCase = true)) {
-                        val replaceCurr = slotStack.item !is ItemAppleGold
+                        val replaceCurr = slotStack == null || slotStack.item !is ItemAppleGold
 
                         return if (replaceCurr) index else null
                     }
@@ -389,7 +382,7 @@ class InventoryCleaner : Module() {
                     val item = stack?.item
 
                     if (item is ItemEnderPearl && !type(index).equals("Pearl", ignoreCase = true)) {
-                        val replaceCurr = slotStack.item !is ItemEnderPearl
+                        val replaceCurr = slotStack == null || slotStack.item !is ItemEnderPearl
 
                         return if (replaceCurr) index else null
                     }
@@ -402,7 +395,7 @@ class InventoryCleaner : Module() {
 
                     if ((item is ItemPotion && ItemPotion.isSplash(stack.itemDamage))
                         && !type(index).equals("Potion", ignoreCase = true)) {
-                        val replaceCurr = slotStack.item !is ItemPotion || !ItemPotion.isSplash(slotStack.itemDamage)
+                        val replaceCurr = slotStack == null || slotStack.item !is ItemPotion || !ItemPotion.isSplash(slotStack.itemDamage)
 
                         return if (replaceCurr) index else null
                     }
