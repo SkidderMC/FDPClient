@@ -66,6 +66,10 @@ object MovementUtils : MinecraftInstance() {
         }
     }
 
+    /**
+     * make player move slowly like when using item
+     * @author liulihaocai
+     */
     @JvmStatic
     fun limitSpeedByPercent(percent: Float) {
         mc.thePlayer.motionX *= percent

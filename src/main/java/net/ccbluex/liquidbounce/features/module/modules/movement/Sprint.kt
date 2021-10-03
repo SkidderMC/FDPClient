@@ -23,12 +23,13 @@ import net.minecraft.potion.Potion
 @ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
 class Sprint : Module() {
     val allDirectionsValue = BoolValue("AllDirections", true)
-    private val allDirectionsBypassValue=ListValue("AllDirectionsBypass",arrayOf("Rotate","Toggle","Minemora","Spoof","LimitSpeed","None"),"None").displayable { allDirectionsValue.get() }
+    private val allDirectionsBypassValue = ListValue("AllDirectionsBypass",arrayOf("Rotate","Toggle","Minemora","Spoof","LimitSpeed","None"),"None").displayable { allDirectionsValue.get() }
     private val blindnessValue = BoolValue("Blindness", true)
     val foodValue = BoolValue("Food", true)
     val checkServerSide = BoolValue("CheckServerSide", false)
     val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false).displayable { checkServerSide.get() }
     private val noPacket = BoolValue("NoPacket", false)
+    private val allDirectionsLimitSpeedGround = BoolValue("AllDirectionsLimitSpeedOnlyGround", true)
     private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed",0.7f, 0.5f, 1f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
 
     private var spoofStat=false
@@ -39,7 +40,6 @@ class Sprint : Module() {
                 }else{
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.START_SPRINTING))
                 }
-                chat("STAT $value")
                 field=value
             }
         }
@@ -69,7 +69,8 @@ class Sprint : Module() {
                     }
                     "minemora" -> mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000013, mc.thePlayer.posZ)
                     "limitspeed" -> {
-                        MovementUtils.limitSpeedByPercent(allDirectionsLimitSpeedValue.get())
+                        if(!allDirectionsLimitSpeedGround.get() || mc.thePlayer.onGround)
+                            MovementUtils.limitSpeedByPercent(allDirectionsLimitSpeedValue.get())
                     }
                     "spoof" -> spoofStat=true
                 }

@@ -400,6 +400,7 @@ class Scaffold : Module() {
             }
         }
         if(towerStatus) move()
+
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepLengthValue.get()>0 && lockRotation != null && silentRotationValue.get()) {
             val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation, rotationSpeed)
@@ -415,8 +416,12 @@ class Scaffold : Module() {
         // Reset placeable delay
         if (targetPlace == null && !placeableDelay.equals("OFF")) {
             if(placeableDelay.equals("Smart")) {
-                if(lastPlace==0) delayTimer.reset()
-            }else delayTimer.reset()
+                if(lastPlace==0) {
+                    delayTimer.reset()
+                }
+            } else {
+                delayTimer.reset()
+            }
         }
     }
 
@@ -841,7 +846,7 @@ class Scaffold : Module() {
         }
         if (placeRotation == null) return false
         if (!rotationsValue.equals("None")) {
-            val rotation = when (rotationsValue.get().lowercase()) {
+            lockRotation = when (rotationsValue.get().lowercase()) {
                 "aac" -> {
                     if (!towerStatus) {
                         Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
@@ -878,13 +883,12 @@ class Scaffold : Module() {
                 )*/
             if (silentRotationValue.get()) {
                 val limitedRotation =
-                    RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation, rotationSpeed)
+                    RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
                 RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
             } else {
-                mc.thePlayer.rotationYaw = rotation.yaw
-                mc.thePlayer.rotationPitch = rotation.pitch
+                mc.thePlayer.rotationYaw = lockRotation!!.yaw
+                mc.thePlayer.rotationPitch = lockRotation!!.pitch
             }
-            lockRotation = rotation
             //lastTickOnGround=mc.thePlayer.onGround
         }
         targetPlace = placeRotation.placeInfo
