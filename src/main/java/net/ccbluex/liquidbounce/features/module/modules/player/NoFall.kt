@@ -214,8 +214,8 @@ class NoFall : Module() {
                 }
             }
             "packet1" -> {
-                if (mc.thePlayer.fallDistance.toInt() / 3 > packet1Count) {
-                    packet1Count = mc.thePlayer.fallDistance.toInt() / 3
+                if (mc.thePlayer.fallDistance.toInt() / 2 > packet1Count) {
+                    packet1Count = mc.thePlayer.fallDistance.toInt() / 2
                     packetModify = true
                 }
                 if (mc.thePlayer.onGround) {

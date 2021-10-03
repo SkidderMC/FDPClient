@@ -912,6 +912,28 @@ class Scaffold : Module() {
     private val rotationSpeed: Float
         get() = (Math.random() * (maxRotationSpeedValue.get() - minRotationSpeedValue.get()) + minRotationSpeedValue.get()).toFloat()
 
+    // new scaffold blocksearch algorithm
+    private var lastRecGroundY=0.0
+
+    private fun isNotSafe():Boolean{
+        if(mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0,-0.015625,0.0).expand(0.0,0.0,0.0)).isNotEmpty() || mc.thePlayer.onGround) {
+            lastRecGroundY=mc.thePlayer.posY
+            return false;
+        };
+        if(mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0,-1.0,0.0).expand(0.0,0.0,0.0)).isNotEmpty())
+            return false
+        if(mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0,-2.0,0.0).expand(0.0,0.0,0.0)).isNotEmpty())
+            return false
+        if(mc.thePlayer.posY<lastRecGroundY-0.015625)
+            return true
+
+        return false
+    }
+
+    private val isOnEdge: Boolean
+        get() = mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX*0.25,-1.0,mc.thePlayer.motionZ*0.25).expand(-0.15,0.0,-0.15)).isEmpty()
+                && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0,-0.625,0.0).expand(0.0,0.0,0.0)).isNotEmpty()
+
 //    fun roundYaw(rYaw: Float):Float{
 //        var lrYaw = rYaw
 //        while(lrYaw>360) {
