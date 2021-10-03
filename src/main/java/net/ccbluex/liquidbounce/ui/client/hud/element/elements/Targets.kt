@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
+import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -17,7 +18,6 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -172,13 +172,11 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         Fonts.font18.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 36, 15, 0xffffff)
 
         // Draw info
+        RenderUtils.drawHead(target.skin, 2, 2, 30, 30)
         val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
         if (playerInfo != null) {
             Fonts.font18.drawString("Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
                 36, 24, 0xffffff)
-
-            // Draw head
-            RenderUtils.drawHead(playerInfo.locationSkin, 2, 2, 30, 30)
         }
     }
 
@@ -187,7 +185,6 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
 
         RenderUtils.drawCircleRect(0f,0f,150f,50f,5f,Color(0,0,0,130).rgb)
 
-        val skin = mc.netHandler.getPlayerInfo(target.uniqueID)?.locationSkin ?: DefaultPlayerSkin.getDefaultSkinLegacy()
         val hurtPercent=target.hurtPercent
         val scale=if(hurtPercent==0f){ 1f }
         else if(hurtPercent<0.5f){
@@ -205,7 +202,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         // 受伤的红色效果
         GL11.glColor4f(1f, 1-hurtPercent, 1-hurtPercent, 1f)
         // 绘制头部图片
-        RenderUtils.quickDrawHead(skin, 0, 0, size, size)
+        RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
         font.drawString("Name ${target.name}", 40, 11,Color.WHITE.rgb)
@@ -256,10 +253,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         GL11.glPopMatrix()
 
         // Draw head
-        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
-        if (playerInfo != null) {
-            RenderUtils.drawHead(playerInfo.locationSkin, 2,2,16,16)
-        }
+        RenderUtils.drawHead(target.skin, 2,2,16,16)
     }
 
     private fun getTBorder():Border?{

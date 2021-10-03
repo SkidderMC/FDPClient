@@ -37,7 +37,7 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage"), "SpoofGround")
+    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage"), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
     private val minFallDistance = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
 
@@ -214,6 +214,15 @@ class NoFall : Module() {
                 }
             }
             "packet1" -> {
+                if (mc.thePlayer.fallDistance.toInt() / 3 > packet1Count) {
+                    packet1Count = mc.thePlayer.fallDistance.toInt() / 3
+                    packetModify = true
+                }
+                if (mc.thePlayer.onGround) {
+                    packet1Count = 0
+                }
+            }
+            "packet2" -> {
                 if (mc.thePlayer.fallDistance.toInt() / 2 > packet1Count) {
                     packet1Count = mc.thePlayer.fallDistance.toInt() / 2
                     packetModify = true
@@ -335,27 +344,30 @@ class NoFall : Module() {
             val packet = event.packet
             if (mode.equals("SpoofGround", ignoreCase = true) && mc.thePlayer.fallDistance > 2.5){
                 packet.onGround = true
-            }else if (mode.equals("AlwaysSpoofGround", ignoreCase = true)){
+            } else if (mode.equals("AlwaysSpoofGround", ignoreCase = true)){
                 packet.onGround = true
-            }else if (mode.equals("NoGround", ignoreCase = true)){
+            } else if (mode.equals("NoGround", ignoreCase = true)){
                 packet.onGround = false
-            }else if (mode.equals("Hypixel", ignoreCase = true) && mc.thePlayer != null && mc.thePlayer.fallDistance > 1.5){
+            } else if (mode.equals("Hypixel", ignoreCase = true) && mc.thePlayer != null && mc.thePlayer.fallDistance > 1.5){
                 packet.onGround = mc.thePlayer.ticksExisted % 2 == 0
-            }else if (mode.equals("HypSpoof", ignoreCase = true)) {
+            } else if (mode.equals("HypSpoof", ignoreCase = true)) {
                 PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
-            }else if (mode.equals("AACv4", ignoreCase = true) && aac4Fakelag) {
+            } else if (mode.equals("AACv4", ignoreCase = true) && aac4Fakelag) {
                 event.cancelEvent()
                 if (packetModify) {
                     packet.onGround = true
                     packetModify = false
                 }
                 aac4Packets.add(packet)
-            }else if (mode.equals("Verus", ignoreCase = true) && needSpoof) {
+            } else if (mode.equals("Verus", ignoreCase = true) && needSpoof) {
                 packet.onGround = true
                 needSpoof = false
             } else if (mode.equals("Damage", ignoreCase = true) && mc.thePlayer != null && mc.thePlayer.fallDistance > 3.5) {
                 packet.onGround = true
-            }else if (mode.equals("Packet1", ignoreCase = true) && packetModify) {
+            } else if (mode.equals("Packet1", ignoreCase = true) && packetModify) {
+                packet.onGround = true
+                packetModify = false
+            } else if (mode.equals("Packet2", ignoreCase = true) && packetModify) {
                 packet.onGround = true
                 packetModify = false
             }

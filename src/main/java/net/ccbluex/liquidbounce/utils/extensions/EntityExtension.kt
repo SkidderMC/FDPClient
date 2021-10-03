@@ -5,14 +5,17 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
+import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.client.Minecraft
+import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 import kotlin.math.abs
 import kotlin.math.pow
@@ -68,3 +71,6 @@ val EntityLivingBase.renderHurtTime: Float
 
 val EntityLivingBase.hurtPercent: Float
     get() = (this.renderHurtTime)/10
+
+val EntityLivingBase.skin: ResourceLocation // TODO: add special skin for mobs
+    get() = if(this is EntityPlayer) { Minecraft.getMinecraft().netHandler.getPlayerInfo(this.uniqueID)?.locationSkin } else { null } ?: DefaultPlayerSkin.getDefaultSkinLegacy()
