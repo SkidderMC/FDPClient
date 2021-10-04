@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import java.util.*
+import kotlin.concurrent.schedule
 
 @ModuleInfo(name = "AutoAdvertise", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 class AutoAdvertise : Module() {
@@ -22,14 +23,12 @@ class AutoAdvertise : Module() {
     fun onWorld(event: WorldEvent){
         if(waiting) return
 
-        Timer().schedule(object : TimerTask(){
-            override fun run() {
-                waiting=false
-                if(mc.thePlayer!=null){
-                    mc.thePlayer.sendChatMessage("["+ RandomUtils.randomString(3)+"] Try FDPClient! ${LiquidBounce.CLIENT_WEBSITE} ["+ RandomUtils.randomString(3)+"]")
-                }
+        Timer().schedule(2000L) {
+            waiting=false
+            if(mc.thePlayer!=null){
+                mc.thePlayer.sendChatMessage("["+ RandomUtils.randomString(3)+"] Try FDPClient! ${LiquidBounce.CLIENT_WEBSITE} ["+ RandomUtils.randomString(3)+"]")
             }
-        },2000L)
+        }
         waiting=true
     }
 }

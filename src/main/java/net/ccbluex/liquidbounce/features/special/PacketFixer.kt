@@ -40,20 +40,20 @@ class PacketFixer : Listenable,MinecraftInstance() {
             // particles
             val explosion = Explosion(mc.theWorld, null, packet.x, packet.y, packet.z, packet.strength, packet.affectedBlockPositions)
             explosion.doExplosionB(true)
-            // convert it to velocity packet
-            val velocityPacket=S12PacketEntityVelocity(mc.thePlayer.entityId,
-                mc.thePlayer.motionX+packet.func_149149_c(),
-                mc.thePlayer.motionY+packet.func_149144_d(),
-                mc.thePlayer.motionZ+packet.func_149147_e())
-            val packetEvent=PacketEvent(velocityPacket,PacketEvent.Type.RECEIVE)
-            LiquidBounce.eventManager.callEvent(packetEvent)
-            if(!packetEvent.isCancelled) {
-                PacketUtils.handlePacket(velocityPacket)
+            if(packet.func_149149_c()!=0f&&packet.func_149144_d()!=0f&&packet.func_149147_e()!=0f){
+                // convert it to velocity packet
+                val velocityPacket=S12PacketEntityVelocity(mc.thePlayer.entityId,
+                    mc.thePlayer.motionX+packet.func_149149_c(),
+                    mc.thePlayer.motionY+packet.func_149144_d(),
+                    mc.thePlayer.motionZ+packet.func_149147_e())
+                val packetEvent=PacketEvent(velocityPacket,PacketEvent.Type.RECEIVE)
+                LiquidBounce.eventManager.callEvent(packetEvent)
+                if(!packetEvent.isCancelled) {
+                    PacketUtils.handlePacket(velocityPacket)
+                }
             }
         }
     }
 
-    override fun handleEvents(): Boolean {
-        return true
-    }
+    override fun handleEvents() = true
 }

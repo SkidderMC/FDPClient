@@ -32,6 +32,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.util.*
+import kotlin.concurrent.schedule
 import kotlin.math.ceil
 import kotlin.math.sqrt
 
@@ -187,12 +188,10 @@ class NoFall : Module() {
                         .findCollision(5) ?: return
                     if (fallPos.y - mc.thePlayer.motionY / 20.0 < mc.thePlayer.posY) {
                         mc.timer.timerSpeed = 0.05f
-                        Timer().schedule(object : TimerTask() {
-                            override fun run() {
-                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(fallPos.x.toDouble(), fallPos.y.toDouble(), fallPos.z.toDouble(), true))
-                                mc.timer.timerSpeed = 1f
-                            }
-                        }, 100)
+                        Timer().schedule(100L) {
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(fallPos.x.toDouble(), fallPos.y.toDouble(), fallPos.z.toDouble(), true))
+                            mc.timer.timerSpeed = 1f
+                        }
                     }
                 }
             }

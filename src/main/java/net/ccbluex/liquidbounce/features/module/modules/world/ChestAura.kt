@@ -26,7 +26,7 @@ import net.minecraft.network.play.server.S24PacketBlockAction
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
-import java.util.*
+import kotlin.concurrent.schedule
 
 @ModuleInfo(name = "ChestAura", category = ModuleCategory.WORLD)
 object ChestAura : Module() {
@@ -89,11 +89,9 @@ object ChestAura : Module() {
         }else if(currentBlock != null && InventoryUtils.INV_TIMER.hasTimePassed(delayValue.get().toLong()) && !underClick){
                  underClick=true
                 if(discoverDelay.get()){
-                    java.util.Timer().schedule(object :TimerTask() {
-                        override fun run() {
-                            click()
-                        }
-                    }, discoverDelayValue.get().toLong())
+                    java.util.Timer().schedule(discoverDelayValue.get().toLong()) {
+                        click()
+                    }
                 }else{
                     click()
                 } 

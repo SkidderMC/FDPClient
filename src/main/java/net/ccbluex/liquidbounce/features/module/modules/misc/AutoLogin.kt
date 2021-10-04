@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.value.TextValue
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S45PacketTitle
 import java.util.*
+import kotlin.concurrent.schedule
 
 @ModuleInfo(name = "AutoLogin", category = ModuleCategory.MISC)
 class AutoLogin : Module() {
@@ -65,10 +66,8 @@ class AutoLogin : Module() {
 
     private fun delayedMessage(message: String){
         logined=true
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                mc.thePlayer.sendChatMessage(message)
-            }
-        },delayValue.get().toLong())
+        Timer().schedule(delayValue.get().toLong()) {
+            mc.thePlayer.sendChatMessage(message)
+        }
     }
 }
