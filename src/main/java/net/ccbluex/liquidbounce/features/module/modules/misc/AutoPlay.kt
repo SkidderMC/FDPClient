@@ -18,6 +18,7 @@ import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraft.util.IChatComponent
 import java.util.*
+import kotlin.concurrent.schedule
 
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
 class AutoPlay : Module(){
@@ -74,13 +75,11 @@ class AutoPlay : Module(){
                             clickState=2
                         }
                     }else if(clickState==2 && windowId!=0 && slot==11 && itemName.contains("enderPearl",ignoreCase = true)){
-                        Timer().schedule(object :TimerTask() {
-                            override fun run() {
-                                clicking=false
-                                clickState=0
-                                mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId, slot, 0, 0, item, 1919))
-                            }
-                        },500L)
+                        Timer().schedule(500L) {
+                            clicking=false
+                            clickState=0
+                            mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId, slot, 0, 0, item, 1919))
+                        }
                     }
                 }
                 "blocksmc","hypixel" -> {
@@ -113,14 +112,12 @@ class AutoPlay : Module(){
                     if(clickState==1 && text.contains("Only VIP players can join full servers!",true)){
                         LiquidBounce.hud.addNotification(Notification(this.name,"Join failed! trying again...", NotifyType.WARNING,3000))
                         // connect failed so try to join again
-                        Timer().schedule(object : TimerTask() {
-                            override fun run() {
-                                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
-                                repeat(2){
-                                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
-                                }
+                        Timer().schedule(1500L) {
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
+                            repeat(2){
+                                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
                             }
-                        },1500)
+                        }
                     }
                 }
                 "hypixel" -> {
@@ -147,13 +144,11 @@ class AutoPlay : Module(){
         queued=true
         AutoDisable.handleGameEnd()
         if(this.state){
-            Timer().schedule(object : TimerTask() {
-                override fun run() {
-                    if(state) {
-                        runnable()
-                    }
+            Timer().schedule(delayValue.get().toLong()*1000) {
+                if(state) {
+                    runnable()
                 }
-            },delayValue.get().toLong()*1000)
+            }
             LiquidBounce.hud.addNotification(Notification(this.name,"Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO,delayValue.get()*1000))
         }
     }

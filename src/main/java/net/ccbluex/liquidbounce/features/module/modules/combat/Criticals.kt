@@ -43,6 +43,7 @@ class Criticals : Module() {
     private var target = 0
     var jState = 0
     var aacLastState = false
+
     override fun onEnable() {
         if (modeValue.equals("NoGround"))
             mc.thePlayer.jump()
@@ -169,7 +170,6 @@ class Criticals : Module() {
                     }
                 }
             }
-            mc.thePlayer.onCriticalHit(entity)
             msTimer.reset()
         }
     }

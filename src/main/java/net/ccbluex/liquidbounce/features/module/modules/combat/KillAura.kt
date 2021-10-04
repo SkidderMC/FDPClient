@@ -767,18 +767,9 @@ class KillAura : Module() {
                 mc.thePlayer.attackTargetEntityWithCurrentItem(entity)
         }
 
-        // Extra critical effects
-        val criticals = LiquidBounce.moduleManager[Criticals::class.java]
-
-        for (i in 0..2) {
-            // Critical Effect
-            if (mc.thePlayer.fallDistance > 0F && !mc.thePlayer.onGround && !mc.thePlayer.isOnLadder && !mc.thePlayer.isInWater && !mc.thePlayer.isPotionActive(Potion.blindness) && mc.thePlayer.ridingEntity == null || criticals.state && criticals.msTimer.hasTimePassed(criticals.delayValue.get().toLong()) && !mc.thePlayer.isInWater && !mc.thePlayer.isInLava && !mc.thePlayer.isInWeb)
-                mc.thePlayer.onCriticalHit(target)
-
-            // Enchant Effect
-            if (EnchantmentHelper.getModifierForCreature(mc.thePlayer.heldItem, target!!.creatureAttribute) > 0.0f || fakeSharpValue.get())
-                mc.thePlayer.onEnchantmentCritical(target)
-        }
+        // Enchant Effect
+        if (EnchantmentHelper.getModifierForCreature(mc.thePlayer.heldItem, target!!.creatureAttribute) > 0.0f || fakeSharpValue.get())
+            mc.thePlayer.onEnchantmentCritical(target)
 
         // Start blocking after attack
         if (mc.thePlayer.isBlocking || (autoBlockValue.equals("Range") && canBlock)) {
