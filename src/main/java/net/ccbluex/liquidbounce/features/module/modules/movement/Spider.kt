@@ -26,12 +26,14 @@ class Spider : Module() {
     private val motionValue = FloatValue("Motion", 0.42F, 0.1F, 1F).displayable { modeValue.equals("Motion") }
 
     private var startHeight=0.0
+    private var groundHeight = 0.0
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(!mc.thePlayer.isCollidedHorizontally || !mc.gameSettings.keyBindForward.pressed || mc.thePlayer.posY-heightValue.get()>startHeight) {
             if(mc.thePlayer.onGround){
                 startHeight=mc.thePlayer.posY
+                groundHeight=mc.thePlayer.posY
             }
             return
         }
@@ -40,7 +42,7 @@ class Spider : Module() {
             "collide" -> {
                 if(mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    startHeight=mc.thePlayer.posY
+                    groundHeight=mc.thePlayer.posY
                 }
             }
             "motion" -> {
@@ -60,7 +62,7 @@ class Spider : Module() {
                 // TODO: use a better way 2 fix
                 //if(mc.objectMouseOver.typeOfHit==MovingObjectPosition.MovingObjectType.BLOCK){
                     event.boundingBox=AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(),
-                        event.x+1.0, startHeight+1.0, event.z+1.0)
+                        event.x+1.0, groundHeight+1.0, event.z+1.0)
                 //}
             }
         }
