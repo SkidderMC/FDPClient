@@ -454,3 +454,6 @@ module.ChinaHat.description=A beautiful hat
 module.Skeletal.name=Skeletal
 module.Skeletal.description=ESP like skeletons
 
+module.Spider.name=Spider
+module.Spider.description=Makes you move like a spider
+

@@ -54,7 +54,7 @@ class ModulesSection : ConfigSection("modules") {
         LiquidBounce.moduleManager.modules.forEach {
             val moduleJson=JsonObject()
 
-            if(it.canEnable)
+            if(it.canEnable || it.triggerType!=EnumTriggerType.PRESS)
                 moduleJson.addProperty("state",it.state)
 
             moduleJson.addProperty("keybind",it.keyBind)

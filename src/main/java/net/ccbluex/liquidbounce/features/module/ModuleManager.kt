@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ReflectUtils
+import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 
 class ModuleManager : Listenable {
@@ -135,7 +136,7 @@ class ModuleManager : Listenable {
 
     @EventTarget
     private fun onUpdate(event: UpdateEvent) {
-        if(pendingBindModule!=null)
+        if(pendingBindModule!=null || Minecraft.getMinecraft().currentScreen!=null)
             return
 
         modules.filter { it.triggerType == EnumTriggerType.PRESS }.forEach { it.state = Keyboard.isKeyDown(it.keyBind) }

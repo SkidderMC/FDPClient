@@ -33,8 +33,6 @@ object RegexUtils {
      */
     fun round(value: Double, places: Int): Double {
         require(places >= 0)
-        var bd = BigDecimal.valueOf(value)
-        bd = bd.setScale(places, RoundingMode.HALF_UP)
-        return bd.toDouble()
+        return BigDecimal.valueOf(value).setScale(places, RoundingMode.HALF_UP).toDouble()
     }
 }

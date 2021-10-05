@@ -29,11 +29,11 @@ class Step : Module() {
      * OPTIONS
      */
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0", "Spartan", "Rewinside"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "TimerJump", "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0", "Spartan", "Rewinside"), "NCP")
     //TODO : MotionStep Bypass Matrix(maybe I can covert it to packet step :/ Matrix moment) and WatchCat / Skid NCP( already patched in *New* NCP (Fork) ) Step from Skidma
     
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
-    private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") }
+    private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") || modeValue.equals("TimerJump") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
 
     /**
@@ -80,6 +80,25 @@ class Step : Module() {
                     && !mc.gameSettings.keyBindJump.isKeyDown -> {
                 fakeJump()
                 mc.thePlayer.motionY = jumpHeightValue.get().toDouble()
+            }
+
+            mode.equals("timerjump", true) -> {
+                mc.timer.timerSpeed=1f
+                if(mc.thePlayer.isCollidedHorizontally){
+                    if(mc.thePlayer.onGround){
+                        fakeJump()
+                        mc.thePlayer.motionY = jumpHeightValue.get().toDouble()
+                        isStep=true
+                    }else if(isStep){
+                        mc.timer.timerSpeed=if(mc.thePlayer.motionY>0){
+                            (1-(mc.thePlayer.motionY/1.8)).toFloat()
+                        }else{
+                            1.25f
+                        }
+                    }
+                }else{
+                    isStep=false
+                }
             }
 
             mode.equals("laac", true) -> if (mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isOnLadder
@@ -210,8 +229,9 @@ class Step : Module() {
 
             // Set step to default in some cases
             if (!mc.thePlayer.onGround || !timer.hasTimePassed(delayValue.get().toLong()) ||
-                mode.equals("Jump", ignoreCase = true) || mode.equals("MotionNCP", ignoreCase = true)
-                || mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true)) {
+                mode.equals("Jump", ignoreCase = true) || mode.equals("MotionNCP", ignoreCase = true) ||
+                mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true) ||
+                mode.equals("TimerJump", ignoreCase = true)) {
                 mc.thePlayer.stepHeight = 0.6F
                 event.stepHeight = 0.6F
                 return
