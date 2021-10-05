@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -18,10 +19,9 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val modeValue=ListValue("Mode", arrayOf("Blink","TPBack","FlyFlag","GroundSpoof","TestHypixel"),"Blink")
-    private val fallModeValue=ListValue("FallCheckMode", arrayOf("GroundDist","PredictFall","FallDist"),"FallDist")
+    private val modeValue=ListValue("Mode", arrayOf("Blink","TPBack","FlyFlag","PacketFlag","GroundSpoof","TestHypixel"),"Blink")
     private val maxFallDistValue=FloatValue("MaxFallDistance",10F,5F,20F)
-    private val resetMotion=BoolValue("ResetMotion",false)
+    private val resetMotion=BoolValue("ResetMotion",false).displayable { modeValue.equals("Blink") }
     private val startFallDistValue=FloatValue("BlinkStartFallDistance",2F,0F,5F).displayable { modeValue.equals("Blink") }
     private val autoScaffold=BoolValue("BlinkAutoScaffold",true).displayable { modeValue.equals("Blink") }
     private val voidOnly=BoolValue("OnlyVoid", true).displayable { modeValue.equals("TestHypixel") }
@@ -30,6 +30,7 @@ class AntiVoid : Module() {
     private var blink=false
     private var canBlink=false
     private var canSpoof=false
+    private var tried=false
 
     private var posX=0.0
     private var posY=0.0
@@ -38,40 +39,35 @@ class AntiVoid : Module() {
     private var motionY=0.0
     private var motionZ=0.0
 
-    private fun willVoid(distance: Float):Boolean {
-        if(mc.thePlayer.onGround)
-            return false
-
-        return when(fallModeValue.get().lowercase()){
-            "grounddist" -> {
-                val collide = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, 0.0, 0.0, 0.0, 0F, 0F, 0F).findCollision(60)
-                return collide==null||(mc.thePlayer.posY-collide.y)>distance
-            }
-
-            "predictfall" -> {
-                val collide = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.motionX, mc.thePlayer.motionY, mc.thePlayer.motionZ, mc.thePlayer.rotationYaw, mc.thePlayer.moveStrafing, mc.thePlayer.moveForward).findCollision(60)
-                return collide==null||(mc.thePlayer.posY-collide.y)>distance
-            }
-
-            "falldist" -> {
-                mc.thePlayer.fallDistance>distance && mc.thePlayer.motionY<0
-            }
-
-            else -> false
-        }
+    override fun onEnable() {
+        blink=false
+        canBlink=false
+        canSpoof=false
+        tried=false
     }
 
     @EventTarget
-    fun onUpdate() {
+    fun onUpdate(event: UpdateEvent) {
+        if(mc.thePlayer.onGround)
+            tried=false
+
         when(modeValue.get().lowercase()){
             "groundspoof" -> {
-                canSpoof = willVoid(maxFallDistValue.get())
+                canSpoof = mc.thePlayer.fallDistance > maxFallDistValue.get()
             }
 
             "flyflag" -> {
-                if(willVoid(maxFallDistValue.get())){
-                    mc.thePlayer.motionY += 0.1
+                if(mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried){
+                    mc.thePlayer.motionY += 1
                     mc.thePlayer.fallDistance = 0F
+                    tried=true
+                }
+            }
+
+            "packetflag" -> {
+                if(mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried){
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX+1, mc.thePlayer.posY+1, mc.thePlayer.posZ+1, false))
+                    tried=true
                 }
             }
 
@@ -82,21 +78,20 @@ class AntiVoid : Module() {
                     posZ = mc.thePlayer.prevPosZ
                 }
 
-                if(willVoid(maxFallDistValue.get())){
+                if(mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried){
                     mc.thePlayer.setPositionAndUpdate(posX, posY, posZ)
                     mc.thePlayer.fallDistance = 0F
-                    mc.thePlayer.motionY = 0.0
-                    if(resetMotion.get()){
-                        mc.thePlayer.motionX=0.0
-                        mc.thePlayer.motionY=0.0
-                        mc.thePlayer.motionZ=0.0
-                    }
+                    mc.thePlayer.motionX=0.0
+                    mc.thePlayer.motionY=0.0
+                    mc.thePlayer.motionZ=0.0
+                    tried=true
                 }
             }
 
             "blink" -> {
                 if(!blink){
-                    if(canBlink && willVoid(startFallDistValue.get())){
+                    val collide = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, 0.0, 0.0, 0.0, 0F, 0F, 0F).findCollision(60)
+                    if(canBlink && (collide==null||(mc.thePlayer.posY-collide.y)>startFallDistValue.get())){
                         posX=mc.thePlayer.posX
                         posY=mc.thePlayer.posY
                         posZ=mc.thePlayer.posZ

@@ -37,7 +37,6 @@ object AntiBot : Module() {
     private val armorValue = BoolValue("Armor", false)
     private val pingValue = BoolValue("Ping", false)
     private val needHitValue = BoolValue("NeedHit", false)
-    private val invalidSpawnValue = BoolValue("InvalidSpawn", true)
     private val duplicateInWorldValue = BoolValue("DuplicateInWorld", false)
     private val duplicateInTabValue = BoolValue("DuplicateInTab", false)
     private val duplicateCompareModeValue = ListValue("DuplicateCompareMode", arrayOf("OnTime", "WhenSpawn"), "OnTime").displayable { duplicateInTabValue.get() || duplicateInWorldValue.get() }
@@ -69,7 +68,7 @@ object AntiBot : Module() {
 
         // Anti Bot checks
 
-        if (colorValue.get() && !entity.displayName!!.formattedText.replace("§r", "").contains("§"))
+        if (colorValue.get() && !entity.displayName.formattedText.replace("§r", "").contains("§"))
             return true
 
         if (livingTimeValue.get() && entity.ticksExisted < livingTimeTicksValue.get())
@@ -115,7 +114,7 @@ object AntiBot : Module() {
 
         if (tabValue.get()) {
             val equals = tabModeValue.equals("Equals")
-            val targetName = stripColor(entity.displayName!!.formattedText)
+            val targetName = stripColor(entity.displayName.formattedText)
 
             if (targetName != null) {
                 for (networkPlayerInfo in mc.netHandler.playerInfoMap) {
@@ -132,7 +131,7 @@ object AntiBot : Module() {
         if(duplicateCompareModeValue.equals("WhenSpawn") && duplicate.contains(entity.gameProfile.id))
             return true
 
-        if (duplicateInWorldValue.get() && duplicateCompareModeValue.equals("OnTime") && mc.theWorld!!.loadedEntityList.count { it is EntityPlayer && it.name == it.name } > 1)
+        if (duplicateInWorldValue.get() && duplicateCompareModeValue.equals("OnTime") && mc.theWorld.loadedEntityList.count { it is EntityPlayer && it.name == it.name } > 1)
             return true
 
         if (duplicateInTabValue.get() && duplicateCompareModeValue.equals("OnTime") && mc.netHandler.playerInfoMap.count { entity.name == it.gameProfile.name } > 1)
@@ -144,7 +143,7 @@ object AntiBot : Module() {
         if (alwaysInRadiusValue.get() && !notAlwaysInRadius.contains(entity.entityId))
             return true
 
-        return entity.name!!.isEmpty() || entity.name == mc.thePlayer!!.name
+        return entity.name.isEmpty() || entity.name == mc.thePlayer.name
     }
 
     override fun onDisable() {
@@ -160,7 +159,7 @@ object AntiBot : Module() {
         val packet = event.packet
 
         if (packet is S14PacketEntity) {
-            val entity = packet.getEntity(mc.theWorld!!)
+            val entity = packet.getEntity(mc.theWorld)
 
             if (entity is EntityPlayer) {
                 if (packet.onGround && !ground.contains(entity.entityId))
@@ -183,22 +182,22 @@ object AntiBot : Module() {
                 if (entity.isInvisible && !invisible.contains(entity.entityId))
                     invisible.add(entity.entityId)
 
-                if ((!livingTimeValue.get() || entity.ticksExisted > livingTimeTicksValue.get()) && !notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer!!.getDistanceToEntity(entity) > alwaysRadiusValue.get())
+                if ((!livingTimeValue.get() || entity.ticksExisted > livingTimeTicksValue.get()) && !notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer.getDistanceToEntity(entity) > alwaysRadiusValue.get())
                     notAlwaysInRadius.add(entity.entityId);
             }
         }else if (packet is S0BPacketAnimation) {
-            val entity = mc.theWorld!!.getEntityByID(packet.entityID)
+            val entity = mc.theWorld.getEntityByID(packet.entityID)
 
             if (entity != null && entity is EntityLivingBase && packet.animationType == 0
                 && !swing.contains(entity.entityId))
                 swing.add(entity.entityId)
         }else if(packet is S38PacketPlayerListItem){
             if(duplicateCompareModeValue.equals("WhenSpawn") && packet.action==S38PacketPlayerListItem.Action.ADD_PLAYER){
-                packet.entries.forEach {
-                    val name=it.profile.name
+                packet.entries.forEach { entry ->
+                    val name=entry.profile.name
                     if(duplicateInWorldValue.get() && mc.theWorld.playerEntities.any { it.name == name }
                         || duplicateInTabValue.get() && mc.netHandler.playerInfoMap.any { it.gameProfile.name == name }) {
-                        duplicate.add(it.profile.id)
+                        duplicate.add(entry.profile.id)
                     }
                 }
             }
