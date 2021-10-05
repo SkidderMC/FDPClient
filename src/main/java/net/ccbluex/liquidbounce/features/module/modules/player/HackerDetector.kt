@@ -270,8 +270,7 @@ class HackerDetector : Module() {
             this.vl=-vlValue.get()
 
             if(report.get()){
-                val autoReportModule=LiquidBounce.moduleManager.getModule(AutoReport::class.java)
-                autoReportModule.doReport(this.player)
+                LiquidBounce.moduleManager[AutoReport::class.java]!!.doReport(this.player)
             }
         }
     }

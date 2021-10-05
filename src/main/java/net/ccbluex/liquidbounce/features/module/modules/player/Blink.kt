@@ -102,7 +102,7 @@ class Blink : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val breadcrumbs = LiquidBounce.moduleManager.getModule(Breadcrumbs::class.java)
+        val breadcrumbs = LiquidBounce.moduleManager[Breadcrumbs::class.java]!!
         synchronized(positions) {
             GL11.glPushMatrix()
             GL11.glDisable(GL11.GL_TEXTURE_2D)

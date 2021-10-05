@@ -78,7 +78,7 @@ class NoFall : Module() {
         if (mc.thePlayer.motionY > 0)
             jumped = true
 
-        if (!state || LiquidBounce.moduleManager.getModule(FreeCam::class.java).state)
+        if (!state || LiquidBounce.moduleManager[FreeCam::class.java]!!.state)
             return
 
         if (mc.thePlayer.isSpectator || mc.thePlayer.capabilities.allowFlying || mc.thePlayer.capabilities.disableDamage)

@@ -43,7 +43,7 @@ class AntiStuck : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent){
         if(stuck){
-            val freeze=LiquidBounce.moduleManager.getModule(Freeze::class.java)
+            val freeze=LiquidBounce.moduleManager[Freeze::class.java]!!
             freeze.state=true
 
             if(timer.hasTimePassed(1500)){

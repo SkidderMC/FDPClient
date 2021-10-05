@@ -179,7 +179,7 @@ class Step : Module() {
 
         if(event.eventState==EventState.PRE){
             // Phase should disable step
-            if (LiquidBounce.moduleManager[Phase::class.java].state) {
+            if (LiquidBounce.moduleManager[Phase::class.java]!!.state) {
                 event.stepHeight = 0F
                 return
             }
@@ -194,7 +194,7 @@ class Step : Module() {
                 }
             }
             // Some fly modes should disable step
-            val fly = LiquidBounce.moduleManager[Fly::class.java]
+            val fly = LiquidBounce.moduleManager[Fly::class.java]!!
             if (fly.state) {
                 val flyMode = fly.modeValue.get()
 

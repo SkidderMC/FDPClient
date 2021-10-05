@@ -85,7 +85,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        val killAura = LiquidBounce.moduleManager[KillAura::class.java]
+        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
         if (!MovementUtils.isMoving())
             return
 

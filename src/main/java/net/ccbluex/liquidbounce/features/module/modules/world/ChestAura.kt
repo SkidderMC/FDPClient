@@ -49,7 +49,7 @@ object ChestAura : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (LiquidBounce.moduleManager[Blink::class.java].state)
+        if (LiquidBounce.moduleManager[Blink::class.java]!!.state)
             return
 
         if(onlyOnGround.get() && !mc.thePlayer.onGround)

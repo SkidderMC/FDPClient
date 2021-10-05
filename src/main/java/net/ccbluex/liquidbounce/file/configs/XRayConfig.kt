@@ -18,7 +18,7 @@ import java.io.File
 class XRayConfig(file: File) : FileConfig(file) {
 
     override fun loadConfig(config: String) {
-        val xRay = LiquidBounce.moduleManager.getModule(XRay::class.java)
+        val xRay = LiquidBounce.moduleManager[XRay::class.java]!!
         val jsonArray = JsonParser().parse(config).asJsonArray
         xRay.xrayBlocks.clear()
 
@@ -37,7 +37,7 @@ class XRayConfig(file: File) : FileConfig(file) {
     }
 
     override fun saveConfig(): String {
-        val xRay = LiquidBounce.moduleManager.getModule(XRay::class.java)
+        val xRay = LiquidBounce.moduleManager[XRay::class.java]!!
         val jsonArray = JsonArray()
 
         for (block in xRay.xrayBlocks)

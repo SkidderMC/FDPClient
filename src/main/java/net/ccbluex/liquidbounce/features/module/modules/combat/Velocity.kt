@@ -169,7 +169,6 @@ class Velocity : Module() {
             }
             
             "aac5.2.0combat" -> {
-                if(LiquidBounce.moduleManager[Fly::class.java].state) return
                 if (mc.thePlayer.hurtTime>0 && velocityInput){
                     velocityInput = false
                     mc.thePlayer.motionX = 0.0
@@ -198,7 +197,7 @@ class Velocity : Module() {
 
                     // Reduce Y
                     if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get()
-                            && !LiquidBounce.moduleManager[Speed::class.java].state)
+                            && !LiquidBounce.moduleManager[Speed::class.java]!!.state)
                         mc.thePlayer.motionY -= 0.014999993
                 }
 
@@ -310,7 +309,6 @@ class Velocity : Module() {
                 }
 
                 "aac5.2.0" -> {
-                    if(LiquidBounce.moduleManager[Fly::class.java].state) return
                     event.cancelEvent()
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
                 }
@@ -330,7 +328,6 @@ class Velocity : Module() {
                 }
                 
                 "aac5.2.0combat" -> {
-                    if(LiquidBounce.moduleManager[Fly::class.java].state) return
                     event.cancelEvent()
                     velocityInput = true
                     templateX = packet.motionX
@@ -375,7 +372,7 @@ class Velocity : Module() {
                         return
                     }
                     
-                    val target=LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager.get(KillAura::class.java).rangeValue.get()+1) ?: return
+                    val target=LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager[KillAura::class.java]!!.rangeValue.get()+1) ?: return
                     mc.thePlayer.motionX=0.0
                     mc.thePlayer.motionZ=0.0
                     packet.motionX = 0
@@ -398,7 +395,7 @@ class Velocity : Module() {
                             return
                     }
 
-                    val target=LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager.get(KillAura::class.java).rangeValue.get()) ?: return
+                    val target=LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager[KillAura::class.java]!!.rangeValue.get()) ?: return
                     if(rspAlwaysValue.get()){
                         mc.thePlayer.motionX=0.0
                         mc.thePlayer.motionZ=0.0

@@ -120,7 +120,7 @@ class AntiVoid : Module() {
                         }
 
                         if(autoScaffold.get()){
-                            LiquidBounce.moduleManager.getModule(Scaffold::class.java).state=true
+                            LiquidBounce.moduleManager[Scaffold::class.java]!!.state=true
                         }
 
                         packetCache.clear()

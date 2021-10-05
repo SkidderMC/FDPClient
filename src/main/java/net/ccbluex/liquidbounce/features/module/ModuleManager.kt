@@ -101,8 +101,8 @@ class ModuleManager : Listenable {
     /**
      * Get module by [moduleClass]
      */
-    fun <T : Module> getModule(moduleClass: Class<T>): T {
-        return moduleClassMap[moduleClass] as T
+    fun <T : Module> getModule(moduleClass: Class<T>): T? {
+        return moduleClassMap[moduleClass] as T?
     }
 
     operator fun <T : Module> get(clazz: Class<T>) = getModule(clazz)

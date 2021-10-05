@@ -259,7 +259,7 @@ class Scaffold : Module() {
                         mc.thePlayer.jump()
                 }
                 "whenspeed" -> {
-                    canSameY=LiquidBounce.moduleManager.getModule(Speed::class.java).state
+                    canSameY=LiquidBounce.moduleManager[Speed::class.java]!!.state
                 }
                 else -> {
                     canSameY = false

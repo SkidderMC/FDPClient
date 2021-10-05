@@ -46,7 +46,7 @@ class NameTags : Module() {
         for(entity in mc.theWorld.loadedEntityList) {
             if(EntityUtils.isSelected(entity, false)) {
                 renderNameTag(entity as EntityLivingBase,
-                    if(hackerValue.get()&&(LiquidBounce.moduleManager.getModule(HackerDetector::class.java)).isHacker(entity))
+                    if(hackerValue.get()&&LiquidBounce.moduleManager[HackerDetector::class.java]!!.isHacker(entity))
                     { "§c" }else{ "" } + if(!modeValue.equals("Liquid")&&AntiBot.isBot(entity)){ "§e" }else{ "" }
                             + if (clearNamesValue.get()){ entity.name } else { entity.getDisplayName().unformattedText })
             }
@@ -56,7 +56,7 @@ class NameTags : Module() {
     private fun getPlayerName(entity: EntityLivingBase): String {
         val name = entity.displayName.formattedText
         var pre = ""
-        val teams = LiquidBounce.moduleManager.getModule(Teams::class.java)
+        val teams = LiquidBounce.moduleManager[Teams::class.java]!!
         if (LiquidBounce.fileManager.friendsConfig.isFriend(entity.name)) {
             pre = "$pre§b[Friend] "
         }
