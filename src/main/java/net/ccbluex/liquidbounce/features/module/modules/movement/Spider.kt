@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -55,9 +56,8 @@ class Spider : Module() {
 
         when (modeValue.get().lowercase()) {
             "collide" -> {
-                val block=BlockUtils.getBlock(Vec3(mc.thePlayer.posX + (-sin(mc.thePlayer.rotationYaw) * 0.7), mc.thePlayer.posY, mc.thePlayer.posZ + (cos(mc.thePlayer.rotationYaw) * 0.7))) ?: return
-
-                if(block.isFullBlock){
+                // TODO: use a better way 2 fix
+                if(mc.objectMouseOver.typeOfHit==MovingObjectPosition.MovingObjectType.BLOCK){
                     event.boundingBox=AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(),
                         event.x+1.0, BigDecimal.valueOf(mc.thePlayer.posY).setScale(0, RoundingMode.DOWN).toDouble(), event.z+1.0)
                 }
