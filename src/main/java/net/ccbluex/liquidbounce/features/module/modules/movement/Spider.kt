@@ -27,6 +27,7 @@ class Spider : Module() {
 
     private var startHeight=0.0
     private var groundHeight = 0.0
+    private var modifyBB = false
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -35,9 +36,12 @@ class Spider : Module() {
                 startHeight=mc.thePlayer.posY
                 groundHeight=mc.thePlayer.posY
             }
+            modifyBB = false
             return
         }
-
+        
+        modifyBB = true
+        
         when (modeValue.get().lowercase()){
             "collide" -> {
                 if(mc.thePlayer.onGround) {
@@ -56,14 +60,13 @@ class Spider : Module() {
     fun onBlockBB(event: BlockBBEvent) {
         if(!mc.thePlayer.isCollidedHorizontally || !mc.gameSettings.keyBindForward.pressed || mc.thePlayer.posY-heightValue.get()>startHeight)
             return
-
+        if(!modifyBB || mc.thePlayer.motionY>0.0) return
+        
         when (modeValue.get().lowercase()) {
             "collide" -> {
-                // TODO: use a better way 2 fix
-                //if(mc.objectMouseOver.typeOfHit==MovingObjectPosition.MovingObjectType.BLOCK){
+                if(event.y>groundHeight-0.0156249 && event.y<groundHeight+0.0156249)
                     event.boundingBox=AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(),
-                        event.x+1.0, groundHeight+1.0, event.z+1.0)
-                //}
+                        event.x+1.0, event.y+1.0, event.z+1.0)
             }
         }
     }
