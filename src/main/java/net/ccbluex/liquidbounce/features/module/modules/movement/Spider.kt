@@ -21,7 +21,7 @@ import kotlin.math.sin
 @ModuleInfo(name = "Spider", category = ModuleCategory.MOVEMENT)
 class Spider : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Collide", "Motion"), "Collide")
+    private val modeValue = ListValue("Mode", arrayOf("Collide", "Motion"/*,"AAC4"*/), "Collide")
     private val heightValue = IntegerValue("Height", 2, 1, 10)
     private val motionValue = FloatValue("Motion", 0.42F, 0.1F, 1F).displayable { modeValue.equals("Motion") }
 
@@ -40,6 +40,7 @@ class Spider : Module() {
             "collide" -> {
                 if(mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
+                    startHeight=mc.thePlayer.posY
                 }
             }
             "motion" -> {
@@ -57,10 +58,10 @@ class Spider : Module() {
         when (modeValue.get().lowercase()) {
             "collide" -> {
                 // TODO: use a better way 2 fix
-                if(mc.objectMouseOver.typeOfHit==MovingObjectPosition.MovingObjectType.BLOCK){
+                //if(mc.objectMouseOver.typeOfHit==MovingObjectPosition.MovingObjectType.BLOCK){
                     event.boundingBox=AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(),
-                        event.x+1.0, BigDecimal.valueOf(mc.thePlayer.posY).setScale(0, RoundingMode.DOWN).toDouble(), event.z+1.0)
-                }
+                        event.x+1.0, startHeight+1.0, event.z+1.0)
+                //}
             }
         }
     }
