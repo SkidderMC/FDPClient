@@ -44,6 +44,7 @@ open class Module : MinecraftInstance(), Listenable {
         }
     val canEnable: Boolean
     var autoDisable: EnumAutoDisableType
+    var triggerType: EnumTriggerType
     val moduleCommand: Boolean
     val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
     var splicedName=""
@@ -76,6 +77,7 @@ open class Module : MinecraftInstance(), Listenable {
         canEnable = moduleInfo.canEnable
         autoDisable = moduleInfo.autoDisable
         moduleCommand = moduleInfo.moduleCommand
+        triggerType = moduleInfo.triggerType
     }
 
     fun onLoad(){
@@ -168,7 +170,7 @@ open class Module : MinecraftInstance(), Listenable {
         get() = "$name${if (tag == null) "" else " §7$tag"}"
 
     val colorlessTagName: String
-        get() = "$name${if (tag == null) "" else " " + stripColor(tag)}"
+        get() = "$name${if (tag == null) "" else " " + stripColor(tag!!)}"
 
     var width=10
 

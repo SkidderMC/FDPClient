@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.file.config.sections
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
+import net.ccbluex.liquidbounce.features.module.EnumTriggerType
 import net.ccbluex.liquidbounce.file.config.ConfigSection
 
 class ModulesSection : ConfigSection("modules") {
@@ -32,6 +33,9 @@ class ModulesSection : ConfigSection("modules") {
             if(data.has("array"))
                 module.array=data.get("array").asBoolean
 
+            if(data.has("trigger"))
+                module.triggerType=EnumTriggerType.valueOf(data.get("trigger").asString)
+
             if(data.has("autodisable"))
                 module.autoDisable=EnumAutoDisableType.valueOf(data.get("autodisable").asString)
 
@@ -52,11 +56,17 @@ class ModulesSection : ConfigSection("modules") {
 
             if(it.canEnable)
                 moduleJson.addProperty("state",it.state)
+
             moduleJson.addProperty("keybind",it.keyBind)
+
             if(it.canEnable)
                 moduleJson.addProperty("array",it.array)
+
             if(it.canEnable)
                 moduleJson.addProperty("autodisable",it.autoDisable.toString())
+
+            moduleJson.addProperty("trigger", it.triggerType.toString())
+
 
             val valuesJson=JsonObject()
             it.values.forEach { value ->

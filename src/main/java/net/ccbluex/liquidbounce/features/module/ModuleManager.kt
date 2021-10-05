@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.special.AutoDisable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
@@ -121,15 +122,23 @@ class ModuleManager : Listenable {
      * Handle incoming key presses
      */
     @EventTarget
-    private fun onKey(event: KeyEvent){
+    private fun onKey(event: KeyEvent) {
         if(pendingBindModule==null) {
-            modules.filter { it.keyBind == event.key }.forEach { it.toggle() }
+            modules.filter { it.triggerType == EnumTriggerType.TOGGLE && it.keyBind == event.key }.forEach { it.toggle() }
         }else{
             pendingBindModule!!.keyBind=event.key
             ClientUtils.displayAlert("Bound module §a§l${pendingBindModule!!.name}§3 to key §a§l${Keyboard.getKeyName(event.key)}§3.")
             LiquidBounce.hud.addNotification(Notification("KeyBind","Bound ${pendingBindModule!!.name} to ${Keyboard.getKeyName(event.key)}.", NotifyType.INFO))
             pendingBindModule=null
         }
+    }
+
+    @EventTarget
+    private fun onUpdate(event: UpdateEvent) {
+        if(pendingBindModule!=null)
+            return
+
+        modules.filter { it.triggerType == EnumTriggerType.PRESS }.forEach { it.state = Keyboard.isKeyDown(it.keyBind) }
     }
 
     override fun handleEvents() = true

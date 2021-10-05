@@ -36,8 +36,8 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun stripColor(input: String?): String? {
-        return COLOR_PATTERN.matcher(input ?: return null).replaceAll("")
+    fun stripColor(input: String): String {
+        return COLOR_PATTERN.matcher(input).replaceAll("")
     }
 
     @JvmStatic

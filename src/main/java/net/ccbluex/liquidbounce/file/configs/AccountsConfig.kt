@@ -18,12 +18,13 @@ class AccountsConfig(file: File) : FileConfig(file) {
         altManagerMinecraftAccounts.clear()
         for (account in accountList) {
             val information = account.split(":").toTypedArray()
-            if (information.size >= 3)
+            if (information.size >= 3) {
                 altManagerMinecraftAccounts.add(MinecraftAccount(information[0], information[1], information[2]))
-            else if (information.size == 2)
+            } else if (information.size == 2) {
                 altManagerMinecraftAccounts.add(MinecraftAccount(information[0], information[1]))
-            else
+            } else {
                 altManagerMinecraftAccounts.add(MinecraftAccount(information[0]))
+            }
         }
     }
 

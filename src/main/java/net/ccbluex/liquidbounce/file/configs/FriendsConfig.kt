@@ -10,7 +10,7 @@ import java.io.File
 
 class FriendsConfig(file: File) : FileConfig(file) {
 
-    private val friends = mutableListOf<Friend>()
+    val friends = mutableListOf<Friend>()
 
     override fun loadConfig(config: String) {
         clearFriends()
@@ -27,7 +27,7 @@ class FriendsConfig(file: File) : FileConfig(file) {
     override fun saveConfig(): String {
         val builder = StringBuilder()
 
-        for (friend in getFriends())
+        for (friend in friends)
             builder.append(friend.playerName).append(":").append(friend.alias).append("\n")
 
         return builder.toString()
@@ -77,15 +77,6 @@ class FriendsConfig(file: File) : FileConfig(file) {
      */
     fun clearFriends() {
         friends.clear()
-    }
-
-    /**
-     * Get friends
-     *
-     * @return list of friends
-     */
-    fun getFriends(): List<Friend> {
-        return friends
     }
 
     /**
