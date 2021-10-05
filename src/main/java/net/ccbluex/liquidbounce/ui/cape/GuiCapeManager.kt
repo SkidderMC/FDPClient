@@ -11,15 +11,15 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
-import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.GL11
-import java.io.*
+import java.io.File
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import javax.imageio.ImageIO
 
 object GuiCapeManager : GuiScreen() {
-    val jsonFile=File(LiquidBounce.fileManager.capesDir,"cape.json")
+    private val jsonFile=File(LiquidBounce.fileManager.capesDir,"cape.json")
 
     val FDP_CAPE_1=loadCapeFromResource("FDP Cape 1","assets/minecraft/fdpclient/cape/cape1.png")
     val FDP_CAPE_2=loadCapeFromResource("FDP Cape 2","assets/minecraft/fdpclient/cape/cape2.png")
@@ -55,7 +55,7 @@ object GuiCapeManager : GuiScreen() {
         if(!jsonFile.exists())
             return
 
-        val json=JsonParser().parse(IOUtils.toString(FileInputStream(jsonFile),"utf-8")).asJsonObject
+        val json=JsonParser().parse(Files.readAllBytes(jsonFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject
 
         if(json.has("name")){
             val name=json.get("name").asString
@@ -72,9 +72,7 @@ object GuiCapeManager : GuiScreen() {
 
         json.addProperty("name", if(nowCape!=null){ nowCape!!.name }else{ "NONE" })
 
-        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(jsonFile), StandardCharsets.UTF_8))
-        writer.write(FileManager.PRETTY_GSON.toJson(json))
-        writer.close()
+        Files.write(jsonFile.toPath(), FileManager.PRETTY_GSON.toJson(json).toByteArray(StandardCharsets.UTF_8))
     }
 
     private fun loadCapeFromResource(name: String, loc: String) = Cape(name,ImageIO.read(GuiCapeManager::class.java.classLoader.getResourceAsStream(loc)))

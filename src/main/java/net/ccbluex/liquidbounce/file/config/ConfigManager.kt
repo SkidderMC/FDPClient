@@ -9,10 +9,9 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.value.*
-import org.apache.commons.io.IOUtils
 import org.lwjgl.input.Keyboard
 import org.reflections.Reflections
-import java.io.*
+import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
@@ -38,7 +37,7 @@ class ConfigManager {
         configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
 
         val json=if(configFile.exists()){
-            JsonParser().parse(IOUtils.toString(FileInputStream(configFile),"utf-8")).asJsonObject
+            JsonParser().parse(Files.readAllBytes(configFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject
         }else{
             JsonObject() // 这样方便一点,虽然效率会低
         }
@@ -67,9 +66,7 @@ class ConfigManager {
             config.add(section.sectionName,section.save())
         }
 
-        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(configFile), StandardCharsets.UTF_8))
-        writer.write(FileManager.PRETTY_GSON.toJson(config))
-        writer.close()
+        Files.write(configFile.toPath(), FileManager.PRETTY_GSON.toJson(config).toByteArray(StandardCharsets.UTF_8))
 
         if(saveConfigSet) {
             saveConfigSet()
@@ -84,7 +81,7 @@ class ConfigManager {
     }
 
     fun loadConfigSet(){
-        val configSet=if(configSetFile.exists()){ JsonParser().parse(IOUtils.toString(FileInputStream(configSetFile),"utf-8")).asJsonObject }else{ JsonObject() }
+        val configSet=if(configSetFile.exists()){ JsonParser().parse(Files.readAllBytes(configSetFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject }else{ JsonObject() }
 
         load(if(configSet.has("file")){
             configSet.get("file").asString
@@ -98,9 +95,7 @@ class ConfigManager {
 
         configSet.addProperty("file",nowConfig)
 
-        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(configSetFile), StandardCharsets.UTF_8))
-        writer.write(FileManager.PRETTY_GSON.toJson(configSet))
-        writer.close()
+        Files.write(configSetFile.toPath(), FileManager.PRETTY_GSON.toJson(configSet).toByteArray(StandardCharsets.UTF_8))
     }
 
     fun loadLegacySupport(){

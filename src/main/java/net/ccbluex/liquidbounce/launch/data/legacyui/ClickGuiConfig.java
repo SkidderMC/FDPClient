@@ -12,28 +12,17 @@ import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ModuleEle
 import net.ccbluex.liquidbounce.launch.options.LegacyUiLaunchOption;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.File;
 
 public class ClickGuiConfig extends FileConfig {
 
-    /**
-     * Constructor of config
-     *
-     * @param file of config
-     */
     public ClickGuiConfig(final File file) {
         super(file);
     }
 
-    /**
-     * Load config from file
-     *
-     * @throws IOException
-     */
     @Override
-    protected void loadConfig() throws IOException {
-        final JsonElement jsonElement = new JsonParser().parse(new BufferedReader(new FileReader(getFile())));
+    public void loadConfig(String config) {
+        final JsonElement jsonElement = new JsonParser().parse(config);
 
         if(jsonElement instanceof JsonNull)
             return;
@@ -75,13 +64,8 @@ public class ClickGuiConfig extends FileConfig {
         }
     }
 
-    /**
-     * Save config to file
-     *
-     * @throws IOException
-     */
     @Override
-    protected void saveConfig() throws IOException {
+    public String saveConfig() {
         final JsonObject jsonObject = new JsonObject();
 
         for (final Panel panel : LegacyUiLaunchOption.clickGui.panels) {
@@ -108,8 +92,6 @@ public class ClickGuiConfig extends FileConfig {
             jsonObject.add(panel.getCategory().getConfigName(), panelObject);
         }
 
-        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), StandardCharsets.UTF_8));
-        writer.write(FileManager.PRETTY_GSON.toJson(jsonObject));
-        writer.close();
+        return FileManager.PRETTY_GSON.toJson(jsonObject);
     }
 }

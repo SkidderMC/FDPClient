@@ -34,6 +34,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
+import java.nio.charset.StandardCharsets
 
 object LiquidBounce {
 
@@ -92,7 +93,7 @@ object LiquidBounce {
         CLIENT_VERSION=if (commitId==null){
             CLIENT_REAL_VERSION
         }else{
-            val str=IOUtils.toString(commitId,"utf-8").replace("\n","")
+            val str=IOUtils.toString(commitId, StandardCharsets.UTF_8).replace("\n","")
             "git-"+(str.substring(0, 7.coerceAtMost(str.length)))
         }
 

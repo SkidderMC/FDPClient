@@ -118,7 +118,7 @@ public class FileManager extends MinecraftInstance {
         }
 
         try {
-            config.loadConfig();
+            config.loadConfig(config.loadConfigFile());
             ClientUtils.getLogger().info("[FileManager] Loaded config: " + config.getFile().getName() + ".");
         }catch(final Throwable t) {
             ClientUtils.getLogger().error("[FileManager] Failed to load config file: " + config.getFile().getName() + ".", t);
@@ -178,7 +178,7 @@ public class FileManager extends MinecraftInstance {
             if(!config.hasConfig())
                 config.createConfig();
 
-            config.saveConfig();
+            config.saveConfigFile(config.saveConfig());
             ClientUtils.getLogger().info("[FileManager] Saved config: " + config.getFile().getName() + ".");
         }catch(final Throwable t) {
             ClientUtils.getLogger().error("[FileManager] Failed to save config file: " +

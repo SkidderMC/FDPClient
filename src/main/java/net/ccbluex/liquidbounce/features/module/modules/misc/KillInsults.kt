@@ -15,9 +15,9 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.player.EntityPlayer
-import org.apache.commons.io.IOUtils
-import java.io.*
+import java.io.File
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 
 @ModuleInfo(name = "KillInsults", category = ModuleCategory.MISC)
 object KillInsults : Module() {
@@ -40,13 +40,11 @@ object KillInsults : Module() {
     fun loadFile(){
         fun convertJson(){
             insultWords.clear()
-            insultWords.addAll(IOUtils.toString(FileInputStream(insultFile),"utf-8").split("\n")
-                .filter { it.isNotBlank() })
-            val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(insultFile), StandardCharsets.UTF_8))
+            insultWords.addAll(Files.readAllBytes(insultFile.toPath()).toString(StandardCharsets.UTF_8).split("\n").filter { it.isNotBlank() })
+
             val json=JsonArray()
             insultWords.map { JsonPrimitive(it) }.forEach(json::add)
-            writer.write(FileManager.PRETTY_GSON.toJson(json))
-            writer.close()
+            Files.write(insultFile.toPath(), FileManager.PRETTY_GSON.toJson(json).toByteArray(StandardCharsets.UTF_8))
         }
 
         try {
@@ -55,7 +53,7 @@ object KillInsults : Module() {
                 FileUtils.unpackFile(insultFile, "assets/minecraft/fdpclient/misc/insult.json")
             }
             //read it
-            val json=JsonParser().parse(IOUtils.toString(FileInputStream(insultFile),"utf-8"))
+            val json=JsonParser().parse(Files.readAllBytes(insultFile.toPath()).toString(StandardCharsets.UTF_8))
             if(json.isJsonArray){
                 insultWords.clear()
                 json.asJsonArray.forEach{

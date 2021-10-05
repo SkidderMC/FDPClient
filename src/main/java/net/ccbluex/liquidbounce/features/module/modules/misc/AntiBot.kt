@@ -15,7 +15,10 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.network.play.server.*
+import net.minecraft.network.play.server.S0BPacketAnimation
+import net.minecraft.network.play.server.S14PacketEntity
+import net.minecraft.network.play.server.S19PacketEntityStatus
+import net.minecraft.network.play.server.S38PacketPlayerListItem
 import java.util.*
 
 @ModuleInfo(name = "AntiBot", category = ModuleCategory.MISC)

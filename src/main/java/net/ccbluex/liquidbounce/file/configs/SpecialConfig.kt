@@ -10,12 +10,11 @@ import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
-import java.io.*
-import java.nio.charset.StandardCharsets
+import java.io.File
 
 class SpecialConfig(file: File) : FileConfig(file) {
-    override fun loadConfig() {
-        val json=JsonParser().parse(BufferedReader(FileReader(file))).asJsonObject
+    override fun loadConfig(config: String) {
+        val json=JsonParser().parse(config).asJsonObject
 
         LiquidBounce.commandManager.prefix='.'
         AutoReconnect.delay=5000
@@ -68,7 +67,7 @@ class SpecialConfig(file: File) : FileConfig(file) {
         }
     }
 
-    override fun saveConfig() {
+    override fun saveConfig(): String {
         val json=JsonObject()
 
         json.addProperty("prefix",LiquidBounce.commandManager.prefix)
@@ -92,8 +91,6 @@ class SpecialConfig(file: File) : FileConfig(file) {
         backgroundJson.addProperty("particles", GuiBackground.particles)
         json.add("background",backgroundJson)
 
-        val writer = BufferedWriter(OutputStreamWriter(FileOutputStream(file), StandardCharsets.UTF_8))
-        writer.write(FileManager.PRETTY_GSON.toJson(json))
-        writer.close()
+        return FileManager.PRETTY_GSON.toJson(json)
     }
 }

@@ -24,6 +24,7 @@ import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import org.apache.commons.io.IOUtils
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 /***
@@ -62,7 +63,7 @@ class AuthBypass : Module(){
 
         //load locale async
         Thread {
-            val localeJson=JsonParser().parse(IOUtils.toString(AuthBypass::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/item_names_in_pt_BR.json"),"utf-8")).asJsonObject
+            val localeJson=JsonParser().parse(IOUtils.toString(AuthBypass::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/item_names_in_pt_BR.json"),StandardCharsets.UTF_8)).asJsonObject
 
             brLangMap.clear()
             for((key,element) in localeJson.entrySet()){
