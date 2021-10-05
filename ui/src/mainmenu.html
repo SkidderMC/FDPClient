@@ -10,73 +10,73 @@
 </head>
 
 <body>
-<div class="bg">
-</div>
-<div class="mdui-valign title page" style="opacity: 1;height: 100%;margin-top:10px">
-    <div class="mdui-center">
-        <h1 style="font-size: 45px;color:rgba(255,255,255,0.8);font-weight: 400;text-shadow: 0 0 8px rgba(0,0,0,0.07);">
-            FDPClient
-        </h1>
+    <div class="bg">
     </div>
-</div>
-<div class="mdui-valign loading page" style="opacity: 0;height: 100%;">
-    <div class="mdui-center">
-        <h1 style="font-size: 45px;color:rgba(255,255,255,0.8);font-weight: 400;text-shadow: 0 0 8px rgba(0,0,0,0.07);">
-            FDPClient
-        </h1>
-        <div class="mdui-progress" style="opacity: 1;box-shadow: 0 0 5px rgba(0,0,0,0.08);width: 130%;margin-left: -15%;background:rgba(50,50,50,0.08);height: 13px;border-radius: 4px;">
-            <div style="background:rgba(255,255,255,0.5);" class="mdui-progress-indeterminate"></div>
+    <div class="mdui-valign title page" style="opacity: 1;height: 100%;margin-top:10px">
+        <div class="mdui-center">
+            <h1 style="font-size: 45px;color:rgba(255,255,255,0.8);font-weight: 400;text-shadow: 0 0 8px rgba(0,0,0,0.07);">
+                FDPClient
+            </h1>
         </div>
     </div>
-</div>
-
-<div class="mdui-valign mainmenu page" style="display: none!important;opacity: 0;height: 100%;margin-top:20px">
-    <div class="modules">
-        <div id="bg-tooltip" mdui-tooltip="{content: 'Background'}" class="fixedIcon" onclick="GuiMainMenu.action(3)">
-            <span><i class="mdui-icon material-icons">image</i></span>
-        </div>
-        <div id="mods-tooltip" mdui-tooltip="{content: 'Mods'}" class="fixedIcon" onclick="GuiMainMenu.action(4)">
-            <span><i class="mdui-icon material-icons">view_module</i></span>
-        </div>
-        <div id="setting-tooltip" mdui-tooltip="{content: 'Setting'}" class="fixedIcon" onclick="GuiMainMenu.action(5)">
-            <span><i class="mdui-icon material-icons">settings</i></span>
-        </div>
-        <div id="quit-tooltip" mdui-tooltip="{content: 'Quit'}" class="fixedIcon" onclick="GuiMainMenu.action(6)">
-            <span><i class="mdui-icon material-icons">exit_to_app</i></span>
+    <div class="mdui-valign loading page" style="opacity: 0;height: 100%;">
+        <div class="mdui-center">
+            <h1 style="font-size: 45px;color:rgba(255,255,255,0.8);font-weight: 400;text-shadow: 0 0 8px rgba(0,0,0,0.07);">
+                FDPClient
+            </h1>
+            <div class="mdui-progress" style="opacity: 1;box-shadow: 0 0 5px rgba(0,0,0,0.08);width: 130%;margin-left: -15%;background:rgba(50,50,50,0.08);height: 13px;border-radius: 4px;">
+                <div style="background:rgba(255,255,255,0.5);" class="mdui-progress-indeterminate"></div>
+            </div>
         </div>
     </div>
 
-    <div class="changelog">
-        <div id="changelog-tooltip" mdui-tooltip="{content: 'ChangeLog'}" event="log" onclick="show()" mdui-dialog="{target: '#log'}" class="fixedIcon">
-            <span><i class="mdui-icon material-icons">update</i></span>
+    <div class="mdui-valign mainmenu page" style="display: none!important;opacity: 0;height: 100%;margin-top:20px">
+        <div class="modules">
+            <div id="bg-tooltip" mdui-tooltip="{content: 'Background'}" class="fixedIcon" onclick="GuiMainMenu.action(3)">
+                <span><i class="mdui-icon material-icons">image</i></span>
+            </div>
+            <div id="mods-tooltip" mdui-tooltip="{content: 'Mods'}" class="fixedIcon" onclick="GuiMainMenu.action(4)">
+                <span><i class="mdui-icon material-icons">view_module</i></span>
+            </div>
+            <div id="setting-tooltip" mdui-tooltip="{content: 'Setting'}" class="fixedIcon" onclick="GuiMainMenu.action(5)">
+                <span><i class="mdui-icon material-icons">settings</i></span>
+            </div>
+            <div id="quit-tooltip" mdui-tooltip="{content: 'Quit'}" class="fixedIcon" onclick="GuiMainMenu.action(6)">
+                <span><i class="mdui-icon material-icons">exit_to_app</i></span>
+            </div>
         </div>
-    </div>
 
-    <div class="username">
-        Version: %version% , Made by UnlegitMC
-    </div>
-    <div class="mdui-center">
-        <h1 style="opacity: 1;text-align: center;font-size: 45px;color:rgba(255,255,255,0.8);font-weight: 400;text-shadow: 0 0 8px rgba(0,0,0,0.07);">
-            FDPClient
-        </h1>
-        <div class="button" onclick="GuiMainMenu.action(0)">
-            <i class="mdui-icon material-icons" style="margin-bottom: 1px;margin-right: 25px;">person</i> <span style="margin-right: 25px;" id="single-button">SinglePlayer</span>
+        <div class="changelog">
+            <div id="changelog-tooltip" mdui-tooltip="{content: 'ChangeLog'}" event="log" onclick="show()" mdui-dialog="{target: '#log'}" class="fixedIcon">
+                <span><i class="mdui-icon material-icons">update</i></span>
+            </div>
         </div>
-        <div class="button" onclick="GuiMainMenu.action(1)">
-            <i class="mdui-icon material-icons" style="margin-bottom: 1px;margin-right: 25px;">group</i> <span style="margin-right: 25px;" id="multi-button">MultiPlayer</span>
+
+        <div class="username">
+            Version: %version% , Made by UnlegitMC
         </div>
-        <div class="button" onclick="GuiMainMenu.action(2)">
-            <i class="mdui-icon material-icons" style="margin-bottom: 1px;margin-right: 25px;">account_circle</i> <span style="margin-right: 25px;" id="alt-button">AltManager</span>
+        <div class="mdui-center">
+            <h1 style="opacity: 1;text-align: center;font-size: 45px;color:rgba(255,255,255,0.8);font-weight: 400;text-shadow: 0 0 8px rgba(0,0,0,0.07);">
+                FDPClient
+            </h1>
+            <div class="button" onclick="GuiMainMenu.action(0)">
+                <i class="mdui-icon material-icons" style="margin-bottom: 1px;margin-right: 25px;">person</i> <span style="margin-right: 25px;" id="single-button">SinglePlayer</span>
+            </div>
+            <div class="button" onclick="GuiMainMenu.action(1)">
+                <i class="mdui-icon material-icons" style="margin-bottom: 1px;margin-right: 25px;">group</i> <span style="margin-right: 25px;" id="multi-button">MultiPlayer</span>
+            </div>
+            <div class="button" onclick="GuiMainMenu.action(2)">
+                <i class="mdui-icon material-icons" style="margin-bottom: 1px;margin-right: 25px;">account_circle</i> <span style="margin-right: 25px;" id="alt-button">AltManager</span>
+            </div>
         </div>
     </div>
-</div>
-<div class="mdui-dialog" id="log">
-    <div class="mdui-dialog-content" id="logs">Loading....</div>
-    <div class="mdui-dialog-actions">
-        <button class="mdui-btn mdui-ripple" mdui-dialog-close>ok</button>
+    <div class="mdui-dialog" id="log">
+        <div class="mdui-dialog-content" id="logs">Loading....</div>
+        <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>ok</button>
+        </div>
     </div>
-</div>
-<script>
+    <script>
         const GuiMainMenu = java.importClass("net.ccbluex.liquidbounce.launch.data.ultralight.GuiMainMenu")
         const LiquidBounce = java.importClass("net.ccbluex.liquidbounce.LiquidBounce")
             // function add(a) {
@@ -188,11 +188,12 @@
         }
 
         // this seems not working
-        // rainbow();
-        // function rainbow() {
-        //     $(".bg").css("filter", "brightness(1.1) drop-shadow(0 0 " + fn3() + ")");
-        //     setTimeout("rainbow();", 4500);
-        // }
+        rainbow();
+
+        function rainbow() {
+            $(".bg").css("filter", "brightness(1.1) drop-shadow(0 0 " + fn3() + ")");
+            setTimeout("rainbow();", 4500);
+        }
 
         document.onselectstart = function() {
             return false
@@ -225,7 +226,7 @@
         initPageElements();
         checkUpdate();
     </script>
-<style>
+    <style>
         #mojang {
             transition: all 0.5s;
             z-index: 999999;

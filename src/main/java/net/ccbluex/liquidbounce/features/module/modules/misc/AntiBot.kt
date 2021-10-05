@@ -7,20 +7,16 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.extensions.getFullName
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.network.play.server.S0BPacketAnimation
-import net.minecraft.network.play.server.S14PacketEntity
-import net.minecraft.network.play.server.S19PacketEntityStatus
-import net.minecraft.network.play.server.S38PacketPlayerListItem
+import net.minecraft.network.play.server.*
+import java.util.*
 
 @ModuleInfo(name = "AntiBot", category = ModuleCategory.MISC)
 object AntiBot : Module() {
@@ -41,8 +37,10 @@ object AntiBot : Module() {
     private val armorValue = BoolValue("Armor", false)
     private val pingValue = BoolValue("Ping", false)
     private val needHitValue = BoolValue("NeedHit", false)
+    private val invalidSpawnValue = BoolValue("InvalidSpawn", true)
     private val duplicateInWorldValue = BoolValue("DuplicateInWorld", false)
     private val duplicateInTabValue = BoolValue("DuplicateInTab", false)
+    private val duplicateCompareModeValue = ListValue("DuplicateCompareMode", arrayOf("OnTime", "WhenSpawn"), "OnTime").displayable { duplicateInTabValue.get() || duplicateInWorldValue.get() }
     private val fastDamageValue = BoolValue("FastDamage", false)
     private val fastDamageTicksValue = IntegerValue("FastDamageTicks", 5, 1, 20).displayable { fastDamageValue.get() }
     private val alwaysInRadiusValue = BoolValue("AlwaysInRadius", false)
@@ -57,6 +55,7 @@ object AntiBot : Module() {
     private val notAlwaysInRadius = mutableListOf<Int>()
     private val lastDamage = mutableMapOf<Int, Int>()
     private val lastDamageVl = mutableMapOf<Int, Float>()
+    private val duplicate = mutableListOf<UUID>()
 
     @JvmStatic
     fun isBot(entity: EntityLivingBase): Boolean {
@@ -130,10 +129,13 @@ object AntiBot : Module() {
             }
         }
 
-        if (duplicateInWorldValue.get() && mc.theWorld!!.loadedEntityList.count { it is EntityPlayer && it.displayNameString == it.displayNameString } > 1)
+        if(duplicateCompareModeValue.equals("WhenSpawn") && duplicate.contains(entity.gameProfile.id))
             return true
 
-        if (duplicateInTabValue.get() && mc.netHandler.playerInfoMap.count { entity.name == stripColor(it.getFullName()) } > 1)
+        if (duplicateInWorldValue.get() && duplicateCompareModeValue.equals("OnTime") && mc.theWorld!!.loadedEntityList.count { it is EntityPlayer && it.name == it.name } > 1)
+            return true
+
+        if (duplicateInTabValue.get() && duplicateCompareModeValue.equals("OnTime") && mc.netHandler.playerInfoMap.count { entity.name == it.gameProfile.name } > 1)
             return true
 
         if(fastDamageValue.get() && lastDamageVl.getOrDefault(entity.entityId, 0f) > 0)
@@ -184,7 +186,25 @@ object AntiBot : Module() {
                 if ((!livingTimeValue.get() || entity.ticksExisted > livingTimeTicksValue.get()) && !notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer!!.getDistanceToEntity(entity) > alwaysRadiusValue.get())
                     notAlwaysInRadius.add(entity.entityId);
             }
-        }else if(packet is S19PacketEntityStatus && packet.opCode.toInt()==2 || packet is S0BPacketAnimation && packet.animationType==1){
+        }else if (packet is S0BPacketAnimation) {
+            val entity = mc.theWorld!!.getEntityByID(packet.entityID)
+
+            if (entity != null && entity is EntityLivingBase && packet.animationType == 0
+                && !swing.contains(entity.entityId))
+                swing.add(entity.entityId)
+        }else if(packet is S38PacketPlayerListItem){
+            if(duplicateCompareModeValue.equals("WhenSpawn") && packet.action==S38PacketPlayerListItem.Action.ADD_PLAYER){
+                packet.entries.forEach {
+                    val name=it.profile.name
+                    if(duplicateInWorldValue.get() && mc.theWorld.playerEntities.any { it.name == name }
+                        || duplicateInTabValue.get() && mc.netHandler.playerInfoMap.any { it.gameProfile.name == name }) {
+                        duplicate.add(it.profile.id)
+                    }
+                }
+            }
+        }
+
+        if(packet is S19PacketEntityStatus && packet.opCode.toInt()==2 || packet is S0BPacketAnimation && packet.animationType==1){
             val entity = if(packet is S19PacketEntityStatus) { packet.getEntity(mc.theWorld) }
                 else if(packet is S0BPacketAnimation) { mc.theWorld.getEntityByID(packet.entityID) }
                 else { null }  ?: return
@@ -197,14 +217,6 @@ object AntiBot : Module() {
                 }
                 lastDamage[entity.entityId] = entity.ticksExisted
             }
-        }
-
-        if (packet is S0BPacketAnimation) {
-            val entity = mc.theWorld!!.getEntityByID(packet.entityID)
-
-            if (entity != null && entity is EntityLivingBase && packet.animationType == 0
-                    && !swing.contains(entity.entityId))
-                swing.add(entity.entityId)
         }
     }
 
@@ -230,5 +242,6 @@ object AntiBot : Module() {
         lastDamage.clear()
         lastDamageVl.clear()
         notAlwaysInRadius.clear()
+        duplicate.clear()
     }
 }
