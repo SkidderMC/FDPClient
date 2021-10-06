@@ -45,10 +45,7 @@ import net.minecraft.stats.StatList
 import net.minecraft.util.*
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
+import kotlin.math.*
 
 @ModuleInfo(name = "Scaffold", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_G)
 class Scaffold : Module() {
@@ -930,6 +927,28 @@ class Scaffold : Module() {
 
         return false
     }
+
+    private fun unnecessaryCal(x: Float, y: Float, z: Float): Boolean {
+        return (x>0.05f && y>0.05f && z>0.05f && x<0.95f && y<0.95f && z<0.95f)
+    }
+
+    private fun canCatch(blockPos1: BlockPos, blockPos2: BlockPos): Float {
+        return calHeight((abs(blockPos1.x - blockPos2.x) + abs(blockPos1.y - blockPos2.y) + abs(blockPos1.z - blockPos2.z)).toDouble()
+            .roundToInt()-1)
+    }
+
+    private fun calHeight(ticks: Int): Float {
+        var dis=0f
+        var motY=mc.thePlayer.motionY.toFloat()
+        var tick=0
+        while(tick<ticks) {
+            tick++
+            dis+=motY
+            motY-=0.08f
+            motY*=0.98f
+        }
+        return dis
+    };
 
     private val isOnEdge: Boolean
         get() = mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX*0.25,-1.0,mc.thePlayer.motionZ*0.25).expand(-0.15,0.0,-0.15)).isEmpty()

@@ -5,25 +5,24 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.JumpEvent
-import net.ccbluex.liquidbounce.event.MoveEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
 class LongJump : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("NCP", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC", "BlocksMC2", "HYT4v4"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("NCP", "NCPDamage", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC", "BlocksMC2", "HYT4v4"), "NCP")
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
     // redesky
@@ -60,10 +59,23 @@ class LongJump : Module() {
     private var canMineplexBoost = false
     private var timer=MSTimer()
     var airTicks=0
+    private var balance=0
+    private var x = 0.0
+    private var y = 0.0
+    private var z = 0.0
+    private var damageStat=false
+    private val jumpYPosArr=arrayOf(0.41999998688698, 0.7531999805212, 1.00133597911214, 1.16610926093821, 1.24918707874468, 1.24918707874468, 1.1707870772188, 1.0155550727022, 0.78502770378924, 0.4807108763317, 0.10408037809304, 0.0)
 
     override fun onEnable() {
         airTicks=0
+        balance=0
         hasJumped=false
+        if (modeValue.equals("ncpdamage")) {
+            x=mc.thePlayer.posX
+            y=mc.thePlayer.posY
+            z=mc.thePlayer.posZ
+            damageStat=false
+        }
     }
 
     override fun onDisable() {
@@ -78,6 +90,28 @@ class LongJump : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         mc.thePlayer ?: return
+
+        if (modeValue.equals("ncpdamage")) {
+            if(!damageStat){
+                mc.thePlayer.setPosition(x,y,z)
+                if(balance>jumpYPosArr.size*4){
+                    repeat(4){
+                        jumpYPosArr.forEach {
+                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y+it, z, false))
+                        }
+                        PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false))
+                    }
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
+                    chat("DAMAGE")
+                    damageStat=true
+                }
+            }else{
+                MovementUtils.strafe(0.5f*ncpBoostValue.get())
+                mc.thePlayer.jump()
+                state=false
+            }
+            return
+        }
 
         if (jumped) {
             val mode = modeValue.get()
@@ -245,6 +279,18 @@ class LongJump : Module() {
             }
             mc.thePlayer.jump()
             hasJumped=true
+        }
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent){
+        val packet=event.packet
+
+        if(packet is C03PacketPlayer){
+            if(modeValue.equals("NCPDamage") && !damageStat){
+                balance++
+                event.cancelEvent()
+            }
         }
     }
 
