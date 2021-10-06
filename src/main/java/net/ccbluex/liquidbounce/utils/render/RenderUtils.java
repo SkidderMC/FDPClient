@@ -9,7 +9,9 @@ import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
+import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.*;
@@ -231,13 +233,13 @@ public final class RenderUtils extends MinecraftInstance {
         return drawText(text, fontRenderer, width, height, scale, color,  true, shadow);
     }
 
-    public static int drawText(String text, GameFontRenderer fontRenderer, int width, int height, float scale, int color, boolean center, boolean shadow) {
+    public static int drawText(String text, FontRenderer fontRenderer, int width, int height, float scale, int color, boolean center, boolean shadow) {
         GlStateManager.pushMatrix();
         //set scale
         GlStateManager.scale(scale, scale, scale);
         int length=0;
         if(center){
-            length = fontRenderer.drawCenteredString(text, Math.round(width / scale), Math.round(height / scale), color, shadow);
+            length = RendererExtensionKt.drawCenteredString(fontRenderer, text, Math.round(width / scale), Math.round(height / scale), color, shadow);
         }else{
             length = fontRenderer.drawString(text, Math.round(width / scale), Math.round(height / scale), color, shadow);
         }
@@ -936,11 +938,30 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.rotate(-135F, 0F, 1F, 0F);
         GlStateManager.translate(0.0, 0.0, 0.0);
 
+        float renderYawOffset = entity.renderYawOffset;
+        float rotationYaw = entity.rotationYaw;
+        float rotationPitch = entity.rotationPitch;
+        float prevRotationYawHead = entity.prevRotationYawHead;
+        float rotationYawHead = entity.rotationYawHead;
+
+
+        entity.renderYawOffset = 0;
+        entity.rotationYaw = 0;
+        entity.rotationPitch = 90;
+        entity.rotationYawHead = entity.rotationYaw;
+        entity.prevRotationYawHead = entity.rotationYaw;
+
         RenderManager rendermanager = mc.getRenderManager();
         rendermanager.setPlayerViewY(180F);
         rendermanager.setRenderShadow(false);
         rendermanager.renderEntityWithPosYaw(entity, 0.0, 0.0, 0.0, 0F, 1F);
         rendermanager.setRenderShadow(true);
+
+        entity.renderYawOffset = renderYawOffset;
+        entity.rotationYaw = rotationYaw;
+        entity.rotationPitch = rotationPitch;
+        entity.prevRotationYawHead = prevRotationYawHead;
+        entity.rotationYawHead = rotationYawHead;
 
         GlStateManager.popMatrix();
         RenderHelper.disableStandardItemLighting();

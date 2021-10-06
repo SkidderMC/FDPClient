@@ -73,3 +73,6 @@ val EntityLivingBase.hurtPercent: Float
 
 val EntityLivingBase.skin: ResourceLocation // TODO: add special skin for mobs
     get() = if(this is EntityPlayer) { Minecraft.getMinecraft().netHandler.getPlayerInfo(this.uniqueID)?.locationSkin } else { null } ?: DefaultPlayerSkin.getDefaultSkinLegacy()
+
+val EntityLivingBase.ping: Int
+    get() = if(this is EntityPlayer) { Minecraft.getMinecraft().netHandler.getPlayerInfo(this.uniqueID)?.responseTime?.coerceAtLeast(0) } else { null } ?: -1

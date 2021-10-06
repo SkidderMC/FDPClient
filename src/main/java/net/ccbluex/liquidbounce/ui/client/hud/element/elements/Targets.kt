@@ -7,15 +7,14 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
-import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
-import net.ccbluex.liquidbounce.utils.extensions.skin
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
@@ -26,8 +25,8 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux","Rise"), "Rise")
-    private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom"), "Slide")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline","Astolfo","Liquid","Flux","Rise","Zamorozka"), "Rise")
+    private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide","Zoom","None"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed",10,5,20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed",20,5,40)
     private val fontValue = FontValue("Font", Fonts.font20)
@@ -106,6 +105,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
             "liquid" -> drawLiquid(prevTarget!!,nowAnimHP)
             "flux" -> drawFlux(prevTarget!!,nowAnimHP)
             "rise" -> drawRise(prevTarget!!,nowAnimHP)
+            "zamorozka" -> drawZamorozka(prevTarget!!,nowAnimHP)
         }
 
         return getTBorder()
@@ -121,7 +121,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         // health rect
         RenderUtils.drawRect(3F, 55F, 137F, 58F,ColorUtils.reAlpha(color,100).rgb)
         RenderUtils.drawRect(3F,55F,3+(hpPct*134F),58F,color.rgb)
-        GlStateManager.resetColor()
+        GL11.glColor4f(1f,1f,1f,1f)
         RenderUtils.drawEntityOnScreen(18,46,20,target)
 
         font.drawStringWithShadow(target.name, 37F, 6F, -1)
@@ -180,6 +180,28 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         }
     }
 
+    private fun drawZamorozka(target: EntityLivingBase, easingHealth: Float){
+        val font=fontValue.get()
+
+        // Frame
+        RenderUtils.drawCircleRect(0f,0f,150f,55f,5f,Color(0,0,0,70).rgb)
+        RenderUtils.drawRect(7f,7f,35f,40f,Color(0,0,0,70).rgb)
+        GL11.glColor4f(1f,1f,1f,1f)
+        RenderUtils.drawEntityOnScreen(21, 38, 15, target)
+
+        // Healthbar
+        val barLength=143-7f
+        RenderUtils.drawCircleRect(7f,45f,143f,50f,2.5f,Color(0,0,0,70).rgb)
+        RenderUtils.drawCircleRect(7f,45f,7+((easingHealth/target.maxHealth)*barLength).coerceAtLeast(5f),50f,2.5f,ColorUtils.rainbowWithAlpha(90).rgb)
+        RenderUtils.drawCircleRect(7f,45f,7+((target.health/target.maxHealth)*barLength).coerceAtLeast(5f),50f,2.5f,ColorUtils.rainbow().rgb)
+
+        // Info
+        RenderUtils.drawCircleRect(43f,15f-font.FONT_HEIGHT,143f,17f,(font.FONT_HEIGHT+1)*0.45f,Color(0,0,0,70).rgb)
+        font.drawCenteredString("${target.name} ${if(target.ping!=-1) { "§f${target.ping}ms" } else { "" }}", 93f, 16f-font.FONT_HEIGHT, ColorUtils.rainbow().rgb, false)
+        font.drawString("Health: ${decimalFormat.format(easingHealth)} §7/ ${decimalFormat.format(target.maxHealth)}", 43, 11+font.FONT_HEIGHT,Color.WHITE.rgb)
+        font.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 43, 11+font.FONT_HEIGHT*2,Color.WHITE.rgb)
+    }
+
     private fun drawRise(target: EntityLivingBase, easingHealth: Float){
         val font=fontValue.get()
 
@@ -206,7 +228,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
         GL11.glPopMatrix()
 
         font.drawString("Name ${target.name}", 40, 11,Color.WHITE.rgb)
-        font.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))} Hurt ${target.hurtTime}", 40, 11+font.FONT_HEIGHT,Color.WHITE.rgb)
+        font.drawString("Distance ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))} Hurt ${target.hurtTime}", 40, 11+font.FONT_HEIGHT,Color.WHITE.rgb)
 
         // 渐变血量条
         GL11.glEnable(3042)
@@ -266,6 +288,7 @@ class Targets : Element(-46.0,-40.0,1F,Side(Side.Horizontal.MIDDLE,Side.Vertical
                 .coerceAtLeast(70)
                 .toFloat(),34F)
             "rise" -> Border(0F,0F,150F,55F)
+            "zamorozka" -> Border(0F,0F,150F,55F)
             "exhibition" -> Border(0F, 0F, 140F, 45F)
             else -> null
         }

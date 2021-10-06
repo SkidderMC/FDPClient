@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiAdd;
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiDirectLogin;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
+import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.login.LoginUtils;
 import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
 import net.ccbluex.liquidbounce.utils.login.UserUtils;
@@ -128,9 +129,9 @@ public class GuiAltManager extends GuiScreen {
 
         altsList.drawScreen(mouseX, mouseY, partialTicks);
 
-        Fonts.font20.drawCenteredString("%ui.altmanager%", width / 2, 6, 0xffffff);
-        Fonts.font18.drawCenteredString( LanguageManager.INSTANCE.getAndFormat("ui.alt.alts",LiquidBounce.fileManager.accountsConfig.getAltManagerMinecraftAccounts().size()), width / 2, 18, 0xffffff);
-        Fonts.font18.drawCenteredString(status, width / 2, 32, 0xffffff);
+        RendererExtensionKt.drawCenteredString(Fonts.font20, "%ui.altmanager%", width / 2, 6, 0xffffff);
+        RendererExtensionKt.drawCenteredString(Fonts.font18,  LanguageManager.INSTANCE.getAndFormat("ui.alt.alts",LiquidBounce.fileManager.accountsConfig.getAltManagerMinecraftAccounts().size()), width / 2, 18, 0xffffff);
+        RendererExtensionKt.drawCenteredString(Fonts.font18, status, width / 2, 32, 0xffffff);
         Fonts.font18.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.username",mc.getSession().getUsername()), 6, 6, 0xffffff);
         Fonts.font18.drawStringWithShadow(LanguageManager.INSTANCE.getAndFormat("ui.alt.type",(UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()) ? "%ui.alt.type.premium%" : "%ui.alt.type.cracked%")), 6, 15, 0xffffff);
 
@@ -363,8 +364,8 @@ public class GuiAltManager extends GuiScreen {
         @Override
         protected void drawSlot(int id, int x, int y, int var4, int var5, int var6) {
             final MinecraftAccount minecraftAccount = LiquidBounce.fileManager.accountsConfig.getAltManagerMinecraftAccounts().get(id);
-            Fonts.font20.drawCenteredString(minecraftAccount.getAccountName()==null || minecraftAccount.getAccountName().isEmpty() ? minecraftAccount.getName() : minecraftAccount.getAccountName(), (width / 2), y + 2, Color.WHITE.getRGB(), true);
-            Fonts.font20.drawCenteredString(minecraftAccount.isCracked() ? "%ui.alt.type.cracked%" : (minecraftAccount.getAccountName() == null ? "%ui.alt.type.premium%" : minecraftAccount.getName()), (width / 2), y + 15, minecraftAccount.isCracked() ? Color.GRAY.getRGB() : (minecraftAccount.getAccountName() == null ? Color.GREEN.getRGB() : Color.LIGHT_GRAY.getRGB()), true);
+            RendererExtensionKt.drawCenteredString(Fonts.font20, minecraftAccount.getAccountName()==null || minecraftAccount.getAccountName().isEmpty() ? minecraftAccount.getName() : minecraftAccount.getAccountName(), (width / 2), y + 2, Color.WHITE.getRGB(), true);
+            RendererExtensionKt.drawCenteredString(Fonts.font20, minecraftAccount.isCracked() ? "%ui.alt.type.cracked%" : (minecraftAccount.getAccountName() == null ? "%ui.alt.type.premium%" : minecraftAccount.getName()), (width / 2), y + 15, minecraftAccount.isCracked() ? Color.GRAY.getRGB() : (minecraftAccount.getAccountName() == null ? Color.GREEN.getRGB() : Color.LIGHT_GRAY.getRGB()), true);
         }
 
         @Override
