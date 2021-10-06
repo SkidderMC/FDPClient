@@ -816,7 +816,7 @@ class KillAura : Module() {
             mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
         ) ?: return false
         
-        if(rModes == "OldMatrix") directRotation.pitch = 89.9
+        if(rModes == "OldMatrix") directRotation.pitch = (89.9).toFloat()
         
         var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
         if(diffAngle<0) diffAngle = -diffAngle
