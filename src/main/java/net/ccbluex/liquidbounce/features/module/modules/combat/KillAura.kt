@@ -244,6 +244,7 @@ class KillAura : Module() {
         clicks = 0
 
         stopBlocking()
+        RotationUtils.setTargetRotationReverse(RotationUtils.serverRotation, 0, 0)
     }
 
     /**
@@ -800,12 +801,13 @@ class KillAura : Module() {
                 (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
             )
         var rModes = when(rotationModeValue.get()) {
-            "LiquidBounce", "SmoothLiquid" -> "LiquidBounce"
-            "ForceCenter", "SmoothCenter", "OldMatrix" -> "CenterLine"
+            "LiquidBounce", "SmoothLiquid", "Derp" -> "LiquidBounce"
+            "ForceCenter", "SmoothCenter", "OldMatrix", "Spin", "FastSpin" -> "CenterLine"
             "LockView" -> "CenterSimple"
             "Test" -> "HalfUp"
             else -> "LiquidBounce"
         }
+        
         val (_, directRotation) = 
         RotationUtils.calculateCenter(
             rModes,
@@ -816,7 +818,7 @@ class KillAura : Module() {
             mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
         ) ?: return false
         
-        if(rModes == "OldMatrix") directRotation.pitch = (89.9).toFloat()
+        if(rotationModeValue.get() == "OldMatrix") directRotation.pitch = (89.9).toFloat()
         
         var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
         if(diffAngle<0) diffAngle = -diffAngle
