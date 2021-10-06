@@ -127,7 +127,7 @@ class KillAura : Module() {
     //TODO: Divide AAC Opinion into three separated opinions
     
     // Rotations
-    private val rotationModeValue = ListValue("RotationMode", arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView"), "LiquidBounce")
+    private val rotationModeValue = ListValue("RotationMode", arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix"), "LiquidBounce")
     //TODO: RotationMode Bypass Intave
     
     private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
@@ -164,8 +164,6 @@ class KillAura : Module() {
 
     // Predict
     private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
-    
-    //TODO: Player Motion Predict(Multiply *2)
     
     private val maxPredictSize: FloatValue = object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -273,7 +271,7 @@ class KillAura : Module() {
             return
         }
 
-        //if (rotationStrafeValue.equals("Off"))
+        if (rotationStrafeValue.equals("Off"))
             update()
 
         if (target != null && currentTarget != null && ((attackTimingValue.equals("Pre") && event.eventState == EventState.PRE)
@@ -294,10 +292,13 @@ class KillAura : Module() {
         if (rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding)
             return
 
-        //update()
-
+        //if(event.eventState == EventState.PRE)
+            update()
+            
         if(strafeOnlyGroundValue.get()&&!mc.thePlayer.onGround)
             return
+            
+        //TODO: Fix Rotation issue on Strafe POST Event
 
         if (discoveredTargets.isNotEmpty() && RotationUtils.targetRotation != null) {
             when (rotationStrafeValue.get().lowercase()) {
@@ -800,7 +801,7 @@ class KillAura : Module() {
             )
         var rModes = when(rotationModeValue.get()) {
             "LiquidBounce", "SmoothLiquid" -> "LiquidBounce"
-            "ForceCenter", "SmoothCenter" -> "CenterLine"
+            "ForceCenter", "SmoothCenter", "OldMatrix" -> "CenterLine"
             "LockView" -> "CenterSimple"
             "Test" -> "HalfUp"
             else -> "LiquidBounce"
@@ -814,6 +815,8 @@ class KillAura : Module() {
             predictValue.get() && rotationModeValue.get() != "Test",
             mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
         ) ?: return false
+        
+        if(rModes == "OldMatrix") directRotation.pitch = 89.9
         
         var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
         if(diffAngle<0) diffAngle = -diffAngle
@@ -832,7 +835,7 @@ class KillAura : Module() {
             "LiquidBounce", "ForceCenter" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation,
                 (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
             "LockView" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (180.0).toFloat())
-            "SmoothCenter", "SmoothLiquid" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (calculateSpeed).toFloat())
+            "SmoothCenter", "SmoothLiquid", "OldMatrix" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (calculateSpeed).toFloat())
             "Test" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (calculateSpeed).toFloat())
             else -> return true
         }
