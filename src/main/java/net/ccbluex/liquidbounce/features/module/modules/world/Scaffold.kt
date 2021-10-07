@@ -933,8 +933,9 @@ class Scaffold : Module() {
     }
 
     private fun canCatch(blockPos1: BlockPos, blockPos2: BlockPos): Float {
-        return calHeight((abs(blockPos1.x - blockPos2.x) + abs(blockPos1.y - blockPos2.y) + abs(blockPos1.z - blockPos2.z)).toDouble()
-            .roundToInt()-1)
+        return calHeight((abs(blockPos1.x - blockPos2.x) + abs(blockPos1.z - blockPos2.z)).toDouble()
+            .roundToInt())
+        //忘记把改过的js传上去了
     }
 
     private fun calHeight(ticks: Int): Float {
