@@ -5,11 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -75,6 +78,7 @@ class LongJump : Module() {
             y=mc.thePlayer.posY
             z=mc.thePlayer.posZ
             damageStat=false
+            LiquidBounce.hud.addNotification(Notification(name, "Wait for damage...",NotifyType.SUCCESS, jumpYPosArr.size*4*50))
         }
     }
 
@@ -102,7 +106,6 @@ class LongJump : Module() {
                         PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false))
                     }
                     PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
-                    chat("DAMAGE")
                     damageStat=true
                 }
             }else{

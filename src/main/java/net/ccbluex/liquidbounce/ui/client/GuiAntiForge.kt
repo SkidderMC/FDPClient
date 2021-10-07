@@ -52,7 +52,7 @@ class GuiAntiForge(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        Fonts.font20.drawCenteredString("%ui.antiForge%", width / 2f, height / 8f + 5f, 4673984, true)
+        Fonts.font40.drawCenteredString("%ui.antiForge%", width / 2f, height / 8f + 5f, 4673984, true)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 

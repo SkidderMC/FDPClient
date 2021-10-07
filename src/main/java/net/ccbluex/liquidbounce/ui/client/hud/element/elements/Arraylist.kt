@@ -64,7 +64,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
-    private val fontValue = FontValue("Font", Fonts.font18)
+    private val fontValue = FontValue("Font", Fonts.font35)
 
     private var x2 = 0
     private var y2 = 0F

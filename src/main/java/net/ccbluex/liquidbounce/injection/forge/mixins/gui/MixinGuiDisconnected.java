@@ -94,7 +94,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(CallbackInfo callbackInfo) {
-        RendererExtensionKt.drawCenteredString(Fonts.font20, infoStr, this.width / 2F, this.height / 2F + field_175353_i / 2F + this.fontRendererObj.FONT_HEIGHT + 100, 0,false);
+        RendererExtensionKt.drawCenteredString(Fonts.font40, infoStr, this.width / 2F, this.height / 2F + field_175353_i / 2F + this.fontRendererObj.FONT_HEIGHT + 100, 0,false);
         if (AutoReconnect.INSTANCE.isEnabled()) {
             this.updateReconnectButton();
         }

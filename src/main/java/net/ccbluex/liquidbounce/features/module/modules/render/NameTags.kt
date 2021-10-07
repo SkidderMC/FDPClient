@@ -34,7 +34,7 @@ class NameTags : Module() {
     private val distanceValue = BoolValue("Distance", false)
     private val armorValue = BoolValue("Armor", true)
     private val clearNamesValue = BoolValue("ClearNames", true)
-    private val fontValue = FontValue("Font", Fonts.font20)
+    private val fontValue = FontValue("Font", Fonts.font40)
     private val borderValue = BoolValue("Border", true)
     private val hackerValue = BoolValue("Hacker", true)
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }

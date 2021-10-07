@@ -37,10 +37,10 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         Gui.drawRect(width / 2 - 60, bHeight - 30, width / 2 + 60, bHeight + 174, Integer.MIN_VALUE)
 
-        Fonts.font20.drawCenteredString(LiquidBounce.CLIENT_NAME,(width / 2).toFloat(), (bHeight - 20).toFloat(),Color.WHITE.rgb,false)
-        Fonts.font20.drawString(LiquidBounce.CLIENT_VERSION, 3F, (height - Fonts.font20.height -2).toFloat(), 0xffffff,  false)
+        Fonts.font40.drawCenteredString(LiquidBounce.CLIENT_NAME,(width / 2).toFloat(), (bHeight - 20).toFloat(),Color.WHITE.rgb,false)
+        Fonts.font40.drawString(LiquidBounce.CLIENT_VERSION, 3F, (height - Fonts.font40.height -2).toFloat(), 0xffffff,  false)
         val str="§cWebsite: §fhttps://${LiquidBounce.CLIENT_WEBSITE}/"
-        Fonts.font20.drawString(str, (this.width - Fonts.font20.getStringWidth(str) - 3).toFloat(), (height - Fonts.font20.height - 2).toFloat(), 0xffffff, false)
+        Fonts.font40.drawString(str, (this.width - Fonts.font40.getStringWidth(str) - 3).toFloat(), (height - Fonts.font40.height - 2).toFloat(), 0xffffff, false)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 

@@ -34,7 +34,7 @@ class KeyStrokes : Element(5.0,25.0,1.25F, Side.default()) {
     private val outline = BoolValue("Outline", false)
     private val outlineBoldValue = IntegerValue("OutlineBold", 1,0,5)
     private val outlineRainbow = BoolValue("OutLineRainbow", false)
-    private val fontValue = FontValue("Font", Fonts.font18)
+    private val fontValue = FontValue("Font", Fonts.font35)
 
     init {
         keys.add(KeyStroke(mc.gameSettings.keyBindForward,16,0,15,15).initKeyName())

@@ -746,9 +746,9 @@ class Scaffold : Module() {
                 }
             }
             RenderHelper.enableGUIStandardItemLighting()
-            mc.renderItem.renderItemIntoGUI(stack, width / 2 - Fonts.font20.getStringWidth(info), (height * 0.6 - Fonts.font20.FONT_HEIGHT * 0.5).toInt())
+            mc.renderItem.renderItemIntoGUI(stack, width / 2 - Fonts.font40.getStringWidth(info), (height * 0.6 - Fonts.font40.FONT_HEIGHT * 0.5).toInt())
             RenderHelper.disableStandardItemLighting()
-            Fonts.font20.drawCenteredString(info, width / 2f, height * 0.6f, Color.WHITE.rgb, false)
+            Fonts.font40.drawCenteredString(info, width / 2f, height * 0.6f, Color.WHITE.rgb, false)
             GlStateManager.popMatrix()
         }
     }

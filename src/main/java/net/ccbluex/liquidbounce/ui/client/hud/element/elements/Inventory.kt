@@ -31,7 +31,7 @@ class Inventory : Element(300.0,50.0,1F, Side(Side.Horizontal.RIGHT,Side.Vertica
     private val bdBlueValue = IntegerValue("BDBlue", 255, 0, 255)
     private val title = BoolValue("Title",true)
     private val bdRainbow = BoolValue("BDRainbow",false)
-    private val fontValue = FontValue("Font",Fonts.font18)
+    private val fontValue = FontValue("Font",Fonts.font35)
 
     override fun drawElement(partialTicks: Float): Border {
         val borderColor=if(bdRainbow.get()){ColorUtils.rainbow()}else{Color(bdRedValue.get(),bdGreenValue.get(),bdBlueValue.get())}

@@ -842,10 +842,10 @@ public final class RenderUtils extends MinecraftInstance {
         setGlCap(GL_BLEND, true);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        final int width = Fonts.font18.getStringWidth(string) / 2;
+        final int width = Fonts.font35.getStringWidth(string) / 2;
 
-        Gui.drawRect(-width - 1, -1, width + 1, Fonts.font18.FONT_HEIGHT, Integer.MIN_VALUE);
-        Fonts.font18.drawString(string, -width, 1.5F, Color.WHITE.getRGB(), true);
+        Gui.drawRect(-width - 1, -1, width + 1, Fonts.font35.FONT_HEIGHT, Integer.MIN_VALUE);
+        Fonts.font35.drawString(string, -width, 1.5F, Color.WHITE.getRGB(), true);
 
         resetCaps();
         glColor4f(1F, 1F, 1F, 1F);
