@@ -109,7 +109,7 @@ class LongJump : Module() {
                     damageStat=true
                 }
             }else{
-                MovementUtils.strafe(0.5f*ncpBoostValue.get())
+                MovementUtils.strafe(0.20f*ncpBoostValue.get())
                 mc.thePlayer.jump()
                 state=false
             }
