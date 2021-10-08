@@ -143,7 +143,7 @@ class NoFall : Module() {
             }
             "motionflag" -> {
                 if (mc.thePlayer.fallDistance > 3) {
-                    mc.thePlayer.motionY = flySpeed.get()
+                    mc.thePlayer.motionY = flySpeed.get().toDouble()
                 }
             }
             "spartan" -> {
