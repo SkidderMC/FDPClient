@@ -38,9 +38,10 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage"), "SpoofGround")
+    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage","MotionFlag"), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
     private val minFallDistance = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
+    private val flySpeed = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
 
     private var oldaacState = 0
     private var jumped = false
@@ -140,6 +141,11 @@ class NoFall : Module() {
                     mc.thePlayer.fallDistance = -9999f
                 }
             }
+            "motionflag" -> {
+                if (mc.thePlayer.fallDistance > 3) {
+                    mc.thePlayer.motionY = flySpeed.get()
+                }
+            }
             "spartan" -> {
                 spartanTimer.update()
                 if (mc.thePlayer.fallDistance > 1.5 && spartanTimer.hasTimePassed(10)) {
@@ -170,7 +176,7 @@ class NoFall : Module() {
                 }
                 if (aac5Check && mc.thePlayer.fallDistance > 2.5 && !mc.thePlayer.onGround) {
                     aac5doFlag = true
-                    aac5Timer = 19
+                    aac5Timer = 18
                 } else {
                     if (aac5Timer < 2) aac5doFlag = false
                 }
