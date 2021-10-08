@@ -38,9 +38,10 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage"), "SpoofGround")
+    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage","FlyFlag"), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
     private val minFallDistance = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
+    private val flySpeed = FloatValue("FlySpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("FlyFlag") }
 
     private var oldaacState = 0
     private var jumped = false
@@ -138,6 +139,11 @@ class NoFall : Module() {
                     if (!mc.isIntegratedServerRunning)
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, Double.NaN, mc.thePlayer.posZ, false))
                     mc.thePlayer.fallDistance = -9999f
+                }
+            }
+            "FlyFlag" -> {
+                if (mc.thePlayer.fallDistance > 3) {
+                    mc.thePlayer.motionY = flySpeed.get()
                 }
             }
             "spartan" -> {
