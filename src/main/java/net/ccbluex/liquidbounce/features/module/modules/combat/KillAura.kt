@@ -254,6 +254,15 @@ class KillAura : Module() {
     fun onMotion(event: MotionEvent) {
         if (mc.thePlayer.isRiding)
             return
+        
+        if (target != null && currentTarget != null && ((attackTimingValue.equals("Pre") && event.eventState == EventState.PRE)
+                    || (attackTimingValue.equals("Post") && event.eventState == EventState.POST)
+                    || attackTimingValue.equals("Both") || attackTimingValue.get().equals("All"))) {
+            while (clicks > 0) {
+                runAttack()
+                clicks--
+            }
+        }
 
         if (event.eventState == EventState.POST) {
             // AutoBlock
@@ -274,15 +283,6 @@ class KillAura : Module() {
 
         if (rotationStrafeValue.equals("Off"))
             update()
-
-        if (target != null && currentTarget != null && ((attackTimingValue.equals("Pre") && event.eventState == EventState.PRE)
-                    || (attackTimingValue.equals("Post") && event.eventState == EventState.POST)
-                    || attackTimingValue.equals("Both") || attackTimingValue.get().equals("All"))) {
-            while (clicks > 0) {
-                runAttack()
-                clicks--
-            }
-        }
     }
 
     /**
