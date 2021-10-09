@@ -20,7 +20,7 @@ import java.awt.Color
  * @author liulihaocai
  * InventoryHUD
  */
-@ElementInfo(name = "Inventory")
+@ElementInfo(name = "Inventory", blur = true)
 class Inventory : Element(300.0,50.0,1F, Side(Side.Horizontal.RIGHT,Side.Vertical.UP)) {
     private val bgRedValue = IntegerValue("BGRed", 0, 0, 255)
     private val bgGreenValue = IntegerValue("BGGreen", 0, 0, 255)

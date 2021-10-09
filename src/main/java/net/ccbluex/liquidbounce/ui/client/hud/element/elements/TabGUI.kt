@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -13,7 +8,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbowWithAlpha
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -24,34 +19,33 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-@ElementInfo(name = "TabGUI")
+@ElementInfo(name = "TabGUI", blur = true)
 class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
 
-    private val redValue = IntegerValue("Rectangle Red", 0, 0, 255)
-    private val greenValue = IntegerValue("Rectangle Green", 148, 0, 255)
+    private val redValue = IntegerValue("Rectangle Red", 111, 0, 255)
+    private val greenValue = IntegerValue("Rectangle Green", 111, 0, 255)
     private val blueValue = IntegerValue("Rectangle Blue", 255, 0, 255)
-    private val alphaValue = IntegerValue("Rectangle Alpha", 140, 0, 255)
+    private val alphaValue = IntegerValue("Rectangle Alpha", 255, 0, 255)
     private val rectangleRainbow = BoolValue("Rectangle Rainbow", false)
     private val backgroundRedValue = IntegerValue("Background Red", 0, 0, 255)
     private val backgroundGreenValue = IntegerValue("Background Green", 0, 0, 255)
     private val backgroundBlueValue = IntegerValue("Background Blue", 0, 0, 255)
     private val backgroundAlphaValue = IntegerValue("Background Alpha", 150, 0, 255)
-    private val borderValue = BoolValue("Border", true)
+    private val borderValue = BoolValue("Border", false)
     private val borderStrength = FloatValue("Border Strength", 2F, 1F, 5F)
     private val borderRedValue = IntegerValue("Border Red", 0, 0, 255)
     private val borderGreenValue = IntegerValue("Border Green", 0, 0, 255)
     private val borderBlueValue = IntegerValue("Border Blue", 0, 0, 255)
-    private val borderAlphaValue = IntegerValue("Border Alpha", 150, 0, 255)
+    private val borderAlphaValue = IntegerValue("Border Alpha", 10, 0, 255)
     private val borderRainbow = BoolValue("Border Rainbow", false)
-    private val arrowsValue = BoolValue("Arrows", true)
+    private val arrowsValue = BoolValue("Arrows", false)
     private val fontValue = FontValue("Font", Fonts.font35)
-    private val textShadow = BoolValue("TextShadow", false)
-    private val textFade = BoolValue("TextFade", true)
+    private val textShadow = BoolValue("TextShadow", true)
+    private val textFade = BoolValue("TextFade", false)
     private val textPositionY = FloatValue("TextPosition-Y", 2F, 0F, 5F)
     private val width = FloatValue("Width", 60F, 55F, 100F)
     private val tabHeight = FloatValue("TabHeight", 12F, 10F, 15F)
     private val upperCaseValue = BoolValue("UpperCase", false)
-
     private val tabs = mutableListOf<Tab>()
 
     private var categoryMenu = true
@@ -66,14 +60,14 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
             val tab = Tab(category.displayName)
 
             LiquidBounce.moduleManager.modules
-                    .filter { module: Module -> category == module.category }
-                    .forEach { e: Module -> tab.modules.add(e) }
+                .filter { module: Module -> category == module.category }
+                .forEach { e: Module -> tab.modules.add(e) }
 
             tabs.add(tab)
         }
     }
 
-    override fun drawElement(partialTicks: Float): Border? {
+    override fun drawElement(partialTicks: Float): Border {
         updateAnimation()
 
         val fontRenderer = fontValue.get()
@@ -82,24 +76,25 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
         val color = if (!rectangleRainbow.get())
             Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
         else
-            rainbowWithAlpha(alphaValue.get())
+            ColorUtils.rainbowWithAlpha(alphaValue.get())
 
         val backgroundColor = Color(backgroundRedValue.get(), backgroundGreenValue.get(), backgroundBlueValue.get(),
-                backgroundAlphaValue.get())
+            backgroundAlphaValue.get())
 
         val borderColor = if (!borderRainbow.get())
             Color(borderRedValue.get(), borderGreenValue.get(), borderBlueValue.get(), borderAlphaValue.get())
         else
-            rainbowWithAlpha(borderAlphaValue.get())
+            ColorUtils.rainbowWithAlpha(borderAlphaValue.get())
 
         // Draw
         val guiHeight = tabs.size * tabHeight.get()
 
-        if (borderValue.get())
+        if (borderValue.get()) {
             RenderUtils.drawBorderedRect(1F, 0F, width.get(), guiHeight, borderStrength.get(), borderColor.rgb, backgroundColor.rgb)
-        else
+        } else {
             RenderUtils.drawRect(1F, 0F, width.get(), guiHeight, backgroundColor.rgb)
-        RenderUtils.drawRect(1F, 1 + tabY - 1, width.get(), tabY + tabHeight.get(), color)
+        }
+        // RenderUtils.drawGradientSideways(1.0, (1 + tabY - 1).toDouble(), width.get().toDouble(), (tabY + tabHeight.get()).toDouble(), color.rgb,Color(color.red, color.green,color.blue,50).rgb)
         GlStateManager.resetColor()
 
         var y = 1F
@@ -122,10 +117,10 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
             if (arrowsValue.get()) {
                 if (side.horizontal == Side.Horizontal.RIGHT)
                     fontRenderer.drawString(if (!categoryMenu && selectedCategory == index) ">" else "<", 3F, y + 2F,
-                            0xffffff, textShadow.get())
+                        0xffffff, textShadow.get())
                 else
                     fontRenderer.drawString(if (!categoryMenu && selectedCategory == index) "<" else ">",
-                            width.get() - 8F, y + 2F, 0xffffff, textShadow.get())
+                        width.get() - 8F, y + 2F, 0xffffff, textShadow.get())
             }
 
             if (index == selectedCategory && !categoryMenu) {
@@ -134,16 +129,7 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
                 else
                     width.get() + 5
 
-                tab.drawTab(
-                        tabX,
-                        y,
-                        color.rgb,
-                        backgroundColor.rgb,
-                        borderColor.rgb,
-                        borderStrength.get(),
-                        upperCaseValue.get(),
-                        fontRenderer
-                )
+                tab.drawTab(tabX, y, color.rgb, backgroundColor.rgb, borderColor.rgb, borderStrength.get(), upperCaseValue.get(), fontRenderer)
             }
             y += tabHeight.get()
         }
@@ -289,7 +275,7 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
                 val moduleColor = if (module.state) 0xffffff else Color(205, 205, 205).rgb
 
                 fontRenderer.drawString(if (upperCase) module.name.uppercase() else module.name, x + 2F,
-                        y + tabHeight.get() * index + textPositionY.get(), moduleColor, textShadow.get())
+                    y + tabHeight.get() * index + textPositionY.get(), moduleColor, textShadow.get())
             }
         }
 

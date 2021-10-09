@@ -268,7 +268,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         realHeight += 10
 
         // Values
-        for (value in element.values) {
+        for (value in element.values.filter { it.displayable }) {
             when (value) {
                 is BoolValue -> {
                     // Title

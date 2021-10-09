@@ -17,18 +17,20 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Horizontal
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.Animation
+import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
+import kotlin.math.abs
 
 /**
  * CustomHUD Arraylist element
  *
  * Shows a list of enabled modules
  */
-@ElementInfo(name = "Arraylist")
+@ElementInfo(name = "Arraylist", blur = true)
 class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
 
@@ -123,6 +125,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
                     val rectX=xPos - if (rectMode.equals("right", true)) 5 else 2
+                    blur(rectX-backgroundExpand.get(), yPos, if (rectMode.equals("right", true)) -3F else 0F, yPos + textHeight)
                     RenderUtils.drawRect(
                         rectX-backgroundExpand.get(),
                         yPos,
@@ -218,6 +221,7 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
                         module.yPos=realYPos
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
+                    blur(0F, yPos, xPos + module.width + if (rectMode.equals("right", true)) 5 else 2 + backgroundExpand.get(), yPos + textHeight)
                     RenderUtils.drawRect(
                         0F,
                         yPos,
@@ -313,4 +317,6 @@ class Arraylist(x: Double = 5.0, y: Double = 5.0, scale: Float = 1F,
             .filter { it.array && !shouldExpect(it) && (it.state || it.slide > 0 || !(it.yPosAnimation==null || it.yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED)) }
             .sortedBy { -it.width }
     }
+
+    override fun drawBoarderBlur(blurRadius: Float) {}
 }

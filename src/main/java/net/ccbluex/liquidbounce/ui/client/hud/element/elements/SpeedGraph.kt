@@ -17,7 +17,7 @@ import kotlin.math.sqrt
  *
  * Allows to draw custom text
  */
-@ElementInfo(name = "SpeedGraph")
+@ElementInfo(name = "SpeedGraph", blur = true)
 class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
                  side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
 

@@ -32,7 +32,7 @@ import kotlin.math.sqrt
  *
  * Allows to draw custom text
  */
-@ElementInfo(name = "Text")
+@ElementInfo(name = "Text", blur = true)
 class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
            side: Side = Side.default()) : Element(x, y, scale, side) {
 

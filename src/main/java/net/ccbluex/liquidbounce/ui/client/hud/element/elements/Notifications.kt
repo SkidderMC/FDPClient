@@ -12,8 +12,10 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.IntegerValue
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
@@ -21,9 +23,11 @@ import kotlin.math.max
 /**
  * CustomHUD Notification element
  */
-@ElementInfo(name = "Notifications")
+@ElementInfo(name = "Notifications", blur = true)
 class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
                     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
+
+    private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
 
     /**
      * Example notification for CustomHUD designer
@@ -38,7 +42,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
         LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
-            if(notify.drawNotification(index)){
+            if(notify.drawNotification(index, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale)){
                 LiquidBounce.hud.notifications.remove(notify)
             }
 
@@ -59,6 +63,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
         return null
     }
 
+    override fun drawBoarderBlur(blurRadius: Float) {}
 }
 
 class Notification(val title: String, val content: String, val type: NotifyType, val time: Int=1500, val animeTime: Int=500) {
@@ -75,9 +80,10 @@ class Notification(val title: String, val content: String, val type: NotifyType,
     /**
      * Draw notification
      */
-    fun drawNotification(index: Int):Boolean {
+    fun drawNotification(index: Int, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float):Boolean {
         val realY=-(index+1)*height
         val nowTime=System.currentTimeMillis()
+        var transY=nowY.toDouble()
 
         //Y-Axis Animation
         if(nowY!=realY){
@@ -88,11 +94,10 @@ class Notification(val title: String, val content: String, val type: NotifyType,
             }else{
                 pct=EaseUtils.easeOutExpo(pct)
             }
-            GL11.glTranslated(0.0,(realY-nowY)*pct,0.0)
+            transY+=(realY-nowY)*pct
         }else{
             animeYTime=nowTime
         }
-        GL11.glTranslated(0.0,nowY.toDouble(),0.0)
 
         //X-Axis Animation
         var pct=(nowTime-animeXTime)/animeTime.toDouble()
@@ -127,16 +132,18 @@ class Notification(val title: String, val content: String, val type: NotifyType,
                 return true
             }
         }
-        GL11.glTranslated(width-(width*pct),0.0,0.0)
-        GL11.glTranslatef(-width.toFloat(),0F,0F)
+        val transX=width-(width*pct)-width
+        GL11.glTranslated(transX,transY,0.0)
+
+        if(blurRadius != 0f)
+            BlurUtils.draw((x+transX).toFloat()*scale, (y+transY).toFloat()*scale, width*scale, height*scale, blurRadius)
 
         //draw notify
 //        GL11.glPushMatrix()
 //        GL11.glEnable(GL11.GL_SCISSOR_TEST)
 //        GL11.glScissor(width-(width*pct).toFloat(),0F, width.toFloat(),height.toFloat())
-        RenderUtils.drawRect(0F,0F,width.toFloat(),height.toFloat(),Color(0,0,0,144))
-        RenderUtils.drawRect(0F,height-2F,
-            max(width-width*((nowTime-displayTime)/(animeTime*2F+time)),0F),height.toFloat(),type.renderColor)
+        RenderUtils.drawRect(0F,0F,width.toFloat(),height.toFloat(),Color(0,0,0,alpha))
+        RenderUtils.drawRect(0F,height-2F, max(width-width*((nowTime-displayTime)/(animeTime*2F+time)),0F),height.toFloat(),type.renderColor)
         Fonts.font35.drawString(title,4F,4F,Color.WHITE.rgb)
         Fonts.font35.drawString(content,4F,17F,Color.WHITE.rgb)
 

@@ -59,6 +59,9 @@ open class HUD : MinecraftInstance() {
             GL11.glTranslated(element.renderX, element.renderY, 0.0)
 
             try {
+                if(element.info.blur)
+                    element.drawBoarderBlur()
+
                 element.border = element.drawElement(partialTicks)
 
                 if (designer)

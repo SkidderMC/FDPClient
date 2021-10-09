@@ -7,9 +7,12 @@ package net.ccbluex.liquidbounce.ui.client.hud.element
 
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.Value
 import net.minecraft.client.gui.ScaledResolution
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -61,11 +64,13 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, var scale: Floa
     var prevMouseX = 0F
     var prevMouseY = 0F
 
+    protected val blurValue = FloatValue("Blur", 0f, 0f, 100f).displayable { info.blur }
+
     /**
      * Get all values of element
      */
     open val values: List<Value<*>>
-        get() = ClassUtils.getValues(this.javaClass, this)
+        get() = ClassUtils.getValues(this.javaClass, this).toMutableList().also { it.add(blurValue) }
 
     /**
      * Called when element created
@@ -103,6 +108,28 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, var scale: Floa
     }
 
     /**
+     * render a blur effect at the boarder
+     */
+    open fun drawBoarderBlur(blurRadius: Float = blurValue.get()){
+        if(border==null || blurRadius==0f || border!!.size==0f)
+            return
+
+        val posX = this.renderX.toFloat() + border!!.x.coerceAtMost(border!!.x2)
+        val posY = this.renderY.toFloat() + border!!.y.coerceAtMost(border!!.y2)
+        val width = abs(border!!.x2 - border!!.x)
+        val height = abs(border!!.y2 - border!!.y)
+
+        BlurUtils.draw(posX*scale, posY*scale, width*scale, height*scale, blurRadius)
+    }
+
+    protected fun blur(x: Float, y: Float, x2: Float, y2: Float){
+        if(blurValue.get() == 0f)
+            return
+
+        BlurUtils.draw((renderX+(x.coerceAtMost(x2))).toFloat()*scale, (renderY+(y.coerceAtMost(y2))).toFloat()*scale, abs(x2-x)*scale, abs(y2-y)*scale, blurValue.get())
+    }
+
+    /**
      * Called when mouse clicked
      */
     open fun handleMouseClick(x: Double, y: Double, mouseButton: Int) {}
@@ -118,7 +145,7 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, var scale: Floa
  * Element info
  */
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-annotation class ElementInfo(val name: String)
+annotation class ElementInfo(val name: String, val blur: Boolean = false)
 
 /**
  * CustomHUD Side
@@ -178,6 +205,8 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
  * Border of element
  */
 data class Border(val x: Float, val y: Float, val x2: Float, val y2: Float) {
+
+    val size = abs(x2-x) * abs(y2-y)
 
     fun draw() = RenderUtils.drawBorderedRect(x, y, x2, y2, 3F, Int.MIN_VALUE, 0)
 

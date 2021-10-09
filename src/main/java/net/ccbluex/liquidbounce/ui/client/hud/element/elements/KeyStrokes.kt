@@ -5,6 +5,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -17,7 +18,7 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-@ElementInfo(name = "KeyStrokes")
+@ElementInfo(name = "KeyStrokes", blur = true)
 class KeyStrokes : Element(5.0,25.0,1.25F, Side.default()) {
     private val keys=ArrayList<KeyStroke>()
 
@@ -54,11 +55,13 @@ class KeyStrokes : Element(5.0,25.0,1.25F, Side.default()) {
         }
 
         for(keyStroke in keys){
-            keyStroke.render(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get())
+            keyStroke.render(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale)
         }
 
         return Border(0F,0F,47F,47F)
     }
+
+    override fun drawBoarderBlur(blurRadius: Float) {}
 }
 
 class KeyStroke(val key:KeyBinding,val posX:Int,val posY:Int, val width:Int, val height:Int){
@@ -67,9 +70,12 @@ class KeyStroke(val key:KeyBinding,val posX:Int,val posY:Int, val width:Int, val
     private var lastClick=false
     private val animations=ArrayList<Long>()
 
-    fun render(speed: Int, bgColor: Color, textColor: Color, highLightPct: Float, outline: Boolean, outlineBold: Int, font: FontRenderer){
+    fun render(speed: Int, bgColor: Color, textColor: Color, highLightPct: Float, outline: Boolean, outlineBold: Int, font: FontRenderer, blurRadius: Float, renderX: Float, renderY: Float, scale: Float){
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(),posY.toFloat(),0F)
+
+        if(blurRadius != 0f)
+            BlurUtils.draw((renderX+posX)*scale, (renderY+posY)*scale, width*scale, height*scale, blurRadius)
 
         val highLightColor=Color(255-((255-bgColor.red)*highLightPct).toInt(),255-((255-bgColor.blue)*highLightPct).toInt(),255-((255-bgColor.green)*highLightPct).toInt())
         val clickAlpha=255-(255-bgColor.alpha)*highLightPct
