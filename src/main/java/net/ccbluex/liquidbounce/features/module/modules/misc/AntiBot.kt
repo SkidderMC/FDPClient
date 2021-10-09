@@ -31,8 +31,6 @@ object AntiBot : Module() {
     private val livingTimeValue = BoolValue("LivingTime", false)
     private val livingTimeTicksValue = IntegerValue("LivingTimeTicks", 40, 1, 200).displayable { livingTimeValue.get() }
     private val groundValue = BoolValue("Ground", true)
-    private val matrixBotValue = BoolValue("MatrixBot", false)
-    private val matrixBot2Value = BoolValue("MatrixBot2", false)
     private val airValue = BoolValue("Air", false)
     private val invalidGroundValue = BoolValue("InvalidGround", true)
     private val swingValue = BoolValue("Swing", false)
@@ -53,8 +51,6 @@ object AntiBot : Module() {
     private val alwaysInRadiusWithTicksCheckValue = BoolValue("AlwaysInRadiusWithTicksCheck", false).displayable { alwaysInRadiusValue.get() && livingTimeValue.get()}
 
     private val ground = mutableListOf<Int>()
-    private val raped = mutableListOf<Int>()
-    private val matrsxed = mutableListOf<Int>()
     private val air = mutableListOf<Int>()
     private val invalidGround = mutableMapOf<Int, Int>()
     private val swing = mutableListOf<Int>()
@@ -84,12 +80,6 @@ object AntiBot : Module() {
             return true
 
         if (groundValue.get() && !ground.contains(entity.entityId))
-            return true
-
-        if (matrixBotValue.get() && !raped.contains(entity.entityId))
-            return true
-
-        if (matrixBot2Value.get() && matrsxed.contains(entity.entityId))
             return true
 
         if (airValue.get() && !air.contains(entity.entityId))
@@ -180,12 +170,6 @@ object AntiBot : Module() {
                 if (packet.onGround && !ground.contains(entity.entityId))
                     ground.add(entity.entityId)
 
-                if (entity.hurtResistantTime > 5 && !raped.contains(entity.entityId))
-                    raped.add(entity.entityId)
-
-                if (entity.hurtTime >= 9 && entity.hurtResistantTime < 3 && !matrsxed.contains(entity.entityId))
-                    matrsxed.add(entity.entityId)
-
                 if (!packet.onGround && !air.contains(entity.entityId))
                     air.add(entity.entityId)
 
@@ -260,12 +244,10 @@ object AntiBot : Module() {
         hitted.clear()
         swing.clear()
         ground.clear()
-        raped.clear()
         invalidGround.clear()
         invisible.clear()
         lastDamage.clear()
         lastDamageVl.clear()
-        matrsxed.clear()
         notAlwaysInRadius.clear()
         duplicate.clear()
     }
