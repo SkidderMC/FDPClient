@@ -43,7 +43,7 @@ class AACLowHop3 : SpeedMode("AACLowHop3") {
         }
 
         val speed = MovementUtils.getSpeed().toDouble()
-        mc.thePlayer.motionX = -(sin(MovementUtils.getDirection()) * speed)
-        mc.thePlayer.motionZ = cos(MovementUtils.getDirection()) * speed
+        mc.thePlayer.motionX = -(sin(MovementUtils.direction) * speed)
+        mc.thePlayer.motionZ = cos(MovementUtils.direction) * speed
     }
 }

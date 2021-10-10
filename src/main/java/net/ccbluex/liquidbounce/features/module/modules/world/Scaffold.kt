@@ -861,7 +861,7 @@ class Scaffold : Module() {
                     Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
                 "test2" -> {
-                    Rotation(((MovementUtils.getDirection() * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
+                    Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
                 }
                 "custom" -> {
                     Rotation(mc.thePlayer.rotationYaw + customYaw.get(), customPitch.get().toFloat())
