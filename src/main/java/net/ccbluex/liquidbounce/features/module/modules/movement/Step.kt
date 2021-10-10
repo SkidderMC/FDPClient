@@ -176,7 +176,7 @@ class Step : Module() {
                     }
 
                     ncpNextStep == 2 -> {
-                        val yaw = MovementUtils.getDirection()
+                        val yaw = MovementUtils.direction
 
                         event.y = 1.001335979112147 - 0.7531999805212
                         event.x = -sin(yaw) * 0.7
@@ -207,20 +207,6 @@ class Step : Module() {
                             (event.stepHeight>1.5-0.015625 && event.stepHeight<1.5+0.015625)||
                             (event.stepHeight>2.0-0.015625 && event.stepHeight<2.0+0.015625))) {
                     event.stepHeight=0F
-                    return
-                }
-            }
-            // Some fly modes should disable step
-            val fly = LiquidBounce.moduleManager[Fly::class.java]!!
-            if (fly.state) {
-                val flyMode = fly.modeValue.get()
-
-                if (flyMode.equals("Hypixel", ignoreCase = true) ||
-                    flyMode.equals("OtherHypixel", ignoreCase = true) ||
-                    flyMode.equals("LatestHypixel", ignoreCase = true) ||
-                    flyMode.equals("Rewinside", ignoreCase = true) ||
-                    flyMode.equals("Mineplex", ignoreCase = true) && mc.thePlayer.inventory.getCurrentItem() == null) {
-                    event.stepHeight = 0F
                     return
                 }
             }
@@ -392,7 +378,7 @@ class Step : Module() {
     }
 
     private fun couldStep(): Boolean {
-        val yaw = MovementUtils.getDirection()
+        val yaw = MovementUtils.direction
         val x = -sin(yaw) * 0.32
         val z = cos(yaw) * 0.32
 

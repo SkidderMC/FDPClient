@@ -6,10 +6,12 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.MoveEvent
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.AxisAlignedBB
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+
 
 object MovementUtils : MinecraftInstance() {
     @JvmStatic
@@ -40,7 +42,7 @@ object MovementUtils : MinecraftInstance() {
     @JvmStatic
     fun strafe(speed: Float) {
         if (!isMoving()) return
-        val yaw = getDirection()
+        val yaw = direction
         mc.thePlayer.motionX = -sin(yaw) * speed
         mc.thePlayer.motionZ = cos(yaw) * speed
     }
@@ -48,14 +50,14 @@ object MovementUtils : MinecraftInstance() {
     @JvmStatic
     fun move(speed: Float) {
         if (!isMoving()) return
-        val yaw = getDirection()
+        val yaw = direction
         mc.thePlayer.motionX += -sin(yaw) * speed
         mc.thePlayer.motionZ += cos(yaw) * speed
     }
 
     @JvmStatic
     fun limitSpeed(speed: Float) {
-        val yaw = getDirection()
+        val yaw = direction
         val maxXSpeed = -sin(yaw) * speed
         val maxZSpeed = cos(yaw) * speed
         if (mc.thePlayer.motionX > maxZSpeed) {
@@ -82,16 +84,16 @@ object MovementUtils : MinecraftInstance() {
         mc.thePlayer.setPosition(mc.thePlayer.posX + -sin(yaw) * length, mc.thePlayer.posY, mc.thePlayer.posZ + cos(yaw) * length)
     }
 
-    @JvmStatic
-    fun getDirection(): Double {
-        var rotationYaw = mc.thePlayer.rotationYaw
-        if (mc.thePlayer.moveForward < 0f) rotationYaw += 180f
-        var forward = 1f
-        if (mc.thePlayer.moveForward < 0f) forward = -0.5f else if (mc.thePlayer.moveForward > 0f) forward = 0.5f
-        if (mc.thePlayer.moveStrafing > 0f) rotationYaw -= 90f * forward
-        if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward
-        return Math.toRadians(rotationYaw.toDouble())
-    }
+    val direction: Double
+        get() {
+            var rotationYaw = mc.thePlayer.rotationYaw
+            if (mc.thePlayer.moveForward < 0f) rotationYaw += 180f
+            var forward = 1f
+            if (mc.thePlayer.moveForward < 0f) forward = -0.5f else if (mc.thePlayer.moveForward > 0f) forward = 0.5f
+            if (mc.thePlayer.moveStrafing > 0f) rotationYaw -= 90f * forward
+            if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward
+            return Math.toRadians(rotationYaw.toDouble())
+        }
 
     var bps = 0.0
         private set
@@ -171,7 +173,6 @@ object MovementUtils : MinecraftInstance() {
         }
     }
 
-    @JvmStatic
     fun calculateGround(): Double {
         val playerBoundingBox = mc.thePlayer.entityBoundingBox
         var blockHeight = 1.0
@@ -186,5 +187,25 @@ object MovementUtils : MinecraftInstance() {
             ground -= blockHeight
         }
         return 0.0
+    }
+
+    fun handleVanillaKickBypass() {
+        val ground = calculateGround()
+        run {
+            var posY = mc.thePlayer.posY
+            while (posY > ground) {
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, posY, mc.thePlayer.posZ, true))
+                if (posY - 8.0 < ground) break // Prevent next step
+                posY -= 8.0
+            }
+        }
+        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, ground, mc.thePlayer.posZ, true))
+        var posY = ground
+        while (posY < mc.thePlayer.posY) {
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, posY, mc.thePlayer.posZ, true))
+            if (posY + 8.0 > mc.thePlayer.posY) break // Prevent next step
+            posY += 8.0
+        }
+        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
     }
 }
