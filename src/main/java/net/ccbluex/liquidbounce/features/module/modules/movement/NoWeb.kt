@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 @ModuleInfo(name = "NoWeb", category = ModuleCategory.MOVEMENT)
 class NoWeb : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside","Horizon", "Spartan", "AAC4", "AAC5", "OldMatrix", "Test"), "None")
+    private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside","Horizon", "Spartan", "AAC4", "AAC5", "Matrix", "Test"), "None")
     private val horizonSpeed = FloatValue("HorizonSpeed", 0.1F, 0.01F, 0.8F)
     
      private var usedTimer = false
@@ -76,13 +76,17 @@ class NoWeb : Module() {
                 }
                 usedTimer = true
             }
-            "oldmatrix" -> {
-                mc.thePlayer.jumpMovementFactor = 0.124133333f
+            "matrix" -> {
+                mc.thePlayer.jumpMovementFactor = 0.12425f
                 mc.thePlayer.motionY = -0.0125
                 if (mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY = -0.1625
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
                     mc.thePlayer.motionY = 0.2425
+                }
+                if(mc.thePlayer.ticksExisted % 40 == 0){
+                    mc.timer.timerSpeed = 3.0F
+                    usedTimer = true
                 }
             }
             "aac5" -> {
