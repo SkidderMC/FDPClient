@@ -63,6 +63,7 @@ class InfiniteAura : Module() {
     }
 
     override fun onDisable() {
+        stopBlocking()
         timer.reset()
         points.clear()
     }
