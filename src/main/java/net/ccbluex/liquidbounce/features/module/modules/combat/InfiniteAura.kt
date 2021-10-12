@@ -44,8 +44,8 @@ class InfiniteAura : Module() {
     private val noRegen=BoolValue("NoRegen",true)
     private val tpBack=BoolValue("TPBack",true)
     private val doSwing=BoolValue("Swing",true).displayable { modeValue.equals("Aura") }
-    private val AutoBlock=BoolValue("AutoBlock",true).displayable { modeValue.equals("Aura") }
-    private val voidCheck=BoolValue("VoidCheck",true)
+    //private val AutoBlock=BoolValue("AutoBlock",true).displayable { modeValue.equals("Aura") }
+    private val voidCheck=BoolValue("IgnoreInVoid",true)
     private val path=BoolValue("PathRender",true)
 
     private val timer=MSTimer()
@@ -112,9 +112,9 @@ class InfiniteAura : Module() {
                 targets.add(entity)
             }
         }
-        stopBlocking()
+        //stopBlocking()
         if(targets.size==0) return
-        startBlocking()
+        //startBlocking()
         targets.sortBy { mc.thePlayer.getDistanceToEntity(it) }
         var count=0
         val playerPos=Vec3(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
@@ -127,6 +127,8 @@ class InfiniteAura : Module() {
             hit(entity)
         }
     }
+    
+    /*
     private fun startBlocking() {
 
         if(blockingStatus)
@@ -136,14 +138,15 @@ class InfiniteAura : Module() {
         blockingStatus = true
     }
 
-
+    
     private fun stopBlocking() {
         if (blockingStatus) {
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, if(MovementUtils.isMoving()) BlockPos(-1,-1,-1) else BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
         }
     }
-
+    */
+    
     private fun isVoid(entity: Entity): Boolean {
         if (entity.posY < 0.0) {
             return true
