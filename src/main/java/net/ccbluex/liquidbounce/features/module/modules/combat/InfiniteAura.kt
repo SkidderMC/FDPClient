@@ -63,7 +63,7 @@ class InfiniteAura : Module() {
     }
 
     override fun onDisable() {
-        stopBlocking()
+        //stopBlocking()
         timer.reset()
         points.clear()
     }
@@ -168,7 +168,7 @@ class InfiniteAura : Module() {
         if(isVoid(entity) && voidCheck.get())
             return;
 
-        startBlocking()
+        //startBlocking()
 
         val path= PathUtils.findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,entity.posX,entity.posY,entity.posZ,moveDistanceValue.get().toDouble())
 
