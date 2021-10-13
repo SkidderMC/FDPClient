@@ -48,4 +48,32 @@ Mixins can be used to modify classes at runtime before they are loaded. FDPClien
 Ultralight is a HTML renderer and can be works with LWJGL. If you want to learn more about it, check out its [repo](https://github.com/labymod/ultralight-java)
 
 ## Contributing
-We appreciate contributions. So if you want to support us, feel free to make changes to FDPClient's source code and submit a pull request.
+We are welcome for your contributing, but you have to follow these rules to make us merge your pull request.
+
+### Language and Code Quality
+First of all, your code at least can be build, and make bugs as less as you can!   
+And we want to use kotlin features to make coding easier and faster, please use kotlin and make the [Detekt](https://github.com/detekt/detekt) code quality check good and use kotlin features if you can **\***, we never merge shitcode.
+
+#### Kotlin features
+Usage of kotlin features and help enhance the code readability    
+kotlin feature examples
+~~~kotlin
+Timer().schedule(2000L) { 
+    // your code
+}
+~~~
+not using kotlin feature
+~~~kotlin
+Timer().schedule(object : TimerTask(){
+    override fun run() {
+        // your code
+    }
+},2000L)
+~~~
+
+### Skid codes
+Please use original code if you can, and no direct code steals, but we welcome skid using packet logger or anything else like that to skid from a close source and make the cheating community more open!
+
+### Useless features
+Useless features means feature only you think its usable ,or feature can be have with config change.  
+Like the "TimerSpeed" option to InfiniteAura, this feature can be added with bind Timer to the key with InfiniteAura, or use macro system in FDP Client.
