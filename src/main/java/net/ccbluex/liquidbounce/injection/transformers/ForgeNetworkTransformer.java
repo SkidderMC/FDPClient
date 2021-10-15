@@ -29,6 +29,9 @@ public class ForgeNetworkTransformer implements IClassTransformer {
      */
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if(System.getProperty("dev-mode")!=null)
+            return basicClass;
+
         if(name.equals("net.minecraftforge.fml.common.network.handshake.NetworkDispatcher")) {
             try {
                 final ClassNode classNode = ClassUtils.INSTANCE.toClassNode(basicClass);

@@ -24,12 +24,8 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.entity.Entity
-import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -42,16 +38,12 @@ class InfiniteAura : Module() {
     private val distValue=IntegerValue("Distance",30,20,100)
     private val moveDistanceValue=FloatValue("MoveDistance",5F,2F,15F)
     private val noRegen=BoolValue("NoRegen",true)
-    private val tpBack=BoolValue("TPBack",true)
     private val doSwing=BoolValue("Swing",true).displayable { modeValue.equals("Aura") }
-    //private val AutoBlock=BoolValue("AutoBlock",true).displayable { modeValue.equals("Aura") }
-    private val voidCheck=BoolValue("IgnoreInVoid",true)
     private val path=BoolValue("PathRender",true)
 
     private val timer=MSTimer()
     private var points=ArrayList<Vec3>()
     private var thread: Thread? = null
-    var blockingStatus = false
 
     private fun getDelay():Int{
         return 1000/cpsValue.get()
@@ -63,7 +55,6 @@ class InfiniteAura : Module() {
     }
 
     override fun onDisable() {
-        //stopBlocking()
         timer.reset()
         points.clear()
     }
@@ -112,9 +103,7 @@ class InfiniteAura : Module() {
                 targets.add(entity)
             }
         }
-        //stopBlocking()
         if(targets.size==0) return
-        //startBlocking()
         targets.sortBy { mc.thePlayer.getDistanceToEntity(it) }
         var count=0
         val playerPos=Vec3(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
@@ -127,49 +116,8 @@ class InfiniteAura : Module() {
             hit(entity)
         }
     }
-    
-    /*
-    private fun startBlocking() {
-
-        if(blockingStatus)
-            return
-
-        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
-        blockingStatus = true
-    }
-
-    
-    private fun stopBlocking() {
-        if (blockingStatus) {
-            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, if(MovementUtils.isMoving()) BlockPos(-1,-1,-1) else BlockPos.ORIGIN, EnumFacing.DOWN))
-            blockingStatus = false
-        }
-    }
-    */
-    
-    private fun isVoid(entity: Entity): Boolean {
-        if (entity.posY < 0.0) {
-            return true
-        }
-        var off = 0
-        while (off < entity.posY.toInt() + 2) {
-            val bb: AxisAlignedBB = mc.thePlayer.entityBoundingBox.offset(entity.posX.toDouble(), (-off).toDouble(), entity.posZ.toDouble())
-            if (mc.theWorld!!.getCollidingBoundingBoxes(entity as Entity, bb).isEmpty()) {
-                off += 2
-                continue
-            }
-            return false
-            off += 2
-        }
-        return true
-    }
 
     private fun hit(entity: EntityLivingBase){
-        if(isVoid(entity) && voidCheck.get())
-            return;
-
-        //startBlocking()
-
         val path= PathUtils.findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,entity.posX,entity.posY,entity.posZ,moveDistanceValue.get().toDouble())
 
         path.forEach {
@@ -190,13 +138,10 @@ class InfiniteAura : Module() {
             mc.netHandler.addToSendQueue(C0APacketAnimation())
         }
         mc.playerController.attackEntity(mc.thePlayer,entity)
-        if(tpBack.get()){
+
         for(i in path.size-1 downTo 0){
             val vec=path[i]
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec.xCoord,vec.yCoord,vec.zCoord,true))
-        }
-        }else{
-        	mc.thePlayer.setPositionAndUpdate(path[path.size].xCoord, path[path.size].yCoord, path[path.size].zCoord);
         }
     }
 
