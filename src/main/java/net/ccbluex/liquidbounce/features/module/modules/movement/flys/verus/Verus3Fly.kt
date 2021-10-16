@@ -22,8 +22,4 @@ class Verus3Fly : FlyMode("Verus3") {
         if(event.block is BlockAir && event.y<=fly.launchY)
             event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, fly.launchY, event.z + 1.0)
     }
-
-    override fun onJump(event: JumpEvent) {
-        event.cancelEvent()
-    }
 }
