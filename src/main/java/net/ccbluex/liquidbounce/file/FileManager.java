@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.file;
 
 import com.google.gson.*;
+import kotlin.collections.ArraysKt;
+import kotlin.io.FilesKt;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.macro.Macro;
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType;
@@ -43,6 +45,8 @@ public class FileManager extends MinecraftInstance {
 
     public static final Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    private final String[] allowedCacheFolderName=new String[]{"ultralight"};
+
     /**
      * Constructor of file manager
      * Setup everything important
@@ -72,8 +76,15 @@ public class FileManager extends MinecraftInstance {
         if(!capesDir.exists())
             capesDir.mkdir();
 
-        if(!cacheDir.exists())
+        if(!cacheDir.exists()) {
             cacheDir.mkdirs();
+        }else{
+            for(File file : cacheDir.listFiles()) {
+                if(!ArraysKt.contains(allowedCacheFolderName, file.getName())){
+                    FilesKt.deleteRecursively(file); // nooo i want to use kotlin
+                }
+            }
+        }
     }
 
     /**
