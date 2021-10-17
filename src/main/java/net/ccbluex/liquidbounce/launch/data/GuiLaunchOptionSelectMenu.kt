@@ -17,6 +17,9 @@ class GuiLaunchOptionSelectMenu : GuiScreen() {
 
         drawCenteredString(mc.fontRendererObj, "Select",  width/2, height/2 - 40, Color.WHITE.rgb)
 
+        mc.fontRendererObj.drawString(LiquidBounce.CLIENT_NAME, 3F, (height - mc.fontRendererObj.FONT_HEIGHT -2).toFloat(), 0xffffff,  false)
+        mc.fontRendererObj.drawString(LiquidBounce.CLIENT_VERSION, (this.width - mc.fontRendererObj.getStringWidth(LiquidBounce.CLIENT_VERSION) - 3).toFloat(), (height - mc.fontRendererObj.FONT_HEIGHT - 2).toFloat(), 0xffffff, false)
+
         super.drawScreen(mouseX, mouseY, pTicks)
     }
 

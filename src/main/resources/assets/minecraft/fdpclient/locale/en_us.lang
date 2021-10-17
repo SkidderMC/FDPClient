@@ -424,8 +424,8 @@ module.Teleport.description=Allows you to teleport around
 module.Timer.name=Timer
 module.Timer.description=Changes the speed of the entire game
 
-module.ToggleSound.name=ToggleSound
-module.ToggleSound.description=Play a sound when you toggle modules
+module.Modules.name=Modules
+module.Modules.description=Change global module settings
 
 module.Tracers.name=Tracers
 module.Tracers.description=Draws a line to targets around you

@@ -424,9 +424,6 @@ module.Teleport.description=让你能够传送
 module.Timer.name=变速齿轮
 module.Timer.description=改变游戏速度
 
-module.ToggleSound.name=开启音效
-module.ToggleSound.description=在开关模块时播放音效
-
 module.Tracers.name=连线透视
 module.Tracers.description=绘制一条线到目标
 

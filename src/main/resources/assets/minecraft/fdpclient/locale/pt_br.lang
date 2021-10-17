@@ -424,9 +424,6 @@ module.Teleport.description=Permite que você se teletransporte
 module.Timer.name=TempoDoJogo
 module.Timer.description=Altera a velocidade de todo o jogo
 
-module.ToggleSound.name=TrocarSons
-module.ToggleSound.description=Tocar um som quando você alternar os módulos
-
 module.Tracers.name=Rastreadores
 module.Tracers.description=Desenha uma linha nos alvos ao seu redor
 
