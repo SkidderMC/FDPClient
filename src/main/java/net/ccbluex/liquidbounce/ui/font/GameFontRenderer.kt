@@ -63,10 +63,14 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         val text=LanguageManager.replace(rawText)
 
         GlStateManager.translate(x - 1.5, y + 0.5, 0.0)
+
+        GlStateManager.enableColorMaterial()
         GlStateManager.enableAlpha()
+        GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-        GlStateManager.enableTexture2D()
+        GL11.glEnable(GL11.GL_POLYGON_SMOOTH)
+        GL11.glDisable(GL11.GL_CULL_FACE) // 不要剔除模型的背面
 
         var hexColor = colorHex
         if (hexColor and -67108864 == 0)
@@ -153,11 +157,16 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                     width += currentFont.getStringWidth(words)
                 }
             }
-        } else
+        } else {
             defaultFont.drawString(text, 0.0, 0.0, hexColor)
+        }
 
+        GL11.glEnable(GL11.GL_CULL_FACE)
+        GL11.glDisable(GL11.GL_POLYGON_SMOOTH)
         GlStateManager.disableBlend()
+        GlStateManager.enableTexture2D()
         GlStateManager.translate(-(x - 1.5), -(y + 0.5), 0.0)
+        GlStateManager.resetColor()
         GlStateManager.color(1f, 1f, 1f, 1f)
 
         return (x + getStringWidth(text)).toInt()
