@@ -35,23 +35,6 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
     private boolean translated = false;
 
-    @Inject(method = "initGui", at = @At("RETURN"), cancellable = true)
-    public void injectInitGui(CallbackInfo callbackInfo) {
-        GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
-        if (guiScreen instanceof GuiChest) {
-            buttonList.add(new GuiButton(114514, this.width / 2 - 100, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable", "%module.KillAura.name%")));
-            buttonList.add(new GuiButton(1919810, this.width / 2 + 1, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable", "%module.ChestStealer.name%")));
-        }
-    }
-
-    @Override
-    protected void actionPerformed(GuiButton button) {
-        if (button.id == 114514)
-            LiquidBounce.moduleManager.getModule(KillAura.class).setState(false);
-        if (button.id == 1919810)
-            LiquidBounce.moduleManager.getModule(ChestStealer.class).setState(false);
-    }
-
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo) {
         ChestStealer chestStealer = LiquidBounce.moduleManager.getModule(ChestStealer.class);

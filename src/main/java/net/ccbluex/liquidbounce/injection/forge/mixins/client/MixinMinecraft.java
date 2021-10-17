@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 import com.guimc.fuckpcl.PCLChecker;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
@@ -19,8 +20,10 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
@@ -139,9 +142,9 @@ public abstract class MixinMinecraft {
         LiquidBounce.eventManager.callEvent(new TickEvent());
     }
 
-    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V", shift = At.Shift.AFTER))
+    @Inject(method = "dispatchKeypresses", at = @At(value = "HEAD"))
     private void onKey(CallbackInfo callbackInfo) {
-        if(Keyboard.getEventKeyState() && currentScreen == null)
+        if(Keyboard.getEventKeyState() && (currentScreen == null || (Modules.INSTANCE.getToggleIgnoreScreenValue().get() && this.currentScreen instanceof GuiContainer)))
             LiquidBounce.eventManager.callEvent(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
     }
 
