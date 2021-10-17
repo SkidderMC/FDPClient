@@ -7,14 +7,16 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.AxisAlignedBB
 
 class VerusFly : FlyMode("Verus") {
+    private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 3f)
+
     private var flyable=false
-    private var enabled=false
     private val timer=MSTimer()
 
     override fun onEnable() {
@@ -26,8 +28,8 @@ class VerusFly : FlyMode("Verus") {
         mc.thePlayer.motionZ = 0.0
         mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ)
         flyable = true
-        enabled = true
         timer.reset()
+        fly.launchY+=0.42
     }
 
     override fun onUpdate(event: UpdateEvent) {
@@ -35,12 +37,7 @@ class VerusFly : FlyMode("Verus") {
             flyable=false
 
         if(flyable&&timer.hasTimePassed(100)){
-            MovementUtils.strafe(1.5F)
-            if(enabled){
-                fly.launchY+=0.42
-                enabled=false
-                mc.thePlayer.motionY=0.0
-            }
+            MovementUtils.strafe(speedValue.get())
         }else if(!timer.hasTimePassed(100)) {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionY = 0.0
