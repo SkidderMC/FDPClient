@@ -457,3 +457,6 @@ module.Skeletal.description=ESP like skeletons
 module.Spider.name=Spider
 module.Spider.description=Makes you move like a spider
 
+module.NoAchievements.name=NoAchievements
+module.NoAchievements.description=Disable alert when you earn a achievement
+
