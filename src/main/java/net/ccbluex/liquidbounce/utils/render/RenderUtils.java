@@ -34,7 +34,6 @@ import org.lwjgl.util.glu.GLUtessellator;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

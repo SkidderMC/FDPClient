@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.verus
 
 import net.ccbluex.liquidbounce.event.BlockBBEvent
-import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
