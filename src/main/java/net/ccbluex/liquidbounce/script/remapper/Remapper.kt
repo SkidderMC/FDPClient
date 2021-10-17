@@ -22,9 +22,9 @@ object Remapper {
      */
     fun loadSrg() {
         // Load srg
-        ClientUtils.getLogger().info("[Remapper] Loading srg...")
+        ClientUtils.logInfo("[Remapper] Loading srg...")
         parseSrg(IOUtils.readLines(Remapper::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/scriptapi/mcp-stable_22.srg")))
-        ClientUtils.getLogger().info("[Remapper] Loaded srg.")
+        ClientUtils.logInfo("[Remapper] Loaded srg.")
     }
 
     private fun parseSrg(srgData: List<String>) {

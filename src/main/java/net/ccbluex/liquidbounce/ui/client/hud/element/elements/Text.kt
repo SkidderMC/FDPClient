@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils
+import net.ccbluex.liquidbounce.utils.extensions.ping
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
@@ -88,7 +89,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
                 "ydp" -> return mc.thePlayer.posY.toString()
                 "zdp" -> return mc.thePlayer.posZ.toString()
                 "velocity" -> return DECIMAL_FORMAT.format(sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ))
-                "ping" -> return EntityUtils.getPing(mc.thePlayer).toString()
+                "ping" -> return "${mc.thePlayer.ping}"
                 "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
                 "attackDist" -> return if(LiquidBounce.combatManager.target!=null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString()+" Blocks" else "Hasn't attacked"
             }

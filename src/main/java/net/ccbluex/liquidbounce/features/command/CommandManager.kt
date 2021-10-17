@@ -95,7 +95,7 @@ class CommandManager {
         try {
             registerCommand(commandClass.newInstance())
         } catch (e: Throwable) {
-            ClientUtils.getLogger().error("Failed to load command: ${commandClass.name} (${e.javaClass.name}: ${e.message})")
+            ClientUtils.logError("Failed to load command: ${commandClass.name} (${e.javaClass.name}: ${e.message})")
         }
     }
 

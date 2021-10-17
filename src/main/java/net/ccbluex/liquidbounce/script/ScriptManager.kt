@@ -42,9 +42,9 @@ class ScriptManager {
     fun loadJsScript(scriptFile : File) {
         try {
             scripts.add(Script(scriptFile))
-            ClientUtils.getLogger().info("[ScriptAPI] Successfully loaded script '${scriptFile.name}'.")
+            ClientUtils.logInfo("[ScriptAPI] Successfully loaded script '${scriptFile.name}'.")
         } catch(t : Throwable) {
-            ClientUtils.getLogger().error("[ScriptAPI] Failed to load script '${scriptFile.name}'.", t)
+            ClientUtils.logError("[ScriptAPI] Failed to load script '${scriptFile.name}'.", t)
         }
     }
 

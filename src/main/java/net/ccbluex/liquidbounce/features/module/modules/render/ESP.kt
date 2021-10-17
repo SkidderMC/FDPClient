@@ -213,41 +213,37 @@ class ESP : Module() {
         }
 
         //normal shader esp
-        try {
-            val shader = when(mode){
-                "shaderoutline" -> OutlineShader.OUTLINE_SHADER
-                "shaderglow" -> GlowShader.GLOW_SHADER
-                else -> return
-            }
-            val radius = when(mode){
-                "shaderoutline" -> shaderOutlineRadius.get()
-                "shaderglow" -> shaderGlowRadius.get()
-                else -> 1f
-            }
+        val shader = when(mode){
+            "shaderoutline" -> OutlineShader.OUTLINE_SHADER
+            "shaderglow" -> GlowShader.GLOW_SHADER
+            else -> return
+        }
+        val radius = when(mode){
+            "shaderoutline" -> shaderOutlineRadius.get()
+            "shaderglow" -> shaderGlowRadius.get()
+            else -> 1f
+        }
 
-            //search
-            val entityMap: MutableMap<Color, ArrayList<EntityLivingBase>> = HashMap()
-            for (entity in mc.theWorld.loadedEntityList) {
-                if (EntityUtils.isSelected(entity, false)) {
-                    val entityLiving = entity as EntityLivingBase
-                    val color = getColor(entityLiving)
-                    if (!entityMap.containsKey(color)) {
-                        entityMap[color] = ArrayList()
-                    }
-                    entityMap[color]!!.add(entityLiving)
+        //search
+        val entityMap: MutableMap<Color, ArrayList<EntityLivingBase>> = HashMap()
+        for (entity in mc.theWorld.loadedEntityList) {
+            if (EntityUtils.isSelected(entity, false)) {
+                val entityLiving = entity as EntityLivingBase
+                val color = getColor(entityLiving)
+                if (!entityMap.containsKey(color)) {
+                    entityMap[color] = ArrayList()
                 }
+                entityMap[color]!!.add(entityLiving)
             }
+        }
 
-            //draw
-            for ((key, value) in entityMap) {
-                shader.startDraw(partialTicks)
-                for (entity in value) {
-                    mc.renderManager.renderEntityStatic(entity, partialTicks, true)
-                }
-                shader.stopDraw(key, radius, 1f)
+        //draw
+        for ((key, value) in entityMap) {
+            shader.startDraw(partialTicks)
+            for (entity in value) {
+                mc.renderManager.renderEntityStatic(entity, partialTicks, true)
             }
-        } catch (ex: Exception) {
-            ClientUtils.getLogger().error("An error occurred while rendering all entities for shader esp", ex)
+            shader.stopDraw(key, radius, 1f)
         }
     }
 

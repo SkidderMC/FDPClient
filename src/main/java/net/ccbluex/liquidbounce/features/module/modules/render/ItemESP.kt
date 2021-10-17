@@ -59,13 +59,9 @@ class ItemESP : Module() {
 
         shader.startDraw(partialTicks)
 
-        try {
-            for (entity in mc.theWorld.loadedEntityList) {
-                if (!(entity is EntityItem || entity is EntityArrow)) continue
-                mc.renderManager.renderEntityStatic(entity, event.partialTicks, true)
-            }
-        } catch (ex: Exception) {
-            ClientUtils.getLogger().error("An error occurred while rendering all item entities for shader esp", ex)
+        for (entity in mc.theWorld.loadedEntityList) {
+            if (!(entity is EntityItem || entity is EntityArrow)) continue
+            mc.renderManager.renderEntityStatic(entity, event.partialTicks, true)
         }
 
         shader.stopDraw(getColor(),outlineWidth.get(),1f)

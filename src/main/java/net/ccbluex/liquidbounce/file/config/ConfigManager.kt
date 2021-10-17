@@ -231,7 +231,7 @@ class ConfigManager {
         try {
             registerSection(sectionClass.newInstance())
         } catch (e: Throwable) {
-            ClientUtils.getLogger().error("Failed to load config section: ${sectionClass.name} (${e.javaClass.name}: ${e.message})")
+            ClientUtils.logError("Failed to load config section: ${sectionClass.name} (${e.javaClass.name}: ${e.message})")
         }
     }
 }

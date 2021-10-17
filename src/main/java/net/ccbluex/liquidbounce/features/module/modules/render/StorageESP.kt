@@ -97,28 +97,24 @@ class StorageESP : Module() {
             else -> return
         }
 
-        try {
-            val entityMap: MutableMap<Color, ArrayList<TileEntity>> = HashMap()
+        val entityMap: MutableMap<Color, ArrayList<TileEntity>> = HashMap()
 
-            //search
-            for (tileEntity in mc.theWorld.loadedTileEntityList) {
-                val color = getColor(tileEntity) ?: continue
-                if (!entityMap.containsKey(color)) {
-                    entityMap[color] = ArrayList()
-                }
-                entityMap[color]!!.add(tileEntity)
+        //search
+        for (tileEntity in mc.theWorld.loadedTileEntityList) {
+            val color = getColor(tileEntity) ?: continue
+            if (!entityMap.containsKey(color)) {
+                entityMap[color] = ArrayList()
             }
+            entityMap[color]!!.add(tileEntity)
+        }
 
-            //draw
-            for ((key, value) in entityMap) {
-                shader.startDraw(partialTicks)
-                for (tileEntity in value) {
-                    TileEntityRendererDispatcher.instance.renderTileEntityAt(tileEntity, tileEntity.pos.x - renderManager.renderPosX, tileEntity.pos.y - renderManager.renderPosY, tileEntity.pos.z - renderManager.renderPosZ, partialTicks)
-                }
-                shader.stopDraw(key, if (mode.equals("shaderglow", ignoreCase = true)) 2.5f else 1.5f, 1f)
+        //draw
+        for ((key, value) in entityMap) {
+            shader.startDraw(partialTicks)
+            for (tileEntity in value) {
+                TileEntityRendererDispatcher.instance.renderTileEntityAt(tileEntity, tileEntity.pos.x - renderManager.renderPosX, tileEntity.pos.y - renderManager.renderPosY, tileEntity.pos.z - renderManager.renderPosZ, partialTicks)
             }
-        } catch (ex: Exception) {
-            ClientUtils.getLogger().error("An error occurred while rendering all storages for shader esp", ex)
+            shader.stopDraw(key, if (mode.equals("shaderglow", ignoreCase = true)) 2.5f else 1.5f, 1f)
         }
     }
 }

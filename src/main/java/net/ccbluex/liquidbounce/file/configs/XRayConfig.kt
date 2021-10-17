@@ -26,12 +26,12 @@ class XRayConfig(file: File) : FileConfig(file) {
             try {
                 val block = Block.getBlockFromName(jsonElement.asString)
                 if (xRay.xrayBlocks.contains(block)) {
-                    ClientUtils.getLogger().error("[FileManager] Skipped xray block '" + block.registryName + "' because the block is already added.")
+                    ClientUtils.logError("[FileManager] Skipped xray block '" + block.registryName + "' because the block is already added.")
                     continue
                 }
                 xRay.xrayBlocks.add(block)
             } catch (throwable: Throwable) {
-                ClientUtils.getLogger().error("[FileManager] Failed to add block to xray.", throwable)
+                ClientUtils.logError("[FileManager] Failed to add block to xray.", throwable)
             }
         }
     }
