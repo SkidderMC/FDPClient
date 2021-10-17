@@ -25,16 +25,16 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
                         val name = args[2]
 
                         if (name.isEmpty()) {
-                            chat("The name is empty.")
+                            alert("The name is empty.")
                             return
                         }
 
                         if (if (args.size > 3) friendsConfig.addFriend(name, StringUtils.toCompleteString(args, 3)) else friendsConfig.addFriend(name)) {
                             LiquidBounce.fileManager.saveConfig(friendsConfig)
-                            chat("§a§l$name§3 was added to your friend list.")
+                            alert("§a§l$name§3 was added to your friend list.")
                             playEdit()
                         } else
-                            chat("The name is already in the list.")
+                            alert("The name is already in the list.")
                         return
                     }
                     chatSyntax("friend add <name> [alias]")
@@ -55,7 +55,7 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
                                      added++
                              }
 
-                         chat("Added §a§l$added §3players matching the same regex to your friend list.")
+                         alert("Added §a§l$added §3players matching the same regex to your friend list.")
                          playEdit()
                          return
                      }
@@ -77,7 +77,7 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
                                      remove++
                              }
 
-                         chat("Removed §a§l$remove §3players matching the same regex from your friend list.")
+                         alert("Removed §a§l$remove §3players matching the same regex from your friend list.")
                          playEdit()
                          return
                      }
@@ -91,10 +91,10 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
 
                         if (friendsConfig.removeFriend(name)) {
                             LiquidBounce.fileManager.saveConfig(friendsConfig)
-                            chat("§a§l$name§3 was removed from your friend list.")
+                            alert("§a§l$name§3 was removed from your friend list.")
                             playEdit()
                         } else
-                            chat("This name is not in the list.")
+                            alert("This name is not in the list.")
                         return
                     }
                     chatSyntax("friend remove <name>")
@@ -105,17 +105,17 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
                     val friends = friendsConfig.friends.size
                     friendsConfig.clearFriends()
                     LiquidBounce.fileManager.saveConfig(friendsConfig)
-                    chat("Removed $friends friend(s).")
+                    alert("Removed $friends friend(s).")
                     return
                 }
 
                 args[1].equals("list", ignoreCase = true) -> {
-                    chat("Your Friends:")
+                    alert("Your Friends:")
 
                     for (friend in friendsConfig.friends)
-                        chat("§7> §a§l${friend.playerName} §c(§7§l${friend.alias}§c)")
+                        alert("§7> §a§l${friend.playerName} §c(§7§l${friend.alias}§c)")
 
-                    chat("You have §c${friendsConfig.friends.size}§3 friends.")
+                    alert("You have §c${friendsConfig.friends.size}§3 friends.")
                     return
                 }
             }

@@ -19,7 +19,7 @@ class HideCommand : Command("hide", emptyArray()) {
         if (args.size > 1) {
             when {
                 args[1].equals("list", true) -> {
-                    chat("§c§lHidden")
+                    alert("§c§lHidden")
                     LiquidBounce.moduleManager.modules.filter { !it.array }.forEach {
                         ClientUtils.displayChatMessage("§6> §c${it.name}")
                     }
@@ -30,7 +30,7 @@ class HideCommand : Command("hide", emptyArray()) {
                     for (module in LiquidBounce.moduleManager.modules)
                         module.array = true
 
-                    chat("Cleared hidden modules.")
+                    alert("Cleared hidden modules.")
                     return
                 }
 
@@ -38,7 +38,7 @@ class HideCommand : Command("hide", emptyArray()) {
                     for (module in LiquidBounce.moduleManager.modules)
                         module.array = module::class.java.getAnnotation(ModuleInfo::class.java).array
 
-                    chat("Reset hidden modules.")
+                    alert("Reset hidden modules.")
                     return
                 }
 
@@ -47,7 +47,7 @@ class HideCommand : Command("hide", emptyArray()) {
                     val module = LiquidBounce.moduleManager.getModule(args[1])
 
                     if (module == null) {
-                        chat("Module §a§l${args[1]}§3 not found.")
+                        alert("Module §a§l${args[1]}§3 not found.")
                         return
                     }
 
@@ -55,7 +55,7 @@ class HideCommand : Command("hide", emptyArray()) {
                     module.array = !module.array
 
                     // Response to user
-                    chat("Module §a§l${module.name}§3 is now §a§l${if (module.array) "visible" else "invisible"}§3 on the array list.")
+                    alert("Module §a§l${module.name}§3 is now §a§l${if (module.array) "visible" else "invisible"}§3 on the array list.")
                     playEdit()
                     return
                 }

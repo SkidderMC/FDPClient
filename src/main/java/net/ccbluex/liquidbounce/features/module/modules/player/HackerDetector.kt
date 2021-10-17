@@ -56,7 +56,7 @@ class HackerDetector : Module() {
         for(player in needRemove){
             datas.remove(player)
             if(debugMode.get()){
-                chat("[GC] REMOVE ${player.name}")
+                alert("[GC] REMOVE ${player.name}")
             }
         }
     }
@@ -253,7 +253,7 @@ class HackerDetector : Module() {
         if(!this.useHacks.contains(type)) this.useHacks.add(type)
         //display debug message
         if(debugMode.get()){
-            chat("§f${this.player.name} §euse §2$type §7$msg §c${this.vl}+${vl}")
+            alert("§f${this.player.name} §euse §2$type §7$msg §c${this.vl}+${vl}")
         }
         this.vl+=vl
 
@@ -263,7 +263,7 @@ class HackerDetector : Module() {
                 use+="$typ,"
             }
             use=use.substring(0,use.length-1)
-            chat("§f${this.player.name} §eusing hack §a$use")
+            alert("§f${this.player.name} §eusing hack §a$use")
             if(notify.get()){
                 LiquidBounce.hud.addNotification(Notification(name,"${this.player.name} might use hack ($use)",NotifyType.WARNING))
             }

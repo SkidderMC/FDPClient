@@ -114,7 +114,7 @@ public class GuiDirectLogin extends GuiScreen {
                     }).start();
                 } catch (final UnsupportedFlavorException e) {
                     status = "§c%ui.alt.readFailed%";
-                    ClientUtils.getLogger().error("Failed to read data from clipboard.", e);
+                    ClientUtils.INSTANCE.logError("Failed to read data from clipboard.", e);
                 }
                 break;
         }

@@ -38,7 +38,7 @@ public class Fonts {
         AWTFontRenderer.Companion.getActiveFontRenderers().clear();
         long l = System.currentTimeMillis();
 
-        ClientUtils.getLogger().info("Loading Fonts.");
+        ClientUtils.INSTANCE.logInfo("Loading Fonts.");
 
         initFonts();
 
@@ -59,7 +59,7 @@ public class Fonts {
         try {
             CUSTOM_FONT_RENDERERS.clear();
 
-            final File fontsFile = new File(LiquidBounce.fileManager.fontsDir, "fonts.json");
+            final File fontsFile = new File(LiquidBounce.fileManager.getFontsDir(), "fonts.json");
 
             if(fontsFile.exists()) {
                 final JsonElement jsonElement = new JsonParser().parse(new BufferedReader(new FileReader(fontsFile)));
@@ -88,7 +88,7 @@ public class Fonts {
             e.printStackTrace();
         }
 
-        ClientUtils.getLogger().info("Loaded Fonts. (" + (System.currentTimeMillis() - l) + "ms)");
+        ClientUtils.INSTANCE.logInfo("Loaded Fonts. (" + (System.currentTimeMillis() - l) + "ms)");
     }
 
     private static void initFonts() {
@@ -100,7 +100,7 @@ public class Fonts {
     }
 
     private static void initSingleFont(String name, String resourcePath) throws IOException {
-        File file=new File(LiquidBounce.fileManager.fontsDir, name);
+        File file=new File(LiquidBounce.fileManager.getFontsDir(), name);
         if(!file.exists())
             FileUtils.unpackFile(file, resourcePath);
     }
@@ -155,7 +155,7 @@ public class Fonts {
 
     private static Font getFont(final String fontName, final int size) {
         try {
-            final InputStream inputStream = new FileInputStream(new File(LiquidBounce.fileManager.fontsDir, fontName));
+            final InputStream inputStream = new FileInputStream(new File(LiquidBounce.fileManager.getFontsDir(), fontName));
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
             inputStream.close();

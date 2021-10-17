@@ -48,7 +48,7 @@ class Gapple : Module() {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                     }
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                    chat("Gapple eaten")
+                    alert("Gapple eaten")
                     timer.reset()
                 }
             }

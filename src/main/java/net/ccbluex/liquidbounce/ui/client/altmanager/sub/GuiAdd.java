@@ -81,7 +81,7 @@ public class GuiAdd extends GuiScreen {
                 mc.displayGuiScreen(prevGui);
                 break;
             case 1:
-                if (LiquidBounce.fileManager.accountsConfig.getAltManagerMinecraftAccounts().stream().anyMatch(account -> account.getName().equals(username.getText()))) {
+                if (LiquidBounce.fileManager.getAccountsConfig().getAltManagerMinecraftAccounts().stream().anyMatch(account -> account.getName().equals(username.getText()))) {
                     status = "§c%ui.alt.alreadyAdded%";
                     break;
                 }
@@ -102,7 +102,7 @@ public class GuiAdd extends GuiScreen {
                     addAccount(accountData[0], accountData[1]);
                 }catch(final UnsupportedFlavorException e) {
                     status = "§c%ui.alt.readFailed%";
-                    ClientUtils.getLogger().error("Failed to read data from clipboard.", e);
+                    ClientUtils.INSTANCE.logError("Failed to read data from clipboard.", e);
                 }
                 break;
         }
@@ -152,7 +152,7 @@ public class GuiAdd extends GuiScreen {
     }
 
     private void addAccount(final String name, final String password) {
-        if (LiquidBounce.fileManager.accountsConfig.getAltManagerMinecraftAccounts().stream()
+        if (LiquidBounce.fileManager.getAccountsConfig().getAltManagerMinecraftAccounts().stream()
                 .anyMatch(account -> account.getName().equals(name))) {
             status = "§c%ui.alt.alreadyAdded%";
             return;
@@ -184,8 +184,8 @@ public class GuiAdd extends GuiScreen {
             }
 
 
-            LiquidBounce.fileManager.accountsConfig.getAltManagerMinecraftAccounts().add(account);
-            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig);
+            LiquidBounce.fileManager.getAccountsConfig().getAltManagerMinecraftAccounts().add(account);
+            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.getAccountsConfig());
 
             status = "§a%ui.alt.alreadyAdded%";
             prevGui.status = status;

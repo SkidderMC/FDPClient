@@ -335,7 +335,7 @@ class Criticals : Module() {
         }
         if(packet is S0BPacketAnimation &&debugValue.get()){
             if(packet.animationType==4&&packet.entityID==target){
-                chat("CRIT")
+                alert("CRIT")
             }
         }
     }

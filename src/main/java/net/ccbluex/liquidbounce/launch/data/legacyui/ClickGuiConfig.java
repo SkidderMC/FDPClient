@@ -55,11 +55,11 @@ public class ClickGuiConfig extends FileConfig {
 
                         moduleElement.setShowSettings(elementObject.get("Settings").getAsBoolean());
                     }catch(final Exception e) {
-                        ClientUtils.getLogger().error("Error while loading clickgui module element with the name '" + moduleElement.getModule().getName() + "' (Panel Name: " + panel.getCategory().getConfigName() + ").", e);
+                        ClientUtils.INSTANCE.logError("Error while loading clickgui module element with the name '" + moduleElement.getModule().getName() + "' (Panel Name: " + panel.getCategory().getConfigName() + ").", e);
                     }
                 }
             }catch(final Exception e) {
-                ClientUtils.getLogger().error("Error while loading clickgui panel with the name '" + panel.getCategory().getConfigName() + "'.", e);
+                ClientUtils.INSTANCE.logError("Error while loading clickgui panel with the name '" + panel.getCategory().getConfigName() + "'.", e);
             }
         }
     }
@@ -92,6 +92,6 @@ public class ClickGuiConfig extends FileConfig {
             jsonObject.add(panel.getCategory().getConfigName(), panelObject);
         }
 
-        return FileManager.PRETTY_GSON.toJson(jsonObject);
+        return FileManager.Companion.getPRETTY_GSON().toJson(jsonObject);
     }
 }

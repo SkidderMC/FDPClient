@@ -50,7 +50,7 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
             val newValue = !value.get()
             value.set(newValue)
 
-            chat("§7${module.name} §8${args[1]}§7 was toggled ${if (newValue) "§8on§7" else "§8off§7" + "."}")
+            alert("§7${module.name} §8${args[1]}§7 was toggled ${if (newValue) "§8on§7" else "§8off§7" + "."}")
             playEdit()
         } else {
             if (args.size < 3) {
@@ -72,13 +72,13 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
                             id = Block.getIdFromBlock(Block.getBlockFromName(args[2]))
 
                             if (id <= 0) {
-                                chat("§7Block §8${args[2]}§7 does not exist!")
+                                alert("§7Block §8${args[2]}§7 does not exist!")
                                 return
                             }
                         }
 
                         value.set(id)
-                        chat("§7${module.name} §8${args[1].lowercase()}§7 was set to §8${BlockUtils.getBlockName(id)}§7.")
+                        alert("§7${module.name} §8${args[1].lowercase()}§7 was set to §8${BlockUtils.getBlockName(id)}§7.")
                         playEdit()
                         return
                     }
@@ -95,10 +95,10 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
                     is TextValue -> value.set(StringUtils.toCompleteString(args, 2))
                 }
 
-                chat("§7${module.name} §8${args[1]}§7 was set to §8${value.get()}§7.")
+                alert("§7${module.name} §8${args[1]}§7 was set to §8${value.get()}§7.")
                 playEdit()
             } catch (e: NumberFormatException) {
-                chat("§8${args[2]}§7 cannot be converted to number!")
+                alert("§8${args[2]}§7 cannot be converted to number!")
             }
         }
     }

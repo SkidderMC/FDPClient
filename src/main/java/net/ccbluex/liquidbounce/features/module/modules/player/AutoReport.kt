@@ -72,7 +72,7 @@ class AutoReport : Module() {
         reported.add(name)
         mc.thePlayer.sendChatMessage(commandValue.get().replace("%name%",name))
         if(tipValue.get()){
-            chat("$name reported!")
+            alert("$name reported!")
         }
         return true
     }

@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 
 public class NewMCMath {
 
-    private static final float[] SIN_TABLE = MiscUtils.make(new float[65536], (e) ->
+    private static final float[] SIN_TABLE = MiscUtils.INSTANCE.make(new float[65536], (e) ->
     {
         for (int i = 0; i < e.length; ++i)
         {

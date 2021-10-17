@@ -13,7 +13,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
             val module = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
-                chat("Module '${args[1]}' not found.")
+                alert("Module '${args[1]}' not found.")
                 return
             }
 
@@ -24,7 +24,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
             }
             playEdit()
 
-            chat("Set module §l${module.name}§r AutoDisable state to §l${module.autoDisable}§r.")
+            alert("Set module §l${module.name}§r AutoDisable state to §l${module.autoDisable}§r.")
 
             return
         }

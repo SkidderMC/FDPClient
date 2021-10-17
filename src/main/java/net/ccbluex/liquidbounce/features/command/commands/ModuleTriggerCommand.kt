@@ -13,7 +13,7 @@ class ModuleTriggerCommand : Command("moduletrigger", arrayOf("trigger")) {
             val module = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
-                chat("Module '${args[1]}' not found.")
+                alert("Module '${args[1]}' not found.")
                 return
             }
 
@@ -24,7 +24,7 @@ class ModuleTriggerCommand : Command("moduletrigger", arrayOf("trigger")) {
             }
             playEdit()
 
-            chat("Set module §l${module.name}§r trigger type to §l${module.triggerType}§r.")
+            alert("Set module §l${module.name}§r trigger type to §l${module.triggerType}§r.")
 
             return
         }

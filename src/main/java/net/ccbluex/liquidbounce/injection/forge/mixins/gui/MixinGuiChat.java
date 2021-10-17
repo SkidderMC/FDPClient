@@ -136,7 +136,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     @Inject(method = "autocompletePlayerNames", at = @At("HEAD"))
     private void prioritizeClientFriends(final CallbackInfo callbackInfo) {
         foundPlayerNames.sort(
-                Comparator.comparing(s -> !LiquidBounce.fileManager.friendsConfig.isFriend(s)));
+                Comparator.comparing(s -> !LiquidBounce.fileManager.getFriendsConfig().isFriend(s)));
     }
 
     /**

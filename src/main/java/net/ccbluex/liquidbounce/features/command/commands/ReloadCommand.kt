@@ -17,8 +17,8 @@ class ReloadCommand : Command("reload", emptyArray()) {
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
-        chat("Reloading...")
-        chat("§c§lReloading commands...")
+        alert("Reloading...")
+        alert("§c§lReloading commands...")
         LiquidBounce.commandManager = CommandManager()
         LiquidBounce.commandManager.registerCommands()
         LiquidBounce.isStarting = true
@@ -27,24 +27,24 @@ class ReloadCommand : Command("reload", emptyArray()) {
         LiquidBounce.scriptManager.unloadScripts()
         for(module in LiquidBounce.moduleManager.modules)
             LiquidBounce.moduleManager.generateCommand(module)
-        chat("§c§lReloading scripts...")
+        alert("§c§lReloading scripts...")
         LiquidBounce.scriptManager.loadScripts()
         LiquidBounce.scriptManager.enableScripts()
-        chat("§c§lReloading fonts...")
+        alert("§c§lReloading fonts...")
         Fonts.loadFonts()
-        chat("§c§lReloading modules...")
+        alert("§c§lReloading modules...")
         LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig,false)
         KillInsults.loadFile()
         GuiCapeManager.load()
-        chat("§c§lReloading accounts...")
+        alert("§c§lReloading accounts...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.accountsConfig)
-        chat("§c§lReloading friends...")
+        alert("§c§lReloading friends...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.friendsConfig)
-        chat("§c§lReloading xray...")
+        alert("§c§lReloading xray...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.xrayConfig)
-        chat("§c§lReloading HUD...")
+        alert("§c§lReloading HUD...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.hudConfig)
-        chat("Reloaded.")
+        alert("Reloaded.")
         LiquidBounce.isStarting = false
         LiquidBounce.isLoadingConfig = false
         System.gc()
