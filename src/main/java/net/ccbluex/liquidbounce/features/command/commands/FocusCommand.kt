@@ -19,7 +19,7 @@ class FocusCommand : Command("focus", emptyArray()) {
             val target = args[2]
             val entity=mc.theWorld.playerEntities.filter { it.name.equals(target,true) && !it.equals(mc.thePlayer) }.also {
                 if(it.isEmpty()){
-                    chat("§6Couldn't find anyone named §a${target.lowercase()}§6 in the world.")
+                    alert("§6Couldn't find anyone named §a${target.lowercase()}§6 in the world.")
                     return
                 }
             }[0]
@@ -27,23 +27,23 @@ class FocusCommand : Command("focus", emptyArray()) {
             when (focused.lowercase()) {
                 "add" -> {
                     LiquidBounce.combatManager.focusedPlayerList.add(entity)
-                    chat("Successfully added §a${target.lowercase()}§3 into the focus list.")
+                    alert("Successfully added §a${target.lowercase()}§3 into the focus list.")
                     return
                 }
                 "remove" -> {
                     if (LiquidBounce.combatManager.focusedPlayerList.contains(entity)) {
                         LiquidBounce.combatManager.focusedPlayerList.remove(entity)
-                        chat("Successfully removed §a${target.lowercase()}§3 from the focus list.")
+                        alert("Successfully removed §a${target.lowercase()}§3 from the focus list.")
                         return
                     } else {
-                        chat("§6Couldn't find anyone named §a${target.lowercase()}§6 in the focus list.")
+                        alert("§6Couldn't find anyone named §a${target.lowercase()}§6 in the focus list.")
                         return
                     }
                 }
             }
         } else if (args.size == 2 && args[1].equals("clear", true)) {
             LiquidBounce.combatManager.focusedPlayerList.clear()
-            chat("Successfully cleared the focus list.")
+            alert("Successfully cleared the focus list.")
             return
         }
 

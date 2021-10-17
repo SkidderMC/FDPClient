@@ -17,7 +17,7 @@ class ToggleCommand : Command("toggle", arrayOf("t")) {
             val module = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
-                chat("Module '${args[1]}' not found.")
+                alert("Module '${args[1]}' not found.")
                 return
             }
 
@@ -34,7 +34,7 @@ class ToggleCommand : Command("toggle", arrayOf("t")) {
                 module.toggle()
             }
 
-            chat("${if (module.state) "Enabled" else "Disabled"} module §8${module.name}§3.")
+            alert("${if (module.state) "Enabled" else "Disabled"} module §8${module.name}§3.")
             return
         }
 

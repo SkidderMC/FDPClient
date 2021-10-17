@@ -18,7 +18,7 @@ class SayCommand : Command("say", emptyArray()) {
         if (args.size > 1) {
             val str=StringUtils.toCompleteString(args, 1)
             PacketUtils.sendPacketNoEvent(C01PacketChatMessage(str.substring(0, str.length.coerceAtMost(100))))
-            chat("Message was sent to the chat.")
+            alert("Message was sent to the chat.")
             return
         }
         chatSyntax("say <message...>")

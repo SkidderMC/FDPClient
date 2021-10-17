@@ -4,6 +4,6 @@ import net.ccbluex.liquidbounce.features.command.Command
 
 class UsernameCommand : Command("username", arrayOf("name")) {
     override fun execute(args: Array<String>) {
-        chat("Username: " + mc.thePlayer.name)
+        alert("Username: " + mc.thePlayer.name)
     }
 }

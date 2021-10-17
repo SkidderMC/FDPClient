@@ -14,9 +14,9 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                         val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
                         if(!file.exists()){
                             LiquidBounce.configManager.load(args[2],true)
-                            chat("Create config ${args[2]}")
+                            alert("Create config ${args[2]}")
                         }else{
-                            chat("Config ${args[2]} already exists")
+                            alert("Config ${args[2]} already exists")
                         }
                     }else{
                         chatSyntax("${args[1]} <configName>")
@@ -28,9 +28,9 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                         val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
                         if(file.exists()){
                             LiquidBounce.configManager.load(args[2],args[1].equals("load",true))
-                            chat("Loaded config ${args[2]}")
+                            alert("Loaded config ${args[2]}")
                         }else{
-                            chat("Config ${args[2]} not exists")
+                            alert("Config ${args[2]} not exists")
                         }
                     }else{
                         chatSyntax("${args[1]} <configName>")
@@ -42,9 +42,9 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                         val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
                         if(file.exists()) {
                             file.delete()
-                            chat("Successfully deleted config ${args[2]}")
+                            alert("Successfully deleted config ${args[2]}")
                         }else {
-                            chat("Config ${args[2]} not exist")
+                            alert("Config ${args[2]} not exist")
                         }
                     }else{
                         chatSyntax("${args[1]} <configName>")
@@ -62,24 +62,24 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                                 name
                         }
 
-                    chat("Configs(${list.size}):")
+                    alert("Configs(${list.size}):")
 
                     for (file in list) {
                         if(file.equals(LiquidBounce.configManager.nowConfig))
-                            chat("-> §a§l$file")
+                            alert("-> §a§l$file")
                         else
-                            chat("> $file")
+                            alert("> $file")
                     }
                 }
 
                 "save" -> {
                     LiquidBounce.configManager.save(true,true)
-                    chat("Saved config ${LiquidBounce.configManager.nowConfig}")
+                    alert("Saved config ${LiquidBounce.configManager.nowConfig}")
                 }
 
                 "reload" -> {
                     LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig,false)
-                    chat("Reloaded config ${LiquidBounce.configManager.nowConfig}")
+                    alert("Reloaded config ${LiquidBounce.configManager.nowConfig}")
                 }
 
                 "rename" -> {
@@ -88,11 +88,11 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                         val newFile=File(LiquidBounce.fileManager.configsDir,"${args[3]}.json")
                         if(file.exists()&&!newFile.exists()) {
                             file.renameTo(newFile)
-                            chat("Renamed config ${args[2]} to ${args[3]}")
+                            alert("Renamed config ${args[2]} to ${args[3]}")
                         }else if(!file.exists()) {
-                            chat("Config ${args[2]} not exist")
+                            alert("Config ${args[2]} not exist")
                         }else if(newFile.exists()){
-                            chat("Config ${args[3]} already exists")
+                            alert("Config ${args[3]} already exists")
                         }
                         if(LiquidBounce.configManager.nowConfig.equals(args[2],true)){
                             LiquidBounce.configManager.load(args[3],false)
@@ -104,7 +104,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 }
 
                 "current" -> {
-                    chat("Current config is ${LiquidBounce.configManager.nowConfig}")
+                    alert("Current config is ${LiquidBounce.configManager.nowConfig}")
                 }
 
                 "copy" -> {
@@ -113,11 +113,11 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                         val newFile=File(LiquidBounce.fileManager.configsDir,"${args[3]}.json")
                         if(file.exists()&&!newFile.exists()) {
                             Files.copy(file.toPath(),newFile.toPath())
-                            chat("Copied config ${args[2]} to ${args[3]}")
+                            alert("Copied config ${args[2]} to ${args[3]}")
                         }else if(!file.exists()) {
-                            chat("Config ${args[2]} not exist")
+                            alert("Config ${args[2]} not exist")
                         }else if(newFile.exists()){
-                            chat("Config ${args[3]} already exists")
+                            alert("Config ${args[3]} already exists")
                         }
                     }else{
                         chatSyntax("${args[1]} <configName> <newName>")

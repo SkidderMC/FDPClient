@@ -97,7 +97,7 @@ public abstract class MixinMinecraft {
         if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
             Display.destroy();
             String warnStr="Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
-            MiscUtils.showErrorPopup(warnStr);
+            MiscUtils.INSTANCE.showErrorPopup(warnStr);
             throw new AccessDeniedException(warnStr);
         }
         LiquidBounce.INSTANCE.initClient();
@@ -105,7 +105,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
-        ClientUtils.setTitle();
+        ClientUtils.INSTANCE.setTitle();
     }
 
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))

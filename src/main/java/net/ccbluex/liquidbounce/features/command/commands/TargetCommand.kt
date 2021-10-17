@@ -17,28 +17,28 @@ class TargetCommand : Command("target", emptyArray()) {
             when {
                 args[1].equals("players", ignoreCase = true) -> {
                     Target.player.set(!Target.player.get())
-                    chat("§7Target player toggled ${if (Target.player.get()) "on" else "off"}.")
+                    alert("§7Target player toggled ${if (Target.player.get()) "on" else "off"}.")
                     playEdit()
                     return
                 }
 
                 args[1].equals("mobs", ignoreCase = true) -> {
                     Target.mob.set(!Target.mob.get())
-                    chat("§7Target mobs toggled ${if (Target.mob.get()) "on" else "off"}.")
+                    alert("§7Target mobs toggled ${if (Target.mob.get()) "on" else "off"}.")
                     playEdit()
                     return
                 }
 
                 args[1].equals("animals", ignoreCase = true) -> {
                     Target.animal.set(!Target.animal.get())
-                    chat("§7Target animals toggled ${if (Target.animal.get()) "on" else "off"}.")
+                    alert("§7Target animals toggled ${if (Target.animal.get()) "on" else "off"}.")
                     playEdit()
                     return
                 }
 
                 args[1].equals("invisible", ignoreCase = true) -> {
                     Target.invisible.set(!Target.invisible.get())
-                    chat("§7Target Invisible toggled ${if (Target.invisible.get()) "on" else "off"}.")
+                    alert("§7Target Invisible toggled ${if (Target.invisible.get()) "on" else "off"}.")
                     playEdit()
                     return
                 }

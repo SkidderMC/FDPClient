@@ -182,7 +182,15 @@ open class Module : MinecraftInstance(), Listenable {
         state = !state
     }
 
-    protected fun chat(msg: String) = ClientUtils.displayAlert(msg)
+    /**
+     * Print [msg] to chat as alert
+     */
+    protected fun alert(msg: String) = ClientUtils.displayAlert(msg)
+
+    /**
+     * Print [msg] to chat as plain text
+     */
+    protected fun chat(msg: String) = ClientUtils.displayChatMessage(msg)
 
     /**
      * Called when module toggled

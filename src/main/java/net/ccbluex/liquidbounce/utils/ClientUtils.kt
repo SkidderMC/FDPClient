@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager
 import org.lwjgl.opengl.Display
 
 object ClientUtils : MinecraftInstance() {
-    val logger = LogManager.getLogger("FDPClient")
+    private val logger = LogManager.getLogger("FDPClient")
     val osType: EnumOSType
     var inDevMode = System.getProperty("dev-mode") != null
 

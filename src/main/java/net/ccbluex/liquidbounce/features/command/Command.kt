@@ -30,9 +30,14 @@ abstract class Command(val command: String, val alias: Array<String>) : Minecraf
     }
 
     /**
-     * Print [msg] to chat
+     * Print [msg] to chat as alert
      */
-    protected fun chat(msg: String) = ClientUtils.displayAlert(msg)
+    protected fun alert(msg: String) = ClientUtils.displayAlert(msg)
+
+    /**
+     * Print [msg] to chat as plain text
+     */
+    protected fun chat(msg: String) = ClientUtils.displayChatMessage(msg)
 
     /**
      * Print [syntax] of command to chat

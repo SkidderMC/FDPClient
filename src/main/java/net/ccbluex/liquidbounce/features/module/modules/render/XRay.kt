@@ -51,7 +51,7 @@ class XRay : Module() {
                                     val tmpBlock = Block.getBlockFromName(args[2])
 
                                     if (Block.getIdFromBlock(tmpBlock) <= 0 || tmpBlock == null) {
-                                        chat("§7Block §8${args[2]}§7 does not exist!")
+                                        alert("§7Block §8${args[2]}§7 does not exist!")
                                         return
                                     }
 
@@ -59,13 +59,13 @@ class XRay : Module() {
                                 }
 
                                 if (xrayBlocks.contains(block)) {
-                                    chat("This block is already on the list.")
+                                    alert("This block is already on the list.")
                                     return
                                 }
 
                                 xrayBlocks.add(block)
                                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.xrayConfig)
-                                chat("§7Added block §8${block.localizedName}§7.")
+                                alert("§7Added block §8${block.localizedName}§7.")
                                 playEdit()
                             } catch (exception: NumberFormatException) {
                                 chatSyntaxError()
@@ -89,19 +89,19 @@ class XRay : Module() {
                                     block = Block.getBlockFromName(args[2])
 
                                     if (Block.getIdFromBlock(block) <= 0) {
-                                        chat("§7Block §8${args[2]}§7 does not exist!")
+                                        alert("§7Block §8${args[2]}§7 does not exist!")
                                         return
                                     }
                                 }
 
                                 if (!xrayBlocks.contains(block)) {
-                                    chat("This block is not on the list.")
+                                    alert("This block is not on the list.")
                                     return
                                 }
 
                                 xrayBlocks.remove(block)
                                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.xrayConfig)
-                                chat("§7Removed block §8${block.localizedName}§7.")
+                                alert("§7Removed block §8${block.localizedName}§7.")
                                 playEdit()
                             } catch (exception: NumberFormatException) {
                                 chatSyntaxError()
@@ -114,8 +114,8 @@ class XRay : Module() {
                     }
 
                     if (args[1].equals("list", ignoreCase = true)) {
-                        chat("§8Xray blocks:")
-                        xrayBlocks.forEach { chat("§8${it.localizedName} §7-§c ${Block.getIdFromBlock(it)}") }
+                        alert("§8Xray blocks:")
+                        xrayBlocks.forEach { alert("§8${it.localizedName} §7-§c ${Block.getIdFromBlock(it)}") }
                         return
                     }
                 }

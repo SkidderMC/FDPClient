@@ -20,12 +20,12 @@ class BindsCommand : Command("binds", emptyArray()) {
                 for (module in LiquidBounce.moduleManager.modules)
                     module.keyBind = Keyboard.KEY_NONE
 
-                chat("Removed all binds.")
+                alert("Removed all binds.")
                 return
             }
         }
 
-        chat("§c§lBinds")
+        alert("§c§lBinds")
         LiquidBounce.moduleManager.modules.filter { it.keyBind != Keyboard.KEY_NONE }.forEach {
             ClientUtils.displayChatMessage("§6> §c${it.name}: §a§l${Keyboard.getKeyName(it.keyBind)}")
         }

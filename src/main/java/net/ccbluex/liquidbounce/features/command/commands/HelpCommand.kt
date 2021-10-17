@@ -27,7 +27,7 @@ class HelpCommand : Command("help", emptyArray()) {
         }
 
         if (page <= 0) {
-            chat("The number you have entered is too low, it must be over 0")
+            alert("The number you have entered is too low, it must be over 0")
             return
         }
 
@@ -38,11 +38,11 @@ class HelpCommand : Command("help", emptyArray()) {
             maxPageDouble.toInt()
 
         if (page > maxPage) {
-            chat("The number you have entered is too big, it must be under $maxPage.")
+            alert("The number you have entered is too big, it must be under $maxPage.")
             return
         }
 
-        chat("§c§lHelp")
+        alert("§c§lHelp")
         ClientUtils.displayChatMessage("§7> Page: §8$page / $maxPage")
 
         val commands = LiquidBounce.commandManager.commands.map { it.value }.distinct().sortedBy { it.command }

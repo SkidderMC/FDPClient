@@ -18,9 +18,9 @@ class MacroCommand : Command("macro", arrayOf("m")) {
                             var comm=StringUtils.toCompleteString(args, 3)
                             if(!comm.startsWith(".")) comm=".$comm"
                             LiquidBounce.macroManager.macros.add(Macro(key,comm))
-                            chat("Bound macro $comm to key ${Keyboard.getKeyName(key)}.")
+                            alert("Bound macro $comm to key ${Keyboard.getKeyName(key)}.")
                         }else{
-                            chat("Unknown key to bind macro.")
+                            alert("Unknown key to bind macro.")
                         }
                         save()
                     }else{
@@ -37,7 +37,7 @@ class MacroCommand : Command("macro", arrayOf("m")) {
                             LiquidBounce.macroManager.macros.filter { it.key==key }
                         }.forEach {
                             LiquidBounce.macroManager.macros.remove(it)
-                            chat("Remove macro ${it.command}.")
+                            alert("Remove macro ${it.command}.")
                         }
                         save()
                     }else{
@@ -46,9 +46,9 @@ class MacroCommand : Command("macro", arrayOf("m")) {
                 }
 
                 "list" -> {
-                    chat("Macros:")
+                    alert("Macros:")
                     LiquidBounce.macroManager.macros.forEach {
-                        chat("key=${Keyboard.getKeyName(it.key)}, command=${it.command}")
+                        alert("key=${Keyboard.getKeyName(it.key)}, command=${it.command}")
                     }
                 }
 
