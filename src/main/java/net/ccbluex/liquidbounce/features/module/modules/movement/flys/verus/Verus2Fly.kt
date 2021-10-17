@@ -7,12 +7,16 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.AxisAlignedBB
 
 class Verus2Fly : FlyMode("Verus2") {
+    private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 5f)
+
+    private var flyable=false
     private val timer=MSTimer()
 
     override fun onEnable() {
@@ -22,20 +26,31 @@ class Verus2Fly : FlyMode("Verus2") {
         mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionY = 0.0
         mc.thePlayer.motionZ = 0.0
-        mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.015625, mc.thePlayer.posZ)
-        fly.launchY += 0.015625
-        MovementUtils.strafe(2F)
+        mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ)
+        flyable = true
+        mc.timer.timerSpeed = 0.5f
+        fly.launchY+=0.42
+        timer.reset()
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if(mc.gameSettings.keyBindJump.isKeyDown &&timer.hasTimePassed(250)) {
-            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY+0.42, mc.thePlayer.posZ)
-            fly.launchY+=0.42
-            timer.reset()
-        }else if(mc.gameSettings.keyBindSneak.isKeyDown &&timer.hasTimePassed(250)) {
-            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY-0.42, mc.thePlayer.posZ)
-            fly.launchY-=0.42
-            timer.reset()
+        if(timer.hasTimePassed(300)) {
+            mc.timer.timerSpeed=1f
+        }
+
+        if(timer.hasTimePassed(1500)) {
+            if(flyable){
+                MovementUtils.strafe(0.48f)
+            }
+            flyable = false
+        }
+
+        if(flyable&&timer.hasTimePassed(100)){
+            MovementUtils.strafe(speedValue.get())
+        }else if(!timer.hasTimePassed(100)) {
+            mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionY = 0.0
+            mc.thePlayer.motionZ = 0.0
         }
     }
 

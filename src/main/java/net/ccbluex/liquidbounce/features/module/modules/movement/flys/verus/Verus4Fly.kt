@@ -4,6 +4,7 @@ import net.ccbluex.liquidbounce.event.BlockBBEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -12,7 +13,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 
 class Verus4Fly : FlyMode("Verus4") {
-    private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
+    private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 3f)
 
     private var times=0
     private var timer=MSTimer()
@@ -45,7 +46,7 @@ class Verus4Fly : FlyMode("Verus4") {
         val packet=event.packet
 
         if(packet is C03PacketPlayer){
-            packet.onGround=times>=5 && !timer.hasTimePassed(500)
+            packet.onGround=(times>=5 && !timer.hasTimePassed(500))
         }
     }
 
