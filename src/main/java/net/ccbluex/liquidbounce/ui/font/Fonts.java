@@ -35,6 +35,7 @@ public class Fonts {
     private static final List<GameFontRenderer> CUSTOM_FONT_RENDERERS = new ArrayList<>();
 
     public static void loadFonts() {
+        AWTFontRenderer.Companion.getActiveFontRenderers().clear();
         long l = System.currentTimeMillis();
 
         ClientUtils.getLogger().info("Loading Fonts.");

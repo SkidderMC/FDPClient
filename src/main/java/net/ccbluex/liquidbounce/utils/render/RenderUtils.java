@@ -7,9 +7,12 @@ package net.ccbluex.liquidbounce.utils.render;
 
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
+import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
+import net.ccbluex.liquidbounce.utils.render.glu.TessCallback;
+import net.ccbluex.liquidbounce.utils.render.glu.VertexData;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -25,8 +28,13 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Timer;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
+import org.lwjgl.util.glu.GLUtessellator;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1150,5 +1158,80 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glDisable(2848);
         GL11.glHint(3154, 4352);
         GL11.glHint(3155, 4352);
+    }
+
+    public static void drawAWTShape(Shape shape) {
+        PathIterator path=shape.getPathIterator(new AffineTransform());
+        float[] cp=new float[2]; // 记录上次操作的点用于计算曲线
+
+        GLUtessellator tess = GLU.gluNewTess(); // 创建GLUtessellator用于渲染凹多边形（GL_POLYGON只能渲染凸多边形）
+
+        tess.gluTessCallback(GLU.GLU_TESS_BEGIN, TessCallback.INSTANCE);
+        tess.gluTessCallback(GLU.GLU_TESS_END, TessCallback.INSTANCE);
+        tess.gluTessCallback(GLU.GLU_TESS_VERTEX, TessCallback.INSTANCE);
+        tess.gluTessCallback(GLU.GLU_TESS_COMBINE, TessCallback.INSTANCE);
+
+        switch (path.getWindingRule()){
+            case PathIterator.WIND_EVEN_ODD:{
+                tess.gluTessProperty(GLU.GLU_TESS_WINDING_RULE, GLU.GLU_TESS_WINDING_ODD);
+                break;
+            }
+            case PathIterator.WIND_NON_ZERO:{
+                tess.gluTessProperty(GLU.GLU_TESS_WINDING_RULE, GLU.GLU_TESS_WINDING_NONZERO);
+                break;
+            }
+        }
+
+        tess.gluTessBeginPolygon(null);
+
+        while (!path.isDone()){
+            float[] segment=new float[6];
+            int type=path.currentSegment(segment);
+            switch (type){
+                case PathIterator.SEG_MOVETO:{
+                    tess.gluTessBeginContour();
+                    tessVertex(tess, new double[] {segment[0], segment[1], 0.0, 0.0, 0.0, 0.0});
+                    cp[0] = segment[0];
+                    cp[1] = segment[1];
+                    break;
+                }
+                case PathIterator.SEG_LINETO:{
+                    tessVertex(tess, new double[] {segment[0], segment[1], 0.0, 0.0, 0.0, 0.0});
+                    cp[0] = segment[0];
+                    cp[1] = segment[1];
+                    break;
+                }
+                case PathIterator.SEG_QUADTO:{
+                    Float[][] points=MathUtils.getPointsOnCurve(new Float[][]{new Float[]{cp[0], cp[1]}, new Float[]{segment[0], segment[1]}, new Float[]{segment[2], segment[3]}}, 20);
+                    for(Float[] point : points){
+                        tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
+                    }
+                    cp[0] = segment[2];
+                    cp[1] = segment[3];
+                    break;
+                }
+                case PathIterator.SEG_CUBICTO:{
+                    Float[][] points=MathUtils.getPointsOnCurve(new Float[][]{new Float[]{cp[0], cp[1]}, new Float[]{segment[0], segment[1]}, new Float[]{segment[2], segment[3]}, new Float[]{segment[4], segment[5]}}, 20);
+                    for(Float[] point : points){
+                        tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
+                    }
+                    cp[0] = segment[4];
+                    cp[1] = segment[5];
+                    break;
+                }
+                case PathIterator.SEG_CLOSE:{
+                    tess.gluTessEndContour();
+                    break;
+                }
+            }
+            path.next();
+        }
+
+        tess.gluEndPolygon();
+        tess.gluDeleteTess();
+    }
+
+    public static void tessVertex(GLUtessellator tessellator, double[] coords) {
+        tessellator.gluTessVertex(coords, 0, new VertexData(coords));
     }
 }

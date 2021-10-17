@@ -31,8 +31,6 @@ object UltralightEngine {
 
     val views=mutableListOf<View>()
 
-    val inDevMode=System.getProperty("dev-mode")!=null
-
     init {
         if(!pagesPath.exists())
             pagesPath.mkdirs()
@@ -105,7 +103,7 @@ object UltralightEngine {
             return
         }
 
-        if(inDevMode){
+        if(ClientUtils.inDevMode){
             if(pagesPath.exists())
                 pagesPath.deleteRecursively()
 

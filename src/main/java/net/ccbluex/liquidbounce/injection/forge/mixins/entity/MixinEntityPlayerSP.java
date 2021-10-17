@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.InventoryMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.Rotation;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
@@ -234,6 +235,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Overwrite
     public void onLivingUpdate() {
         LiquidBounce.eventManager.callEvent(new UpdateEvent());
+        AWTFontRenderer.Companion.garbageCollectionTick();
 
         if (this.sprintingTicksLeft > 0) {
             --this.sprintingTicksLeft;

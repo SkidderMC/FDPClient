@@ -18,6 +18,8 @@ public final class ClientUtils extends MinecraftInstance {
 
     public static final EnumOSType osType;
 
+    public static boolean inDevMode=System.getProperty("dev-mode")!=null;
+
     static {
         String os=System.getProperty("os.name").toLowerCase();
         if(os.contains("win")){

@@ -50,6 +50,7 @@ public class FileManager extends MinecraftInstance {
     public FileManager() {
         setupFolder();
         loadBackground();
+        // TODO: delete legacy caches due to use vector font renderer
     }
 
     /**
