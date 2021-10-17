@@ -136,6 +136,7 @@ class Scaffold : Module() {
         ), "Jump"
     )
     private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
+    private val towerFakeJump = BoolValue("TowerFakeJump", true)
     private val towerActiveValue = ListValue("TowerActivation", arrayOf("Always", "PressSpace", "NoMove", "OFF"), "PressSpace")
     private val towerTimerValue = FloatValue("TowerTimer", 1f, 0.1f, 5f)
 
@@ -424,6 +425,9 @@ class Scaffold : Module() {
     }
 
     private fun fakeJump() {
+        if(!towerFakeJump.get())
+            return
+
         mc.thePlayer.isAirBorne = true
         mc.thePlayer.triggerAchievement(StatList.jumpStat)
     }
@@ -447,30 +451,23 @@ class Scaffold : Module() {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.42
-                } else if (mc.thePlayer.motionY < 0.1) mc.thePlayer.motionY = -0.3
+                } else if (mc.thePlayer.motionY < 0.1) {
+                    mc.thePlayer.motionY = -0.3
+                }
             }
             "motiontp" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.42
-                } else if (mc.thePlayer.motionY < 0.23)
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+                } else if (mc.thePlayer.motionY < 0.23) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
+                }
             }
             "packet" -> {
                 if (mc.thePlayer.onGround && towerTimer.hasTimePassed(2)) {
                     fakeJump()
-                    mc.netHandler.addToSendQueue(
-                        C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, false
-                        )
-                    )
-                    mc.netHandler.addToSendQueue(
-                        C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 0.753, mc.thePlayer.posZ, false
-                        )
-                    )
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, false))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.753, mc.thePlayer.posZ, false))
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.0, mc.thePlayer.posZ)
                     towerTimer.reset()
                 }
@@ -505,9 +502,11 @@ class Scaffold : Module() {
                 if (mc.thePlayer.motionY >= plusMaxMotionValue.get()) {
                     mc.thePlayer.motionY = plusMaxMotionValue.get().toDouble()
                 }
+                fakeJump()
             }
             "stablemotion" -> {
                 mc.thePlayer.motionY = stableMotionValue.get().toDouble()
+                fakeJump()
             }
             "aac3.3.9" -> {
                 if (mc.thePlayer.onGround) {

@@ -214,39 +214,7 @@ object EaseUtils {
         ELASTIC,
         BOUNCE;
 
-        fun toFriendlyName():String{
-            val name=toString()
-
-            return name.substring(0,1).uppercase()+name.substring(1,name.length).lowercase()
-        }
-    }
-
-    @JvmStatic
-    fun apply(type: EnumEasingType,order: EnumEasingOrder,value: Double):Double{
-        if(type==EnumEasingType.NONE)
-            return value
-
-        val methodName="ease${order.methodName}${type.toFriendlyName()}"
-
-        for(method in this.javaClass.declaredMethods){
-            if(method.name.equals(methodName)){
-                return method.invoke(this,value) as Double
-            }
-        }
-
-        ClientUtils.getLogger().warn("Cannot found easing method: $methodName")
-        return value
-    }
-
-    @JvmStatic
-    fun getEnumEasingList(name: String):ListValue{
-        val arr=mutableListOf<String>()
-
-        for(it in EnumEasingType.values()){
-            arr.add(it.toFriendlyName())
-        }
-
-        return ListValue(name,arr.toTypedArray(),arr[0])
+        val friendlyName = name.substring(0,1).uppercase()+name.substring(1,name.length).lowercase()
     }
 
     enum class EnumEasingOrder(val methodName: String) {
@@ -256,13 +224,25 @@ object EaseUtils {
     }
 
     @JvmStatic
-    fun getEnumEasingOrderList(name: String):ListValue{
-        val arr=mutableListOf<String>()
+    fun getEnumEasingList(name: String) = ListValue(name,EnumEasingType.values().map { it.toString() }.toTypedArray(),EnumEasingType.SINE.toString())
 
-        for(it in EnumEasingOrder.values()){
-            arr.add(it.toString())
+    @JvmStatic
+    fun getEnumEasingOrderList(name: String) = ListValue(name,EnumEasingOrder.values().map { it.toString() }.toTypedArray(),EnumEasingOrder.FAST_AT_START.toString())
+
+    @JvmStatic
+    fun apply(type: EnumEasingType,order: EnumEasingOrder,value: Double):Double{
+        if(type==EnumEasingType.NONE)
+            return value
+
+        val methodName="ease${order.methodName}${type.friendlyName}"
+
+        this.javaClass.declaredMethods.find { it.name.equals(methodName) }.also {
+            return if(it!=null){
+                it.invoke(this,value) as Double
+            }else{
+                ClientUtils.logError("Cannot found easing method: $methodName")
+                value
+            }
         }
-
-        return ListValue(name,arr.toTypedArray(),arr[0])
     }
 }

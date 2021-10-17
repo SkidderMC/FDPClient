@@ -151,7 +151,7 @@ object LiquidBounce {
             scriptManager.loadScripts()
             scriptManager.enableScripts()
         } catch (throwable: Throwable) {
-            ClientUtils.getLogger().error("Failed to load scripts.", throwable)
+            ClientUtils.logError("Failed to load scripts.", throwable)
         }
 
         // Register commands

@@ -355,7 +355,7 @@ class KillAura : Module() {
         // Target
         currentTarget = target
 
-        if (!targetModeValue.equals("Switch") && EntityUtils.isSelected(currentTarget, true))
+        if (!targetModeValue.equals("Switch") && (currentTarget!=null && EntityUtils.isSelected(currentTarget!!, true)))
             target = currentTarget
     }
 

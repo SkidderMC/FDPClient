@@ -85,11 +85,11 @@ class Config {
                         }
                     }
                 } catch (e: Exception) {
-                    ClientUtils.getLogger().error("Error while loading custom hud element from config.", e)
+                    ClientUtils.logError("Error while loading custom hud element from config.", e)
                 }
             }
         } catch (e: Exception) {
-            ClientUtils.getLogger().error("Error while loading custom hud config.", e)
+            ClientUtils.logError("Error while loading custom hud config.", e)
             return createDefault()
         }
 

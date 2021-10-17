@@ -34,7 +34,7 @@ class ModuleManager : Listenable {
      * Register all modules
      */
     fun registerModules() {
-        ClientUtils.getLogger().info("[ModuleManager] Loading modules...")
+        ClientUtils.logInfo("[ModuleManager] Loading modules...")
 
         ReflectUtils.getReflects("${this.javaClass.`package`.name}.modules",Module::class.java)
             .forEach(this::registerModule)
@@ -45,7 +45,7 @@ class ModuleManager : Listenable {
 
         LiquidBounce.eventManager.registerListener(AutoDisable)
 
-        ClientUtils.getLogger().info("[ModuleManager] Loaded ${modules.size} modules.")
+        ClientUtils.logInfo("[ModuleManager] Loaded ${modules.size} modules.")
     }
 
     /**
@@ -71,7 +71,7 @@ class ModuleManager : Listenable {
             // this module is a kotlin object
             registerModule(ClassUtils.getObjectInstance(moduleClass) as Module)
         } catch (e: Throwable){
-            ClientUtils.getLogger().error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
+            ClientUtils.logError("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
         }
     }
 

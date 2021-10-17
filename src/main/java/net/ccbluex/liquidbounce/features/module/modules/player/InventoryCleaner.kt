@@ -252,7 +252,7 @@ class InventoryCleaner : Module() {
                         item is ItemBucket || ignoreVehiclesValue.get() && (item is ItemBoat || item is ItemMinecart)
             }
         } catch (ex: Exception) {
-            ClientUtils.getLogger().error("(InventoryCleaner) Failed to check item: ${itemStack.unlocalizedName}.", ex)
+            ClientUtils.logError("(InventoryCleaner) Failed to check item: ${itemStack.unlocalizedName}.", ex)
             true
         }
     }

@@ -102,7 +102,7 @@ class Script(val scriptFile: File) : MinecraftInstance() {
 
     fun supportLegacyScripts() {
         if (!scriptText.lines().first().contains("api_version=2")) {
-            ClientUtils.getLogger().info("[ScriptAPI] Running script '${scriptFile.name}' with legacy support.")
+            ClientUtils.logWarn("[ScriptAPI] Running script '${scriptFile.name}' with legacy support.")
             val legacyScript = LiquidBounce::class.java.getResource("/assets/minecraft/fdpclient/scriptapi/legacy.js").readText()
             scriptEngine.eval(legacyScript)
         }
@@ -157,7 +157,7 @@ class Script(val scriptFile: File) : MinecraftInstance() {
         try {
             events[eventName]?.call(null)
         } catch (throwable: Throwable) {
-            ClientUtils.getLogger().error("[ScriptAPI] Exception in script '$scriptName'!", throwable)
+            ClientUtils.logError("[ScriptAPI] Exception in script '$scriptName'!", throwable)
         }
     }
 }

@@ -33,7 +33,7 @@ abstract class Value<T>(val name: String, protected var value: T) {
             onChanged(oldValue, newValue)
             LiquidBounce.configManager.smartSave()
         } catch (e: Exception) {
-            ClientUtils.getLogger().error("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
+            ClientUtils.logError("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
         }
     }
 

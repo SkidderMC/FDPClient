@@ -27,7 +27,7 @@ class ChatTranslator : Module() {
             if(!cache.contains(msg)) {
                 doTranslate(msg)
             }else{
-                ClientUtils.displayChatMessage(if(cache[msg]==null){msg}else{cache[msg]})
+                ClientUtils.displayChatMessage(if(cache.containsKey(msg)){msg}else{cache[msg]!!})
             }
 
             event.cancelEvent()
