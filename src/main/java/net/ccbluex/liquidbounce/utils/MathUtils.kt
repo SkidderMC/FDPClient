@@ -16,11 +16,11 @@ object MathUtils {
     //TODO: 两圆相交坐标求解（月底能有时间弄）（TargetStrafe）
 
     @JvmStatic
-    fun lerp(a: Array<Float>, b: Array<Float>, t: Float) = arrayOf(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+    fun lerp(a: Array<Double>, b: Array<Double>, t: Double) = arrayOf(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
 
     @JvmStatic
-    fun calcCurvePoint(points: Array<Array<Float>>, t: Float): Array<Float> {
-        val cpoints = mutableListOf<Array<Float>>()
+    fun calcCurvePoint(points: Array<Array<Double>>, t: Double): Array<Double> {
+        val cpoints = mutableListOf<Array<Double>>()
         for(i in 0 until (points.size-1)){
             cpoints.add(lerp(points[i], points[i+1], t))
         }
@@ -32,10 +32,10 @@ object MathUtils {
     }
 
     @JvmStatic
-    fun getPointsOnCurve(points: Array<Array<Float>>, num: Int): Array<Array<Float>> {
-        val cpoints = mutableListOf<Array<Float>>()
+    fun getPointsOnCurve(points: Array<Array<Double>>, num: Int): Array<Array<Double>> {
+        val cpoints = mutableListOf<Array<Double>>()
         for(i in 0 until num) {
-            val t = i / (num - 1f)
+            val t = i / (num - 1.0)
             cpoints.add(calcCurvePoint(points, t))
         }
         return cpoints.toTypedArray()
