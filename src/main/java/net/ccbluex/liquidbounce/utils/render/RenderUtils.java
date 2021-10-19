@@ -1015,7 +1015,7 @@ public final class RenderUtils extends MinecraftInstance {
 
     public static void drawAWTShape(Shape shape) {
         PathIterator path=shape.getPathIterator(new AffineTransform());
-        float[] cp=new float[2]; // 记录上次操作的点用于计算曲线
+        double[] cp=new double[2]; // 记录上次操作的点用于计算曲线
 
         GLUtessellator tess = GLU.gluNewTess(); // 创建GLUtessellator用于渲染凹多边形（GL_POLYGON只能渲染凸多边形）
 
@@ -1038,7 +1038,7 @@ public final class RenderUtils extends MinecraftInstance {
         tess.gluTessBeginPolygon(null);
 
         while (!path.isDone()){
-            float[] segment=new float[6];
+            double[] segment=new double[6];
             int type=path.currentSegment(segment);
             switch (type){
                 case PathIterator.SEG_MOVETO:{
@@ -1055,8 +1055,8 @@ public final class RenderUtils extends MinecraftInstance {
                     break;
                 }
                 case PathIterator.SEG_QUADTO:{
-                    Float[][] points=MathUtils.getPointsOnCurve(new Float[][]{new Float[]{cp[0], cp[1]}, new Float[]{segment[0], segment[1]}, new Float[]{segment[2], segment[3]}}, 20);
-                    for(Float[] point : points){
+                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}}, 20);
+                    for(Double[] point : points){
                         tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
                     }
                     cp[0] = segment[2];
@@ -1064,8 +1064,8 @@ public final class RenderUtils extends MinecraftInstance {
                     break;
                 }
                 case PathIterator.SEG_CUBICTO:{
-                    Float[][] points=MathUtils.getPointsOnCurve(new Float[][]{new Float[]{cp[0], cp[1]}, new Float[]{segment[0], segment[1]}, new Float[]{segment[2], segment[3]}, new Float[]{segment[4], segment[5]}}, 20);
-                    for(Float[] point : points){
+                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}, new Double[]{segment[4], segment[5]}}, 20);
+                    for(Double[] point : points){
                         tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
                     }
                     cp[0] = segment[4];
