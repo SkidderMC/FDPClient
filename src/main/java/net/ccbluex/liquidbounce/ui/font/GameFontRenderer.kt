@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL13
 import java.awt.Color
 import java.awt.Font
 
@@ -69,8 +70,11 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-        GL11.glEnable(GL11.GL_POLYGON_SMOOTH)
-        GL11.glDisable(GL11.GL_CULL_FACE) // 不要剔除模型的背面
+        RenderUtils.clearCaps()
+        RenderUtils.enableGlCap(GL13.GL_MULTISAMPLE)
+        GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_FASTEST)
+        RenderUtils.enableGlCap(GL11.GL_POLYGON_SMOOTH)
+        RenderUtils.disableGlCap(GL11.GL_CULL_FACE) // 不要剔除模型的背面
 
         var hexColor = colorHex
         if (hexColor and -67108864 == 0)
@@ -161,8 +165,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
             defaultFont.drawString(text, 0.0, 0.0, hexColor)
         }
 
-        GL11.glEnable(GL11.GL_CULL_FACE)
-        GL11.glDisable(GL11.GL_POLYGON_SMOOTH)
+        RenderUtils.resetCaps()
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
         GlStateManager.translate(-(x - 1.5), -(y + 0.5), 0.0)
