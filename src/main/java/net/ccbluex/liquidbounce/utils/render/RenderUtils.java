@@ -781,6 +781,11 @@ public final class RenderUtils extends MinecraftInstance {
 
     public static void resetCaps() {
         glCapMap.forEach(RenderUtils::setGlState);
+        glCapMap.clear();
+    }
+
+    public static void clearCaps() {
+        glCapMap.clear();
     }
 
     public static void enableGlCap(final int cap) {
@@ -793,7 +798,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void disableGlCap(final int cap) {
-        setGlCap(cap, true);
+        setGlCap(cap, false);
     }
 
     public static void disableGlCap(final int... caps) {
