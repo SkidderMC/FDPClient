@@ -103,7 +103,7 @@ class AntiVoid : Module() {
                         mc.thePlayer.motionZ*=0.838
                         mc.thePlayer.motionX*=0.838
                         canSpoof=true
-                        if()
+                        
                     }
                 }
                 lastRecY = mc.thePlayer.posY
