@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
@@ -102,7 +103,30 @@ class AntiVoid : Module() {
                         mc.thePlayer.motionZ*=0.838
                         mc.thePlayer.motionX*=0.838
                         canSpoof=true
-                    }else if(mc.thePlayer.posY>lastRecY+0.01) mc.thePlayer.fallDistance = 0.0f
+                        if()
+                    }
+                }
+                lastRecY = mc.thePlayer.posY
+            }
+            
+            "oldcubecraft" -> {
+                canSpoof=false
+                if(!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
+                            0.0, 0.0, 0.0
+                        ).expand(0.0, 0.0, 0.0)).isEmpty() && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
+                            0.0, -282.25, 0.0
+                        ).expand(0.0, -283.75, 0.0)).isEmpty()) {
+                    if(mc.thePlayer.fallDistance>maxFallDistValue.get() && mc.thePlayer.posY<lastRecY+0.01 && mc.thePlayer.motionY<=0 && !mc.thePlayer.onGround){
+                        mc.thePlayer.motionY=0.0
+                        mc.thePlayer.motionZ=0.0
+                        mc.thePlayer.motionX=0.0
+                        mc.thePlayer.jumpMovementFactor = 0.00f
+                        canSpoof=true
+                        if(!tried) {
+                            tired = true
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, 32000, mc.thePlayer.posZ, false))
+                        }
+                    }
                 }
                 lastRecY = mc.thePlayer.posY
             }
@@ -132,10 +156,12 @@ class AntiVoid : Module() {
                             mc.thePlayer.motionX=0.0
                             mc.thePlayer.motionY=0.0
                             mc.thePlayer.motionZ=0.0
+                            mc.thePlayer.jumpMovementFactor = 0.00f
                         }else{
                             mc.thePlayer.motionX=motionX
                             mc.thePlayer.motionY=motionY
                             mc.thePlayer.motionZ=motionZ
+                            mc.thePlayer.jumpMovementFactor = 0.00f
                         }
 
                         if(autoScaffold.get()){
@@ -169,9 +195,28 @@ class AntiVoid : Module() {
                 }
             }
 
-            "groundspoof","jartex" -> {
+            "groundspoof" -> {
                 if (canSpoof && (packet is C03PacketPlayer)) {
                     packet.onGround = true
+                }
+            }
+            
+            "jartex" -> {
+                if (canSpoof && (packet is C03PacketPlayer)) {
+                    packet.onGround = true
+                }
+                if(canSpoof && (packet is S08PacketPlayerPosLook)) {
+                    mc.thePlayer.fallDistance = -9999.0f
+                }
+            }
+            
+            "oldcubecraft" -> {
+                if (canSpoof && (packet is C03PacketPlayer)) {
+                    if (packet.y<1145.14) event.cancelEvent()
+                }
+                if(canSpoof && (packet is S08PacketPlayerPosLook)) {
+                    mc.thePlayer.fallDistance = -9999.0f
+                    tired = false
                 }
             }
 
