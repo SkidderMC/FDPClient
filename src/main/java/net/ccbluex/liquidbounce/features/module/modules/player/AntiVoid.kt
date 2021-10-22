@@ -20,7 +20,7 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val modeValue=ListValue("Mode", arrayOf("Blink","TPBack","FlyFlag","PacketFlag","GroundSpoof","TestHypixel","Jartex"),"Blink")
+    private val modeValue=ListValue("Mode", arrayOf("Blink","TPBack","FlyFlag","PacketFlag","GroundSpoof","TestHypixel","Jartex","OldCubecraft"),"Blink")
     private val maxFallDistValue=FloatValue("MaxFallDistance",10F,5F,20F)
     private val resetMotion=BoolValue("ResetMotion",false).displayable { modeValue.equals("Blink") }
     private val startFallDistValue=FloatValue("BlinkStartFallDistance",2F,0F,5F).displayable { modeValue.equals("Blink") }
@@ -123,8 +123,8 @@ class AntiVoid : Module() {
                         mc.thePlayer.jumpMovementFactor = 0.00f
                         canSpoof=true
                         if(!tried) {
-                            tired = true
-                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, 32000, mc.thePlayer.posZ, false))
+                            tried = true
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, (32000.0).toDouble(), mc.thePlayer.posZ, false))
                         }
                     }
                 }
@@ -216,7 +216,7 @@ class AntiVoid : Module() {
                 }
                 if(canSpoof && (packet is S08PacketPlayerPosLook)) {
                     mc.thePlayer.fallDistance = -9999.0f
-                    tired = false
+                    tried = false
                 }
             }
 
