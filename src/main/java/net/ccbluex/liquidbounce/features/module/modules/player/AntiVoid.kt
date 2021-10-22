@@ -60,10 +60,10 @@ class AntiVoid : Module() {
             }
 
             "flyflag" -> {
-                if(mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried){
+                mc.netHandler
+                if(mc.thePlayer.fallDistance > maxFallDistValue.get()){
                     mc.thePlayer.motionY += 1
-                    mc.thePlayer.fallDistance = 0F
-                    tried=true
+//                    mc.thePlayer.fallDistance = 0F
                 }
             }
 
@@ -93,17 +93,13 @@ class AntiVoid : Module() {
             
             "jartex" -> {
                 canSpoof=false
-                if(!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
-                            0.0, 0.0, 0.0
-                        ).expand(0.0, 0.0, 0.0)).isEmpty() && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
-                            0.0, -282.25, 0.0
-                        ).expand(0.0, -283.75, 0.0)).isEmpty()) {
+                if(!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, 0.0, 0.0).expand(0.0, 0.0, 0.0)).isEmpty()
+                    && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -282.25, 0.0).expand(0.0, -283.75, 0.0)).isEmpty()) {
                     if(mc.thePlayer.fallDistance>maxFallDistValue.get() && mc.thePlayer.posY<lastRecY+0.01 && mc.thePlayer.motionY<=0 && !mc.thePlayer.onGround){
                         mc.thePlayer.motionY=0.0
                         mc.thePlayer.motionZ*=0.838
                         mc.thePlayer.motionX*=0.838
                         canSpoof=true
-                        
                     }
                 }
                 lastRecY = mc.thePlayer.posY
