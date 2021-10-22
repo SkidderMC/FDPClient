@@ -460,3 +460,6 @@ module.Spider.description=Makes you move like a spider
 module.NoAchievements.name=NoAchievements
 module.NoAchievements.description=Disable alert when you earn a achievement
 
+module.TargetStrafe.name=TargetStrafe
+module.TargetStrafe.description=Strafe around your target.
+

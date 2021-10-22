@@ -494,9 +494,8 @@ class KillAura : Module() {
                     GL11.glLineWidth((radius*5f).toFloat())
                     GL11.glBegin(3)
                     for (i in 0..360 step 5) {
-                        val rainbow = Color.getHSBColor(if(i<180){ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(i/180f) }
-                        else{ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(-(i-360)/180f) }, 0.7f, 1.0f)
-                        RenderUtils.glColor(rainbow)
+                        RenderUtils.glColor(Color.getHSBColor(if(i<180){ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(i/180f) }
+                        else{ HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get())*(-(i-360)/180f) }, 0.7f, 1.0f))
                         GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
                     }
                     GL11.glEnd()
