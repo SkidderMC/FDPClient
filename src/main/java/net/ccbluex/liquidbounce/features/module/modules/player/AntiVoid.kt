@@ -60,10 +60,10 @@ class AntiVoid : Module() {
             }
 
             "flyflag" -> {
-                mc.netHandler
-                if(mc.thePlayer.fallDistance > maxFallDistValue.get()){
+                if(mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried){
                     mc.thePlayer.motionY += 1
 //                    mc.thePlayer.fallDistance = 0F
+                    tried = true
                 }
             }
 
