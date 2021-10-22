@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.movement.InventoryMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
@@ -103,15 +102,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Shadow
     public abstract boolean isSneaking();
 
-    /**
-     * @author liuli
-     * for aac5.2.0-vanilla fly with betterview mode
-     */
-    @Overwrite
-    protected boolean isCurrentViewEntity() {
-        return (mc.getRenderViewEntity()!=null&&mc.getRenderViewEntity().equals(this)) || (LiquidBounce.moduleManager!=null&&LiquidBounce.moduleManager.getModule(Fly.class).getState());
-    }
-
     @Shadow
     private double lastReportedPosX;
 
@@ -129,6 +119,9 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     @Shadow
     private float lastReportedPitch;
+
+    @Shadow
+    protected abstract boolean isCurrentViewEntity();
 
     /**
      * @author CCBlueX, liulihaocai

@@ -23,7 +23,6 @@ import net.minecraft.util.AxisAlignedBB
 
 class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
-    private val viewValue = BoolValue("${valuePrefix}BetterView", false)
     private val smoothValue = BoolValue("${valuePrefix}Smooth", false)
     private val purseValue = IntegerValue("${valuePrefix}Purse", 7, 3, 20)
     private val packetModeValue = ListValue("${valuePrefix}PacketMode", arrayOf("Old", "Rise"), "Old")
@@ -31,7 +30,6 @@ class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
 
     private val packets = mutableListOf<C03PacketPlayer>()
     private val timer=MSTimer()
-    private var clonedPlayer: EntityOtherPlayerMP? = null
     private var nextFlag = false
     private var flyClip = false
     private var flyStart = false
@@ -51,13 +49,6 @@ class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
 
         if(smoothValue.get()){
             mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ)
-        }else if (viewValue.get()) {
-            clonedPlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
-            clonedPlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
-            clonedPlayer!!.copyLocationAndAnglesFrom(mc.thePlayer)
-            mc.theWorld.addEntityToWorld((-(Math.random() * 10000)).toInt(), clonedPlayer)
-            clonedPlayer!!.isInvisible = true
-            mc.renderViewEntity = clonedPlayer
         }
     }
 
@@ -65,12 +56,6 @@ class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
         sendPackets()
         packets.clear()
         mc.thePlayer.noClip = false
-
-        if(viewValue.get()){
-            mc.renderViewEntity = mc.thePlayer
-            mc.theWorld.removeEntityFromWorld(clonedPlayer?.entityId ?: return)
-            clonedPlayer=null
-        }
     }
 
     override fun onUpdate(event: UpdateEvent) {
@@ -102,13 +87,6 @@ class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
         if (mc.gameSettings.keyBindSneak.isKeyDown)
             mc.thePlayer.motionY -= speedValue.get() * 0.5
         MovementUtils.strafe(speedValue.get())
-
-        clonedPlayer ?: return
-
-        clonedPlayer!!.inventory.copyInventory(mc.thePlayer.inventory)
-        clonedPlayer!!.health = mc.thePlayer.health
-        clonedPlayer!!.rotationYaw=mc.thePlayer.rotationYaw
-        clonedPlayer!!.rotationPitch=mc.thePlayer.rotationPitch
     }
 
 
@@ -122,8 +100,6 @@ class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
                 mc.timer.timerSpeed = 1.3F
             }
             nextFlag=true
-
-            clonedPlayer?.setPosition(packet.x, packet.y, packet.z)
         }else if(packet is C03PacketPlayer){
             val f = mc.thePlayer.width / 2.0
             // need to no collide else will flag
