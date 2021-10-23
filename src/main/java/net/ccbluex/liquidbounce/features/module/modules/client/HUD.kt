@@ -27,11 +27,11 @@ object HUD : Module() {
     val chatRectValue = BoolValue("ChatRect", true)
     val chatCombineValue = BoolValue("ChatCombine", true)
     val chatAnimValue = BoolValue("ChatAnimation", true)
-    val rainbowStart=FloatValue("RainbowStart",0.41f,0f,1f)
-    val rainbowStop=FloatValue("RainbowStop",0.58f,0f,1f)
-    val rainbowSaturation=FloatValue("RainbowSaturation",0.7f,0f,1f)
-    val rainbowBrightness=FloatValue("RainbowBrightness",1f,0f,1f)
-    val rainbowSpeed=IntegerValue("RainbowSpeed",1500,500,7000)
+    val rainbowStart = FloatValue("RainbowStart", 0.41f, 0f, 1f)
+    val rainbowStop = FloatValue("RainbowStop", 0.58f, 0f, 1f)
+    val rainbowSaturation = FloatValue("RainbowSaturation", 0.7f, 0f, 1f)
+    val rainbowBrightness = FloatValue("RainbowBrightness", 1f, 0f, 1f)
+    val rainbowSpeed = IntegerValue("RainbowSpeed", 1500, 500, 7000)
 
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
@@ -46,13 +46,15 @@ object HUD : Module() {
 
     @EventTarget
     fun onScreen(event: ScreenEvent) {
-        if (mc.theWorld == null || mc.thePlayer == null)
+        if (mc.theWorld == null || mc.thePlayer == null) {
             return
+        }
 
-        if (state && blurValue.get() && !mc.entityRenderer.isShaderActive && event.guiScreen != null && !(event.guiScreen is GuiChat || event.guiScreen is GuiHudDesigner))
+        if (state && blurValue.get() && !mc.entityRenderer.isShaderActive && event.guiScreen != null && !(event.guiScreen is GuiChat || event.guiScreen is GuiHudDesigner)) {
             mc.entityRenderer.loadShader(ResourceLocation("fdpclient/blur.json"))
-        else if (mc.entityRenderer.shaderGroup != null && mc.entityRenderer.shaderGroup!!.shaderGroupName.contains("fdpclient/blur.json"))
+        } else if (mc.entityRenderer.shaderGroup != null && mc.entityRenderer.shaderGroup!!.shaderGroupName.contains("fdpclient/blur.json")) {
             mc.entityRenderer.stopUseShader()
+        }
     }
 
     @EventTarget

@@ -21,10 +21,12 @@ class FastBreak : Module() {
     fun onUpdate(event: UpdateEvent) {
         mc.playerController.blockHitDelay = 0
 
-        if (mc.playerController.curBlockDamageMP > breakDamage.get())
+        if (mc.playerController.curBlockDamageMP > breakDamage.get()) {
             mc.playerController.curBlockDamageMP = 1F
+        }
 
-        if (Fucker.currentDamage > breakDamage.get())
+        if (Fucker.currentDamage > breakDamage.get()) {
             Fucker.currentDamage = 1F
+        }
     }
 }

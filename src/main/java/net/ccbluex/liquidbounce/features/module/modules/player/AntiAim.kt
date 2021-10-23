@@ -13,22 +13,21 @@ import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "AntiAim", category = ModuleCategory.PLAYER)
 class AntiAim : Module() {
-    private val yawMode=ListValue("YawMove", arrayOf("Jitter","Spin","Back","BackJitter"),"Spin")
-    private val pitchMode=ListValue("PitchMode", arrayOf("Down","Up","Jitter","AnotherJitter"),"Down")
-    private val rotateValue=BoolValue("SilentRotate",true)
+    private val yawMode = ListValue("YawMove", arrayOf("Jitter", "Spin", "Back", "BackJitter"), "Spin")
+    private val pitchMode = ListValue("PitchMode", arrayOf("Down", "Up", "Jitter", "AnotherJitter"), "Down")
+    private val rotateValue = BoolValue("SilentRotate", true)
 
     private var yaw = 0f
     private var pitch = 0f
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent){
+    fun onUpdate(event: UpdateEvent) {
         when (yawMode.get().lowercase()) {
             "spin" -> {
                 yaw += 20.0f
                 if (yaw > 180.0f) {
-                    yaw= -180.0f
-
-                }else if (yaw < -180.0f){
+                    yaw = -180.0f
+                } else if (yaw < -180.0f) {
                     yaw = 180.0f
                 }
             }
@@ -39,7 +38,7 @@ class AntiAim : Module() {
                 yaw = mc.thePlayer.rotationYaw + 180f
             }
             "backjitter" -> {
-                yaw = mc.thePlayer.rotationYaw + 180f+RandomUtils.nextDouble(-3.0,3.0).toFloat()
+                yaw = mc.thePlayer.rotationYaw + 180f + RandomUtils.nextDouble(-3.0, 3.0).toFloat()
             }
         }
 
@@ -51,23 +50,23 @@ class AntiAim : Module() {
                 pitch = 90.0f
             }
             "anotherjitter" -> {
-                pitch = 60f+RandomUtils.nextDouble(-3.0,3.0).toFloat()
+                pitch = 60f + RandomUtils.nextDouble(-3.0, 3.0).toFloat()
             }
             "jitter" -> {
                 pitch += 30.0f
                 if (pitch > 90.0f) {
                     pitch = -90.0f
-                }else if (pitch < -90.0f) {
+                } else if (pitch < -90.0f) {
                     pitch = 90.0f
                 }
             }
         }
 
-        if(rotateValue.get()){
+        if (rotateValue.get()) {
             RotationUtils.setTargetRotation(Rotation(yaw, pitch))
-        }else{
-            mc.thePlayer.rotationYaw=yaw
-            mc.thePlayer.rotationPitch=pitch
+        } else {
+            mc.thePlayer.rotationYaw = yaw
+            mc.thePlayer.rotationPitch = pitch
         }
     }
 }

@@ -66,7 +66,7 @@ class NCPBHop : SpeedMode("NCPBHop") {
             thePlayer.posY -= 0.09316090325960147
         }
 
-        when{
+        when {
             (level == 1 && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) -> {
                 level = 2
                 moveSpeed = 1.35 * baseMoveSpeed - 0.01

@@ -29,7 +29,7 @@ import kotlin.math.roundToInt
 
 @ModuleInfo(name = "NameTags", category = ModuleCategory.RENDER)
 class NameTags : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Simple","Liquid","Jello"),"Simple")
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello"), "Simple")
     private val healthValue = BoolValue("Health", true)
     private val pingValue = BoolValue("Ping", true)
     private val distanceValue = BoolValue("Distance", false)
@@ -44,12 +44,11 @@ class NameTags : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        for(entity in mc.theWorld.loadedEntityList) {
-            if(EntityUtils.isSelected(entity, false)) {
+        for (entity in mc.theWorld.loadedEntityList) {
+            if (EntityUtils.isSelected(entity, false)) {
                 renderNameTag(entity as EntityLivingBase,
-                    if(hackerValue.get()&&LiquidBounce.moduleManager[HackerDetector::class.java]!!.isHacker(entity))
-                    { "§c" }else{ "" } + if(!modeValue.equals("Liquid")&&AntiBot.isBot(entity)){ "§e" }else{ "" }
-                            + if (clearNamesValue.get()){ entity.name } else { entity.getDisplayName().unformattedText })
+                    if (hackerValue.get() && LiquidBounce.moduleManager[HackerDetector::class.java]!!.isHacker(entity)) { "§c" } else { "" } + if (!modeValue.equals("Liquid") && AntiBot.isBot(entity)) { "§e" } else { "" } +
+                            if (clearNamesValue.get()) { entity.name } else { entity.getDisplayName().unformattedText })
             }
         }
     }
@@ -101,8 +100,9 @@ class NameTags : Module() {
         // Scale
         var distance = mc.thePlayer.getDistanceToEntity(entity) / 4F
 
-        if (distance < 1F)
+        if (distance < 1F) {
             distance = 1F
+        }
 
         val scale = (distance / 150F) * scaleValue.get()
 
@@ -114,17 +114,17 @@ class NameTags : Module() {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         // Draw nametag
-        when(modeValue.get().lowercase()) {
+        when (modeValue.get().lowercase()) {
             "simple" -> {
                 val healthPercent = (entity.health / entity.maxHealth).coerceAtMost(1F)
                 val width = fontRenderer.getStringWidth(tag).coerceAtLeast(30) / 2
-                val maxWidth=width*2+12F
+                val maxWidth = width * 2 + 12F
 
-                glScalef(-scale*2, -scale*2, scale*2)
-                drawRect(-width - 6F, -fontRenderer.FONT_HEIGHT*1.7F, width + 6F, -2F, Color(0,0,0,jelloAlphaValue.get()))
-                drawRect(-width-6F,-2F,-width-6F+(maxWidth*healthPercent),0F,ColorUtils.healthColor(entity.health,entity.maxHealth,jelloAlphaValue.get()))
-                drawRect(-width-6F+(maxWidth*healthPercent),-2F,width+6F,0F,Color(0,0,0,jelloAlphaValue.get()))
-                fontRenderer.drawString(tag, (-fontRenderer.getStringWidth(tag)*0.5F).toInt(), (-fontRenderer.FONT_HEIGHT*1.4F).toInt(),Color.WHITE.rgb)
+                glScalef(-scale * 2, -scale * 2, scale * 2)
+                drawRect(-width - 6F, -fontRenderer.FONT_HEIGHT * 1.7F, width + 6F, -2F, Color(0, 0, 0, jelloAlphaValue.get()))
+                drawRect(-width - 6F, -2F, -width - 6F + (maxWidth * healthPercent), 0F, ColorUtils.healthColor(entity.health, entity.maxHealth, jelloAlphaValue.get()))
+                drawRect(-width - 6F + (maxWidth * healthPercent), -2F, width + 6F, 0F, Color(0, 0, 0, jelloAlphaValue.get()))
+                fontRenderer.drawString(tag, (-fontRenderer.getStringWidth(tag) * 0.5F).toInt(), (-fontRenderer.FONT_HEIGHT * 1.4F).toInt(), Color.WHITE.rgb)
             }
 
             "liquid" -> {
@@ -142,17 +142,19 @@ class NameTags : Module() {
 
                 glScalef(-scale, -scale, scale)
                 val width = fontRenderer.getStringWidth(text) / 2
-                if (borderValue.get())
+                if (borderValue.get()) {
                     drawBorderedRect(-width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F, 2F, Color(255, 255, 255, 90).rgb, Integer.MIN_VALUE)
-                else
+                } else {
                     drawRect(-width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F, Integer.MIN_VALUE)
+                }
 
                 fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, true)
 
                 if (armorValue.get() && entity is EntityPlayer) {
                     for (index in 0..4) {
-                        if (entity.getEquipmentInSlot(index) == null)
+                        if (entity.getEquipmentInSlot(index) == null) {
                             continue
+                        }
 
                         mc.renderItem.zLevel = -147F
                         mc.renderItem.renderItemAndEffectIntoGUI(entity.getEquipmentInSlot(index), -50 + index * 20, -22)
@@ -165,33 +167,33 @@ class NameTags : Module() {
             }
 
             "jello" -> {
-                //colors
-                var hpBarColor=Color(255,255,255,jelloAlphaValue.get())
-                val name=entity.displayName.unformattedText
-                if(jelloColorValue.get() && name.startsWith("§")){
-                    hpBarColor=ColorUtils.colorCode(name.substring(1,2),jelloAlphaValue.get())
+                // colors
+                var hpBarColor = Color(255, 255, 255, jelloAlphaValue.get())
+                val name = entity.displayName.unformattedText
+                if (jelloColorValue.get() && name.startsWith("§")) {
+                    hpBarColor = ColorUtils.colorCode(name.substring(1, 2), jelloAlphaValue.get())
                 }
-                val bgColor=Color(50,50,50,jelloAlphaValue.get())
+                val bgColor = Color(50, 50, 50, jelloAlphaValue.get())
                 val width = fontRenderer.getStringWidth(tag) / 2
-                val maxWidth=(width + 4F)-(-width - 4F)
-                var healthPercent=entity.health/entity.maxHealth
+                val maxWidth = (width + 4F) - (-width - 4F)
+                var healthPercent = entity.health / entity.maxHealth
 
-                //render bg
-                glScalef(-scale*2, -scale*2, scale*2)
-                drawRect(-width - 4F, -fontRenderer.FONT_HEIGHT*3F, width + 4F, -3F, bgColor)
+                // render bg
+                glScalef(-scale * 2, -scale * 2, scale * 2)
+                drawRect(-width - 4F, -fontRenderer.FONT_HEIGHT * 3F, width + 4F, -3F, bgColor)
 
-                //render hp bar
-                if(healthPercent>1){
-                    healthPercent=1F
+                // render hp bar
+                if (healthPercent> 1) {
+                    healthPercent = 1F
                 }
 
-                drawRect(-width - 4F, -3F, (-width - 4F)+(maxWidth*healthPercent), 1F, hpBarColor)
-                drawRect((-width - 4F)+(maxWidth*healthPercent), -3F, width + 4F, 1F, bgColor)
+                drawRect(-width - 4F, -3F, (-width - 4F) + (maxWidth * healthPercent), 1F, hpBarColor)
+                drawRect((-width - 4F) + (maxWidth * healthPercent), -3F, width + 4F, 1F, bgColor)
 
-                //string
-                fontRenderer.drawString(tag,-width,-fontRenderer.FONT_HEIGHT*2-4,Color.WHITE.rgb)
-                glScalef(0.5F,0.5F,0.5F)
-                fontRenderer.drawString("Health: "+entity.health.toInt(),-width*2, -fontRenderer.FONT_HEIGHT*2,Color.WHITE.rgb)
+                // string
+                fontRenderer.drawString(tag, -width, -fontRenderer.FONT_HEIGHT * 2 - 4, Color.WHITE.rgb)
+                glScalef(0.5F, 0.5F, 0.5F)
+                fontRenderer.drawString("Health: " + entity.health.toInt(), -width * 2, -fontRenderer.FONT_HEIGHT * 2, Color.WHITE.rgb)
             }
         }
         // Reset caps

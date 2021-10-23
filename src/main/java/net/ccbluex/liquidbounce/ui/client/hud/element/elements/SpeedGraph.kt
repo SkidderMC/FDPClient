@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
-import java.awt.Color
 import kotlin.math.sqrt
 
 /**
@@ -19,8 +18,12 @@ import kotlin.math.sqrt
  * Allows to draw custom text
  */
 @ElementInfo(name = "SpeedGraph", blur = true)
-class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
-                 side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
+class SpeedGraph(
+    x: Double = 75.0,
+    y: Double = 110.0,
+    scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)
+) : Element(x, y, scale, side) {
 
     private val yMultiplier = FloatValue("yMultiplier", 7F, 1F, 20F)
     private val height = IntegerValue("Height", 50, 30, 150)
@@ -37,7 +40,7 @@ class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
     private val bdRedValue = IntegerValue("BDRed", 255, 0, 255)
     private val bdGreenValue = IntegerValue("BDGreen", 255, 0, 255)
     private val bdBlueValue = IntegerValue("BDBlue", 255, 0, 255)
-    private val boarderValue = BoolValue("Boarder",false)
+    private val boarderValue = BoolValue("Boarder", false)
     private val currentLineValue = BoolValue("CurrentLine", false)
     private val clRedValue = IntegerValue("CLRed", 0, 0, 255)
     private val clGreenValue = IntegerValue("CLGreen", 255, 0, 255)
@@ -56,9 +59,10 @@ class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
             val x2 = mc.thePlayer.posX
             val x1 = mc.thePlayer.prevPosX
             var speed = sqrt((z2 - z1) * (z2 - z1) + (x2 - x1) * (x2 - x1))
-            if (speed < 0)
+            if (speed < 0) {
                 speed = -speed
-            speed = (lastSpeed * 0.9 + speed * 0.1) * smoothness.get() + speed * (1-smoothness.get())
+            }
+            speed = (lastSpeed * 0.9 + speed * 0.1) * smoothness.get() + speed * (1 - smoothness.get())
             lastSpeed = speed
             speedList.add(speed)
             while (speedList.size > width) {
@@ -90,8 +94,8 @@ class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
         }
         GL11.glEnd()
 
-        if(currentLineValue.get()){
-            val y=(speedList.lastOrNull() ?: 0.0) * 10 * yMultiplier.get()
+        if (currentLineValue.get()) {
+            val y = (speedList.lastOrNull() ?: 0.0) * 10 * yMultiplier.get()
             RenderUtils.glColor(clRedValue.get(), clGreenValue.get(), clBlueValue.get(), 255)
             GL11.glBegin(GL11.GL_LINES)
             GL11.glVertex2d(0.0, height.get() + 1 - y.coerceAtMost(height.get().toDouble()))
@@ -99,7 +103,7 @@ class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
             GL11.glEnd()
         }
 
-        if(boarderValue.get()){
+        if (boarderValue.get()) {
             RenderUtils.glColor(bdRedValue.get(), bdGreenValue.get(), bdBlueValue.get(), 255)
             GL11.glBegin(GL11.GL_LINE_STRIP)
             GL11.glVertex2d(0.0, 0.0)

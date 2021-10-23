@@ -5,6 +5,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
+    id "io.gitlab.arturbosch.detekt"
 }
 
 repositories {
@@ -42,6 +43,8 @@ configurations {
 }
 
 dependencies {
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
+
     include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
         exclude module: "guava"
@@ -127,6 +130,25 @@ reobf {
     shadowJar {
         mappingType = "SEARGE"
     }
+}
+
+detekt {
+    toolVersion = "$detekt_version"
+    input = files("$projectDir")
+    config = files("$project.projectDir/detekt.yml")
+//    buildUponDefaultConfig = true
+    basePath = projectDir
+
+//    reports {
+//        reports {
+//            html.enabled = true
+//            xml.enabled = true
+//            txt.enabled = false
+//            sarif.enabled = false
+//        }
+//    }
+
+    autoCorrect = true
 }
 
 tasks.reobfJar.dependsOn(shadowJar)

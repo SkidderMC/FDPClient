@@ -14,15 +14,15 @@ import java.io.File
 
 object GuiMainMenu : DynamicGuiView(Page(File(UltralightEngine.pagesPath, "mainmenu.html"))) {
     @JvmField
-    var cancelledUpdate=false
+    var cancelledUpdate = false
     @JvmField
-    var updateVersion:String?=null
+    var updateVersion: String? = null
     @JvmField
-    var updateMessage:String?=null
+    var updateMessage: String? = null
 
     @JvmStatic
-    fun action(code: Int){
-        when(code){
+    fun action(code: Int) {
+        when (code) {
             0 -> mc.displayGuiScreen(GuiSelectWorld(this))
             1 -> mc.displayGuiScreen(GuiMultiplayer(this))
             2 -> mc.displayGuiScreen(GuiAltManager(this))
@@ -34,7 +34,7 @@ object GuiMainMenu : DynamicGuiView(Page(File(UltralightEngine.pagesPath, "mainm
     }
 
     @JvmStatic
-    fun mcTranslate(str: String):String{
+    fun mcTranslate(str: String): String {
         return I18n.format(str)
     }
 }

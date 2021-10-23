@@ -10,12 +10,12 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
 abstract class Value<T>(val name: String, protected var value: T) {
-    val default=value
+    val default = value
 
     private var displayableFunc: () -> Boolean = { true }
 
     fun displayable(func: () -> Boolean): Value<T> {
-        displayableFunc=func
+        displayableFunc = func
         return this
     }
 
@@ -39,8 +39,8 @@ abstract class Value<T>(val name: String, protected var value: T) {
 
     fun get() = value
 
-    fun setDefault(){
-        value=default
+    fun setDefault() {
+        value = default
     }
 
     open fun changeValue(value: T) {
@@ -55,18 +55,18 @@ abstract class Value<T>(val name: String, protected var value: T) {
 
     // this is better api for ListValue and TextValue
 
-    override fun equals(other: Any?):Boolean {
+    override fun equals(other: Any?): Boolean {
         other ?: return false
-        if(value is String && other is String){
+        if (value is String && other is String) {
             return (value as String).equals(other, true)
         }
         return value?.equals(other) ?: false
     }
 
-    fun contains(text: String/*, ignoreCase: Boolean*/):Boolean {
-        return if(value is String){
+    fun contains(text: String/*, ignoreCase: Boolean*/): Boolean {
+        return if (value is String) {
             (value as String).contains(text, true)
-        }else{
+        } else {
             false
         }
     }

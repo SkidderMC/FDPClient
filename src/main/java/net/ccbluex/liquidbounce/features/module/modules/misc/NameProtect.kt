@@ -30,14 +30,16 @@ class NameProtect : Module() {
     fun onText(event: TextEvent) {
         val thePlayer = mc.thePlayer
 
-        if (thePlayer == null || event.text!!.contains("§8[§9§l" + LiquidBounce.CLIENT_NAME + "§8] §3"))
+        if (thePlayer == null || event.text!!.contains("§8[§9§l" + LiquidBounce.CLIENT_NAME + "§8] §3")) {
             return
+        }
 
         for (friend in LiquidBounce.fileManager.friendsConfig.friends)
             event.text = StringUtils.replace(event.text, friend.playerName, translateAlternateColorCodes(friend.alias) + "§f")
 
-        if (!state)
+        if (!state) {
             return
+        }
         event.text = StringUtils.replace(event.text, thePlayer.name, translateAlternateColorCodes(fakeNameValue.get()) + "§f")
 
         if (allPlayersValue.get()) {

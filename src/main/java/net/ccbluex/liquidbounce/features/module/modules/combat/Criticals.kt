@@ -27,16 +27,16 @@ import net.minecraft.stats.StatList
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "Hypixel", "Hypixel2","AACPacket", "AAC4.3.11OldHYT", "NoGround", "Visual", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "Motion", "Hover"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "Hypixel", "Hypixel2", "AACPacket", "AAC4.3.11OldHYT", "NoGround", "Visual", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "Motion", "Hover"), "packet")
     val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
     val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
-    val hoverNoFall = BoolValue("HoverNoFall",true)
-    val hoverCombat = BoolValue("HoverOnlyCombat",true)
+    val hoverNoFall = BoolValue("HoverNoFall", true)
+    val hoverCombat = BoolValue("HoverOnlyCombat", true)
     val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
     private val debugValue = BoolValue("DebugMessage", false)
-    //private val rsNofallValue = BoolValue("RedeNofall",true)
+    // private val rsNofallValue = BoolValue("RedeNofall",true)
 
     val msTimer = MSTimer()
 
@@ -45,8 +45,9 @@ class Criticals : Module() {
     var aacLastState = false
 
     override fun onEnable() {
-        if (modeValue.equals("NoGround"))
+        if (modeValue.equals("NoGround")) {
             mc.thePlayer.jump()
+        }
         jState = 0
     }
 
@@ -58,96 +59,97 @@ class Criticals : Module() {
 
             if (!mc.thePlayer.onGround || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb || mc.thePlayer.isInWater ||
                 mc.thePlayer.isInLava || mc.thePlayer.ridingEntity != null || entity.hurtTime > hurtTimeValue.get() ||
-                LiquidBounce.moduleManager[Fly::class.java]!!.state || !msTimer.hasTimePassed(delayValue.get().toLong()))
+                LiquidBounce.moduleManager[Fly::class.java]!!.state || !msTimer.hasTimePassed(delayValue.get().toLong())) {
                 return
+            }
 
-            fun sendCriticalPacket(xOffset: Double=0.0, yOffset: Double=0.0, zOffset: Double=0.0, ground: Boolean){
-                val x = mc.thePlayer.posX+xOffset
-                val y = mc.thePlayer.posY+yOffset
-                val z = mc.thePlayer.posZ+zOffset
-                if(lookValue.get()){
-                    mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x,y,z,mc.thePlayer.rotationYaw,mc.thePlayer.rotationPitch,ground))
-                }else{
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x,y,z,ground))
+            fun sendCriticalPacket(xOffset: Double = 0.0, yOffset: Double = 0.0, zOffset: Double = 0.0, ground: Boolean) {
+                val x = mc.thePlayer.posX + xOffset
+                val y = mc.thePlayer.posY + yOffset
+                val z = mc.thePlayer.posZ + zOffset
+                if (lookValue.get()) {
+                    mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y, z, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, ground))
+                } else {
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, ground))
                 }
             }
 
             when (modeValue.get().lowercase()) {
                 "packet" -> {
-                    sendCriticalPacket(yOffset=0.0625,ground = true)
+                    sendCriticalPacket(yOffset = 0.0625, ground = true)
                     sendCriticalPacket(ground = false)
-                    sendCriticalPacket(yOffset=1.1E-5,ground = false)
+                    sendCriticalPacket(yOffset = 1.1E-5, ground = false)
                     sendCriticalPacket(ground = false)
                 }
 
                 "ncppacket" -> {
-                    sendCriticalPacket(yOffset=0.11,ground = false)
-                    sendCriticalPacket(yOffset=0.1100013579,ground = false)
-                    sendCriticalPacket(yOffset=0.0000013579,ground = false)
+                    sendCriticalPacket(yOffset = 0.11, ground = false)
+                    sendCriticalPacket(yOffset = 0.1100013579, ground = false)
+                    sendCriticalPacket(yOffset = 0.0000013579, ground = false)
                 }
 
                 "hypixel" -> {
-                    sendCriticalPacket(yOffset=0.04132332,ground = false)
-                    sendCriticalPacket(yOffset=0.023243243674,ground = false)
-                    sendCriticalPacket(yOffset=0.01,ground = false)
-                    sendCriticalPacket(yOffset=0.0011,ground = false)
+                    sendCriticalPacket(yOffset = 0.04132332, ground = false)
+                    sendCriticalPacket(yOffset = 0.023243243674, ground = false)
+                    sendCriticalPacket(yOffset = 0.01, ground = false)
+                    sendCriticalPacket(yOffset = 0.0011, ground = false)
                 }
-                
+
                 "aac4.3.11oldhyt" -> {
-                    sendCriticalPacket(yOffset=0.042487,ground = false)
-                    sendCriticalPacket(yOffset=0.0104649713461000007,ground = false)
-                    sendCriticalPacket(yOffset=0.0014749900000101,ground = false)
-                    sendCriticalPacket(yOffset=0.0000007451816400000,ground = false)
+                    sendCriticalPacket(yOffset = 0.042487, ground = false)
+                    sendCriticalPacket(yOffset = 0.0104649713461000007, ground = false)
+                    sendCriticalPacket(yOffset = 0.0014749900000101, ground = false)
+                    sendCriticalPacket(yOffset = 0.0000007451816400000, ground = false)
                 }
 
                 "hypixel2" -> {
-                    sendCriticalPacket(yOffset=0.05250000001304,ground = false)
-                    sendCriticalPacket(yOffset=0.00150000001304,ground = false)
+                    sendCriticalPacket(yOffset = 0.05250000001304, ground = false)
+                    sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
                 }
 
                 "mineplex" -> {
-                    sendCriticalPacket(yOffset=0.0000000000000045,ground = false)
+                    sendCriticalPacket(yOffset = 0.0000000000000045, ground = false)
                     sendCriticalPacket(ground = false)
                 }
 
                 "more" -> {
-                    sendCriticalPacket(yOffset=0.00000000001,ground = false)
+                    sendCriticalPacket(yOffset = 0.00000000001, ground = false)
                     sendCriticalPacket(ground = false)
                 }
 
                 // Minemora criticals without test
                 "testminemora" -> {
-                    sendCriticalPacket(yOffset=0.0114514,ground = false)
-                    sendCriticalPacket(yOffset=0.0010999999940395355,ground = false)
-                    sendCriticalPacket(yOffset=0.00150000001304,ground = false)
-                    sendCriticalPacket(yOffset=0.0012016413,ground = false)
+                    sendCriticalPacket(yOffset = 0.0114514, ground = false)
+                    sendCriticalPacket(yOffset = 0.0010999999940395355, ground = false)
+                    sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
+                    sendCriticalPacket(yOffset = 0.0012016413, ground = false)
                 }
 
                 "aacpacket" -> {
-                    sendCriticalPacket(yOffset=0.05250000001304,ground = false)
-                    sendCriticalPacket(yOffset=0.00150000001304,ground = false)
-                    sendCriticalPacket(yOffset=0.01400000001304,ground = false)
-                    sendCriticalPacket(yOffset=0.00150000001304,ground = false)
+                    sendCriticalPacket(yOffset = 0.05250000001304, ground = false)
+                    sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
+                    sendCriticalPacket(yOffset = 0.01400000001304, ground = false)
+                    sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
                 }
 
                 "fakecollide" -> {
                     val motionX: Double
                     val motionZ: Double
-                    if(MovementUtils.isMoving()) {
+                    if (MovementUtils.isMoving()) {
                         motionX = mc.thePlayer.motionX
                         motionZ = mc.thePlayer.motionZ
-                    }else{
+                    } else {
                         motionX = 0.00
                         motionZ = 0.00
                     }
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
-                    sendCriticalPacket(xOffset = motionX/3,yOffset=0.20000004768372,zOffset = motionZ/3,ground = false)
-                    sendCriticalPacket(xOffset = motionX/1.5,yOffset=0.12160004615784,zOffset = motionZ/1.5,ground = false)
+                    sendCriticalPacket(xOffset = motionX / 3, yOffset = 0.20000004768372, zOffset = motionZ / 3, ground = false)
+                    sendCriticalPacket(xOffset = motionX / 1.5, yOffset = 0.12160004615784, zOffset = motionZ / 1.5, ground = false)
                 }
-                
+
                 "tphop" -> {
-                    sendCriticalPacket(yOffset=0.02,ground = false)
-                    sendCriticalPacket(yOffset=0.01,ground = false)
+                    sendCriticalPacket(yOffset = 0.02, ground = false)
+                    sendCriticalPacket(yOffset = 0.01, ground = false)
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.01, mc.thePlayer.posZ)
                 }
 
@@ -178,111 +180,111 @@ class Criticals : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (packet is C03PacketPlayer){
+        if (packet is C03PacketPlayer) {
             when (modeValue.get().lowercase()) {
                 "noground" -> packet.onGround = false
                 "motion" -> {
                     when (motionValue.get().lowercase()) {
-                        "minemoratest" -> if(!LiquidBounce.combatManager.inCombat) mc.timer.timerSpeed = 1.00f
+                        "minemoratest" -> if (!LiquidBounce.combatManager.inCombat) mc.timer.timerSpeed = 1.00f
                     }
                 }
                 "hover" -> {
-                    if(hoverCombat.get() && !LiquidBounce.combatManager.inCombat) return
-                    if(packet is C05PacketPlayerLook) {
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.yaw, packet.pitch, packet.onGround))  
+                    if (hoverCombat.get() && !LiquidBounce.combatManager.inCombat) return
+                    if (packet is C05PacketPlayerLook) {
+                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.yaw, packet.pitch, packet.onGround))
                         event.cancelEvent()
                         return
-                    }else if(!(packet is C04PacketPlayerPosition) && !(packet is C06PacketPlayerPosLook)) {
+                    } else if (!(packet is C04PacketPlayerPosition) && !(packet is C06PacketPlayerPosLook)) {
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.onGround))
                         event.cancelEvent()
                         return
                     }
                     when (hoverValue.get().lowercase()) {
                         "2b2t" -> {
-                            if(mc.thePlayer.onGround){
-                                packet.onGround=false
+                            if (mc.thePlayer.onGround) {
+                                packet.onGround = false
                                 jState++
-                                when(jState) {
+                                when (jState) {
                                     2 -> packet.y += 0.02
                                     3 -> packet.y += 0.01
                                     4 -> {
-                                        if(hoverNoFall.get()) packet.onGround=true
+                                        if (hoverNoFall.get()) packet.onGround = true
                                         jState = 1
                                     }
                                     else -> jState = 1
                                 }
-                            }else jState = 0
+                            } else jState = 0
                         }
                         "minis2" -> {
-                            if(mc.thePlayer.onGround && !aacLastState) {
+                            if (mc.thePlayer.onGround && !aacLastState) {
                                 packet.onGround = mc.thePlayer.onGround
                                 aacLastState = mc.thePlayer.onGround
                                 return
                             }
                             aacLastState = mc.thePlayer.onGround
-                            if(mc.thePlayer.onGround){
+                            if (mc.thePlayer.onGround) {
                                 packet.onGround = false
                                 jState++
-                                if(jState % 2 == 0) {
+                                if (jState % 2 == 0) {
                                     packet.y += 0.015625
-                                }else if(jState>100) {
-                                    if(hoverNoFall.get()) packet.onGround = true
+                                } else if (jState> 100) {
+                                    if (hoverNoFall.get()) packet.onGround = true
                                     jState = 1
                                 }
-                            }else jState = 0
+                            } else jState = 0
                         }
                         "tpcollide" -> {
-                            if(mc.thePlayer.onGround){
-                                packet.onGround=false
+                            if (mc.thePlayer.onGround) {
+                                packet.onGround = false
                                 jState++
-                                when(jState) {
+                                when (jState) {
                                     2 -> packet.y += 0.20000004768372
                                     3 -> packet.y += 0.12160004615784
                                     4 -> {
-                                        if(hoverNoFall.get()) packet.onGround=true
+                                        if (hoverNoFall.get()) packet.onGround = true
                                         jState = 1
                                     }
                                     else -> jState = 1
                                 }
-                            }else jState = 0
+                            } else jState = 0
                         }
                         "minis" -> {
-                            if(mc.thePlayer.onGround && !aacLastState) {
+                            if (mc.thePlayer.onGround && !aacLastState) {
                                 packet.onGround = mc.thePlayer.onGround
                                 aacLastState = mc.thePlayer.onGround
                                 return
                             }
                             aacLastState = mc.thePlayer.onGround
-                            if(mc.thePlayer.onGround){
+                            if (mc.thePlayer.onGround) {
                                 packet.onGround = false
                                 jState++
-                                if(jState % 2 == 0) {
+                                if (jState % 2 == 0) {
                                     packet.y += 0.0625
-                                }else if(jState>50) {
-                                    if(hoverNoFall.get()) packet.onGround = true
+                                } else if (jState> 50) {
+                                    if (hoverNoFall.get()) packet.onGround = true
                                     jState = 1
                                 }
-                            }else jState = 0
+                            } else jState = 0
                         }
                         "normal1" -> {
-                            if(mc.thePlayer.onGround){
-                                if(!(hoverNoFall.get() && jState == 0)) packet.onGround=false
+                            if (mc.thePlayer.onGround) {
+                                if (!(hoverNoFall.get() && jState == 0)) packet.onGround = false
                                 jState++
-                                when(jState) {
+                                when (jState) {
                                     2 -> packet.y += 0.001335979112147
                                     3 -> packet.y += 0.0000000131132
                                     4 -> packet.y += 0.0000000194788
                                     5 -> packet.y += 0.00000000001304
                                     6 -> {
-                                        if(hoverNoFall.get()) packet.onGround=true
+                                        if (hoverNoFall.get()) packet.onGround = true
                                         jState = 1
                                     }
                                     else -> jState = 1
                                 }
-                            }else jState = 0
+                            } else jState = 0
                         }
                         "aac4other" -> {
-                            if(mc.thePlayer.onGround && !aacLastState && hoverNoFall.get()) {
+                            if (mc.thePlayer.onGround && !aacLastState && hoverNoFall.get()) {
                                 packet.onGround = mc.thePlayer.onGround
                                 aacLastState = mc.thePlayer.onGround
                                 packet.y += 0.00101
@@ -290,10 +292,10 @@ class Criticals : Module() {
                             }
                             aacLastState = mc.thePlayer.onGround
                             packet.y += 0.001
-                            if(mc.thePlayer.onGround || !hoverNoFall.get()) packet.onGround = false
+                            if (mc.thePlayer.onGround || !hoverNoFall.get()) packet.onGround = false
                         }
                         "aac4" -> {
-                            if(mc.thePlayer.onGround && !aacLastState && hoverNoFall.get()) {
+                            if (mc.thePlayer.onGround && !aacLastState && hoverNoFall.get()) {
                                 packet.onGround = mc.thePlayer.onGround
                                 aacLastState = mc.thePlayer.onGround
                                 packet.y += 0.000000000000136
@@ -301,40 +303,40 @@ class Criticals : Module() {
                             }
                             aacLastState = mc.thePlayer.onGround
                             packet.y += 0.000000000000036
-                            if(mc.thePlayer.onGround || !hoverNoFall.get()) packet.onGround = false
+                            if (mc.thePlayer.onGround || !hoverNoFall.get()) packet.onGround = false
                         }
                         "normal2" -> {
-                            if(mc.thePlayer.onGround){
-                                if(!(hoverNoFall.get() && jState == 0)) packet.onGround=false
+                            if (mc.thePlayer.onGround) {
+                                if (!(hoverNoFall.get() && jState == 0)) packet.onGround = false
                                 jState++
-                                when(jState) {
+                                when (jState) {
                                     2 -> packet.y += 0.00000000000667547
                                     3 -> packet.y += 0.00000000000045413
                                     4 -> packet.y += 0.000000000000036
                                     5 -> {
-                                        if(hoverNoFall.get()) packet.onGround=true
+                                        if (hoverNoFall.get()) packet.onGround = true
                                         jState = 1
                                     }
                                     else -> jState = 1
                                 }
-                            }else jState = 0
+                            } else jState = 0
                         }
                         "oldredesky" -> {
-                            if(hoverNoFall.get()&&mc.thePlayer.fallDistance>0){
-                                packet.onGround=true
+                            if (hoverNoFall.get() && mc.thePlayer.fallDistance> 0) {
+                                packet.onGround = true
                                 return
                             }
 
-                            if(mc.thePlayer.onGround){
-                                packet.onGround=false
+                            if (mc.thePlayer.onGround) {
+                                packet.onGround = false
                             }
                         }
                     }
                 }
             }
         }
-        if(packet is S0BPacketAnimation &&debugValue.get()){
-            if(packet.animationType==4&&packet.entityID==target){
+        if (packet is S0BPacketAnimation && debugValue.get()) {
+            if (packet.animationType == 4 && packet.entityID == target) {
                 alert("CRIT")
             }
         }

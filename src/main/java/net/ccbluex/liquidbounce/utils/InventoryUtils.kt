@@ -30,8 +30,9 @@ object InventoryUtils : MinecraftInstance(), Listenable {
     fun findItem(startSlot: Int, endSlot: Int, item: Item): Int {
         for (i in startSlot until endSlot) {
             val stack = mc.thePlayer.inventoryContainer.getSlot(i).stack
-            if (stack != null && stack.item === item)
+            if (stack != null && stack.item === item) {
                 return i
+            }
         }
         return -1
     }
@@ -49,8 +50,9 @@ object InventoryUtils : MinecraftInstance(), Listenable {
             if (itemStack != null && itemStack.item is ItemBlock) {
                 val itemBlock = itemStack.item as ItemBlock
                 val block = itemBlock.getBlock()
-                if (canPlaceBlock(block) && itemStack.stackSize > 0)
+                if (canPlaceBlock(block) && itemStack.stackSize > 0) {
                     return i
+                }
             }
         }
         return -1
@@ -73,17 +75,19 @@ object InventoryUtils : MinecraftInstance(), Listenable {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet is C0EPacketClickWindow || packet is C08PacketPlayerBlockPlacement)
+        if (packet is C0EPacketClickWindow || packet is C08PacketPlayerBlockPlacement) {
             INV_TIMER.reset()
-        if (packet is C08PacketPlayerBlockPlacement)
+        }
+        if (packet is C08PacketPlayerBlockPlacement) {
             CLICK_TIMER.reset()
+        }
     }
 
-    fun openPacket(){
+    fun openPacket() {
         mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
     }
 
-    fun closePacket(){
+    fun closePacket() {
         mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
     }
 

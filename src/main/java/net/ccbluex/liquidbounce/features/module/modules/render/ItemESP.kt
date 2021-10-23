@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
@@ -34,13 +33,13 @@ class ItemESP : Module() {
     private val colorBlueValue = IntegerValue("B", 0, 0, 255)
     private val colorRainbow = BoolValue("Rainbow", true)
 
-    private fun getColor():Color{
+    private fun getColor(): Color {
         return if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
     }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
-        val color=getColor()
+        val color = getColor()
         for (entity in mc.theWorld.loadedEntityList) {
             if (!(entity is EntityItem || entity is EntityArrow)) continue
             when (modeValue.get().lowercase()) {
@@ -64,6 +63,6 @@ class ItemESP : Module() {
             mc.renderManager.renderEntityStatic(entity, event.partialTicks, true)
         }
 
-        shader.stopDraw(getColor(),outlineWidth.get(),1f)
+        shader.stopDraw(getColor(), outlineWidth.get(), 1f)
     }
 }

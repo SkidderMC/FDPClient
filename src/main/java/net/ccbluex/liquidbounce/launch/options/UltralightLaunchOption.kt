@@ -15,7 +15,7 @@ class UltralightLaunchOption : LaunchOption() {
         UltralightEngine.initResources()
         UltralightEngine.initEngine()
 
-        LiquidBounce.mainMenu=GuiMainMenu
+        LiquidBounce.mainMenu = GuiMainMenu
 
         LiquidBounce.commandManager.registerCommand(BrowseCommand())
         LiquidBounce.moduleManager.registerModule(ClickGUIModule)

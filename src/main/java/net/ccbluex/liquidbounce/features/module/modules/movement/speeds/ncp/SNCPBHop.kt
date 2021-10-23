@@ -88,7 +88,7 @@ class SNCPBHop : SpeedMode("SNCPBHop") {
                 level = 89
             }
 
-            level == 89 ->  {
+            level == 89 -> {
                 if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, mc.thePlayer.motionY, 0.0)).size > 0 || mc.thePlayer.isCollidedVertically) level = 1
                 lastDist = 0.0
                 moveSpeed = baseMoveSpeed

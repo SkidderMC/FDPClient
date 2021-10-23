@@ -30,11 +30,13 @@ class Aimbot : Module() {
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        if (mc.gameSettings.keyBindAttack.isKeyDown)
+        if (mc.gameSettings.keyBindAttack.isKeyDown) {
             clickTimer.reset()
+        }
 
-        if (onClickValue.get() && clickTimer.hasTimePassed(500L))
+        if (onClickValue.get() && clickTimer.hasTimePassed(500L)) {
             return
+        }
 
         val range = rangeValue.get()
         val entity = mc.theWorld.loadedEntityList
@@ -44,16 +46,18 @@ class Aimbot : Module() {
             }
             .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
 
-        if (!lockValue.get() && RotationUtils.isFaced(entity, range.toDouble()))
+        if (!lockValue.get() && RotationUtils.isFaced(entity, range.toDouble())) {
             return
+        }
 
         val rotation = RotationUtils.limitAngleChange(
             Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
-            if (centerValue.get())
+            if (centerValue.get()) {
                 RotationUtils.toRotation(RotationUtils.getCenter(entity.entityBoundingBox), true)
-            else
+            } else {
                 RotationUtils.searchCenter(entity.entityBoundingBox, false, false, true,
-                    false).rotation,
+                    false).rotation
+            },
             (turnSpeedValue.get() + Math.random()).toFloat()
         )
 
@@ -65,15 +69,17 @@ class Aimbot : Module() {
             val yawNegative = Random.nextBoolean()
             val pitchNegative = Random.nextBoolean()
 
-            if (yaw)
+            if (yaw) {
                 mc.thePlayer.rotationYaw += if (yawNegative) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
+            }
 
             if (pitch) {
                 mc.thePlayer.rotationPitch += if (pitchNegative) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
-                if (mc.thePlayer.rotationPitch > 90)
+                if (mc.thePlayer.rotationPitch > 90) {
                     mc.thePlayer.rotationPitch = 90F
-                else if (mc.thePlayer.rotationPitch < -90)
+                } else if (mc.thePlayer.rotationPitch < -90) {
                     mc.thePlayer.rotationPitch = -90F
+                }
             }
         }
     }

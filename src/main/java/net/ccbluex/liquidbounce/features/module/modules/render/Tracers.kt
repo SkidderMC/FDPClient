@@ -75,12 +75,12 @@ class Tracers : Module() {
     }
 
     private fun drawTraces(entity: Entity, color: Color) {
-        val x = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks
-                - mc.renderManager.renderPosX)
-        val y = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks
-                - mc.renderManager.renderPosY)
-        val z = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks
-                - mc.renderManager.renderPosZ)
+        val x = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks -
+                mc.renderManager.renderPosX)
+        val y = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks -
+                mc.renderManager.renderPosY)
+        val z = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks -
+                mc.renderManager.renderPosZ)
 
         val eyeVector = Vec3(0.0, 0.0, 1.0)
                 .rotatePitch((-Math.toRadians(mc.thePlayer.rotationPitch.toDouble())).toFloat())

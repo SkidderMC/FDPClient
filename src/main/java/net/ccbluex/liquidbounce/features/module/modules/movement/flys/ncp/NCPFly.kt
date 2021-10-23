@@ -12,8 +12,9 @@ class NCPFly : FlyMode("NCP") {
     private val motionValue = FloatValue("${valuePrefix}Motion", 0f, 0f, 1f)
 
     override fun onEnable() {
-        if (!mc.thePlayer.onGround)
+        if (!mc.thePlayer.onGround) {
             return
+        }
 
         repeat(65) {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.049, mc.thePlayer.posZ, false))
@@ -34,10 +35,10 @@ class NCPFly : FlyMode("NCP") {
     }
 
     override fun onPacket(event: PacketEvent) {
-        val packet=event.packet
+        val packet = event.packet
 
-        if(packet is C03PacketPlayer){
-            packet.onGround=true
+        if (packet is C03PacketPlayer) {
+            packet.onGround = true
         }
     }
 }

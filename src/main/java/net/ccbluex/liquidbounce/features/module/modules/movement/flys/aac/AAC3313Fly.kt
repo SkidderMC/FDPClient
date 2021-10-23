@@ -11,14 +11,15 @@ class AAC3313Fly : FlyMode("AAC3.3.13") {
     private var wasDead = false
 
     override fun onDisable() {
-        wasDead=false
+        wasDead = false
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if(mc.thePlayer.isDead)
+        if (mc.thePlayer.isDead) {
             wasDead = true
+        }
 
-        if(wasDead || mc.thePlayer.onGround) {
+        if (wasDead || mc.thePlayer.onGround) {
             wasDead = false
 
             mc.thePlayer.motionY = motionValue.get().toDouble()
@@ -27,7 +28,7 @@ class AAC3313Fly : FlyMode("AAC3.3.13") {
 
         mc.timer.timerSpeed = 1F
 
-        if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
             mc.timer.timerSpeed = 0.2F
             mc.rightClickDelayTimer = 0
         }

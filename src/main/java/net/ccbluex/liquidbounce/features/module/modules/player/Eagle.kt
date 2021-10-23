@@ -24,10 +24,12 @@ class Eagle : Module() {
     }
 
     override fun onDisable() {
-        if (mc.thePlayer == null)
+        if (mc.thePlayer == null) {
             return
+        }
 
-        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak))
+        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
             mc.gameSettings.keyBindSneak.pressed = false
+        }
     }
 }

@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 class HypixelNewFly : FlyMode("HypixelNew") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 0.5f, 0.3f, 0.7f)
 
-    private val timer=MSTimer()
+    private val timer = MSTimer()
 
     override fun onUpdate(event: UpdateEvent) {
         mc.timer.timerSpeed = 0.7f

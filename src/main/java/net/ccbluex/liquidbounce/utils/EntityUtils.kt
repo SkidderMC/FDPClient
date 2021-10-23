@@ -25,9 +25,7 @@ import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.monster.EntitySlime
 import net.minecraft.entity.monster.EntityGhast
 import net.minecraft.entity.boss.EntityDragon
-import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.Entity
-import net.minecraft.scoreboard.ScorePlayerTeam
 
 object EntityUtils : MinecraftInstance() {
     fun isSelected(entity: Entity, canAttackCheck: Boolean): Boolean {
@@ -35,20 +33,25 @@ object EntityUtils : MinecraftInstance() {
             if (invisible.get() || !entity.isInvisible()) {
                 if (player.get() && entity is EntityPlayer) {
                     if (canAttackCheck) {
-                        if (isBot(entity))
+                        if (isBot(entity)) {
                             return false
+                        }
 
-                        if (isFriend(entity))
+                        if (isFriend(entity)) {
                             return false
+                        }
 
-                        if (entity.isSpectator)
+                        if (entity.isSpectator) {
                             return false
+                        }
 
-                        if (entity.isPlayerSleeping)
+                        if (entity.isPlayerSleeping) {
                             return false
+                        }
 
-                        if (!LiquidBounce.combatManager.isFocusEntity(entity))
+                        if (!LiquidBounce.combatManager.isFocusEntity(entity)) {
                             return false
+                        }
 
                         val teams = LiquidBounce.moduleManager.getModule(Teams::class.java)
                         return !teams!!.state || !teams.isInYourTeam(entity)

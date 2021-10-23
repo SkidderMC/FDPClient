@@ -7,7 +7,7 @@ class AAC4XGlideFly : FlyMode("AAC4.X-Glide") {
     private var delay = 0
 
     override fun onEnable() {
-        delay=0
+        delay = 0
     }
 
     override fun onUpdate(event: UpdateEvent) {

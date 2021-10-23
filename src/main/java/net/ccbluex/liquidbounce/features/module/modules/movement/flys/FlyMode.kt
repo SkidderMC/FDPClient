@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.value.Value
 
 abstract class FlyMode(val modeName: String) : MinecraftInstance() {
-    protected val valuePrefix="$modeName-"
+    protected val valuePrefix = "$modeName-"
 
     protected val fly: Fly
         get() = LiquidBounce.moduleManager[Fly::class.java]!!

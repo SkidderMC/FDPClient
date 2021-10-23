@@ -9,7 +9,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class CubeCraftFly : FlyMode("CubeCraft") {
-    private var timer=TickTimer()
+    private var timer = TickTimer()
 
     override fun onUpdate(event: UpdateEvent) {
         mc.timer.timerSpeed = 0.6F
@@ -21,12 +21,12 @@ class CubeCraftFly : FlyMode("CubeCraft") {
         val yaw = MovementUtils.direction
 
         if (timer.hasTimePassed(2)) {
-            event.x=-sin(yaw) * 2.4
-            event.z=cos(yaw) * 2.4
+            event.x = -sin(yaw) * 2.4
+            event.z = cos(yaw) * 2.4
             timer.reset()
         } else {
-            event.x=-sin(yaw) * 0.2
-            event.z= cos(yaw) * 0.2
+            event.x = -sin(yaw) * 0.2
+            event.z = cos(yaw) * 0.2
         }
     }
 }

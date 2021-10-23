@@ -50,7 +50,6 @@ object Fucker : Module() {
     private val noHitValue = BoolValue("NoHit", false)
     private val bypassValue = BoolValue("Bypass", false)
 
-
     /**
      * VALUES
      */
@@ -67,15 +66,17 @@ object Fucker : Module() {
         if (noHitValue.get()) {
             val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
 
-            if (killAura.state && killAura.target != null)
+            if (killAura.state && killAura.target != null) {
                 return
+            }
         }
 
         val targetId = blockValue.get()
 
         if (pos == null || Block.getIdFromBlock(BlockUtils.getBlock(pos)) != targetId ||
-            BlockUtils.getCenterDistance(pos!!) > rangeValue.get())
+            BlockUtils.getCenterDistance(pos!!) > rangeValue.get()) {
             pos = find(targetId)
+        }
 
         // Reset current breaking when there is no target block
         if (pos == null) {
@@ -95,8 +96,9 @@ object Fucker : Module() {
                     false, true).blockPos
 
             if (blockPos != null && blockPos.getBlock() !is BlockAir) {
-                if (currentPos.x != blockPos.x || currentPos.y != blockPos.y || currentPos.z != blockPos.z)
+                if (currentPos.x != blockPos.x || currentPos.y != blockPos.y || currentPos.z != blockPos.z) {
                     surroundings = true
+                }
 
                 pos = blockPos
                 currentPos = pos ?: return
@@ -112,8 +114,9 @@ object Fucker : Module() {
 
         oldPos = currentPos
 
-        if (!switchTimer.hasTimePassed(switchValue.get().toLong()))
+        if (!switchTimer.hasTimePassed(switchValue.get().toLong())) {
             return
+        }
 
         // Block hit delay
         if (blockHitDelay > 0) {
@@ -122,16 +125,18 @@ object Fucker : Module() {
         }
 
         // Face block
-        if (rotationsValue.get())
+        if (rotationsValue.get()) {
             RotationUtils.setTargetRotation(rotations.rotation)
+        }
 
         when {
             // Destory block
             actionValue.equals("destroy") || surroundings || !isRealBlock -> {
                 // Auto Tool
                 val autoTool = LiquidBounce.moduleManager[AutoTool::class.java]!!
-                if (autoTool.state)
+                if (autoTool.state) {
                     autoTool.switchSlot(currentPos)
+                }
 
                 // Break block
                 if (instantValue.get()) {
@@ -190,7 +195,7 @@ object Fucker : Module() {
             }
 
             // Use block
-            actionValue.equals("use") ->{
+            actionValue.equals("use") -> {
                 if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.heldItem, pos, EnumFacing.DOWN,
                         Vec3(currentPos.x.toDouble(), currentPos.y.toDouble(), currentPos.z.toDouble()))) {
                     if (swingValue.equals("Normal")) {
@@ -208,29 +213,29 @@ object Fucker : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        RenderUtils.drawBlockBox(pos ?: return, Color.RED, false,true, 1F)
+        RenderUtils.drawBlockBox(pos ?: return, Color.RED, false, true, 1F)
     }
 
     /**
      * Find new target block by [targetID]
      */
-    private fun find(targetID: Int) : BlockPos? {
-        val block= BlockUtils.searchBlocks(rangeValue.get().toInt() + 1)
+    private fun find(targetID: Int): BlockPos? {
+        val block = BlockUtils.searchBlocks(rangeValue.get().toInt() + 1)
             .filter {
-                Block.getIdFromBlock(it.value) == targetID && BlockUtils.getCenterDistance(it.key) <= rangeValue.get()
-                        && (isHitable(it.key) || surroundingsValue.get())
+                Block.getIdFromBlock(it.value) == targetID && BlockUtils.getCenterDistance(it.key) <= rangeValue.get() &&
+                        (isHitable(it.key) || surroundingsValue.get())
             }
             .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key ?: return null
 
-        if(bypassValue.get()){
-            val upBlock=block.up()
-            if(BlockUtils.getBlock(upBlock)!=Blocks.air){
-                isRealBlock=false
+        if (bypassValue.get()) {
+            val upBlock = block.up()
+            if (BlockUtils.getBlock(upBlock) != Blocks.air) {
+                isRealBlock = false
                 return upBlock
             }
         }
 
-        isRealBlock=true
+        isRealBlock = true
         return block
     }
 
@@ -247,8 +252,8 @@ object Fucker : Module() {
 
                 movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
             }
-            "around" -> !BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north())
-                    || !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())
+            "around" -> !BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
+                    !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())
             else -> true
         }
     }

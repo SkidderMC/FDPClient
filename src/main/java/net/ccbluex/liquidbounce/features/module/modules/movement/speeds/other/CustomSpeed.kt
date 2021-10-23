@@ -19,41 +19,43 @@ class CustomSpeed : SpeedMode("Custom") {
     private val yValue = FloatValue("CustomY", 0f, 0f, 4f)
     private val upTimerValue = FloatValue("CustomUpTimer", 1f, 0.1f, 2f)
     private val downTimerValue = FloatValue("CustomDownTimer", 1f, 0.1f, 2f)
-    private val strafeValue = ListValue("CustomStrafe", arrayOf("Strafe","Boost","Plus","PlusOnlyUp","Non-Strafe"),"Boost")
-    private val groundStay = IntegerValue("CustomGroundStay",0,0,10)
+    private val strafeValue = ListValue("CustomStrafe", arrayOf("Strafe", "Boost", "Plus", "PlusOnlyUp", "Non-Strafe"), "Boost")
+    private val groundStay = IntegerValue("CustomGroundStay", 0, 0, 10)
     private val groundResetXZValue = BoolValue("CustomGroundResetXZ", false)
     private val resetXZValue = BoolValue("CustomResetXZ", false)
     private val resetYValue = BoolValue("CustomResetY", false)
     private val doLaunchSpeedValue = BoolValue("CustomDoLaunchSpeed", true)
 
-    private var groundTick=0
+    private var groundTick = 0
 
     override fun onPreMotion() {
         if (MovementUtils.isMoving()) {
-            mc.timer.timerSpeed = if(mc.thePlayer.motionY>0){ upTimerValue.get() } else { downTimerValue.get() }
+            mc.timer.timerSpeed = if (mc.thePlayer.motionY> 0) { upTimerValue.get() } else { downTimerValue.get() }
 
             when {
                 mc.thePlayer.onGround -> {
-                    if(groundTick>=groundStay.get()){
-                        if(doLaunchSpeedValue.get())
+                    if (groundTick >= groundStay.get()) {
+                        if (doLaunchSpeedValue.get()) {
                             MovementUtils.strafe(launchSpeedValue.get())
-                        if(yValue.get()!=0f)
+                        }
+                        if (yValue.get() != 0f) {
                             mc.thePlayer.motionY = yValue.get().toDouble()
-                    }else if(groundResetXZValue.get()){
+                        }
+                    } else if (groundResetXZValue.get()) {
                         mc.thePlayer.motionX = 0.0
                         mc.thePlayer.motionZ = 0.0
                     }
                     groundTick++
                 }
                 else -> {
-                    groundTick=0
-                    when(strafeValue.get().lowercase()){
+                    groundTick = 0
+                    when (strafeValue.get().lowercase()) {
                         "strafe" -> MovementUtils.strafe(speedValue.get())
                         "boost" -> MovementUtils.strafe()
-                        "plus" -> MovementUtils.move(speedValue.get()*0.1f)
-                        "plusonlyup" -> if(mc.thePlayer.motionY>0){
-                            MovementUtils.move(speedValue.get()*0.1f)
-                        }else{
+                        "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
+                        "plusonlyup" -> if (mc.thePlayer.motionY> 0) {
+                            MovementUtils.move(speedValue.get() * 0.1f)
+                        } else {
                             MovementUtils.strafe()
                         }
                     }

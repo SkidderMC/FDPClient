@@ -17,9 +17,9 @@ class ModuleTriggerCommand : Command("moduletrigger", arrayOf("trigger")) {
                 return
             }
 
-            module.triggerType = try{
+            module.triggerType = try {
                 EnumTriggerType.valueOf(args[2].uppercase())
-            }catch (e: IllegalArgumentException){
+            } catch (e: IllegalArgumentException) {
                 EnumTriggerType.TOGGLE
             }
             playEdit()

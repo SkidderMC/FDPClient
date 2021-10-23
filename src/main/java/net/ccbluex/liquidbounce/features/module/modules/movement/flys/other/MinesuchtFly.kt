@@ -5,17 +5,17 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
-
 class MinesuchtFly : FlyMode("Minesucht") {
-    private val timer=MSTimer()
+    private val timer = MSTimer()
 
     override fun onUpdate(event: UpdateEvent) {
         val posX = mc.thePlayer.posX
         val posY = mc.thePlayer.posY
         val posZ = mc.thePlayer.posZ
 
-        if (!mc.gameSettings.keyBindForward.isKeyDown)
+        if (!mc.gameSettings.keyBindForward.isKeyDown) {
             return
+        }
 
         if (timer.hasTimePassed(100L)) {
             val vec3 = mc.thePlayer.getPositionEyes(0f)

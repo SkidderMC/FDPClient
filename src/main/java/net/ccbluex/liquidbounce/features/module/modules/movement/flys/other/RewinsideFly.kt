@@ -11,16 +11,17 @@ import net.minecraft.util.AxisAlignedBB
 
 class RewinsideFly : FlyMode("Rewinside") {
     override fun onPacket(event: PacketEvent) {
-        val packet=event.packet
+        val packet = event.packet
 
-        if(packet is C03PacketPlayer){
-            packet.onGround=true
+        if (packet is C03PacketPlayer) {
+            packet.onGround = true
         }
     }
 
     override fun onBlockBB(event: BlockBBEvent) {
-        if(event.block is BlockAir && event.y<=mc.thePlayer.posY)
+        if (event.block is BlockAir && event.y <= mc.thePlayer.posY) {
             event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, mc.thePlayer.posY, event.z + 1.0)
+        }
     }
 
     override fun onJump(event: JumpEvent) {

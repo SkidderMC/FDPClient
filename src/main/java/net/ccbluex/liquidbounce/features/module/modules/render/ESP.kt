@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -96,7 +95,7 @@ class ESP : Module() {
                         RenderUtils.draw2D(entityLiving, posX, posY, posZ, color.rgb, Color.BLACK.rgb)
                     }
 
-                    "csgo","real2d" -> {
+                    "csgo", "real2d" -> {
                         val renderManager = mc.renderManager
                         val timer = mc.timer
                         val bb = entityLiving.entityBoundingBox
@@ -133,20 +132,20 @@ class ESP : Module() {
                             maxY = screenPos.y.coerceAtLeast(maxY)
                         }
 
-                        //out of screen
+                        // out of screen
                         if (!(minX == mc.displayWidth.toFloat() || minY == mc.displayHeight.toFloat() || maxX == 0f || maxY == 0f)) {
-                            if(mode.equals("csgo", ignoreCase = true)){
+                            if (mode.equals("csgo", ignoreCase = true)) {
                                 val width = CSGOWidth.get() * ((maxY - minY) / 50)
                                 RenderUtils.drawRect(minX - width, minY - width, minX, maxY, color)
                                 RenderUtils.drawRect(maxX, minY - width, maxX + width, maxY + width, color)
                                 RenderUtils.drawRect(minX - width, maxY, maxX, maxY + width, color)
                                 RenderUtils.drawRect(minX - width, minY - width, maxX, minY, color)
 
-                                //hp bar
+                                // hp bar
                                 val hpSize = (maxY + width - minY) * (entityLiving.health / entityLiving.maxHealth)
                                 RenderUtils.drawRect(minX - width * 3, minY - width, minX - width * 2, maxY + width, Color.GRAY)
-                                RenderUtils.drawRect(minX - width * 3, maxY - hpSize, minX - width * 2, maxY + width, ColorUtils.healthColor(entityLiving.health,entityLiving.maxHealth))
-                            }else if(mode.equals("real2d", ignoreCase = true)){
+                                RenderUtils.drawRect(minX - width * 3, maxY - hpSize, minX - width * 2, maxY + width, ColorUtils.healthColor(entityLiving.health, entityLiving.maxHealth))
+                            } else if (mode.equals("real2d", ignoreCase = true)) {
                                 RenderUtils.drawRect(minX - 1, minY - 1, minX, maxY, color)
                                 RenderUtils.drawRect(maxX, minY - 1, maxX + 1, maxY + 1, color)
                                 RenderUtils.drawRect(minX - 1, maxY, maxX, maxY + 1, color)
@@ -195,7 +194,7 @@ class ESP : Module() {
                 }
                 shader.stopDraw(color, radius, 1f)
 
-                //hurt
+                // hurt
                 if (hurtingEntities.size > 0) {
                     shader.startDraw(partialTicks)
                     for (entity in hurtingEntities) {
@@ -212,19 +211,19 @@ class ESP : Module() {
             return
         }
 
-        //normal shader esp
-        val shader = when(mode){
+        // normal shader esp
+        val shader = when (mode) {
             "shaderoutline" -> OutlineShader.OUTLINE_SHADER
             "shaderglow" -> GlowShader.GLOW_SHADER
             else -> return
         }
-        val radius = when(mode){
+        val radius = when (mode) {
             "shaderoutline" -> shaderOutlineRadius.get()
             "shaderglow" -> shaderGlowRadius.get()
             else -> 1f
         }
 
-        //search
+        // search
         val entityMap: MutableMap<Color, ArrayList<EntityLivingBase>> = HashMap()
         for (entity in mc.theWorld.loadedEntityList) {
             if (EntityUtils.isSelected(entity, false)) {
@@ -237,7 +236,7 @@ class ESP : Module() {
             }
         }
 
-        //draw
+        // draw
         for ((key, value) in entityMap) {
             shader.startDraw(partialTicks)
             for (entity in value) {

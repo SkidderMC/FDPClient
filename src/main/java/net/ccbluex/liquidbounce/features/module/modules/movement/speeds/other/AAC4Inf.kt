@@ -5,8 +5,9 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class AAC4Inf : SpeedMode("AAC4Inf") {
     override fun onUpdate() {
-        if (!MovementUtils.isMoving())
+        if (!MovementUtils.isMoving()) {
             return
+        }
         if (mc.thePlayer.onGround) {
             mc.thePlayer.jump()
             mc.thePlayer.speedInAir = 0.02F

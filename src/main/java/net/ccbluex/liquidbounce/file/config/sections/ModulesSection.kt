@@ -10,38 +10,43 @@ class ModulesSection : ConfigSection("modules") {
     override fun load(json: JsonObject) {
         // set them to default setting
         LiquidBounce.moduleManager.modules.forEach {
-            val moduleInfo=it.moduleInfo
-            it.state=moduleInfo.defaultOn
-            it.keyBind=moduleInfo.keyBind
-            it.array=moduleInfo.array
-            it.autoDisable=moduleInfo.autoDisable
+            val moduleInfo = it.moduleInfo
+            it.state = moduleInfo.defaultOn
+            it.keyBind = moduleInfo.keyBind
+            it.array = moduleInfo.array
+            it.autoDisable = moduleInfo.autoDisable
             it.values.forEach { value ->
                 value.setDefault()
             }
         }
         // load config
-        for(entrySet in json.entrySet()){
-            val module=LiquidBounce.moduleManager.getModule(entrySet.key) ?: continue
-            val data=entrySet.value.asJsonObject
+        for (entrySet in json.entrySet()) {
+            val module = LiquidBounce.moduleManager.getModule(entrySet.key) ?: continue
+            val data = entrySet.value.asJsonObject
 
-            if(data.has("state"))
-                module.state=data.get("state").asBoolean
+            if (data.has("state")) {
+                module.state = data.get("state").asBoolean
+            }
 
-            if(data.has("keybind"))
-                module.keyBind=data.get("keybind").asInt
+            if (data.has("keybind")) {
+                module.keyBind = data.get("keybind").asInt
+            }
 
-            if(data.has("array"))
-                module.array=data.get("array").asBoolean
+            if (data.has("array")) {
+                module.array = data.get("array").asBoolean
+            }
 
-            if(data.has("trigger"))
-                module.triggerType=EnumTriggerType.valueOf(data.get("trigger").asString)
+            if (data.has("trigger")) {
+                module.triggerType = EnumTriggerType.valueOf(data.get("trigger").asString)
+            }
 
-            if(data.has("autodisable"))
-                module.autoDisable=EnumAutoDisableType.valueOf(data.get("autodisable").asString)
+            if (data.has("autodisable")) {
+                module.autoDisable = EnumAutoDisableType.valueOf(data.get("autodisable").asString)
+            }
 
-            val values=data.getAsJsonObject("values")
+            val values = data.getAsJsonObject("values")
             module.values.forEach {
-                if(values.has(it.name)){
+                if (values.has(it.name)) {
                     it.fromJson(values.get(it.name))
                 }
             }
@@ -49,32 +54,34 @@ class ModulesSection : ConfigSection("modules") {
     }
 
     override fun save(): JsonObject {
-        val json=JsonObject()
+        val json = JsonObject()
 
         LiquidBounce.moduleManager.modules.forEach {
-            val moduleJson=JsonObject()
+            val moduleJson = JsonObject()
 
-            if(it.canEnable || it.triggerType!=EnumTriggerType.PRESS)
-                moduleJson.addProperty("state",it.state)
+            if (it.canEnable || it.triggerType != EnumTriggerType.PRESS) {
+                moduleJson.addProperty("state", it.state)
+            }
 
-            moduleJson.addProperty("keybind",it.keyBind)
+            moduleJson.addProperty("keybind", it.keyBind)
 
-            if(it.canEnable)
-                moduleJson.addProperty("array",it.array)
+            if (it.canEnable) {
+                moduleJson.addProperty("array", it.array)
+            }
 
-            if(it.canEnable)
-                moduleJson.addProperty("autodisable",it.autoDisable.toString())
+            if (it.canEnable) {
+                moduleJson.addProperty("autodisable", it.autoDisable.toString())
+            }
 
             moduleJson.addProperty("trigger", it.triggerType.toString())
 
-
-            val valuesJson=JsonObject()
+            val valuesJson = JsonObject()
             it.values.forEach { value ->
-                valuesJson.add(value.name,value.toJson())
+                valuesJson.add(value.name, value.toJson())
             }
-            moduleJson.add("values",valuesJson)
+            moduleJson.add("values", valuesJson)
 
-            json.add(it.name,moduleJson)
+            json.add(it.name, moduleJson)
         }
 
         return json
