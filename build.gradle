@@ -150,5 +150,6 @@ detekt {
 
     autoCorrect = true
 }
+tasks.getByPath("detekt").onlyIf { gradle.startParameter.taskNames.any { it.contains("detekt") } }
 
 tasks.reobfJar.dependsOn(shadowJar)
