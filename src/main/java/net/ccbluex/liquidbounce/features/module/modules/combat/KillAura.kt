@@ -93,6 +93,13 @@ class KillAura : Module() {
             if (i < newValue) set(i)
         }
     }
+    private val swingRangeValue = object : FloatValue("SwingRange", 5f, 0f, 15f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val i = discoverRangeValue.get()
+            if (i < newValue) set(i)
+            if (maxRange > newValue) set(maxRange)
+        }
+    }
     private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 15f)
     private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f)
 
@@ -219,6 +226,11 @@ class KillAura : Module() {
     // Container Delay
     private var containerOpen = -1L
 
+    // Swing
+    private val swingTimer = MSTimer()
+    private var swingDelay = 0L
+    private var canSwing = false
+
     // Fake block status
     var blockingStatus = false
 
@@ -242,6 +254,8 @@ class KillAura : Module() {
         prevTargetEntities.clear()
         attackTimer.reset()
         clicks = 0
+        canSwing = false
+        swingTimer.reset()
 
         stopBlocking()
         RotationUtils.setTargetRotationReverse(RotationUtils.serverRotation, 0, 0)
@@ -255,13 +269,10 @@ class KillAura : Module() {
         if (mc.thePlayer.isRiding)
             return
         
-        if (target != null && currentTarget != null && ((attackTimingValue.equals("Pre") && event.eventState == EventState.PRE)
+        if ((attackTimingValue.equals("Pre") && event.eventState == EventState.PRE)
                     || (attackTimingValue.equals("Post") && event.eventState == EventState.POST)
-                    || attackTimingValue.equals("Both") || attackTimingValue.get().equals("All"))) {
-            while (clicks > 0) {
-                runAttack()
-                clicks--
-            }
+                    || attackTimingValue.equals("Both") || attackTimingValue.equals("All")) {
+            runAttackLoop()
         }
 
         if (event.eventState == EventState.POST) {
@@ -389,11 +400,8 @@ class KillAura : Module() {
         if (mc.thePlayer.isRiding)
             update()
 
-        if (target != null && currentTarget != null && attackTimingValue.equals("All")) {
-            while (clicks > 0) {
-                runAttack()
-                clicks--
-            }
+        if (attackTimingValue.equals("All")) {
+            runAttackLoop()
         }
     }
 
@@ -457,7 +465,7 @@ class KillAura : Module() {
                 "block" -> {
                     val bb=it.entityBoundingBox
                     it.entityBoundingBox=bb.expand(0.2,0.2,0.2)
-                    RenderUtils.drawEntityBox(it, if (it.hurtTime<=0) Color.GREEN else Color.RED, true, true, 4f)
+                    RenderUtils.drawEntityBox(it, if (it.hurtTime<=0) if(it == target) Color.BLUE else Color.GREEN else Color.RED, true, true, 4f)
                     it.entityBoundingBox=bb
                 }
                 "fdp" -> {
@@ -613,6 +621,20 @@ class KillAura : Module() {
 //        updateHitable()
 //    }
 
+    private fun runAttackLoop() {
+        if(clicks <= 0 && canSwing && swingTimer.hasTimePassed(swingDelay)){
+            swingTimer.reset()
+            swingDelay = getAttackDelay(minCPS.get(), maxCPS.get())
+            runSwing()
+            return
+        }
+
+        while (clicks > 0) {
+            runAttack()
+            clicks--
+        }
+    }
+
     /**
      * Attack enemy
      */
@@ -622,24 +644,15 @@ class KillAura : Module() {
 
         // Settings
         val failRate = failRateValue.get()
-        val swing = swingValue.get()
         val openInventory = noInventoryAttackValue.equals("Spoof") && mc.currentScreen is GuiInventory
         val failHit = failRate > 0 && Random().nextInt(100) <= failRate
 
-        // Close inventory when open
-        if (openInventory)
-            mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
-
         // Check is not hitable or check failrate
-        if (!hitable || failHit) {
-            if (!swing.equals("none",true) && (fakeSwingValue.get() || failHit)) {
-                if(swing.equals("packet",true)){
-                    mc.netHandler.addToSendQueue(C0APacketAnimation())
-                }else{
-                    mc.thePlayer.swingItem()
-                }
-            }
-        } else {
+        if(hitable && !failHit) {
+            // Close inventory when open
+            if (openInventory)
+                mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
+
             // Attack
             if (!targetModeValue.equals("Multi")) {
                 attackEntity(currentTarget!!)
@@ -661,20 +674,19 @@ class KillAura : Module() {
 
             if (target == currentTarget)
                 target = null
-        }
 
-        // Open inventory
-        if (openInventory)
-            mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+            // Open inventory
+            if (openInventory)
+                mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+        } else if(fakeSwingValue.get()) {
+            runSwing()
+        }
     }
 
     /**
      * Update current target
      */
     private fun updateTarget() {
-        // Reset fixed target to null
-        target = null
-
         // Settings
         val hurtTime = hurtTimeValue.get()
         val fov = fovValue.get()
@@ -721,10 +733,23 @@ class KillAura : Module() {
                 continue
 
             // Set target to current entity
-            if(mc.thePlayer.getDistanceToEntityBox(entity) < maxRange)
+            if(mc.thePlayer.getDistanceToEntityBox(entity) < maxRange) {
                 target = entity
-            
-            return
+                canSwing = false
+                return
+            }
+        }
+
+        target = null
+        canSwing = discoveredTargets.find { mc.thePlayer.getDistanceToEntityBox(it) < swingRangeValue.get() } != null
+    }
+
+    private fun runSwing(){
+        val swing=swingValue.get()
+        if(swing.equals("packet",true)){
+            mc.netHandler.addToSendQueue(C0APacketAnimation())
+        }else if(swing.equals("normal",true)){
+            mc.thePlayer.swingItem()
         }
     }
 
@@ -745,12 +770,7 @@ class KillAura : Module() {
         }
 
         // Attack target
-        val swing=swingValue.get()
-        if(swing.equals("packet",true)){
-            mc.netHandler.addToSendQueue(C0APacketAnimation())
-        }else if(swing.equals("normal",true)){
-            mc.thePlayer.swingItem()
-        }
+        runSwing()
 
         mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 

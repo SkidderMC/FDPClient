@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.BlockAir
 import net.minecraft.util.AxisAlignedBB
 
 @ModuleInfo(name = "Spider", category = ModuleCategory.MOVEMENT)
@@ -57,7 +58,7 @@ class Spider : Module() {
         
         when (modeValue.get().lowercase()) {
             "collide" -> {
-                if(event.y>groundHeight-0.0156249 && event.y<groundHeight+0.0156249)
+                if(event.block is BlockAir && event.y<=mc.thePlayer.posY && event.y>groundHeight-0.0156249 && event.y<groundHeight+0.0156249)
                     event.boundingBox=AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(),
                         event.x+1.0, event.y+1.0, event.z+1.0)
             }
