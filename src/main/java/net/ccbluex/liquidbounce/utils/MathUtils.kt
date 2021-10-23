@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.utils
 
 import kotlin.math.pow
 import kotlin.math.sqrt
+import java.awt.Point
 
 object MathUtils {
     @JvmStatic
