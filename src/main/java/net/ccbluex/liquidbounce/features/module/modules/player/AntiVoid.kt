@@ -20,57 +20,58 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val modeValue=ListValue("Mode", arrayOf("Blink","TPBack","FlyFlag","PacketFlag","GroundSpoof","TestHypixel","Jartex","OldCubecraft"),"Blink")
-    private val maxFallDistValue=FloatValue("MaxFallDistance",10F,5F,20F)
-    private val resetMotion=BoolValue("ResetMotion",false).displayable { modeValue.equals("Blink") }
-    private val startFallDistValue=FloatValue("BlinkStartFallDistance",2F,0F,5F).displayable { modeValue.equals("Blink") }
-    private val autoScaffold=BoolValue("BlinkAutoScaffold",true).displayable { modeValue.equals("Blink") }
-    private val voidOnly=BoolValue("OnlyVoid", true)
+    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "FlyFlag", "PacketFlag", "GroundSpoof", "TestHypixel", "Jartex", "OldCubecraft"), "Blink")
+    private val maxFallDistValue = FloatValue("MaxFallDistance", 10F, 5F, 20F)
+    private val resetMotion = BoolValue("ResetMotion", false).displayable { modeValue.equals("Blink") }
+    private val startFallDistValue = FloatValue("BlinkStartFallDistance", 2F, 0F, 5F).displayable { modeValue.equals("Blink") }
+    private val autoScaffold = BoolValue("BlinkAutoScaffold", true).displayable { modeValue.equals("Blink") }
+    private val voidOnly = BoolValue("OnlyVoid", true)
 
-    private val packetCache=ArrayList<C03PacketPlayer>()
-    private var blink=false
-    private var canBlink=false
-    private var canSpoof=false
-    private var tried=false
+    private val packetCache = ArrayList<C03PacketPlayer>()
+    private var blink = false
+    private var canBlink = false
+    private var canSpoof = false
+    private var tried = false
 
-    private var posX=0.0
-    private var posY=0.0
-    private var posZ=0.0
-    private var motionX=0.0
-    private var motionY=0.0
-    private var motionZ=0.0
-    private var lastRecY=0.0
+    private var posX = 0.0
+    private var posY = 0.0
+    private var posZ = 0.0
+    private var motionX = 0.0
+    private var motionY = 0.0
+    private var motionZ = 0.0
+    private var lastRecY = 0.0
 
     override fun onEnable() {
-        blink=false
-        canBlink=false
-        canSpoof=false
-        lastRecY=mc.thePlayer.posY
-        tried=false
+        blink = false
+        canBlink = false
+        canSpoof = false
+        lastRecY = mc.thePlayer.posY
+        tried = false
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if(mc.thePlayer.onGround)
-            tried=false
+        if (mc.thePlayer.onGround) {
+            tried = false
+        }
 
-        when(modeValue.get().lowercase()){
+        when (modeValue.get().lowercase()) {
             "groundspoof" -> {
                 canSpoof = mc.thePlayer.fallDistance > maxFallDistValue.get()
             }
 
             "flyflag" -> {
                 mc.netHandler
-                if(mc.thePlayer.fallDistance > maxFallDistValue.get()){
+                if (mc.thePlayer.fallDistance > maxFallDistValue.get()) {
                     mc.thePlayer.motionY += 1
 //                    mc.thePlayer.fallDistance = 0F
                 }
             }
 
             "packetflag" -> {
-                if(mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried){
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX+1, mc.thePlayer.posY+1, mc.thePlayer.posZ+1, false))
-                    tried=true
+                if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried) {
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + 1, mc.thePlayer.posY + 1, mc.thePlayer.posZ + 1, false))
+                    tried = true
                 }
             }
 
@@ -81,44 +82,44 @@ class AntiVoid : Module() {
                     posZ = mc.thePlayer.prevPosZ
                 }
 
-                if(mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried){
+                if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried) {
                     mc.thePlayer.setPositionAndUpdate(posX, posY, posZ)
                     mc.thePlayer.fallDistance = 0F
-                    mc.thePlayer.motionX=0.0
-                    mc.thePlayer.motionY=0.0
-                    mc.thePlayer.motionZ=0.0
-                    tried=true
+                    mc.thePlayer.motionX = 0.0
+                    mc.thePlayer.motionY = 0.0
+                    mc.thePlayer.motionZ = 0.0
+                    tried = true
                 }
             }
-            
+
             "jartex" -> {
-                canSpoof=false
-                if(!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, 0.0, 0.0).expand(0.0, 0.0, 0.0)).isEmpty()
-                    && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -282.25, 0.0).expand(0.0, -283.75, 0.0)).isEmpty()) {
-                    if(mc.thePlayer.fallDistance>maxFallDistValue.get() && mc.thePlayer.posY<lastRecY+0.01 && mc.thePlayer.motionY<=0 && !mc.thePlayer.onGround){
-                        mc.thePlayer.motionY=0.0
-                        mc.thePlayer.motionZ*=0.838
-                        mc.thePlayer.motionX*=0.838
-                        canSpoof=true
+                canSpoof = false
+                if (!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, 0.0, 0.0).expand(0.0, 0.0, 0.0)).isEmpty() &&
+                    mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -282.25, 0.0).expand(0.0, -283.75, 0.0)).isEmpty()) {
+                    if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround) {
+                        mc.thePlayer.motionY = 0.0
+                        mc.thePlayer.motionZ *= 0.838
+                        mc.thePlayer.motionX *= 0.838
+                        canSpoof = true
                     }
                 }
                 lastRecY = mc.thePlayer.posY
             }
-            
+
             "oldcubecraft" -> {
-                canSpoof=false
-                if(!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
+                canSpoof = false
+                if (!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
                             0.0, 0.0, 0.0
                         ).expand(0.0, 0.0, 0.0)).isEmpty() && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
                             0.0, -282.25, 0.0
                         ).expand(0.0, -283.75, 0.0)).isEmpty()) {
-                    if(mc.thePlayer.fallDistance>maxFallDistValue.get() && mc.thePlayer.posY<lastRecY+0.01 && mc.thePlayer.motionY<=0 && !mc.thePlayer.onGround){
-                        mc.thePlayer.motionY=0.0
-                        mc.thePlayer.motionZ=0.0
-                        mc.thePlayer.motionX=0.0
+                    if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround) {
+                        mc.thePlayer.motionY = 0.0
+                        mc.thePlayer.motionZ = 0.0
+                        mc.thePlayer.motionX = 0.0
                         mc.thePlayer.jumpMovementFactor = 0.00f
-                        canSpoof=true
-                        if(!tried) {
+                        canSpoof = true
+                        if (!tried) {
                             tried = true
                             mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, (32000.0).toDouble(), mc.thePlayer.posZ, false))
                         }
@@ -128,49 +129,49 @@ class AntiVoid : Module() {
             }
 
             "blink" -> {
-                if(!blink){
+                if (!blink) {
                     val collide = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, 0.0, 0.0, 0.0, 0F, 0F, 0F).findCollision(60)
-                    if(canBlink && (collide==null||(mc.thePlayer.posY-collide.y)>startFallDistValue.get())){
-                        posX=mc.thePlayer.posX
-                        posY=mc.thePlayer.posY
-                        posZ=mc.thePlayer.posZ
-                        motionX=mc.thePlayer.motionX
-                        motionY=mc.thePlayer.motionY
-                        motionZ=mc.thePlayer.motionZ
+                    if (canBlink && (collide == null || (mc.thePlayer.posY - collide.y)> startFallDistValue.get())) {
+                        posX = mc.thePlayer.posX
+                        posY = mc.thePlayer.posY
+                        posZ = mc.thePlayer.posZ
+                        motionX = mc.thePlayer.motionX
+                        motionY = mc.thePlayer.motionY
+                        motionZ = mc.thePlayer.motionZ
 
                         packetCache.clear()
-                        blink=true
+                        blink = true
                     }
 
-                    if(mc.thePlayer.onGround){
-                        canBlink=true
+                    if (mc.thePlayer.onGround) {
+                        canBlink = true
                     }
-                }else{
-                    if(mc.thePlayer.fallDistance>maxFallDistValue.get()){
-                        mc.thePlayer.setPositionAndUpdate(posX,posY,posZ)
-                        if(resetMotion.get()){
-                            mc.thePlayer.motionX=0.0
-                            mc.thePlayer.motionY=0.0
-                            mc.thePlayer.motionZ=0.0
+                } else {
+                    if (mc.thePlayer.fallDistance> maxFallDistValue.get()) {
+                        mc.thePlayer.setPositionAndUpdate(posX, posY, posZ)
+                        if (resetMotion.get()) {
+                            mc.thePlayer.motionX = 0.0
+                            mc.thePlayer.motionY = 0.0
+                            mc.thePlayer.motionZ = 0.0
                             mc.thePlayer.jumpMovementFactor = 0.00f
-                        }else{
-                            mc.thePlayer.motionX=motionX
-                            mc.thePlayer.motionY=motionY
-                            mc.thePlayer.motionZ=motionZ
+                        } else {
+                            mc.thePlayer.motionX = motionX
+                            mc.thePlayer.motionY = motionY
+                            mc.thePlayer.motionZ = motionZ
                             mc.thePlayer.jumpMovementFactor = 0.00f
                         }
 
-                        if(autoScaffold.get()){
-                            LiquidBounce.moduleManager[Scaffold::class.java]!!.state=true
+                        if (autoScaffold.get()) {
+                            LiquidBounce.moduleManager[Scaffold::class.java]!!.state = true
                         }
 
                         packetCache.clear()
-                        blink=false
-                        canBlink=false
-                    }else if(mc.thePlayer.onGround){
-                        blink=false
+                        blink = false
+                        canBlink = false
+                    } else if (mc.thePlayer.onGround) {
+                        blink = false
 
-                        for(packet in packetCache){
+                        for (packet in packetCache) {
                             mc.netHandler.addToSendQueue(packet)
                         }
                     }
@@ -180,10 +181,10 @@ class AntiVoid : Module() {
     }
 
     @EventTarget
-    fun onPacket(event: PacketEvent){
-        val packet=event.packet
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
 
-        when(modeValue.get().lowercase()) {
+        when (modeValue.get().lowercase()) {
             "blink" -> {
                 if (blink && (packet is C03PacketPlayer)) {
                     packetCache.add(packet)
@@ -196,21 +197,21 @@ class AntiVoid : Module() {
                     packet.onGround = true
                 }
             }
-            
+
             "jartex" -> {
                 if (canSpoof && (packet is C03PacketPlayer)) {
                     packet.onGround = true
                 }
-                if(canSpoof && (packet is S08PacketPlayerPosLook)) {
+                if (canSpoof && (packet is S08PacketPlayerPosLook)) {
                     mc.thePlayer.fallDistance = -9999.0f
                 }
             }
-            
+
             "oldcubecraft" -> {
                 if (canSpoof && (packet is C03PacketPlayer)) {
-                    if (packet.y<1145.14) event.cancelEvent()
+                    if (packet.y <1145.14) event.cancelEvent()
                 }
-                if(canSpoof && (packet is S08PacketPlayerPosLook)) {
+                if (canSpoof && (packet is S08PacketPlayerPosLook)) {
                     mc.thePlayer.fallDistance = -9999.0f
                     tried = false
                 }
@@ -223,9 +224,9 @@ class AntiVoid : Module() {
                         ).expand(0.0, 0.0, 0.0)).isEmpty() && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
                             0.0, -282.25, 0.0
                         ).expand(0.0, -283.75, 0.0)).isEmpty()) {
-                        packet.y+=11.0
+                        packet.y += 11.0
                     }
-                    if (!voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get()) packet.y+=11.0
+                    if (!voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get()) packet.y += 11.0
                 }
             }
         }

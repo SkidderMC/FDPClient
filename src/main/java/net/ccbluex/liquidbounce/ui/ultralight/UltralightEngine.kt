@@ -29,17 +29,19 @@ object UltralightEngine {
 
     const val ULTRALIGHT_NATIVE_VERSION = "0.4.6"
 
-    val views=mutableListOf<View>()
+    val views = mutableListOf<View>()
 
     init {
-        if(!pagesPath.exists())
+        if (!pagesPath.exists()) {
             pagesPath.mkdirs()
+        }
 
-        if(!cachePath.exists())
+        if (!cachePath.exists()) {
             cachePath.mkdirs()
+        }
     }
 
-    fun initEngine(){
+    fun initEngine() {
         platform = UltralightPlatform.instance()
         platform.setConfig(
             UltralightConfig()
@@ -66,7 +68,7 @@ object UltralightEngine {
         renderer.logMemoryUsage()
     }
 
-    fun initResources(){
+    fun initResources() {
         // download ultralight natives and resources from web
         checkNativeResources()
         checkPageResources()
@@ -75,15 +77,17 @@ object UltralightEngine {
         UltralightJava.load(resourcePath.toPath())
     }
 
-    private fun checkNativeResources(){
+    private fun checkNativeResources() {
         val versionFile = File(resourcePath, "VERSION")
 
         // Check if library version is matching the resources version
-        if (versionFile.exists() && versionFile.readText() == ULTRALIGHT_NATIVE_VERSION)
+        if (versionFile.exists() && versionFile.readText() == ULTRALIGHT_NATIVE_VERSION) {
             return
+        }
 
-        if(resourcePath.exists())
+        if (resourcePath.exists()) {
             resourcePath.deleteRecursively()
+        }
 
         resourcePath.mkdirs()
 
@@ -97,38 +101,42 @@ object UltralightEngine {
         versionFile.writeText(ULTRALIGHT_NATIVE_VERSION)
     }
 
-    private fun checkPageResources(){
-        if(File(pagesPath, "NO_UPDATE").exists()) {
+    private fun checkPageResources() {
+        if (File(pagesPath, "NO_UPDATE").exists()) {
             logger.warn("PASSED RESOURCE CHECK BY \"NO_UPDATE\" FILE")
             return
         }
 
-        if(ClientUtils.inDevMode){
-            if(pagesPath.exists())
+        if (ClientUtils.inDevMode) {
+            if (pagesPath.exists()) {
                 pagesPath.deleteRecursively()
+            }
 
             pagesPath.mkdirs()
 
-            val projectDir=File(File("./").canonicalFile.parentFile,"ui")
-            val srcDir=File(projectDir,"src") // this should not have issues
-            val depsDir=File(projectDir,"deps")
+            val projectDir = File(File("./").canonicalFile.parentFile, "ui")
+            val srcDir = File(projectDir, "src") // this should not have issues
+            val depsDir = File(projectDir, "deps")
 
-            if(!depsDir.exists())
+            if (!depsDir.exists()) {
                 throw NullPointerException("deps dir not exists, please run \"./gradlew ui:build\" first!")
+            }
 
-            FileUtils.copyDir(srcDir,pagesPath)
-            FileUtils.copyDir(depsDir,File(pagesPath,"lib"))
+            FileUtils.copyDir(srcDir, pagesPath)
+            FileUtils.copyDir(depsDir, File(pagesPath, "lib"))
 
             return
         }
 
         val versionFile = File(pagesPath, "VERSION")
 
-        if (versionFile.exists() && versionFile.readText() == LiquidBounce.CLIENT_VERSION)
+        if (versionFile.exists() && versionFile.readText() == LiquidBounce.CLIENT_VERSION) {
             return
+        }
 
-        if(pagesPath.exists())
+        if (pagesPath.exists()) {
             pagesPath.deleteRecursively()
+        }
 
         pagesPath.mkdirs()
 
@@ -139,11 +147,11 @@ object UltralightEngine {
         versionFile.writeText(LiquidBounce.CLIENT_VERSION)
     }
 
-    fun registerView(view: View){
+    fun registerView(view: View) {
         views.add(view)
     }
 
-    fun unregisterView(view: View){
+    fun unregisterView(view: View) {
         views.remove(view)
         view.close()
     }

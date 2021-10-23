@@ -12,10 +12,10 @@ class SmoothVanillaFly : FlyMode("SmoothVanilla") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
     private val kickBypassValue = BoolValue("${valuePrefix}KickBypass", false)
 
-    private var packets=0
+    private var packets = 0
 
     override fun onEnable() {
-        packets=0
+        packets = 0
     }
 
     override fun onUpdate(event: UpdateEvent) {
@@ -24,13 +24,13 @@ class SmoothVanillaFly : FlyMode("SmoothVanilla") {
     }
 
     override fun onPacket(event: PacketEvent) {
-        val packet=event.packet
+        val packet = event.packet
 
-        if(packet is C03PacketPlayer) {
+        if (packet is C03PacketPlayer) {
             packets++
-            if(packets==40 && kickBypassValue.get()) {
+            if (packets == 40 && kickBypassValue.get()) {
                 MovementUtils.handleVanillaKickBypass()
-                packets=0
+                packets = 0
             }
         }
     }

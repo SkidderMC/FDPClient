@@ -22,15 +22,16 @@ class Timer : Module() {
     private val onMoveValue = BoolValue("OnMove", true)
 
     override fun onDisable() {
-        if (mc.thePlayer == null)
+        if (mc.thePlayer == null) {
             return
+        }
 
         mc.timer.timerSpeed = 1F
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if(MovementUtils.isMoving() || !onMoveValue.get()) {
+        if (MovementUtils.isMoving() || !onMoveValue.get()) {
             mc.timer.timerSpeed = speedValue.get()
             return
         }

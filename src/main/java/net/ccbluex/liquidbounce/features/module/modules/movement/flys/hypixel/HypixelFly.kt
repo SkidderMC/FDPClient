@@ -16,8 +16,8 @@ class HypixelFly : FlyMode("Hypixel") {
     private val boostDelayValue = IntegerValue("${valuePrefix}BoostDelay", 1200, 0, 2000)
     private val boostTimerValue = FloatValue("${valuePrefix}BoostTimer", 1f, 0f, 5f)
 
-    private val timer=TickTimer()
-    private val flyTimer=MSTimer()
+    private val timer = TickTimer()
+    private val flyTimer = MSTimer()
 
     override fun onUpdate(event: UpdateEvent) {
         val boostDelay: Long = boostDelayValue.get().toLong()
@@ -33,8 +33,9 @@ class HypixelFly : FlyMode("Hypixel") {
     }
 
     override fun onBlockBB(event: BlockBBEvent) {
-        if(event.block is BlockAir && event.y<=mc.thePlayer.posY)
+        if (event.block is BlockAir && event.y <= mc.thePlayer.posY) {
             event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, mc.thePlayer.posY, event.z + 1.0)
+        }
     }
 
     override fun onJump(event: JumpEvent) {
@@ -46,10 +47,10 @@ class HypixelFly : FlyMode("Hypixel") {
     }
 
     override fun onPacket(event: PacketEvent) {
-        val packet=event.packet
+        val packet = event.packet
 
-        if(packet is C03PacketPlayer){
-            packet.onGround=false
+        if (packet is C03PacketPlayer) {
+            packet.onGround = false
         }
     }
 }

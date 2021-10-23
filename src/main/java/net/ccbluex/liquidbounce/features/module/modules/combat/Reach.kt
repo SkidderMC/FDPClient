@@ -24,9 +24,9 @@ object Reach : Module() {
         }
 
     val hitReach: Float
-        get() = if(state){
+        get() = if (state) {
             combatReachValue.get()
-        }else{
+        } else {
             3f
         }
 }

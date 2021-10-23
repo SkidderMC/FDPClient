@@ -24,24 +24,25 @@ class Gapple : Module() {
     // Auto Mode
     private val healthValue = FloatValue("Health", 10F, 1F, 20F)
     private val delayValue = IntegerValue("Delay", 150, 0, 1000)
-    private val noAbsorption = BoolValue("NoAbsorption",true)
+    private val noAbsorption = BoolValue("NoAbsorption", true)
     private val timer = MSTimer()
 
-    private var eating=-1
+    private var eating = -1
 
     override fun onEnable() {
-        eating=-1
+        eating = -1
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer.health > healthValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) || noAbsorption.get() && mc.thePlayer.absorptionAmount>0)
+        if (mc.thePlayer.health > healthValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) || noAbsorption.get() && mc.thePlayer.absorptionAmount> 0) {
             return
+        }
 
-        when(modeValue.get().lowercase()){
+        when (modeValue.get().lowercase()) {
             "auto" -> {
                 val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
-                if(gappleInHotbar != -1){
+                if (gappleInHotbar != -1) {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
                     mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                     repeat(35) {
@@ -53,19 +54,19 @@ class Gapple : Module() {
                 }
             }
             "legitauto" -> {
-                if(eating==-1){
+                if (eating == -1) {
                     val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
                     mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
-                    eating=0
-                }else if(eating>35){
+                    eating = 0
+                } else if (eating> 35) {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     timer.reset()
                 }
             }
             "head" -> {
                 val headInHotbar = InventoryUtils.findItem(36, 45, Items.skull)
-                if(headInHotbar != -1) {
+                if (headInHotbar != -1) {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(headInHotbar - 36))
                     mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
@@ -76,12 +77,12 @@ class Gapple : Module() {
     }
 
     @EventTarget
-    fun onPacket(event: PacketEvent){
-        val packet=event.packet
-        if(eating!=-1 && packet is C03PacketPlayer){
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+        if (eating != -1 && packet is C03PacketPlayer) {
             eating++
-        }else if(packet is S09PacketHeldItemChange || packet is C09PacketHeldItemChange){
-            eating=-1
+        } else if (packet is S09PacketHeldItemChange || packet is C09PacketHeldItemChange) {
+            eating = -1
         }
     }
 

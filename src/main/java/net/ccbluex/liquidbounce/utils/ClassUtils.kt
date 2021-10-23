@@ -16,9 +16,9 @@ object ClassUtils {
      */
     @JvmStatic
     fun hasClass(className: String): Boolean {
-        return if (cachedClasses.containsKey(className))
+        return if (cachedClasses.containsKey(className)) {
             cachedClasses[className]!!
-        else try {
+        } else try {
             Class.forName(className)
             cachedClasses[className] = true
 
@@ -31,9 +31,9 @@ object ClassUtils {
     }
 
     @JvmStatic
-    fun getObjectInstance(clazz: Class<*>):Any{
+    fun getObjectInstance(clazz: Class<*>): Any {
         clazz.declaredFields.forEach {
-            if(it.name.equals("INSTANCE")){
+            if (it.name.equals("INSTANCE")) {
                 return it.get(null)
             }
         }

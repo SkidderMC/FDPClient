@@ -9,38 +9,38 @@ import org.lwjgl.input.Keyboard
 class MacroCommand : Command("macro", arrayOf("m")) {
     override fun execute(args: Array<String>) {
         if (args.size > 1) {
-            val arg1=args[1]
-            when(arg1.lowercase()){
+            val arg1 = args[1]
+            when (arg1.lowercase()) {
                 "add" -> {
                     if (args.size > 3) {
                         val key = Keyboard.getKeyIndex(args[2].uppercase())
-                        if(key!=Keyboard.KEY_NONE){
-                            var comm=StringUtils.toCompleteString(args, 3)
-                            if(!comm.startsWith(".")) comm=".$comm"
-                            LiquidBounce.macroManager.macros.add(Macro(key,comm))
+                        if (key != Keyboard.KEY_NONE) {
+                            var comm = StringUtils.toCompleteString(args, 3)
+                            if (!comm.startsWith(".")) comm = ".$comm"
+                            LiquidBounce.macroManager.macros.add(Macro(key, comm))
                             alert("Bound macro $comm to key ${Keyboard.getKeyName(key)}.")
-                        }else{
+                        } else {
                             alert("Unknown key to bind macro.")
                         }
                         save()
-                    }else{
+                    } else {
                         chatSyntax("macro add <key> <macro>")
                     }
                 }
 
                 "remove" -> {
                     if (args.size > 2) {
-                        if(args[2].startsWith(".")){
+                        if (args[2].startsWith(".")) {
                             LiquidBounce.macroManager.macros.filter { it.command == StringUtils.toCompleteString(args, 2) }
-                        }else{
+                        } else {
                             val key = Keyboard.getKeyIndex(args[2].uppercase())
-                            LiquidBounce.macroManager.macros.filter { it.key==key }
+                            LiquidBounce.macroManager.macros.filter { it.key == key }
                         }.forEach {
                             LiquidBounce.macroManager.macros.remove(it)
                             alert("Remove macro ${it.command}.")
                         }
                         save()
-                    }else{
+                    } else {
                         chatSyntax("macro remove <macro/key>")
                     }
                 }
@@ -59,7 +59,7 @@ class MacroCommand : Command("macro", arrayOf("m")) {
         chatSyntax("macro <add/remove/list>")
     }
 
-    private fun save(){
+    private fun save() {
         LiquidBounce.configManager.smartSave()
         playEdit()
     }

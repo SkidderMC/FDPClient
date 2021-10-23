@@ -16,8 +16,8 @@ import net.minecraft.util.AxisAlignedBB
 class VerusFly : FlyMode("Verus") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 3f)
 
-    private var flyable=false
-    private val timer=MSTimer()
+    private var flyable = false
+    private val timer = MSTimer()
 
     override fun onEnable() {
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.35, mc.thePlayer.posZ, false))
@@ -29,16 +29,17 @@ class VerusFly : FlyMode("Verus") {
         mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ)
         flyable = true
         timer.reset()
-        fly.launchY+=0.42
+        fly.launchY += 0.42
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if(timer.hasTimePassed(1500))
-            flyable=false
+        if (timer.hasTimePassed(1500)) {
+            flyable = false
+        }
 
-        if(flyable&&timer.hasTimePassed(100)){
+        if (flyable && timer.hasTimePassed(100)) {
             MovementUtils.strafe(speedValue.get())
-        }else if(!timer.hasTimePassed(100)) {
+        } else if (!timer.hasTimePassed(100)) {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionY = 0.0
             mc.thePlayer.motionZ = 0.0
@@ -46,16 +47,17 @@ class VerusFly : FlyMode("Verus") {
     }
 
     override fun onPacket(event: PacketEvent) {
-        val packet=event.packet
+        val packet = event.packet
 
-        if(packet is C03PacketPlayer){
-            packet.onGround=true
+        if (packet is C03PacketPlayer) {
+            packet.onGround = true
         }
     }
 
     override fun onBlockBB(event: BlockBBEvent) {
-        if(event.block is BlockAir && event.y<=fly.launchY)
-            event.boundingBox= AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, fly.launchY, event.z + 1.0)
+        if (event.block is BlockAir && event.y <= fly.launchY) {
+            event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, fly.launchY, event.z + 1.0)
+        }
     }
 
     override fun onJump(event: JumpEvent) {

@@ -50,7 +50,7 @@ class AWTFontRenderer(val font: Font) {
     private val cachedChars: HashMap<String, CachedFont> = HashMap()
 
     private val fontMetrics: FontMetrics = Canvas().getFontMetrics(font)
-    private val fontHeight: Int = if (fontMetrics.height <= 0){ font.size }else{ fontMetrics.height + 3 }
+    private val fontHeight: Int = if (fontMetrics.height <= 0) { font.size } else { fontMetrics.height + 3 }
 
     val height: Int
         get() = (fontHeight - 8) / 2
@@ -81,22 +81,22 @@ class AWTFontRenderer(val font: Font) {
 
         GL11.glColor4f(red, green, blue, alpha)
 
-        var isLastUTF16=false
-        var highSurrogate='\u0000'
-        for(char in text.toCharArray()){
-            if(char in '\ud800'..'\udfff'){
-                if(isLastUTF16){
-                    val utf16Char="$highSurrogate$char"
-                    val singleWidth=drawChar(utf16Char, 0f, 0f)
-                    GL11.glTranslatef(singleWidth-8f,0f,0f)
-                }else{
-                    highSurrogate=char
+        var isLastUTF16 = false
+        var highSurrogate = '\u0000'
+        for (char in text.toCharArray()) {
+            if (char in '\ud800'..'\udfff') {
+                if (isLastUTF16) {
+                    val utf16Char = "$highSurrogate$char"
+                    val singleWidth = drawChar(utf16Char, 0f, 0f)
+                    GL11.glTranslatef(singleWidth - 8f, 0f, 0f)
+                } else {
+                    highSurrogate = char
                 }
                 isLastUTF16 = !isLastUTF16
-            }else{
-                val singleWidth=drawChar("$char", 0f, 0f)
-                GL11.glTranslatef(singleWidth-8f,0f,0f)
-                isLastUTF16=false
+            } else {
+                val singleWidth = drawChar("$char", 0f, 0f)
+                GL11.glTranslatef(singleWidth - 8f, 0f, 0f)
+                isLastUTF16 = false
             }
         }
 
@@ -111,8 +111,8 @@ class AWTFontRenderer(val font: Font) {
      * @param y        target position y to render
      */
     private fun drawChar(char: String, x: Float, y: Float): Int {
-        if(cachedChars.containsKey(char)){
-            val cached=cachedChars[char]!!
+        if (cachedChars.containsKey(char)) {
+            val cached = cachedChars[char]!!
 
             GL11.glCallList(cached.displayList)
             GL11.glCallList(cached.displayList) // TODO: stupid solutions, find a better way
@@ -139,33 +139,34 @@ class AWTFontRenderer(val font: Font) {
      * @return the width of the text
      */
     fun getStringWidth(text: String): Int {
-        var width=0
+        var width = 0
 
-        var isLastUTF16=false
-        var highSurrogate='\u0000'
-        for(char in text.toCharArray()){
-            if(char in '\ud800'..'\udfff'){
-                if(isLastUTF16){
-                    val utf16Char="$highSurrogate$char"
+        var isLastUTF16 = false
+        var highSurrogate = '\u0000'
+        for (char in text.toCharArray()) {
+            if (char in '\ud800'..'\udfff') {
+                if (isLastUTF16) {
+                    val utf16Char = "$highSurrogate$char"
 
-                    width+=getCharWidth(utf16Char)-8
-                }else{
-                    highSurrogate=char
+                    width += getCharWidth(utf16Char) - 8
+                } else {
+                    highSurrogate = char
                 }
                 isLastUTF16 = !isLastUTF16
-            }else{
-                width+=getCharWidth("$char")-8
-                isLastUTF16=false
+            } else {
+                width += getCharWidth("$char") - 8
+                isLastUTF16 = false
             }
         }
 
-        return width/2
+        return width / 2
     }
 
     fun getCharWidth(char: String): Int {
-        var width=fontMetrics.stringWidth(char) + 8
-        if(width <= 0)
+        var width = fontMetrics.stringWidth(char) + 8
+        if (width <= 0) {
             width = 7
+        }
 
         return width
     }

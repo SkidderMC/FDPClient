@@ -24,20 +24,20 @@ class AutoClicker : Module() {
 
         override fun onChanged(oldValue: Int, newValue: Int) {
             val minCPS = minCPSValue.get()
-            if (minCPS > newValue)
+            if (minCPS > newValue) {
                 set(minCPS)
+            }
         }
-
     }
 
     private val minCPSValue: IntegerValue = object : IntegerValue("MinCPS", 5, 1, 20) {
 
         override fun onChanged(oldValue: Int, newValue: Int) {
             val maxCPS = maxCPSValue.get()
-            if (maxCPS < newValue)
+            if (maxCPS < newValue) {
                 set(maxCPS)
+            }
         }
-
     }
 
     private val rightValue = BoolValue("Right", true)
@@ -70,18 +70,19 @@ class AutoClicker : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (jitterValue.get() && (leftValue.get() && mc.gameSettings.keyBindAttack.isKeyDown && mc.playerController.curBlockDamageMP == 0F
-                        || rightValue.get() && mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem)) {
+        if (jitterValue.get() && (leftValue.get() && mc.gameSettings.keyBindAttack.isKeyDown && mc.playerController.curBlockDamageMP == 0F ||
+                        rightValue.get() && mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem)) {
             if (Random.nextBoolean()) mc.thePlayer.rotationYaw += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
 
             if (Random.nextBoolean()) {
                 mc.thePlayer.rotationPitch += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
 
                 // Make sure pitch is not going into unlegit values
-                if (mc.thePlayer.rotationPitch > 90)
+                if (mc.thePlayer.rotationPitch > 90) {
                     mc.thePlayer.rotationPitch = 90F
-                else if (mc.thePlayer.rotationPitch < -90)
+                } else if (mc.thePlayer.rotationPitch < -90) {
                     mc.thePlayer.rotationPitch = -90F
+                }
             }
         }
     }

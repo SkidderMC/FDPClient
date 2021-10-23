@@ -27,8 +27,8 @@ class ChinaHat : Module() {
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glDisable(GL11.GL_DEPTH_TEST)
         GL11.glDepthMask(false)
-        GL11.glColor4f(colorRedValue.get()/255f, colorGreenValue.get()/255f, colorBlueValue.get()/255f, colorAlphaValue.get()/255f)
-        GL11.glTranslatef(0f, mc.thePlayer.height+0.4f, 0f)
+        GL11.glColor4f(colorRedValue.get() / 255f, colorGreenValue.get() / 255f, colorBlueValue.get() / 255f, colorAlphaValue.get() / 255f)
+        GL11.glTranslatef(0f, mc.thePlayer.height + 0.4f, 0f)
         GL11.glRotatef(90f, 1f, 0f, 0f)
 
         val shaft = Cylinder()

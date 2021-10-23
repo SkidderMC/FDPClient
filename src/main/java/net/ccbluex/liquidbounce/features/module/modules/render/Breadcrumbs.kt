@@ -25,19 +25,19 @@ class Breadcrumbs : Module() {
     private val colorGreenValue = IntegerValue("G", 255, 0, 255)
     private val colorBlueValue = IntegerValue("B", 255, 0, 255)
     private val colorRainbow = BoolValue("Rainbow", false)
-    private val fade = BoolValue("Fade",true)
-    private val fadeTime = IntegerValue("FadeTime",5,1,20)
+    private val fade = BoolValue("Fade", true)
+    private val fadeTime = IntegerValue("FadeTime", 5, 1, 20)
 
     private val points = mutableListOf<BreadcrumbPoint>()
-    private var head=0
+    private var head = 0
 
     val color: Color
         get() = if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val fTime=fadeTime.get()*1000
-        val fadeSec=System.currentTimeMillis()-fTime
+        val fTime = fadeTime.get() * 1000
+        val fadeSec = System.currentTimeMillis() - fTime
 
         synchronized(points) {
             GL11.glPushMatrix()
@@ -53,18 +53,18 @@ class Breadcrumbs : Module() {
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ
             for (point in points.map { it }) {
-                RenderUtils.glColor(point.color, if(fade.get()) {
-                    val pct=(point.time - fadeSec).toFloat() / fTime
-                    if(pct<0||pct>1){
+                RenderUtils.glColor(point.color, if (fade.get()) {
+                    val pct = (point.time - fadeSec).toFloat() / fTime
+                    if (pct <0 || pct> 1) {
                         points.remove(point)
-                        head=points.indexOf(point) + 1
+                        head = points.indexOf(point) + 1
                         continue
                     }
                     pct
-                }else{ 1f })
+                } else { 1f })
                 GL11.glVertex3d(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
             }
-            GL11.glColor4d(1.0,1.0,1.0,1.0)
+            GL11.glColor4d(1.0, 1.0, 1.0, 1.0)
             GL11.glEnd()
             GL11.glEnable(GL11.GL_DEPTH_TEST)
             GL11.glDisable(GL11.GL_LINE_SMOOTH)
@@ -82,22 +82,22 @@ class Breadcrumbs : Module() {
     }
 
     @EventTarget
-    fun onWorld(event: WorldEvent){
+    fun onWorld(event: WorldEvent) {
         synchronized(points) {
             points.clear()
-            head=0
+            head = 0
         }
     }
 
     override fun onEnable() {
-        head=0
+        head = 0
         if (mc.thePlayer == null) return
     }
 
     override fun onDisable() {
         synchronized(points) {
             points.clear()
-            head=0
+            head = 0
         }
     }
 

@@ -12,7 +12,6 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-
 object MovementUtils : MinecraftInstance() {
     @JvmStatic
     fun getSpeed(): Float {
@@ -125,10 +124,10 @@ object MovementUtils : MinecraftInstance() {
             }
             val cos = cos(Math.toRadians((yaw + 90.0f).toDouble()))
             val sin = sin(Math.toRadians((yaw + 90.0f).toDouble()))
-            mc.thePlayer.motionX = (forward * speed * cos
-                    + strafe * speed * sin)
-            mc.thePlayer.motionZ = (forward * speed * sin
-                    - strafe * speed * cos)
+            mc.thePlayer.motionX = (forward * speed * cos +
+                    strafe * speed * sin)
+            mc.thePlayer.motionZ = (forward * speed * sin -
+                    strafe * speed * cos)
         }
     }
 

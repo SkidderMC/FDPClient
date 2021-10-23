@@ -29,8 +29,9 @@ class AACHop3313 : SpeedMode("AACHop3.3.13") {
             }
 
             mc.thePlayer.fallDistance < 0.31f -> {
-                if (getBlock(mc.thePlayer.position) is BlockCarpet) // why?
+                if (getBlock(mc.thePlayer.position) is BlockCarpet) { // why?
                     return
+                }
 
                 // Motion XZ
                 mc.thePlayer.jumpMovementFactor = if (mc.thePlayer.moveStrafing == 0f) 0.027f else 0.021f

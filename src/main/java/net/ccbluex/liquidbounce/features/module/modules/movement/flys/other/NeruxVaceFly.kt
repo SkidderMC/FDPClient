@@ -7,15 +7,16 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 class NeruxVaceFly : FlyMode("NeruxVace") {
     private val ticksValue = IntegerValue("${valuePrefix}Ticks", 6, 0, 20)
 
-    private var glideDelay=0
+    private var glideDelay = 0
 
     override fun onEnable() {
-        glideDelay=0
+        glideDelay = 0
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if (!mc.thePlayer.onGround)
+        if (!mc.thePlayer.onGround) {
             glideDelay++
+        }
 
         if (glideDelay >= ticksValue.get() && !mc.thePlayer.onGround) {
             glideDelay = 0

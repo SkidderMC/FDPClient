@@ -24,12 +24,12 @@ class View(width: Int, height: Int) {
     private var glTexture = -1
     private val gcTimer = MSTimer()
 
-    var width=width
+    var width = width
         private set
-    var height=height
+    var height = height
         private set
-    var realWidth=0
-    var realHeight=0
+    var realWidth = 0
+    var realHeight = 0
 
     init {
         view = UltralightEngine.renderer.createView(
@@ -42,28 +42,28 @@ class View(width: Int, height: Int) {
         view.setViewListener(TheViewListener(view))
     }
 
-    fun loadURL(url: String){
+    fun loadURL(url: String) {
         view.loadURL(url)
     }
 
-    fun loadFile(file: File){
+    fun loadFile(file: File) {
         view.loadURL("file:///${file.absolutePath}")
     }
 
-    fun loadPage(page: Page){
+    fun loadPage(page: Page) {
         view.loadURL(page.url)
     }
 
-    fun resize(width: Int, height: Int){
-        this.width=width
-        this.height=height
+    fun resize(width: Int, height: Int) {
+        this.width = width
+        this.height = height
         view.resize(width.toLong(), height.toLong())
     }
 
     /**
      * @author CCBlueX
      */
-    fun render(){
+    fun render() {
         UltralightEngine.renderer.update()
         UltralightEngine.renderer.render()
 
@@ -137,7 +137,7 @@ class View(width: Int, height: Int) {
         glDisable(GL_BLEND)
         glEnable(GL_DEPTH_TEST)
 
-        if(gcTimer.hasTimePassed(1000L)){
+        if (gcTimer.hasTimePassed(1000L)) {
             garbageCollect()
             UltralightEngine.renderer.purgeMemory()
 //            UltralightEngine.renderer.logMemoryUsage()
@@ -160,11 +160,11 @@ class View(width: Int, height: Int) {
         glBindTexture(GL_TEXTURE_2D, 0)
     }
 
-    fun garbageCollect(){
+    fun garbageCollect() {
         view.lockJavascriptContext().use { it.context.garbageCollect() }
     }
 
-    fun close(){
+    fun close() {
         view.unfocus()
         view.stop()
         deleteTexture()

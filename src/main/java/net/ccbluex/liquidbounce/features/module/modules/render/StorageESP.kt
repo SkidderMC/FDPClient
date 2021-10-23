@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestAura.clickedBlocks
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.OutlineShader
@@ -79,7 +78,7 @@ class StorageESP : Module() {
                 }
             }
 
-            GL11.glColor4f(1F,1F,1F,1F)
+            GL11.glColor4f(1F, 1F, 1F, 1F)
             mc.gameSettings.gammaSetting = gamma
         } catch (e: Exception) {
             e.printStackTrace()
@@ -91,7 +90,7 @@ class StorageESP : Module() {
         val mode = modeValue.get()
         val renderManager = mc.renderManager
         val partialTicks = event.partialTicks
-        val shader = when(mode){
+        val shader = when (mode) {
             "shaderoutline" -> OutlineShader.OUTLINE_SHADER
             "shaderglow" -> GlowShader.GLOW_SHADER
             else -> return
@@ -99,7 +98,7 @@ class StorageESP : Module() {
 
         val entityMap: MutableMap<Color, ArrayList<TileEntity>> = HashMap()
 
-        //search
+        // search
         for (tileEntity in mc.theWorld.loadedTileEntityList) {
             val color = getColor(tileEntity) ?: continue
             if (!entityMap.containsKey(color)) {
@@ -108,7 +107,7 @@ class StorageESP : Module() {
             entityMap[color]!!.add(tileEntity)
         }
 
-        //draw
+        // draw
         for ((key, value) in entityMap) {
             shader.startDraw(partialTicks)
             for (tileEntity in value) {

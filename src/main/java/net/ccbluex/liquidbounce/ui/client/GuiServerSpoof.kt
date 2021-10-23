@@ -19,7 +19,7 @@ class GuiServerSpoof(private val prevGui: GuiScreen) : GuiScreen() {
         textField.isFocused = true
         textField.text = ServerSpoof.address
         textField.maxStringLength = 114514
-        buttonList.add(GuiButton(2, width / 2 - 100, height / 4 + 96, "STATUS").also { stat=it })
+        buttonList.add(GuiButton(2, width / 2 - 100, height / 4 + 96, "STATUS").also { stat = it })
         buttonList.add(GuiButton(0, width / 2 - 100, height / 4 + 120, "%ui.back%"))
         updateButtonStat()
     }
@@ -32,8 +32,9 @@ class GuiServerSpoof(private val prevGui: GuiScreen) : GuiScreen() {
         drawBackground(0)
         drawCenteredString(Fonts.font40, "%ui.serverSpoof%", width / 2, 34, 0xffffff)
         textField.drawTextBox()
-        if (textField.text.isEmpty() && !textField.isFocused)
+        if (textField.text.isEmpty() && !textField.isFocused) {
             drawString(Fonts.font40, "§7%ui.serverSpoof.address%", width / 2 - 100, 66, 0xffffff)
+        }
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -61,8 +62,9 @@ class GuiServerSpoof(private val prevGui: GuiScreen) : GuiScreen() {
             return
         }
 
-        if (textField.isFocused)
+        if (textField.isFocused) {
             textField.textboxKeyTyped(typedChar, keyCode)
+        }
 
         super.keyTyped(typedChar, keyCode)
     }

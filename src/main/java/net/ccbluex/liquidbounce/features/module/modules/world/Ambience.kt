@@ -14,8 +14,8 @@ import net.minecraft.network.play.server.S2BPacketChangeGameState
 
 @ModuleInfo(name = "Ambience", category = ModuleCategory.WORLD)
 class Ambience : Module() {
-    private val timeModeValue = ListValue("TimeMode", arrayOf("None","Normal","Custom"), "Normal")
-    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None","Sun","Rain","Thunder"), "None")
+    private val timeModeValue = ListValue("TimeMode", arrayOf("None", "Normal", "Custom"), "Normal")
+    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
     private val customWorldTimeValue = IntegerValue("CustomTime", 1000, 0, 24000).displayable { timeModeValue.equals("Custom") }
     private val changeWorldTimeSpeedValue = IntegerValue("ChangeWorldTimeSpeed", 150, 10, 500).displayable { timeModeValue.equals("Normal") }
     private val weatherStrengthValue = FloatValue("WeatherStrength", 1f, 0f, 1f).displayable { !weatherModeValue.equals("None") }
@@ -27,13 +27,14 @@ class Ambience : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event : UpdateEvent) {
+    fun onUpdate(event: UpdateEvent) {
         when (timeModeValue.get().lowercase()) {
             "normal" -> {
-                if (i < 24000)
+                if (i < 24000) {
                     i += changeWorldTimeSpeedValue.get()
-                else
+                } else {
                     i = 0
+                }
                 mc.theWorld.worldTime = i
             }
             "custom" -> {
@@ -41,7 +42,7 @@ class Ambience : Module() {
             }
         }
 
-        when(weatherModeValue.get().lowercase()){
+        when (weatherModeValue.get().lowercase()) {
             "sun" -> {
                 mc.theWorld.setRainStrength(0f)
                 mc.theWorld.setThunderStrength(0f)
@@ -58,16 +59,17 @@ class Ambience : Module() {
     }
 
     @EventTarget
-    fun onPacket(event: PacketEvent){
-        val packet=event.packet
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
 
-        if(!timeModeValue.equals("none")&&packet is S03PacketTimeUpdate){
+        if (!timeModeValue.equals("none") && packet is S03PacketTimeUpdate) {
             event.cancelEvent()
         }
 
-        if(!weatherModeValue.equals("none")&&packet is S2BPacketChangeGameState){
-            if(packet.gameState in 7..8) // change weather packet
+        if (!weatherModeValue.equals("none") && packet is S2BPacketChangeGameState) {
+            if (packet.gameState in 7..8) { // change weather packet
                 event.cancelEvent()
+            }
         }
     }
 }

@@ -29,8 +29,9 @@ class GuiHudDesigner : GuiScreen() {
         LiquidBounce.hud.render(true, partialTicks)
         LiquidBounce.hud.handleMouseMove(mouseX, mouseY)
 
-        if (!LiquidBounce.hud.elements.contains(selectedElement))
+        if (!LiquidBounce.hud.elements.contains(selectedElement)) {
             selectedElement = null
+        }
 
         val wheel = Mouse.getDWheel()
 
@@ -61,7 +62,7 @@ class GuiHudDesigner : GuiScreen() {
         if (!(mouseX >= editorPanel.x && mouseX <= editorPanel.x + editorPanel.width && mouseY >= editorPanel.y &&
                         mouseY <= editorPanel.y + min(editorPanel.realHeight, 200))) {
             selectedElement = null
-            editorPanel.create = false;
+            editorPanel.create = false
         }
 
         if (mouseButton == 0) {
@@ -89,8 +90,9 @@ class GuiHudDesigner : GuiScreen() {
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         when (keyCode) {
-            Keyboard.KEY_DELETE -> if (Keyboard.KEY_DELETE == keyCode && selectedElement != null)
+            Keyboard.KEY_DELETE -> if (Keyboard.KEY_DELETE == keyCode && selectedElement != null) {
                 LiquidBounce.hud.removeElement(selectedElement!!)
+            }
 
             Keyboard.KEY_ESCAPE -> {
                 selectedElement = null

@@ -29,11 +29,12 @@ class YPort : SpeedMode("YPort") {
     private var safeJump = false
 
     override fun onPreMotion() {
-        if (!safeJump && !mc.gameSettings.keyBindJump.isKeyDown && !mc.thePlayer.isOnLadder && !mc.thePlayer.isInsideOfMaterial(Material.water)
-            && !mc.thePlayer.isInsideOfMaterial(Material.lava) && !mc.thePlayer.isInWater && (this.getBlock(-1.1) !is BlockAir
-            && this.getBlock(-1.1) !is BlockAir || this.getBlock(-0.1) !is BlockAir && mc.thePlayer.motionX != 0.0
-            && mc.thePlayer.motionZ != 0.0 && !mc.thePlayer.onGround && mc.thePlayer.fallDistance < 3.0f && mc.thePlayer.fallDistance > 0.05) && level == 3)
+        if (!safeJump && !mc.gameSettings.keyBindJump.isKeyDown && !mc.thePlayer.isOnLadder && !mc.thePlayer.isInsideOfMaterial(Material.water) &&
+            !mc.thePlayer.isInsideOfMaterial(Material.lava) && !mc.thePlayer.isInWater && (this.getBlock(-1.1) !is BlockAir &&
+            this.getBlock(-1.1) !is BlockAir || this.getBlock(-0.1) !is BlockAir && mc.thePlayer.motionX != 0.0 &&
+            mc.thePlayer.motionZ != 0.0 && !mc.thePlayer.onGround && mc.thePlayer.fallDistance < 3.0f && mc.thePlayer.fallDistance > 0.05) && level == 3) {
                 mc.thePlayer.motionY = -0.3994
+        }
 
         val xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX
         val zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ

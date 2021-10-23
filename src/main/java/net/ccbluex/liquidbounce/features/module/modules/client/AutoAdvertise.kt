@@ -17,18 +17,18 @@ import kotlin.concurrent.schedule
 
 @ModuleInfo(name = "AutoAdvertise", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 class AutoAdvertise : Module() {
-    var waiting=false
+    var waiting = false
 
     @EventTarget
-    fun onWorld(event: WorldEvent){
-        if(waiting) return
+    fun onWorld(event: WorldEvent) {
+        if (waiting) return
 
         Timer().schedule(2000L) {
-            waiting=false
-            if(mc.thePlayer!=null){
-                mc.thePlayer.sendChatMessage("["+ RandomUtils.randomString(3)+"] Try FDPClient! ${LiquidBounce.CLIENT_WEBSITE} ["+ RandomUtils.randomString(3)+"]")
+            waiting = false
+            if (mc.thePlayer != null) {
+                mc.thePlayer.sendChatMessage("[" + RandomUtils.randomString(3) + "] Try FDPClient! ${LiquidBounce.CLIENT_WEBSITE} [" + RandomUtils.randomString(3) + "]")
             }
         }
-        waiting=true
+        waiting = true
     }
 }

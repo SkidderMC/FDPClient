@@ -32,8 +32,9 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
 
         val categoryString = moduleObject.getMember("category") as String
         for (category in ModuleCategory.values())
-            if (categoryString.equals(category.configName, true))
+            if (categoryString.equals(category.configName, true)) {
                 this.category = category
+            }
 
         if (moduleObject.hasMember("settings")) {
             val settings = moduleObject.getMember("settings") as JSObject
@@ -42,8 +43,9 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
                 _values[settingName] = settings.getMember(settingName) as Value<*>
         }
 
-        if (moduleObject.hasMember("tag"))
+        if (moduleObject.hasMember("tag")) {
             _tag = moduleObject.getMember("tag") as String
+        }
     }
 
     override val values: List<Value<*>>
@@ -90,25 +92,25 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
 
     @EventTarget
     fun onAttack(attackEvent: AttackEvent) = callEvent("attack", attackEvent)
-    
+
     @EventTarget
     fun onBlockBB(blockBBEvent: BlockBBEvent) = callEvent("blockBB", blockBBEvent)
-    
+
     @EventTarget
     fun onClientShutdown(clientShutdownEvent: ClientShutdownEvent) = callEvent("clientShutdown")
-   
+
     @EventTarget
     fun onPushOut(pushOutEvent: PushOutEvent) = callEvent("pushOut", pushOutEvent)
-    
+
     @EventTarget
     fun onRenderEntity(renderEntityEvent: RenderEntityEvent) = callEvent("renderEntity", renderEntityEvent)
-    
+
     @EventTarget
     fun onScreen(screenEvent: ScreenEvent) = callEvent("screen", screenEvent)
-    
+
     @EventTarget
     fun onText(textEvent: TextEvent) = callEvent("text", textEvent)
-    
+
     @EventTarget
     fun onTick(tickEvent: TickEvent) = callEvent("tick")
 
@@ -123,7 +125,7 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
 
     @EventTarget
     fun onWorld(worldEvent: WorldEvent) = callEvent("world", worldEvent)
-    
+
     @EventTarget
     fun onClickWindow(clickWindowEvent: ClickWindowEvent) = callEvent("clickWindow", clickWindowEvent)
 

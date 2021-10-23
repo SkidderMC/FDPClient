@@ -18,7 +18,7 @@ class CommandManager {
      * Register all default commands
      */
     fun registerCommands() {
-        ReflectUtils.getReflects("${this.javaClass.`package`.name}.commands",Command::class.java)
+        ReflectUtils.getReflects("${this.javaClass.`package`.name}.commands", Command::class.java)
             .forEach(this::registerCommand)
     }
 
@@ -27,11 +27,11 @@ class CommandManager {
      */
     fun executeCommands(input: String) {
         val args = input.split(" ").toTypedArray()
-        val command=commands[args[0].substring(1).lowercase()]
+        val command = commands[args[0].substring(1).lowercase()]
 
-        if(command!=null){
+        if (command != null) {
             command.execute(args)
-        }else{
+        } else {
             ClientUtils.displayChatMessage("§cCommand not found. Type ${prefix}help to view all commands.")
         }
     }
@@ -79,14 +79,12 @@ class CommandManager {
     /**
      * Register [command] by just adding it to the commands registry
      */
-    fun registerCommand(command: Command){
+    fun registerCommand(command: Command) {
         commands[command.command.lowercase()] = command
         command.alias.forEach {
             commands[it.lowercase()] = command
         }
     }
-
-
 
     /**
      * Register [commandClass]
@@ -102,10 +100,11 @@ class CommandManager {
     /**
      * Unregister [command] by just removing it from the commands registry
      */
-    fun unregisterCommand(command: Command){
+    fun unregisterCommand(command: Command) {
         commands.toList().forEach {
-            if(it.second == command)
+            if (it.second == command) {
                 commands.remove(it.first)
+            }
         }
     }
 }

@@ -22,34 +22,35 @@ import net.minecraft.network.play.server.S3FPacketCustomPayload
 
 @ModuleInfo(name = "AutoReport", category = ModuleCategory.PLAYER)
 class AutoReport : Module() {
-    private val modeValue=ListValue("Mode", arrayOf("Hit","All"),"Hit")
-    private val commandValue=TextValue("Command","/reportar %name%")
-    private val tipValue=BoolValue("Tip",true)
-    private val allDelayValue=IntegerValue("AllDelay",500,0,1000)
-    private val blockBooksValue=BoolValue("BlockBooks",false) // 绕过Hypixel /report举报弹出书
+    private val modeValue = ListValue("Mode", arrayOf("Hit", "All"), "Hit")
+    private val commandValue = TextValue("Command", "/reportar %name%")
+    private val tipValue = BoolValue("Tip", true)
+    private val allDelayValue = IntegerValue("AllDelay", 500, 0, 1000)
+    private val blockBooksValue = BoolValue("BlockBooks", false) // 绕过Hypixel /report举报弹出书
 
-    private val reported=mutableListOf<String>()
-    private val delayTimer=MSTimer()
+    private val reported = mutableListOf<String>()
+    private val delayTimer = MSTimer()
 
     override fun onEnable() {
         reported.clear()
     }
 
     @EventTarget
-    fun onAttack(event: AttackEvent){
-        val entity=event.targetEntity ?: return
-        if(isTarget(entity)){
+    fun onAttack(event: AttackEvent) {
+        val entity = event.targetEntity ?: return
+        if (isTarget(entity)) {
             doReport(entity as EntityPlayer)
         }
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent){
-        if(modeValue.equals("All")&&delayTimer.hasTimePassed(allDelayValue.get().toLong())){
-            for(entity in mc.theWorld.loadedEntityList){
-                if(isTarget(entity)){
-                    if(doReport(entity as EntityPlayer)&&allDelayValue.get()!=0)
+    fun onUpdate(event: UpdateEvent) {
+        if (modeValue.equals("All") && delayTimer.hasTimePassed(allDelayValue.get().toLong())) {
+            for (entity in mc.theWorld.loadedEntityList) {
+                if (isTarget(entity)) {
+                    if (doReport(entity as EntityPlayer) && allDelayValue.get() != 0) {
                         break
+                    }
                 }
             }
             delayTimer.reset()
@@ -57,39 +58,45 @@ class AutoReport : Module() {
     }
 
     @EventTarget
-    fun onPacket(event: PacketEvent){
-        if(blockBooksValue.get()&&event.packet is S3FPacketCustomPayload)
+    fun onPacket(event: PacketEvent) {
+        if (blockBooksValue.get() && event.packet is S3FPacketCustomPayload) {
             event.cancelEvent()
+        }
     }
 
-    fun doReport(player: EntityPlayer):Boolean{
-        val name=player.name
+    fun doReport(player: EntityPlayer): Boolean {
+        val name = player.name
 
         // pass this if reported
-        if(reported.contains(name))
+        if (reported.contains(name)) {
             return false
+        }
 
         reported.add(name)
-        mc.thePlayer.sendChatMessage(commandValue.get().replace("%name%",name))
-        if(tipValue.get()){
+        mc.thePlayer.sendChatMessage(commandValue.get().replace("%name%", name))
+        if (tipValue.get()) {
             alert("$name reported!")
         }
         return true
     }
 
-    private fun isTarget(entity: Entity):Boolean{
-        if(entity is EntityPlayer){
-            if(entity == mc.thePlayer)
+    private fun isTarget(entity: Entity): Boolean {
+        if (entity is EntityPlayer) {
+            if (entity == mc.thePlayer) {
                 return false
+            }
 
-            if (AntiBot.isBot(entity))
+            if (AntiBot.isBot(entity)) {
                 return false
+            }
 
-            if (EntityUtils.isFriend(entity))
+            if (EntityUtils.isFriend(entity)) {
                 return false
+            }
 
-            if (entity.isSpectator)
+            if (entity.isSpectator) {
                 return false
+            }
 
             val teams = LiquidBounce.moduleManager[Teams::class.java]!!
             return !teams.state || !teams.isInYourTeam(entity)

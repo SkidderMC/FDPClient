@@ -24,7 +24,7 @@ class ModuleManager : Listenable {
     val modules = mutableListOf<Module>()
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
 
-    var pendingBindModule: Module?=null
+    var pendingBindModule: Module? = null
 
     init {
         LiquidBounce.eventManager.registerListener(this)
@@ -36,10 +36,10 @@ class ModuleManager : Listenable {
     fun registerModules() {
         ClientUtils.logInfo("[ModuleManager] Loading modules...")
 
-        ReflectUtils.getReflects("${this.javaClass.`package`.name}.modules",Module::class.java)
+        ReflectUtils.getReflects("${this.javaClass.`package`.name}.modules", Module::class.java)
             .forEach(this::registerModule)
 
-        modules.forEach{ it.onInitialize() }
+        modules.forEach { it.onInitialize() }
 
         modules.forEach { it.onLoad() }
 
@@ -70,7 +70,7 @@ class ModuleManager : Listenable {
         } catch (e: IllegalAccessException) {
             // this module is a kotlin object
             registerModule(ClassUtils.getObjectInstance(moduleClass) as Module)
-        } catch (e: Throwable){
+        } catch (e: Throwable) {
             ClientUtils.logError("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
         }
     }
@@ -88,13 +88,15 @@ class ModuleManager : Listenable {
      * Generate command for [module]
      */
     internal fun generateCommand(module: Module) {
-        if(!module.moduleCommand)
+        if (!module.moduleCommand) {
             return
+        }
 
         val values = module.values
 
-        if (values.isEmpty())
+        if (values.isEmpty()) {
             return
+        }
 
         LiquidBounce.commandManager.registerCommand(ModuleCommand(module, values))
     }
@@ -124,20 +126,21 @@ class ModuleManager : Listenable {
      */
     @EventTarget
     private fun onKey(event: KeyEvent) {
-        if(pendingBindModule==null) {
+        if (pendingBindModule == null) {
             modules.filter { it.triggerType == EnumTriggerType.TOGGLE && it.keyBind == event.key }.forEach { it.toggle() }
-        }else{
-            pendingBindModule!!.keyBind=event.key
+        } else {
+            pendingBindModule!!.keyBind = event.key
             ClientUtils.displayAlert("Bound module §a§l${pendingBindModule!!.name}§3 to key §a§l${Keyboard.getKeyName(event.key)}§3.")
-            LiquidBounce.hud.addNotification(Notification("KeyBind","Bound ${pendingBindModule!!.name} to ${Keyboard.getKeyName(event.key)}.", NotifyType.INFO))
-            pendingBindModule=null
+            LiquidBounce.hud.addNotification(Notification("KeyBind", "Bound ${pendingBindModule!!.name} to ${Keyboard.getKeyName(event.key)}.", NotifyType.INFO))
+            pendingBindModule = null
         }
     }
 
     @EventTarget
     private fun onUpdate(event: UpdateEvent) {
-        if(pendingBindModule!=null || Minecraft.getMinecraft().currentScreen!=null)
+        if (pendingBindModule != null || Minecraft.getMinecraft().currentScreen != null) {
             return
+        }
 
         modules.filter { it.triggerType == EnumTriggerType.PRESS }.forEach { it.state = Keyboard.isKeyDown(it.keyBind) }
     }

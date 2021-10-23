@@ -26,8 +26,9 @@ class AACPort : SpeedMode("AACPort") {
             val x = mc.thePlayer.posX - MathHelper.sin(f) * d
             val z = mc.thePlayer.posZ + MathHelper.cos(f) * d
 
-            if (mc.thePlayer.posY < mc.thePlayer.posY.toInt() + 0.5 && getBlock(BlockPos(x, mc.thePlayer.posY, z)) !is BlockAir)
+            if (mc.thePlayer.posY < mc.thePlayer.posY.toInt() + 0.5 && getBlock(BlockPos(x, mc.thePlayer.posY, z)) !is BlockAir) {
                 break
+            }
 
             mc.thePlayer.sendQueue.addToSendQueue(C04PacketPlayerPosition(x, mc.thePlayer.posY, z, true))
             d += 0.2

@@ -17,7 +17,7 @@ import java.awt.Color
 
 @ModuleInfo(name = "Fly", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, keyBind = Keyboard.KEY_F)
 class Fly : Module() {
-    private val modes= ReflectUtils.getReflects("${this.javaClass.`package`.name}.flys", FlyMode::class.java)
+    private val modes = ReflectUtils.getReflects("${this.javaClass.`package`.name}.flys", FlyMode::class.java)
         .map { it.newInstance() as FlyMode }
         .sortedBy { it.modeName }
 
@@ -40,9 +40,9 @@ class Fly : Module() {
     private val markValue = ListValue("Mark", arrayOf("Up", "Down", "Off"), "Up")
     private val fakeDamageValue = BoolValue("FakeDamage", false)
 
-    var launchX=0.0
-    var launchY=0.0
-    var launchZ=0.0
+    var launchX = 0.0
+    var launchY = 0.0
+    var launchZ = 0.0
     var launchYaw = 0f
     var launchPitch = 0f
 
@@ -71,10 +71,10 @@ class Fly : Module() {
         mc.timer.timerSpeed = 1F
         mc.thePlayer.speedInAir = 0.02F
 
-        if(motionResetValue.get()){
-            mc.thePlayer.motionX=0.0
-            mc.thePlayer.motionY=0.0
-            mc.thePlayer.motionZ=0.0
+        if (motionResetValue.get()) {
+            mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionY = 0.0
+            mc.thePlayer.motionZ = 0.0
         }
 
         mode.onDisable()
@@ -82,8 +82,9 @@ class Fly : Module() {
 
     @EventTarget
     fun onRender3d(event: Render3DEvent) {
-        if(markValue.equals("Off"))
+        if (markValue.equals("Off")) {
             return
+        }
 
         RenderUtils.drawPlatform(
             if (markValue.equals("Up")) launchY + 2.0 else launchY,

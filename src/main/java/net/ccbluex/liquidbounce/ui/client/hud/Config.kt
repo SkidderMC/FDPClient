@@ -49,11 +49,13 @@ class Config {
         try {
             for (jsonObject in jsonArray) {
                 try {
-                    if (jsonObject !is JsonObject)
+                    if (jsonObject !is JsonObject) {
                         continue
+                    }
 
-                    if (!jsonObject.has("Type"))
+                    if (!jsonObject.has("Type")) {
                         continue
+                    }
 
                     val type = jsonObject["Type"].asString
 
@@ -72,13 +74,15 @@ class Config {
                             )
 
                             for (value in element.values) {
-                                if (jsonObject.has(value.name))
+                                if (jsonObject.has(value.name)) {
                                     value.fromJson(jsonObject[value.name])
+                                }
                             }
 
                             // Support for old HUD files
-                            if (jsonObject.has("font"))
+                            if (jsonObject.has("font")) {
                                 element.values.find { it is FontValue }?.fromJson(jsonObject["font"])
+                            }
 
                             hud.addElement(element)
                             break

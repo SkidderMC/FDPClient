@@ -73,18 +73,20 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
         val fontRenderer = fontValue.get()
 
         // Color
-        val color = if (!rectangleRainbow.get())
+        val color = if (!rectangleRainbow.get()) {
             Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
-        else
+        } else {
             ColorUtils.rainbowWithAlpha(alphaValue.get())
+        }
 
         val backgroundColor = Color(backgroundRedValue.get(), backgroundGreenValue.get(), backgroundBlueValue.get(),
             backgroundAlphaValue.get())
 
-        val borderColor = if (!borderRainbow.get())
+        val borderColor = if (!borderRainbow.get()) {
             Color(borderRedValue.get(), borderGreenValue.get(), borderBlueValue.get(), borderAlphaValue.get())
-        else
+        } else {
             ColorUtils.rainbowWithAlpha(borderAlphaValue.get())
+        }
 
         // Draw
         val guiHeight = tabs.size * tabHeight.get()
@@ -99,15 +101,17 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
 
         var y = 1F
         tabs.forEachIndexed { index, tab ->
-            val tabName = if (upperCaseValue.get())
+            val tabName = if (upperCaseValue.get()) {
                 tab.tabName.uppercase()
-            else
+            } else {
                 tab.tabName
+            }
 
-            val textX = if (side.horizontal == Side.Horizontal.RIGHT)
+            val textX = if (side.horizontal == Side.Horizontal.RIGHT) {
                 width.get() - fontRenderer.getStringWidth(tabName) - tab.textFade - 3
-            else
+            } else {
                 tab.textFade + 5
+            }
             val textY = y + textPositionY.get()
 
             val textColor = if (selectedCategory == index) 0xffffff else Color(210, 210, 210).rgb
@@ -115,19 +119,21 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
             fontRenderer.drawString(tabName, textX, textY, textColor, textShadow.get())
 
             if (arrowsValue.get()) {
-                if (side.horizontal == Side.Horizontal.RIGHT)
+                if (side.horizontal == Side.Horizontal.RIGHT) {
                     fontRenderer.drawString(if (!categoryMenu && selectedCategory == index) ">" else "<", 3F, y + 2F,
                         0xffffff, textShadow.get())
-                else
+                } else {
                     fontRenderer.drawString(if (!categoryMenu && selectedCategory == index) "<" else ">",
                         width.get() - 8F, y + 2F, 0xffffff, textShadow.get())
+                }
             }
 
             if (index == selectedCategory && !categoryMenu) {
-                val tabX = if (side.horizontal == Side.Horizontal.RIGHT)
+                val tabX = if (side.horizontal == Side.Horizontal.RIGHT) {
                     1F - tab.menuWidth
-                else
+                } else {
                     width.get() + 5
+                }
 
                 tab.drawTab(tabX, y, color.rgb, backgroundColor.rgb, borderColor.rgb, borderStrength.get(), upperCaseValue.get(), fontRenderer)
             }
@@ -152,48 +158,59 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
 
         val xPos = tabHeight.get() * selectedCategory
         if (tabY.toInt() != xPos.toInt()) {
-            if (xPos > tabY)
+            if (xPos > tabY) {
                 tabY += 0.1F * delta
-            else
+            } else {
                 tabY -= 0.1F * delta
-        } else
+            }
+        } else {
             tabY = xPos
+        }
         val xPos2 = tabHeight.get() * selectedModule
 
         if (itemY.toInt() != xPos2.toInt()) {
-            if (xPos2 > itemY)
+            if (xPos2 > itemY) {
                 itemY += 0.1F * delta
-            else
+            } else {
                 itemY -= 0.1F * delta
-        } else
+            }
+        } else {
             itemY = xPos2
+        }
 
-        if (categoryMenu)
+        if (categoryMenu) {
             itemY = 0F
+        }
 
         if (textFade.get()) {
             tabs.forEachIndexed { index, tab ->
                 if (index == selectedCategory) {
-                    if (tab.textFade < 4)
+                    if (tab.textFade < 4) {
                         tab.textFade += 0.05F * delta
+                    }
 
-                    if (tab.textFade > 4)
+                    if (tab.textFade > 4) {
                         tab.textFade = 4F
+                    }
                 } else {
-                    if (tab.textFade > 0)
+                    if (tab.textFade > 0) {
                         tab.textFade -= 0.05F * delta
+                    }
 
-                    if (tab.textFade < 0)
+                    if (tab.textFade < 0) {
                         tab.textFade = 0F
+                    }
                 }
             }
         } else {
             for (tab in tabs) {
-                if (tab.textFade > 0)
+                if (tab.textFade > 0) {
                     tab.textFade -= 0.05F * delta
+                }
 
-                if (tab.textFade < 0)
+                if (tab.textFade < 0) {
                     tab.textFade = 0F
+                }
             }
         }
     }
@@ -251,22 +268,32 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
         var menuWidth = 0
         var textFade = 0F
 
-        fun drawTab(x: Float, y: Float, color: Int, backgroundColor: Int, borderColor: Int, borderStrength: Float,
-                    upperCase: Boolean, fontRenderer: FontRenderer) {
+        fun drawTab(
+            x: Float,
+            y: Float,
+            color: Int,
+            backgroundColor: Int,
+            borderColor: Int,
+            borderStrength: Float,
+            upperCase: Boolean,
+            fontRenderer: FontRenderer
+        ) {
             var maxWidth = 0
 
             for (module in modules)
-                if (fontRenderer.getStringWidth(if (upperCase) module.name.uppercase() else module.name) + 4 > maxWidth)
+                if (fontRenderer.getStringWidth(if (upperCase) module.name.uppercase() else module.name) + 4 > maxWidth) {
                     maxWidth = (fontRenderer.getStringWidth(if (upperCase) module.name.uppercase() else module.name) + 7F).toInt()
+                }
 
             menuWidth = maxWidth
 
             val menuHeight = modules.size * tabHeight.get()
 
-            if (borderValue.get())
+            if (borderValue.get()) {
                 RenderUtils.drawBorderedRect(x - 1F, y - 1F, x + menuWidth - 2F, y + menuHeight - 1F, borderStrength, borderColor, backgroundColor)
-            else
+            } else {
                 RenderUtils.drawRect(x - 1F, y - 1F, x + menuWidth - 2F, y + menuHeight - 1F, backgroundColor)
+            }
 
             RenderUtils.drawRect(x - 1.toFloat(), y + itemY - 1, x + menuWidth - 2F, y + itemY + tabHeight.get() - 1, color)
             GlStateManager.resetColor()
@@ -278,7 +305,6 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
                     y + tabHeight.get() * index + textPositionY.get(), moduleColor, textShadow.get())
             }
         }
-
     }
 
     /**
