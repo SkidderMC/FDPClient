@@ -72,7 +72,7 @@ class Jesus : Module() {
                         }
                     }
                     if (mc.thePlayer.fallDistance >= 4) {
-                        mc.thePlayer.motionY = -0.004 
+                        mc.thePlayer.motionY = -0.004
                     } else if (mc.thePlayer.isInWater) mc.thePlayer.motionY = 0.09
                 }
                 if (mc.thePlayer.hurtTime != 0) {

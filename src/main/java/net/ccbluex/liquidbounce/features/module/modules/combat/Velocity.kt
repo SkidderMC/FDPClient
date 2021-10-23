@@ -67,7 +67,6 @@ class Velocity : Module() {
     private val rspDengerValue = BoolValue("RedeskyOnlyDanger", false)
         .displayable { modeValue.contains("RedeSky") }
 
-
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val onlyCombatValue = BoolValue("OnlyCombat", false)
     // private val onlyHitVelocityValue = BoolValue("OnlyHitVelocity",false)
