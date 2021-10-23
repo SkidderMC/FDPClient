@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Canvas
 import java.awt.Font
-import java.awt.FontMetrics
 import java.awt.font.FontRenderContext
 import java.awt.geom.AffineTransform
 
@@ -33,7 +32,14 @@ class AWTFontRenderer(val font: Font) {
                 gcTicks = 0
             }
         }
+
+        fun clear() {
+            activeFontRenderers.forEach { it.clearGarbage() }
+            activeFontRenderers.clear()
+        }
     }
+
+    private val cachedChars: HashMap<String, CachedFont> = HashMap()
 
     private fun collectGarbage() {
         val currentTime = System.currentTimeMillis()
@@ -47,10 +53,14 @@ class AWTFontRenderer(val font: Font) {
         }
     }
 
-    private val cachedChars: HashMap<String, CachedFont> = HashMap()
+    private fun clearGarbage() {
+        cachedChars.forEach { (_, cachedFont) -> cachedFont.finalize() }
+        cachedChars.clear()
+    }
 
-    private val fontMetrics: FontMetrics = Canvas().getFontMetrics(font)
-    private val fontHeight: Int = if (fontMetrics.height <= 0) { font.size } else { fontMetrics.height + 3 }
+    private val fontMetrics = Canvas().getFontMetrics(font)
+    private val fontHeight = if (fontMetrics.height <= 0) { font.size } else { fontMetrics.height + 3 }
+    private val epsilon = font.size * 0.02
 
     val height: Int
         get() = (fontHeight - 8) / 2
@@ -124,7 +134,7 @@ class AWTFontRenderer(val font: Font) {
         val list = GL11.glGenLists(1)
         GL11.glNewList(list, GL11.GL_COMPILE_AND_EXECUTE)
 
-        RenderUtils.drawAWTShape(font.createGlyphVector(FontRenderContext(AffineTransform(), true, false), char).getOutline(x + 3, y + 1f + fontMetrics.ascent))
+        RenderUtils.drawAWTShape(font.createGlyphVector(FontRenderContext(AffineTransform(), true, false), char).getOutline(x + 3, y + 1f + fontMetrics.ascent), epsilon)
 
         cachedChars[char] = CachedFont(list, System.currentTimeMillis())
         GL11.glEndList()

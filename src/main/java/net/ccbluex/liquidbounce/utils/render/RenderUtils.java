@@ -31,6 +31,8 @@ import org.lwjgl.util.glu.GLUtessellator;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1018,9 +1020,9 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glHint(3155, 4352);
     }
 
-    public static void drawAWTShape(Shape shape) {
+    public static void drawAWTShape(Shape shape, double epsilon) {
         PathIterator path=shape.getPathIterator(new AffineTransform());
-        double[] cp=new double[2]; // 记录上次操作的点用于计算曲线
+        Double[] cp=new Double[2]; // 记录上次操作的点用于计算曲线
 
         GLUtessellator tess = GLU.gluNewTess(); // 创建GLUtessellator用于渲染凹多边形（GL_POLYGON只能渲染凸多边形）
 
@@ -1040,6 +1042,8 @@ public final class RenderUtils extends MinecraftInstance {
             }
         }
 
+        ArrayList<Double[]> pointsCache = new ArrayList<>();
+
         tess.gluTessBeginPolygon(null);
 
         while (!path.isDone()){
@@ -1048,36 +1052,38 @@ public final class RenderUtils extends MinecraftInstance {
             switch (type){
                 case PathIterator.SEG_MOVETO:{
                     tess.gluTessBeginContour();
-                    tessVertex(tess, new double[] {segment[0], segment[1], 0.0, 0.0, 0.0, 0.0});
+                    pointsCache.add(new Double[] {segment[0], segment[1]});
                     cp[0] = segment[0];
                     cp[1] = segment[1];
                     break;
                 }
                 case PathIterator.SEG_LINETO:{
-                    tessVertex(tess, new double[] {segment[0], segment[1], 0.0, 0.0, 0.0, 0.0});
+                    pointsCache.add(new Double[] {segment[0], segment[1]});
                     cp[0] = segment[0];
                     cp[1] = segment[1];
                     break;
                 }
                 case PathIterator.SEG_QUADTO:{
-                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}}, 20);
-                    for(Double[] point : points){
-                        tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
-                    }
+                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}}, 10);
+                    pointsCache.addAll(Arrays.asList(points));
                     cp[0] = segment[2];
                     cp[1] = segment[3];
                     break;
                 }
                 case PathIterator.SEG_CUBICTO:{
-                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}, new Double[]{segment[4], segment[5]}}, 20);
-                    for(Double[] point : points){
-                        tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
-                    }
+                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}, new Double[]{segment[4], segment[5]}}, 10);
+                    pointsCache.addAll(Arrays.asList(points));
                     cp[0] = segment[4];
                     cp[1] = segment[5];
                     break;
                 }
                 case PathIterator.SEG_CLOSE:{
+                    tessVertex(tess, new double[] {pointsCache.get(0)[0], pointsCache.get(0)[1], 0.0, 0.0, 0.0, 0.0});
+                    for(Double[] point : MathUtils.simplifyPoints(pointsCache.toArray(new Double[0][0]), epsilon)){
+                        tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
+                    }
+                    tessVertex(tess, new double[] {cp[0], cp[1], 0.0, 0.0, 0.0, 0.0});
+                    pointsCache.clear();
                     tess.gluTessEndContour();
                     break;
                 }

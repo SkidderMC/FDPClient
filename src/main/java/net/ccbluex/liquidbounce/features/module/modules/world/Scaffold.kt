@@ -370,6 +370,9 @@ class Scaffold : Module() {
         // AutoBlock
         if (packet is C09PacketHeldItemChange) {
             slot = packet.slotId
+        } else if (packet is C08PacketPlayerBlockPlacement) {
+            // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
+            packet.stack = mc.thePlayer.inventory.getStackInSlot(slot)
         }
     }
 

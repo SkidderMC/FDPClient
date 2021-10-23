@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.CombatManager
-import net.ccbluex.liquidbounce.features.special.PacketFixer
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.MetricsLite
@@ -170,8 +169,6 @@ object LiquidBounce {
 
         combatManager = CombatManager()
         eventManager.registerListener(combatManager)
-
-        eventManager.registerListener(PacketFixer())
 
         GuiCapeManager.load()
 
