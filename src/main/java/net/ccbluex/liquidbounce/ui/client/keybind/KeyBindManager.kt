@@ -44,10 +44,11 @@ class KeyBindManager : GuiScreen() {
 
         GL11.glPushMatrix()
 
-        GL11.glPushMatrix()
+//        GL11.glPushMatrix()
         GL11.glScalef(2f, 2f, 2f)
-        Fonts.font40.drawString("%ui.keybind.title%", width * 0.21f, height * 0.2f, Color.WHITE.rgb, false)
-        GL11.glPopMatrix()
+        Fonts.font40.drawString("%ui.keybind.title%", width * 0.21f * 0.5f, height * 0.2f * 0.5f, Color.WHITE.rgb, false)
+//        GL11.glPopMatrix()
+        GL11.glScalef(0.5f, 0.5f, 0.5f)
 
         GL11.glTranslatef(width * 0.2f, height * 0.2f + Fonts.font40.height * 2.3f, 0F)
         val scale = mcWidth / baseWidth.toFloat()
