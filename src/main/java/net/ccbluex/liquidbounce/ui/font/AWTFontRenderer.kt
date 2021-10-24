@@ -83,13 +83,7 @@ class AWTFontRenderer(val font: Font) {
         GL11.glPushMatrix()
         GL11.glScaled(scale, scale, scale)
         GL11.glTranslated(x * 2F, y * 2.0 - 2.0, 0.0)
-
-        val red = (color shr 16 and 0xff) / 255F
-        val green = (color shr 8 and 0xff) / 255F
-        val blue = (color and 0xff) / 255F
-        val alpha = (color shr 24 and 0xff) / 255F
-
-        GL11.glColor4f(red, green, blue, alpha)
+        RenderUtils.glColor(color)
 
         var isLastUTF16 = false
         var highSurrogate = '\u0000'
@@ -97,15 +91,13 @@ class AWTFontRenderer(val font: Font) {
             if (char in '\ud800'..'\udfff') {
                 if (isLastUTF16) {
                     val utf16Char = "$highSurrogate$char"
-                    val singleWidth = drawChar(utf16Char, 0f, 0f)
-                    GL11.glTranslatef(singleWidth - 8f, 0f, 0f)
+                    GL11.glTranslatef(drawChar(utf16Char, 0f, 0f).toFloat(), 0f, 0f)
                 } else {
                     highSurrogate = char
                 }
                 isLastUTF16 = !isLastUTF16
             } else {
-                val singleWidth = drawChar("$char", 0f, 0f)
-                GL11.glTranslatef(singleWidth - 8f, 0f, 0f)
+                GL11.glTranslatef(drawChar(char.toString(), 0f, 0f).toFloat(), 0f, 0f)
                 isLastUTF16 = false
             }
         }
@@ -128,7 +120,7 @@ class AWTFontRenderer(val font: Font) {
             GL11.glCallList(cached.displayList) // TODO: stupid solutions, find a better way
             cached.lastUsage = System.currentTimeMillis()
 
-            return getCharWidth(char)
+            return cached.width
         }
 
         val list = GL11.glGenLists(1)
@@ -136,48 +128,16 @@ class AWTFontRenderer(val font: Font) {
 
         RenderUtils.drawAWTShape(font.createGlyphVector(FontRenderContext(AffineTransform(), true, false), char).getOutline(x + 3, y + 1f + fontMetrics.ascent), epsilon)
 
-        cachedChars[char] = CachedFont(list, System.currentTimeMillis())
         GL11.glEndList()
 
-        return getCharWidth(char)
-    }
-
-    /**
-     * Calculate the string width of a text
-     *
-     * @param text for width calculation
-     * @return the width of the text
-     */
-    fun getStringWidth(text: String): Int {
-        var width = 0
-
-        var isLastUTF16 = false
-        var highSurrogate = '\u0000'
-        for (char in text.toCharArray()) {
-            if (char in '\ud800'..'\udfff') {
-                if (isLastUTF16) {
-                    val utf16Char = "$highSurrogate$char"
-
-                    width += getCharWidth(utf16Char) - 8
-                } else {
-                    highSurrogate = char
-                }
-                isLastUTF16 = !isLastUTF16
-            } else {
-                width += getCharWidth("$char") - 8
-                isLastUTF16 = false
-            }
-        }
-
-        return width / 2
-    }
-
-    fun getCharWidth(char: String): Int {
-        var width = fontMetrics.stringWidth(char) + 8
-        if (width <= 0) {
-            width = 7
-        }
+        val width = fontMetrics.stringWidth(char)
+        cachedChars[char] = CachedFont(list, System.currentTimeMillis(), width)
 
         return width
     }
+
+    /**
+     * 获取字符串宽度
+     */
+    fun getStringWidth(text: String) = fontMetrics.stringWidth(text) / 2
 }

@@ -1020,6 +1020,11 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glHint(3155, 4352);
     }
 
+    /**
+     * 在LWJGL中渲染AWT图形
+     * @param shape 准备渲染的图形
+     * @param epsilon 图形精细度，传0不做处理
+     */
     public static void drawAWTShape(Shape shape, double epsilon) {
         PathIterator path=shape.getPathIterator(new AffineTransform());
         Double[] cp=new Double[2]; // 记录上次操作的点用于计算曲线
@@ -1042,6 +1047,7 @@ public final class RenderUtils extends MinecraftInstance {
             }
         }
 
+        // 缓存单个图形路径上的点用于精简以提升性能
         ArrayList<Double[]> pointsCache = new ArrayList<>();
 
         tess.gluTessBeginPolygon(null);
@@ -1078,11 +1084,11 @@ public final class RenderUtils extends MinecraftInstance {
                     break;
                 }
                 case PathIterator.SEG_CLOSE:{
-                    tessVertex(tess, new double[] {pointsCache.get(0)[0], pointsCache.get(0)[1], 0.0, 0.0, 0.0, 0.0});
+                    // 精简路径上的点
                     for(Double[] point : MathUtils.simplifyPoints(pointsCache.toArray(new Double[0][0]), epsilon)){
                         tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
                     }
-                    tessVertex(tess, new double[] {cp[0], cp[1], 0.0, 0.0, 0.0, 0.0});
+                    // 清除缓存以便画下一个图形
                     pointsCache.clear();
                     tess.gluTessEndContour();
                     break;
