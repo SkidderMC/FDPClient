@@ -67,7 +67,7 @@ class FreeCam : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(event: UpdateEvent) {
         if (noClipValue.get()) mc.thePlayer.noClip = true
         mc.thePlayer.fallDistance = 0f
         if (flyValue.get()) {
@@ -86,7 +86,7 @@ class FreeCam : Module() {
         val packet = event.packet
         if (c03SpoofValue.get()) {
             if (packet is C03PacketPlayer.C04PacketPlayerPosition || packet is C03PacketPlayer.C05PacketPlayerLook || packet is C03PacketPlayer.C06PacketPlayerPosLook) {
-                if (packetCount> 20) {
+                if (packetCount >= 20) {
                     packetCount = 0
                     PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer!!.posX, fakePlayer!!.posY, fakePlayer!!.posZ, fakePlayer!!.rotationYaw, fakePlayer!!.rotationPitch, fakePlayer!!.onGround))
                 } else {

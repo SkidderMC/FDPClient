@@ -5,6 +5,10 @@
  */
 package net.ccbluex.liquidbounce.ui.font
 
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.TickEvent
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Canvas
@@ -18,17 +22,20 @@ import java.awt.geom.AffineTransform
  */
 class AWTFontRenderer(val font: Font) {
 
-    companion object {
-        val activeFontRenderers: ArrayList<AWTFontRenderer> = ArrayList()
-
+    companion object : Listenable {
+        private val activeFontRenderers: ArrayList<AWTFontRenderer> = ArrayList()
         private var gcTicks: Int = 0
-        private const val GC_TICKS = 600 // Start garbage collection every 600 frames
+        private const val GC_TICKS = 200 // Start garbage collection every 200 ticks (10sec)
         private const val CACHED_FONT_REMOVAL_TIME = 30000 // Remove cached texts after 30s of not being used
 
-        fun garbageCollectionTick() {
+        init {
+            LiquidBounce.eventManager.registerListener(this)
+        }
+
+        @EventTarget
+        fun onTick(event: TickEvent) {
             if (gcTicks++ > GC_TICKS) {
                 activeFontRenderers.forEach { it.collectGarbage() }
-
                 gcTicks = 0
             }
         }
@@ -37,6 +44,8 @@ class AWTFontRenderer(val font: Font) {
             activeFontRenderers.forEach { it.clearGarbage() }
             activeFontRenderers.clear()
         }
+
+        override fun handleEvents() = activeFontRenderers.isNotEmpty()
     }
 
     private val cachedChars: HashMap<String, CachedFont> = HashMap()
