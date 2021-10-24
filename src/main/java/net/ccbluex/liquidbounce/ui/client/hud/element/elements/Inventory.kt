@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.gui.FontRenderer
+import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import org.lwjgl.opengl.GL11
@@ -48,8 +50,8 @@ class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vert
         RenderUtils.drawRect(173F, startY, 174F, 66F, borderColor)
         if (title.get()) {
             // GameFontRender will shift y axis 3F when render string
-            val str = "Inventory"
-            font.drawString("Inventory", (174F / 2F) - (font.getStringWidth(str) * 0.5F), -(font.FONT_HEIGHT).toFloat(), borderColor.rgb, false)
+            val str = mc.thePlayer.inventory.displayName.formattedText
+            font.drawString(str, (174F / 2F) - (font.getStringWidth(str) * 0.5F), -(font.FONT_HEIGHT).toFloat(), borderColor.rgb, false)
         }
 
         // render item
