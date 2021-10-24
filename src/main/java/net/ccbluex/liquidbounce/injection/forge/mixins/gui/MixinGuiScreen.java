@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatStyle;
@@ -134,5 +135,14 @@ public abstract class MixinGuiScreen {
         final HoverEvent hoverEvent = chatStyle.getChatHoverEvent();
 
         drawHoveringText(Collections.singletonList("§c§l" + clickEvent.getAction().getCanonicalName().toUpperCase() + ": §a" + clickEvent.getValue()), x, y - (hoverEvent != null ? 17 : 0));
+    }
+
+    @Inject(method = "drawHoveringText*", at = @At("HEAD"))
+    private void drawHoveringText(CallbackInfo ci) {
+        // idk why this make font renderer works
+        GlStateManager.enableLighting();
+        GlStateManager.enableDepth();
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.enableRescaleNormal();
     }
 }
