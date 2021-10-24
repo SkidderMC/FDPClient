@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Horizontal
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -51,7 +52,7 @@ class Arraylist(
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
     private val saturationValue = FloatValue("Random-Saturation", 0.9f, 0f, 1f)
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
-    private val tags = BoolValue("Tags", true)
+    private val tagsValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "Space", "None"), "Space")
     private val shadow = BoolValue("ShadowText", false)
     private val split = BoolValue("SplitName", false)
     private val slideInAnimation = BoolValue("SlideInAnimation", true)
@@ -64,7 +65,7 @@ class Arraylist(
     private val backgroundExpand = IntegerValue("Background-Expand", 2, 0, 10)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
     private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "None")
-    private val upperCaseValue = BoolValue("UpperCase", false)
+    private val caseValue = ListValue("Case", arrayOf("Upper", "Normal", "Lower"), "Normal")
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
@@ -79,19 +80,37 @@ class Arraylist(
         return noRenderModules.get() && module.category == ModuleCategory.RENDER
     }
 
+    private fun changeCase(inStr: String): String {
+        val str = LanguageManager.replace(inStr)
+        return when(caseValue.get().lowercase()) {
+            "upper" -> str.uppercase()
+            "lower" -> str.lowercase()
+            else -> str
+        }
+    }
+
+    private fun getModuleTag(module: Module): String {
+        module.tag ?: return ""
+        return when(tagsValue.get().lowercase()) {
+            "-" -> " - ${module.tag}"
+            "|" -> "|${module.tag}"
+            "()" -> " (${module.tag})"
+            "[]" -> " [${module.tag}]"
+            "<>" -> " <${module.tag}>"
+            "space" -> " ${module.tag}"
+            else -> ""
+        }
+    }
+
+    private fun getModuleName(module: Module) = if (split.get()) { module.splicedName } else { module.localizedName }
+
     override fun drawElement(partialTicks: Float): Border? {
         val fontRenderer = fontValue.get()
-
-        fun getModuleName(module: Module) = if (split.get()) { module.splicedName } else { module.localizedName }
 
         for (module in LiquidBounce.moduleManager.modules) {
             if (!module.array || shouldExpect(module) || (!module.state && module.slide == 0F && (module.yPosAnimation == null || module.yPosAnimation!!.state == Animation.EnumAnimationState.STOPPED))) continue
 
-            var displayString = getModuleName(module) + if (module.tag != null) { if (tags.get()) { " " + module.tag } else { "" } } else { "" }
-
-            if (upperCaseValue.get()) displayString = displayString.uppercase()
-
-            module.width = fontRenderer.getStringWidth(displayString)
+            module.width = fontRenderer.getStringWidth(changeCase(getModuleName(module) + getModuleTag(module) ))
 
             val targetSlide = if (module.state) { module.width.toFloat() } else { 0f }
             if (module.slide != targetSlide) {
@@ -145,8 +164,8 @@ class Arraylist(
                         }
                     )
 
-                    val mName = if (upperCaseValue.get()) { getModuleName(module).uppercase() } else { getModuleName(module) }
-                    val mTag = if (module.tag != null) { " " + if (upperCaseValue.get()) { module.tag!!.uppercase() } else { module.tag } } else { "" }
+                    val mName = changeCase(getModuleName(module))
+                    val mTag = changeCase(getModuleTag(module))
                     fontRenderer.drawString(mName, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY,
                         when (colorMode.lowercase()) {
                             "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
@@ -156,17 +175,16 @@ class Arraylist(
                             "anotherrainbow" -> ColorUtils.fade(customColor, 100, index + 1).rgb
                             else -> customColor.rgb
                         }, textShadow)
-                    if (tags.get()) {
-                        fontRenderer.drawString(mTag, xPos - (if (rectMode.equals("right", true)) 3 else 0) + fontRenderer.getStringWidth(mName), yPos + textY,
-                            ColorUtils.antiColor(when (tagColorModeValue.get().lowercase()) {
-                                "rainbow" -> ColorUtils.antiColor(ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()))
-                                "random" -> Color(moduleColor)
-                                "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
-                                "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get())
-                                "anotherrainbow" -> ColorUtils.antiColor(ColorUtils.fade(tagCustomColor, 100, index + 1))
-                                else -> ColorUtils.antiColor(tagCustomColor)
-                            }).rgb, textShadow)
-                    }
+
+                    fontRenderer.drawString(mTag, xPos - (if (rectMode.equals("right", true)) 3 else 0) + fontRenderer.getStringWidth(mName), yPos + textY,
+                        ColorUtils.antiColor(when (tagColorModeValue.get().lowercase()) {
+                            "rainbow" -> ColorUtils.antiColor(ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()))
+                            "random" -> Color(moduleColor)
+                            "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
+                            "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get())
+                            "anotherrainbow" -> ColorUtils.antiColor(ColorUtils.fade(tagCustomColor, 100, index + 1))
+                            else -> ColorUtils.antiColor(tagCustomColor)
+                        }).rgb, textShadow)
 
                     if (!rectMode.equals("none", true)) {
                         val rectColor = when (rectColorMode.lowercase()) {
@@ -242,8 +260,8 @@ class Arraylist(
                         }
                     )
 
-                    val mName = if (upperCaseValue.get()) { getModuleName(module).uppercase() } else { getModuleName(module) }
-                    val mTag = if (module.tag != null) { " " + if (upperCaseValue.get()) { module.tag!!.uppercase() } else { module.tag } } else { "" }
+                    val mName = changeCase(getModuleName(module))
+                    val mTag = changeCase(getModuleTag(module))
                     fontRenderer.drawString(mName, xPos, yPos + textY, when (colorMode.lowercase()) {
                         "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
                         "random" -> moduleColor

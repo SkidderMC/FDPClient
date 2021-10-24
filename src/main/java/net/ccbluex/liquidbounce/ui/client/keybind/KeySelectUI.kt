@@ -34,7 +34,7 @@ class KeySelectUI(val info: KeyInfo) : PopUI("%ui.keybind.select%") {
                     GL11.glPushMatrix()
                     GL11.glTranslatef(0F, yOffset, 0F)
 
-                    val name = module.localizedName
+                    val name = module.name
                     Fonts.font35.drawString(if (str.isNotEmpty()) {
                         "§0" + name.substring(0, str.length) + "§7" + name.substring(str.length, name.length)
                     } else { "§0$name" }, 8F, singleHeight * 0.5F, Color.BLACK.rgb, false)
