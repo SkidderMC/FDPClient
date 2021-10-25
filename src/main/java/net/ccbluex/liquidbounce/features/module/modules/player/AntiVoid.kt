@@ -94,8 +94,8 @@ class AntiVoid : Module() {
 
             "jartex" -> {
                 canSpoof = false
-                if (!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, 0.0, 0.0).expand(0.0, 0.0, 0.0)).isEmpty() &&
-                    mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -282.25, 0.0).expand(0.0, -283.75, 0.0)).isEmpty()) {
+                if (!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(
+                        mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -192.0, 0.0).expand(0.0, -193.725, 0.0)).isEmpty()) {
                     if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround) {
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ *= 0.838
@@ -109,10 +109,8 @@ class AntiVoid : Module() {
             "oldcubecraft" -> {
                 canSpoof = false
                 if (!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
-                            0.0, 0.0, 0.0
-                        ).expand(0.0, 0.0, 0.0)).isEmpty() && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
-                            0.0, -282.25, 0.0
-                        ).expand(0.0, -283.75, 0.0)).isEmpty()) {
+                            0.0, -192.0, 0.0
+                        ).expand(0.0, -193.725, 0.0)).isEmpty()) {
                     if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround) {
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ = 0.0
@@ -218,12 +216,12 @@ class AntiVoid : Module() {
             }
 
             "testhypixel" -> {
+                if(packet is S08PacketPlayerPosLook && mc.thePlayer.fallDistance>3.125) mc.thePlayer.fallDistance = 3.125f
                 if (packet is C03PacketPlayer) {
-                    if (voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get() && mc.thePlayer.motionY <= 0 && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
-                            0.0, 0.0, 0.0
-                        ).expand(0.0, 0.0, 0.0)).isEmpty() && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
-                            0.0, -282.25, 0.0
-                        ).expand(0.0, -283.75, 0.0)).isEmpty()) {
+                    if (voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get() && mc.thePlayer.motionY <= 0 &&
+                        mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
+                            0.0, -192.0, 0.0
+                        ).expand(0.0, -193.725, 0.0)).isEmpty()) {
                         packet.y += 11.0
                     }
                     if (!voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get()) packet.y += 11.0
