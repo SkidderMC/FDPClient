@@ -20,7 +20,7 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "FlyFlag", "PacketFlag", "GroundSpoof", "TestHypixel", "Jartex", "OldCubecraft"), "Blink")
+    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft"), "Blink")
     private val maxFallDistValue = FloatValue("MaxFallDistance", 10F, 5F, 20F)
     private val resetMotion = BoolValue("ResetMotion", false).displayable { modeValue.equals("Blink") }
     private val startFallDistValue = FloatValue("BlinkStartFallDistance", 2F, 0F, 5F).displayable { modeValue.equals("Blink") }
@@ -60,11 +60,11 @@ class AntiVoid : Module() {
                 canSpoof = mc.thePlayer.fallDistance > maxFallDistValue.get()
             }
 
-            "flyflag" -> {
-                mc.netHandler
-                if (mc.thePlayer.fallDistance > maxFallDistValue.get()) {
+            "motionflag" -> {
+                if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried) {
                     mc.thePlayer.motionY += 1
-//                    mc.thePlayer.fallDistance = 0F
+                    mc.thePlayer.fallDistance = 0.0F
+                    tried = true
                 }
             }
 
@@ -215,7 +215,7 @@ class AntiVoid : Module() {
                 }
             }
 
-            "testhypixel" -> {
+            "oldhypixel" -> {
                 if(packet is S08PacketPlayerPosLook && mc.thePlayer.fallDistance>3.125) mc.thePlayer.fallDistance = 3.125f
                 if (packet is C03PacketPlayer) {
                     if (voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get() && mc.thePlayer.motionY <= 0 &&
