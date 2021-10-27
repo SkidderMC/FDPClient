@@ -58,15 +58,14 @@ class Regen : Module() {
                 }
 
                 "newspartan" -> {
-                    if (mc.thePlayer.ticksExisted % 4 == 0) {
-                        mc.timer.timerSpeed = 0.95F
+                    if (mc.thePlayer.ticksExisted % 5 == 0) {
                         resetTimer = true
-                        repeat(8) {
+                        mc.timer.timerSpeed = 0.98F
+                        repeat(10) {
                             mc.netHandler.addToSendQueue(C03PacketPlayer(true))
                         }
                     } else {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(false))
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(true))
+                        if(MovementUtils.isMoving()) mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                     }
                 }
 
