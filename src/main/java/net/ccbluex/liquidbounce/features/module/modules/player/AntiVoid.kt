@@ -57,25 +57,36 @@ class AntiVoid : Module() {
 
         when (modeValue.get().lowercase()) {
             "groundspoof" -> {
+                if (!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(
+                        mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -192.0, 0.0).expand(0.0, -193.725, 0.0)).isEmpty()) {
                 canSpoof = mc.thePlayer.fallDistance > maxFallDistValue.get()
+                }
             }
 
             "motionflag" -> {
+                if (!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(
+                        mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -192.0, 0.0).expand(0.0, -193.725, 0.0)).isEmpty()) {
                 if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried) {
                     mc.thePlayer.motionY += 1
                     mc.thePlayer.fallDistance = 0.0F
                     tried = true
                 }
+                }
             }
 
             "packetflag" -> {
+                if (!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(
+                        mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -192.0, 0.0).expand(0.0, -193.725, 0.0)).isEmpty()) {
                 if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried) {
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + 1, mc.thePlayer.posY + 1, mc.thePlayer.posZ + 1, false))
                     tried = true
                 }
+                }
             }
 
             "tpback" -> {
+                if (!voidOnly.get() || mc.theWorld.getCollidingBoundingBoxes(
+                        mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -192.0, 0.0).expand(0.0, -193.725, 0.0)).isEmpty()) {
                 if (mc.thePlayer.onGround && BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)) !is BlockAir) {
                     posX = mc.thePlayer.prevPosX
                     posY = mc.thePlayer.prevPosY
@@ -89,6 +100,7 @@ class AntiVoid : Module() {
                     mc.thePlayer.motionY = 0.0
                     mc.thePlayer.motionZ = 0.0
                     tried = true
+                }
                 }
             }
 
