@@ -102,7 +102,6 @@ object LiquidBounce {
 //        }else{
 //            launchFilters.add(EnumLaunchFilter.ULTRALIGHT)
 //        }
-        mainMenu = GuiLaunchOptionSelectMenu()
     }
 
     /**
@@ -171,6 +170,8 @@ object LiquidBounce {
         eventManager.registerListener(combatManager)
 
         GuiCapeManager.load()
+
+        mainMenu = GuiLaunchOptionSelectMenu()
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
     }
