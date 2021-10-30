@@ -808,12 +808,12 @@ class Scaffold : Module() {
             val neighbor = blockPosition.offset(side)
             if (!BlockUtils.canBeClicked(neighbor)) continue
             val dirVec = Vec3(side.directionVec)
-            var xSearch = 0.05
-            while (xSearch < 0.96) {
-                var ySearch = 0.05
-                while (ySearch < 0.96) {
-                    var zSearch = 0.05
-                    while (zSearch < 0.96) {
+            var xSearch = -0.1
+            while (xSearch < 1.105) {
+                var ySearch = -0.1
+                while (ySearch < 1.105) {
+                    var zSearch = -0.1
+                    while (zSearch < 1.105) {
                         val posVec = Vec3(blockPosition).addVector(xSearch, ySearch, zSearch)
                         val distanceSqPosVec = eyesPos.squareDistanceTo(posVec)
                         val hitVec = posVec.add(Vec3(dirVec.xCoord * 0.5, dirVec.yCoord * 0.5, dirVec.zCoord * 0.5))
@@ -830,14 +830,9 @@ class Scaffold : Module() {
                         val diffY = hitVec.yCoord - eyesPos.yCoord
                         val diffZ = hitVec.zCoord - eyesPos.zCoord
                         val diffXZ = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ).toDouble()
-                        val diffXYZ = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ + diffY * diffY).toDouble()
                         val rotation = Rotation(
-                            MathHelper.wrapAngleTo180_float(
-                                (
-                                    if(diffZ>=0) (acos(diffX/diffXZ)*180/Math.PI - 90.0f) else (270.0f - acos(diffX/diffXZ)*180/Math.PI)
-                                ).toFloat()
-                            ),
-                            MathHelper.wrapAngleTo180_float((Math.acos(diffXZ/diffXYZ)*180/Math.PI).toFloat())
+                            MathHelper.wrapAngleTo180_float(Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90f),
+                            MathHelper.wrapAngleTo180_float((-Math.toDegrees(atan2(diffY, diffXZ))).toFloat())
                         )
                         val rotationVector = RotationUtils.getVectorForRotation(rotation)
                         val vector = eyesPos.addVector(
@@ -857,6 +852,7 @@ class Scaffold : Module() {
                             if(Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())) < testYaw) {
                                 placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
                                 testYaw = Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())).toDouble()
+                                chat(testYaw.toString())
                             }
                         }else placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
                         zSearch += 0.1
