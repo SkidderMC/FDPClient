@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL13
 import java.awt.Color
 import java.awt.Font
 
@@ -49,18 +50,21 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         currentText = event.text ?: return 0
 
         val currY = y - 3F
-        if (shadow)
+        if (shadow) {
             drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
+        }
         return drawText(currentText, x, currY, color, false)
     }
 
     private fun drawText(rawText: String?, x: Float, y: Float, colorHex: Int, ignoreColor: Boolean): Int {
-        if (rawText == null)
+        if (rawText == null) {
             return 0
-        if (rawText.isNullOrEmpty())
+        }
+        if (rawText.isNullOrEmpty()) {
             return x.toInt()
+        }
 
-        val text=LanguageManager.replace(rawText)
+        val text = LanguageManager.replace(rawText)
 
         GlStateManager.translate(x - 1.5, y + 0.5, 0.0)
 
@@ -69,12 +73,16 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-        GL11.glEnable(GL11.GL_POLYGON_SMOOTH)
-        GL11.glDisable(GL11.GL_CULL_FACE) // 不要剔除模型的背面
+        RenderUtils.clearCaps()
+        RenderUtils.enableGlCap(GL13.GL_MULTISAMPLE)
+        GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_FASTEST)
+        RenderUtils.enableGlCap(GL11.GL_POLYGON_SMOOTH)
+        RenderUtils.disableGlCap(GL11.GL_CULL_FACE) // 不要剔除模型的背面
 
         var hexColor = colorHex
-        if (hexColor and -67108864 == 0)
+        if (hexColor and -67108864 == 0) {
             hexColor = hexColor or -16777216
+        }
 
         val alpha: Int = (hexColor shr 24 and 0xff)
 
@@ -93,8 +101,9 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
             var underline = false
 
             parts.forEachIndexed { index, part ->
-                if (part.isEmpty())
+                if (part.isEmpty()) {
                     return@forEachIndexed
+                }
 
                 if (index == 0) {
                     currentFont.drawString(part, width, 0.0, hexColor)
@@ -122,8 +131,9 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                         20 -> italic = true
                         21 -> {
                             hexColor = colorHex
-                            if (hexColor and -67108864 == 0)
+                            if (hexColor and -67108864 == 0) {
                                 hexColor = hexColor or -16777216
+                            }
 
                             bold = false
                             italic = false
@@ -133,26 +143,29 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                         }
                     }
 
-                    currentFont = if (bold && italic)
+                    currentFont = if (bold && italic) {
                         boldItalicFont
-                    else if (bold)
+                    } else if (bold) {
                         boldFont
-                    else if (italic)
+                    } else if (italic) {
                         italicFont
-                    else
+                    } else {
                         defaultFont
+                    }
 
                     currentFont.drawString(if (randomCase) ColorUtils.randomMagicText(words) else words, width, 0.0, hexColor)
 
-                    if (strikeThrough)
+                    if (strikeThrough) {
                         RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 3.0,
                                 (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 3.0,
                                 FONT_HEIGHT / 16F)
+                    }
 
-                    if (underline)
+                    if (underline) {
                         RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 2.0,
                                 (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
                                 FONT_HEIGHT / 16F)
+                    }
 
                     width += currentFont.getStringWidth(words)
                 }
@@ -161,8 +174,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
             defaultFont.drawString(text, 0.0, 0.0, hexColor)
         }
 
-        GL11.glEnable(GL11.GL_CULL_FACE)
-        GL11.glDisable(GL11.GL_POLYGON_SMOOTH)
+        RenderUtils.resetCaps()
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
         GlStateManager.translate(-(x - 1.5), -(y + 0.5), 0.0)
@@ -191,8 +203,9 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
             var italic = false
 
             parts.forEachIndexed { index, part ->
-                if (part.isEmpty())
+                if (part.isEmpty()) {
                     return@forEachIndexed
+                }
 
                 if (index == 0) {
                     width += currentFont.getStringWidth(part)
@@ -213,22 +226,24 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                         }
                     }
 
-                    currentFont = if (bold && italic)
+                    currentFont = if (bold && italic) {
                         boldItalicFont
-                    else if (bold)
+                    } else if (bold) {
                         boldFont
-                    else if (italic)
+                    } else if (italic) {
                         italicFont
-                    else
+                    } else {
                         defaultFont
+                    }
 
                     width += currentFont.getStringWidth(words)
                 }
             }
 
             width / 2
-        } else
+        } else {
             defaultFont.getStringWidth(currentText) / 2
+        }
     }
 
     override fun getCharWidth(character: Char) = getStringWidth(character.toString())

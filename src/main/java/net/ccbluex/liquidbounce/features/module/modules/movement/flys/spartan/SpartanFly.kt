@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
 class SpartanFly : FlyMode("Spartan") {
-    private val timer=TickTimer()
+    private val timer = TickTimer()
 
     override fun onUpdate(event: UpdateEvent) {
         mc.thePlayer.motionY = 0.0

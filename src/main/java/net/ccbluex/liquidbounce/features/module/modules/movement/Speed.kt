@@ -19,7 +19,7 @@ import org.lwjgl.input.Keyboard
 
 @ModuleInfo(name = "Speed", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, keyBind = Keyboard.KEY_V)
 class Speed : Module() {
-    private val modes=ReflectUtils.getReflects("${this.javaClass.`package`.name}.speeds",SpeedMode::class.java)
+    private val modes = ReflectUtils.getReflects("${this.javaClass.`package`.name}.speeds", SpeedMode::class.java)
         .map { it.newInstance() as SpeedMode }
         .sortedBy { it.modeName }
 
@@ -47,37 +47,42 @@ class Speed : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (MovementUtils.isMoving())
+        if (MovementUtils.isMoving()) {
             mc.thePlayer.isSprinting = true
+        }
 
         mode.onMotion(event)
 
-        if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE || (mc.thePlayer.isInWater && noWater.get()))
+        if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE || (mc.thePlayer.isInWater && noWater.get())) {
             return
+        }
 
         mode.onPreMotion()
     }
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get()))
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) {
             return
+        }
 
         mode.onMove(event)
     }
 
     @EventTarget
     fun onTick(event: TickEvent) {
-        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get()))
+        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) {
             return
+        }
 
         mode.onTick()
     }
 
     @EventTarget
     fun onJump(event: JumpEvent) {
-        if(mode.noJump)
+        if (mode.noJump) {
             event.cancelEvent()
+        }
     }
 
     override fun onEnable() {

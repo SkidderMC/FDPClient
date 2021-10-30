@@ -12,7 +12,7 @@ import kotlin.math.sin
 class MineSecureFly : FlyMode("MineSecure") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
 
-    private val timer=MSTimer()
+    private val timer = MSTimer()
 
     override fun onUpdate(event: UpdateEvent) {
         mc.thePlayer.capabilities.isFlying = false

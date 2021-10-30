@@ -31,6 +31,8 @@ import org.lwjgl.util.glu.GLUtessellator;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -760,13 +762,11 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawLine(final double x, final double y, final double x1, final double y1, final float width) {
-        glDisable(GL_TEXTURE_2D);
         glLineWidth(width);
         glBegin(GL_LINES);
         glVertex2d(x, y);
         glVertex2d(x1, y1);
         glEnd();
-        glEnable(GL_TEXTURE_2D);
     }
 
     public static void makeScissorBox(final float x, final float y, final float x2, final float y2) {
@@ -781,6 +781,11 @@ public final class RenderUtils extends MinecraftInstance {
 
     public static void resetCaps() {
         glCapMap.forEach(RenderUtils::setGlState);
+        glCapMap.clear();
+    }
+
+    public static void clearCaps() {
+        glCapMap.clear();
     }
 
     public static void enableGlCap(final int cap) {
@@ -793,7 +798,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void disableGlCap(final int cap) {
-        setGlCap(cap, true);
+        setGlCap(cap, false);
     }
 
     public static void disableGlCap(final int... caps) {
@@ -1013,9 +1018,14 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glHint(3155, 4352);
     }
 
-    public static void drawAWTShape(Shape shape) {
+    /**
+     * 在LWJGL中渲染AWT图形
+     * @param shape 准备渲染的图形
+     * @param epsilon 图形精细度，传0不做处理
+     */
+    public static void drawAWTShape(Shape shape, double epsilon) {
         PathIterator path=shape.getPathIterator(new AffineTransform());
-        float[] cp=new float[2]; // 记录上次操作的点用于计算曲线
+        Double[] cp=new Double[2]; // 记录上次操作的点用于计算曲线
 
         GLUtessellator tess = GLU.gluNewTess(); // 创建GLUtessellator用于渲染凹多边形（GL_POLYGON只能渲染凸多边形）
 
@@ -1035,44 +1045,49 @@ public final class RenderUtils extends MinecraftInstance {
             }
         }
 
+        // 缓存单个图形路径上的点用于精简以提升性能
+        ArrayList<Double[]> pointsCache = new ArrayList<>();
+
         tess.gluTessBeginPolygon(null);
 
         while (!path.isDone()){
-            float[] segment=new float[6];
+            double[] segment=new double[6];
             int type=path.currentSegment(segment);
             switch (type){
                 case PathIterator.SEG_MOVETO:{
                     tess.gluTessBeginContour();
-                    tessVertex(tess, new double[] {segment[0], segment[1], 0.0, 0.0, 0.0, 0.0});
+                    pointsCache.add(new Double[] {segment[0], segment[1]});
                     cp[0] = segment[0];
                     cp[1] = segment[1];
                     break;
                 }
                 case PathIterator.SEG_LINETO:{
-                    tessVertex(tess, new double[] {segment[0], segment[1], 0.0, 0.0, 0.0, 0.0});
+                    pointsCache.add(new Double[] {segment[0], segment[1]});
                     cp[0] = segment[0];
                     cp[1] = segment[1];
                     break;
                 }
                 case PathIterator.SEG_QUADTO:{
-                    Float[][] points=MathUtils.getPointsOnCurve(new Float[][]{new Float[]{cp[0], cp[1]}, new Float[]{segment[0], segment[1]}, new Float[]{segment[2], segment[3]}}, 20);
-                    for(Float[] point : points){
-                        tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
-                    }
+                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}}, 10);
+                    pointsCache.addAll(Arrays.asList(points));
                     cp[0] = segment[2];
                     cp[1] = segment[3];
                     break;
                 }
                 case PathIterator.SEG_CUBICTO:{
-                    Float[][] points=MathUtils.getPointsOnCurve(new Float[][]{new Float[]{cp[0], cp[1]}, new Float[]{segment[0], segment[1]}, new Float[]{segment[2], segment[3]}, new Float[]{segment[4], segment[5]}}, 20);
-                    for(Float[] point : points){
-                        tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
-                    }
+                    Double[][] points=MathUtils.getPointsOnCurve(new Double[][]{new Double[]{cp[0], cp[1]}, new Double[]{segment[0], segment[1]}, new Double[]{segment[2], segment[3]}, new Double[]{segment[4], segment[5]}}, 10);
+                    pointsCache.addAll(Arrays.asList(points));
                     cp[0] = segment[4];
                     cp[1] = segment[5];
                     break;
                 }
                 case PathIterator.SEG_CLOSE:{
+                    // 精简路径上的点
+                    for(Double[] point : MathUtils.simplifyPoints(pointsCache.toArray(new Double[0][0]), epsilon)){
+                        tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
+                    }
+                    // 清除缓存以便画下一个图形
+                    pointsCache.clear();
                     tess.gluTessEndContour();
                     break;
                 }

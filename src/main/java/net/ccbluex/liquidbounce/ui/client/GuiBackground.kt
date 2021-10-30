@@ -91,5 +91,4 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
 
         super.keyTyped(typedChar, keyCode)
     }
-
 }

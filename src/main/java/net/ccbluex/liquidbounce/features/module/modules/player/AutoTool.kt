@@ -36,8 +36,8 @@ class AutoTool : Module() {
             }
         }
 
-        if (bestSlot != -1)
+        if (bestSlot != -1) {
             mc.thePlayer.inventory.currentItem = bestSlot
+        }
     }
-
 }

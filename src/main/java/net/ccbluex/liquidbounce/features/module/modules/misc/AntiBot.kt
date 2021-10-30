@@ -48,7 +48,7 @@ object AntiBot : Module() {
     private val alwaysInRadiusValue = BoolValue("AlwaysInRadius", false)
     private val alwaysRadiusValue = FloatValue("AlwaysInRadiusBlocks", 20f, 5f, 30f).displayable { alwaysInRadiusValue.get() }
     private val alwaysInRadiusRemoveValue = BoolValue("AlwaysInRadiusRemove", false).displayable { alwaysInRadiusValue.get() }
-    private val alwaysInRadiusWithTicksCheckValue = BoolValue("AlwaysInRadiusWithTicksCheck", false).displayable { alwaysInRadiusValue.get() && livingTimeValue.get()}
+    private val alwaysInRadiusWithTicksCheckValue = BoolValue("AlwaysInRadiusWithTicksCheck", false).displayable { alwaysInRadiusValue.get() && livingTimeValue.get() }
 
     private val ground = mutableListOf<Int>()
     private val air = mutableListOf<Int>()
@@ -64,58 +64,73 @@ object AntiBot : Module() {
     @JvmStatic
     fun isBot(entity: EntityLivingBase): Boolean {
         // Check if entity is a player
-        if (entity !is EntityPlayer)
+        if (entity !is EntityPlayer) {
             return false
+        }
 
         // Check if anti bot is enabled
-        if (!state)
+        if (!state) {
             return false
+        }
 
         // Anti Bot checks
 
-        if (colorValue.get() && !entity.displayName.formattedText.replace("§r", "").contains("§"))
+        if (colorValue.get() && !entity.displayName.formattedText.replace("§r", "").contains("§")) {
             return true
+        }
 
-        if (livingTimeValue.get() && entity.ticksExisted < livingTimeTicksValue.get())
+        if (livingTimeValue.get() && entity.ticksExisted < livingTimeTicksValue.get()) {
             return true
+        }
 
-        if (groundValue.get() && !ground.contains(entity.entityId))
+        if (groundValue.get() && !ground.contains(entity.entityId)) {
             return true
+        }
 
-        if (airValue.get() && !air.contains(entity.entityId))
+        if (airValue.get() && !air.contains(entity.entityId)) {
             return true
+        }
 
-        if (swingValue.get() && !swing.contains(entity.entityId))
+        if (swingValue.get() && !swing.contains(entity.entityId)) {
             return true
+        }
 
-        if (healthValue.get() && entity.health > 20F)
+        if (healthValue.get() && entity.health > 20F) {
             return true
+        }
 
-        if (entityIDValue.get() && (entity.entityId >= 1000000000 || entity.entityId <= -1))
+        if (entityIDValue.get() && (entity.entityId >= 1000000000 || entity.entityId <= -1)) {
             return true
+        }
 
-        if (derpValue.get() && (entity.rotationPitch > 90F || entity.rotationPitch < -90F))
+        if (derpValue.get() && (entity.rotationPitch > 90F || entity.rotationPitch < -90F)) {
             return true
+        }
 
-        if (wasInvisibleValue.get() && invisible.contains(entity.entityId))
+        if (wasInvisibleValue.get() && invisible.contains(entity.entityId)) {
             return true
+        }
 
         if (armorValue.get()) {
             if (entity.inventory.armorInventory[0] == null && entity.inventory.armorInventory[1] == null &&
-                entity.inventory.armorInventory[2] == null && entity.inventory.armorInventory[3] == null)
+                entity.inventory.armorInventory[2] == null && entity.inventory.armorInventory[3] == null) {
                 return true
+            }
         }
 
         if (pingValue.get()) {
-            if (mc.netHandler.getPlayerInfo(entity.uniqueID)?.responseTime == 0)
+            if (mc.netHandler.getPlayerInfo(entity.uniqueID)?.responseTime == 0) {
                 return true
+            }
         }
 
-        if (needHitValue.get() && !hitted.contains(entity.entityId))
+        if (needHitValue.get() && !hitted.contains(entity.entityId)) {
             return true
+        }
 
-        if (invalidGroundValue.get() && invalidGround.getOrDefault(entity.entityId, 0) >= 10)
+        if (invalidGroundValue.get() && invalidGround.getOrDefault(entity.entityId, 0) >= 10) {
             return true
+        }
 
         if (tabValue.get()) {
             val equals = tabModeValue.equals("Equals")
@@ -125,28 +140,34 @@ object AntiBot : Module() {
                 for (networkPlayerInfo in mc.netHandler.playerInfoMap) {
                     val networkName = stripColor(networkPlayerInfo.getFullName()) ?: continue
 
-                    if (if (equals) targetName == networkName else targetName.contains(networkName))
+                    if (if (equals) targetName == networkName else targetName.contains(networkName)) {
                         return false
+                    }
                 }
 
                 return true
             }
         }
 
-        if(duplicateCompareModeValue.equals("WhenSpawn") && duplicate.contains(entity.gameProfile.id))
+        if (duplicateCompareModeValue.equals("WhenSpawn") && duplicate.contains(entity.gameProfile.id)) {
             return true
+        }
 
-        if (duplicateInWorldValue.get() && duplicateCompareModeValue.equals("OnTime") && mc.theWorld.loadedEntityList.count { it is EntityPlayer && it.name == it.name } > 1)
+        if (duplicateInWorldValue.get() && duplicateCompareModeValue.equals("OnTime") && mc.theWorld.loadedEntityList.count { it is EntityPlayer && it.name == it.name } > 1) {
             return true
+        }
 
-        if (duplicateInTabValue.get() && duplicateCompareModeValue.equals("OnTime") && mc.netHandler.playerInfoMap.count { entity.name == it.gameProfile.name } > 1)
+        if (duplicateInTabValue.get() && duplicateCompareModeValue.equals("OnTime") && mc.netHandler.playerInfoMap.count { entity.name == it.gameProfile.name } > 1) {
             return true
+        }
 
-        if(fastDamageValue.get() && lastDamageVl.getOrDefault(entity.entityId, 0f) > 0)
+        if (fastDamageValue.get() && lastDamageVl.getOrDefault(entity.entityId, 0f) > 0) {
             return true
+        }
 
-        if (alwaysInRadiusValue.get() && !notAlwaysInRadius.contains(entity.entityId))
+        if (alwaysInRadiusValue.get() && !notAlwaysInRadius.contains(entity.entityId)) {
             return true
+        }
 
         return entity.name.isEmpty() || entity.name == mc.thePlayer.name
     }
@@ -158,8 +179,9 @@ object AntiBot : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (mc.thePlayer == null || mc.theWorld == null)
+        if (mc.thePlayer == null || mc.theWorld == null) {
             return
+        }
 
         val packet = event.packet
 
@@ -167,59 +189,64 @@ object AntiBot : Module() {
             val entity = packet.getEntity(mc.theWorld)
 
             if (entity is EntityPlayer) {
-                if (packet.onGround && !ground.contains(entity.entityId))
+                if (packet.onGround && !ground.contains(entity.entityId)) {
                     ground.add(entity.entityId)
+                }
 
-                if (!packet.onGround && !air.contains(entity.entityId))
+                if (!packet.onGround && !air.contains(entity.entityId)) {
                     air.add(entity.entityId)
+                }
 
                 if (packet.onGround) {
-                    if (entity.prevPosY != entity.posY)
+                    if (entity.prevPosY != entity.posY) {
                         invalidGround[entity.entityId] = invalidGround.getOrDefault(entity.entityId, 0) + 1
+                    }
                 } else {
                     val currentVL = invalidGround.getOrDefault(entity.entityId, 0) / 2
-                    if (currentVL <= 0)
+                    if (currentVL <= 0) {
                         invalidGround.remove(entity.entityId)
-                    else
+                    } else {
                         invalidGround[entity.entityId] = currentVL
+                    }
                 }
 
-                if (entity.isInvisible && !invisible.contains(entity.entityId))
+                if (entity.isInvisible && !invisible.contains(entity.entityId)) {
                     invisible.add(entity.entityId)
+                }
 
-                if ((!livingTimeValue.get() || entity.ticksExisted > livingTimeTicksValue.get() || !alwaysInRadiusWithTicksCheckValue.get()) && !notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer.getDistanceToEntity(entity) > alwaysRadiusValue.get())
-                    notAlwaysInRadius.add(entity.entityId);
-                if(!notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer.getDistanceToEntity(entity) < alwaysRadiusValue.get() && alwaysInRadiusValue.get() && alwaysInRadiusRemoveValue.get()){
-                    mc.theWorld.removeEntity(entity);
+                if ((!livingTimeValue.get() || entity.ticksExisted > livingTimeTicksValue.get() || !alwaysInRadiusWithTicksCheckValue.get()) && !notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer.getDistanceToEntity(entity) > alwaysRadiusValue.get()) {
+                    notAlwaysInRadius.add(entity.entityId)
+                }
+                if (!notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer.getDistanceToEntity(entity) < alwaysRadiusValue.get() && alwaysInRadiusValue.get() && alwaysInRadiusRemoveValue.get()) {
+                    mc.theWorld.removeEntity(entity)
                 }
             }
-        }else if (packet is S0BPacketAnimation) {
+        } else if (packet is S0BPacketAnimation) {
             val entity = mc.theWorld.getEntityByID(packet.entityID)
 
-            if (entity != null && entity is EntityLivingBase && packet.animationType == 0
-                && !swing.contains(entity.entityId))
+            if (entity != null && entity is EntityLivingBase && packet.animationType == 0 &&
+                !swing.contains(entity.entityId)) {
                 swing.add(entity.entityId)
-        }else if(packet is S38PacketPlayerListItem){
-            if(duplicateCompareModeValue.equals("WhenSpawn") && packet.action==S38PacketPlayerListItem.Action.ADD_PLAYER){
+            }
+        } else if (packet is S38PacketPlayerListItem) {
+            if (duplicateCompareModeValue.equals("WhenSpawn") && packet.action == S38PacketPlayerListItem.Action.ADD_PLAYER) {
                 packet.entries.forEach { entry ->
-                    val name=entry.profile.name
-                    if(duplicateInWorldValue.get() && mc.theWorld.playerEntities.any { it.name == name }
-                        || duplicateInTabValue.get() && mc.netHandler.playerInfoMap.any { it.gameProfile.name == name }) {
+                    val name = entry.profile.name
+                    if (duplicateInWorldValue.get() && mc.theWorld.playerEntities.any { it.name == name } ||
+                        duplicateInTabValue.get() && mc.netHandler.playerInfoMap.any { it.gameProfile.name == name }) {
                         duplicate.add(entry.profile.id)
                     }
                 }
             }
         }
 
-        if(packet is S19PacketEntityStatus && packet.opCode.toInt()==2 || packet is S0BPacketAnimation && packet.animationType==1){
-            val entity = if(packet is S19PacketEntityStatus) { packet.getEntity(mc.theWorld) }
-                else if(packet is S0BPacketAnimation) { mc.theWorld.getEntityByID(packet.entityID) }
-                else { null }  ?: return
+        if (packet is S19PacketEntityStatus && packet.opCode.toInt() == 2 || packet is S0BPacketAnimation && packet.animationType == 1) {
+            val entity = if (packet is S19PacketEntityStatus) { packet.getEntity(mc.theWorld) } else if (packet is S0BPacketAnimation) { mc.theWorld.getEntityByID(packet.entityID) } else { null } ?: return
 
             if (entity is EntityPlayer) {
-                lastDamageVl[entity.entityId] = lastDamageVl.getOrDefault(entity.entityId, 0f) + if(entity.ticksExisted-lastDamage.getOrDefault(entity.entityId, 0) <= fastDamageTicksValue.get()){
+                lastDamageVl[entity.entityId] = lastDamageVl.getOrDefault(entity.entityId, 0f) + if (entity.ticksExisted - lastDamage.getOrDefault(entity.entityId, 0) <= fastDamageTicksValue.get()) {
                      1f
-                }else {
+                } else {
                     -0.5f
                 }
                 lastDamage[entity.entityId] = entity.ticksExisted
@@ -231,8 +258,9 @@ object AntiBot : Module() {
     fun onAttack(e: AttackEvent) {
         val entity = e.targetEntity
 
-        if (entity != null && entity is EntityLivingBase && !hitted.contains(entity.entityId))
+        if (entity != null && entity is EntityLivingBase && !hitted.contains(entity.entityId)) {
             hitted.add(entity.entityId)
+        }
     }
 
     @EventTarget

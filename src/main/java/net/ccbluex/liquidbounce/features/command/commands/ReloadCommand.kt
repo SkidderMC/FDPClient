@@ -25,7 +25,7 @@ class ReloadCommand : Command("reload", emptyArray()) {
         LiquidBounce.isLoadingConfig = true
         LiquidBounce.scriptManager.disableScripts()
         LiquidBounce.scriptManager.unloadScripts()
-        for(module in LiquidBounce.moduleManager.modules)
+        for (module in LiquidBounce.moduleManager.modules)
             LiquidBounce.moduleManager.generateCommand(module)
         alert("§c§lReloading scripts...")
         LiquidBounce.scriptManager.loadScripts()
@@ -33,7 +33,7 @@ class ReloadCommand : Command("reload", emptyArray()) {
         alert("§c§lReloading fonts...")
         Fonts.loadFonts()
         alert("§c§lReloading modules...")
-        LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig,false)
+        LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig, false)
         KillInsults.loadFile()
         GuiCapeManager.load()
         alert("§c§lReloading accounts...")

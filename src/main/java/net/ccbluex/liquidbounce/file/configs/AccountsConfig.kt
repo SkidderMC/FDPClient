@@ -14,7 +14,7 @@ import java.io.File
 class AccountsConfig(file: File) : FileConfig(file) {
     val altManagerMinecraftAccounts: MutableList<MinecraftAccount> = ArrayList()
     override fun loadConfig(config: String) {
-        val accountList = Gson().fromJson<List<*>>(config, MutableList::class.java) as MutableList<String>?  ?: return
+        val accountList = Gson().fromJson<List<*>>(config, MutableList::class.java) as MutableList<String>? ?: return
         altManagerMinecraftAccounts.clear()
         for (account in accountList) {
             val information = account.split(":").toTypedArray()
@@ -32,9 +32,9 @@ class AccountsConfig(file: File) : FileConfig(file) {
         val accountList: MutableList<String> = ArrayList()
 
         for (minecraftAccount in altManagerMinecraftAccounts) {
-            accountList.add(minecraftAccount.name + ":"
-                    + (if (minecraftAccount.password == null) { "" } else { minecraftAccount.password }) + ":"
-                    + if (minecraftAccount.accountName == null) { "" } else { minecraftAccount.accountName })
+            accountList.add(minecraftAccount.name + ":" +
+                    (if (minecraftAccount.password == null) { "" } else { minecraftAccount.password }) + ":" +
+                    if (minecraftAccount.accountName == null) { "" } else { minecraftAccount.accountName })
         }
 
         return FileManager.PRETTY_GSON.toJson(accountList)

@@ -10,7 +10,8 @@ open class TextValue(name: String, value: String) : Value<String>(name, value) {
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
-        if (element.isJsonPrimitive)
+        if (element.isJsonPrimitive) {
             value = element.asString
+        }
     }
 }

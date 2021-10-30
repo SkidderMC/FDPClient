@@ -15,7 +15,7 @@ class ClipCommand : Command("clip", emptyArray()) {
                 return
             }
 
-            when(args[1].lowercase()){
+            when (args[1].lowercase()) {
                 "up" -> {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + dist, mc.thePlayer.posZ)
                 }
@@ -25,7 +25,7 @@ class ClipCommand : Command("clip", emptyArray()) {
                 }
 
                 else -> {
-                    val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble()+when(args[1].lowercase()){
+                    val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble() + when (args[1].lowercase()) {
                         "right" -> 90
                         "back" -> 180
                         "left" -> 270
@@ -47,7 +47,7 @@ class ClipCommand : Command("clip", emptyArray()) {
         if (args.isEmpty()) return emptyList()
 
         return when (args.size) {
-            1 -> listOf("up","down","forward","back","left","right").filter { it.startsWith(args[0], true) }
+            1 -> listOf("up", "down", "forward", "back", "left", "right").filter { it.startsWith(args[0], true) }
 
             else -> emptyList()
         }

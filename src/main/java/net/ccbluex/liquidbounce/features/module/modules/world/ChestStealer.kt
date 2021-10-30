@@ -36,8 +36,9 @@ class ChestStealer : Module() {
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 200, 0, 400) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minDelayValue.get()
-            if (i > newValue)
+            if (i > newValue) {
                 set(i)
+            }
 
             nextDelay = TimeUtils.randomDelay(minDelayValue.get(), get())
         }
@@ -47,14 +48,15 @@ class ChestStealer : Module() {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = maxDelayValue.get()
 
-            if (i < newValue)
+            if (i < newValue) {
                 set(i)
+            }
 
             nextDelay = TimeUtils.randomDelay(get(), maxDelayValue.get())
         }
     }
 
-    private val chestValue= IntegerValue("ChestOpenDelay",300,0,1000)
+    private val chestValue = IntegerValue("ChestOpenDelay", 300, 0, 1000)
 
     private val takeRandomizedValue = BoolValue("TakeRandomized", false)
     private val onlyItemsValue = BoolValue("OnlyItems", false)
@@ -96,8 +98,9 @@ class ChestStealer : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
-        if(!chestTimer.hasTimePassed(chestValue.get().toLong()))
+        if (!chestTimer.hasTimePassed(chestValue.get().toLong())) {
             return
+        }
 
         val screen = mc.currentScreen
 
@@ -107,12 +110,14 @@ class ChestStealer : Module() {
         }
 
         // No Compass
-        if (noCompassValue.get() && mc.thePlayer.inventory.getCurrentItem()?.item?.unlocalizedName == "item.compass")
+        if (noCompassValue.get() && mc.thePlayer.inventory.getCurrentItem()?.item?.unlocalizedName == "item.compass") {
             return
+        }
 
         // Chest title
-        if (chestTitleValue.get() && (screen.lowerChestInventory == null || !screen.lowerChestInventory.name.contains(ItemStack(Item.itemRegistry.getObject(ResourceLocation("minecraft:chest"))).displayName)))
+        if (chestTitleValue.get() && (screen.lowerChestInventory == null || !screen.lowerChestInventory.name.contains(ItemStack(Item.itemRegistry.getObject(ResourceLocation("minecraft:chest"))).displayName))) {
             return
+        }
 
         // inventory cleaner
         val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]!!
@@ -129,8 +134,9 @@ class ChestStealer : Module() {
                     for (slotIndex in 0 until screen.inventoryRows * 9) {
                         val slot = screen.inventorySlots.inventorySlots[slotIndex]
 
-                        if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1)))
+                        if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1))) {
                             items.add(slot)
+                        }
                     }
 
                     val randomSlot = Random.nextInt(items.size)
@@ -160,11 +166,13 @@ class ChestStealer : Module() {
     private fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (packet is S30PacketWindowItems)
+        if (packet is S30PacketWindowItems) {
             contentReceived = packet.func_148911_c()
+        }
 
-        if(packet is S2DPacketOpenWindow)
+        if (packet is S2DPacketOpenWindow) {
             chestTimer.reset()
+        }
     }
 
     private fun move(screen: GuiChest, slot: Slot) {
@@ -179,8 +187,9 @@ class ChestStealer : Module() {
         for (i in 0 until chest.inventoryRows * 9) {
             val slot = chest.inventorySlots.inventorySlots[i]
 
-            if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1)))
+            if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1))) {
                 return false
+            }
         }
 
         return true

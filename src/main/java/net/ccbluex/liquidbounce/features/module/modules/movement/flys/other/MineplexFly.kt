@@ -16,7 +16,7 @@ import net.minecraft.util.Vec3
 class MineplexFly : FlyMode("Mineplex") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1f, 0.5f, 10f)
 
-    private val timer=MSTimer()
+    private val timer = MSTimer()
 
     override fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.inventory.getCurrentItem() == null) {
@@ -35,22 +35,23 @@ class MineplexFly : FlyMode("Mineplex") {
             mc.timer.timerSpeed = 1 + speedValue.get()
         } else {
             mc.timer.timerSpeed = 1f
-            fly.state=false
+            fly.state = false
             ClientUtils.displayChatMessage("§8[§c§lMineplex-§a§lFly§8] §aSelect an empty slot to fly.")
         }
     }
 
     override fun onPacket(event: PacketEvent) {
-        val packet=event.packet
+        val packet = event.packet
 
-        if(packet is C03PacketPlayer){
-            packet.onGround=true
+        if (packet is C03PacketPlayer) {
+            packet.onGround = true
         }
     }
 
     override fun onBlockBB(event: BlockBBEvent) {
-        if(event.block is BlockAir && event.y<=mc.thePlayer.posY)
+        if (event.block is BlockAir && event.y <= mc.thePlayer.posY) {
             event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, mc.thePlayer.posY, event.z + 1.0)
+        }
     }
 
     override fun onJump(event: JumpEvent) {

@@ -23,11 +23,10 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import kotlin.math.sqrt
 
-
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     private val msTimer = MSTimer()
-    private val modeValue = ListValue("PacketMode", arrayOf("AntiCheat","Custom","WatchDog","Watchdog2","NCP","NoPacket","AAC","AAC5"), "AntiCheat")
+    private val modeValue = ListValue("PacketMode", arrayOf("AntiCheat", "Custom", "WatchDog", "Watchdog2", "NCP", "NoPacket", "AAC", "AAC5"), "AntiCheat")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -35,76 +34,84 @@ class NoSlow : Module() {
     private val bowForwardMultiplier = FloatValue("BowForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
-    private val customDelayValue = IntegerValue("CustomDelay",60,10,200).displayable { modeValue.equals("Custom") }
+    private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
     // Soulsand
     val soulsandValue = BoolValue("Soulsand", false)
     // Slowdown on teleport
     private val teleportValue = BoolValue("Teleport", false)
     private val teleportModeValue = ListValue("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla").displayable { teleportValue.get() }
     private val teleportNoApplyValue = BoolValue("TeleportNoApply", false).displayable { teleportValue.get() }
-    private val teleportCustomSpeedValue = FloatValue("Teleport-CustomSpeed",0.13f,0f,1f).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
+    private val teleportCustomSpeedValue = FloatValue("Teleport-CustomSpeed", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
     private val teleportCustomYValue = BoolValue("Teleport-CustomY", false).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
-    private val teleportDecreasePercentValue = FloatValue("Teleport-DecreasePercent",0.13f,0f,1f).displayable { teleportValue.get() && teleportModeValue.equals("Decrease") }
+    private val teleportDecreasePercentValue = FloatValue("Teleport-DecreasePercent", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Decrease") }
 
-    var pendingFlagApplyPacket=false
-    var lastMotionX=0.0
-    var lastMotionY=0.0
-    var lastMotionZ=0.0
+    var pendingFlagApplyPacket = false
+    var lastMotionX = 0.0
+    var lastMotionY = 0.0
+    var lastMotionZ = 0.0
 
     override fun onDisable() {
         msTimer.reset()
-        pendingFlagApplyPacket=false
+        pendingFlagApplyPacket = false
     }
 
-    private fun sendPacket(event : MotionEvent, sendC07 : Boolean, sendC08 : Boolean, delay : Boolean, delayValue : Long, onGround : Boolean, watchDog : Boolean = false) {
-        val digging = C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1,-1,-1), EnumFacing.DOWN)
+    private fun sendPacket(
+        event: MotionEvent,
+        sendC07: Boolean,
+        sendC08: Boolean,
+        delay: Boolean,
+        delayValue: Long,
+        onGround: Boolean,
+        watchDog: Boolean = false
+    ) {
+        val digging = C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN)
         val blockPlace = C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem())
         val blockMent = C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f)
-        if(onGround && !mc.thePlayer.onGround) {
+        if (onGround && !mc.thePlayer.onGround) {
             return
         }
-        if(sendC07 && event.eventState == EventState.PRE) {
-            if(delay && msTimer.hasTimePassed(delayValue)) {
+        if (sendC07 && event.eventState == EventState.PRE) {
+            if (delay && msTimer.hasTimePassed(delayValue)) {
                 mc.netHandler.addToSendQueue(digging)
-            } else if(!delay) {
+            } else if (!delay) {
                 mc.netHandler.addToSendQueue(digging)
             }
         }
-        if(sendC08 && event.eventState == EventState.POST) {
-            if(delay && msTimer.hasTimePassed(delayValue) && !watchDog) {
+        if (sendC08 && event.eventState == EventState.POST) {
+            if (delay && msTimer.hasTimePassed(delayValue) && !watchDog) {
                 mc.netHandler.addToSendQueue(blockPlace)
                 msTimer.reset()
-            } else if(!delay && !watchDog) {
+            } else if (!delay && !watchDog) {
                 mc.netHandler.addToSendQueue(blockPlace)
-            } else if(watchDog) {
+            } else if (watchDog) {
                 mc.netHandler.addToSendQueue(blockMent)
             }
         }
     }
 
-
     @EventTarget
     fun onMotion(event: MotionEvent) {
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
-        if (!MovementUtils.isMoving())
+        if (!MovementUtils.isMoving()) {
             return
+        }
 
 //        val heldItem = mc.thePlayer.heldItem
-        if(modeValue.get().lowercase() == "aac5") {
+        if (modeValue.get().lowercase() == "aac5") {
             if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking() || killAura.blockingStatus)) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
             }
             return
         }
-        if(modeValue.get().lowercase() != "aac5") {
+        if (modeValue.get().lowercase() != "aac5") {
             if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
                 return
             }
-            when(modeValue.get().lowercase()) {
+            when (modeValue.get().lowercase()) {
                 "anticheat" -> {
-                    this.sendPacket(event,true,false,false,0,false,false)
-                    if(mc.thePlayer.ticksExisted % 2 == 0) {
-                        this.sendPacket(event,false,true,false,0,false)
+                    this.sendPacket(event, true, false, false, 0, false, false)
+                    if (mc.thePlayer.ticksExisted % 2 == 0) {
+                        this.sendPacket(event, false, true, false, 0, false)
                     }
 //                if(mc.thePlayer.ticksExisted % 2 == 0) {
 //                    sendPacket(event, true, false, false, 5, false, false)
@@ -114,30 +121,31 @@ class NoSlow : Module() {
                 }
 
                 "aac" -> {
-                    if(mc.thePlayer.ticksExisted % 3 == 0) {
-                        sendPacket(event, true , false, false, 0, false)
+                    if (mc.thePlayer.ticksExisted % 3 == 0) {
+                        sendPacket(event, true, false, false, 0, false)
                     } else {
-                        sendPacket(event, false , true, false, 0, false)
+                        sendPacket(event, false, true, false, 0, false)
                     }
                 }
 
                 "custom" -> {
-                    sendPacket(event,true,true,true,customDelayValue.get().toLong(),customOnGround.get())
+                    sendPacket(event, true, true, true, customDelayValue.get().toLong(), customOnGround.get())
                 }
 
                 "ncp" -> {
-                    sendPacket(event,true,true,false,0,false)
+                    sendPacket(event, true, true, false, 0, false)
                 }
-                
+
                 "watchdog2" -> {
-                    if (event.eventState == EventState.PRE)
+                    if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
-                    else
+                    } else {
                         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0.0f, 0.0f, 0.0f))
+                    }
                 }
 
                 "watchdog" -> {
-                    if(mc.thePlayer.ticksExisted % 2 == 0) {
+                    if (mc.thePlayer.ticksExisted % 2 == 0) {
                         sendPacket(event, true, false, false, 50, true)
                     } else {
                         sendPacket(event, false, true, false, 0, true, true)
@@ -150,7 +158,7 @@ class NoSlow : Module() {
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
         val heldItem = mc.thePlayer.heldItem?.item
-        
+
         event.forward = getMultiplier(heldItem, true)
         event.strafe = getMultiplier(heldItem, false)
     }
@@ -170,14 +178,14 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        val packet=event.packet
+        val packet = event.packet
 
-        if(teleportValue.get() && packet is S08PacketPlayerPosLook){
-            pendingFlagApplyPacket=true
-            lastMotionX=mc.thePlayer.motionX
-            lastMotionY=mc.thePlayer.motionY
-            lastMotionZ=mc.thePlayer.motionZ
-            when(teleportModeValue.get().lowercase()){
+        if (teleportValue.get() && packet is S08PacketPlayerPosLook) {
+            pendingFlagApplyPacket = true
+            lastMotionX = mc.thePlayer.motionX
+            lastMotionY = mc.thePlayer.motionY
+            lastMotionZ = mc.thePlayer.motionZ
+            when (teleportModeValue.get().lowercase()) {
                 "vanillanosetback" -> {
                     val x = packet.x - mc.thePlayer.posX
                     val y = packet.y - mc.thePlayer.posY
@@ -185,38 +193,39 @@ class NoSlow : Module() {
                     val diff = sqrt(x * x + y * y + z * z)
                     if (diff <= 8) {
                         event.cancelEvent()
-                        pendingFlagApplyPacket=false
+                        pendingFlagApplyPacket = false
                         PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.getYaw(), packet.getPitch(), true))
                     }
                 }
             }
-        }else if(pendingFlagApplyPacket && packet is C06PacketPlayerPosLook){
-            pendingFlagApplyPacket=false
-            if(teleportNoApplyValue.get()){
+        } else if (pendingFlagApplyPacket && packet is C06PacketPlayerPosLook) {
+            pendingFlagApplyPacket = false
+            if (teleportNoApplyValue.get()) {
                 event.cancelEvent()
             }
-            when(teleportModeValue.get().lowercase()){
+            when (teleportModeValue.get().lowercase()) {
                 "vanilla", "vanillanosetback" -> {
-                    mc.thePlayer.motionX=lastMotionX
-                    mc.thePlayer.motionY=lastMotionY
-                    mc.thePlayer.motionZ=lastMotionZ
+                    mc.thePlayer.motionX = lastMotionX
+                    mc.thePlayer.motionY = lastMotionY
+                    mc.thePlayer.motionZ = lastMotionZ
                 }
                 "custom" -> {
-                    if(MovementUtils.isMoving())
+                    if (MovementUtils.isMoving()) {
                         MovementUtils.strafe(teleportCustomSpeedValue.get())
+                    }
 
-                    if(teleportCustomYValue.get()){
-                        if(lastMotionY>0){
-                            mc.thePlayer.motionY=teleportCustomSpeedValue.get().toDouble()
-                        }else{
-                            mc.thePlayer.motionY=-teleportCustomSpeedValue.get().toDouble()
+                    if (teleportCustomYValue.get()) {
+                        if (lastMotionY> 0) {
+                            mc.thePlayer.motionY = teleportCustomSpeedValue.get().toDouble()
+                        } else {
+                            mc.thePlayer.motionY = -teleportCustomSpeedValue.get().toDouble()
                         }
                     }
                 }
                 "decrease" -> {
-                    mc.thePlayer.motionX=lastMotionX*teleportDecreasePercentValue.get()
-                    mc.thePlayer.motionY=lastMotionY*teleportDecreasePercentValue.get()
-                    mc.thePlayer.motionZ=lastMotionZ*teleportDecreasePercentValue.get()
+                    mc.thePlayer.motionX = lastMotionX * teleportDecreasePercentValue.get()
+                    mc.thePlayer.motionY = lastMotionY * teleportDecreasePercentValue.get()
+                    mc.thePlayer.motionZ = lastMotionZ * teleportDecreasePercentValue.get()
                 }
             }
         }

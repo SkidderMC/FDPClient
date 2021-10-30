@@ -33,11 +33,11 @@ class BindCommand : Command("bind", emptyArray()) {
                 // Response to user
                 alert("Bound module §a§l${module.name}§3 to key §a§l${Keyboard.getKeyName(key)}§3.")
                 LiquidBounce.hud.addNotification(
-                    Notification("KeyBind","Bound ${module.name} to ${Keyboard.getKeyName(key)}.", NotifyType.INFO)
+                    Notification("KeyBind", "Bound ${module.name} to ${Keyboard.getKeyName(key)}.", NotifyType.INFO)
                 )
                 playEdit()
-            }else{
-                LiquidBounce.moduleManager.pendingBindModule=module
+            } else {
+                LiquidBounce.moduleManager.pendingBindModule = module
                 alert("Press any key to bind module ${module.name}")
             }
             return

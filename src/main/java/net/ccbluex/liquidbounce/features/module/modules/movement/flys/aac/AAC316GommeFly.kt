@@ -20,7 +20,7 @@ class AAC316GommeFly : FlyMode("AAC3.1.6-Gomme") {
 
         delay++
 
-        if (!noFlag){
+        if (!noFlag) {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.onGround))
         }
         if (mc.thePlayer.posY <= 0.0) noFlag = true

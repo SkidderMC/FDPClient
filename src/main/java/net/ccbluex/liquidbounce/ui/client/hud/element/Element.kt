@@ -19,8 +19,12 @@ import kotlin.math.min
 /**
  * CustomHUD element
  */
-abstract class Element(var x: Double = 2.0, var y: Double = 2.0, var scale: Float = 1F,
-                       var side: Side = Side.default()) : MinecraftInstance() {
+abstract class Element(
+    var x: Double = 2.0,
+    var y: Double = 2.0,
+    var scale: Float = 1F,
+    var side: Side = Side.default()
+) : MinecraftInstance() {
 
     val info = javaClass.getAnnotation(ElementInfo::class.java)
             ?: throw IllegalArgumentException("Passed element with missing element info")
@@ -110,23 +114,25 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, var scale: Floa
     /**
      * render a blur effect at the boarder
      */
-    open fun drawBoarderBlur(blurRadius: Float = blurValue.get()){
-        if(border==null || blurRadius==0f || border!!.size==0f)
+    open fun drawBoarderBlur(blurRadius: Float = blurValue.get()) {
+        if (border == null || blurRadius == 0f || border!!.size == 0f) {
             return
+        }
 
         val posX = this.renderX.toFloat() + border!!.x.coerceAtMost(border!!.x2)
         val posY = this.renderY.toFloat() + border!!.y.coerceAtMost(border!!.y2)
         val width = abs(border!!.x2 - border!!.x)
         val height = abs(border!!.y2 - border!!.y)
 
-        BlurUtils.draw(posX*scale, posY*scale, width*scale, height*scale, blurRadius)
+        BlurUtils.draw(posX * scale, posY * scale, width * scale, height * scale, blurRadius)
     }
 
-    protected fun blur(x: Float, y: Float, x2: Float, y2: Float){
-        if(blurValue.get() == 0f)
+    protected fun blur(x: Float, y: Float, x2: Float, y2: Float) {
+        if (blurValue.get() == 0f) {
             return
+        }
 
-        BlurUtils.draw((renderX+(x.coerceAtMost(x2))).toFloat()*scale, (renderY+(y.coerceAtMost(y2))).toFloat()*scale, abs(x2-x)*scale, abs(y2-y)*scale, blurValue.get())
+        BlurUtils.draw((renderX + (x.coerceAtMost(x2))).toFloat() * scale, (renderY + (y.coerceAtMost(y2))).toFloat() * scale, abs(x2 - x) * scale, abs(y2 - y) * scale, blurValue.get())
     }
 
     /**
@@ -138,7 +144,6 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, var scale: Floa
      * Called when key pressed
      */
     open fun handleKey(c: Char, keyCode: Int) {}
-
 }
 
 /**
@@ -160,7 +165,6 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
          * Default element side
          */
         fun default() = Side(Horizontal.LEFT, Vertical.UP)
-
     }
 
     /**
@@ -176,9 +180,7 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
 
             @JvmStatic
             fun getByName(name: String) = values().find { it.sideName == name }
-
         }
-
     }
 
     /**
@@ -194,11 +196,8 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
 
             @JvmStatic
             fun getByName(name: String) = values().find { it.sideName == name }
-
         }
-
     }
-
 }
 
 /**
@@ -206,8 +205,7 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
  */
 data class Border(val x: Float, val y: Float, val x2: Float, val y2: Float) {
 
-    val size = abs(x2-x) * abs(y2-y)
+    val size = abs(x2 - x) * abs(y2 - y)
 
     fun draw() = RenderUtils.drawBorderedRect(x, y, x2, y2, 3F, Int.MIN_VALUE, 0)
-
 }

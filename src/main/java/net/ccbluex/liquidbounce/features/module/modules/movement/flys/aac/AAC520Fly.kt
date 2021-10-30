@@ -14,9 +14,9 @@ import kotlin.math.sin
 
 class AAC520Fly : FlyMode("AAC5.2.0") {
     override fun onEnable() {
-        if(mc.isSingleplayer) {
+        if (mc.isSingleplayer) {
             LiquidBounce.hud.addNotification(Notification("Fly", "Use AAC5.2.0 Fly will crash single player", NotifyType.ERROR, 2000, 500))
-            fly.state=false
+            fly.state = false
             return
         }
 
@@ -24,7 +24,7 @@ class AAC520Fly : FlyMode("AAC5.2.0") {
         mc.thePlayer.motionY = 0.0
         mc.thePlayer.motionZ = 0.0
 
-        PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
+        PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, 1.7976931348623157E+308, mc.thePlayer.posZ, true))
     }
 
     override fun onUpdate(event: UpdateEvent) {
@@ -34,9 +34,9 @@ class AAC520Fly : FlyMode("AAC5.2.0") {
     }
 
     override fun onPacket(event: PacketEvent) {
-        val packet=event.packet
+        val packet = event.packet
 
-        if(packet is S08PacketPlayerPosLook){
+        if (packet is S08PacketPlayerPosLook) {
             event.cancelEvent()
             mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
             PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.yaw, packet.pitch, false))
@@ -45,7 +45,7 @@ class AAC520Fly : FlyMode("AAC5.2.0") {
             mc.thePlayer.setPosition(mc.thePlayer.posX + -sin(yaw) * dist, mc.thePlayer.posY, mc.thePlayer.posZ + cos(yaw) * dist)
             PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
             PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, 1.7976931348623157E+308, mc.thePlayer.posZ, true))
-        }else if(packet is C03PacketPlayer){
+        } else if (packet is C03PacketPlayer) {
             event.cancelEvent()
         }
     }

@@ -8,7 +8,18 @@ package net.ccbluex.liquidbounce.utils.misc
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.util.*
 
-class FallingPlayer(private var x: Double, private var y: Double, private var z: Double, private var motionX: Double, private var motionY: Double, private var motionZ: Double, private val yaw: Float, private var strafe: Float, private var forward: Float, private val jumpMovementFactor: Float = mc.thePlayer.jumpMovementFactor) : MinecraftInstance() {
+class FallingPlayer(
+    private var x: Double,
+    private var y: Double,
+    private var z: Double,
+    private var motionX: Double,
+    private var motionY: Double,
+    private var motionZ: Double,
+    private val yaw: Float,
+    private var strafe: Float,
+    private var forward: Float,
+    private val jumpMovementFactor: Float = mc.thePlayer.jumpMovementFactor
+) : MinecraftInstance() {
     private fun calculateForTick() {
         strafe *= 0.98f
         forward *= 0.98f

@@ -21,7 +21,6 @@ import java.nio.file.Files
 import java.util.*
 import javax.imageio.ImageIO
 
-
 /**
  * CustomHUD image element
  *
@@ -43,7 +42,6 @@ class Image : Element() {
 
             return image
         }
-
     }
 
     private val image: TextValue = object : TextValue("Image", "") {
@@ -51,19 +49,20 @@ class Image : Element() {
         override fun fromJson(element: JsonElement) {
             super.fromJson(element)
 
-            if (get().isEmpty())
+            if (get().isEmpty()) {
                 return
+            }
 
             setImage(get())
         }
 
         override fun onChanged(oldValue: String, newValue: String) {
-            if (get().isEmpty())
+            if (get().isEmpty()) {
                 return
+            }
 
             setImage(get())
         }
-
     }
 
     private val resourceLocation = ResourceLocation(RandomUtils.randomNumber(128))
@@ -123,5 +122,4 @@ class Image : Element() {
 
         return this
     }
-
 }

@@ -25,18 +25,18 @@ import java.awt.Color
 
 @ModuleInfo(name = "Crosshair", category = ModuleCategory.RENDER)
 class Crosshair : Module() {
-    //Color
+    // Color
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "Slowly", "Rainbow"), "Custom")
     private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorModeValue.equals("Custom") }
     private val colorGreenValue = IntegerValue("Green", 255, 0, 255).displayable { colorModeValue.equals("Custom") }
     private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { colorModeValue.equals("Custom") }
     private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255)
 
-    //Rainbow thingy
+    // Rainbow thingy
     private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f).displayable { colorModeValue.equals("Slowly") }
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f).displayable { colorModeValue.equals("Slowly") }
 
-    //Size, width, hitmarker
+    // Size, width, hitmarker
     private val widthValue = FloatValue("Width", 0.5f, 0.25f, 10f)
     private val sizeValue = FloatValue("Length", 7f, 0.25f, 15f)
     private val gapValue = FloatValue("Gap", 5f, 0.25f, 15f)
@@ -94,7 +94,7 @@ class Crosshair : Module() {
         get() =
             when (colorModeValue.get().lowercase()) {
                 "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
-                "slowly" -> ColorUtils.reAlpha(ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get()),colorAlphaValue.get())
+                "slowly" -> ColorUtils.reAlpha(ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get()), colorAlphaValue.get())
                 "rainbow" -> ColorUtils.rainbowWithAlpha(colorAlphaValue.get())
                 else -> Color.WHITE
             }

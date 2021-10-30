@@ -15,7 +15,8 @@ open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val m
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
-        if (element.isJsonPrimitive)
+        if (element.isJsonPrimitive) {
             value = element.asFloat
+        }
     }
 }

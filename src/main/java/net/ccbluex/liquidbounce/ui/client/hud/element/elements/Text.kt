@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.CPSCounter
-import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.extensions.ping
@@ -34,8 +33,12 @@ import kotlin.math.sqrt
  * Allows to draw custom text
  */
 @ElementInfo(name = "Text", blur = true)
-class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
-           side: Side = Side.default()) : Element(x, y, scale, side) {
+class Text(
+    x: Double = 10.0,
+    y: Double = 10.0,
+    scale: Float = 1F,
+    side: Side = Side.default()
+) : Element(x, y, scale, side) {
 
     companion object {
         val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd")
@@ -56,10 +59,10 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
     val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
-    val rectValue = ListValue("Rect", arrayOf("Normal","OneTap","Skeet","None"),"None")
+    val rectValue = ListValue("Rect", arrayOf("Normal", "OneTap", "Skeet", "None"), "None")
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
-    private val rainbowSpeed = IntegerValue("RainbowSpeed",10,1,10)
-    private val rainbowIndex = IntegerValue("RainbowIndex",1,1,20)
+    private val rainbowSpeed = IntegerValue("RainbowSpeed", 10, 1, 10)
+    private val rainbowIndex = IntegerValue("RainbowIndex", 1, 1, 20)
     private var fontValue = FontValue("Font", Fonts.font40)
 
     private var editMode = false
@@ -70,11 +73,11 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
     private val display: String
         get() {
-            val textContent = if (displayString.get().isEmpty() && !editMode)
+            val textContent = if (displayString.get().isEmpty() && !editMode) {
                 "Text Element"
-            else
+            } else {
                 displayString.get()
-
+            }
 
             return multiReplace(textContent)
         }
@@ -91,7 +94,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
                 "velocity" -> return DECIMAL_FORMAT.format(sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ))
                 "ping" -> return "${mc.thePlayer.ping}"
                 "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
-                "attackDist" -> return if(LiquidBounce.combatManager.target!=null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString()+" Blocks" else "Hasn't attacked"
+                "attackDist" -> return if (LiquidBounce.combatManager.target != null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
             }
         }
 
@@ -149,16 +152,16 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
         val fontRenderer = fontValue.get()
 
-        val rectColor = when(rectColorModeValue.get().lowercase()){
-            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
+        val rectColor = when (rectColorModeValue.get().lowercase()) {
+            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
             "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-            "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()),100,rainbowIndex.get()).rgb
+            "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()), 100, rainbowIndex.get()).rgb
             else -> Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
         }
-        val expand = fontRenderer.FONT_HEIGHT*rectExpandValue.get()
-        when(rectValue.get().lowercase()){
+        val expand = fontRenderer.FONT_HEIGHT * rectExpandValue.get()
+        when (rectValue.get().lowercase()) {
             "normal" -> {
-                RenderUtils.drawRect(-expand,-expand,fontRenderer.getStringWidth(displayText)+expand,fontRenderer.FONT_HEIGHT+expand,rectColor)
+                RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, rectColor)
             }
             "onetap" -> {
                 RenderUtils.drawRect(-4.0f, -8.0f, (fontRenderer.getStringWidth(displayText) + 3).toFloat(), fontRenderer.FONT_HEIGHT.toFloat(), Color(43, 43, 43).rgb)
@@ -172,16 +175,17 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
             }
         }
 
-        fontRenderer.drawString(displayText, 0F, 0F, when(colorModeValue.get().lowercase()){
-            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(),indexOffset=100*rainbowSpeed.get()).rgb
+        fontRenderer.drawString(displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
+            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
             "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-            "anotherrainbow" -> ColorUtils.fade(color,100,rainbowIndex.get()).rgb
+            "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
             else -> color.rgb
         }, shadow.get())
 
-        if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40)
+        if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) {
             fontRenderer.drawString("_", fontRenderer.getStringWidth(displayText) + 2F,
                     0F, Color.WHITE.rgb, shadow.get())
+        }
 
         if (editMode && mc.currentScreen !is GuiHudDesigner) {
             editMode = false
@@ -205,8 +209,9 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
     override fun handleMouseClick(x: Double, y: Double, mouseButton: Int) {
         if (isInBorder(x, y) && mouseButton == 0) {
-            if (System.currentTimeMillis() - prevClick <= 250L)
+            if (System.currentTimeMillis() - prevClick <= 250L) {
                 editMode = true
+            }
 
             prevClick = System.currentTimeMillis()
         } else {
@@ -217,15 +222,17 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     override fun handleKey(c: Char, keyCode: Int) {
         if (editMode && mc.currentScreen is GuiHudDesigner) {
             if (keyCode == Keyboard.KEY_BACK) {
-                if (displayString.get().isNotEmpty())
+                if (displayString.get().isNotEmpty()) {
                     displayString.set(displayString.get().substring(0, displayString.get().length - 1))
+                }
 
                 updateElement()
                 return
             }
 
-            if (ChatAllowedCharacters.isAllowedCharacter(c) || c == '§')
+            if (ChatAllowedCharacters.isAllowedCharacter(c) || c == '§') {
                 displayString.set(displayString.get() + c)
+            }
 
             updateElement()
         }
@@ -237,5 +244,4 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         blueValue.set(c.blue)
         return this
     }
-
 }

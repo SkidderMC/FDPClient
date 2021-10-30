@@ -23,13 +23,13 @@ class AntiFireBall : Module() {
     private val timer = MSTimer()
 
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
-    private val rotationValue = BoolValue("Rotation",true)
+    private val rotationValue = BoolValue("Rotation", true)
 
     @EventTarget
     private fun onUpdate(event: UpdateEvent) {
         for (entity in mc.theWorld.loadedEntityList) {
             if (entity is EntityFireball && mc.thePlayer.getDistanceToEntity(entity) < 5.5 && timer.hasTimePassed(300)) {
-                if(rotationValue.get()) {
+                if (rotationValue.get()) {
                     RotationUtils.setTargetRotation(RotationUtils.getRotationsNonLivingEntity(entity))
                 }
 

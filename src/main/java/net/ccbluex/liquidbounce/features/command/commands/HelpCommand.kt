@@ -17,7 +17,6 @@ class HelpCommand : Command("help", emptyArray()) {
     override fun execute(args: Array<String>) {
         var page = 1
 
-
         if (args.size > 1) {
             try {
                 page = args[1].toInt()
@@ -32,10 +31,11 @@ class HelpCommand : Command("help", emptyArray()) {
         }
 
         val maxPageDouble = LiquidBounce.commandManager.commands.size / 8.0
-        val maxPage = if (maxPageDouble > maxPageDouble.toInt())
+        val maxPage = if (maxPageDouble > maxPageDouble.toInt()) {
             maxPageDouble.toInt() + 1
-        else
+        } else {
             maxPageDouble.toInt()
+        }
 
         if (page > maxPage) {
             alert("The number you have entered is too big, it must be under $maxPage.")

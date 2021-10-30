@@ -23,7 +23,6 @@ open class CancellableEvent : Event() {
     fun cancelEvent() {
         isCancelled = true
     }
-
 }
 
 enum class EventState(val stateName: String) {

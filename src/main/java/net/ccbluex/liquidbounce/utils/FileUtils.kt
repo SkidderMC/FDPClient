@@ -48,22 +48,25 @@ object FileUtils {
     @JvmStatic
     fun extractZip(zipFile: File, folder: File) = extractZip(FileInputStream(zipFile), folder)
 
-    fun copyDir(fromDir: File, toDir: File){
-        if(!fromDir.exists())
+    fun copyDir(fromDir: File, toDir: File) {
+        if (!fromDir.exists()) {
             throw IllegalArgumentException("From dir not exists")
+        }
 
-        if(!fromDir.isDirectory || (toDir.exists() && !toDir.isDirectory))
+        if (!fromDir.isDirectory || (toDir.exists() && !toDir.isDirectory)) {
             throw IllegalArgumentException("Arguments MUST be a directory")
+        }
 
-        if(!toDir.exists())
+        if (!toDir.exists()) {
             toDir.mkdirs()
+        }
 
         fromDir.listFiles().forEach {
-            val toFile=File(toDir,it.name)
-            if(it.isDirectory){
+            val toFile = File(toDir, it.name)
+            if (it.isDirectory) {
                 copyDir(it, toFile)
-            }else{
-                Files.copy(it.toPath(),toFile.toPath(),StandardCopyOption.REPLACE_EXISTING)
+            } else {
+                Files.copy(it.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
             }
         }
     }

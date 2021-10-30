@@ -42,8 +42,9 @@ class FriendsConfig(file: File) : FileConfig(file) {
      */
     @JvmOverloads
     fun addFriend(playerName: String, alias: String = playerName): Boolean {
-        if (isFriend(playerName))
+        if (isFriend(playerName)) {
             return false
+        }
 
         friends.add(Friend(playerName, alias))
 

@@ -38,79 +38,84 @@ class AutoPot : Module() {
     private val utility = BoolValue("Utility", true)
     private val notCombat = BoolValue("NotCombat", true)
 
-    private var throwing=false
-    private var throwTime=0
-    private var pot=-1
+    private var throwing = false
+    private var throwTime = 0
+    private var pot = -1
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent){
-        if(notCombat.get()&&LiquidBounce.combatManager.inCombat) return
-        if(!mc.thePlayer.onGround) return
+    fun onUpdate(event: UpdateEvent) {
+        if (notCombat.get() && LiquidBounce.combatManager.inCombat) return
+        if (!mc.thePlayer.onGround) return
 
-        if(throwing){
+        if (throwing) {
             throwTime++
             RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, 90F))
-            if(throwTime==throwTickValue.get()) {
+            if (throwTime == throwTickValue.get()) {
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(pot - 36))
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                 pot = -1
             }
-            if(throwTime>=(throwTickValue.get()*2)){
-                throwTime=0
+            if (throwTime >= (throwTickValue.get() * 2)) {
+                throwTime = 0
                 throwing = false
             }
             return
         }
-        if(!InventoryUtils.INV_TIMER.hasTimePassed(delayValue.get().toLong())) return
+        if (!InventoryUtils.INV_TIMER.hasTimePassed(delayValue.get().toLong())) return
 
-        val enableSelect=selectValue.get()!=-1
-        val potion=if(enableSelect){
-            if(findSinglePotion(36+selectValue.get())){
-                36+selectValue.get()
-            }else{
+        val enableSelect = selectValue.get() != -1
+        val potion = if (enableSelect) {
+            if (findSinglePotion(36 + selectValue.get())) {
+                36 + selectValue.get()
+            } else {
                 -1
             }
-        }else{
-            findPotion(36,45)
+        } else {
+            findPotion(36, 45)
         }
 
-        if(potion!=-1){
-            RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw,90F))
-            pot=potion
-            throwing=true
+        if (potion != -1) {
+            RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, 90F))
+            pot = potion
+            throwing = true
             InventoryUtils.INV_TIMER.reset()
             return
         }
 
-        if(openInventoryValue.get()&&!enableSelect){
-            val invPotion=findPotion(9,36)
+        if (openInventoryValue.get() && !enableSelect) {
+            val invPotion = findPotion(9, 36)
             if (invPotion != -1) {
                 val openInventory = mc.currentScreen !is GuiInventory && simulateInventory.get()
-                if(InventoryUtils.hasSpaceHotbar()) {
-                    if (openInventory)
+                if (InventoryUtils.hasSpaceHotbar()) {
+                    if (openInventory) {
                         mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                    }
 
                     mc.playerController.windowClick(0, invPotion, 0, 1, mc.thePlayer)
 
-                    if (openInventory)
+                    if (openInventory) {
                         mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
+                    }
 
                     return
-                }else{
+                } else {
                     for (i in 36 until 45) {
                         val stack = mc.thePlayer.inventoryContainer.getSlot(i).stack
-                        if (stack == null || stack.item !is ItemPotion || !ItemPotion.isSplash(stack.itemDamage))
+                        if (stack == null || stack.item !is ItemPotion || !ItemPotion.isSplash(stack.itemDamage)) {
                             continue
+                        }
 
-                        if (openInventory)
+                        if (openInventory) {
                             mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                        }
 
                         mc.playerController.windowClick(0, invPotion, 0, 0, mc.thePlayer)
                         mc.playerController.windowClick(0, i, 0, 0, mc.thePlayer)
 
-                        if (openInventory)
+                        if (openInventory) {
                             mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
+                        }
 
                         break
                     }
@@ -121,44 +126,41 @@ class AutoPot : Module() {
 
     private fun findPotion(startSlot: Int, endSlot: Int): Int {
         for (i in startSlot until endSlot) {
-            if(findSinglePotion(i)){
+            if (findSinglePotion(i)) {
                 return i
             }
         }
         return -1
     }
 
-    private fun findSinglePotion(slot:Int):Boolean{
+    private fun findSinglePotion(slot: Int): Boolean {
         val stack = mc.thePlayer.inventoryContainer.getSlot(slot).stack
 
-        if (stack == null || stack.item !is ItemPotion || !ItemPotion.isSplash(stack.itemDamage))
+        if (stack == null || stack.item !is ItemPotion || !ItemPotion.isSplash(stack.itemDamage)) {
             return false
+        }
 
         val itemPotion = stack.item as ItemPotion
 
-        if(mc.thePlayer.health<healthValue.get()&&regen.get()) {
-            for (potionEffect in itemPotion.getEffects(stack))
-                if (potionEffect.potionID == Potion.heal.id)
+        if (mc.thePlayer.health <healthValue.get() && regen.get()) {
+            for (potionEffect in itemPotion.getEffects(stack)) {
+                if (potionEffect.potionID == Potion.heal.id) {
                     return true
+                }
+            }
 
-            if (!mc.thePlayer.isPotionActive(Potion.regeneration))
-                for (potionEffect in itemPotion.getEffects(stack))
+            if (!mc.thePlayer.isPotionActive(Potion.regeneration)) {
+                for (potionEffect in itemPotion.getEffects(stack)) {
                     if (potionEffect.potionID == Potion.regeneration.id) return true
-        }else if(utility.get()){
-            for (potionEffect in itemPotion.getEffects(stack)){
-                if(isUsefulPotion(potionEffect.potionID)) return true
+                }
+            }
+        } else if (utility.get()) {
+            for (potionEffect in itemPotion.getEffects(stack)) {
+                if (InventoryUtils.isPositivePotionEffect(potionEffect.potionID) && !mc.thePlayer.isPotionActive(potionEffect.potionID))
+                    return true
             }
         }
 
         return false
-    }
-
-    private fun isUsefulPotion(id: Int):Boolean{
-        if(id==Potion.regeneration.id||id==Potion.heal.id||id==Potion.poison.id
-            ||id==Potion.blindness.id||id==Potion.harm.id||id==Potion.wither.id
-            ||id==Potion.digSlowdown.id||id==Potion.moveSlowdown.id){
-            return false
-        }
-        return !mc.thePlayer.isPotionActive(id)
     }
 }
