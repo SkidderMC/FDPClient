@@ -832,7 +832,11 @@ class Scaffold : Module() {
                         val diffXZ = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ).toDouble()
                         val diffXYZ = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ + diffY * diffY).toDouble()
                         val rotation = Rotation(
-                            MathHelper.wrapAngleTo180_float(((diffZ>=0) ? (acos(diffX/diffXZ)*180/Math.PI - 90.0f) : (270.0f - acos(diffX/diffXZ)*180/Math.PI)).toFloat()),
+                            MathHelper.wrapAngleTo180_float(
+                                (
+                                    if(diffZ>=0) (acos(diffX/diffXZ)*180/Math.PI - 90.0f) else (270.0f - acos(diffX/diffXZ)*180/Math.PI)
+                                ).toFloat()
+                            ),
                             MathHelper.wrapAngleTo180_float((Math.acos(diffXZ/diffXYZ)*180/Math.PI).toFloat())
                         )
                         val rotationVector = RotationUtils.getVectorForRotation(rotation)
