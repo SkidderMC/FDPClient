@@ -665,10 +665,9 @@ class Scaffold : Module() {
                 mc.thePlayer.motionZ *= modifier.toDouble()
             }
 
-            val swing = swingValue.get()
-            if (swing.equals("packet", true)) {
+            if (swingValue.equals("packet")) {
                 mc.netHandler.addToSendQueue(C0APacketAnimation())
-            } else if (swing.equals("normal", true)) {
+            } else if (swingValue.equals("normal")) {
                 mc.thePlayer.swingItem()
             }
             lastPlace = 2
