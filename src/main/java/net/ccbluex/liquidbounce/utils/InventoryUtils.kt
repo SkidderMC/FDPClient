@@ -14,10 +14,13 @@ import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
+import net.minecraft.item.ItemPotion
+import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.client.C16PacketClientStatus
+import net.minecraft.potion.Potion
 
 object InventoryUtils : MinecraftInstance(), Listenable {
     val CLICK_TIMER = MSTimer()
@@ -89,6 +92,35 @@ object InventoryUtils : MinecraftInstance(), Listenable {
 
     fun closePacket() {
         mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
+    }
+
+    fun isPositivePotionEffect(id: Int): Boolean {
+        if (id == Potion.regeneration.id || id == Potion.moveSpeed.id ||
+            id == Potion.heal.id || id == Potion.nightVision.id ||
+            id == Potion.jump.id || id == Potion.invisibility.id ||
+            id == Potion.resistance.id || id == Potion.waterBreathing.id ||
+            id == Potion.absorption.id || id == Potion.digSpeed.id ||
+            id == Potion.damageBoost.id || id == Potion.healthBoost.id ||
+            id == Potion.fireResistance.id) {
+            return true
+        }
+        return false
+    }
+
+    fun isPositivePotion(item: ItemPotion, stack: ItemStack): Boolean {
+        item.getEffects(stack).forEach {
+            if(isPositivePotionEffect(it.potionID))
+                return true
+        }
+
+        return false
+    }
+
+    fun getItemDurability(stack: ItemStack): Float {
+        if(stack.isItemStackDamageable && stack.maxDamage>0) {
+            return (stack.maxDamage-stack.itemDamage)/stack.maxDamage.toFloat()
+        }
+        return 1f
     }
 
     override fun handleEvents() = true

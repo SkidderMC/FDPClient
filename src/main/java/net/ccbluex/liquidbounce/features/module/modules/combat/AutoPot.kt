@@ -143,30 +143,24 @@ class AutoPot : Module() {
         val itemPotion = stack.item as ItemPotion
 
         if (mc.thePlayer.health <healthValue.get() && regen.get()) {
-            for (potionEffect in itemPotion.getEffects(stack))
+            for (potionEffect in itemPotion.getEffects(stack)) {
                 if (potionEffect.potionID == Potion.heal.id) {
                     return true
                 }
+            }
 
             if (!mc.thePlayer.isPotionActive(Potion.regeneration)) {
-                for (potionEffect in itemPotion.getEffects(stack))
+                for (potionEffect in itemPotion.getEffects(stack)) {
                     if (potionEffect.potionID == Potion.regeneration.id) return true
+                }
             }
         } else if (utility.get()) {
             for (potionEffect in itemPotion.getEffects(stack)) {
-                if (isUsefulPotion(potionEffect.potionID)) return true
+                if (InventoryUtils.isPositivePotionEffect(potionEffect.potionID) && !mc.thePlayer.isPotionActive(potionEffect.potionID))
+                    return true
             }
         }
 
         return false
-    }
-
-    private fun isUsefulPotion(id: Int): Boolean {
-        if (id == Potion.regeneration.id || id == Potion.heal.id || id == Potion.poison.id ||
-            id == Potion.blindness.id || id == Potion.harm.id || id == Potion.wither.id ||
-            id == Potion.digSlowdown.id || id == Potion.moveSlowdown.id) {
-            return false
-        }
-        return !mc.thePlayer.isPotionActive(id)
     }
 }
