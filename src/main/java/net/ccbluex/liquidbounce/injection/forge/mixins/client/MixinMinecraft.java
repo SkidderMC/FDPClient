@@ -91,7 +91,13 @@ public abstract class MixinMinecraft {
     @Shadow
     @Final
     public File mcDataDir;
-
+    /**
+     * @author XiGuaGeGe
+     */
+    @Overwrite
+    public int getLimitFramerate() {
+        return this.theWorld == null && this.currentScreen != null ? 120 : this.gameSettings.limitFramerate;
+    }
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
     private void startGame(CallbackInfo callbackInfo) throws AccessDeniedException {
         if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
