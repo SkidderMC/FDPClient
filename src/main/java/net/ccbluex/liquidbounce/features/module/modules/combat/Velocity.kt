@@ -33,8 +33,8 @@ class Velocity : Module() {
     /**
      * OPTIONS
      */
-    private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
-    private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
+    private val horizontalValue = FloatValue("Horizontal", 0F, -1F, 1F)
+    private val verticalValue = FloatValue("Vertical", 0F, -1F, 1F)
     private val modeValue = ListValue("Mode", arrayOf("Simple", "Vanilla", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
                                                       "Redesky1", "Redesky2",
                                                       "AAC5.2.0", "AAC5.2.0Combat",
