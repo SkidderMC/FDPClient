@@ -32,21 +32,21 @@ import java.awt.Color
 
 @ModuleInfo(name = "InfiniteAura", category = ModuleCategory.COMBAT)
 class InfiniteAura : Module() {
-    private val modeValue=ListValue("Mode", arrayOf("Aura","Click"),"Aura")
-    private val targetsValue=IntegerValue("Targets",3,1,10).displayable { modeValue.equals("Aura") }
-    private val cpsValue=IntegerValue("CPS",1,1,10)
-    private val distValue=IntegerValue("Distance",30,20,100)
-    private val moveDistanceValue=FloatValue("MoveDistance",5F,2F,15F)
-    private val noRegen=BoolValue("NoRegen",true)
-    private val doSwing=BoolValue("Swing",true).displayable { modeValue.equals("Aura") }
-    private val path=BoolValue("PathRender",true)
+    private val modeValue = ListValue("Mode", arrayOf("Aura", "Click"), "Aura")
+    private val targetsValue = IntegerValue("Targets", 3, 1, 10).displayable { modeValue.equals("Aura") }
+    private val cpsValue = IntegerValue("CPS", 1, 1, 10)
+    private val distValue = IntegerValue("Distance", 30, 20, 100)
+    private val moveDistanceValue = FloatValue("MoveDistance", 5F, 2F, 15F)
+    private val noRegen = BoolValue("NoRegen", true)
+    private val doSwing = BoolValue("Swing", true).displayable { modeValue.equals("Aura") }
+    private val path = BoolValue("PathRender", true)
 
-    private val timer=MSTimer()
-    private var points=ArrayList<Vec3>()
+    private val timer = MSTimer()
+    private var points = ArrayList<Vec3>()
     private var thread: Thread? = null
 
-    private fun getDelay():Int{
-        return 1000/cpsValue.get()
+    private fun getDelay(): Int {
+        return 1000 / cpsValue.get()
     }
 
     override fun onEnable() {
@@ -60,11 +60,11 @@ class InfiniteAura : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent){
-        if(!timer.hasTimePassed(getDelay().toLong())) return
-        when(modeValue.get().lowercase()){
+    fun onUpdate(event: UpdateEvent) {
+        if (!timer.hasTimePassed(getDelay().toLong())) return
+        when (modeValue.get().lowercase()) {
             "aura" -> {
-                if(thread == null || !thread!!.isAlive) {
+                if (thread == null || !thread!!.isAlive) {
                     thread = Thread {
                         // do it async because a* pathfinding need some time
                         doTpAura()
@@ -72,18 +72,19 @@ class InfiniteAura : Module() {
                     points.clear()
                     timer.reset()
                     thread!!.start()
-                }else{
+                } else {
                     timer.reset()
                 }
             }
 
             "click" -> {
-                if(mc.gameSettings.keyBindAttack.isKeyDown&&(thread == null || !thread!!.isAlive)) {
+                if (mc.gameSettings.keyBindAttack.isKeyDown && (thread == null || !thread!!.isAlive)) {
                     thread = Thread {
                         // do it async because a* pathfinding need some time
-                        val entity=RaycastUtils.raycastEntity(distValue.get().toDouble()) { entity -> entity != null && EntityUtils.isSelected(entity, true) } ?: return@Thread
-                        if(mc.thePlayer.getDistanceToEntity(entity)<3)
+                        val entity = RaycastUtils.raycastEntity(distValue.get().toDouble()) { entity -> entity != null && EntityUtils.isSelected(entity, true) } ?: return@Thread
+                        if (mc.thePlayer.getDistanceToEntity(entity) <3) {
                             return@Thread
+                        }
 
                         hit(entity as EntityLivingBase)
                     }
@@ -95,33 +96,33 @@ class InfiniteAura : Module() {
         }
     }
 
-    private fun doTpAura(){
-        val targets=ArrayList<EntityLivingBase>()
-        for(entity in mc.theWorld.loadedEntityList){
-            if(entity is EntityLivingBase&&EntityUtils.isSelected(entity,true)
-                &&mc.thePlayer.getDistanceToEntity(entity)<distValue.get()){
+    private fun doTpAura() {
+        val targets = ArrayList<EntityLivingBase>()
+        for (entity in mc.theWorld.loadedEntityList) {
+            if (entity is EntityLivingBase && EntityUtils.isSelected(entity, true) &&
+                mc.thePlayer.getDistanceToEntity(entity) <distValue.get()) {
                 targets.add(entity)
             }
         }
-        if(targets.size==0) return
+        if (targets.size == 0) return
         targets.sortBy { mc.thePlayer.getDistanceToEntity(it) }
-        var count=0
-        val playerPos=Vec3(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
+        var count = 0
+        val playerPos = Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
 
         points.add(playerPos)
-        for(entity in targets){
+        for (entity in targets) {
             count++
-            if(count>targetsValue.get()) break
+            if (count> targetsValue.get()) break
 
             hit(entity)
         }
     }
 
-    private fun hit(entity: EntityLivingBase){
-        val path= PathUtils.findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,entity.posX,entity.posY,entity.posZ,moveDistanceValue.get().toDouble())
+    private fun hit(entity: EntityLivingBase) {
+        val path = PathUtils.findBlinkPath(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, entity.posX, entity.posY, entity.posZ, moveDistanceValue.get().toDouble())
 
         path.forEach {
-            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord, it.yCoord, it.zCoord, true))
             points.add(it)
         }
 
@@ -129,29 +130,26 @@ class InfiniteAura : Module() {
 //            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
 //            points.add(it)
 
-        if(doSwing.get())
-        {
+        if (doSwing.get()) {
             mc.thePlayer.swingItem()
-        }
-        else
-        {
+        } else {
             mc.netHandler.addToSendQueue(C0APacketAnimation())
         }
-        mc.playerController.attackEntity(mc.thePlayer,entity)
+        mc.playerController.attackEntity(mc.thePlayer, entity)
 
-        for(i in path.size-1 downTo 0){
-            val vec=path[i]
-            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec.xCoord,vec.yCoord,vec.zCoord,true))
+        for (i in path.size - 1 downTo 0) {
+            val vec = path[i]
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec.xCoord, vec.yCoord, vec.zCoord, true))
         }
     }
 
     @EventTarget
-    fun onPacket(event: PacketEvent){
-        if(event.packet is S08PacketPlayerPosLook){
+    fun onPacket(event: PacketEvent) {
+        if (event.packet is S08PacketPlayerPosLook) {
             timer.reset()
         }
-        val isMovePacket=(event.packet is C04PacketPlayerPosition||event.packet is C03PacketPlayer.C06PacketPlayerPosLook)
-        if(noRegen.get()&&event.packet is C03PacketPlayer&&!isMovePacket){
+        val isMovePacket = (event.packet is C04PacketPlayerPosition || event.packet is C03PacketPlayer.C06PacketPlayerPosLook)
+        if (noRegen.get() && event.packet is C03PacketPlayer && !isMovePacket) {
             event.cancelEvent()
         }
     }
@@ -159,7 +157,7 @@ class InfiniteAura : Module() {
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         synchronized(points) {
-            if(points.isEmpty()||!path.get()) return
+            if (points.isEmpty() || !path.get()) return
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ
@@ -175,7 +173,7 @@ class InfiniteAura : Module() {
             GL11.glDepthMask(false)
             GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
 
-            for (vec in points){
+            for (vec in points) {
                 val x = vec.xCoord - renderPosX
                 val y = vec.yCoord - renderPosY
                 val z = vec.zCoord - renderPosZ
@@ -211,7 +209,6 @@ class InfiniteAura : Module() {
                 GL11.glVertex3d(x - width, y + height, z - width)
                 GL11.glEnd()
             }
-
 
             GL11.glDepthMask(true)
             GL11.glEnable(GL11.GL_DEPTH_TEST)

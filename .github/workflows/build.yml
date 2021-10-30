@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -29,20 +29,3 @@ jobs:
         with:
           name: FDPClient
           path: build/libs/FDPClient-${{ github.event.head_commit.id }}.jar
-      - name: Publish build artifacts
-        run: curl -F "file=@build/libs/FDPClient-${{ github.event.head_commit.id }}.jar" https://api.anonfiles.com/upload > result.txt
-      - name: Comment artifact download link
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const fs=require("fs");
-            var json=JSON.parse(fs.readFileSync("result.txt").toString())
-            var msg="**Sorry!** File upload failed"
-            if(json.status){
-                msg=json.data.file.url.short
-            }
-            github.rest.repos.createCommitComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                commit_sha: "${{ github.event.head_commit.id }}",
-                body: msg });

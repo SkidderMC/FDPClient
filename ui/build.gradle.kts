@@ -1,12 +1,12 @@
-group="org.unlegitmc.fdp"
-version="v1"
+group = "org.unlegitmc.fdp"
+version = "v1"
 
 plugins.apply("java")
 
-val depsDir=File(projectDir,"deps")
+val depsDir = File(projectDir, "deps")
 
 tasks.getByName("jar").doLast {
-    val libs=arrayListOf(UILib("mdui/mdui.min.js", java.net.URL("https://cdn.jsdelivr.net/npm/mdui@1.0.2/dist/js/mdui.min.js")),
+    val libs = arrayListOf(UILib("mdui/mdui.min.js", java.net.URL("https://cdn.jsdelivr.net/npm/mdui@1.0.2/dist/js/mdui.min.js")),
         UILib("mdui/mdui.min.css", java.net.URL("https://cdn.jsdelivr.net/npm/mdui@1.0.2/dist/css/mdui.min.css")),
         UILib("mdui/LICENSE.txt", java.net.URL("https://cdn.jsdelivr.net/npm/mdui@1.0.2/LICENSE")),
         UILib("icons/material-icons/MaterialIcons-Regular.woff", java.net.URL("https://cdn.jsdelivr.net/npm/mdui@1.0.2/dist/icons/material-icons/MaterialIcons-Regular.woff")),
@@ -43,23 +43,23 @@ tasks.getByName("jar").doLast {
         UILib("swal/LICENSE.md", java.net.URL("https://unpkg.com/sweetalert/LICENSE.md")))
 
     // write the resource file into a zip
-    val zipFile=File(buildDir,"tmp/resources.zip")
-    val zos=java.util.jar.JarOutputStream(java.io.BufferedOutputStream(java.io.FileOutputStream(zipFile)))
-    fun process(jarDir: String, dir: File){
+    val zipFile = File(buildDir, "tmp/resources.zip")
+    val zos = java.util.jar.JarOutputStream(java.io.BufferedOutputStream(java.io.FileOutputStream(zipFile)))
+    fun process(jarDir: String, dir: File) {
         dir.listFiles().forEach {
-            if(it.isDirectory){
-                process("$jarDir${it.name}/",it)
-            }else if(it.isFile){
+            if (it.isDirectory) {
+                process("$jarDir${it.name}/", it)
+            } else if (it.isFile) {
                 zos.putNextEntry(java.util.jar.JarEntry("$jarDir${it.name}"))
                 zos.write(java.nio.file.Files.readAllBytes(it.toPath()))
                 zos.closeEntry()
             }
         }
     }
-    process("",File(projectDir,"src"))
+    process("", File(projectDir, "src"))
     libs.forEach {
-        val file=File(depsDir,it.file)
-        if(!file.exists()){
+        val file = File(depsDir, it.file)
+        if (!file.exists()) {
             file.parentFile.mkdirs()
             println("Downloading lib file ${it.file}")
             java.nio.file.Files.copy(it.url.openStream(), file.toPath())
@@ -71,8 +71,8 @@ tasks.getByName("jar").doLast {
     zos.close()
 
     // then pack it into the jar
-    val file=File("$buildDir/libs/${project.name}-${version}.jar")
-    val jos=java.util.jar.JarOutputStream(java.io.BufferedOutputStream(java.io.FileOutputStream(file)))
+    val file = File("$buildDir/libs/${project.name}-$version.jar")
+    val jos = java.util.jar.JarOutputStream(java.io.BufferedOutputStream(java.io.FileOutputStream(file)))
     jos.putNextEntry(java.util.jar.JarEntry("ui_resources.zip"))
     jos.write(java.nio.file.Files.readAllBytes(zipFile.toPath()))
     jos.closeEntry()

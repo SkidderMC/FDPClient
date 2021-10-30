@@ -28,26 +28,26 @@ class FreeCam : Module() {
     private val motionValue = BoolValue("RecordMotion", true)
     private val c03SpoofValue = BoolValue("C03Spoof", true)
     private var fakePlayer: EntityOtherPlayerMP? = null
-    private var motionX=0.0
-    private var motionY=0.0
-    private var motionZ=0.0
+    private var motionX = 0.0
+    private var motionY = 0.0
+    private var motionZ = 0.0
 
-    private var packetCount=0
+    private var packetCount = 0
 
     override fun onEnable() {
         if (mc.thePlayer == null) return
 
-        if(motionValue.get()){
-            motionX=mc.thePlayer.motionX
-            motionY=mc.thePlayer.motionY
-            motionZ=mc.thePlayer.motionZ
-        }else{
-            motionX=0.0
-            motionY=0.0
-            motionZ=0.0
+        if (motionValue.get()) {
+            motionX = mc.thePlayer.motionX
+            motionY = mc.thePlayer.motionY
+            motionZ = mc.thePlayer.motionZ
+        } else {
+            motionX = 0.0
+            motionY = 0.0
+            motionZ = 0.0
         }
 
-        packetCount=0
+        packetCount = 0
         fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
         fakePlayer!!.clonePlayer(mc.thePlayer, true)
         fakePlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
@@ -67,7 +67,7 @@ class FreeCam : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(event: UpdateEvent) {
         if (noClipValue.get()) mc.thePlayer.noClip = true
         mc.thePlayer.fallDistance = 0f
         if (flyValue.get()) {
@@ -84,29 +84,29 @@ class FreeCam : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if(c03SpoofValue.get()){
-            if(packet is C03PacketPlayer.C04PacketPlayerPosition||packet is C03PacketPlayer.C05PacketPlayerLook||packet is C03PacketPlayer.C06PacketPlayerPosLook){
-                if(packetCount>20) {
-                    packetCount=0
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer!!.posX,fakePlayer!!.posY,fakePlayer!!.posZ,fakePlayer!!.rotationYaw,fakePlayer!!.rotationPitch,fakePlayer!!.onGround))
-                }else{
+        if (c03SpoofValue.get()) {
+            if (packet is C03PacketPlayer.C04PacketPlayerPosition || packet is C03PacketPlayer.C05PacketPlayerLook || packet is C03PacketPlayer.C06PacketPlayerPosLook) {
+                if (packetCount >= 20) {
+                    packetCount = 0
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer!!.posX, fakePlayer!!.posY, fakePlayer!!.posZ, fakePlayer!!.rotationYaw, fakePlayer!!.rotationPitch, fakePlayer!!.onGround))
+                } else {
                     packetCount++
                     PacketUtils.sendPacketNoEvent(C03PacketPlayer(fakePlayer!!.onGround))
                 }
                 event.cancelEvent()
             }
-        }else if(packet is C03PacketPlayer){
+        } else if (packet is C03PacketPlayer) {
             event.cancelEvent()
         }
 
         if (packet is S08PacketPlayerPosLook) {
-            fakePlayer!!.setPosition(packet.x,packet.y,packet.z)
+            fakePlayer!!.setPosition(packet.x, packet.y, packet.z)
             // when teleport,motion reset
-            motionX=0.0
-            motionY=0.0
-            motionZ=0.0
+            motionX = 0.0
+            motionY = 0.0
+            motionZ = 0.0
             // apply the flag to bypass some anticheat
-            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer!!.posX,fakePlayer!!.posY,fakePlayer!!.posZ,fakePlayer!!.rotationYaw,fakePlayer!!.rotationPitch,fakePlayer!!.onGround))
+            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer!!.posX, fakePlayer!!.posY, fakePlayer!!.posZ, fakePlayer!!.rotationYaw, fakePlayer!!.rotationPitch, fakePlayer!!.onGround))
 
             event.cancelEvent()
         }

@@ -23,13 +23,13 @@ class FontValue(valueName: String, value: FontRenderer) : Value<FontRenderer>(va
         value = Fonts.getFontRenderer(valueObject["fontName"].asString, valueObject["fontSize"].asInt)
     }
 
-    fun set(name: String):Boolean{
-        if(name.equals("Minecraft",true)){
+    fun set(name: String): Boolean {
+        if (name.equals("Minecraft", true)) {
             set(Fonts.minecraftFont)
             return true
-        }else if(name.contains(" - ")){
-            val spiced=name.split(" - ")
-            set(Fonts.getFontRenderer(spiced[0],spiced[1].toInt())?:return false)
+        } else if (name.contains(" - ")) {
+            val spiced = name.split(" - ")
+            set(Fonts.getFontRenderer(spiced[0], spiced[1].toInt()) ?: return false)
             return true
         }
         return false

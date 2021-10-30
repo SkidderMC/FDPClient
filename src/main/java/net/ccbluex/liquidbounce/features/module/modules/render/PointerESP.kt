@@ -24,17 +24,17 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "PointerESP", category = ModuleCategory.RENDER)
 class PointerESP : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Solid","Line"),"Solid")
-    private val redValue = IntegerValue("Red",140,0,255)
-    private val greenValue = IntegerValue("Green",140,0,255)
-    private val blueValue = IntegerValue("Blue",255,0,255)
-    private val alphaValue = IntegerValue("Alpha",255,0,255)
+    private val modeValue = ListValue("Mode", arrayOf("Solid", "Line"), "Solid")
+    private val redValue = IntegerValue("Red", 140, 0, 255)
+    private val greenValue = IntegerValue("Green", 140, 0, 255)
+    private val blueValue = IntegerValue("Blue", 255, 0, 255)
+    private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
     private val sizeValue = IntegerValue("Size", 100, 50, 200)
 
     @EventTarget
-    fun onRender2D(event : Render2DEvent) {
+    fun onRender2D(event: Render2DEvent) {
         val sr = ScaledResolution(mc)
-        val color=Color(redValue.get(),greenValue.get(),blueValue.get(),alphaValue.get())
+        val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
 
         GlStateManager.pushMatrix()
         val size = 50 + sizeValue.get()
@@ -44,7 +44,7 @@ class PointerESP : Module() {
         val playerOffSetZ = mc.thePlayer.posZ
 
         for (entity in mc.theWorld.loadedEntityList) {
-            if (EntityUtils.isSelected(entity,true)) {
+            if (EntityUtils.isSelected(entity, true)) {
                 val pos1 = (((entity.posX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks) - playerOffsetX) * 0.2)
                 val pos2 = (((entity.posZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks) - playerOffSetZ) * 0.2)
                 val cos = cos(mc.thePlayer.rotationYaw * (Math.PI * 2 / 360))
@@ -55,13 +55,13 @@ class PointerESP : Module() {
                 val var9 = 0 - rotY
                 if (MathHelper.sqrt_double(var7 * var7 + var9 * var9) < size / 2 - 4) {
                     val angle = (atan2(rotY - 0, rotX - 0) * 180 / Math.PI).toFloat()
-                    val x = ((size / 2) * cos(Math.toRadians(angle.toDouble()))) + xOffset + size / 2;
-                    val y = ((size / 2) * sin(Math.toRadians(angle.toDouble()))) + yOffset + size / 2;
-                    GlStateManager.pushMatrix();
+                    val x = ((size / 2) * cos(Math.toRadians(angle.toDouble()))) + xOffset + size / 2
+                    val y = ((size / 2) * sin(Math.toRadians(angle.toDouble()))) + yOffset + size / 2
+                    GlStateManager.pushMatrix()
                     GlStateManager.translate(x, y, 0.0)
                     GlStateManager.rotate(angle, 0F, 0F, 1F)
                     GlStateManager.scale(1.5, 1.0, 1.0)
-                    when(modeValue.get().lowercase()){
+                    when (modeValue.get().lowercase()) {
                         "solid" -> {
                             drawTriAngle(0F, 0F, 2.2F, 3F, color)
                             drawTriAngle(0F, 0F, 1.5F, 3F, color)

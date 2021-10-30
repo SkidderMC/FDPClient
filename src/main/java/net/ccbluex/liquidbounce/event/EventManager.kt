@@ -18,8 +18,9 @@ class EventManager : MinecraftInstance() {
         for (method in listener.javaClass.declaredMethods) {
             if (method.isAnnotationPresent(EventTarget::class.java) && method.parameterTypes.size == 1) {
                 try {
-                    if (!method.isAccessible)
+                    if (!method.isAccessible) {
                         method.isAccessible = true
+                    }
 
                     val eventClass = method.parameterTypes[0] as Class<out Event>
                     val eventTarget = method.getAnnotation(EventTarget::class.java)
@@ -27,7 +28,7 @@ class EventManager : MinecraftInstance() {
                     val invokableEventTargets = registry.getOrDefault(eventClass, ArrayList())
                     invokableEventTargets.add(EventHook(listener, method, eventTarget))
                     registry[eventClass] = invokableEventTargets
-                }catch (t: Throwable){
+                } catch (t: Throwable) {
                     t.printStackTrace()
                 }
             }
@@ -57,8 +58,9 @@ class EventManager : MinecraftInstance() {
 
         for (invokableEventTarget in targets) {
             try {
-                if (!invokableEventTarget.eventClass.handleEvents() && !invokableEventTarget.isIgnoreCondition)
+                if (!invokableEventTarget.eventClass.handleEvents() && !invokableEventTarget.isIgnoreCondition) {
                     continue
+                }
 
                 invokableEventTarget.method.invoke(invokableEventTarget.eventClass, event)
             } catch (throwable: Throwable) {

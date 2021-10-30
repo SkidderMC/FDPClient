@@ -31,26 +31,27 @@ class Jesus : Module() {
 
     private var nextTick = false
 
-    private fun isLiquidBlock(bb: AxisAlignedBB = mc.thePlayer.entityBoundingBox):Boolean{
+    private fun isLiquidBlock(bb: AxisAlignedBB = mc.thePlayer.entityBoundingBox): Boolean {
         return BlockUtils.collideBlock(bb) { it is BlockLiquid }
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        if (mc.thePlayer == null || mc.thePlayer.isSneaking)
+        if (mc.thePlayer == null || mc.thePlayer.isSneaking) {
             return
+        }
 
         val blockPos = mc.thePlayer.position.down()
 
         when (modeValue.get().lowercase()) {
             "ncp" -> {
-                if (isLiquidBlock() && mc.thePlayer.isInsideOfMaterial(Material.air)){
+                if (isLiquidBlock() && mc.thePlayer.isInsideOfMaterial(Material.air)) {
                     mc.thePlayer.motionY = 0.08
                 }
             }
             "jump" -> {
-                if(BlockUtils.getBlock(blockPos) === Blocks.water && mc.thePlayer.onGround){
-                    mc.thePlayer.motionY=jumpMotionValue.get().toDouble()
+                if (BlockUtils.getBlock(blockPos) === Blocks.water && mc.thePlayer.onGround) {
+                    mc.thePlayer.motionY = jumpMotionValue.get().toDouble()
                 }
             }
             "aac" -> {
@@ -59,20 +60,24 @@ class Jesus : Module() {
                         mc.thePlayer.motionX *= 0.99999
                         mc.thePlayer.motionY *= 0.0
                         mc.thePlayer.motionZ *= 0.99999
-                        if (mc.thePlayer.isCollidedHorizontally)
+                        if (mc.thePlayer.isCollidedHorizontally) {
                             mc.thePlayer.motionY = ((mc.thePlayer.posY - (mc.thePlayer.posY - 1).toInt()).toInt() / 8f).toDouble()
+                        }
                     } else {
                         mc.thePlayer.motionX *= 0.99999
                         mc.thePlayer.motionY *= 0.0
                         mc.thePlayer.motionZ *= 0.99999
-                        if (mc.thePlayer.isCollidedHorizontally)
+                        if (mc.thePlayer.isCollidedHorizontally) {
                             mc.thePlayer.motionY = ((mc.thePlayer.posY - (mc.thePlayer.posY - 1).toInt()).toInt() / 8f).toDouble()
+                        }
                     }
-                    if (mc.thePlayer.fallDistance >= 4)
-                        mc.thePlayer.motionY = -0.004 else if (mc.thePlayer.isInWater) mc.thePlayer.motionY = 0.09
+                    if (mc.thePlayer.fallDistance >= 4) {
+                        mc.thePlayer.motionY = -0.004
+                    } else if (mc.thePlayer.isInWater) mc.thePlayer.motionY = 0.09
                 }
-                if (mc.thePlayer.hurtTime != 0)
+                if (mc.thePlayer.hurtTime != 0) {
                     mc.thePlayer.onGround = false
+                }
             }
             "matrix" -> {
                 if (mc.thePlayer.isInWater) {
@@ -112,22 +117,23 @@ class Jesus : Module() {
                 if (mc.thePlayer.isInWater) {
                     mc.thePlayer.motionX *= 1.17
                     mc.thePlayer.motionZ *= 1.17
-                    if (mc.thePlayer.isCollidedHorizontally){
+                    if (mc.thePlayer.isCollidedHorizontally) {
                         mc.thePlayer.motionY = 0.24
-                    } else if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.0, mc.thePlayer.posZ)).block !== Blocks.air){
+                    } else if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.0, mc.thePlayer.posZ)).block !== Blocks.air) {
                         mc.thePlayer.motionY += 0.04
                     }
                 }
             }
             "dolphin" -> {
-                if (mc.thePlayer.isInWater)
+                if (mc.thePlayer.isInWater) {
                     mc.thePlayer.motionY += 0.03999999910593033
+                }
             }
             "aac4.2.1" -> {
                 if (!mc.thePlayer.onGround && BlockUtils.getBlock(blockPos) === Blocks.water || mc.thePlayer.isInWater) {
                     mc.thePlayer.motionY *= 0.0
                     mc.thePlayer.jumpMovementFactor = 0.08f
-                    if (mc.thePlayer.fallDistance > 0){
+                    if (mc.thePlayer.fallDistance > 0) {
                         return
                     } else if (mc.thePlayer.isInWater) {
                         mc.gameSettings.keyBindJump.pressed = true
@@ -155,8 +161,9 @@ class Jesus : Module() {
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if(!mc.thePlayer.isInWater)
+        if (!mc.thePlayer.isInWater) {
             return
+        }
 
         when (modeValue.get().lowercase()) {
             "aacfly" -> {
@@ -172,12 +179,13 @@ class Jesus : Module() {
 
     @EventTarget
     fun onBlockBB(event: BlockBBEvent) {
-        if (mc.thePlayer == null || mc.thePlayer.entityBoundingBox == null)
+        if (mc.thePlayer == null || mc.thePlayer.entityBoundingBox == null) {
             return
+        }
 
         if (event.block is BlockLiquid && !isLiquidBlock() && !mc.thePlayer.isSneaking) {
             when (modeValue.get().lowercase()) {
-                "ncp","vanilla","jump" -> {
+                "ncp", "vanilla", "jump" -> {
                     event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), (event.x + 1).toDouble(), (event.y + 1).toDouble(), (event.z + 1).toDouble())
                 }
             }
@@ -186,28 +194,32 @@ class Jesus : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (mc.thePlayer == null || !modeValue.equals("NCP"))
+        if (mc.thePlayer == null || !modeValue.equals("NCP")) {
             return
+        }
 
         if (event.packet is C03PacketPlayer) {
             if (isLiquidBlock(AxisAlignedBB(mc.thePlayer.entityBoundingBox.maxX, mc.thePlayer.entityBoundingBox.maxY,
                     mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.01,
                     mc.thePlayer.entityBoundingBox.minZ))) {
                 nextTick = !nextTick
-                if (nextTick)
+                if (nextTick) {
                     event.packet.y -= 0.001
+                }
             }
         }
     }
 
     @EventTarget
     fun onJump(event: JumpEvent) {
-        if (mc.thePlayer == null)
+        if (mc.thePlayer == null) {
             return
+        }
 
         val block = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.01, mc.thePlayer.posZ))
-        if (noJumpValue.get() && block is BlockLiquid)
+        if (noJumpValue.get() && block is BlockLiquid) {
             event.cancelEvent()
+        }
     }
 
     override val tag: String

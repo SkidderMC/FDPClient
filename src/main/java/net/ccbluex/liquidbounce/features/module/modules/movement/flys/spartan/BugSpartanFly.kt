@@ -6,7 +6,6 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
-
 class BugSpartanFly : FlyMode("BugSpartan") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
 
@@ -26,10 +25,12 @@ class BugSpartanFly : FlyMode("BugSpartan") {
         mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionY = 0.0
         mc.thePlayer.motionZ = 0.0
-        if (mc.gameSettings.keyBindJump.isKeyDown)
+        if (mc.gameSettings.keyBindJump.isKeyDown) {
             mc.thePlayer.motionY += speedValue.get() * 0.5
-        if (mc.gameSettings.keyBindSneak.isKeyDown)
+        }
+        if (mc.gameSettings.keyBindSneak.isKeyDown) {
             mc.thePlayer.motionY -= speedValue.get() * 0.5
+        }
 
         MovementUtils.strafe(speedValue.get())
     }

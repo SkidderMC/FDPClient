@@ -19,8 +19,12 @@ import org.lwjgl.opengl.GL11
  * Shows a horizontal display of current armor
  */
 @ElementInfo(name = "Armor")
-class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
-            side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
+class Armor(
+    x: Double = -8.0,
+    y: Double = 57.0,
+    scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)
+) : Element(x, y, scale, side) {
 
     private val modeValue = ListValue("Alignment", arrayOf("Horizontal", "Vertical"), "Horizontal")
 
@@ -43,10 +47,11 @@ class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
 
                 renderItem.renderItemIntoGUI(stack, x, y)
                 renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
-                if (mode.equals("Horizontal", true))
+                if (mode.equals("Horizontal", true)) {
                     x += 18
-                else if (mode.equals("Vertical", true))
+                } else if (mode.equals("Vertical", true)) {
                     y += 18
+                }
             }
 
             GlStateManager.enableAlpha()
@@ -56,9 +61,10 @@ class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
             GL11.glPopMatrix()
         }
 
-        return if (modeValue.equals("Horizontal"))
+        return if (modeValue.equals("Horizontal")) {
             Border(0F, 0F, 72F, 17F)
-        else
+        } else {
             Border(0F, 0F, 18F, 72F)
+        }
     }
 }

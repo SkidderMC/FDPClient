@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
 
-class ServerInfoCommand : Command("serverinfo",arrayOf("si")) {
+class ServerInfoCommand : Command("serverinfo", arrayOf("si")) {
     /**
      * Execute commands with provided [args]
      */

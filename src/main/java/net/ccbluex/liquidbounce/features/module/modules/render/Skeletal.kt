@@ -51,11 +51,12 @@ class Skeletal : Module() {
 
     @EventTarget
     fun onRender(event: Render3DEvent) {
-        val map=playerModelMap
-            .filter { (!onlyEnemyValue.get() || EntityUtils.isSelected(it.key, true)) && (mc.gameSettings.thirdPersonView!=0 || mc.thePlayer.entityId!=it.key.entityId) }
+        val map = playerModelMap
+            .filter { (!onlyEnemyValue.get() || EntityUtils.isSelected(it.key, true)) && (mc.gameSettings.thirdPersonView != 0 || mc.thePlayer.entityId != it.key.entityId) }
 
-        if(map.isEmpty())
+        if (map.isEmpty()) {
             return
+        }
 
         fun render(vec3f: Vector3f) {
             GL11.glRotatef(vec3f.x * 57.29578f, 1.0f, 0.0f, 0.0f)
@@ -68,13 +69,13 @@ class Skeletal : Module() {
         GL11.glDisable(3553)
         GL11.glEnable(2903)
         GL11.glDepthMask(true)
-        if(rainbowValue.get()){
+        if (rainbowValue.get()) {
             RenderUtils.glColor(ColorUtils.rainbow())
-        }else{
+        } else {
             GL11.glColor4f(redValue.get() / 255.0f, greenValue.get() / 255.0f, blueValue.get() / 255.0f, 1.0f)
         }
         map.forEach { (player, model) ->
-            if(!mc.theWorld.playerEntities.contains(player)){
+            if (!mc.theWorld.playerEntities.contains(player)) {
                 playerModelMap.remove(player)
             }
             GL11.glPushMatrix()
@@ -169,10 +170,10 @@ class Skeletal : Module() {
     }
 
     class ClonedModelPlayer(model: ModelPlayer) {
-        val head=Vector3f(model.bipedHead.rotateAngleX, model.bipedHead.rotateAngleY, model.bipedHead.rotateAngleZ)
-        val rightArm=Vector3f(model.bipedRightArm.rotateAngleX, model.bipedRightArm.rotateAngleY, model.bipedRightArm.rotateAngleZ)
-        val leftArm=Vector3f(model.bipedLeftArm.rotateAngleX, model.bipedLeftArm.rotateAngleY, model.bipedLeftArm.rotateAngleZ)
-        val rightLeg=Vector3f(model.bipedRightLeg.rotateAngleX, model.bipedRightLeg.rotateAngleY, model.bipedRightLeg.rotateAngleZ)
-        val leftLeg=Vector3f(model.bipedLeftLeg.rotateAngleX, model.bipedLeftLeg.rotateAngleY, model.bipedLeftLeg.rotateAngleZ)
+        val head = Vector3f(model.bipedHead.rotateAngleX, model.bipedHead.rotateAngleY, model.bipedHead.rotateAngleZ)
+        val rightArm = Vector3f(model.bipedRightArm.rotateAngleX, model.bipedRightArm.rotateAngleY, model.bipedRightArm.rotateAngleZ)
+        val leftArm = Vector3f(model.bipedLeftArm.rotateAngleX, model.bipedLeftArm.rotateAngleY, model.bipedLeftArm.rotateAngleZ)
+        val rightLeg = Vector3f(model.bipedRightLeg.rotateAngleX, model.bipedRightLeg.rotateAngleY, model.bipedRightLeg.rotateAngleZ)
+        val leftLeg = Vector3f(model.bipedLeftLeg.rotateAngleX, model.bipedLeftLeg.rotateAngleY, model.bipedLeftLeg.rotateAngleZ)
     }
 }

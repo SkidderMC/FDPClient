@@ -33,26 +33,28 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
                             LiquidBounce.fileManager.saveConfig(friendsConfig)
                             alert("§a§l$name§3 was added to your friend list.")
                             playEdit()
-                        } else
+                        } else {
                             alert("The name is already in the list.")
+                        }
                         return
                     }
                     chatSyntax("friend add <name> [alias]")
                     return
                 }
-                
+
                 args[1].equals("addall", ignoreCase = true) -> {
                      if (args.size == 3) {
                          val regex = args[2]
                          val coloredRegex = ColorUtils.translateAlternateColorCodes(regex)
 
-                         var added : Int = 0
+                         var added: Int = 0
 
                          mc.theWorld.playerEntities
                              .filter { !AntiBot.isBot(it) && it.displayName.getFormattedText().contains(coloredRegex, false) }
                              .forEach {
-                                 if (friendsConfig.addFriend(it.name))
+                                 if (friendsConfig.addFriend(it.name)) {
                                      added++
+                                 }
                              }
 
                          alert("Added §a§l$added §3players matching the same regex to your friend list.")
@@ -67,14 +69,15 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
                      if (args.size == 3) {
                          val regex = args[2]
 
-                         var remove : Int = 0
+                         var remove: Int = 0
 
                          friendsConfig.friends
                              .map { it.playerName }
                              .filter { it.contains(regex, false) }
                              .forEach {
-                                 if (friendsConfig.removeFriend(it))
+                                 if (friendsConfig.removeFriend(it)) {
                                      remove++
+                                 }
                              }
 
                          alert("Removed §a§l$remove §3players matching the same regex from your friend list.")
@@ -93,8 +96,9 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
                             LiquidBounce.fileManager.saveConfig(friendsConfig)
                             alert("§a§l$name§3 was removed from your friend list.")
                             playEdit()
-                        } else
+                        } else {
                             alert("This name is not in the list.")
+                        }
                         return
                     }
                     chatSyntax("friend remove <name>")

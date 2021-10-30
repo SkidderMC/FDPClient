@@ -12,18 +12,18 @@ import net.minecraft.util.ResourceLocation
 @ModuleInfo(name = "Modules", category = ModuleCategory.CLIENT, canEnable = false)
 object Modules : Module() {
     val toggleIgnoreScreenValue = BoolValue("ToggleIgnoreScreen", false)
-    private val toggleSoundValue = ListValue("ToggleSound", arrayOf("None","Click","Custom"),"Click")
+    private val toggleSoundValue = ListValue("ToggleSound", arrayOf("None", "Click", "Custom"), "Click")
 
-    fun playSound(enable: Boolean){
-        when(toggleSoundValue.get().lowercase()){
+    fun playSound(enable: Boolean) {
+        when (toggleSoundValue.get().lowercase()) {
             "click" -> {
                 mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.click"), 1F))
             }
 
             "custom" -> {
-                if(enable){
+                if (enable) {
                     LiquidBounce.tipSoundManager.enableSound.asyncPlay()
-                }else{
+                } else {
                     LiquidBounce.tipSoundManager.disableSound.asyncPlay()
                 }
             }

@@ -8,12 +8,10 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.movement.InventoryMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.Rotation;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
@@ -103,15 +101,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Shadow
     public abstract boolean isSneaking();
 
-    /**
-     * @author liuli
-     * for aac5.2.0-vanilla fly with betterview mode
-     */
-    @Overwrite
-    protected boolean isCurrentViewEntity() {
-        return (mc.getRenderViewEntity()!=null&&mc.getRenderViewEntity().equals(this)) || (LiquidBounce.moduleManager!=null&&LiquidBounce.moduleManager.getModule(Fly.class).getState());
-    }
-
     @Shadow
     private double lastReportedPosX;
 
@@ -129,6 +118,9 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     @Shadow
     private float lastReportedPitch;
+
+    @Shadow
+    protected abstract boolean isCurrentViewEntity();
 
     /**
      * @author CCBlueX, liulihaocai
@@ -235,7 +227,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Overwrite
     public void onLivingUpdate() {
         LiquidBounce.eventManager.callEvent(new UpdateEvent());
-        AWTFontRenderer.Companion.garbageCollectionTick();
 
         if (this.sprintingTicksLeft > 0) {
             --this.sprintingTicksLeft;

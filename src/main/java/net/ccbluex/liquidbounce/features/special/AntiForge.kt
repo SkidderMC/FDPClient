@@ -24,11 +24,12 @@ object AntiForge : MinecraftInstance(), Listenable {
         val packet = event.packet
         if (enabled && !mc.isIntegratedServerRunning) {
             try {
-                if (blockProxyPacket && packet.javaClass.name == "net.minecraftforge.fml.common.network.internal.FMLProxyPacket")
+                if (blockProxyPacket && packet.javaClass.name == "net.minecraftforge.fml.common.network.internal.FMLProxyPacket") {
                     event.cancelEvent()
+                }
 
                 if (blockPayloadPackets && packet is C17PacketCustomPayload) {
-                    if (!packet.channelName.startsWith("MC|")){
+                    if (!packet.channelName.startsWith("MC|")) {
                         event.cancelEvent()
                     } else if (packet.channelName.equals("MC|Brand", true)) {
                         packet.data = PacketBuffer(Unpooled.buffer()).writeString("vanilla")

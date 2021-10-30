@@ -38,7 +38,7 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel","HypSpoof","Phase", "Verus", "Damage","MotionFlag"), "SpoofGround")
+    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Damage", "MotionFlag"), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
     private val minFallDistance = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
     private val flySpeed = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
@@ -73,20 +73,25 @@ class NoFall : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer.onGround)
+        if (mc.thePlayer.onGround) {
             jumped = false
+        }
 
-        if (mc.thePlayer.motionY > 0)
+        if (mc.thePlayer.motionY > 0) {
             jumped = true
+        }
 
-        if (!state || LiquidBounce.moduleManager[FreeCam::class.java]!!.state)
+        if (!state || LiquidBounce.moduleManager[FreeCam::class.java]!!.state) {
             return
+        }
 
-        if (mc.thePlayer.isSpectator || mc.thePlayer.capabilities.allowFlying || mc.thePlayer.capabilities.disableDamage)
+        if (mc.thePlayer.isSpectator || mc.thePlayer.capabilities.allowFlying || mc.thePlayer.capabilities.disableDamage) {
             return
+        }
 
-        if (BlockUtils.collideBlock(mc.thePlayer.entityBoundingBox) { it is BlockLiquid } || BlockUtils.collideBlock(AxisAlignedBB(mc.thePlayer.entityBoundingBox.maxX, mc.thePlayer.entityBoundingBox.maxY, mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.01, mc.thePlayer.entityBoundingBox.minZ)) { it is BlockLiquid })
+        if (BlockUtils.collideBlock(mc.thePlayer.entityBoundingBox) { it is BlockLiquid } || BlockUtils.collideBlock(AxisAlignedBB(mc.thePlayer.entityBoundingBox.maxX, mc.thePlayer.entityBoundingBox.maxY, mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.01, mc.thePlayer.entityBoundingBox.minZ)) { it is BlockLiquid }) {
             return
+        }
 
         when (modeValue.get().lowercase()) {
             "packet" -> {
@@ -123,8 +128,9 @@ class NoFall : Module() {
                 }
             }
             "laac" -> {
-                if (!jumped && mc.thePlayer.onGround && !mc.thePlayer.isOnLadder && !mc.thePlayer.isInWater && !mc.thePlayer.isInWeb)
+                if (!jumped && mc.thePlayer.onGround && !mc.thePlayer.isOnLadder && !mc.thePlayer.isInWater && !mc.thePlayer.isInWeb) {
                     mc.thePlayer.motionY = -6.0
+                }
             }
             "aac3.3.11" -> {
                 if (mc.thePlayer.fallDistance > 2) {
@@ -136,8 +142,9 @@ class NoFall : Module() {
             }
             "aac3.3.15" -> {
                 if (mc.thePlayer.fallDistance > 2) {
-                    if (!mc.isIntegratedServerRunning)
+                    if (!mc.isIntegratedServerRunning) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, Double.NaN, mc.thePlayer.posZ, false))
+                    }
                     mc.thePlayer.fallDistance = -9999f
                 }
             }
@@ -274,14 +281,15 @@ class NoFall : Module() {
             if (!aac4Fakelag) {
                 aac4Fakelag = true
             }
-        }else if (modeValue.equals("MLG")) {
+        } else if (modeValue.equals("MLG")) {
             if (event.eventState == EventState.PRE) {
                 currentMlgRotation = null
 
                 mlgTimer.update()
 
-                if (!mlgTimer.hasTimePassed(10))
+                if (!mlgTimer.hasTimePassed(10)) {
                     return
+                }
 
                 if (mc.thePlayer.fallDistance > minFallDistance.get()) {
                     val fallingPlayer = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.motionX, mc.thePlayer.motionY, mc.thePlayer.motionZ, mc.thePlayer.rotationYaw, mc.thePlayer.moveStrafing, mc.thePlayer.moveForward)
@@ -296,8 +304,9 @@ class NoFall : Module() {
                         ok = true
                     }
 
-                    if (!ok)
+                    if (!ok) {
                         return
+                    }
 
                     var index = -1
 
@@ -307,12 +316,14 @@ class NoFall : Module() {
                         if (itemStack != null && (itemStack.item == Items.water_bucket || itemStack.item is ItemBlock && (itemStack.item as ItemBlock).block == Blocks.web)) {
                             index = i - 36
 
-                            if (mc.thePlayer.inventory.currentItem == index)
+                            if (mc.thePlayer.inventory.currentItem == index) {
                                 break
+                            }
                         }
                     }
-                    if (index == -1)
+                    if (index == -1) {
                         return
+                    }
 
                     currentMlgItemIndex = index
                     currentMlgBlock = collision
@@ -336,8 +347,9 @@ class NoFall : Module() {
                         mlgTimer.reset()
                     }
                 }
-                if (mc.thePlayer.inventory.currentItem != currentMlgItemIndex)
+                if (mc.thePlayer.inventory.currentItem != currentMlgItemIndex) {
                     mc.thePlayer.sendQueue.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }
             }
         }
     }
@@ -347,13 +359,13 @@ class NoFall : Module() {
         val mode = modeValue.get()
         if (event.packet is C03PacketPlayer) {
             val packet = event.packet
-            if (mode.equals("SpoofGround", ignoreCase = true) && mc.thePlayer.fallDistance > 2.5){
+            if (mode.equals("SpoofGround", ignoreCase = true) && mc.thePlayer.fallDistance > 2.5) {
                 packet.onGround = true
-            } else if (mode.equals("AlwaysSpoofGround", ignoreCase = true)){
+            } else if (mode.equals("AlwaysSpoofGround", ignoreCase = true)) {
                 packet.onGround = true
-            } else if (mode.equals("NoGround", ignoreCase = true)){
+            } else if (mode.equals("NoGround", ignoreCase = true)) {
                 packet.onGround = false
-            } else if (mode.equals("Hypixel", ignoreCase = true) && mc.thePlayer != null && mc.thePlayer.fallDistance > 1.5){
+            } else if (mode.equals("Hypixel", ignoreCase = true) && mc.thePlayer != null && mc.thePlayer.fallDistance > 1.5) {
                 packet.onGround = mc.thePlayer.ticksExisted % 2 == 0
             } else if (mode.equals("HypSpoof", ignoreCase = true)) {
                 PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
@@ -381,8 +393,9 @@ class NoFall : Module() {
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if (BlockUtils.collideBlock(mc.thePlayer.entityBoundingBox) { it is BlockLiquid } || BlockUtils.collideBlock(AxisAlignedBB(mc.thePlayer.entityBoundingBox.maxX, mc.thePlayer.entityBoundingBox.maxY, mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.01, mc.thePlayer.entityBoundingBox.minZ)) { it is BlockLiquid })
+        if (BlockUtils.collideBlock(mc.thePlayer.entityBoundingBox) { it is BlockLiquid } || BlockUtils.collideBlock(AxisAlignedBB(mc.thePlayer.entityBoundingBox.maxX, mc.thePlayer.entityBoundingBox.maxY, mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.01, mc.thePlayer.entityBoundingBox.minZ)) { it is BlockLiquid }) {
             return
+        }
         if (modeValue.equals("laac")) {
             if (!jumped && !mc.thePlayer.onGround && !mc.thePlayer.isOnLadder && !mc.thePlayer.isInWater && !mc.thePlayer.isInWeb && mc.thePlayer.motionY < 0.0) {
                 event.x = 0.0

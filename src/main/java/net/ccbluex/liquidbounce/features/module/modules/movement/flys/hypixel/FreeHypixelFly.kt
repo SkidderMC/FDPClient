@@ -7,7 +7,6 @@ import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-
 class FreeHypixelFly : FlyMode("FreeHypixel") {
     private val timer = TickTimer()
 
@@ -17,10 +16,10 @@ class FreeHypixelFly : FlyMode("FreeHypixel") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if(timer.hasTimePassed(10)) {
+        if (timer.hasTimePassed(10)) {
             mc.thePlayer.capabilities.isFlying = true
             return
-        }else{
+        } else {
             mc.thePlayer.rotationYaw = fly.launchYaw
             mc.thePlayer.rotationPitch = fly.launchPitch
             mc.thePlayer.motionX = 0.0
@@ -28,12 +27,14 @@ class FreeHypixelFly : FlyMode("FreeHypixel") {
             mc.thePlayer.motionZ = 0.0
         }
 
-        if(fly.launchY == BigDecimal(mc.thePlayer.posY).setScale(3, RoundingMode.HALF_DOWN).toDouble())
+        if (fly.launchY == BigDecimal(mc.thePlayer.posY).setScale(3, RoundingMode.HALF_DOWN).toDouble()) {
             timer.update()
+        }
     }
 
     override fun onMove(event: MoveEvent) {
-        if (!timer.hasTimePassed(10))
+        if (!timer.hasTimePassed(10)) {
             event.zero()
+        }
     }
 }

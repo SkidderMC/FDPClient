@@ -30,12 +30,14 @@ class SuperKnockback : Module() {
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
-            if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delay.get().toLong()) || (!MovementUtils.isMoving() && onlyMoveValue.get()))
+            if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delay.get().toLong()) || (!MovementUtils.isMoving() && onlyMoveValue.get())) {
                 return
+            }
             when (modeValue.get().lowercase()) {
                 "extrapacket" -> {
-                    if (mc.thePlayer.isSprinting)
+                    if (mc.thePlayer.isSprinting) {
                         mc.thePlayer.isSprinting = true
+                    }
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
 
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
@@ -45,14 +47,16 @@ class SuperKnockback : Module() {
                 }
 
                 "wtap" -> {
-                    if (mc.thePlayer.isSprinting)
+                    if (mc.thePlayer.isSprinting) {
                         mc.thePlayer.isSprinting = false
+                    }
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
                     mc.thePlayer.serverSprintState = true
                 }
                 "packet" -> {
-                    if(mc.thePlayer.isSprinting)
+                    if (mc.thePlayer.isSprinting) {
                         mc.thePlayer.isSprinting = true
+                    }
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
                     mc.thePlayer.serverSprintState = true

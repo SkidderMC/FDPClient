@@ -21,7 +21,7 @@ object ClassUtils {
      *
      * @param bytes ByteArray of class
      */
-    fun toClassNode(bytes : ByteArray) : ClassNode {
+    fun toClassNode(bytes: ByteArray): ClassNode {
         val classReader = ClassReader(bytes)
         val classNode = ClassNode()
         classReader.accept(classNode, 0)
@@ -34,7 +34,7 @@ object ClassUtils {
      *
      * @param classNode ClassNode of class
      */
-    fun toBytes(classNode : ClassNode) : ByteArray {
+    fun toBytes(classNode: ClassNode): ByteArray {
         val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
         classNode.accept(classWriter)
 

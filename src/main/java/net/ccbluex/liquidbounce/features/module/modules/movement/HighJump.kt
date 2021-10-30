@@ -29,24 +29,24 @@ import net.minecraft.util.EnumFacing
 @ModuleInfo(name = "HighJump", category = ModuleCategory.MOVEMENT)
 class HighJump : Module() {
     private val heightValue = FloatValue("Height", 2f, 1.1f, 7f)
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "StableMotion", "Damage", "AACv3", "DAC", "Mineplex", "Matrix","MatrixWater"), "Vanilla")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "StableMotion", "Damage", "AACv3", "DAC", "Mineplex", "Matrix", "MatrixWater"), "Vanilla")
     private val glassValue = BoolValue("OnlyGlassPane", false)
     private val stableMotionValue = FloatValue("StableMotion", 0.42f, 0.1f, 1f).displayable { modeValue.equals("StableMotion") }
     private var jumpY = 114514.0
 
-    private var martrixStatus=0
-    private var martrixWasTimer=false
+    private var martrixStatus = 0
+    private var martrixWasTimer = false
 
-    private val timer=MSTimer()
+    private val timer = MSTimer()
 
     override fun onEnable() {
         jumpY = 114514.0
-        martrixStatus=0
-        martrixWasTimer=false
+        martrixStatus = 0
+        martrixWasTimer = false
     }
 
     override fun onDisable() {
-        mc.timer.timerSpeed=1f
+        mc.timer.timerSpeed = 1f
     }
 
     @EventTarget
@@ -94,31 +94,31 @@ class HighJump : Module() {
                     mc.timer.timerSpeed = 1.00f
                     martrixWasTimer = false
                 }
-                if ((mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, mc.thePlayer.motionY, 0.0).expand(0.0, 0.0, 0.0)).isNotEmpty()
-                            || mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -4.0, 0.0).expand(0.0, 0.0, 0.0)).isNotEmpty())
-                    && mc.thePlayer.fallDistance > 10) {
+                if ((mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, mc.thePlayer.motionY, 0.0).expand(0.0, 0.0, 0.0)).isNotEmpty() ||
+                            mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -4.0, 0.0).expand(0.0, 0.0, 0.0)).isNotEmpty()) &&
+                    mc.thePlayer.fallDistance > 10) {
                     if (!mc.thePlayer.onGround) {
                         mc.timer.timerSpeed = 0.1f
                         martrixWasTimer = true
                     }
                 }
-                if (timer.hasTimePassed(1000) && martrixStatus==1) {
+                if (timer.hasTimePassed(1000) && martrixStatus == 1) {
                     mc.timer.timerSpeed = 1.0f
                     mc.thePlayer.motionX = 0.0
                     mc.thePlayer.motionZ = 0.0
-                    martrixStatus=0
+                    martrixStatus = 0
                     return
                 }
-                if (martrixStatus==1 && mc.thePlayer.hurtTime > 0) {
+                if (martrixStatus == 1 && mc.thePlayer.hurtTime > 0) {
                     mc.timer.timerSpeed = 1.0f
                     mc.thePlayer.motionY = 3.0
                     mc.thePlayer.motionX = 0.0
                     mc.thePlayer.motionZ = 0.0
                     mc.thePlayer.jumpMovementFactor = 0.00f
-                    martrixStatus=0
+                    martrixStatus = 0
                     return
                 }
-                if (martrixStatus==2) {
+                if (martrixStatus == 2) {
                     mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
                     repeat(8) {
@@ -128,16 +128,16 @@ class HighJump : Module() {
                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
                     mc.timer.timerSpeed = 0.6f
-                    martrixStatus=1
+                    martrixStatus = 1
                     timer.reset()
                     mc.thePlayer.sendQueue.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK, BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ), EnumFacing.UP))
                     mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
                     return
                 }
-                if (mc.thePlayer.isCollidedHorizontally && martrixStatus==0 && mc.thePlayer.onGround) {
+                if (mc.thePlayer.isCollidedHorizontally && martrixStatus == 0 && mc.thePlayer.onGround) {
                     mc.thePlayer.sendQueue.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ), EnumFacing.UP))
                     mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
-                    martrixStatus=2
+                    martrixStatus = 2
                     mc.timer.timerSpeed = 0.05f
                 }
                 if (mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround) {

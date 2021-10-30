@@ -26,10 +26,11 @@ class Chams : Module() {
     private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorAlphaValue = IntegerValue("Alpha", 200, 0, 255)
 
-    fun setColor(){
-        if(colorRainbowValue.get())
+    fun setColor() {
+        if (colorRainbowValue.get()) {
             RenderUtils.glColor(ColorUtils.rainbowWithAlpha(colorAlphaValue.get()))
-        else
+        } else {
             GL11.glColor4f(colorRedValue.get() / 255f, colorGreenValue.get() / 255f, colorBlueValue.get() / 255f, colorAlphaValue.get() / 255f)
+        }
     }
 }

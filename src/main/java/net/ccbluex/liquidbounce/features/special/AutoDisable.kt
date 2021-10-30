@@ -12,36 +12,36 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 object AutoDisable : Listenable {
-    private const val name="AutoDisable"
+    private const val name = "AutoDisable"
 
     @EventTarget
-    fun onWorld(event: WorldEvent){
+    fun onWorld(event: WorldEvent) {
         LiquidBounce.moduleManager.modules
-            .filter { it.state&&it.autoDisable==EnumAutoDisableType.RESPAWN&&it.triggerType==EnumTriggerType.TOGGLE }
+            .filter { it.state && it.autoDisable == EnumAutoDisableType.RESPAWN && it.triggerType == EnumTriggerType.TOGGLE }
             .forEach { module ->
-                module.state=false
-                LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to respawn.",NotifyType.WARNING,2000))
+                module.state = false
+                LiquidBounce.hud.addNotification(Notification(this.name, "Disabled ${module.name} due to respawn.", NotifyType.WARNING, 2000))
             }
     }
 
     @EventTarget
-    fun onPacket(event: PacketEvent){
-        if(event.packet is S08PacketPlayerPosLook){
+    fun onPacket(event: PacketEvent) {
+        if (event.packet is S08PacketPlayerPosLook) {
             LiquidBounce.moduleManager.modules
-                .filter { it.state&&it.autoDisable==EnumAutoDisableType.FLAG&&it.triggerType==EnumTriggerType.TOGGLE }
+                .filter { it.state && it.autoDisable == EnumAutoDisableType.FLAG && it.triggerType == EnumTriggerType.TOGGLE }
                 .forEach { module ->
-                    module.state=false
-                    LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to flags.",NotifyType.WARNING,2000))
+                    module.state = false
+                    LiquidBounce.hud.addNotification(Notification(this.name, "Disabled ${module.name} due to flags.", NotifyType.WARNING, 2000))
                 }
         }
     }
 
-    fun handleGameEnd(){
+    fun handleGameEnd() {
         LiquidBounce.moduleManager.modules
-            .filter { it.state&&it.autoDisable==EnumAutoDisableType.GAME_END }
+            .filter { it.state && it.autoDisable == EnumAutoDisableType.GAME_END }
             .forEach { module ->
-                module.state=false
-                LiquidBounce.hud.addNotification(Notification(this.name,"Disabled ${module.name} due to game end.",NotifyType.WARNING,2000))
+                module.state = false
+                LiquidBounce.hud.addNotification(Notification(this.name, "Disabled ${module.name} due to game end.", NotifyType.WARNING, 2000))
             }
     }
 

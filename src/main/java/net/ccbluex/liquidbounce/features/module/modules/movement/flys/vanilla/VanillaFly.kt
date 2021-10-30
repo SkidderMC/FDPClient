@@ -14,37 +14,40 @@ class VanillaFly : FlyMode("Vanilla") {
     private val kickBypassValue = BoolValue("${valuePrefix}KickBypass", false)
     private val keepAliveValue = BoolValue("${valuePrefix}KeepAlive", false) // old KeepAlive fly combined
 
-    private var packets=0
+    private var packets = 0
 
     override fun onEnable() {
-        packets=0
+        packets = 0
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if(keepAliveValue.get())
+        if (keepAliveValue.get()) {
             mc.netHandler.addToSendQueue(C00PacketKeepAlive())
+        }
 
         mc.thePlayer.capabilities.isFlying = false
 
         mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionY = 0.0
         mc.thePlayer.motionZ = 0.0
-        if (mc.gameSettings.keyBindJump.isKeyDown)
+        if (mc.gameSettings.keyBindJump.isKeyDown) {
             mc.thePlayer.motionY += speedValue.get() * 0.5
-        if (mc.gameSettings.keyBindSneak.isKeyDown)
+        }
+        if (mc.gameSettings.keyBindSneak.isKeyDown) {
             mc.thePlayer.motionY -= speedValue.get() * 0.5
+        }
 
         MovementUtils.strafe(speedValue.get())
     }
 
     override fun onPacket(event: PacketEvent) {
-        val packet=event.packet
+        val packet = event.packet
 
-        if(packet is C03PacketPlayer) {
+        if (packet is C03PacketPlayer) {
             packets++
-            if(packets==40 && kickBypassValue.get()) {
+            if (packets == 40 && kickBypassValue.get()) {
                 MovementUtils.handleVanillaKickBypass()
-                packets=0
+                packets = 0
             }
         }
     }

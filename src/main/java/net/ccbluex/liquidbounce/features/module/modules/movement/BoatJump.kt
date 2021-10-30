@@ -32,7 +32,7 @@ class BoatJump : Module() {
     private val timer = MSTimer()
     private val hitTimer = MSTimer()
     private var lastRide = false
-    private var hasStopped = false;
+    private var hasStopped = false
 
     override fun onEnable() {
         jumpState = 1
@@ -94,7 +94,6 @@ class BoatJump : Module() {
                         )
                     }
                 }
-
             }
         } else if (jumpState == 2 && !mc.thePlayer.isRiding) {
             val radiansYaw = mc.thePlayer.rotationYaw * Math.PI / 180
@@ -118,8 +117,9 @@ class BoatJump : Module() {
                             break
                         }
                     }
-                    if (!hasBoat)
+                    if (!hasBoat) {
                         jumpState = 1
+                    }
                 }
                 "matrix" -> {
                     hasStopped = true

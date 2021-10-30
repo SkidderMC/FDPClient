@@ -16,95 +16,99 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
 class ConfigManager {
-    private val configSetFile=File(LiquidBounce.fileManager.dir, "config-settings.json")
+    private val configSetFile = File(LiquidBounce.fileManager.dir, "config-settings.json")
 
-    private val sections=mutableListOf<ConfigSection>()
+    private val sections = mutableListOf<ConfigSection>()
 
-    var nowConfig="default"
-    var configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
+    var nowConfig = "default"
+    var configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
 
     init {
         Reflections("${this.javaClass.`package`.name}.sections")
             .getSubTypesOf(ConfigSection::class.java).forEach(this::registerSection)
     }
 
-    fun load(name: String,save: Boolean=true){
-        LiquidBounce.isLoadingConfig=true
-        if(save&&nowConfig!=name)
-            save(true,true) // 保存老配置
+    fun load(name: String, save: Boolean = true) {
+        LiquidBounce.isLoadingConfig = true
+        if (save && nowConfig != name) {
+            save(true, true) // 保存老配置
+        }
 
-        nowConfig=name
-        configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
+        nowConfig = name
+        configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
 
-        val json=if(configFile.exists()){
+        val json = if (configFile.exists()) {
             JsonParser().parse(Files.readAllBytes(configFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject
-        }else{
+        } else {
             JsonObject() // 这样方便一点,虽然效率会低
         }
 
-        for (section in sections){
-            section.load(if(json.has(section.sectionName)){ json.getAsJsonObject(section.sectionName) }else{ JsonObject() })
+        for (section in sections) {
+            section.load(if (json.has(section.sectionName)) { json.getAsJsonObject(section.sectionName) } else { JsonObject() })
         }
 
-        if(!configFile.exists())
+        if (!configFile.exists()) {
             save(forceSave = true)
+        }
 
-        if(save)
+        if (save) {
             saveConfigSet()
+        }
 
         ClientUtils.logInfo("Config $nowConfig.json loaded.")
-        LiquidBounce.isLoadingConfig=false
+        LiquidBounce.isLoadingConfig = false
     }
 
-    fun save(saveConfigSet: Boolean = true, forceSave : Boolean = false){
-        if(LiquidBounce.isLoadingConfig&&!forceSave)
+    fun save(saveConfigSet: Boolean = true, forceSave: Boolean = false) {
+        if (LiquidBounce.isLoadingConfig && !forceSave) {
             return
+        }
 
-        val config=JsonObject()
+        val config = JsonObject()
 
-        for (section in sections){
-            config.add(section.sectionName,section.save())
+        for (section in sections) {
+            config.add(section.sectionName, section.save())
         }
 
         Files.write(configFile.toPath(), FileManager.PRETTY_GSON.toJson(config).toByteArray(StandardCharsets.UTF_8))
 
-        if(saveConfigSet) {
+        if (saveConfigSet) {
             saveConfigSet()
         }
 
         ClientUtils.logInfo("Config $nowConfig.json saved.")
     }
 
-    fun smartSave(){
+    fun smartSave() {
         // TODO: Save smartly to save disk I/O
         save()
     }
 
-    fun loadConfigSet(){
-        val configSet=if(configSetFile.exists()){ JsonParser().parse(Files.readAllBytes(configSetFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject }else{ JsonObject() }
+    fun loadConfigSet() {
+        val configSet = if (configSetFile.exists()) { JsonParser().parse(Files.readAllBytes(configSetFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject } else { JsonObject() }
 
-        load(if(configSet.has("file")){
+        load(if (configSet.has("file")) {
             configSet.get("file").asString
-        }else{
+        } else {
             "default"
-        },false)
+        }, false)
     }
 
-    fun saveConfigSet(){
-        val configSet=JsonObject()
+    fun saveConfigSet() {
+        val configSet = JsonObject()
 
-        configSet.addProperty("file",nowConfig)
+        configSet.addProperty("file", nowConfig)
 
         Files.write(configSetFile.toPath(), FileManager.PRETTY_GSON.toJson(configSet).toByteArray(StandardCharsets.UTF_8))
     }
 
-    fun loadLegacySupport(){
-        if(LiquidBounce.fileManager.loadLegacy()){
-            if(File(LiquidBounce.fileManager.configsDir,"$nowConfig.json").exists()){
-                nowConfig="legacy"
-                configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
+    fun loadLegacySupport() {
+        if (LiquidBounce.fileManager.loadLegacy()) {
+            if (File(LiquidBounce.fileManager.configsDir, "$nowConfig.json").exists()) {
+                nowConfig = "legacy"
+                configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
                 save(forceSave = true)
-            }else{
+            } else {
                 save(forceSave = true)
             }
             ClientUtils.logWarn("Converted legacy config")
@@ -187,26 +191,27 @@ class ConfigManager {
             }
         }
 
-        val oldSettingDir=File(LiquidBounce.fileManager.dir,"settings")
-        if(oldSettingDir.exists()){
+        val oldSettingDir = File(LiquidBounce.fileManager.dir, "settings")
+        if (oldSettingDir.exists()) {
             oldSettingDir.listFiles().forEach {
-                if(it.isFile){
-                    val name=nowConfig
+                if (it.isFile) {
+                    val name = nowConfig
                     ClientUtils.logWarn("Converting legacy setting \"${it.name}\"")
-                    load("default",false)
-                    nowConfig=it.name
-                    configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
+                    load("default", false)
+                    nowConfig = it.name
+                    configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
                     executeScript(String(Files.readAllBytes(it.toPath())))
-                    save(false,true)
+                    save(false, true)
                     // set data back
-                    nowConfig=name
-                    configFile=File(LiquidBounce.fileManager.configsDir,"$nowConfig.json")
+                    nowConfig = name
+                    configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
                     saveConfigSet()
                 }
-                if(!LiquidBounce.fileManager.legacySettingsDir.exists())
+                if (!LiquidBounce.fileManager.legacySettingsDir.exists()) {
                     LiquidBounce.fileManager.legacySettingsDir.mkdir()
+                }
 
-                it.renameTo(File(LiquidBounce.fileManager.legacySettingsDir,it.name))
+                it.renameTo(File(LiquidBounce.fileManager.legacySettingsDir, it.name))
             }
             oldSettingDir.delete()
         }

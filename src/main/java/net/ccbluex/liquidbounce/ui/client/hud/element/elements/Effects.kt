@@ -21,7 +21,12 @@ import net.minecraft.potion.Potion
  * Shows a list of active potion effects
  */
 @ElementInfo(name = "Effects")
-class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
+class Effects(
+    x: Double = 2.0,
+    y: Double = 10.0,
+    scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
+) : Element(x, y, scale, side) {
 
     private val fontValue = FontValue("Font", Fonts.font35)
     private val shadow = BoolValue("Shadow", true)
@@ -56,11 +61,13 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F, side: Side =
             val stringWidth = fontRenderer.getStringWidth(name).toFloat()
 
             if (side.horizontal == Side.Horizontal.RIGHT) {
-                if (width > -stringWidth)
+                if (width > -stringWidth) {
                     width = -stringWidth
+                }
             } else {
-                if (width < stringWidth)
+                if (width < stringWidth) {
                     width = stringWidth
+                }
             }
 
             when (side.horizontal) {
@@ -74,11 +81,13 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F, side: Side =
             }
         }
 
-        if (width == 0F)
+        if (width == 0F) {
             width = if (side.horizontal == Side.Horizontal.RIGHT) -40F else 40F
+        }
 
-        if (y == 0F)
+        if (y == 0F) {
             y = if (side.vertical == Side.Vertical.UP) -fontRenderer.FONT_HEIGHT.toFloat() else fontRenderer.FONT_HEIGHT.toFloat()
+        }
 
         return Border(0F, 0F, width, y)
     }

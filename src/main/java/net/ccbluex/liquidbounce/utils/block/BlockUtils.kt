@@ -107,8 +107,9 @@ object BlockUtils : MinecraftInstance() {
                     MathHelper.floor_double(mc.thePlayer.entityBoundingBox.maxZ) + 1) {
                 val block = getBlock(BlockPos(x.toDouble(), axisAlignedBB.minY, z.toDouble()))
 
-                if (!collide(block))
+                if (!collide(block)) {
                     return false
+                }
             }
         }
 
@@ -131,8 +132,9 @@ object BlockUtils : MinecraftInstance() {
                     val boundingBox = block?.getCollisionBoundingBox(mc.theWorld, blockPos, getState(blockPos))
                             ?: continue
 
-                    if (mc.thePlayer.entityBoundingBox.intersectsWith(boundingBox))
+                    if (mc.thePlayer.entityBoundingBox.intersectsWith(boundingBox)) {
                         return true
+                    }
                 }
             }
         }
@@ -140,5 +142,5 @@ object BlockUtils : MinecraftInstance() {
     }
 
     @JvmStatic
-    fun floorVec3(vec3: Vec3) = Vec3(floor(vec3.xCoord),floor(vec3.yCoord),floor(vec3.zCoord))
+    fun floorVec3(vec3: Vec3) = Vec3(floor(vec3.xCoord), floor(vec3.yCoord), floor(vec3.zCoord))
 }

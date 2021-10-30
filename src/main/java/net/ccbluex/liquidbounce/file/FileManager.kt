@@ -48,20 +48,25 @@ class FileManager : MinecraftInstance() {
      * Setup folder
      */
     fun setupFolder() {
-        if (!dir.exists())
+        if (!dir.exists()) {
             dir.mkdir()
+        }
 
-        if (!fontsDir.exists())
+        if (!fontsDir.exists()) {
             fontsDir.mkdir()
+        }
 
-        if (!configsDir.exists())
+        if (!configsDir.exists()) {
             configsDir.mkdir()
+        }
 
-        if (!soundsDir.exists())
+        if (!soundsDir.exists()) {
             soundsDir.mkdir()
+        }
 
-        if (!capesDir.exists())
+        if (!capesDir.exists()) {
             capesDir.mkdir()
+        }
 
         if (!cacheDir.exists()) {
             cacheDir.mkdirs()

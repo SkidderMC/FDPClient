@@ -78,5 +78,4 @@ class HideCommand : Command("hide", emptyArray()) {
             else -> emptyList()
         }
     }
-
 }

@@ -6,8 +6,9 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 class AAC5Long : SpeedMode("AAC5Long") {
     override fun onUpdate() {
         if (mc.thePlayer!!.isInWater) return
-        if (!MovementUtils.isMoving())
+        if (!MovementUtils.isMoving()) {
             return
+        }
         if (mc.thePlayer.onGround) {
             mc.gameSettings.keyBindJump.pressed = false
             mc.thePlayer.jump()

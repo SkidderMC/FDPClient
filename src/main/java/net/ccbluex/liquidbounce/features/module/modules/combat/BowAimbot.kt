@@ -52,8 +52,9 @@ class BowAimbot : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (target != null && !priorityValue.equals("Multi") && markValue.get())
+        if (target != null && !priorityValue.equals("Multi") && markValue.get()) {
             RenderUtils.drawPlatform(target, Color(37, 126, 255, 70))
+        }
     }
 
     private fun getTarget(throughWalls: Boolean, priorityMode: String): Entity? {

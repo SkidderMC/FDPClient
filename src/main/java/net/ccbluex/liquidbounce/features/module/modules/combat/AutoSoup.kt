@@ -38,17 +38,19 @@ class AutoSoup : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        if (!timer.hasTimePassed(delayValue.get().toLong()))
+        if (!timer.hasTimePassed(delayValue.get().toLong())) {
             return
+        }
 
         val soupInHotbar = InventoryUtils.findItem(36, 45, Items.mushroom_stew)
         if (mc.thePlayer.health <= healthValue.get() && soupInHotbar != -1) {
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(soupInHotbar - 36))
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer
                     .getSlot(soupInHotbar).stack))
-            if (bowlValue.equals("Drop"))
+            if (bowlValue.equals("Drop")) {
                 mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM,
                         BlockPos.ORIGIN, EnumFacing.DOWN))
+            }
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
             timer.reset()
             return
@@ -56,8 +58,9 @@ class AutoSoup : Module() {
 
         val bowlInHotbar = InventoryUtils.findItem(36, 45, Items.bowl)
         if (bowlValue.equals("Move") && bowlInHotbar != -1) {
-            if (openInventoryValue.get() && mc.currentScreen !is GuiInventory)
+            if (openInventoryValue.get() && mc.currentScreen !is GuiInventory) {
                 return
+            }
 
             var bowlMovable = false
 
@@ -76,28 +79,31 @@ class AutoSoup : Module() {
             if (bowlMovable) {
                 val openInventory = mc.currentScreen !is GuiInventory && simulateInventoryValue.get()
 
-                if (openInventory)
+                if (openInventory) {
                     mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                }
                 mc.playerController.windowClick(0, bowlInHotbar, 0, 1, mc.thePlayer)
             }
         }
 
         val soupInInventory = InventoryUtils.findItem(9, 36, Items.mushroom_stew)
         if (soupInInventory != -1 && InventoryUtils.hasSpaceHotbar()) {
-            if (openInventoryValue.get() && mc.currentScreen !is GuiInventory)
+            if (openInventoryValue.get() && mc.currentScreen !is GuiInventory) {
                 return
+            }
 
             val openInventory = mc.currentScreen !is GuiInventory && simulateInventoryValue.get()
-            if (openInventory)
+            if (openInventory) {
                 mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+            }
 
             mc.playerController.windowClick(0, soupInInventory, 0, 1, mc.thePlayer)
 
-            if (openInventory)
+            if (openInventory) {
                 mc.netHandler.addToSendQueue(C0DPacketCloseWindow())
+            }
 
             timer.reset()
         }
     }
-
 }
