@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.font.renderer.vector
 
-import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.font.FontsGC
 import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager

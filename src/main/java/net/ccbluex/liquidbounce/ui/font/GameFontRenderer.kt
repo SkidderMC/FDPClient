@@ -16,8 +16,6 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import java.awt.Color
 import java.awt.Font
 

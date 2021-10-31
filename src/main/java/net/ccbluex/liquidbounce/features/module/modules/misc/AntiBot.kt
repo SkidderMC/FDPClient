@@ -37,6 +37,7 @@ object AntiBot : Module() {
     private val healthValue = BoolValue("Health", false)
     private val derpValue = BoolValue("Derp", true)
     private val wasInvisibleValue = BoolValue("WasInvisible", false)
+    private val validNameValue = BoolValue("ValidName", true)
     private val armorValue = BoolValue("Armor", false)
     private val pingValue = BoolValue("Ping", false)
     private val needHitValue = BoolValue("NeedHit", false)
@@ -108,6 +109,10 @@ object AntiBot : Module() {
         }
 
         if (wasInvisibleValue.get() && invisible.contains(entity.entityId)) {
+            return true
+        }
+
+        if (validNameValue.get() && !entity.name.matches(Regex("\\w{3,16}"))) {
             return true
         }
 

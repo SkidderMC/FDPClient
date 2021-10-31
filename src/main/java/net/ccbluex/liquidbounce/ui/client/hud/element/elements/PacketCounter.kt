@@ -17,7 +17,12 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @ElementInfo(name = "PacketCounter")
-class PacketCounter(x: Double = 100.0, y: Double = 30.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.LEFT, Side.Vertical.UP)) : Element(x, y, scale, side),Listenable {
+class PacketCounter(
+    x: Double = 100.0,
+    y: Double = 30.0,
+    scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.LEFT, Side.Vertical.UP)
+) : Element(x, y, scale, side), Listenable {
 
     init {
         LiquidBounce.eventManager.registerListener(this)
@@ -25,12 +30,12 @@ class PacketCounter(x: Double = 100.0, y: Double = 30.0, scale: Float = 1F, side
     override fun handleEvents(): Boolean = true
 
     @EventTarget
-    fun onPacket(event: PacketEvent){
+    fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet.javaClass.name.contains("net.minecraft.network.play.client.",ignoreCase = true)){
+        if (packet.javaClass.name.contains("net.minecraft.network.play.client.", ignoreCase = true)) {
             sentPackets += 1
         }
-        if (packet.javaClass.name.contains("net.minecraft.network.play.server.",ignoreCase = true)){
+        if (packet.javaClass.name.contains("net.minecraft.network.play.server.", ignoreCase = true)) {
             receivedPackets += 1
         }
     }
@@ -43,14 +48,14 @@ class PacketCounter(x: Double = 100.0, y: Double = 30.0, scale: Float = 1F, side
 
     private val packetCounterHeight = IntegerValue("PacketCounterHeight", 50, 30, 150)
     private val packetCounterWidth = IntegerValue("PacketCounterWidth", 100, 100, 300)
-    private val packetCounterUpdateDelay = IntegerValue("PacketCounterUpdateDelay",1000,0,2000)
-    private val packetCounterMessage = ListValue("PacketCounterMessageMode", arrayOf("None","Right","Up"),"Right")
+    private val packetCounterUpdateDelay = IntegerValue("PacketCounterUpdateDelay", 1000, 0, 2000)
+    private val packetCounterMessage = ListValue("PacketCounterMessageMode", arrayOf("None", "Right", "Up"), "Right")
 
     override fun drawElement(partialTicks: Float): Border {
         val height = packetCounterHeight
         val width = packetCounterWidth.get()
         val delay = packetCounterUpdateDelay.get()
-        val tickdelay = delay/50
+        val tickdelay = delay / 50
         val messageMode = packetCounterMessage.get()
         if (Timer.hasTimePassed(delay.toLong())) {
             Timer.reset()
@@ -92,8 +97,8 @@ class PacketCounter(x: Double = 100.0, y: Double = 30.0, scale: Float = 1F, side
             val y1 = receivedPacketsList[i + 1] * 10 * 0.03F / tickdelay
 
             RenderUtils.glColor(Color(0, 255, 0, 255))
-            GL11.glVertex2d(i.toDouble() - receivedStart, height.get()*2 + 1 - y.coerceAtMost(height.get().toFloat()).toDouble() + if (messageMode.equals("Up",true)) Fonts.font35!!.FONT_HEIGHT else 0)
-            GL11.glVertex2d(i + 1.0 - receivedStart, height.get()*2 + 1 - y1.coerceAtMost(height.get().toFloat()).toDouble() + if (messageMode.equals("Up",true)) Fonts.font35!!.FONT_HEIGHT else 0)
+            GL11.glVertex2d(i.toDouble() - receivedStart, height.get() * 2 + 1 - y.coerceAtMost(height.get().toFloat()).toDouble() + if (messageMode.equals("Up", true)) Fonts.font35!!.FONT_HEIGHT else 0)
+            GL11.glVertex2d(i + 1.0 - receivedStart, height.get() * 2 + 1 - y1.coerceAtMost(height.get().toFloat()).toDouble() + if (messageMode.equals("Up", true)) Fonts.font35!!.FONT_HEIGHT else 0)
         }
 
         GL11.glEnd()
@@ -105,11 +110,10 @@ class PacketCounter(x: Double = 100.0, y: Double = 30.0, scale: Float = 1F, side
         GL11.glDisable(GL11.GL_BLEND)
         GlStateManager.resetColor()
 
-
-        if (!messageMode.equals("None",true)) {
+        if (!messageMode.equals("None", true)) {
             GL11.glPushMatrix()
             GL11.glScaled(0.6, 0.6, 0.6)
-            if (messageMode.equals("Right",true)) {
+            if (messageMode.equals("Right", true)) {
                 val y1 = sentPacketsList.last() * 10 * 0.25F / tickdelay
                 val y12 = receivedPacketsList.last() * 10 * 0.03F / tickdelay
                 Fonts.font35!!.drawString(
@@ -124,25 +128,25 @@ class PacketCounter(x: Double = 100.0, y: Double = 30.0, scale: Float = 1F, side
                     (height.get() * 2 + 1 - y12.coerceAtMost(height.get().toFloat())) / 0.6F,
                     Color(0, 255, 0, 255).rgb
                 )
-            }else if (messageMode.equals("Up",true)){
+            } else if (messageMode.equals("Up", true)) {
                 Fonts.font35!!.drawString(
                     "Sent ${sentPacketsList.last()} packets in the past $delay MS.",
                     0F,
-                    (-Fonts.font35!!.FONT_HEIGHT/2) / 0.6F,
+                    (-Fonts.font35!!.FONT_HEIGHT / 2) / 0.6F,
                     Color(255, 0, 0, 255).rgb
                 )
                 Fonts.font35!!.drawString(
                     "Received ${receivedPacketsList.last()} packets in the past $delay MS.",
                     0F,
-                    (height.get() + Fonts.font35!!.FONT_HEIGHT/2) / 0.6F,
+                    (height.get() + Fonts.font35!!.FONT_HEIGHT / 2) / 0.6F,
                     Color(0, 255, 0, 255).rgb
                 )
             }
             GL11.glPopMatrix()
         }
-        val x2 = if (!messageMode.equals("Up",true)) Fonts.font35!!.getStringWidth("Received ${receivedPacketsList.last()} packets in the past $delay MS.").toFloat() else (receivedPacketsList.size - receivedStart).toFloat()
-        val y2 = height.get()*2 + 2F + if (!messageMode.equals("Up",true)) Fonts.font35!!.FONT_HEIGHT else 0
+        val x2 = if (!messageMode.equals("Up", true)) Fonts.font35!!.getStringWidth("Received ${receivedPacketsList.last()} packets in the past $delay MS.").toFloat() else (receivedPacketsList.size - receivedStart).toFloat()
+        val y2 = height.get() * 2 + 2F + if (!messageMode.equals("Up", true)) Fonts.font35!!.FONT_HEIGHT else 0
 
-        return Border(0F,0F,x2,y2)
+        return Border(0F, 0F, x2, y2)
     }
 }
