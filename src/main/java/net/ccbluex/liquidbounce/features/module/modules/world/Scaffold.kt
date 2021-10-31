@@ -133,7 +133,8 @@ class Scaffold : Module() {
             "AAC3.3.9",
             "AAC3.6.4",
             "AAC4.4Constant",
-            "AAC4Jump"
+            "AAC4Jump",
+            "VerusTest"
         ), "Jump"
     )
     private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
@@ -457,7 +458,7 @@ class Scaffold : Module() {
                     mc.thePlayer.motionY = 0.42
                 }
             }
-            "VerusTest" -> {
+            "verustest" -> {
                 if(mc.thePlayer.ticksExisted % 2 == 1) {
                     mc.thePlayer.motionY = 0.5
                     spoofGround = false
@@ -852,6 +853,12 @@ class Scaffold : Module() {
                             MathHelper.wrapAngleTo180_float(Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90f),
                             MathHelper.wrapAngleTo180_float((-Math.toDegrees(atan2(diffY, diffXZ))).toFloat())
                         )
+                        if(testValue.get()) {
+                            if(rotation.pitch>72) {
+                                rotation.pitch += ((rotation.pitch-72)*0.85).toFloat()
+                                if(rotation.pitch>89) rotation.pitch = (89.0).toFloat()
+                            }
+                        }
                         val rotationVector = RotationUtils.getVectorForRotation(rotation)
                         val vector = eyesPos.addVector(
                             rotationVector.xCoord * 4,
@@ -867,10 +874,6 @@ class Scaffold : Module() {
                                 placeRotation.rotation
                             )
                         ) if(testValue.get()) {
-                            if(rotation.pitch>72) {
-                                rotation.pitch += ((rotation.pitch-72)*0.85).toFloat()
-                                if(rotation.pitch>89) rotation.pitch = (89.0).toFloat()
-                            }
                             if(Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())) < testYaw) {
                                 placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
                                 testYaw = Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())).toDouble()
