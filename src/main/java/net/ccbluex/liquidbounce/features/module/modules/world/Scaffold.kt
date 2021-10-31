@@ -184,7 +184,7 @@ class Scaffold : Module() {
     // Visuals
     private val counterDisplayValue = BoolValue("Counter", true)
     private val markValue = BoolValue("Mark", false)
-    
+
     private val testValue = BoolValue("Test", false).displayable { false }
 
     /**
@@ -225,9 +225,9 @@ class Scaffold : Module() {
     private var canSameY = false
     private var lastPlaceBlock: BlockPos? = null
     private var afterPlaceC08: C08PacketPlayerBlockPlacement? = null
-    
+
     private var testYaw = 0.0
-    
+
     private var spoofGround = false
 
     /**
@@ -459,10 +459,10 @@ class Scaffold : Module() {
                 }
             }
             "verustest" -> {
-                if(mc.thePlayer.ticksExisted % 2 == 1) {
+                if (mc.thePlayer.ticksExisted % 2 == 1) {
                     mc.thePlayer.motionY = 0.5
                     spoofGround = false
-                }else{
+                } else {
                     mc.thePlayer.motionY = 0.0
                     mc.thePlayer.onGround = true
                     spoofGround = true
@@ -853,10 +853,10 @@ class Scaffold : Module() {
                             MathHelper.wrapAngleTo180_float(Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90f),
                             MathHelper.wrapAngleTo180_float((-Math.toDegrees(atan2(diffY, diffXZ))).toFloat())
                         )
-                        if(testValue.get()) {
-                            if(rotation.pitch>70) {
-                                rotation.pitch += ((rotation.pitch-70)*0.75).toFloat()
-                                if(rotation.pitch>89) rotation.pitch = (89.0).toFloat()
+                        if (testValue.get()) {
+                            if (rotation.pitch> 70) {
+                                rotation.pitch += ((rotation.pitch - 70) * 0.75).toFloat()
+                                if (rotation.pitch> 89) rotation.pitch = (89.0).toFloat()
                             }
                         }
                         val rotationVector = RotationUtils.getVectorForRotation(rotation)
@@ -873,13 +873,13 @@ class Scaffold : Module() {
                         if (placeRotation == null || RotationUtils.getRotationDifference(rotation) < RotationUtils.getRotationDifference(
                                 placeRotation.rotation
                             )
-                        ) if(testValue.get()) {
-                            if(Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())) < testYaw) {
+                        ) if (testValue.get()) {
+                            if (Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())) < testYaw) {
                                 placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
                                 testYaw = Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())).toDouble()
-                                //chat(testYaw.toString())
+                                // chat(testYaw.toString())
                             }
-                        }else placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
+                        } else placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
                         zSearch += 0.075
                     }
                     ySearch += 0.075

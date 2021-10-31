@@ -228,7 +228,7 @@ class AntiVoid : Module() {
             }
 
             "oldhypixel" -> {
-                if(packet is S08PacketPlayerPosLook && mc.thePlayer.fallDistance>3.125) mc.thePlayer.fallDistance = 3.125f
+                if (packet is S08PacketPlayerPosLook && mc.thePlayer.fallDistance> 3.125) mc.thePlayer.fallDistance = 3.125f
                 if (packet is C03PacketPlayer) {
                     if (voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get() && mc.thePlayer.motionY <= 0 &&
                         mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
