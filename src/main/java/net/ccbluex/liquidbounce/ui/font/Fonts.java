@@ -35,10 +35,13 @@ public class Fonts {
     private static final List<GameFontRenderer> CUSTOM_FONT_RENDERERS = new ArrayList<>();
 
     public static void loadFonts() {
-        AWTFontRenderer.Companion.clear();
         long l = System.currentTimeMillis();
 
         ClientUtils.INSTANCE.logInfo("Loading Fonts.");
+
+        for(GameFontRenderer it : getCustomFonts()) {
+            it.close();
+        }
 
         initFonts();
 
@@ -143,6 +146,26 @@ public class Fonts {
                 final Object fontObj = fontField.get(null);
 
                 if(fontObj instanceof FontRenderer) fonts.add((FontRenderer) fontObj);
+            }catch(final IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        fonts.addAll(Fonts.CUSTOM_FONT_RENDERERS);
+
+        return fonts;
+    }
+
+    public static List<GameFontRenderer> getCustomFonts() {
+        final List<GameFontRenderer> fonts = new ArrayList<>();
+
+        for(final Field fontField : Fonts.class.getDeclaredFields()) {
+            try {
+                fontField.setAccessible(true);
+
+                final Object fontObj = fontField.get(null);
+
+                if(fontObj instanceof GameFontRenderer) fonts.add((GameFontRenderer) fontObj);
             }catch(final IllegalAccessException e) {
                 e.printStackTrace();
             }
