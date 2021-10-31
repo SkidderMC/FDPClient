@@ -828,11 +828,11 @@ class Scaffold : Module() {
             if (!BlockUtils.canBeClicked(neighbor)) continue
             val dirVec = Vec3(side.directionVec)
             var xSearch = -0.1
-            while (xSearch < 1.105) {
+            while (xSearch < 1.102) {
                 var ySearch = -0.1
-                while (ySearch < 1.105) {
+                while (ySearch < 1.102) {
                     var zSearch = -0.1
-                    while (zSearch < 1.105) {
+                    while (zSearch < 1.102) {
                         val posVec = Vec3(blockPosition).addVector(xSearch, ySearch, zSearch)
                         val distanceSqPosVec = eyesPos.squareDistanceTo(posVec)
                         val hitVec = posVec.add(Vec3(dirVec.xCoord * 0.5, dirVec.yCoord * 0.5, dirVec.zCoord * 0.5))
@@ -854,8 +854,8 @@ class Scaffold : Module() {
                             MathHelper.wrapAngleTo180_float((-Math.toDegrees(atan2(diffY, diffXZ))).toFloat())
                         )
                         if(testValue.get()) {
-                            if(rotation.pitch>72) {
-                                rotation.pitch += ((rotation.pitch-72)*0.85).toFloat()
+                            if(rotation.pitch>70) {
+                                rotation.pitch += ((rotation.pitch-70)*0.75).toFloat()
                                 if(rotation.pitch>89) rotation.pitch = (89.0).toFloat()
                             }
                         }
@@ -880,11 +880,11 @@ class Scaffold : Module() {
                                 //chat(testYaw.toString())
                             }
                         }else placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
-                        zSearch += 0.1
+                        zSearch += 0.075
                     }
-                    ySearch += 0.1
+                    ySearch += 0.075
                 }
-                xSearch += 0.1
+                xSearch += 0.075
             }
         }
         if (placeRotation == null) return false
