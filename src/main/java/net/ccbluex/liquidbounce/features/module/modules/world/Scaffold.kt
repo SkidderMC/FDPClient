@@ -36,6 +36,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
@@ -225,11 +226,14 @@ class Scaffold : Module() {
     private var afterPlaceC08: C08PacketPlayerBlockPlacement? = null
     
     private var testYaw = 0.0
+    
+    private var spoofGround = false
 
     /**
      * Enable module
      */
     override fun onEnable() {
+        spoofGround = false
         if (mc.thePlayer == null) return
         lastGroundY = mc.thePlayer.posY.toInt()
         lastPlace = 2
@@ -378,6 +382,10 @@ class Scaffold : Module() {
             // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
             packet.stack = mc.thePlayer.inventory.getStackInSlot(slot)
         }
+        if (packet is C03PacketPlayer && spoofGround) {
+            packet.onGround = true
+            spoofGround = false
+        }
     }
 
     @EventTarget
@@ -447,6 +455,16 @@ class Scaffold : Module() {
                  if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.42
+                }
+            }
+            "VerusTest" -> {
+                if(mc.thePlayer.ticksExisted % 2 == 1) {
+                    mc.thePlayer.motionY = 0.5
+                    spoofGround = false
+                }else{
+                    mc.thePlayer.motionY = 0.0
+                    mc.thePlayer.onGround = true
+                    spoofGround = true
                 }
             }
             "jump" -> {
@@ -850,7 +868,7 @@ class Scaffold : Module() {
                             )
                         ) if(testValue.get()) {
                             if(rotation.pitch>72) {
-                                rotation.pitch += ((rotation.pitch-72)*0.75).toFloat()
+                                rotation.pitch += ((rotation.pitch-72)*0.85).toFloat()
                                 if(rotation.pitch>89) rotation.pitch = (89.0).toFloat()
                             }
                             if(Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())) < testYaw) {
