@@ -849,6 +849,10 @@ class Scaffold : Module() {
                                 placeRotation.rotation
                             )
                         ) if(testValue.get()) {
+                            if(rotation.pitch>72) {
+                                rotation.pitch += ((rotation.pitch-72)*0.75).toFloat()
+                                if(rotation.pitch>89) rotation.pitch = (89.0).toFloat()
+                            }
                             if(Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())) < testYaw) {
                                 placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
                                 testYaw = Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())).toDouble()
