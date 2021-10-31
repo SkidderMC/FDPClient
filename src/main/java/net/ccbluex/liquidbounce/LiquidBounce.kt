@@ -26,6 +26,7 @@ import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.FontsGC
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.utils.*
@@ -130,11 +131,14 @@ object LiquidBounce {
         // Create command manager
         commandManager = CommandManager()
 
-        macroManager = MacroManager()
-        eventManager.registerListener(macroManager)
+        fileManager.loadConfigs(fileManager.accountsConfig, fileManager.friendsConfig, fileManager.specialConfig)
 
         // Load client fonts
         Fonts.loadFonts()
+        eventManager.registerListener(FontsGC)
+
+        macroManager = MacroManager()
+        eventManager.registerListener(macroManager)
 
         // Setup module manager and register modules
         moduleManager = ModuleManager()
@@ -160,9 +164,6 @@ object LiquidBounce {
         // KeyBindManager
         keyBindManager = KeyBindManager()
 
-        // Set HUD
-        hud = HUD.createDefault()
-
         // bstats.org user count display
         metricsLite = MetricsLite(11076)
 
@@ -172,6 +173,11 @@ object LiquidBounce {
         GuiCapeManager.load()
 
         mainMenu = GuiLaunchOptionSelectMenu()
+
+        // Set HUD
+        hud = HUD.createDefault()
+
+        fileManager.loadConfigs(fileManager.hudConfig, fileManager.xrayConfig)
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
     }
@@ -187,7 +193,6 @@ object LiquidBounce {
         // Load configs
         configManager.loadLegacySupport()
         configManager.loadConfigSet()
-        fileManager.loadConfigs(fileManager.accountsConfig, fileManager.friendsConfig, fileManager.xrayConfig, fileManager.specialConfig, fileManager.hudConfig)
 
         // Set is starting status
         isStarting = false
@@ -201,6 +206,8 @@ object LiquidBounce {
      */
     fun stopClient() {
         if (!isStarting && !isLoadingConfig) {
+            ClientUtils.logInfo("Shutting down $CLIENT_NAME $CLIENT_VERSION!")
+
             // Call client shutdown
             eventManager.callEvent(ClientShutdownEvent())
 

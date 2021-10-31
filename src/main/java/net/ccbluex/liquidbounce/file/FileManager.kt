@@ -130,14 +130,13 @@ class FileManager : MinecraftInstance() {
      */
     fun saveAllConfigs() {
         for (field in javaClass.declaredFields) {
-            if (field.type == FileConfig::class.java) {
-                try {
-                    if (!field.isAccessible) field.isAccessible = true
-                    val fileConfig = field[this] as FileConfig
-                    saveConfig(fileConfig)
-                } catch (e: IllegalAccessException) {
-                    ClientUtils.logError("[FileManager] Failed to save config file of field " + field.name + ".", e)
-                }
+            try {
+                field.isAccessible = true
+                val obj = field[this]
+                if(obj is FileConfig)
+                    saveConfig(obj)
+            } catch (e: IllegalAccessException) {
+                ClientUtils.logError("[FileManager] Failed to save config file of field " + field.name + ".", e)
             }
         }
     }
