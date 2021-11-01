@@ -65,7 +65,7 @@ class Regen : Module() {
                             mc.netHandler.addToSendQueue(C03PacketPlayer(true))
                         }
                     } else {
-                        if(MovementUtils.isMoving()) mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                        if (MovementUtils.isMoving()) mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                     }
                 }
 

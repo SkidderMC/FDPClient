@@ -97,7 +97,7 @@ class ChestStealer : Module() {
     private var contentReceived = 0
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
+    fun onRender3D(event: Render3DEvent) {
         if (!chestTimer.hasTimePassed(chestValue.get().toLong())) {
             return
         }

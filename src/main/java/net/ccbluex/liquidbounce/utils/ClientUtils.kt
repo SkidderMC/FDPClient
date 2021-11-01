@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import com.google.gson.JsonObject
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.minecraft.util.IChatComponent
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.opengl.Display

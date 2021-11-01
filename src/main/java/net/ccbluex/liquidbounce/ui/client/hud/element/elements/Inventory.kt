@@ -11,8 +11,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.gui.FontRenderer
-import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import org.lwjgl.opengl.GL11

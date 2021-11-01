@@ -36,6 +36,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
@@ -132,7 +133,8 @@ class Scaffold : Module() {
             "AAC3.3.9",
             "AAC3.6.4",
             "AAC4.4Constant",
-            "AAC4Jump"
+            "AAC4Jump",
+            "VerusTest"
         ), "Jump"
     )
     private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
@@ -183,6 +185,8 @@ class Scaffold : Module() {
     private val counterDisplayValue = BoolValue("Counter", true)
     private val markValue = BoolValue("Mark", false)
 
+    private val testValue = BoolValue("Test", false).displayable { false }
+
     /**
      * MODULE
      */
@@ -222,10 +226,15 @@ class Scaffold : Module() {
     private var lastPlaceBlock: BlockPos? = null
     private var afterPlaceC08: C08PacketPlayerBlockPlacement? = null
 
+    private var testYaw = 0.0
+
+    private var spoofGround = false
+
     /**
      * Enable module
      */
     override fun onEnable() {
+        spoofGround = false
         if (mc.thePlayer == null) return
         lastGroundY = mc.thePlayer.posY.toInt()
         lastPlace = 2
@@ -374,6 +383,10 @@ class Scaffold : Module() {
             // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
             packet.stack = mc.thePlayer.inventory.getStackInSlot(slot)
         }
+        if (packet is C03PacketPlayer && spoofGround) {
+            packet.onGround = true
+            spoofGround = false
+        }
     }
 
     @EventTarget
@@ -443,6 +456,16 @@ class Scaffold : Module() {
                  if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.42
+                }
+            }
+            "verustest" -> {
+                if (mc.thePlayer.ticksExisted % 2 == 1) {
+                    mc.thePlayer.motionY = 0.5
+                    spoofGround = false
+                } else {
+                    mc.thePlayer.motionY = 0.0
+                    mc.thePlayer.onGround = true
+                    spoofGround = true
                 }
             }
             "jump" -> {
@@ -665,10 +688,9 @@ class Scaffold : Module() {
                 mc.thePlayer.motionZ *= modifier.toDouble()
             }
 
-            val swing = swingValue.get()
-            if (swing.equals("packet", true)) {
+            if (swingValue.equals("packet")) {
                 mc.netHandler.addToSendQueue(C0APacketAnimation())
-            } else if (swing.equals("normal", true)) {
+            } else if (swingValue.equals("normal")) {
                 mc.thePlayer.swingItem()
             }
             lastPlace = 2
@@ -801,15 +823,16 @@ class Scaffold : Module() {
         )
         var placeRotation: PlaceRotation? = null
         for (side in EnumFacing.values()) {
+            testYaw = 361.9
             val neighbor = blockPosition.offset(side)
             if (!BlockUtils.canBeClicked(neighbor)) continue
             val dirVec = Vec3(side.directionVec)
-            var xSearch = 0.1
-            while (xSearch < 0.9) {
-                var ySearch = 0.1
-                while (ySearch < 0.9) {
-                    var zSearch = 0.1
-                    while (zSearch < 0.9) {
+            var xSearch = -0.1
+            while (xSearch < 1.102) {
+                var ySearch = -0.1
+                while (ySearch < 1.102) {
+                    var zSearch = -0.1
+                    while (zSearch < 1.102) {
                         val posVec = Vec3(blockPosition).addVector(xSearch, ySearch, zSearch)
                         val distanceSqPosVec = eyesPos.squareDistanceTo(posVec)
                         val hitVec = posVec.add(Vec3(dirVec.xCoord * 0.5, dirVec.yCoord * 0.5, dirVec.zCoord * 0.5))
@@ -830,6 +853,12 @@ class Scaffold : Module() {
                             MathHelper.wrapAngleTo180_float(Math.toDegrees(atan2(diffZ, diffX)).toFloat() - 90f),
                             MathHelper.wrapAngleTo180_float((-Math.toDegrees(atan2(diffY, diffXZ))).toFloat())
                         )
+                        if (testValue.get()) {
+                            if (rotation.pitch> 70) {
+                                rotation.pitch += ((rotation.pitch - 70) * 0.75).toFloat()
+                                if (rotation.pitch> 89) rotation.pitch = (89.0).toFloat()
+                            }
+                        }
                         val rotationVector = RotationUtils.getVectorForRotation(rotation)
                         val vector = eyesPos.addVector(
                             rotationVector.xCoord * 4,
@@ -844,12 +873,18 @@ class Scaffold : Module() {
                         if (placeRotation == null || RotationUtils.getRotationDifference(rotation) < RotationUtils.getRotationDifference(
                                 placeRotation.rotation
                             )
-                        ) placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
-                        zSearch += 0.1
+                        ) if (testValue.get()) {
+                            if (Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())) < testYaw) {
+                                placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
+                                testYaw = Math.abs(RotationUtils.getAngleDifference(rotation.yaw, (mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)).toFloat())).toDouble()
+                                // chat(testYaw.toString())
+                            }
+                        } else placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
+                        zSearch += 0.075
                     }
-                    ySearch += 0.1
+                    ySearch += 0.075
                 }
-                xSearch += 0.1
+                xSearch += 0.075
             }
         }
         if (placeRotation == null) return false

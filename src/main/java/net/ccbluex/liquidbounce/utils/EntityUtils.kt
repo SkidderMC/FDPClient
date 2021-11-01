@@ -5,27 +5,27 @@
  */
 package net.ccbluex.liquidbounce.utils
 
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.animal
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.dead
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisible
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.mob
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.player
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot.isBot
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.mob
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.animal
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.player.EntityPlayer
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
-import net.minecraft.entity.passive.EntityAnimal
-import net.minecraft.entity.passive.EntitySquid
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.boss.EntityDragon
+import net.minecraft.entity.monster.EntityGhast
 import net.minecraft.entity.monster.EntityGolem
-import net.minecraft.entity.passive.EntityVillager
-import net.minecraft.entity.passive.EntityBat
 import net.minecraft.entity.monster.EntityMob
 import net.minecraft.entity.monster.EntitySlime
-import net.minecraft.entity.monster.EntityGhast
-import net.minecraft.entity.boss.EntityDragon
-import net.minecraft.entity.Entity
+import net.minecraft.entity.passive.EntityAnimal
+import net.minecraft.entity.passive.EntityBat
+import net.minecraft.entity.passive.EntitySquid
+import net.minecraft.entity.passive.EntityVillager
+import net.minecraft.entity.player.EntityPlayer
 
 object EntityUtils : MinecraftInstance() {
     fun isSelected(entity: Entity, canAttackCheck: Boolean): Boolean {

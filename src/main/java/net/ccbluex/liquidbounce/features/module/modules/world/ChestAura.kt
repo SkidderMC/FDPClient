@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.extensions.getVec
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockChest
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -34,7 +35,7 @@ object ChestAura : Module() {
     private val rangeValue = FloatValue("Range", 5F, 1F, 6F)
     private val delayValue = IntegerValue("Delay", 100, 50, 500)
     private val throughWallsValue = BoolValue("ThroughWalls", true)
-    private val visualSwing = BoolValue("VisualSwing", true)
+    private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val rotations = BoolValue("Rotations", true)
     private val discoverDelay = BoolValue("DiscoverDelay", false)
     private val discoverDelayValue = IntegerValue("DiscoverDelayValue", 200, 50, 300)
@@ -108,10 +109,10 @@ object ChestAura : Module() {
         try {
             if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.heldItem, currentBlock,
                     EnumFacing.DOWN, currentBlock!!.getVec())) {
-                if (visualSwing.get()) {
-                    mc.thePlayer.swingItem()
-                } else {
+                if (swingValue.equals("packet")) {
                     mc.netHandler.addToSendQueue(C0APacketAnimation())
+                } else if (swingValue.equals("normal")) {
+                    mc.thePlayer.swingItem()
                 }
 
                 clickedBlocks.add(currentBlock!!)

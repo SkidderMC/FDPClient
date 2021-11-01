@@ -109,16 +109,17 @@ object InventoryUtils : MinecraftInstance(), Listenable {
 
     fun isPositivePotion(item: ItemPotion, stack: ItemStack): Boolean {
         item.getEffects(stack).forEach {
-            if(isPositivePotionEffect(it.potionID))
+            if (isPositivePotionEffect(it.potionID)) {
                 return true
+            }
         }
 
         return false
     }
 
     fun getItemDurability(stack: ItemStack): Float {
-        if(stack.isItemStackDamageable && stack.maxDamage>0) {
-            return (stack.maxDamage-stack.itemDamage)/stack.maxDamage.toFloat()
+        if (stack.isItemStackDamageable && stack.maxDamage> 0) {
+            return (stack.maxDamage - stack.itemDamage) / stack.maxDamage.toFloat()
         }
         return 1f
     }

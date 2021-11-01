@@ -40,7 +40,7 @@ public class GuiAltManager extends GuiScreen {
     public static GuiTextField randomAltField;
 
     static {
-        randomAltField = new GuiTextField(2, Fonts.font40, 0,0,0,0);
+        randomAltField = new GuiTextField(2, Minecraft.getMinecraft().fontRendererObj, 0,0,0,0);
         randomAltField.setText("F%nD%nP%n_%s%s%s");
         randomAltField.setMaxStringLength(Integer.MAX_VALUE);
     }

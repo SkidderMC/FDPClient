@@ -2,8 +2,6 @@ package net.ccbluex.liquidbounce.utils
 
 import kotlin.math.pow
 import kotlin.math.sqrt
-import java.awt.*
-import java.awt.geom.*
 
 object MathUtils {
     @JvmStatic

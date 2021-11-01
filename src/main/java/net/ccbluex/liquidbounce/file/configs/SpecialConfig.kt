@@ -13,6 +13,8 @@ import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import java.io.File
 
 class SpecialConfig(file: File) : FileConfig(file) {
+    var useGlyphFontRenderer = false
+
     override fun loadConfig(config: String) {
         val json = JsonParser().parse(config).asJsonObject
 
@@ -27,6 +29,7 @@ class SpecialConfig(file: File) : FileConfig(file) {
         GuiBackground.enabled = true
         GuiBackground.particles = false
         GuiAltManager.randomAltField.text = "F%nD%nP%n_%s%s%s"
+        useGlyphFontRenderer = false
 
         if (json.has("prefix")) {
             LiquidBounce.commandManager.prefix = json.get("prefix").asCharacter
@@ -36,6 +39,9 @@ class SpecialConfig(file: File) : FileConfig(file) {
         }
         if (json.has("alt-field")) {
             GuiAltManager.randomAltField.text = json.get("alt-field").asString
+        }
+        if (json.has("use-glyph-fontrenderer")) {
+            useGlyphFontRenderer = json.get("use-glyph-fontrenderer").asBoolean
         }
         if (json.has("anti-forge")) {
             val jsonValue = json.getAsJsonObject("anti-forge")
@@ -81,6 +87,7 @@ class SpecialConfig(file: File) : FileConfig(file) {
         json.addProperty("prefix", LiquidBounce.commandManager.prefix)
         json.addProperty("auto-reconnect", AutoReconnect.delay)
         json.addProperty("alt-field", GuiAltManager.randomAltField.text)
+        json.addProperty("use-glyph-fontrenderer", useGlyphFontRenderer)
 
         val antiForgeJson = JsonObject()
         antiForgeJson.addProperty("enable", AntiForge.enabled)
