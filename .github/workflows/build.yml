@@ -15,7 +15,7 @@ jobs:
       - name: Java setup
         uses: actions/setup-java@v2
         with:
-          distribution: "temurin"
+          distribution: "adopt"
           java-version: 8
           cache: "gradle"
       - name: Add version info

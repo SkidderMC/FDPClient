@@ -82,7 +82,7 @@ class Arraylist(
 
     private fun changeCase(inStr: String): String {
         val str = LanguageManager.replace(inStr)
-        return when(caseValue.get().lowercase()) {
+        return when (caseValue.get().lowercase()) {
             "upper" -> str.uppercase()
             "lower" -> str.lowercase()
             else -> str
@@ -91,7 +91,7 @@ class Arraylist(
 
     private fun getModuleTag(module: Module): String {
         module.tag ?: return ""
-        return when(tagsValue.get().lowercase()) {
+        return when (tagsValue.get().lowercase()) {
             "-" -> " - ${module.tag}"
             "|" -> "|${module.tag}"
             "()" -> " (${module.tag})"
@@ -110,7 +110,7 @@ class Arraylist(
         for (module in LiquidBounce.moduleManager.modules) {
             if (!module.array || shouldExpect(module) || (!module.state && module.slide == 0F && (module.yPosAnimation == null || module.yPosAnimation!!.state == Animation.EnumAnimationState.STOPPED))) continue
 
-            module.width = fontRenderer.getStringWidth(changeCase(getModuleName(module) + getModuleTag(module) ))
+            module.width = fontRenderer.getStringWidth(changeCase(getModuleName(module) + getModuleTag(module)))
 
             val targetSlide = if (module.state) { module.width.toFloat() } else { 0f }
             if (module.slide != targetSlide) {

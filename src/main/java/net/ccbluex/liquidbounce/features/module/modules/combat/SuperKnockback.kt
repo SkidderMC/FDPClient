@@ -23,6 +23,7 @@ class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val modeValue = ListValue("Mode", arrayOf("ExtraPacket", "WTap", "Packet"), "ExtraPacket")
     private val onlyMoveValue = BoolValue("OnlyMove", false)
+    private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val delay = IntegerValue("Delay", 0, 0, 500)
 
     val timer = MSTimer()
@@ -30,7 +31,8 @@ class SuperKnockback : Module() {
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
-            if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delay.get().toLong()) || (!MovementUtils.isMoving() && onlyMoveValue.get())) {
+            if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delay.get().toLong()) ||
+                (!MovementUtils.isMoving() && onlyMoveValue.get()) || (!mc.thePlayer.onGround && onlyGroundValue.get())) {
                 return
             }
             when (modeValue.get().lowercase()) {
@@ -39,7 +41,6 @@ class SuperKnockback : Module() {
                         mc.thePlayer.isSprinting = true
                     }
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
-
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
@@ -65,6 +66,6 @@ class SuperKnockback : Module() {
             timer.reset()
         }
     }
-    override val tag: String?
+    override val tag: String
         get() = modeValue.get()
 }

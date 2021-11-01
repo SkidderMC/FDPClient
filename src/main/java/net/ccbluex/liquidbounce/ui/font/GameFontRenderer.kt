@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.font
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.TextEvent
+import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -15,18 +16,16 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import java.awt.Color
 import java.awt.Font
 
 class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameSettings,
         ResourceLocation("textures/font/ascii.png"), Minecraft.getMinecraft().textureManager, false) {
 
-    var defaultFont = AWTFontRenderer(font)
-    private var boldFont = AWTFontRenderer(font.deriveFont(Font.BOLD))
-    private var italicFont = AWTFontRenderer(font.deriveFont(Font.ITALIC))
-    private var boldItalicFont = AWTFontRenderer(font.deriveFont(Font.BOLD or Font.ITALIC))
+    var defaultFont = AbstractAwtFontRender.build(font)
+    private var boldFont = AbstractAwtFontRender.build(font.deriveFont(Font.BOLD))
+    private var italicFont = AbstractAwtFontRender.build(font.deriveFont(Font.ITALIC))
+    private var boldItalicFont = AbstractAwtFontRender.build(font.deriveFont(Font.BOLD or Font.ITALIC))
 
     val height: Int
         get() = defaultFont.height / 2
@@ -68,16 +67,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
         GlStateManager.translate(x - 1.5, y + 0.5, 0.0)
 
-        GlStateManager.enableColorMaterial()
-        GlStateManager.enableAlpha()
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-        RenderUtils.clearCaps()
-        RenderUtils.enableGlCap(GL13.GL_MULTISAMPLE)
-        GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_FASTEST)
-        RenderUtils.enableGlCap(GL11.GL_POLYGON_SMOOTH)
-        RenderUtils.disableGlCap(GL11.GL_CULL_FACE) // 不要剔除模型的背面
+        defaultFont.preGlHints()
 
         var hexColor = colorHex
         if (hexColor and -67108864 == 0) {
@@ -174,9 +164,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
             defaultFont.drawString(text, 0.0, 0.0, hexColor)
         }
 
-        RenderUtils.resetCaps()
-        GlStateManager.disableBlend()
-        GlStateManager.enableTexture2D()
+        defaultFont.postGlHints()
         GlStateManager.translate(-(x - 1.5), -(y + 0.5), 0.0)
         GlStateManager.resetColor()
         GlStateManager.color(1f, 1f, 1f, 1f)
@@ -251,6 +239,20 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     override fun onResourceManagerReload(resourceManager: IResourceManager) {}
 
     override fun bindTexture(location: ResourceLocation?) {}
+
+    fun collectGarbage() {
+        defaultFont.collectGarbage()
+        boldFont.collectGarbage()
+        italicFont.collectGarbage()
+        boldItalicFont.collectGarbage()
+    }
+
+    fun close() {
+        defaultFont.close()
+        boldFont.close()
+        italicFont.close()
+        boldItalicFont.close()
+    }
 
     companion object {
         @JvmStatic

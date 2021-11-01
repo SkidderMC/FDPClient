@@ -6,15 +6,15 @@
 package net.ccbluex.liquidbounce.utils.misc
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import javax.swing.JOptionPane
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.function.Consumer
 import javax.swing.JFileChooser
 import javax.swing.JFrame
-import java.util.function.Consumer
+import javax.swing.JOptionPane
 
 object MiscUtils : MinecraftInstance() {
     fun showErrorPopup(message: String) {

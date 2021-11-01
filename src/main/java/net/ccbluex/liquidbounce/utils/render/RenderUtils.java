@@ -762,11 +762,14 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawLine(final double x, final double y, final double x1, final double y1, final float width) {
+        boolean texture2d = GL11.glGetBoolean(GL_TEXTURE_2D);
+        setGlCap(GL_TEXTURE_2D, false);
         glLineWidth(width);
         glBegin(GL_LINES);
         glVertex2d(x, y);
         glVertex2d(x1, y1);
         glEnd();
+        setGlCap(GL_TEXTURE_2D, texture2d);
     }
 
     public static void makeScissorBox(final float x, final float y, final float x2, final float y2) {
