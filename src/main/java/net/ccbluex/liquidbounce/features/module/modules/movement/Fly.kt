@@ -67,6 +67,7 @@ class Fly : Module() {
     override fun onDisable() {
         mc.thePlayer.capabilities.isFlying = false
         mc.thePlayer.capabilities.flySpeed = 0.05f
+        mc.thePlayer.noClip = false
 
         mc.timer.timerSpeed = 1F
         mc.thePlayer.speedInAir = 0.02F
