@@ -23,6 +23,7 @@ class Verus4Fly : FlyMode("Verus4") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        mc.gameSettings.keyBindJump.pressed = false
         if (mc.thePlayer.onGround && times < 5) {
             times++
             timer.reset()
