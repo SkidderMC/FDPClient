@@ -59,7 +59,6 @@ dependencies {
     // TODO: switch to MCEF
     include "com.labymedia:ultralight-java-base:0.4.6"
     include "com.labymedia:ultralight-java-databind:0.4.6"
-    include "org.reflections:reflections:0.10.1"
     include "com.github.unlegitmc:fuckpcl:2.0"
 
     include project(":ui")

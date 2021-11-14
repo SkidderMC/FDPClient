@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.command
 
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.ReflectUtils
 
 class CommandManager {
     val commands = HashMap<String, Command>()
@@ -18,7 +18,7 @@ class CommandManager {
      * Register all default commands
      */
     fun registerCommands() {
-        ReflectUtils.getReflects("${this.javaClass.`package`.name}.commands", Command::class.java)
+        ClassUtils.resolvePackage("${this.javaClass.`package`.name}.commands", Command::class.java)
             .forEach(this::registerCommand)
     }
 
