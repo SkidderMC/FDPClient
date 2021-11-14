@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
-import net.ccbluex.liquidbounce.utils.ReflectUtils
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -17,7 +17,7 @@ import java.awt.Color
 
 @ModuleInfo(name = "Fly", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, keyBind = Keyboard.KEY_F)
 class Fly : Module() {
-    private val modes = ReflectUtils.getReflects("${this.javaClass.`package`.name}.flys", FlyMode::class.java)
+    private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.flys", FlyMode::class.java)
         .map { it.newInstance() as FlyMode }
         .sortedBy { it.modeName }
 
