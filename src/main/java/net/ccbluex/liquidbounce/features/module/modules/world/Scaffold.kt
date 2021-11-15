@@ -130,7 +130,7 @@ class Scaffold : Module() {
             "AAC3.6.4",
             "AAC4.4Constant",
             "AAC4Jump",
-            "VerusTest"
+            "Verus"
         ), "Jump"
     )
     private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
@@ -454,7 +454,8 @@ class Scaffold : Module() {
                     mc.thePlayer.motionY = 0.42
                 }
             }
-            "verustest" -> {
+            "verus" -> {
+                mc.thePlayer.setPosition(mc.thePlayer.posX, round(mc.thePlayer.posY*2)/2, mc.thePlayer.posZ)
                 if (mc.thePlayer.ticksExisted % 2 == 1) {
                     mc.thePlayer.motionY = 0.5
                     spoofGround = false
