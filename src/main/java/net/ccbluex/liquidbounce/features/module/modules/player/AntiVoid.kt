@@ -32,6 +32,7 @@ class AntiVoid : Module() {
     private var canBlink = false
     private var canSpoof = false
     private var tried = false
+    private var flagged = false
 
     private var posX = 0.0
     private var posY = 0.0
@@ -47,12 +48,14 @@ class AntiVoid : Module() {
         canSpoof = false
         lastRecY = mc.thePlayer.posY
         tried = false
+	flagged = false
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.onGround) {
             tried = false
+	    flagged = false
         }
 
         when (modeValue.get().lowercase()) {
@@ -102,7 +105,7 @@ class AntiVoid : Module() {
             "jartex" -> {
                 canSpoof = false
                 if (!voidOnly.get() || checkVoid()) {
-                    if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround) {
+                    if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround && !flagged) {
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ *= 0.838
                         mc.thePlayer.motionX *= 0.838
@@ -115,7 +118,7 @@ class AntiVoid : Module() {
             "oldcubecraft" -> {
                 canSpoof = false
                 if (!voidOnly.get() || checkVoid()) {
-                    if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround) {
+                    if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround && !flagged) {
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ = 0.0
                         mc.thePlayer.motionX = 0.0
@@ -185,11 +188,11 @@ class AntiVoid : Module() {
     private fun checkVoid(): Boolean {
         var i = (-(mc.thePlayer.posY-1.4857625)).toInt()
         var dangerous = true
-		while (i <= 0) {
-			dangerous = mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX * 0.5, i.toDouble(), mc.thePlayer.motionZ * 0.5)).isEmpty()
-			i++
-			if (!dangerous) break
-		}
+	    while (i <= 0) {
+		dangerous = mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX * 0.5, i.toDouble(), mc.thePlayer.motionZ * 0.5)).isEmpty()
+		i++
+		if (!dangerous) break
+	    }
         return dangerous
     }
 
@@ -216,7 +219,7 @@ class AntiVoid : Module() {
                     packet.onGround = true
                 }
                 if (canSpoof && (packet is S08PacketPlayerPosLook)) {
-                    mc.thePlayer.fallDistance = 0.0f
+	            flagged = true
                 }
             }
 
@@ -225,8 +228,7 @@ class AntiVoid : Module() {
                     if (packet.y < 1145.141919810) event.cancelEvent()
                 }
                 if (canSpoof && (packet is S08PacketPlayerPosLook)) {
-                    mc.thePlayer.fallDistance = 0.0f
-                    tried = false
+		    flagged = true
                 }
             }
 
