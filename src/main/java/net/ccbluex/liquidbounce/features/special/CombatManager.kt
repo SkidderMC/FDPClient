@@ -31,17 +31,11 @@ class CombatManager : Listenable, MinecraftInstance() {
             return
         }
 
-        for (entity in mc.theWorld.loadedEntityList) {
-            if (entity is EntityLivingBase &&
-                    entity.getDistanceToEntity(mc.thePlayer) < 7 && EntityUtils.isSelected(entity, true)) {
-                inCombat = true
-                break
-            }
-        }
-
         if (target != null) {
-            if (mc.thePlayer.getDistanceToEntity(target)> 7 || !inCombat || target!!.isDead) {
+            if (mc.thePlayer.getDistanceToEntity(target) > 7 || !inCombat || target!!.isDead) {
                 target = null
+            } else {
+                inCombat = true
             }
         }
 
