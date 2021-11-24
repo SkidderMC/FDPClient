@@ -13,6 +13,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.event.ClickEvent
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemSkull
 import net.minecraft.item.ItemStack
@@ -20,7 +22,9 @@ import net.minecraft.item.ItemTool
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
+import net.minecraft.network.play.client.C01PacketChatMessage
 import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import org.apache.commons.io.IOUtils
@@ -33,6 +37,7 @@ import java.util.*
  */
 @ModuleInfo(name = "AuthBypass", category = ModuleCategory.MISC)
 class AuthBypass : Module() {
+    private val modeValue = ListValue("Mode", arrayOf("RedeSky", "RemiCraft"), "RedeSky")
     private val delayValue = IntegerValue("Delay", 1500, 100, 5000)
 
     private var skull: String? = null
@@ -43,6 +48,22 @@ class AuthBypass : Module() {
     private val jsonParser = JsonParser()
 
     private val brLangMap = HashMap<String, String>()
+
+    init {
+        val localeJson = JsonParser().parse(IOUtils.toString(AuthBypass::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/item_names_in_pt_BR.json"), StandardCharsets.UTF_8)).asJsonObject
+
+        brLangMap.clear()
+        for ((key, element) in localeJson.entrySet()) {
+            brLangMap["item.$key"] = element.asString.lowercase()
+        }
+    }
+
+    override fun onEnable() {
+        skull = null
+        type = "none"
+        packets.clear()
+        clickedSlot.clear()
+    }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -55,25 +76,35 @@ class AuthBypass : Module() {
         }
     }
 
-    override fun onEnable() {
-        skull = null
-        type = "none"
-        packets.clear()
-        clickedSlot.clear()
-
-        // load locale async
-        Thread {
-            val localeJson = JsonParser().parse(IOUtils.toString(AuthBypass::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/item_names_in_pt_BR.json"), StandardCharsets.UTF_8)).asJsonObject
-
-            brLangMap.clear()
-            for ((key, element) in localeJson.entrySet()) {
-                brLangMap["item.$key"] = element.asString.lowercase()
-            }
-        }.start()
-    }
-
     @EventTarget
     fun onPacket(event: PacketEvent) {
+        when(modeValue.get().lowercase()) {
+            "redesky" -> handleRedeSky(event)
+            "remicraft" -> handleRemiCraft(event)
+        }
+    }
+
+    private fun handleRemiCraft(event: PacketEvent) {
+        val packet = event.packet
+        if (packet is S02PacketChat) {
+            val component = packet.chatComponent
+            val raw = component.unformattedText
+            if (raw.contains("注册前您需要先提供验证码，请使用指令：/captcha")) {
+                timer.reset()
+                packets.add(C01PacketChatMessage(raw.substring(raw.indexOf("/captcha"))))
+            } else {
+                component.siblings.forEach { sib ->
+                    val clickEvent = sib.chatStyle.chatClickEvent
+                    if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND) {
+                        timer.reset()
+                        packets.add(C01PacketChatMessage(clickEvent.value))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleRedeSky(event: PacketEvent) {
         val packet = event.packet
         if (packet is S2FPacketSetSlot) {
             val slot = packet.func_149173_d()
@@ -89,14 +120,13 @@ class AuthBypass : Module() {
                     if (itemName.contains("item.skull.char", ignoreCase = true)) {
                         val nbt = item.tagCompound ?: return
                         // val uuid=nbt.get<CompoundTag>("SkullOwner").get<CompoundTag>("Properties").get<ListTag>("textures").get<CompoundTag>(0).get<StringTag>("Value").value
-                        val data = process(nbt.getCompoundTag("SkullOwner").getCompoundTag("Properties")
+                        val data = getSkinURL(nbt.getCompoundTag("SkullOwner").getCompoundTag("Properties")
                             .getTagList("textures", NBTTagCompound.NBT_TYPES.indexOf("COMPOUND"))
                             .getCompoundTagAt(0).getString("Value"))
                         if (skull == null) {
                             skull = data
                         } else if (skull != data) {
                             skull = null
-                            timer.reset()
                             click(windowId, slot, item)
                         }
                     }
@@ -152,6 +182,7 @@ class AuthBypass : Module() {
                 packets.clear()
                 clickedSlot.clear()
                 event.cancelEvent()
+                timer.reset()
             } else {
                 type = "none"
             }
@@ -167,7 +198,7 @@ class AuthBypass : Module() {
         return brLangMap[item.unlocalizedName] ?: "null"
     }
 
-    private fun process(data: String): String {
+    private fun getSkinURL(data: String): String {
         val jsonObject = jsonParser.parse(String(Base64.getDecoder().decode(data))).asJsonObject
         return jsonObject
             .getAsJsonObject("textures")
