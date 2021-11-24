@@ -95,7 +95,7 @@ class AuthBypass : Module() {
             } else {
                 component.siblings.forEach { sib ->
                     val clickEvent = sib.chatStyle.chatClickEvent
-                    if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND) {
+                    if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.startsWith(".say")) {
                         timer.reset()
                         packets.add(C01PacketChatMessage(clickEvent.value))
                     }
