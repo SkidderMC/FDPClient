@@ -220,6 +220,7 @@ class Scaffold : Module() {
      * Enable module
      */
     override fun onEnable() {
+        slot = 1145
         if (mc.thePlayer == null) return
         lastGroundY = mc.thePlayer.posY.toInt()
         lastPlace = 2
@@ -363,10 +364,12 @@ class Scaffold : Module() {
 
         // AutoBlock
         if (packet is C09PacketHeldItemChange) {
-            slot = packet.slotId
+            if(packet.slotId == slot) {
+                event.cancelEvent()
+            }else slot = packet.slotId
         } else if (packet is C08PacketPlayerBlockPlacement) {
             // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
-            packet.stack = mc.thePlayer.inventory.getStackInSlot(slot)
+            if(slot < 100) packet.stack = mc.thePlayer.inventory.getStackInSlot(slot)
         }
     }
 
