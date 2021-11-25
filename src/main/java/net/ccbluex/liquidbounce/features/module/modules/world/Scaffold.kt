@@ -37,6 +37,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.C03PacketPlayer.*
 import net.minecraft.stats.StatList
 import net.minecraft.util.*
 import org.lwjgl.input.Keyboard
