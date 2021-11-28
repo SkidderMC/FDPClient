@@ -38,7 +38,6 @@ import java.util.Map;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glVertex2d;
 
 public final class RenderUtils extends MinecraftInstance {
     private static final Map<Integer, Boolean> glCapMap = new HashMap<>();
