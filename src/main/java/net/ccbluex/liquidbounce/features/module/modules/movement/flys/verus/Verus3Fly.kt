@@ -9,6 +9,7 @@ import net.minecraft.util.AxisAlignedBB
 
 class Verus3Fly : FlyMode("Verus3") {
     override fun onUpdate(event: UpdateEvent) {
+        mc.gameSettings.keyBindJump.pressed = false
         if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
             mc.thePlayer.jump()
             MovementUtils.strafe(0.48F)

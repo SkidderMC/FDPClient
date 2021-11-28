@@ -26,6 +26,7 @@ class TargetStrafe : Module() {
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val renderValue = BoolValue("Render", true)
     private var direction = true
+    private var yaw = 0f
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
@@ -44,7 +45,10 @@ class TargetStrafe : Module() {
     fun strafe(event: MoveEvent) {
         val target = LiquidBounce.combatManager.target
         if (canStrafe(target)) {
-            MovementUtils.setSpeed(event, MovementUtils.getSpeed().toDouble(), RotationUtils.getRotationsEntity(target).yaw, if (direction) 1.0 else -1.0, if (mc.thePlayer.getDistanceToEntity(target) <= radiusValue.get()) 0.0 else 1.0)
+            if(mc.thePlayer.onGround || !onlyGroundValue.get()) {
+                yaw = RotationUtils.getRotationsEntity(target).yaw
+            }
+            MovementUtils.setSpeed(event, MovementUtils.getSpeed().toDouble(), yaw, if (direction) 1.0 else -1.0, if (mc.thePlayer.getDistanceToEntity(target) <= radiusValue.get()) 0.0 else 1.0)
         }
     }
 
@@ -88,7 +92,6 @@ class TargetStrafe : Module() {
     private fun canStrafe(target: EntityLivingBase?): Boolean {
         return target != null &&
                 (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) &&
-                (!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state) &&
-                (!onlyGroundValue.get() || mc.thePlayer.onGround)
+                (!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state)
     }
 }

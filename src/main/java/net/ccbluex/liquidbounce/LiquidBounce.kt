@@ -29,7 +29,10 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.FontsGC
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
-import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.ClassUtils
+import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.InventoryUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
@@ -77,7 +80,7 @@ object LiquidBounce {
 
     val launchFilters = mutableListOf<EnumLaunchFilter>()
     private val dynamicLaunchOptions: Array<LaunchOption>
-        get() = ReflectUtils.getReflects("${LaunchOption::class.java.`package`.name}.options", LaunchOption::class.java)
+        get() = ClassUtils.resolvePackage("${LaunchOption::class.java.`package`.name}.options", LaunchOption::class.java)
             .filter {
                 val annotation = it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
                 if (annotation != null) {

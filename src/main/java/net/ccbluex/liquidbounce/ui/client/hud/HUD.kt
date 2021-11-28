@@ -8,9 +8,9 @@ package net.ccbluex.liquidbounce.ui.client.hud
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.ReflectUtils
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
 import kotlin.math.max
@@ -23,7 +23,7 @@ open class HUD : MinecraftInstance() {
 
     companion object {
 
-        val elements = ReflectUtils.getReflects("${HUD::class.java.`package`.name}.element.elements", Element::class.java)
+        val elements = ClassUtils.resolvePackage("${HUD::class.java.`package`.name}.element.elements", Element::class.java)
             .toTypedArray()
 
         /**

@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.ReflectUtils
 import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 
@@ -36,7 +35,7 @@ class ModuleManager : Listenable {
     fun registerModules() {
         ClientUtils.logInfo("[ModuleManager] Loading modules...")
 
-        ReflectUtils.getReflects("${this.javaClass.`package`.name}.modules", Module::class.java)
+        ClassUtils.resolvePackage("${this.javaClass.`package`.name}.modules", Module::class.java)
             .forEach(this::registerModule)
 
         modules.forEach { it.onInitialize() }
