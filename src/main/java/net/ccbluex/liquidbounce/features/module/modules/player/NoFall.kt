@@ -33,12 +33,13 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Damage", "MotionFlag"), "SpoofGround")
+    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Damage", "MotionFlag", "Matrix", "MatrixPacket"), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
     private val minFallDistance = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
     private val flySpeed = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
@@ -58,6 +59,10 @@ class NoFall : Module() {
     private var currentMlgRotation: VecRotation? = null
     private var currentMlgItemIndex = 0
     private var currentMlgBlock: BlockPos? = null
+    private var matrixIsFall = false
+    private var matrixCanSpoof = false
+    private var matrixFallTicks = 0
+    private var matrixLastMotionY = 0.0
 
     override fun onEnable() {
         aac4Fakelag = false
@@ -69,6 +74,10 @@ class NoFall : Module() {
         aac5Timer = 0
         packet1Count = 0
         oldaacState = 0
+        matrixIsFall = false
+        matrixCanSpoof = false
+        matrixFallTicks = 0
+        matrixLastMotionY = 0.0
     }
 
     @EventTarget
@@ -95,7 +104,29 @@ class NoFall : Module() {
 
         when (modeValue.get().lowercase()) {
             "packet" -> {
-                if (mc.thePlayer.fallDistance > 2f) mc.netHandler.addToSendQueue(C03PacketPlayer(true))
+                if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3f){
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(true))
+                    mc.thePlayer.fallDistance = 0f
+                }
+            }
+            "matrixpacket" -> {
+//                mc.timer.timerSpeed = if(abs((FallingPlayer(mc.thePlayer).findCollision(100)?.y ?: 0) - mc.thePlayer.posY) > 3) {
+//                    (mc.timer.timerSpeed * 0.8f).coerceAtLeast(0.3f)
+//                } else { 1f }
+                if(mc.thePlayer.onGround) {
+                    mc.timer.timerSpeed = 1f
+                } else if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3f){
+                    mc.timer.timerSpeed = (mc.timer.timerSpeed * if(mc.timer.timerSpeed < 0.6) { 0.25f } else { 0.5f }).coerceAtLeast(0.2f)
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(false))
+                    mc.thePlayer.fallDistance = 0f
+                }
             }
             "cubecraft" -> {
                 if (mc.thePlayer.fallDistance > 2f) {
@@ -197,7 +228,7 @@ class NoFall : Module() {
             }
             "phase" -> {
                 if (mc.thePlayer.fallDistance > 3 + phaseOffsetValue.get()) {
-                    val fallPos = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.motionX, mc.thePlayer.motionY, mc.thePlayer.motionZ, mc.thePlayer.rotationYaw, mc.thePlayer.moveStrafing, mc.thePlayer.moveForward)
+                    val fallPos = FallingPlayer(mc.thePlayer)
                         .findCollision(5) ?: return
                     if (fallPos.y - mc.thePlayer.motionY / 20.0 < mc.thePlayer.posY) {
                         mc.timer.timerSpeed = 0.05f
@@ -241,6 +272,31 @@ class NoFall : Module() {
                 }
                 if (mc.thePlayer.onGround) {
                     packet1Count = 0
+                }
+            }
+            "matrix" -> {
+                if(matrixIsFall) {
+                    mc.thePlayer.motionX=0.0
+                    mc.thePlayer.jumpMovementFactor=0f
+                    mc.thePlayer.motionZ=0.0
+                    if(mc.thePlayer.onGround) matrixIsFall = false
+                }
+                if(mc.thePlayer.fallDistance-mc.thePlayer.motionY>3) {
+                    matrixIsFall = true
+                    if(matrixFallTicks==0) matrixLastMotionY=mc.thePlayer.motionY
+                    mc.thePlayer.motionY=0.0
+                    mc.thePlayer.motionX=0.0
+                    mc.thePlayer.jumpMovementFactor=0f
+                    mc.thePlayer.motionZ=0.0
+                    mc.thePlayer.fallDistance=3.2f
+                    if(matrixFallTicks in 8..9) matrixCanSpoof=true
+                    matrixFallTicks++
+                }
+                if(matrixFallTicks>12 && !mc.thePlayer.onGround) {
+                    mc.thePlayer.motionY=matrixLastMotionY
+                    mc.thePlayer.fallDistance = 0f
+                    matrixFallTicks=0
+                    matrixCanSpoof=false
                 }
             }
         }
@@ -292,7 +348,7 @@ class NoFall : Module() {
                 }
 
                 if (mc.thePlayer.fallDistance > minFallDistance.get()) {
-                    val fallingPlayer = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.motionX, mc.thePlayer.motionY, mc.thePlayer.motionZ, mc.thePlayer.rotationYaw, mc.thePlayer.moveStrafing, mc.thePlayer.moveForward)
+                    val fallingPlayer = FallingPlayer(mc.thePlayer)
 
                     val maxDist = mc.playerController.blockReachDistance + 1.5
 
@@ -387,6 +443,9 @@ class NoFall : Module() {
             } else if (mode.equals("Packet2", ignoreCase = true) && packetModify) {
                 packet.onGround = true
                 packetModify = false
+            } else if (mode.equals("Matrix", ignoreCase = true) && matrixCanSpoof) {
+                packet.onGround = true
+                matrixCanSpoof = false
             }
         }
     }
