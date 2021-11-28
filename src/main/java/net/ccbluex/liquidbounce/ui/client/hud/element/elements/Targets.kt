@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka"), "Rise")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris"), "Rise")
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide", "Zoom", "None"), "Slide")
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
@@ -104,6 +104,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "flux" -> drawFlux(prevTarget!!, nowAnimHP)
             "rise" -> drawRise(prevTarget!!, nowAnimHP)
             "zamorozka" -> drawZamorozka(prevTarget!!, nowAnimHP)
+            "arris" -> drawArris(prevTarget!!, nowAnimHP)
         }
 
         return getTBorder()
@@ -276,6 +277,35 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         RenderUtils.drawHead(target.skin, 2, 2, 16, 16)
     }
 
+    private fun drawArris(target: EntityLivingBase, nowAnimHP: Float) {
+        val font = fontValue.get()
+
+        val hp = decimalFormat.format(nowAnimHP)
+        val additionalWidth =
+            font.getStringWidth("${target.name}  ${hp} hp").coerceAtLeast(75)
+        RenderUtils.drawCircleRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
+
+        val hurtPercent = target.hurtPercent
+        val size = 30
+
+        // 受伤的红色效果
+//        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+        // 绘制头部图片
+        RenderUtils.quickDrawHead(target.skin, 5, 5, size, size)
+//        GL11.glColor4f(1f, 1f, 1f, 1f)
+
+        // info text
+        font.drawString(target.name, 40, 5, Color.WHITE.rgb)
+        "$hp hp".also {
+            font.drawString(it, 40 + additionalWidth - font.getStringWidth(it), 5, Color.LIGHT_GRAY.rgb)
+        }
+
+        // hp bar
+        val yPos = 5 + font.FONT_HEIGHT + 3f
+        RenderUtils.drawRect(40f, yPos, 40 + (nowAnimHP / target.maxHealth) * additionalWidth, yPos + 4, Color.GREEN.rgb)
+        RenderUtils.drawRect(40f, yPos + 9, 40 + (target.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
+    }
+
     private fun getTBorder(): Border? {
         return when (modeValue.get().lowercase()) {
             "novoline" -> Border(0F, 0F, 140F, 40F)
@@ -284,9 +314,9 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "flux" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
                 .coerceAtLeast(70)
                 .toFloat(), 34F)
-            "rise" -> Border(0F, 0F, 150F, 55F)
+            "rise" -> Border(0F, 0F, 150F, 50F)
             "zamorozka" -> Border(0F, 0F, 150F, 55F)
-            "exhibition" -> Border(0F, 0F, 140F, 45F)
+            "arris" -> Border(0F, 0F, 120F, 40F)
             else -> null
         }
     }
