@@ -38,6 +38,7 @@ import java.util.Map;
 
 import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glVertex2d;
 
 public final class RenderUtils extends MinecraftInstance {
     private static final Map<Integer, Boolean> glCapMap = new HashMap<>();
@@ -107,12 +108,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawCircle(float x, float y, float radius, int color) {
-        float alpha = (color >> 24 & 0xFF) / 255.0F;
-        float red = (color >> 16 & 0xFF) / 255.0F;
-        float green = (color >> 8 & 0xFF) / 255.0F;
-        float blue = (color & 0xFF) / 255.0F;
-
-        glColor4f(red, green, blue, alpha);
+        glColor(color);
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -170,28 +166,32 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glEnd();
     }
 
-    // TODO: USE GL_POLYGON
-    public static void drawCircleRect(float x, float y, float x1, float y1, float radius, int color){
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+    private static void quickPolygonCircle(float x, float y, float radius, int start, int end, int split) {
+        for(int i = end; i >= start; i-=split) {
+            glVertex2d(x + Math.sin(i * Math.PI / 180.0D) * radius, y + Math.cos(i * Math.PI / 180.0D) * radius);
+        }
+    }
+
+    public static void drawCircleRect(float x, float y, float x1, float y1, float radius, int color) {
         glColor(color);
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glPushMatrix();
+        glLineWidth(1F);
+        glBegin(GL_POLYGON);
 
-        // 圆角
-        quickRenderCircle(x1-radius,y1-radius,0,90,radius,radius);
-        quickRenderCircle(x+radius,y1-radius,90,180,radius,radius);
-        quickRenderCircle(x+radius,y+radius,180,270,radius,radius);
-        quickRenderCircle(x1-radius,y+radius,270,360,radius,radius);
+        quickPolygonCircle(x+radius,y+radius,radius,180,270,4);
+        quickPolygonCircle(x1-radius,y+radius, radius,90,180,4);
+        quickPolygonCircle(x1-radius,y1-radius,radius,0,90,4);
+        quickPolygonCircle(x+radius,y1-radius,radius,270,360,4);
 
-        // 矩形
-        quickDrawRect(x+radius,y+radius,x1-radius,y1-radius);
-        quickDrawRect(x,y+radius,x+radius,y1-radius);
-        quickDrawRect(x1-radius,y+radius,x1,y1-radius);
-        quickDrawRect(x+radius,y,x1-radius,y+radius);
-        quickDrawRect(x+radius,y1-radius,x1-radius,y1);
-
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
+        glEnd();
+        glPopMatrix();
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_LINE_SMOOTH);
+        glColor4f(1F, 1F, 1F, 1F);
     }
 
     public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
