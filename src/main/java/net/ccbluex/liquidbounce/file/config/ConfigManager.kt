@@ -5,12 +5,12 @@ import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.client.Target
 import net.ccbluex.liquidbounce.file.FileManager
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.value.*
 import org.lwjgl.input.Keyboard
-import org.reflections.Reflections
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -24,8 +24,8 @@ class ConfigManager {
     var configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
 
     init {
-        Reflections("${this.javaClass.`package`.name}.sections")
-            .getSubTypesOf(ConfigSection::class.java).forEach(this::registerSection)
+        ClassUtils.resolvePackage("${this.javaClass.`package`.name}.sections", ConfigSection::class.java)
+            .forEach(this::registerSection)
     }
 
     fun load(name: String, save: Boolean = true) {

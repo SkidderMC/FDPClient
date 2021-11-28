@@ -13,6 +13,7 @@ class VanillaFly : FlyMode("Vanilla") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
     private val kickBypassValue = BoolValue("${valuePrefix}KickBypass", false)
     private val keepAliveValue = BoolValue("${valuePrefix}KeepAlive", false) // old KeepAlive fly combined
+    private val noClipValue = BoolValue("${valuePrefix}NoClip", false)
 
     private var packets = 0
 
@@ -23,6 +24,9 @@ class VanillaFly : FlyMode("Vanilla") {
     override fun onUpdate(event: UpdateEvent) {
         if (keepAliveValue.get()) {
             mc.netHandler.addToSendQueue(C00PacketKeepAlive())
+        }
+        if (noClipValue.get()) {
+            mc.thePlayer.noClip = true
         }
 
         mc.thePlayer.capabilities.isFlying = false
