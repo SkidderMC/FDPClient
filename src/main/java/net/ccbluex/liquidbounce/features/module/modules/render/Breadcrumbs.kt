@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import org.lwjgl.opengl.GL11
@@ -33,6 +34,8 @@ class Breadcrumbs : Module() {
     private val fade = BoolValue("Fade", true)
     private val fadeTime = IntegerValue("FadeTime", 5, 1, 20)
     private val precision = IntegerValue("Precision", 1, 1, 20)
+    private val lineWidth = IntegerValue("LineWidth", 1, 1, 10).displayable { typeValue.equals("Line") }
+    private val sphereScale = FloatValue("SphereScale", 1f, 0.1f, 2f).displayable { typeValue.equals("Sphere") }
 
     private val points = mutableListOf<BreadcrumbPoint>()
     private var head = 0
@@ -66,7 +69,7 @@ class Breadcrumbs : Module() {
         mc.entityRenderer.disableLightmap()
         when(typeValue.get().lowercase()) {
             "line" -> {
-                GL11.glLineWidth(2F)
+                GL11.glLineWidth(lineWidth.get().toFloat())
                 GL11.glEnable(GL11.GL_LINE_SMOOTH)
                 GL11.glBegin(GL11.GL_LINE_STRIP)
             }
@@ -109,6 +112,7 @@ class Breadcrumbs : Module() {
                 "sphere" -> {
                     GL11.glPushMatrix()
                     GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
+                    GL11.glScalef(sphereScale.get(), sphereScale.get(), sphereScale.get())
                     GL11.glCallList(sphereList)
                     GL11.glPopMatrix()
                 }

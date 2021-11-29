@@ -39,7 +39,6 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
-import net.minecraft.util.Vec3
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
@@ -487,70 +486,6 @@ class KillAura : Module() {
                         drawPercent -= 1
                     }
                     drawPercent = EaseUtils.easeInOutQuad(drawPercent)
-                    GL11.glPushMatrix()
-                    GL11.glDisable(3553)
-                    GL11.glEnable(2848)
-                    GL11.glEnable(2881)
-                    GL11.glEnable(2832)
-                    GL11.glEnable(3042)
-                    GL11.glBlendFunc(770, 771)
-                    GL11.glHint(3154, 4354)
-                    GL11.glHint(3155, 4354)
-                    GL11.glHint(3153, 4354)
-                    GL11.glDisable(2929)
-                    GL11.glDepthMask(false)
-
-                    val bb = it.entityBoundingBox
-                    val radius = (bb.maxX - bb.minX) + 0.3
-                    val height = bb.maxY - bb.minY
-                    val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-                    val y = (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
-                    val z = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
-                    mc.entityRenderer.disableLightmap()
-                    GL11.glLineWidth((radius * 5f).toFloat())
-                    GL11.glBegin(3)
-                    for (i in 0..360 step 5) {
-                        RenderUtils.glColor(Color.getHSBColor(if (i <180) { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (i / 180f) } else { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f))
-                        GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
-                    }
-                    GL11.glEnd()
-
-                    GL11.glDepthMask(true)
-                    GL11.glEnable(2929)
-                    GL11.glDisable(2848)
-                    GL11.glDisable(2881)
-                    GL11.glEnable(2832)
-                    GL11.glEnable(3553)
-                    GL11.glPopMatrix()
-                }
-                "jello" -> {
-                    val drawTime = (System.currentTimeMillis() % 2000).toInt()
-                    val drawMode = drawTime> 1000
-                    var drawPercent = drawTime / 1000.0
-                    // true when goes up
-                    if (!drawMode) {
-                        drawPercent = 1 - drawPercent
-                    } else {
-                        drawPercent -= 1
-                    }
-                    drawPercent = EaseUtils.easeInOutQuad(drawPercent)
-                    val points = mutableListOf<Vec3>()
-                    val bb = it.entityBoundingBox
-                    val radius = bb.maxX - bb.minX
-                    val height = bb.maxY - bb.minY
-                    val posX = it.lastTickPosX + (it.posX - it.lastTickPosX) * mc.timer.renderPartialTicks
-                    var posY = it.lastTickPosY + (it.posY - it.lastTickPosY) * mc.timer.renderPartialTicks
-                    if (drawMode) {
-                        posY -= 0.5
-                    } else {
-                        posY += 0.5
-                    }
-                    val posZ = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * mc.timer.renderPartialTicks
-                    for (i in 0..360 step 7) {
-                        points.add(Vec3(posX - sin(i * Math.PI / 180F) * radius, posY + height * drawPercent, posZ + cos(i * Math.PI / 180F) * radius))
-                    }
-                    points.add(points[0])
-                    // draw
                     mc.entityRenderer.disableLightmap()
                     GL11.glPushMatrix()
                     GL11.glDisable(GL11.GL_TEXTURE_2D)
@@ -558,29 +493,85 @@ class KillAura : Module() {
                     GL11.glEnable(GL11.GL_LINE_SMOOTH)
                     GL11.glEnable(GL11.GL_BLEND)
                     GL11.glDisable(GL11.GL_DEPTH_TEST)
+
+                    val bb = it.entityBoundingBox
+                    val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
+                    val height = bb.maxY - bb.minY
+                    val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                    val y = (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
+                    val z = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    mc.entityRenderer.disableLightmap()
+                    GL11.glLineWidth((radius * 8f).toFloat())
                     GL11.glBegin(GL11.GL_LINE_STRIP)
-                    val baseMove = (if (drawPercent> 0.5) { 1 - drawPercent } else { drawPercent }) * 2
-                    val min = (height / 60) * 20 * (1 - baseMove) * (if (drawMode) { -1 } else { 1 })
-                    for (i in 0..20) {
-                        var moveFace = (height / 60F) * i * baseMove
-                        if (drawMode) {
-                            moveFace = -moveFace
-                        }
-                        val firstPoint = points[0]
-                        GL11.glVertex3d(
-                            firstPoint.xCoord - mc.renderManager.viewerPosX, firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY,
-                            firstPoint.zCoord - mc.renderManager.viewerPosZ
-                        )
-                        GL11.glColor4f(1F, 1F, 1F, 0.7F * (i / 20F))
-                        for (vec3 in points) {
-                            GL11.glVertex3d(
-                                vec3.xCoord - mc.renderManager.viewerPosX, vec3.yCoord - moveFace - min - mc.renderManager.viewerPosY,
-                                vec3.zCoord - mc.renderManager.viewerPosZ
-                            )
-                        }
-                        GL11.glColor4f(0F, 0F, 0F, 0F)
+                    for (i in 0..360 step 10) {
+                        RenderUtils.glColor(Color.getHSBColor(if (i <180) { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (i / 180f) } else { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f))
+                        GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
                     }
                     GL11.glEnd()
+
+                    GL11.glEnable(GL11.GL_DEPTH_TEST)
+                    GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                    GL11.glDisable(GL11.GL_BLEND)
+                    GL11.glEnable(GL11.GL_TEXTURE_2D)
+                    GL11.glPopMatrix()
+                }
+                "jello" -> {
+                    val everyTime = 3000
+                    val drawTime = (System.currentTimeMillis() % everyTime).toInt()
+                    val drawMode = drawTime > (everyTime/2)
+                    var drawPercent = drawTime / (everyTime/2.0)
+                    // true when goes up
+                    if (!drawMode) {
+                        drawPercent = 1 - drawPercent
+                    } else {
+                        drawPercent -= 1
+                    }
+                    drawPercent = EaseUtils.easeInOutQuad(drawPercent)
+                    mc.entityRenderer.disableLightmap()
+                    GL11.glPushMatrix()
+                    GL11.glDisable(GL11.GL_TEXTURE_2D)
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                    GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                    GL11.glEnable(GL11.GL_BLEND)
+                    GL11.glDisable(GL11.GL_DEPTH_TEST)
+
+                    val bb = it.entityBoundingBox
+                    val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
+                    val height = bb.maxY - bb.minY
+                    val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                    val y = (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
+                    val z = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    mc.entityRenderer.disableLightmap()
+                    GL11.glLineWidth((radius * 15f).toFloat())
+                    GL11.glBegin(GL11.GL_LINE_STRIP)
+                    for (i in 0..360 step 5) {
+                        RenderUtils.glColor(Color.getHSBColor(if (i <180) { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (i / 180f) } else { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f))
+                        GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
+                    }
+                    GL11.glEnd()
+
+                    val eased = (height / 3) * (if (drawPercent > 0.5) { 1 - drawPercent } else { drawPercent }) * (if (drawMode) { -1 } else { 1 })
+                    GL11.glDisable(GL11.GL_CULL_FACE)
+                    GL11.glShadeModel(7425)
+                    for (i in 0..360 step 5) {
+                        val color = Color.getHSBColor(if (i <180) { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (i / 180f) } else { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f)
+                        val x1 = x - sin(i * Math.PI / 180F) * radius
+                        val z1 = z + cos(i * Math.PI / 180F) * radius
+                        val x2 = x - sin((i - 5) * Math.PI / 180F) * radius
+                        val z2 = z + cos((i - 5) * Math.PI / 180F) * radius
+                        GL11.glBegin(GL11.GL_QUADS)
+                        RenderUtils.glColor(color, 0f)
+                        GL11.glVertex3d(x1, y + eased, z1)
+                        GL11.glVertex3d(x2, y + eased, z2)
+                        RenderUtils.glColor(color)
+                        GL11.glVertex3d(x2, y, z2)
+                        GL11.glVertex3d(x1, y, z1)
+                        GL11.glEnd()
+                    }
+                    GL11.glEnable(GL11.GL_CULL_FACE)
+                    GL11.glShadeModel(7424)
+
+                    GL11.glColor4f(1f, 1f, 1f, 1f)
                     GL11.glEnable(GL11.GL_DEPTH_TEST)
                     GL11.glDisable(GL11.GL_LINE_SMOOTH)
                     GL11.glDisable(GL11.GL_BLEND)
@@ -595,6 +586,7 @@ class KillAura : Module() {
                         (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + it.height * 1.1,
                         it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ)
                     GL11.glRotatef(-it.width, 0.0f, 1.0f, 0.0f)
+                    GL11.glRotatef((mc.thePlayer.ticksExisted + mc.timer.renderPartialTicks) * 5, 0f, 1f, 0f)
                     RenderUtils.glColor(if (it.hurtTime <= 0) Color(80, 255, 80) else Color(255, 0, 0))
                     RenderUtils.enableSmoothLine(1.5F)
                     val c = Cylinder()
