@@ -915,11 +915,30 @@ public final class RenderUtils extends MinecraftInstance {
         float f1 = 1.0F / tileHeight;
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldrenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         worldrenderer.pos(x, y + height, 0.0D).tex(u * f, (v + (float) vHeight) * f1).endVertex();
         worldrenderer.pos(x + width, y + height, 0.0D).tex((u + (float) uWidth) * f, (v + (float) vHeight) * f1).endVertex();
         worldrenderer.pos(x + width, y, 0.0D).tex((u + (float) uWidth) * f, v * f1).endVertex();
         worldrenderer.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
+        tessellator.draw();
+    }
+
+    public static void drawScaledCustomSizeModalCircle(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight) {
+        float f = 1.0F / tileWidth;
+        float f1 = 1.0F / tileHeight;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(GL_POLYGON, DefaultVertexFormats.POSITION_TEX);
+        float xRadius = width / 2f;
+        float yRadius = height / 2f;
+        float uRadius = (((u + (float) uWidth) * f) - (u * f)) / 2f;
+        float vRadius = (((v + (float) vHeight) * f1) - (v * f1)) / 2f;
+        for(int i = 0; i <= 360; i+=10) {
+            double xPosOffset = Math.sin(i * Math.PI / 180.0D);
+            double yPosOffset = Math.cos(i * Math.PI / 180.0D);
+            worldrenderer.pos(x + xRadius + xPosOffset * xRadius, y + yRadius + yPosOffset * yRadius, 0)
+                    .tex(u * f + uRadius + xPosOffset * uRadius, v * f1 + vRadius + yPosOffset * vRadius).endVertex();
+        }
         tessellator.draw();
     }
 
