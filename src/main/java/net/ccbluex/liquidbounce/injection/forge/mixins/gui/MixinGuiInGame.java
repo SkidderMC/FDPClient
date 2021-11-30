@@ -12,13 +12,17 @@ import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.utils.ClassUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,10 +32,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.awt.*;
 
 @Mixin(GuiIngame.class)
-public abstract class MixinGuiInGame {
+public abstract class MixinGuiInGame extends MixinGui {
 
     @Shadow
     protected abstract void renderHotbarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer player);
+
+    @Shadow @Final
+    protected static ResourceLocation widgetsTexPath;
 
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
     private void renderScoreboard(CallbackInfo callbackInfo) {
@@ -39,50 +46,51 @@ public abstract class MixinGuiInGame {
             callbackInfo.cancel();
     }
 
-    @Inject(method = "renderTooltip", at = @At("HEAD"), cancellable = true)
-    private void renderTooltip(ScaledResolution sr, float partialTicks, CallbackInfo callbackInfo) {
+    /**
+     * @author liulihaocai
+     */
+    @Overwrite
+    protected void renderTooltip(ScaledResolution sr, float partialTicks) {
         final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
 
-        if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer && hud.getState() && hud.getBetterHotbarValue().get()) {
-            EntityPlayer entityPlayer = (EntityPlayer) Minecraft.getMinecraft().getRenderViewEntity();
-
-            int middleScreen = sr.getScaledWidth() / 2;
-            int hotbarAlpha=hud.getHotbarAlphaValue().get();
+        if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
+            boolean canBetterHotbar = hud.getState() && hud.getBetterHotbarValue().get();
+            Minecraft mc = Minecraft.getMinecraft();
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-            GuiIngame.drawRect(middleScreen - 91, sr.getScaledHeight() - 22, middleScreen + entityPlayer.inventory.currentItem * 20 - 91, sr.getScaledHeight(), ColorUtils.reAlpha(Color.BLACK,hotbarAlpha).getRGB());
-            GuiIngame.drawRect(middleScreen + entityPlayer.inventory.currentItem * 20 - 70, sr.getScaledHeight() - 22, middleScreen + 90, sr.getScaledHeight(), ColorUtils.reAlpha(Color.BLACK,hotbarAlpha).getRGB());
-            GuiIngame.drawRect(middleScreen - 91, sr.getScaledHeight() - 24, middleScreen + entityPlayer.inventory.currentItem * 20 - 91, sr.getScaledHeight() - 22, ColorUtils.reAlpha(new Color(255,127,80),hotbarAlpha).getRGB());
-            GuiIngame.drawRect(middleScreen + entityPlayer.inventory.currentItem * 20 - 70, sr.getScaledHeight() - 24, middleScreen + 90, sr.getScaledHeight() - 22, ColorUtils.reAlpha(new Color(255,127,80),hotbarAlpha).getRGB());
-            GuiIngame.drawRect(middleScreen + entityPlayer.inventory.currentItem * 20 - 91, sr.getScaledHeight() - 20, middleScreen + entityPlayer.inventory.currentItem * 20 - 70, sr.getScaledHeight(), ColorUtils.reAlpha(Color.WHITE,hotbarAlpha).getRGB());
-            GuiIngame.drawRect(middleScreen + entityPlayer.inventory.currentItem * 20 - 91, sr.getScaledHeight() - 24, middleScreen + entityPlayer.inventory.currentItem * 20 - 70, sr.getScaledHeight()-20, ColorUtils.reAlpha(new Color(0,245,255),hotbarAlpha).getRGB());
-
+            mc.getTextureManager().bindTexture(widgetsTexPath);
+            EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
+            int i = sr.getScaledWidth() / 2;
+            float f = this.zLevel;
+            this.zLevel = -90.0F;
+            int itemX = i - 91 + HUD.INSTANCE.getEasePos(entityplayer.inventory.currentItem * 20);
+            if(canBetterHotbar) {
+                RenderUtils.drawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HUD.INSTANCE.getHotbarAlphaValue().get()));
+                RenderUtils.drawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.rainbow());
+                RenderUtils.drawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HUD.INSTANCE.getHotbarAlphaValue().get()));
+            } else {
+                this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
+                this.drawTexturedModalRect(itemX - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+            }
+            this.zLevel = f;
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             RenderHelper.enableGUIStandardItemLighting();
 
-            for(int j = 0; j < 9; ++j) {
+            for (int j = 0; j < 9; ++j)
+            {
                 int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
                 int l = sr.getScaledHeight() - 16 - 3;
-                this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
+                this.renderHotbarItem(j, k, l, partialTicks, entityplayer);
             }
 
             RenderHelper.disableStandardItemLighting();
             GlStateManager.disableRescaleNormal();
             GlStateManager.disableBlend();
-
-            LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
-            callbackInfo.cancel();
         }
-    }
 
-    @Inject(method = "renderTooltip", at = @At("RETURN"))
-    private void renderTooltipPost(ScaledResolution sr, float partialTicks, CallbackInfo callbackInfo) {
-        if (!ClassUtils.hasClass("net.labymod.api.LabyModAPI")) {
-            LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
-        }
+        LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
     }
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
