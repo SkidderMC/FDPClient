@@ -534,6 +534,9 @@ class KillAura : Module() {
                     GL11.glEnable(GL11.GL_LINE_SMOOTH)
                     GL11.glEnable(GL11.GL_BLEND)
                     GL11.glDisable(GL11.GL_DEPTH_TEST)
+                    GL11.glDisable(GL11.GL_CULL_FACE)
+                    GL11.glShadeModel(7425)
+                    mc.entityRenderer.disableLightmap()
 
                     val bb = it.entityBoundingBox
                     val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
@@ -541,19 +544,8 @@ class KillAura : Module() {
                     val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                     val y = (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
                     val z = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
-                    mc.entityRenderer.disableLightmap()
-                    GL11.glLineWidth((radius * 15f).toFloat())
-                    GL11.glBegin(GL11.GL_LINE_STRIP)
-                    for (i in 0..360 step 5) {
-                        RenderUtils.glColor(Color.getHSBColor(if (i <180) { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (i / 180f) } else { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f))
-                        GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
-                    }
-                    GL11.glEnd()
-
                     val eased = (height / 3) * (if (drawPercent > 0.5) { 1 - drawPercent } else { drawPercent }) * (if (drawMode) { -1 } else { 1 })
-                    GL11.glDisable(GL11.GL_CULL_FACE)
-                    GL11.glShadeModel(7425)
-                    for (i in 0..360 step 5) {
+                    for (i in 5..360 step 5) {
                         val color = Color.getHSBColor(if (i <180) { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (i / 180f) } else { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f)
                         val x1 = x - sin(i * Math.PI / 180F) * radius
                         val z1 = z + cos(i * Math.PI / 180F) * radius
@@ -563,14 +555,14 @@ class KillAura : Module() {
                         RenderUtils.glColor(color, 0f)
                         GL11.glVertex3d(x1, y + eased, z1)
                         GL11.glVertex3d(x2, y + eased, z2)
-                        RenderUtils.glColor(color)
+                        RenderUtils.glColor(color, 150f)
                         GL11.glVertex3d(x2, y, z2)
                         GL11.glVertex3d(x1, y, z1)
                         GL11.glEnd()
                     }
+
                     GL11.glEnable(GL11.GL_CULL_FACE)
                     GL11.glShadeModel(7424)
-
                     GL11.glColor4f(1f, 1f, 1f, 1f)
                     GL11.glEnable(GL11.GL_DEPTH_TEST)
                     GL11.glDisable(GL11.GL_LINE_SMOOTH)

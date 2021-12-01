@@ -6,11 +6,13 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.cos
@@ -23,7 +25,9 @@ class ChinaHat : Module() {
     private val radiusValue = FloatValue("Radius", 0.7f, 0.3f, 1.5f)
     private val yPosValue = FloatValue("YPos", 0f, -1f, 1f)
     private val rotateSpeedValue = FloatValue("RotateSpeed", 2f, 0f, 5f)
-    private val onlyThirdPersonValue = BoolValue("OnlyThirdPerson", true)
+    private val drawThePlayer = BoolValue("DrawThePlayer", true)
+    private val onlyThirdPersonValue = BoolValue("OnlyThirdPerson", true).displayable { drawThePlayer.get() }
+    private val drawTargets = BoolValue("DrawTargets", true)
     private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbow.get() }
     private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbow.get() }
     private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbow.get() }
@@ -32,19 +36,33 @@ class ChinaHat : Module() {
 
     @EventTarget
     fun onRender3d(event: Render3DEvent) {
-        if(onlyThirdPersonValue.get() && mc.gameSettings.thirdPersonView == 0)
-            return
+        if(drawThePlayer.get() && !(onlyThirdPersonValue.get() && mc.gameSettings.thirdPersonView == 0)) {
+            drawChinaHatFor(mc.thePlayer)
+        }
+        if(drawTargets.get()) {
+            mc.theWorld.loadedEntityList.forEach {
+                if(EntityUtils.isSelected(it, true)) {
+                    drawChinaHatFor(it as EntityLivingBase)
+                }
+            }
+        }
+    }
 
+    private fun drawChinaHatFor(entity: EntityLivingBase) {
         GL11.glPushMatrix()
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glDisable(GL11.GL_DEPTH_TEST)
         GL11.glDepthMask(false)
-        GL11.glColor4f(colorRedValue.get() / 255f, colorGreenValue.get() / 255f, colorBlueValue.get() / 255f, colorAlphaValue.get() / 255f)
-        GL11.glTranslatef(0f, mc.thePlayer.height + yPosValue.get(), 0f)
         GL11.glDisable(GL11.GL_CULL_FACE)
-        GL11.glRotatef((mc.thePlayer.ticksExisted + mc.timer.renderPartialTicks) * rotateSpeedValue.get(), 0f, 1f, 0f)
+        if(!colorRainbow.get()) {
+            GL11.glColor4f(colorRedValue.get() / 255f, colorGreenValue.get() / 255f, colorBlueValue.get() / 255f, colorAlphaValue.get() / 255f)
+        }
+        GL11.glTranslated(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX,
+            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks - mc.renderManager.renderPosY + entity.height + yPosValue.get(),
+            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks - mc.renderManager.renderPosZ)
+        GL11.glRotatef((entity.ticksExisted + mc.timer.renderPartialTicks) * rotateSpeedValue.get(), 0f, 1f, 0f)
 
         GL11.glBegin(GL11.GL_TRIANGLE_FAN)
         GL11.glVertex3d(0.0, heightValue.get().toDouble(), 0.0)
