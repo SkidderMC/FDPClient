@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.utils.render.Animation
+import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -20,7 +22,11 @@ import net.minecraft.util.ResourceLocation
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HUD : Module() {
     val betterHotbarValue = BoolValue("BetterHotbar", true)
-    val hotbarAlphaValue = IntegerValue("HotbarAlpha", 150, 0, 255).displayable { betterHotbarValue.get() }
+    val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255).displayable { betterHotbarValue.get() }
+    val hotbarEaseValue = BoolValue("HotbarEase", true)
+    private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
+    private val hotbarAnimTypeValue = EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
+    private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
     val inventoryParticle = BoolValue("InventoryParticle", false)
     private val blurValue = BoolValue("Blur", false)
     val fontChatValue = BoolValue("FontChat", false)
@@ -32,6 +38,29 @@ object HUD : Module() {
     val rainbowSaturation = FloatValue("RainbowSaturation", 0.7f, 0f, 1f)
     val rainbowBrightness = FloatValue("RainbowBrightness", 1f, 0f, 1f)
     val rainbowSpeed = IntegerValue("RainbowSpeed", 1500, 500, 7000)
+    val arraylistXAxisAnimSpeedValue = IntegerValue("ArraylistXAxisAnimSpeed", 10, 5, 20)
+    val arraylistXAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistXAxisAnimType")
+    val arraylistXAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistXAxisHotbarAnimOrder")
+    val arraylistYAxisAnimSpeedValue = IntegerValue("ArraylistYAxisAnimSpeed", 10, 5, 20)
+    val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
+    val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder")
+
+    private var easeAnimation: Animation? = null
+    private var easingValue = 0
+        get() {
+            if (easeAnimation != null) {
+                field = easeAnimation!!.value.toInt()
+                if (easeAnimation!!.state == Animation.EnumAnimationState.STOPPED) {
+                    easeAnimation = null
+                }
+            }
+            return field
+        }
+        set(value) {
+            if (easeAnimation == null || (easeAnimation != null && easeAnimation!!.to != value.toDouble())) {
+                easeAnimation = Animation(EaseUtils.EnumEasingType.valueOf(hotbarAnimTypeValue.get()), EaseUtils.EnumEasingOrder.valueOf(hotbarAnimOrderValue.get()), field.toDouble(), value.toDouble(), hotbarAnimSpeedValue.get() * 30L).start()
+            }
+        }
 
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
@@ -60,5 +89,11 @@ object HUD : Module() {
     @EventTarget
     fun onKey(event: KeyEvent) {
         LiquidBounce.hud.handleKey('a', event.key)
+    }
+
+    fun getEasePos(x: Int): Int {
+        if(!state || !hotbarEaseValue.get()) return x
+        easingValue = x
+        return easingValue
     }
 }

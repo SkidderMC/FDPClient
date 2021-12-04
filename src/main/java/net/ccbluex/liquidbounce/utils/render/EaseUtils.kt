@@ -158,36 +158,6 @@ object EaseUtils {
         return if (x == 0.0) { 0.0 } else { if (x == 1.0) { 1.0 } else { if (x < 0.5) { -(2.0.pow(20 * x - 10) * sin((20 * x - 11.125) * c5)) / 2 } else { (2.0.pow(-20 * x + 10) * sin((20 * x - 11.125) * c5)) / 2 + 1 } } }
     }
 
-    @JvmStatic
-    fun easeInBounce(x: Double): Double {
-        return 1 - easeOutBounce(1 - x)
-    }
-
-    @JvmStatic
-    fun easeOutBounce(animeX: Double): Double {
-        var x = animeX
-        val n1 = 7.5625
-        val d1 = 2.75
-
-        if (x < 1 / d1) {
-            return n1 * x * x
-        } else if (x < 2 / d1) {
-            x -= 1.5
-            return n1 * (x / d1) * x + 0.75
-        } else if (x < 2.5 / d1) {
-            x -= 2.25
-            return n1 * (x / d1) * x + 0.9375
-        } else {
-            x -= 2.625
-            return n1 * (x / d1) * x + 0.984375
-        }
-    }
-
-    @JvmStatic
-    fun easeInOutBounce(x: Double): Double {
-        return if (x < 0.5) { (1 - easeOutBounce(1 - 2 * x)) / 2 } else { (1 + easeOutBounce(2 * x - 1)) / 2 }
-    }
-
     enum class EnumEasingType {
         NONE,
         SINE,
@@ -198,8 +168,7 @@ object EaseUtils {
         EXPO,
         CIRC,
         BACK,
-        ELASTIC,
-        BOUNCE;
+        ELASTIC;
 
         val friendlyName = name.substring(0, 1).uppercase() + name.substring(1, name.length).lowercase()
     }

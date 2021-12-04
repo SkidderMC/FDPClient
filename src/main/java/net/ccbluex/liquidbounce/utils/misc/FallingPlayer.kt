@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.utils.misc
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.*
 
 class FallingPlayer(
@@ -18,8 +20,21 @@ class FallingPlayer(
     private val yaw: Float,
     private var strafe: Float,
     private var forward: Float,
-    private val jumpMovementFactor: Float = mc.thePlayer.jumpMovementFactor
+    private val jumpMovementFactor: Float
 ) : MinecraftInstance() {
+    constructor(player: EntityPlayer) : this(
+        player.posX,
+        player.posY,
+        player.posZ,
+        player.motionX,
+        player.motionY,
+        player.motionZ,
+        player.rotationYaw,
+        player.moveStrafing,
+        player.moveForward,
+        player.jumpMovementFactor
+    )
+
     private fun calculateForTick() {
         strafe *= 0.98f
         forward *= 0.98f

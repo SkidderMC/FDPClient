@@ -55,6 +55,7 @@
     "world.MixinWorldClient"
   ],
   "client": [
+    "gui.MixinGui",
     "gui.MixinGuiKeyBindingList",
     "gui.MixinGuiSlot",
     "render.MixinModelPlayer"
