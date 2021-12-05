@@ -39,7 +39,7 @@ object NotificationUtils {
     }
 
     fun displayTray(title: String, text: String) {
-        trayIcon.displayMessage(title, text, TrayIcon.MessageType.INFO)
+        displayTray(title, text, TrayIcon.MessageType.INFO)
     }
 
     fun displayTray(title: String, text: String, messageType: TrayIcon.MessageType) {
