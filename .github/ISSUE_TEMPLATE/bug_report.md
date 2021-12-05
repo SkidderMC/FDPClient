@@ -11,17 +11,17 @@ Please note that we do not provide support for clients other than Forge.
 We will not fix compatibility issues with other clients.
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+<A clear and concise description of what the bug is.>
 
 **To Reproduce**
-Steps to reproduce the behavior (how did you get this bug to occur):
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+<Steps to reproduce the behavior (how did you get this bug to occur):>
+1. 
+2. 
+3. 
+4. 
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
+<A clear and concise description of what you expected to happen.>
 
 **Screenshots/Video**
 If applicable, add screenshots, or a video to help explain your problem.
@@ -41,7 +41,7 @@ If your game crashed, please paste your crash report below.
 
 **Other Installed Mods**
 If you have any other mods installed, please list them here along with their version number.
-- Example Mod 1.0
+- <Example Mod 1.0>
 
 **Additional info**
-Add any other context about the problem here.
+<Add any other context about the problem here.>
