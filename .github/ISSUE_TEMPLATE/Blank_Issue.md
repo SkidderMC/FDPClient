@@ -1,8 +1,7 @@
 ---
 name: Blank
-about:
-title: 
-labels: 
+about: nope
+title: <Title Here>
 assignees: ''
 
 ---
