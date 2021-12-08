@@ -68,7 +68,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 if (accounts.isEmpty()) break;
 
                 final MinecraftAccount minecraftAccount = accounts.get(new Random().nextInt(accounts.size()));
-                GuiAltManager.login(minecraftAccount);
+                GuiAltManager.Companion.login(minecraftAccount);
                 ServerUtils.connectToLastServer();
                 break;
             case 4:

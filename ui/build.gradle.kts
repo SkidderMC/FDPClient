@@ -39,8 +39,8 @@ tasks.getByName("jar").doLast {
         UILib("fonts/roboto/LICENSE.txt", java.net.URL("https://cdn.jsdelivr.net/npm/mdui@1.0.2/dist/fonts/roboto/LICENSE.txt")),
         UILib("jquery/jquery.min.js", java.net.URL("https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js")),
         UILib("jquery/LICENSE.txt", java.net.URL("https://cdn.jsdelivr.net/npm/jquery@2.2.4/LICENSE.txt")),
-        UILib("swal/swal.min.js", java.net.URL("https://unpkg.com/sweetalert/dist/sweetalert.min.js")),
-        UILib("swal/LICENSE.md", java.net.URL("https://unpkg.com/sweetalert/LICENSE.md")))
+        UILib("swal/swal.min.js", java.net.URL("https://cdn.jsdelivr.net/npm/sweetalert@2.1.2/dist/sweetalert.min.js")),
+        UILib("swal/LICENSE.md", java.net.URL("https://cdn.jsdelivr.net/npm/sweetalert@2.1.2/LICENSE.md")))
 
     // write the resource file into a zip
     val zipFile = File(buildDir, "tmp/resources.zip")
