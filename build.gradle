@@ -13,6 +13,7 @@ repositories {
     mavenCentral()
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
+    maven { url = "https://getfdp.today/repo/" }
 }
 
 version = "2.0.0"
@@ -60,6 +61,10 @@ dependencies {
     include "com.labymedia:ultralight-java-base:0.4.6"
     include "com.labymedia:ultralight-java-databind:0.4.6"
     include "com.github.unlegitmc:fuckpcl:2.0"
+    include("me.liuli:Elixir:1.1.0") {
+        exclude module: "kotlin-stdlib"
+        exclude module: "authlib"
+    }
 
     include project(":ui")
 

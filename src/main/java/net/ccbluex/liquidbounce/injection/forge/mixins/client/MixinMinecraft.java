@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.NotificationUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -49,8 +48,6 @@ import java.nio.file.AccessDeniedException;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
-
-    public NotificationUtils Notification = NotificationUtils.INSTANCE;
 
     @Shadow
     public GuiScreen currentScreen;
@@ -117,9 +114,6 @@ public abstract class MixinMinecraft {
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
         ClientUtils.INSTANCE.setTitle();
-        if (Notification.isSuppored()) {
-            Notification.displayTray(LiquidBounce.CLIENT_NAME, "Minecraft " + LiquidBounce.MINECRAFT_VERSION + " is starting");
-        }
     }
 
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))
