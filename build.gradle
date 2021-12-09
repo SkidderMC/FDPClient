@@ -61,7 +61,7 @@ dependencies {
     include "com.labymedia:ultralight-java-base:0.4.6"
     include "com.labymedia:ultralight-java-databind:0.4.6"
     include "com.github.unlegitmc:fuckpcl:2.0"
-    include("me.liuli:Elixir:1.1.0") {
+    include("me.liuli:Elixir:1.2.1") {
         exclude module: "kotlin-stdlib"
         exclude module: "authlib"
     }

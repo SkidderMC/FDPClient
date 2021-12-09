@@ -5,10 +5,10 @@
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager.sub
 
+import me.liuli.elixir.manage.AccountSerializer
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.elements.GuiPasswordField
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.login.MinecraftAccount
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
@@ -43,6 +43,9 @@ class GuiDirectLogin(private val prevGui: GuiScreen) : GuiScreen() {
         if (password.text.isEmpty() && !password.isFocused) {
             drawCenteredString(Fonts.font40, "§7%ui.alt.loginPassword%", width / 2 - 74, 91, 0xffffff)
         }
+        "Add ms@ before your real username can login microsoft account without browser!".also {
+            mc.fontRendererObj.drawString(it, width - mc.fontRendererObj.getStringWidth(it), height - mc.fontRendererObj.FONT_HEIGHT, 0xffffff)
+        }
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -57,11 +60,7 @@ class GuiDirectLogin(private val prevGui: GuiScreen) : GuiScreen() {
                 }
                 Thread {
                     status = "§a%ui.alt.loggingIn%"
-                    status = if (password.text.isEmpty()) GuiAltManager.login(
-                        MinecraftAccount(
-                            username.text
-                        )
-                    ) else GuiAltManager.login(MinecraftAccount(username.text, password.text))
+                    status = GuiAltManager.login(AccountSerializer.accountInstance(username.text, password.text))
                 }.start()
             }
             2 -> {

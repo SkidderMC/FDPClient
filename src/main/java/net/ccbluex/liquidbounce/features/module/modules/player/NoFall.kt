@@ -33,7 +33,6 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.util.*
 import kotlin.concurrent.schedule
-import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.sqrt
 

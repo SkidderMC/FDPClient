@@ -5,23 +5,21 @@
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager
 
+import me.liuli.elixir.account.MinecraftAccount
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiAdd
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiDirectLogin
+import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiMicrosoftLoginPending
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.i18n.LanguageManager.getAndFormat
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.login.LoginUtils
-import net.ccbluex.liquidbounce.utils.login.LoginUtils.LoginResult
-import net.ccbluex.liquidbounce.utils.login.LoginUtils.login
-import net.ccbluex.liquidbounce.utils.login.LoginUtils.loginCracked
-import net.ccbluex.liquidbounce.utils.login.MinecraftAccount
-import net.ccbluex.liquidbounce.utils.login.UserUtils.isValidTokenOffline
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiSlot
 import net.minecraft.client.gui.GuiTextField
+import net.minecraft.util.Session
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
@@ -33,29 +31,19 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
     override fun initGui() {
         altsList = GuiList(this)
         altsList.registerScrollButtons(7, 8)
-        var index = -1
-        for (i in LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.indices) {
-            val minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts[i]
-            if (( // When password is empty, the account is cracked
-                        minecraftAccount.password == null || minecraftAccount.password.isEmpty()) && minecraftAccount.name != null && minecraftAccount.name == mc.session.username // When the account is a premium account match the IGN
-                || minecraftAccount.accountName != null && minecraftAccount.accountName == mc.session.username
-            ) {
-                index = i
-                break
-            }
-        }
-        altsList.elementClicked(index, false, 0, 0)
-        altsList.scrollBy(index * altsList.slotHeight)
+        altsList.elementClicked(-1, false, 0, 0)
+        altsList.scrollBy(-1 * altsList.slotHeight)
         val j = 22
         buttonList.add(GuiButton(1, width - 80, j + 24, 70, 20, "%ui.alt.add%"))
         buttonList.add(GuiButton(2, width - 80, j + 24 * 2, 70, 20, "%ui.alt.remove%"))
         buttonList.add(GuiButton(0, width - 80, height - 65, 70, 20, "%ui.back%"))
         buttonList.add(GuiButton(3, 5, j + 24, 90, 20, "%ui.alt.login%"))
-        buttonList.add(GuiButton(4, 5, j + 24 * 2, 90, 20, "%ui.disconnect.randomAlt%"))
-        buttonList.add(GuiButton(89, 5, j + 24 * 3, 90, 20, "%ui.disconnect.randomOffline%"))
-        buttonList.add(GuiButton(6, 5, j + 24 * 4, 90, 20, "%ui.alt.directLogin%"))
+        buttonList.add(GuiButton(6, 5, j + 24 * 2, 90, 20, "%ui.alt.directLogin%"))
+        buttonList.add(GuiButton(11, 5, j + 24 * 3, 90, 20, "%ui.alt.msLogin%"))
+        buttonList.add(GuiButton(4, 5, j + 24 * 4, 90, 20, "%ui.disconnect.randomAlt%"))
+        buttonList.add(GuiButton(89, 5, j + 24 * 5, 90, 20, "%ui.disconnect.randomOffline%"))
         randomAltField.xPosition = 5
-        randomAltField.yPosition = j + 24 * 5
+        randomAltField.yPosition = j + 24 * 6
         randomAltField.width = 90
         randomAltField.height = 20
     }
@@ -64,10 +52,10 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         drawBackground(0)
         altsList.drawScreen(mouseX, mouseY, partialTicks)
         Fonts.font40.drawCenteredString("%ui.altmanager%", (width / 2).toFloat(), 6f, 0xffffff)
-        Fonts.font35.drawCenteredString(getAndFormat("ui.alt.alts", LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size), (width / 2).toFloat(), 18f, 0xffffff)
+        Fonts.font35.drawCenteredString(LanguageManager.getAndFormat("ui.alt.alts", LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size), (width / 2).toFloat(), 18f, 0xffffff)
         Fonts.font35.drawCenteredString(status, (width / 2).toFloat(), 32f, 0xffffff)
-        Fonts.font35.drawStringWithShadow(getAndFormat("ui.alt.username", mc.getSession().username), 6f, 6f, 0xffffff)
-        Fonts.font35.drawStringWithShadow(getAndFormat("ui.alt.type", if (isValidTokenOffline(mc.getSession().token)) "%ui.alt.type.premium%" else "%ui.alt.type.cracked%"), 6f, 15f, 0xffffff)
+        Fonts.font35.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.username", mc.getSession().username), 6f, 6f, 0xffffff)
+        Fonts.font35.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.type", if (mc.getSession().token.length >= 32) "%ui.alt.type.premium%" else "%ui.alt.type.cracked%"), 6f, 15f, 0xffffff)
         randomAltField.drawTextBox()
         if (randomAltField.text.isEmpty() && !randomAltField.isFocused) {
             drawCenteredString(Fonts.font40, "§7%ui.alt.randomAltField%", width / 2 - 55, 66, 0xffffff)
@@ -112,6 +100,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             }
             6 -> mc.displayGuiScreen(GuiDirectLogin(this))
             89 -> Thread { LoginUtils.randomCracked() }.start()
+            11 -> mc.displayGuiScreen(GuiMicrosoftLoginPending(this))
         }
     }
 
@@ -197,20 +186,8 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
         override fun drawSlot(id: Int, x: Int, y: Int, var4: Int, var5: Int, var6: Int) {
             val minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts[id]
-            Fonts.font40.drawCenteredString(
-                if (minecraftAccount.accountName == null || minecraftAccount.accountName.isEmpty()) minecraftAccount.name else minecraftAccount.accountName,
-                (width / 2).toFloat(),
-                (y + 2).toFloat(),
-                Color.WHITE.rgb,
-                true
-            )
-            Fonts.font40.drawCenteredString(
-                if (minecraftAccount.isCracked) "%ui.alt.type.cracked%" else if (minecraftAccount.accountName == null) "%ui.alt.type.premium%" else minecraftAccount.name,
-                (width / 2).toFloat(),
-                (y + 15).toFloat(),
-                if (minecraftAccount.isCracked) Color.GRAY.rgb else if (minecraftAccount.accountName == null) Color.GREEN.rgb else Color.LIGHT_GRAY.rgb,
-                true
-            )
+            Fonts.font40.drawCenteredString(minecraftAccount.name, width / 2f, y + 2f, Color.WHITE.rgb, true)
+            Fonts.font40.drawCenteredString(minecraftAccount.type, width / 2f, y + 15f, Color.LIGHT_GRAY.rgb, true)
         }
 
         override fun drawBackground() {}
@@ -224,22 +201,15 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             randomAltField.maxStringLength = Int.MAX_VALUE
         }
 
-        fun login(minecraftAccount: MinecraftAccount): String {
-            if (minecraftAccount.isCracked) {
-                loginCracked(minecraftAccount.name)
-                return getAndFormat("ui.alt.nameChanged", minecraftAccount.name)
+        fun login(account: MinecraftAccount): String {
+            return try {
+                val mc = Minecraft.getMinecraft()
+                mc.session = account.session.let { Session(it.username, it.uuid, it.token, it.type) }
+                LanguageManager.getAndFormat("ui.alt.nameChanged", mc.session.username)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                LanguageManager.getAndFormat("ui.alt.error", e.message ?: "UNKNOWN")
             }
-            val result = login(minecraftAccount.name, minecraftAccount.password)
-            if (result === LoginResult.LOGGED) {
-                val userName = Minecraft.getMinecraft().getSession().username
-                minecraftAccount.accountName = userName
-                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig)
-                return getAndFormat("ui.alt.nameChanged", userName)
-            }
-            if (result === LoginResult.WRONG_PASSWORD) return "§c%ui.alt.wrongPassword%"
-            if (result === LoginResult.NO_CONTACT) return "§c%ui.alt.noContact%"
-            if (result === LoginResult.INVALID_ACCOUNT_DATA) return "§c%ui.alt.invalidData%"
-            return if (result === LoginResult.MIGRATED) "§c%ui.alt.migrated%" else ""
         }
     }
 }
