@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
-import net.ccbluex.liquidbounce.utils.login.UserUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -183,7 +182,7 @@ public class MetricsLite extends MinecraftInstance {
         data.addProperty("serverUUID", serverUUID);
 
         data.addProperty("playerAmount", playerAmount);
-        data.addProperty("onlineMode", UserUtils.INSTANCE.isValidTokenOffline(mc.getSession().getToken()));
+        data.addProperty("onlineMode", mc.getSession().getToken().length() >= 32);
         data.addProperty("bukkitVersion", minecraftVersion);
         data.addProperty("bukkitName", softwareName);
 

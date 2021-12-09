@@ -39,15 +39,13 @@ ui.keybind.search=搜索...
 
 ui.alt.idle=等待...
 ui.alt.nameChanged=§c你的名字现在是§8%s§c了
-ui.alt.wrongPassword=错误的密码
-ui.alt.noContact=无法连接至验证服务器
-ui.alt.invalidData=错误的用户名/密码
-ui.alt.migrated=帐号已被迁移
+ui.alt.error=错误: %s
 ui.alt.login=登录
 ui.alt.add=添加
 ui.alt.remove=移除
 ui.alt.import=导入
 ui.alt.directLogin=直接登录
+ui.alt.msLogin=微软登录
 ui.alt.copy=拷贝
 ui.alt.alts=%d个帐号
 ui.alt.username=§7用户名: §a %s
