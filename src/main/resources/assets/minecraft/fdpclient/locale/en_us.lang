@@ -39,15 +39,13 @@ ui.keybind.search=Search...
 
 ui.alt.idle=Idle...
 ui.alt.nameChanged=§cYour name is now §8 %s §c.
-ui.alt.wrongPassword=Wrong password.
-ui.alt.noContact=Cannot contact authentication server.
-ui.alt.invalidData=Invaild username or password.
-ui.alt.migrated=Account migrated.
+ui.alt.error=Occurred an error: %s
 ui.alt.login=Login
 ui.alt.add=Add
 ui.alt.remove=Remove
 ui.alt.import=Import
 ui.alt.directLogin=Direct Login
+ui.alt.msLogin=Microsoft Login
 ui.alt.copy=Copy
 ui.alt.alts=%d Alts
 ui.alt.username=§7User: §a %s

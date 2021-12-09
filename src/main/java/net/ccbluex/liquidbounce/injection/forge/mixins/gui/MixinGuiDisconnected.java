@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
+import me.liuli.elixir.account.MinecraftAccount;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.features.special.AutoReconnect;
@@ -13,7 +14,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.login.LoginUtils;
-import net.ccbluex.liquidbounce.utils.login.MinecraftAccount;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;
 import net.minecraft.client.multiplayer.ServerData;
@@ -68,7 +68,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 if (accounts.isEmpty()) break;
 
                 final MinecraftAccount minecraftAccount = accounts.get(new Random().nextInt(accounts.size()));
-                GuiAltManager.login(minecraftAccount);
+                GuiAltManager.Companion.login(minecraftAccount);
                 ServerUtils.connectToLastServer();
                 break;
             case 4:

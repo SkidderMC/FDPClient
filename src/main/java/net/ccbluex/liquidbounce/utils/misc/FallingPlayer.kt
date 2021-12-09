@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.utils.misc
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.*
 

@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
-import net.ccbluex.liquidbounce.utils.ClassUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
