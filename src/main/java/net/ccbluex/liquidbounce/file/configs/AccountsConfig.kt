@@ -5,38 +5,51 @@
  */
 package net.ccbluex.liquidbounce.file.configs
 
-import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonParser
+import com.google.gson.JsonSyntaxException
+import me.liuli.elixir.account.MinecraftAccount
+import me.liuli.elixir.manage.AccountSerializer
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager
-import net.ccbluex.liquidbounce.utils.login.MinecraftAccount
 import java.io.File
 
 class AccountsConfig(file: File) : FileConfig(file) {
     val altManagerMinecraftAccounts: MutableList<MinecraftAccount> = ArrayList()
+
     override fun loadConfig(config: String) {
-        val accountList = Gson().fromJson<List<*>>(config, MutableList::class.java) as MutableList<String>? ?: return
-        altManagerMinecraftAccounts.clear()
-        for (account in accountList) {
-            val information = account.split(":").toTypedArray()
-            if (information.size >= 3) {
-                altManagerMinecraftAccounts.add(MinecraftAccount(information[0], information[1], information[2]))
-            } else if (information.size == 2) {
-                altManagerMinecraftAccounts.add(MinecraftAccount(information[0], information[1]))
+        val json = try {
+            JsonParser().parse(config).asJsonArray
+        } catch (e: JsonSyntaxException) {
+            // convert old config
+            JsonArray().also {
+                config.split("\n").forEach { str ->
+                    val information = str.split(":")
+                    it.add(AccountSerializer.toJson(AccountSerializer.accountInstance(information[0], information[1])))
+                }
+            }
+        }
+
+        json.forEach { jsonElement ->
+            if(!jsonElement.isJsonObject) {
+                // not JsonObject it must be string
+                val information = jsonElement.asString.split(":")
+                AccountSerializer.accountInstance(information[0], information[1])
             } else {
-                altManagerMinecraftAccounts.add(MinecraftAccount(information[0]))
+                AccountSerializer.fromJson(jsonElement.asJsonObject)
+            }.also {
+                altManagerMinecraftAccounts.add(it)
             }
         }
     }
 
     override fun saveConfig(): String {
-        val accountList: MutableList<String> = ArrayList()
+        val json = JsonArray()
 
-        for (minecraftAccount in altManagerMinecraftAccounts) {
-            accountList.add(minecraftAccount.name + ":" +
-                    (if (minecraftAccount.password == null) { "" } else { minecraftAccount.password }) + ":" +
-                    if (minecraftAccount.accountName == null) { "" } else { minecraftAccount.accountName })
+        altManagerMinecraftAccounts.forEach {
+            json.add(AccountSerializer.toJson(it))
         }
 
-        return FileManager.PRETTY_GSON.toJson(accountList)
+        return FileManager.PRETTY_GSON.toJson(json)
     }
 }
