@@ -9,7 +9,6 @@
     "block.MixinBlockAnvil",
     "block.MixinBlockModelRenderer",
     "block.MixinBlockSoulSand",
-    "client.MixinIChatComponentSerializer",
     "client.MixinLanguageManager",
     "client.MixinMinecraft",
     "client.MixinResourcePackRepository",
