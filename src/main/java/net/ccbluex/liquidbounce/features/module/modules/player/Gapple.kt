@@ -56,10 +56,11 @@ class Gapple : Module() {
             "legitauto" -> {
                 if (eating == -1) {
                     val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
+                    if(gappleInHotbar == -1) return
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
                     mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                     eating = 0
-                } else if (eating> 35) {
+                } else if (eating > 35) {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     timer.reset()
                 }
