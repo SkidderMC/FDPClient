@@ -57,7 +57,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         }
 
     private fun getHealth(entity: EntityLivingBase?): Float {
-        return if (entity == null || entity.isDead) { 0f } else { entity.health }
+        return entity?.health ?: 0f
     }
 
     override fun drawElement(partialTicks: Float): Border? {
@@ -68,8 +68,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         if (mc.currentScreen is GuiHudDesigner) {
             target = mc.thePlayer
-        }
-        if (target != null) {
+        } else if (target != null) {
             prevTarget = target
         }
         prevTarget ?: return getTBorder()
@@ -204,8 +203,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         // Healthbar
         val barLength = 143 - 7f
         RenderUtils.drawCircleRect(7f, 45f, 143f, 50f, 2.5f, Color(0, 0, 0, 70).rgb)
-        RenderUtils.drawCircleRect(7f, 45f, 7 + ((easingHP / target.maxHealth) * barLength).coerceAtLeast(5f), 50f, 2.5f, ColorUtils.rainbowWithAlpha(90).rgb)
-        RenderUtils.drawCircleRect(7f, 45f, 7 + ((target.health / target.maxHealth) * barLength).coerceAtLeast(5f), 50f, 2.5f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawCircleRect(7f, 45f, 7 + ((easingHP / target.maxHealth) * barLength), 50f, 2.5f, ColorUtils.rainbowWithAlpha(90).rgb)
+        RenderUtils.drawCircleRect(7f, 45f, 7 + ((target.health / target.maxHealth) * barLength), 50f, 2.5f, ColorUtils.rainbow().rgb)
 
         // Info
         RenderUtils.drawCircleRect(43f, 15f - font.FONT_HEIGHT, 143f, 17f, (font.FONT_HEIGHT + 1) * 0.45f, Color(0, 0, 0, 70).rgb)

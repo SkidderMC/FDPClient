@@ -165,9 +165,9 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glEnd();
     }
 
-    private static void quickPolygonCircle(float x, float y, float radius, int start, int end, int split) {
+    private static void quickPolygonCircle(float x, float y, float xRadius, float yRadius, int start, int end, int split) {
         for(int i = end; i >= start; i-=split) {
-            glVertex2d(x + Math.sin(i * Math.PI / 180.0D) * radius, y + Math.cos(i * Math.PI / 180.0D) * radius);
+            glVertex2d(x + Math.sin(i * Math.PI / 180.0D) * xRadius, y + Math.cos(i * Math.PI / 180.0D) * yRadius);
         }
     }
 
@@ -182,10 +182,12 @@ public final class RenderUtils extends MinecraftInstance {
         glLineWidth(1F);
         glBegin(GL_POLYGON);
 
-        quickPolygonCircle(x+radius,y+radius,radius,180,270,4);
-        quickPolygonCircle(x1-radius,y+radius, radius,90,180,4);
-        quickPolygonCircle(x1-radius,y1-radius,radius,0,90,4);
-        quickPolygonCircle(x+radius,y1-radius,radius,270,360,4);
+        float xRadius = (float) Math.min((x1 - x) * 0.5, radius);
+        float yRadius = (float) Math.min((y1 - y) * 0.5, radius);
+        quickPolygonCircle(x+xRadius,y+yRadius, xRadius, yRadius,180,270,4);
+        quickPolygonCircle(x1-xRadius,y+yRadius, xRadius, yRadius,90,180,4);
+        quickPolygonCircle(x1-xRadius,y1-yRadius, xRadius, yRadius,0,90,4);
+        quickPolygonCircle(x+xRadius,y1-yRadius, xRadius, yRadius,270,360,4);
 
         glEnd();
         glPopMatrix();
