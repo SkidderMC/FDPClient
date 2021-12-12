@@ -32,22 +32,22 @@
 
     <div class="mdui-valign mainmenu page" style="display: none!important;opacity: 0;height: 100%;margin-top:20px">
         <div class="modules">
-            <div id="bg-tooltip" mdui-tooltip="{content: 'Background'}" class="fixedIcon" onclick="GuiMainMenu.action(3)">
+            <div id="bg-tooltip" mdui-tooltip="{content: 'Background'}" class="fixedIcon" onclick="goAction(3)">
                 <span><i class="mdui-icon material-icons">image</i></span>
             </div>
-            <div id="mods-tooltip" mdui-tooltip="{content: 'Mods'}" class="fixedIcon" onclick="GuiMainMenu.action(4)">
+            <div id="mods-tooltip" mdui-tooltip="{content: 'Mods'}" class="fixedIcon" onclick="goAction(4)">
                 <span><i class="mdui-icon material-icons">view_module</i></span>
             </div>
-            <div id="setting-tooltip" mdui-tooltip="{content: 'Setting'}" class="fixedIcon" onclick="GuiMainMenu.action(5)">
+            <div id="setting-tooltip" mdui-tooltip="{content: 'Setting'}" class="fixedIcon" onclick="goAction(5)">
                 <span><i class="mdui-icon material-icons">settings</i></span>
             </div>
-            <div id="quit-tooltip" mdui-tooltip="{content: 'Quit'}" class="fixedIcon" onclick="GuiMainMenu.action(6)">
+            <div id="quit-tooltip" mdui-tooltip="{content: 'Quit'}" class="fixedIcon" onclick="goAction(6)">
                 <span><i class="mdui-icon material-icons">exit_to_app</i></span>
             </div>
         </div>
 
         <div class="changelog">
-            <div id="changelog-tooltip" mdui-tooltip="{content: 'ChangeLog'}" event="log" onclick="show()" mdui-dialog="{target: '#log'}" class="fixedIcon">
+            <div id="changelog-tooltip" mdui-tooltip="{content: 'ChangeLog'}" onclick="popUpdateInfo()" class="fixedIcon">
                 <span><i class="mdui-icon material-icons">update</i></span>
             </div>
         </div>
@@ -59,13 +59,13 @@
             <h1 style="opacity: 1;text-align: center;font-size: 45px;color:rgba(255,255,255,0.8);font-weight: 400;text-shadow: 0 0 8px rgba(0,0,0,0.07);">
                 FDPClient
             </h1>
-            <div class="button" onclick="GuiMainMenu.action(0)">
+            <div class="button" onclick="goAction(0)">
                 <i class="mdui-icon material-icons" style="margin-bottom: 1px;margin-right: 25px;">person</i> <span style="margin-right: 25px;" id="single-button">SinglePlayer</span>
             </div>
-            <div class="button" onclick="GuiMainMenu.action(1)">
+            <div class="button" onclick="goAction(1)">
                 <i class="mdui-icon material-icons" style="margin-bottom: 1px;margin-right: 25px;">group</i> <span style="margin-right: 25px;" id="multi-button">MultiPlayer</span>
             </div>
-            <div class="button" onclick="GuiMainMenu.action(2)">
+            <div class="button" onclick="goAction(2)">
                 <i class="mdui-icon material-icons" style="margin-bottom: 1px;margin-right: 25px;">account_circle</i> <span style="margin-right: 25px;" id="alt-button">AltManager</span>
             </div>
         </div>
@@ -198,7 +198,14 @@
         document.onselectstart = function() {
             return false
         }
-
+        function goAction(i){
+                $(".mainmenu").css("opacity", "0");
+                $(".mainmenu").css("margin-top", "-50px");
+            setTimeout(function() {
+                $(".mainmenu").css("display", "none");
+                GuiMainMenu.action(i);
+            }, 450);
+        }
         function initPageElements() {
             $(".username").html($(".username").html().replace("%version%", LiquidBounce.CLIENT_VERSION));
 
@@ -291,7 +298,7 @@
             min-width: 200px;
             width: 250px;
             margin: 15px;
-            border: solid 1px rgba(255, 255, 255, 0.3);
+            border: solid 1px rgba(255, 255, 255, 0.4);
             border-radius: 8px;
             box-shadow: 0 0 5px rgba(50, 50, 50, 0.08);
             line-height: 45px;
@@ -299,17 +306,17 @@
             bottom: 0px;
             position: relative;
             text-align: center;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.7);
         }
         
         .button:hover {
             bottom: 5px;
-            border: solid 1px rgba(255, 255, 255, 0.3);
+            border: solid 1px rgba(255, 255, 255, 0.5);
             border-radius: 9px;
             box-shadow: 0 0 8px rgba(50, 50, 50, 0.19);
             line-height: 45px;
             text-align: center;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.9);
         }
         
         .page {
