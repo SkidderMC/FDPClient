@@ -46,10 +46,11 @@ class AutoReport : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (modeValue.equals("All") && delayTimer.hasTimePassed(allDelayValue.get().toLong())) {
-            for (entity in mc.theWorld.loadedEntityList) {
-                if (isTarget(entity)) {
-                    if (doReport(entity as EntityPlayer) && allDelayValue.get() != 0) {
-                        break
+            mc.netHandler.playerInfoMap.forEach {
+                val name = it.gameProfile.name
+                if(name != mc.session.username && !EntityUtils.isFriend(name)) {
+                    if (doReport(name) && allDelayValue.get() != 0) {
+                        return@forEach
                     }
                 }
             }
@@ -64,9 +65,9 @@ class AutoReport : Module() {
         }
     }
 
-    fun doReport(player: EntityPlayer): Boolean {
-        val name = player.name
+    fun doReport(player: EntityPlayer) = doReport(player.name)
 
+    fun doReport(name: String): Boolean {
         // pass this if reported
         if (reported.contains(name)) {
             return false
