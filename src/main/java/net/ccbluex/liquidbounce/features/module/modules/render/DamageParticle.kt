@@ -14,10 +14,12 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 import java.math.BigDecimal
 import java.util.*
 import kotlin.math.abs
@@ -90,7 +92,7 @@ class DamageParticle : Module() {
                     particle.str,
                     (-(mc.fontRendererObj.getStringWidth(particle.str) / 2)).toFloat(),
                     (-(mc.fontRendererObj.FONT_HEIGHT - 1)).toFloat(),
-                    if (colorRainbow.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
+                    (if (colorRainbow.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())).rgb
                 )
                 GL11.glColor4f(187.0f, 255.0f, 255.0f, 1.0f)
                 GL11.glDepthMask(true)
