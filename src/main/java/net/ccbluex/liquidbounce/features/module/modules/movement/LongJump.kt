@@ -73,14 +73,14 @@ class LongJump : Module() {
         airTicks = 0
         balance = 0
         hasJumped = false
+        damageStat = false
         if (modeValue.equals("ncpdamage")) {
             x = mc.thePlayer.posX
             y = mc.thePlayer.posY
             z = mc.thePlayer.posZ
             if(ncpdInstantValue.get()) {
-                damageStat = true
+                balance = 114514
             } else {
-                damageStat = false
                 LiquidBounce.hud.addNotification(Notification(name, "Wait for damage...", NotifyType.SUCCESS, jumpYPosArr.size * 4 * 50))
             }
         }
@@ -102,7 +102,7 @@ class LongJump : Module() {
         if (modeValue.equals("ncpdamage")) {
             if (!damageStat) {
                 mc.thePlayer.setPosition(x, y, z)
-                if (balance> jumpYPosArr.size * 4) {
+                if (balance > jumpYPosArr.size * 4) {
                     repeat(4) {
                         jumpYPosArr.forEach {
                             PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y + it, z, false))
