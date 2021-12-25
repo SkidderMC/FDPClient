@@ -24,6 +24,7 @@ class ClipFly : FlyMode("Clip") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        mc.thePlayer.onGround = false
         mc.timer.timerSpeed = 0.7f
         mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionY = 0.0
