@@ -6,6 +6,7 @@ import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ServerUtils
+import net.minecraft.client.Minecraft
 import org.json.JSONObject
 import java.time.OffsetDateTime
 import kotlin.concurrent.thread
@@ -43,7 +44,7 @@ object DiscordRPC {
         builder.setLargeImage("cfb8fe2fe9169dc68f7f8c1236b885")
         builder.setDetails(LiquidBounce.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
-            builder.setState(if(it.equals("idling", true)) "Idling" else "Playing on $it")
+            builder.setState(if(it.equals("idling", true)) "Idling" else "Playing on $it with ${Minecraft.getMinecraft().session.username}")
         }
 
         // Check ipc client is connected and send rpc
