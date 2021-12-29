@@ -235,6 +235,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
         // 绘制头部图片
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
+        //TODO: Skin Cache
         GL11.glPopMatrix()
 
         font.drawString("Name ${target.name}", 40, 11, Color.WHITE.rgb)
@@ -260,6 +261,22 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glColor4f(1f, 1f, 1f, 1f)
 
         font.drawString(decimalFormat.format(easingHP), stopPos + 5, 43 - font.FONT_HEIGHT / 2, Color.WHITE.rgb)
+    }
+    
+    private fun designRisePraticle() {
+        /*
+            SpawnDelay
+            FadeInTime
+            FadeOutTime
+            Motion
+            MotionTime
+            MotionDecrease
+            Position
+            Colour
+            Size
+            
+            some fancy ideas
+        */
     }
 
     private fun drawFlux(target: EntityLivingBase) {
