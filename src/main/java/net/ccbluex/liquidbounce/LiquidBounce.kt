@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.CombatManager
+import net.ccbluex.liquidbounce.features.special.DiscordRPC
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.MetricsLite
@@ -182,6 +183,12 @@ object LiquidBounce {
 
         fileManager.loadConfigs(fileManager.hudConfig, fileManager.xrayConfig)
 
+        try {
+            DiscordRPC.run()
+        } catch (e: Throwable) {
+            ClientUtils.logError("Failed to load DiscordRPC.", e)
+        }
+
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
     }
 
@@ -222,6 +229,11 @@ object LiquidBounce {
             dynamicLaunchOptions.forEach {
                 it.stop()
             }
+        }
+        try {
+            DiscordRPC.stop()
+        } catch (e: Throwable) {
+            ClientUtils.logError("Failed to shutdown DiscordRPC.", e)
         }
     }
 }
