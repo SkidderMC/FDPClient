@@ -123,7 +123,7 @@ class NoSlow : Module() {
                 "aac" -> {
                     if (mc.thePlayer.ticksExisted % 3 == 0) {
                         sendPacket(event, true, false, false, 0, false)
-                    } else {
+                    } else if (mc.thePlayer.ticksExisted % 3 == 1) {
                         sendPacket(event, false, true, false, 0, false)
                     }
                 }
@@ -146,7 +146,7 @@ class NoSlow : Module() {
 
                 "watchdog" -> {
                     if (mc.thePlayer.ticksExisted % 2 == 0) {
-                        sendPacket(event, true, false, false, 50, true)
+                        sendPacket(event, true, false, true, 50, true)
                     } else {
                         sendPacket(event, false, true, false, 0, true, true)
                     }
