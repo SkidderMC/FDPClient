@@ -83,10 +83,8 @@ open class Module : MinecraftInstance(), Listenable {
         triggerType = moduleInfo.triggerType
     }
 
-    fun onLoad() {
-        if (this !is ScriptModule) {
-            localizedName = "%module.$name.name%"
-        }
+    open fun onLoad() {
+        localizedName = "%module.$name.name%"
     }
 
     // Current state of module
