@@ -30,7 +30,7 @@ class Step : Module() {
      * OPTIONS
      */
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", /* "TimerJump",*/ "NCP", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0", "Spartan", "Rewinside"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", /* "TimerJump",*/ "NCP", "NCPNew", "MotionNCP", "OldNCP", "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0", "Spartan", "Rewinside"), "NCP")
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
     private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") || modeValue.equals("TimerJump") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
@@ -50,6 +50,7 @@ class Step : Module() {
     private var spartanSwitch = false
     private var isAACStep = false
     var wasTimer = false
+    var lastOnGround = false
 
     private val timer = MSTimer()
 
@@ -60,20 +61,26 @@ class Step : Module() {
         mc.thePlayer.stepHeight = 0.6F
         if (wasTimer) mc.timer.timerSpeed = 1.0F
         wasTimer = false
+        lastOnGround = mc.thePlayer.onGround
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (modeValue.equals("AAC4.4.0") && !(mc.thePlayer.isCollidedHorizontally&&mc.thePlayer.onGround)) {
+        if ((modeValue.equals("AAC4.4.0") || modeValue.equals("NCPNew")) && !(mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround && lastOnGround)) {
             mc.thePlayer.stepHeight = 0.6F
-        } else if (modeValue.equals("AAC4.4.0")) mc.thePlayer.stepHeight = 2.0F
+        }
+        
         if (wasTimer) {
             wasTimer = false
-            mc.thePlayer.motionX *= 0.92
-            mc.thePlayer.motionZ *= 0.92
+            if(modeValue.equals("AAC4.4.0")) {
+                mc.thePlayer.motionX *= 0.913
+                mc.thePlayer.motionZ *= 0.913
+            }
             mc.timer.timerSpeed = 1.0F
         }
         val mode = modeValue.get()
+        
+        lastOnGround = mc.thePlayer.onGround
 
         // Motion steps
         when {
@@ -231,12 +238,6 @@ class Step : Module() {
 
             // Set step height
             val height = heightValue.get()
-            if (mode.equals("AAC4.4.0", ignoreCase = true)) {
-                // chat("setStepHeight")
-            } else {
-                mc.thePlayer.stepHeight = height
-                event.stepHeight = height
-            }
 
             // Detect possible step
             if (event.stepHeight > 0.6F) {
@@ -245,9 +246,17 @@ class Step : Module() {
                 stepY = mc.thePlayer.posY
                 stepZ = mc.thePlayer.posZ
             }
+            
+            if (!mode.equals("AAC4.4.0", ignoreCase = true)) {
+                mc.thePlayer.stepHeight = height
+                event.stepHeight = height
+            }
+            
         } else {
             if (!isStep) { // Check if step
                 return
+            } else {
+                isStep = false
             }
 
             if (mc.thePlayer.entityBoundingBox.minY - stepY > 0.6) { // Check if full block step
@@ -255,7 +264,7 @@ class Step : Module() {
                     wasTimer = true
                     mc.timer.timerSpeed = timerValue.get()
                     if (timerDynValue.get()) {
-                        mc.timer.timerSpeed = (mc.timer.timerSpeed / sqrt(mc.thePlayer.entityBoundingBox.minY - stepY)).toFloat()
+                        mc.timer.timerSpeed = (mc.timer.timerSpeed / Math.sqrt(mc.thePlayer.entityBoundingBox.minY - stepY)).toFloat()
                     }
                 }
                 when {
@@ -280,7 +289,8 @@ class Step : Module() {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + stpPacket[i], stepZ, false))
                                 }
-                                mc.thePlayer.motionX = mc.thePlayer.motionZ = 0
+                                mc.thePlayer.motionX = 0.0
+                                mc.thePlayer.motionZ = 0.0
                             }
                             
                             rstepHeight <= 2.019 && rstepHeight > 1.869 -> {
@@ -289,7 +299,8 @@ class Step : Module() {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + stpPacket[i], stepZ, false))
                                 }
-                                mc.thePlayer.motionX = mc.thePlayer.motionZ = 0
+                                mc.thePlayer.motionX = 0.0
+                                mc.thePlayer.motionZ = 0.0
                             }
                             
                             rstepHeight <= 1.869 && rstepHeight > 1.5 -> {
@@ -298,7 +309,8 @@ class Step : Module() {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + stpPacket[i], stepZ, false))
                                 }
-                                mc.thePlayer.motionX = mc.thePlayer.motionZ = 0
+                                mc.thePlayer.motionX = 0.0
+                                mc.thePlayer.motionZ = 0.0
                             }
                             
                             rstepHeight <= 1.5 && rstepHeight > 1.015 -> {
