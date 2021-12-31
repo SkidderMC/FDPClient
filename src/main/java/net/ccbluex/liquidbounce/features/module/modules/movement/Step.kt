@@ -285,9 +285,9 @@ class Step : Module() {
                         when {
                             rstepHeight > 2.019 -> {
                                 val stpPacket = arrayOf(0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869, 2.019, 1.919)
-                                for(i in stpPacket) {
+                                stpPacket.forEach {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                                        stepY + stpPacket[i], stepZ, false))
+                                        stepY + it, stepZ, false))
                                 }
                                 mc.thePlayer.motionX = 0.0
                                 mc.thePlayer.motionZ = 0.0
@@ -295,9 +295,9 @@ class Step : Module() {
                             
                             rstepHeight <= 2.019 && rstepHeight > 1.869 -> {
                                 val stpPacket = arrayOf(0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869)
-                                for(i in stpPacket) {
+                                stpPacket.forEach {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                                        stepY + stpPacket[i], stepZ, false))
+                                        stepY + it, stepZ, false))
                                 }
                                 mc.thePlayer.motionX = 0.0
                                 mc.thePlayer.motionZ = 0.0
@@ -305,9 +305,9 @@ class Step : Module() {
                             
                             rstepHeight <= 1.869 && rstepHeight > 1.5 -> {
                                 val stpPacket = arrayOf(0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652)
-                                for(i in stpPacket) {
+                                stpPacket.forEach {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                                        stepY + stpPacket[i], stepZ, false))
+                                        stepY + it, stepZ, false))
                                 }
                                 mc.thePlayer.motionX = 0.0
                                 mc.thePlayer.motionZ = 0.0
@@ -315,25 +315,25 @@ class Step : Module() {
                             
                             rstepHeight <= 1.5 && rstepHeight > 1.015 -> {
                                 val stpPacket = arrayOf(0.42, 0.7532, 1.01, 1.093, 1.015)
-                                for(i in stpPacket) {
+                                stpPacket.forEach {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                                        stepY + stpPacket[i], stepZ, false))
+                                        stepY + it, stepZ, false))
                                 }
                             }
                             
                             rstepHeight <= 1.015 && rstepHeight > 0.875 -> {
                                 val stpPacket = arrayOf(0.41999998688698, 0.7531999805212)
-                                for(i in stpPacket) {
+                                stpPacket.forEach {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                                        stepY + stpPacket[i], stepZ, false))
+                                        stepY + it, stepZ, false))
                                 }
                             }
                             
                             rstepHeight <= 0.875 && rstepHeight > 0.6 -> {
                                 val stpPacket = arrayOf(0.39, 0.6938)
-                                for(i in stpPacket) {
+                                stpPacket.forEach {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
-                                        stepY + stpPacket[i], stepZ, false))
+                                        stepY + it, stepZ, false))
                                 }
                             }
                         }
