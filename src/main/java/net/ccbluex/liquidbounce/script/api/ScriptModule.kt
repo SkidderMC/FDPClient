@@ -48,6 +48,10 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
         }
     }
 
+    override fun onLoad() {
+        // do nothing
+    }
+
     override val values: List<Value<*>>
         get() {
             return _values.values.toList()
