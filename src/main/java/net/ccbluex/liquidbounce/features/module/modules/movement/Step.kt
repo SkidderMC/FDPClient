@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.stats.StatList
 import net.minecraft.util.MathHelper
@@ -33,6 +34,8 @@ class Step : Module() {
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
     private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") || modeValue.equals("TimerJump") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
+    private val timerValue = FloatValue("Timer", 1F, 0.05F, 1F)
+    private val timerDynValue = BoolValue("UseDynamicTimer", false)
 
     /**
      * VALUES
@@ -248,6 +251,13 @@ class Step : Module() {
             }
 
             if (mc.thePlayer.entityBoundingBox.minY - stepY > 0.6) { // Check if full block step
+                if (timerValue.get()<1.0) {
+                    wasTimer = true
+                    mc.timer.timerSpeed = timerValue.get()
+                    if (timerDynValue.get()) {
+                        mc.timer.timerSpeed = (mc.timer.timerSpeed / sqrt(mc.thePlayer.entityBoundingBox.minY - stepY)).toFloat()
+                    }
+                }
                 when {
                     mode.equals("NCP", ignoreCase = true) || mode.equals("OldAAC", ignoreCase = true) -> {
                         fakeJump()
@@ -257,6 +267,64 @@ class Step : Module() {
                             stepY + 0.41999998688698, stepZ, false))
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                             stepY + 0.7531999805212, stepZ, false))
+                        timer.reset()
+                    }
+                    
+                    mode.equals("NCPNew", ignoreCase = true) -> {
+                        val rstepHeight = mc.thePlayer.entityBoundingBox.minY - stepY
+                        fakeJump()
+                        when {
+                            rstepHeight > 2.019 -> {
+                                val stpPacket = arrayOf(0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869, 2.019, 1.919)
+                                for(i in stpPacket) {
+                                    mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                        stepY + stpPacket[i], stepZ, false))
+                                }
+                                mc.thePlayer.motionX = mc.thePlayer.motionZ = 0
+                            }
+                            
+                            rstepHeight <= 2.019 && rstepHeight > 1.869 -> {
+                                val stpPacket = arrayOf(0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869)
+                                for(i in stpPacket) {
+                                    mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                        stepY + stpPacket[i], stepZ, false))
+                                }
+                                mc.thePlayer.motionX = mc.thePlayer.motionZ = 0
+                            }
+                            
+                            rstepHeight <= 1.869 && rstepHeight > 1.5 -> {
+                                val stpPacket = arrayOf(0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652)
+                                for(i in stpPacket) {
+                                    mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                        stepY + stpPacket[i], stepZ, false))
+                                }
+                                mc.thePlayer.motionX = mc.thePlayer.motionZ = 0
+                            }
+                            
+                            rstepHeight <= 1.5 && rstepHeight > 1.015 -> {
+                                val stpPacket = arrayOf(0.42, 0.7532, 1.01, 1.093, 1.015)
+                                for(i in stpPacket) {
+                                    mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                        stepY + stpPacket[i], stepZ, false))
+                                }
+                            }
+                            
+                            rstepHeight <= 1.015 && rstepHeight > 0.875 -> {
+                                val stpPacket = arrayOf(0.41999998688698, 0.7531999805212)
+                                for(i in stpPacket) {
+                                    mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                        stepY + stpPacket[i], stepZ, false))
+                                }
+                            }
+                            
+                            rstepHeight <= 0.875 && rstepHeight > 0.6 -> {
+                                val stpPacket = arrayOf(0.39, 0.6938)
+                                for(i in stpPacket) {
+                                    mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                        stepY + stpPacket[i], stepZ, false))
+                                }
+                            }
+                        }
                         timer.reset()
                     }
 
@@ -286,10 +354,9 @@ class Step : Module() {
                     mode.equals("AAC4.4.0", ignoreCase = true) -> {
                         val rstepHeight = mc.thePlayer.entityBoundingBox.minY - stepY
                         fakeJump()
+                        timer.reset()
                         when {
                             rstepHeight> 1.0 - 0.015625 && rstepHeight <1.0 + 0.015625 -> {
-                                mc.timer.timerSpeed = 0.44F
-                                wasTimer = true
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                     stepY + 0.4, stepZ, false))
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
@@ -300,8 +367,6 @@ class Step : Module() {
                                     stepY + 1.0, stepZ, true))
                             }
                             rstepHeight> 1.5 - 0.015625 && rstepHeight <1.5 + 0.015625 -> {
-                                mc.timer.timerSpeed = 0.36F
-                                wasTimer = true
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                     stepY + 0.42, stepZ, false))
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
@@ -316,8 +381,6 @@ class Step : Module() {
                                     stepY + 1.50, stepZ, true))
                             }
                             rstepHeight> 2.0 - 0.015625 && rstepHeight <2.0 + 0.015625 -> {
-                                mc.timer.timerSpeed = 0.28F
-                                wasTimer = true
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                     stepY + 0.45, stepZ, false))
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
