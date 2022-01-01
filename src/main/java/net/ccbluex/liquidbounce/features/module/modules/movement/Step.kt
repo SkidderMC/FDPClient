@@ -240,16 +240,15 @@ class Step : Module() {
             val height = heightValue.get()
 
             // Detect possible step
+            
+            mc.thePlayer.stepHeight = height
+            event.stepHeight = height
+            
             if (event.stepHeight > 0.6F) {
                 isStep = true
                 stepX = mc.thePlayer.posX
                 stepY = mc.thePlayer.posY
                 stepZ = mc.thePlayer.posZ
-            }
-            
-            if (!mode.equals("AAC4.4.0", ignoreCase = true)) {
-                mc.thePlayer.stepHeight = height
-                event.stepHeight = height
             }
             
         } else {
