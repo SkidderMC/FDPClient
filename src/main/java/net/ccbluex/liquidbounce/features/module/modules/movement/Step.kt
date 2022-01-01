@@ -255,8 +255,6 @@ class Step : Module() {
         } else {
             if (!isStep) { // Check if step
                 return
-            } else {
-                isStep = false
             }
 
             if (mc.thePlayer.entityBoundingBox.minY - stepY > 0.6) { // Check if full block step
