@@ -67,12 +67,17 @@ class Step : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if ((modeValue.equals("AAC4.4.0") || modeValue.equals("NCPNew")) && !(mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround && lastOnGround)) {
-            mc.thePlayer.stepHeight = 0.6F
-            canStep = false
-        }else {
+        if (mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround && lastOnGround) {
             canStep = true
+            if(modeValue.equals("AAC4.4.0") || modeValue.equals("NCPNew")) {
+                mc.thePlayer.stepHeight = heightValue.get()
+            }
+        }else {
+            canStep = false
+            mc.thePlayer.stepHeight = 0.6F
         }
+        
+        lastOnGround = mc.thePlayer.onGround
         
         if (wasTimer) {
             wasTimer = false
@@ -84,7 +89,6 @@ class Step : Module() {
         }
         val mode = modeValue.get()
         
-        lastOnGround = mc.thePlayer.onGround
 
         // Motion steps
         when {
