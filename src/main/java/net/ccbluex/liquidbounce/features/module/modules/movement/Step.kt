@@ -68,6 +68,8 @@ class Step : Module() {
     fun onUpdate(event: UpdateEvent) {
         if ((modeValue.equals("AAC4.4.0") || modeValue.equals("NCPNew")) && !(mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround && lastOnGround)) {
             mc.thePlayer.stepHeight = 0.6F
+        }else if((modeValue.equals("AAC4.4.0")) {
+            mc.thePlayer.stepHeight = heightValue.get()
         }
         
         if (wasTimer) {
@@ -217,13 +219,6 @@ class Step : Module() {
             }
             if (mode.equals("AAC4.4.0", ignoreCase = true)) {
                 if (event.stepHeight <= 0.6F) return
-                if (!((event.stepHeight>0.6-0.015625 && event.stepHeight<0.6+0.015625)||
-                            (event.stepHeight>1.0-0.015625 && event.stepHeight<1.0+0.015625)||
-                            (event.stepHeight>1.5-0.015625 && event.stepHeight<1.5+0.015625)||
-                            (event.stepHeight>2.0-0.015625 && event.stepHeight<2.0+0.015625))) {
-                    event.stepHeight = 0F
-                    return
-                }
             }
 
             // Set step to default in some cases
@@ -365,7 +360,7 @@ class Step : Module() {
                         fakeJump()
                         timer.reset()
                         when {
-                            rstepHeight> 1.0 - 0.015625 && rstepHeight <1.0 + 0.015625 -> {
+                            rstepHeight >= 1.0 - 0.015625 && rstepHeight < 1.5 - 0.015625 -> {
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                     stepY + 0.4, stepZ, false))
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
@@ -375,7 +370,7 @@ class Step : Module() {
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                     stepY + 1.0, stepZ, true))
                             }
-                            rstepHeight> 1.5 - 0.015625 && rstepHeight <1.5 + 0.015625 -> {
+                            rstepHeight >= 1.5 - 0.015625 && rstepHeight < 2.0 - 0.015625 -> {
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                     stepY + 0.42, stepZ, false))
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
@@ -389,7 +384,7 @@ class Step : Module() {
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                     stepY + 1.50, stepZ, true))
                             }
-                            rstepHeight> 2.0 - 0.015625 && rstepHeight <2.0 + 0.015625 -> {
+                            rstepHeight >= 2.0 - 0.015625 -> {
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                     stepY + 0.45, stepZ, false))
                                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
