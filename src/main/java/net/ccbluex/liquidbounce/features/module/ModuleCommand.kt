@@ -84,7 +84,7 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
                     is IntegerValue -> value.set(args[2].toInt())
                     is FloatValue -> value.set(args[2].toFloat())
                     is ListValue -> {
-                        if (!value.contains(args[2])) {
+                        if (!value.values.any { it.lowercase() == args[2].lowercase() }) {
                             chatSyntax("$moduleName ${args[1].lowercase()} <${value.values.joinToString(separator = "/").lowercase()}>")
                             return
                         }
