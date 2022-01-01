@@ -34,6 +34,7 @@ class MatrixBHop : SpeedMode("MatrixBHop") {
 	    recZ = mc.thePlayer.posZ
             mc.gameSettings.keyBindJump.pressed = false
             mc.thePlayer.jump()
+            MovementUtils.strafe()
             jumped = true
             mc.timer.timerSpeed = 2.0f
         }
