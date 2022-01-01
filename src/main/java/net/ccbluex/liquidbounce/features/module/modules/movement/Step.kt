@@ -51,6 +51,7 @@ class Step : Module() {
     private var isAACStep = false
     var wasTimer = false
     var lastOnGround = false
+    var canStep = false
 
     private val timer = MSTimer()
 
@@ -68,8 +69,9 @@ class Step : Module() {
     fun onUpdate(event: UpdateEvent) {
         if ((modeValue.equals("AAC4.4.0") || modeValue.equals("NCPNew")) && !(mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround && lastOnGround)) {
             mc.thePlayer.stepHeight = 0.6F
-        }else if((modeValue.equals("AAC4.4.0")) {
-            mc.thePlayer.stepHeight = heightValue.get()
+            canStep = false
+        }else {
+            canStep = true
         }
         
         if (wasTimer) {
@@ -217,7 +219,8 @@ class Step : Module() {
                 event.stepHeight = 0F
                 return
             }
-            if (mode.equals("AAC4.4.0", ignoreCase = true)) {
+            if (mode.equals("AAC4.4.0", ignoreCase = true) || mode.equals("NCPNew", ignoreCase = true)) {
+                if (event.stepHeight > 0.6F && !canStep) return
                 if (event.stepHeight <= 0.6F) return
             }
 
