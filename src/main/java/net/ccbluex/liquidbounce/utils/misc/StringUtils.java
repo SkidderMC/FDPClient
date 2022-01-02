@@ -5,9 +5,17 @@
  */
 package net.ccbluex.liquidbounce.utils.misc;
 
+import kotlin.text.Charsets;
+import org.apache.commons.io.IOUtils;
+
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class StringUtils {
+
+    private static final Map<String,String> pinyinMap=new HashMap<>();
+
     public static String toCompleteString(final String[] args) {
         return toCompleteString(args, 0);
     }
@@ -47,5 +55,36 @@ public final class StringUtils {
         }
 
         return stringBuilder.toString();
+    }
+
+    public static String toPinyin(final String inString, final String fill) {
+        if(pinyinMap.isEmpty()) {
+            try {
+                String[] dict = IOUtils.toString(StringUtils.class.getClassLoader().getResourceAsStream("assets/minecraft/fdpclient/misc/pinyin"), Charsets.UTF_8).split(";");
+                for(String word:dict){
+                    String[] wordData=word.split(",");
+                    pinyinMap.put(wordData[0],wordData[1]);
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+        final String[] strSections = inString.split("");
+        final StringBuilder result = new StringBuilder();
+        boolean lastIsPinyin = false;
+        for(String section : strSections){
+            if (pinyinMap.containsKey(section)) {
+                result.append(fill);
+                result.append(pinyinMap.get(section));
+                lastIsPinyin = true;
+            } else {
+                if(lastIsPinyin) {
+                    result.append(fill);
+                }
+                result.append(section);
+                lastIsPinyin = false;
+            }
+        }
+        return result.toString();
     }
 }
