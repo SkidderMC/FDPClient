@@ -8,15 +8,19 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.text.DecimalFormat
@@ -32,6 +36,12 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
     private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
+    private val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
+    private val riseSizeValue = FloatValue("Rise-Size", 1f, 0.5f, 3f)
+    private val riseAlphaValue = FloatValue("Rise-Alpha", 0.7f, 0.1f, 1f)
+    private val riseDistanceValue = FloatValue("Rise-Distance", 1f, 0.5f, 2f)
+    private val riseMoveTimeValue = IntegerValue("Rise-MoveTime", 20, 5, 40)
+    private val riseFadeTimeValue = IntegerValue("Rise-FadeTime", 20, 5, 40)
     private val fontValue = FontValue("Font", Fonts.font40)
 
     private var prevTarget: EntityLivingBase? = null
@@ -213,13 +223,15 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         font.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 43, 11 + font.FONT_HEIGHT * 2, Color.WHITE.rgb)
     }
 
+    private val riseParticleList = mutableListOf<RiseParticle>()
+
     private fun drawRise(target: EntityLivingBase) {
         val font = fontValue.get()
 
         RenderUtils.drawCircleRect(0f, 0f, 150f, 50f, 5f, Color(0, 0, 0, 130).rgb)
 
         val hurtPercent = target.hurtPercent
-        val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent <0.5f) {
+        val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
             1 - (0.2f * hurtPercent * 2)
         } else {
             0.8f + (0.2f * (hurtPercent - 0.5f) * 2)
@@ -235,7 +247,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
         // 绘制头部图片
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
-        //TODO: Skin Cache
         GL11.glPopMatrix()
 
         font.drawString("Name ${target.name}", 40, 11, Color.WHITE.rgb)
@@ -261,22 +272,42 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glColor4f(1f, 1f, 1f, 1f)
 
         font.drawString(decimalFormat.format(easingHP), stopPos + 5, 43 - font.FONT_HEIGHT / 2, Color.WHITE.rgb)
+
+        if(target.hurtTime >= 9) {
+            for(i in 0 until riseCountValue.get()) {
+                riseParticleList.add(RiseParticle())
+            }
+        }
+
+        val curTime = System.currentTimeMillis()
+        riseParticleList.map { it }.forEach { rp ->
+            if ((curTime - rp.time) > ((riseMoveTimeValue.get() + riseFadeTimeValue.get()) * 50)) {
+                riseParticleList.remove(rp)
+            }
+            val movePercent = if((curTime - rp.time) < riseMoveTimeValue.get() * 50) {
+                (curTime - rp.time) / (riseMoveTimeValue.get() * 50f)
+            } else {
+                1f
+            }
+            val x = (movePercent * rp.x * 0.5f * riseDistanceValue.get()) + 20
+            val y = (movePercent * rp.y * 0.5f * riseDistanceValue.get()) + 20
+            val alpha = if((curTime - rp.time) > riseMoveTimeValue.get() * 50) {
+                1f - ((curTime - rp.time - riseMoveTimeValue.get() * 50) / (riseFadeTimeValue.get() * 50f)).coerceAtMost(1f)
+            } else {
+                1f
+            } * riseAlphaValue.get()
+            RenderUtils.drawCircle(x, y, riseSizeValue.get() * 2, Color(rp.colorR, rp.colorG, rp.colorB, (alpha * 255).toInt()).rgb)
+        }
     }
-    
-    private fun designRisePraticle() {
-        /*
-            SpawnDelay
-            FadeInTime
-            FadeOutTime
-            Motion
-            MotionTime
-            MotionDecrease
-            Position
-            Colour
-            Size
-            
-            some fancy ideas
-        */
+
+    class RiseParticle {
+        val colorR = RandomUtils.nextInt(0, 255)
+        val colorG = RandomUtils.nextInt(0, 255)
+        val colorB = RandomUtils.nextInt(0, 255)
+        val alpha = RandomUtils.nextInt(150, 255)
+        val time = System.currentTimeMillis()
+        val x = RandomUtils.nextInt(-50, 50)
+        val y = RandomUtils.nextInt(-50, 50)
     }
 
     private fun drawFlux(target: EntityLivingBase) {
