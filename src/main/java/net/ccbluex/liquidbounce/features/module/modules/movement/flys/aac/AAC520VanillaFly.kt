@@ -132,7 +132,7 @@ class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
                         sendPacketNoEvent(C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
                     } else {
                         sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, 1e+308, packet.z, yaw, pitch, true))
-                        sendPacketNoEvent(C06PacketP1layerPosLook(packet.x, packet.y, packet.z, yaw, pitch, true))
+                        sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, yaw, pitch, true))
                     }
                 }
             }
