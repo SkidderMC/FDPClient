@@ -213,6 +213,8 @@ class KillAura : Module() {
     private val prevTargetEntities = mutableListOf<Int>()
     private val discoveredTargets = mutableListOf<EntityLivingBase>()
     private val inRangeDiscoveredTargets = mutableListOf<EntityLivingBase>()
+    val canFakeBlock: Boolean
+        get() = inRangeDiscoveredTargets.isNotEmpty()
 
     // Attack delay
     private val attackTimer = MSTimer()
@@ -249,6 +251,8 @@ class KillAura : Module() {
         currentTarget = null
         hitable = false
         prevTargetEntities.clear()
+        discoveredTargets.clear()
+        inRangeDiscoveredTargets.clear()
         attackTimer.reset()
         clicks = 0
         canSwing = false

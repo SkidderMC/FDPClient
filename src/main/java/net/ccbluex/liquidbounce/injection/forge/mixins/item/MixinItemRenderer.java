@@ -23,6 +23,7 @@ import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.MathHelper;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -117,8 +118,8 @@ public abstract class MixinItemRenderer {
 
             if (this.itemToRender.getItem() instanceof ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
-            } else if (abstractclientplayer.isUsingItem() || ((itemToRender.getItem() instanceof ItemSword || animations.getAnythingBlock().get())
-                    && ((killAura.getAutoBlockValue().equals("Fake")&&killAura.getTarget()!=null) || killAura.getBlockingStatus()))) {
+            } else if ((abstractclientplayer.isUsingItem() || (mc.gameSettings.keyBindUseItem.isKeyDown() && animations.getAnythingBlock().get())) || ((itemToRender.getItem() instanceof ItemSword || animations.getAnythingBlock().get())
+                    && ((killAura.getAutoBlockValue().equals("Fake") && killAura.getCanFakeBlock()) || killAura.getBlockingStatus()))) {
                 switch((killAura.getBlockingStatus() || animations.getAnythingBlock().get()) ? EnumAction.BLOCK : this.itemToRender.getItemUseAction()) {
                     case NONE:
                         this.transformFirstPersonItem(f, 0.0F);
