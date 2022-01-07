@@ -2,12 +2,15 @@ package net.ccbluex.liquidbounce.features.special
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.network.play.server.S02PacketChat
 
 class CombatManager : Listenable, MinecraftInstance() {
     private val lastAttackTimer = MSTimer()
@@ -19,7 +22,9 @@ class CombatManager : Listenable, MinecraftInstance() {
     val attackedEntityList = mutableListOf<EntityLivingBase>()
     val focusedPlayerList = mutableListOf<EntityPlayer>()
 
-    @EventTarget
+    private val hackerWords = arrayOf("hack", "cheat", "bhop", "fly", "nokb", "antikb")
+
+  @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer == null) return
         MovementUtils.updateBlocksPerSecond()
@@ -69,10 +74,22 @@ class CombatManager : Listenable, MinecraftInstance() {
         focusedPlayerList.clear()
     }
 
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+        if(packet is S02PacketChat) {
+            val raw = packet.chatComponent.unformattedText
+            val found = hackerWords.filter { raw.contains(it, true) }
+            if(raw.contains(mc.session.username, true) && found.isNotEmpty()) {
+                LiquidBounce.hud.addNotification(Notification("Someone call you a hacker!", found.joinToString(", "), NotifyType.ERROR))
+            }
+        }
+    }
+
     fun getNearByEntity(radius: Float): EntityLivingBase? {
         return try {
             mc.theWorld.loadedEntityList
-                .filter { mc.thePlayer.getDistanceToEntity(it) <radius && EntityUtils.isSelected(it, true) }
+                .filter { mc.thePlayer.getDistanceToEntity(it) < radius && EntityUtils.isSelected(it, true) }
                 .sortedBy { it.getDistanceToEntity(mc.thePlayer) }[0] as EntityLivingBase?
         } catch (e: Exception) {
             null
