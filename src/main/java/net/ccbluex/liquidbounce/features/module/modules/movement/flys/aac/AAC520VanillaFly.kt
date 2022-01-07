@@ -102,7 +102,10 @@ class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
         } else if (packet is C03PacketPlayer) {
             val f = mc.thePlayer.width / 2.0
             // need to no collide else will flag
-            if (!mc.theWorld.checkBlockCollision(AxisAlignedBB(packet.x - f, packet.y, packet.z - f, packet.x + f, packet.y + mc.thePlayer.height, packet.z + f))) {
+            if(packet.y < 1145.14001919810) {
+                if (mc.theWorld.checkBlockCollision(AxisAlignedBB(packet.x - f, packet.y, packet.z - f, packet.x + f, packet.y + mc.thePlayer.height, packet.z + f))) {
+                    return
+                }
                 packets.add(packet)
                 nextFlag = false
                 event.cancelEvent()
