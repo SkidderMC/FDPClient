@@ -119,8 +119,7 @@ public abstract class MixinItemRenderer {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
             } else if (abstractclientplayer.isUsingItem() || ((itemToRender.getItem() instanceof ItemSword || animations.getAnythingBlock().get())
                     && ((killAura.getAutoBlockValue().equals("Fake")&&killAura.getTarget()!=null) || killAura.getBlockingStatus()))) {
-                EnumAction enumaction = killAura.getBlockingStatus() || animations.getAnythingBlock().get() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
-                switch(enumaction) {
+                switch((killAura.getBlockingStatus() || animations.getAnythingBlock().get()) ? EnumAction.BLOCK : this.itemToRender.getItemUseAction()) {
                     case NONE:
                         this.transformFirstPersonItem(f, 0.0F);
                         break;
