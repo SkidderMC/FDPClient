@@ -34,8 +34,8 @@ class Velocity : Module() {
     /**
      * OPTIONS
      */
-    private val horizontalValue = FloatValue("Horizontal", 0F, -1F, 1F)
-    private val verticalValue = FloatValue("Vertical", 0F, -1F, 1F)
+    private val horizontalValue = FloatValue("Horizontal", 0F, -2F, 2F)
+    private val verticalValue = FloatValue("Vertical", 0F, -2F, 2F)
     private val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
     private val modeValue = ListValue("Mode", arrayOf("Simple", "Tick", "Vanilla", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
                                                       "Redesky1", "Redesky2",
