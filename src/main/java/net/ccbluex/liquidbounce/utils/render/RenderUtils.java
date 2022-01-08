@@ -1004,6 +1004,30 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glPopMatrix();
     }
 
+    // skid in https://github.com/WYSI-Foundation/LiquidBouncePlus/
+    public static void drawBorder(float x, float y, float x2, float y2, float width, int color1) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+
+        glColor(color1);
+        glLineWidth(width);
+
+        glBegin(GL_LINE_LOOP);
+
+        glVertex2d(x2, y);
+        glVertex2d(x, y);
+        glVertex2d(x, y2);
+        glVertex2d(x2, y2);
+
+        glEnd();
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+    }
+
     public static void drawOutLineRect(double x, double y, double x1, double y1, double width, int internalColor, int borderColor) {
         drawRect(x + width, y + width, x1 - width, y1 - width, internalColor);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

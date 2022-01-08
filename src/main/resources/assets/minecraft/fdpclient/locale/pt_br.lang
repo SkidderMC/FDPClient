@@ -159,6 +159,8 @@ module.AutoTool.description=Seleciona automaticamente a melhor ferramenta em seu
 module.AutoWeapon.name=AutoWeapon
 module.AutoWeapon.description=Seleciona automaticamente a melhor arma em sua hotbar
 
+module.BanChecker.name=BanChecker
+
 module.BetterFPS.name=BetterFPS
 module.BetterFPS.description=Faça cálculos matemáticos mais rápidos
 
