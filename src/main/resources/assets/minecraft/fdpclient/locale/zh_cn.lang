@@ -159,6 +159,8 @@ module.AutoTool.description=自动选择最好的工具
 module.AutoWeapon.name=自动武器
 module.AutoWeapon.description=自动选择快捷栏中最好的武器
 
+module.BanChecker.name=封禁检测
+
 module.BetterFPS.name=更好的FPS
 module.BetterFPS.description=使数学计算更快
 

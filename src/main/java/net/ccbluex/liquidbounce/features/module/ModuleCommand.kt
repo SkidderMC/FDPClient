@@ -16,13 +16,11 @@ import net.minecraft.block.Block
  *
  * @author SenkJu
  */
-class ModuleCommand(val module: Module, val values: List<Value<*>> = module.values) :
-    Command(module.name.lowercase(), emptyArray()) {
+class ModuleCommand(val module: Module, val values: List<Value<*>> = module.values) : Command(module.name.lowercase(), emptyArray()) {
 
     init {
-        if (values.isEmpty()) {
+        if (values.isEmpty())
             throw IllegalArgumentException("Values are empty!")
-        }
     }
 
     /**
@@ -51,43 +49,42 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
             val newValue = !value.get()
             value.set(newValue)
 
-            alert("§7${module.name} §8${args[1]}§7 was toggled ${if (newValue) "§8on§7" else "§8off§7" + "."}")
+            chat("§7${module.name} §8${args[1]}§7 was toggled ${if (newValue) "§8on§7" else "§8off§7" + "."}")
             playEdit()
         } else {
             if (args.size < 3) {
-                if (value is IntegerValue || value is FloatValue || value is TextValue) {
+                if (value is IntegerValue || value is FloatValue || value is TextValue)
                     chatSyntax("$moduleName ${args[1].lowercase()} <value>")
-                } else if (value is ListValue) {
+                else if (value is ListValue)
                     chatSyntax("$moduleName ${args[1].lowercase()} <${value.values.joinToString(separator = "/").lowercase()}>")
-                }
                 return
             }
 
             try {
                 when (value) {
                     is BlockValue -> {
-                        var id: Int
-
-                        try {
-                            id = args[2].toInt()
+                        val id: Int = try {
+                            args[2].toInt()
                         } catch (exception: NumberFormatException) {
-                            id = Block.getIdFromBlock(Block.getBlockFromName(args[2]))
+                            val tmpId = Block.getBlockFromName(args[2])?.let { Block.getIdFromBlock(it) }
 
-                            if (id <= 0) {
-                                alert("§7Block §8${args[2]}§7 does not exist!")
+                            if (tmpId == null || tmpId <= 0) {
+                                chat("§7Block §8${args[2]}§7 does not exist!")
                                 return
                             }
+
+                            tmpId
                         }
 
                         value.set(id)
-                        alert("§7${module.name} §8${args[1].lowercase()}§7 was set to §8${BlockUtils.getBlockName(id)}§7.")
+                        chat("§7${module.name} §8${args[1].lowercase()}§7 was set to §8${BlockUtils.getBlockName(id)}§7.")
                         playEdit()
                         return
                     }
                     is IntegerValue -> value.set(args[2].toInt())
                     is FloatValue -> value.set(args[2].toFloat())
                     is ListValue -> {
-                        if (!value.containsValue(args[2])) {
+                        if (!value.values.any { it.lowercase() == args[2].lowercase() }) {
                             chatSyntax("$moduleName ${args[1].lowercase()} <${value.values.joinToString(separator = "/").lowercase()}>")
                             return
                         }
@@ -97,10 +94,10 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
                     is TextValue -> value.set(StringUtils.toCompleteString(args, 2))
                 }
 
-                alert("§7${module.name} §8${args[1]}§7 was set to §8${value.get()}§7.")
+                chat("§7${module.name} §8${args[1]}§7 was set to §8${value.get()}§7.")
                 playEdit()
             } catch (e: NumberFormatException) {
-                alert("§8${args[2]}§7 cannot be converted to number!")
+                chat("§8${args[2]}§7 cannot be converted to number!")
             }
         }
     }
@@ -113,7 +110,7 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
                 .filter { it !is FontValue && it.name.startsWith(args[0], true) }
                 .map { it.name.lowercase() }
             2 -> {
-                when (module.getValue(args[0])) {
+                when(module.getValue(args[0])) {
                     is BlockValue -> {
                         return Block.blockRegistry.keys
                             .map { it.resourcePath.lowercase() }
@@ -121,12 +118,10 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
                     }
                     is ListValue -> {
                         values.forEach { value ->
-                            if (!value.name.equals(args[0], true)) {
+                            if (!value.name.equals(args[0], true))
                                 return@forEach
-                            }
-                            if (value is ListValue) {
+                            if (value is ListValue)
                                 return value.values.filter { it.startsWith(args[1], true) }
-                            }
                         }
                         return emptyList()
                     }

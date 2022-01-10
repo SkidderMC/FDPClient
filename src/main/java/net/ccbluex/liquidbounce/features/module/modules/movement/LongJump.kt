@@ -51,7 +51,7 @@ class LongJump : Module() {
     private val rs3BoostValue = FloatValue("RedeSky3Boost", 1F, 0.3F, 1.5F).displayable { modeValue.equals("RedeSky3") }
     private val rs3HeightValue = FloatValue("RedeSky3Height", 1F, 0.3F, 1.5F).displayable { modeValue.equals("RedeSky3") }
     private val rs3TimerValue = FloatValue("RedeSky3Timer", 1F, 0.1F, 5F).displayable { modeValue.equals("RedeSky3") }
-
+    private val ncpdInstantValue = BoolValue("NCPDamageInstant", false).displayable { modeValue.equals("NCPDamage") }
     // settings
     private val autoJumpValue = BoolValue("AutoJump", true)
     private val autoDisableValue = BoolValue("AutoDisable", true)
@@ -73,12 +73,16 @@ class LongJump : Module() {
         airTicks = 0
         balance = 0
         hasJumped = false
+        damageStat = false
         if (modeValue.equals("ncpdamage")) {
             x = mc.thePlayer.posX
             y = mc.thePlayer.posY
             z = mc.thePlayer.posZ
-            damageStat = false
-            LiquidBounce.hud.addNotification(Notification(name, "Wait for damage...", NotifyType.SUCCESS, jumpYPosArr.size * 4 * 50))
+            if(ncpdInstantValue.get()) {
+                balance = 114514
+            } else {
+                LiquidBounce.hud.addNotification(Notification(name, "Wait for damage...", NotifyType.SUCCESS, jumpYPosArr.size * 4 * 50))
+            }
         }
     }
 
@@ -98,7 +102,7 @@ class LongJump : Module() {
         if (modeValue.equals("ncpdamage")) {
             if (!damageStat) {
                 mc.thePlayer.setPosition(x, y, z)
-                if (balance> jumpYPosArr.size * 4) {
+                if (balance > jumpYPosArr.size * 4) {
                     repeat(4) {
                         jumpYPosArr.forEach {
                             PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y + it, z, false))
@@ -109,7 +113,7 @@ class LongJump : Module() {
                     damageStat = true
                 }
             } else {
-                MovementUtils.strafe(0.20f * ncpBoostValue.get())
+                MovementUtils.strafe(0.50f * ncpBoostValue.get())
                 mc.thePlayer.jump()
                 state = false
             }

@@ -147,15 +147,26 @@
                 verCheck()
                 return
             }
-
-            $.get("https://api.github.com/repos/UnlegitMC/FDPClient/releases/latest", function(data) {
-                GuiMainMenu.updateVersion = String(data.tag_name)
-                GuiMainMenu.updateMessage = String(data.body)
-                verCheck()
-            });
+            try{
+                $.get("https://api.github.com/repos/UnlegitMC/FDPClient/releases/latest", function(data) {
+                    GuiMainMenu.updateVersion = String(data.tag_name)
+                    GuiMainMenu.updateMessage = String(data.body)
+                    verCheck()
+                });
+            }catch(a){
+                console.log(a);
+            }
+            GuiMainMenu.updateVersion = "N/A"
+            GuiMainMenu.updateMessage = "Because this prompt will cause collapse, please go to the official website to check the latest version"
         }
 
         function popUpdateInfo() {
+            if (GuiMainMenu.updateVersion == null) {
+                return
+            }
+            if (data.body == null) {
+                return
+            }
             if (GuiMainMenu.updateVersion == LiquidBounce.CLIENT_VERSION)
                 return
             console.log("POP")
