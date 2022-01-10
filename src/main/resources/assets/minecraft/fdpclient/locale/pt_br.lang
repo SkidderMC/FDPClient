@@ -18,7 +18,7 @@ ui.background.particles=Partículas
 ui.background.change=Alterar papel de parede
 ui.background.reset=Redefinir papel de parede
 
-ui.chest.stealing=Roubo de Baú
+ui.chest.stealing=Coletar bau 
 ui.chest.disable=Desativar %s
 
 ui.gameover.close=Ocultar esta tela
@@ -87,16 +87,16 @@ module.category.exploit=Explorar
 module.Aimbot.name=Aimbot
 module.Aimbot.description=Enfrenta automaticamente entidades selecionadas ao seu redor
 
-module.Ambience.name=Tempo
+module.Ambience.name=Ambience
 module.Ambience.description=Mudar o tempo do ambiente
 
-module.Animations.name=Animações
-module.Animations.description=Renderizar espada enquanto bloqueia e animação de inventário
+module.Animations.name=Animations
+module.Animations.description=Permite alterar as animações da espada enquanto bloqueia e animação de inventário
 
-module.AntiAim.name=AntiMira
+module.AntiAim.name=AntiAim
 module.AntiAim.description=Anti visando como CS:GO
 
-module.AntiBlind.name=AntiCego
+module.AntiBlind.name=AntiBlind
 module.AntiBlind.description=Cancela efeitos de cegueira
 
 module.AntiBot.name=AntiBot
@@ -132,22 +132,22 @@ module.AutoBow.description=Atira uma flecha automaticamente sempre que seu arco 
 module.AutoClicker.name=AutoClicker
 module.AutoClicker.description=Clica constantemente ao segurar um botão do mouse
 
-module.AutoDisable.name=DesativarAutomatico
+module.AutoDisable.name=AutoDisable
 module.AutoDisable.description=Desativa módulos automaticamente
 
 module.AutoIgnore.name=AutoIgnore
 module.AutoIgnore.description=Ignorar spammers automaticamente (apenas redesenhado)
 
-module.AutoLogin.name=AutoEntrar
+module.AutoLogin.name=AutoLogin
 module.AutoLogin.description=Automático faz com que você faça o login no servidor
 
 module.AutoPlay.name=AutoPlay
 module.AutoPlay.description=Entrar automaticamente em outro jogo quando o jogo terminar
 
-module.AutoPot.name=AutoPoção
+module.AutoPot.name=AutoPot
 module.AutoPot.description=Jogue poções automaticamente
 
-module.AutoReport.name=AutoRelatório
+module.AutoReport.name=AutoReport
 module.AutoReport.description=Auto reportar jogadores
 
 module.AutoSoup.name=AutoSoup
@@ -159,13 +159,15 @@ module.AutoTool.description=Seleciona automaticamente a melhor ferramenta em seu
 module.AutoWeapon.name=AutoWeapon
 module.AutoWeapon.description=Seleciona automaticamente a melhor arma em sua hotbar
 
+module.BanChecker.name=BanChecker
+
 module.BetterFPS.name=BetterFPS
 module.BetterFPS.description=Faça cálculos matemáticos mais rápidos
 
 module.BetterFont.name=BetterFont
-module.BetterFont.description=Tornar FontRenderer melhor
+module.BetterFont.description=Torna as Fonts melhores
 
-module.Blink.name=Piscar
+module.Blink.name=Blink
 module.Blink.description=Suspende todos os pacotes de movimento
 
 module.BlockESP.name=BlockESP
@@ -240,7 +242,7 @@ module.FastUse.name=FastUse
 module.FastUse.description=Permite que você use itens mais rápido
 
 module.Fly.name=Fly
-module.Fly.description=Permite que você voe em modo de sobrevivência
+module.Fly.description=Permite que você voe
 
 module.FreeCam.name=FreeCam
 module.FreeCam.description=Permite que você saia de seu corpo
@@ -273,7 +275,7 @@ module.HitBox.name=HitBox
 module.HitBox.description=Torna hitboxes de alvos maiores
 
 module.HudDesigner.name=HudDesigner
-module.HudDesigner.description=Abre o HudDesigner
+module.HudDesigner.description=Permite Editar o HUD
 
 module.HurtCam.name=HurtCam
 module.HurtCam.description=Altera o efeito da câmera danificada
@@ -300,7 +302,7 @@ module.KillAura.name=KillAura
 module.KillAura.description=Ataca automaticamente os alvos ao seu redor
 
 module.LegitSpoof.name=LegitSpoof
-module.LegitSpoof.description=Hack? Não sou legítimo
+module.LegitSpoof.description=Hack? Não sou legít
 
 module.LightningDetect.name=LightningDetect
 module.LightningDetect.description=Verificar geração de relâmpagos em
@@ -317,31 +319,31 @@ module.MessageSpam.description=Mensagens de spam (apenas redesenhado)
 module.MidClick.name=AdicionarAmigo
 module.MidClick.description=Permite que você adicione um jogador como amigo clicando com o botão direito nele.
 
-module.NameProtect.name=ProtegerNome
+module.NameProtect.name=NameProtect
 module.NameProtect.description=Altera os nomes dos jogadores do lado do cliente
 
 module.NameTags.name=Crachas
 module.NameTags.description=Altera a escala dos crachás para que você possa sempre lê-los
 
-module.NoBob.name=Não Bob
+module.NoBob.name=NoBob
 module.NoBob.description=Desativa o efeito de oscilação da vista
 
-module.NoFOV.name=Não Fov
+module.NoFOV.name=NoFov
 module.NoFOV.description=Desabilita mudanças de FOV causadas por efeito de velocidade, etc
 
-module.NoFall.name=Não Cair
+module.NoFall.name=NoFall
 module.NoFall.description=Impede que você sofra danos de queda
 
-module.NoJumpDelay.name=Não Ter Delay em pulos
+module.NoJumpDelay.name=NoJumpDelay
 module.NoJumpDelay.description=Remove o atraso entre os saltos
 
-module.NoRotateSet.name=NãoRotação
+module.NoRotateSet.name=NoRotateSet
 module.NoRotateSet.description=Evita que o servidor gire sua cabeça
 
 module.NoSlow.name=NoSlow
 module.NoSlow.description=Cancela os efeitos de lentidão causados por soulsand e usando itens
 
-module.NoSlowBreak.name=NãoQuebrarLento
+module.NoSlowBreak.name=NoSlowBreak
 module.NoSlowBreak.description=Ajusta automaticamente a velocidade de interrupção ao usar módulos que a influenciam
 
 module.NoWeb.name=NoWeb
@@ -365,19 +367,19 @@ module.PointerESP.description=Mostrar os indicadores em torno de sua travessia
 module.PrevFallPos.name=PrevFallPos
 module.PrevFallPos.description=Visualize sua posição de queda
 
-module.Projectiles.name=Projéteis
+module.Projectiles.name=Projectiles
 module.Projectiles.description=Permite que você veja onde as setas irão parar
 
-module.Reach.name=Alcance
+module.Reach.name=Reach
 module.Reach.description=Aumenta seu alcance
 
 module.Regen.name=Regen
 module.Regen.description=Regenera sua saúde muito mais rápido
 
-module.Rotations.name=Rotações
+module.Rotations.name=Rotations
 module.Rotations.description=Configurações de rotação
 
-module.SafeWalk.name=EviteCair
+module.SafeWalk.name=SafeWalk
 module.SafeWalk.description=Evita que você caia como se estivesse esgueirando
 
 module.Scaffold.name=Scaffold
@@ -407,28 +409,28 @@ module.Strafe.description=Permite que você se mova livremente no ar
 module.SuperKnockback.name=SuperKnockback
 module.SuperKnockback.description=Aumenta o knockback negociado para outras entidades
 
-module.Target.name=Destino
-module.Target.description=Configurações de destino
+module.Target.name=Target
+module.Target.description=Configurações de alvo destino
 
 module.TargetStrafe.name=TargetStrafe
 module.TargetStrafe.description=TargetStrafe
 
-module.Teams.name=Equipes
-module.Teams.description=Evita que Killaura ataque companheiros de equipe
+module.Teams.name=Teams
+module.Teams.description=Evita que modules ataque companheiros de equipe
 
-module.Teleport.name=Teleportar
+module.Teleport.name=Teleport
 module.Teleport.description=Permite que você se teletransporte
 
-module.Timer.name=TempoDoJogo
+module.Timer.name=Timer
 module.Timer.description=Altera a velocidade de todo o jogo
 
-module.Tracers.name=Rastreadores
+module.Tracers.name=Tracers
 module.Tracers.description=Desenha uma linha nos alvos ao seu redor
 
-module.TrueSight.name=VerBarreiras
+module.TrueSight.name=TrueSight
 module.TrueSight.description=Permite que você veja entidades invisíveis e barreiras
 
-module.Velocity.name=Velocidade
+module.Velocity.name=Velocity
 module.Velocity.description=Permite que você modifique a quantidade de knockback realizada
 
 module.XRay.name=XRay
@@ -437,6 +439,6 @@ module.XRay.description=Permite que você veja os blocos selecionados através d
 module.IRC.name=IRC
 module.IRC.description=Permitir que você converse com outros usuários
 
-module.Crosshair.name=AlterarMira
+module.Crosshair.name=CrossHair
 module.Crosshair.description=Alterar uma cruz melhor
 

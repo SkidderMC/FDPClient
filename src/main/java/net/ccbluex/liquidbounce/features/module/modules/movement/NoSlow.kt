@@ -26,7 +26,7 @@ import kotlin.math.sqrt
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     private val msTimer = MSTimer()
-    private val modeValue = ListValue("PacketMode", arrayOf("AntiCheat", "Custom", "WatchDog", "Watchdog2", "NCP", "NoPacket", "AAC", "AAC5"), "AntiCheat")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", /*"AAC4",*/ "AAC5"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -108,22 +108,18 @@ class NoSlow : Module() {
                 return
             }
             when (modeValue.get().lowercase()) {
-                "anticheat" -> {
-                    this.sendPacket(event, true, false, false, 0, false, false)
-                    if (mc.thePlayer.ticksExisted % 2 == 0) {
-                        this.sendPacket(event, false, true, false, 0, false)
-                    }
-//                if(mc.thePlayer.ticksExisted % 2 == 0) {
-//                    sendPacket(event, true, false, false, 5, false, false)
-//                } else {
-//                    sendPacket(event, false, false, false, 5, false, false)
-//                }
+                "liquidbounce" -> {
+                    sendPacket(event, true, true, false, 0, false)
+                }
+                "aac4" -> {
+                    //Todo: skid from my old codes cuz I forgot the packet order /Co
+                    //sendPacket(event, true, true, true, 80, false, false)
                 }
 
                 "aac" -> {
                     if (mc.thePlayer.ticksExisted % 3 == 0) {
                         sendPacket(event, true, false, false, 0, false)
-                    } else {
+                    } else if (mc.thePlayer.ticksExisted % 3 == 1) {
                         sendPacket(event, false, true, false, 0, false)
                     }
                 }
@@ -146,7 +142,7 @@ class NoSlow : Module() {
 
                 "watchdog" -> {
                     if (mc.thePlayer.ticksExisted % 2 == 0) {
-                        sendPacket(event, true, false, false, 50, true)
+                        sendPacket(event, true, false, true, 50, true)
                     } else {
                         sendPacket(event, false, true, false, 0, true, true)
                     }

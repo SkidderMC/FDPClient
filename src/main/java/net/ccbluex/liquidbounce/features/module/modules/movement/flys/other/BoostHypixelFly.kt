@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.flys.hypixel
+package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode

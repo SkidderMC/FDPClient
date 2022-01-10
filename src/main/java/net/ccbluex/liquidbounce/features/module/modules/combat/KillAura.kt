@@ -111,7 +111,7 @@ class KillAura : Module() {
     private val keepSprintValue = BoolValue("KeepSprint", true)
 
     // AutoBlock
-    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range"/*, "Fake"*/, "Off"), "Off")
+    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Off")
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
@@ -213,6 +213,8 @@ class KillAura : Module() {
     private val prevTargetEntities = mutableListOf<Int>()
     private val discoveredTargets = mutableListOf<EntityLivingBase>()
     private val inRangeDiscoveredTargets = mutableListOf<EntityLivingBase>()
+    val canFakeBlock: Boolean
+        get() = inRangeDiscoveredTargets.isNotEmpty()
 
     // Attack delay
     private val attackTimer = MSTimer()
@@ -249,6 +251,8 @@ class KillAura : Module() {
         currentTarget = null
         hitable = false
         prevTargetEntities.clear()
+        discoveredTargets.clear()
+        inRangeDiscoveredTargets.clear()
         attackTimer.reset()
         clicks = 0
         canSwing = false
