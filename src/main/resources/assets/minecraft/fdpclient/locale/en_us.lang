@@ -159,6 +159,8 @@ module.AutoTool.description=Automatically selects the best tool in your inventor
 module.AutoWeapon.name=AutoWeapon
 module.AutoWeapon.description=Automatically selects the best weapon in your hotbar
 
+module.BanChecker.name=BanChecker
+
 module.BetterFPS.name=BetterFPS
 module.BetterFPS.description=Make math calculate faster
 
