@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.font.renderer
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.ui.font.FontsGC
 import net.ccbluex.liquidbounce.ui.font.renderer.glyph.GlyphFontRenderer
 import net.ccbluex.liquidbounce.ui.font.renderer.vector.VectorFontRenderer
@@ -41,16 +42,19 @@ abstract class AbstractAwtFontRender(val font: Font) {
         var isLastUTF16 = false
         var highSurrogate = '\u0000'
         for (char in text.toCharArray()) {
+            if(HUD.fontOnlyASCIIValue.get() && char.code > 127)
+                continue
+
             if (char in '\ud800'..'\udfff') {
                 if (isLastUTF16) {
                     val utf16Char = "$highSurrogate$char"
-                    GL11.glTranslatef(drawChar(utf16Char, 0f, 0f).toFloat(), 0f, 0f)
+                    GL11.glTranslatef(drawChar(utf16Char).toFloat(), 0f, 0f)
                 } else {
                     highSurrogate = char
                 }
                 isLastUTF16 = !isLastUTF16
             } else {
-                GL11.glTranslatef(drawChar(char.toString(), 0f, 0f).toFloat(), 0f, 0f)
+                GL11.glTranslatef(drawChar(char.toString()).toFloat(), 0f, 0f)
                 isLastUTF16 = false
             }
         }
@@ -65,7 +69,7 @@ abstract class AbstractAwtFontRender(val font: Font) {
      * @param x        target position x to render
      * @param y        target position y to render
      */
-    abstract fun drawChar(char: String, x: Float, y: Float): Int
+    abstract fun drawChar(char: String): Int
 
     /**
      * Get the width of a string
