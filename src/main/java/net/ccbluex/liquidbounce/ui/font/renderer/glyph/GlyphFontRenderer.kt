@@ -58,7 +58,7 @@ class GlyphFontRenderer(font: Font) : AbstractAwtFontRender(font) {
         return CachedGlyphFont(resourceLocation, charWidth)
     }
 
-    override fun drawChar(char: String, x: Float, y: Float): Int {
+    override fun drawChar(char: String): Int {
         val cached = if (cachedChars.containsKey(char)) {
             val cached = cachedChars[char]!! as CachedGlyphFont
             cached.lastUsage = System.currentTimeMillis()
@@ -70,7 +70,7 @@ class GlyphFontRenderer(font: Font) : AbstractAwtFontRender(font) {
         }
 
         Minecraft.getMinecraft().textureManager.bindTexture(cached.resourceLocation)
-        Gui.drawModalRectWithCustomSizedTexture(x.toInt(), y.toInt(), 0f, 0f, cached.width, fontHeight, cached.width.toFloat(), fontHeight.toFloat())
+        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, cached.width, fontHeight, cached.width.toFloat(), fontHeight.toFloat())
 
         return cached.width
     }

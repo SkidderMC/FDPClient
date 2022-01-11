@@ -38,10 +38,6 @@ import static org.lwjgl.opengl.GL11.*;
 public class TessCallback extends GLUtessellatorCallbackAdapter {
     public final static TessCallback INSTANCE = new TessCallback();
 
-    private TessCallback(){
-
-    }
-
     public void begin(int type) {
         glBegin(type);
     }
@@ -58,19 +54,6 @@ public class TessCallback extends GLUtessellatorCallbackAdapter {
         for (int i=0;i<outData.length;i++) {
             outData[i] = new VertexData(combined);
         }
-//		vertex[0] = coords[0];
-//		vertex[1] = coords[1];
-//		vertex[2] = coords[2];
-//
-//		for (int i = 3; i < 6; i++)
-//		{
-//		vertex[i] = weight[0] * vertex_data[0][i] +
-//		indent indweight[1] * vertex_data[1][i] +
-//		indent indweight[2] * vertex_data[2][i] +
-//		indent indweight[3] * vertex_data[3][i];
-//		}
-//
-//		*dataOut = vertex;
     }
 
     public void end() {

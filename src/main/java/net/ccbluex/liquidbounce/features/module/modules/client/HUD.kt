@@ -44,6 +44,11 @@ object HUD : Module() {
     val arraylistYAxisAnimSpeedValue = IntegerValue("ArraylistYAxisAnimSpeed", 10, 5, 20)
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder")
+    val fontEpsilonValue = FloatValue("FontEpsilon", 0.05f, 0f, 0.2f)
+    val fontDoubleRenderValue = BoolValue("FontDoubleRender", true)
+    val fontOnlyASCIIValue = BoolValue("FontOnlyASCII", false)
+
+    private var lastFontEpsilon = 0f
 
     private var easeAnimation: Animation? = null
     private var easingValue = 0
@@ -71,6 +76,15 @@ object HUD : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         LiquidBounce.hud.update()
+        if(mc.currentScreen == null && lastFontEpsilon != fontEpsilonValue.get()) {
+            lastFontEpsilon = fontEpsilonValue.get()
+            alert("You need to reload FDPClient to apply changes!")
+        }
+    }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent) {
+        lastFontEpsilon = fontEpsilonValue.get()
     }
 
     @EventTarget

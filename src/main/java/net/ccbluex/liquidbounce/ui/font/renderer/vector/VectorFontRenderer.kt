@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.font.renderer.vector
 
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
@@ -20,14 +21,14 @@ import java.awt.geom.AffineTransform
  */
 class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
 
-    private val epsilon = font.size * 0.02
-
-    override fun drawChar(char: String, x: Float, y: Float): Int {
+    override fun drawChar(char: String): Int {
         if (cachedChars.containsKey(char)) {
             val cached = cachedChars[char]!! as CachedVectorFont
 
             GL11.glCallList(cached.displayList)
-            GL11.glCallList(cached.displayList) // TODO: stupid solutions, find a better way
+            if(HUD.fontDoubleRenderValue.get()) {
+                GL11.glCallList(cached.displayList) // TODO: stupid solutions, find a better way
+            }
             cached.lastUsage = System.currentTimeMillis()
 
             return cached.width
@@ -36,7 +37,8 @@ class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
         val list = GL11.glGenLists(1)
         GL11.glNewList(list, GL11.GL_COMPILE_AND_EXECUTE)
 
-        RenderUtils.drawAWTShape(font.createGlyphVector(FontRenderContext(AffineTransform(), true, false), char).getOutline(x, y + 1f + fontMetrics.ascent), epsilon)
+        RenderUtils.drawAWTShape(font.createGlyphVector(FontRenderContext(AffineTransform(), true, false), char)
+            .getOutline(0f, fontMetrics.ascent.toFloat()), font.size * HUD.fontEpsilonValue.get().toDouble())
 
         GL11.glEndList()
 
@@ -53,8 +55,8 @@ class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
         RenderUtils.clearCaps()
-        RenderUtils.enableGlCap(GL13.GL_MULTISAMPLE)
-        GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_FASTEST)
+//        RenderUtils.enableGlCap(GL13.GL_MULTISAMPLE)
+        GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST)
         RenderUtils.enableGlCap(GL11.GL_POLYGON_SMOOTH)
         RenderUtils.disableGlCap(GL11.GL_CULL_FACE) // 不要剔除模型的背面
     }
