@@ -23,7 +23,6 @@ import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.MathHelper;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -132,7 +131,7 @@ public abstract class MixinItemRenderer {
                     case BLOCK:
                         if(animations.getState()){
                             GL11.glTranslated(animations.getTranslateX().get(), animations.getTranslateY().get(), animations.getTranslateZ().get());
-                            switch (animations.getPresetValue().get()) {
+                            switch (animations.getBlockingModeValue().get()) {
                                 case "Akrien": {
                                     transformFirstPersonItem(f1, 0.0F);
                                     doBlockTransformations();
