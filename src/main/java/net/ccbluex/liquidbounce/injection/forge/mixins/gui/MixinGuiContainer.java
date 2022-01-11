@@ -30,7 +30,14 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     @Shadow
     protected int guiTop;
 
+    private long guiOpenTime = -1;
+
     private boolean translated = false;
+
+    @Inject(method = "initGui", at = @At("RETURN"))
+    private void initGuiReturn(CallbackInfo callbackInfo) {
+        guiOpenTime = System.currentTimeMillis();
+    }
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo) {
@@ -55,21 +62,25 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
             Animations animations = LiquidBounce.moduleManager.getModule(Animations.class);
             if (animations.getState()) {
-                long guiOpenTime = -1;
-                float pct = Math.max(animations.getTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((float) animations.getTimeValue().get());
+                double pct = Math.max(animations.getTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((double) animations.getTimeValue().get());
                 if (pct != 0) {
                     GL11.glPushMatrix();
 
-                    switch (animations.getModeValue().get().toLowerCase()) {
+                    pct = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf(animations.getInvEaseMode().get()),
+                            EaseUtils.EnumEasingOrder.valueOf(animations.getInvEaseOrderMode().get()), pct);
+
+                    switch (animations.getInvModeValue().get().toLowerCase()) {
                         case "slide": {
                             pct = (float) EaseUtils.easeInBack(pct);
-                            GL11.glTranslatef(0F, -(guiTop + ySize) * pct, 0F);
+                            GL11.glTranslated(0, -(guiTop + ySize) * pct, 0);
                             break;
                         }
                         case "zoom": {
-                            float scale = 1 - pct;
-                            GL11.glScalef(scale, scale, scale);
-                            GL11.glTranslatef(((guiLeft + (xSize * 0.5F * pct)) / scale) - guiLeft, ((guiTop + (ySize * 0.5F * pct)) / scale) - guiTop, 0F);
+                            double scale = 1 - pct;
+                            GL11.glScaled(scale, scale, scale);
+                            GL11.glTranslated(((guiLeft + (xSize * 0.5 * pct)) / scale) - guiLeft,
+                                    ((guiTop + (ySize * 0.5d * pct)) / scale) - guiTop,
+                                    0);
                         }
                     }
 
