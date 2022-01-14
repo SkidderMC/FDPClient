@@ -5,7 +5,7 @@ ui.background=Fundo
 ui.serverSpoof=ServerSpoof
 ui.antiForge=AntiForge
 ui.reconnect=Reconectar
-ui.changelog=Log de Mudanças
+ui.changelog=Alterações
 
 ui.back=Voltar
 ui.status=Status
@@ -15,16 +15,16 @@ ui.off=Desligado
 ui.serverSpoof.address=Endereço do servidor
 
 ui.background.particles=Partículas
-ui.background.change=Alterar papel de parede
-ui.background.reset=Redefinir papel de parede
+ui.background.change=Alterar
+ui.background.reset=Redefinir
 
-ui.chest.stealing=Coletar bau 
+ui.chest.stealing=Coletar
 ui.chest.disable=Desativar %s
 
-ui.gameover.close=Ocultar esta tela
+ui.gameover.close=Ocultar tela
 
-ui.disconnect.randomAlt=Alt aleatório
-ui.disconnect.randomOffline=Random Offline
+ui.disconnect.randomAlt=randomAlt
+ui.disconnect.randomOffline=randomOffline
 
 ui.update.released=FDP Client %s foi lançado!
 ui.update.dismiss=Dispensar
@@ -39,7 +39,7 @@ ui.keybind.search=Pesquisar ...
 
 ui.alt.idle=Inativo ...
 ui.alt.nameChanged=§cSeu nome agora é §8 %s §c.
-ui.alt.error=Occoreu um erro: %s
+ui.alt.error=Ocorreu um erro: %s
 ui.alt.login=Login
 ui.alt.add=Adicionar
 ui.alt.remove=Remover
@@ -49,14 +49,14 @@ ui.alt.msLogin=Microsoft Login
 ui.alt.copy=Copiar
 ui.alt.alts=%d Alts
 ui.alt.username=§7User: §a %s
-ui.alt.type=§7Tipo: §a %s
-ui.alt.type.premium=Premium
-ui.alt.type.cracked=Rachado
-ui.alt.removed=A conta foi removida.
-ui.alt.needSelect=Selecione uma conta.
+ui.alt.type=§7Tipo: %a %s
+ui.alt.type.premium=premium
+ui.alt.type.cracked=cracked
+ui.alt.removed=removed
+ui.alt.needSelect=Selecione uma conta
 ui.alt.copied=Conta copiada para sua área de transferência.
 ui.alt.imported=As contas foram importadas com sucesso.
-ui.alt.emptyList=A lista está vazia.
+ui.alt.emptyList=A lista está vazia
 ui.alt.loggingIn=Fazendo login ...
 ui.alt.clipBoardLogin=Login da área de transferência
 ui.alt.fillBoth=Você deve preencher os dois campos!
@@ -75,17 +75,17 @@ notify.module.title=Módulo
 notify.module.enable=Ativado %s
 notify.module.disable=Desativado %s
 
-module.category.combat=Combate
-module.category.player=Jogador
-module.category.movement=Movimento
+module.category.combat=Combat
+module.category.player=Player
+module.category.movement=Movement
 module.category.render=Render
-module.category.client=Cliente
-module.category.world=Mundo
+module.category.client=Client
+module.category.world=World
 module.category.misc=Misc
-module.category.exploit=Explorar
+module.category.exploit=Exploit
 
 module.Aimbot.name=Aimbot
-module.Aimbot.description=Enfrenta automaticamente entidades selecionadas ao seu redor
+module.Aimbot.description=Auxiliam a mirar com maior precisão
 
 module.Ambience.name=Ambience
 module.Ambience.description=Mudar o tempo do ambiente
@@ -94,13 +94,13 @@ module.Animations.name=Animations
 module.Animations.description=Permite alterar as animações da espada enquanto bloqueia e animação de inventário
 
 module.AntiAim.name=AntiAim
-module.AntiAim.description=Anti visando como CS:GO
+module.AntiAim.description=Igual os cheats de CS:GO
 
 module.AntiBlind.name=AntiBlind
-module.AntiBlind.description=Cancela efeitos de cegueira
+module.AntiBlind.description=Cancela efeitos
 
 module.AntiBot.name=AntiBot
-module.AntiBot.description=Impede que o KillAura ataque bots do AntiCheat
+module.AntiBot.description=Impede atacar bots do AntiCheat
 
 module.AntiFireBall.name=AntiFireBall
 module.AntiFireBall.description=Acerte a bola de fogo automaticamente para deixá-la voltar
@@ -213,7 +213,7 @@ module.Clip.name=Clip
 module.Clip.description=Permite que você recorte blocos
 
 module.Criticals.name=Criticals
-module.Criticals.description=Lida automaticamente com ocorrências críticas
+module.Criticals.description=Permite que você dê danos criticos
 
 module.DamageParticle.name=DamageParticle
 module.DamageParticle.description=Permite que você veja os danos dos alvos
@@ -253,7 +253,7 @@ module.Freeze.description=Permite que você fique preso no ar
 module.Fucker.name=Fucker
 module.Fucker.description=Destrói os blocos selecionados ao seu redor
 
-module.Gapple.name=Maças
+module.Gapple.name=AutoGapple
 module.Gapple.description=Comer Maças
 
 module.GhostHand.name=GhostHand
@@ -283,10 +283,10 @@ module.HurtCam.description=Altera o efeito da câmera danificada
 module.InfiniteAura.name=InfiniteAura
 module.InfiniteAura.description=Atingir inimigos de longe
 
-module.InventoryCleaner.name=InventoryCleaner
+module.InventoryCleaner.name=InvCleaner
 module.InventoryCleaner.description=Automaticamente joga fora itens inúteis e classifica seu inventário
 
-module.InventoryMove.name=MoverInventario
+module.InventoryMove.name=InvMove
 module.InventoryMove.description=Permite que você ande enquanto um inventário é aberto
 
 module.ItemESP.name=ItemESP
@@ -313,17 +313,17 @@ module.Jesus.description=Permite que você ande sobre a água
 module.LongJump.name=LongJump
 module.LongJump.description=Permite que você vá mais longe
 
-module.MessageSpam.name=SpammarMensagens
+module.MessageSpam.name=MessageSpam
 module.MessageSpam.description=Mensagens de spam (apenas redesenhado)
 
-module.MidClick.name=AdicionarAmigo
+module.MidClick.name=MidClick
 module.MidClick.description=Permite que você adicione um jogador como amigo clicando com o botão direito nele.
 
 module.NameProtect.name=NameProtect
 module.NameProtect.description=Altera os nomes dos jogadores do lado do cliente
 
-module.NameTags.name=Crachas
-module.NameTags.description=Altera a escala dos crachás para que você possa sempre lê-los
+module.NameTags.name=NameTags
+module.NameTags.description=Permite lê o nome dos oponentes
 
 module.NoBob.name=NoBob
 module.NoBob.description=Desativa o efeito de oscilação da vista
@@ -371,7 +371,7 @@ module.Projectiles.name=Projectiles
 module.Projectiles.description=Permite que você veja onde as setas irão parar
 
 module.Reach.name=Reach
-module.Reach.description=Aumenta seu alcance
+module.Reach.description=Aumente seu alcance
 
 module.Regen.name=Regen
 module.Regen.description=Regenera sua saúde muito mais rápido
@@ -412,9 +412,6 @@ module.SuperKnockback.description=Aumenta o knockback negociado para outras enti
 module.Target.name=Target
 module.Target.description=Configurações de alvo destino
 
-module.TargetStrafe.name=TargetStrafe
-module.TargetStrafe.description=TargetStrafe
-
 module.Teams.name=Teams
 module.Teams.description=Evita que modules ataque companheiros de equipe
 
@@ -440,5 +437,22 @@ module.IRC.name=IRC
 module.IRC.description=Permitir que você converse com outros usuários
 
 module.Crosshair.name=CrossHair
-module.Crosshair.description=Alterar uma cruz melhor
+module.Crosshair.description=Permite customizar a mira
 
+module.Damage.name=Damage
+module.Damage.description=Permite que você se machuque
+
+module.ChinaHat.name=ChinaHat
+module.ChinaHat.description=Um lindo chapeu
+
+module.Skeletal.name=Skeletal
+module.Skeletal.description=Veja esqueletos LOL
+
+module.Spider.name=Spider
+module.Spider.description=Faz você escalar como uma aranha
+
+module.NoAchievements.name=NoAchievements
+module.NoAchievements.description=Desativa alerta de conquistas
+
+module.TargetStrafe.name=TargetStrafe
+module.TargetStrafe.description=Strafe em torno de seu alvo.
