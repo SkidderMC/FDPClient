@@ -38,7 +38,7 @@ class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
         GL11.glNewList(list, GL11.GL_COMPILE_AND_EXECUTE)
 
         RenderUtils.drawAWTShape(font.createGlyphVector(FontRenderContext(AffineTransform(), true, false), char)
-            .getOutline(0f, fontMetrics.ascent.toFloat()), font.size * HUD.fontEpsilonValue.get().toDouble())
+            .getOutline(0f, fontMetrics.ascent.toFloat()), HUD.fontEpsilonValue.get().toDouble())
 
         GL11.glEndList()
 
