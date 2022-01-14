@@ -44,7 +44,7 @@ object HUD : Module() {
     val arraylistYAxisAnimSpeedValue = IntegerValue("ArraylistYAxisAnimSpeed", 10, 5, 20)
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder")
-    val fontEpsilonValue = FloatValue("FontEpsilon", 0.05f, 0f, 0.2f)
+    val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 0.2f)
     val fontDoubleRenderValue = BoolValue("FontDoubleRender", true)
     val fontOnlyASCIIValue = BoolValue("FontOnlyASCII", false)
 
