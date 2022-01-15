@@ -256,12 +256,11 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glBlendFunc(770, 771)
         GL11.glEnable(2848)
         GL11.glShadeModel(7425)
-        fun renderSideway(x: Int, x1: Int) {
-            RenderUtils.quickDrawGradientSideways(x.toDouble(), 39.0, x1.toDouble(), 45.0, ColorUtils.hslRainbow(x, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1, indexOffset = 10).rgb)
-        }
         val stopPos = (5 + ((135 - font.getStringWidth(decimalFormat.format(target.maxHealth))) * (easingHP / target.maxHealth))).toInt()
         for (i in 5..stopPos step 5) {
-            renderSideway(i, (i + 5).coerceAtMost(stopPos))
+            val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
+            RenderUtils.quickDrawGradientSideways(i.toDouble(), 39.0, x1, 45.0,
+                ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
         }
         GL11.glEnable(3553)
         GL11.glDisable(3042)

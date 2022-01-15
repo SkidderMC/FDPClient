@@ -10,12 +10,18 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.client.button.FLineButtonRenderer
+import net.ccbluex.liquidbounce.features.module.modules.client.button.AbstractButtonRenderer
+import net.ccbluex.liquidbounce.features.module.modules.client.button.RiseButtonRenderer
+import net.ccbluex.liquidbounce.features.module.modules.client.button.RoundedButtonRenderer
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.util.ResourceLocation
 
@@ -47,6 +53,7 @@ object HUD : Module() {
     val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
     val fontDoubleRenderValue = BoolValue("FontDoubleRender", true)
     val fontOnlyASCIIValue = BoolValue("FontOnlyASCII", false)
+    private val buttonValue = ListValue("Button", arrayOf("FLine", "Rounded", "Rise", "Vanilla"), "FLine")
 
     private var lastFontEpsilon = 0f
 
@@ -105,9 +112,18 @@ object HUD : Module() {
         LiquidBounce.hud.handleKey('a', event.key)
     }
 
-    fun getEasePos(x: Int): Int {
+    fun getHotbarEasePos(x: Int): Int {
         if(!state || !hotbarEaseValue.get()) return x
         easingValue = x
         return easingValue
+    }
+
+    fun getButtonRenderer(button: GuiButton): AbstractButtonRenderer? {
+        return when (buttonValue.get().lowercase()) {
+            "fline" -> FLineButtonRenderer(button)
+            "rounded" -> RoundedButtonRenderer(button)
+            "rise" -> RiseButtonRenderer(button)
+            else -> null // vanilla or unknown
+        }
     }
 }
