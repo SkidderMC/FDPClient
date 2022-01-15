@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import java.awt.Font
 import java.awt.font.FontRenderContext
 import java.awt.geom.AffineTransform
