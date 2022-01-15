@@ -62,7 +62,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             int i = sr.getScaledWidth() / 2;
             float f = this.zLevel;
             this.zLevel = -90.0F;
-            int itemX = i - 91 + HUD.INSTANCE.getEasePos(entityplayer.inventory.currentItem * 20);
+            int itemX = i - 91 + HUD.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
             if(canBetterHotbar) {
                 RenderUtils.drawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HUD.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.drawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.rainbow());
