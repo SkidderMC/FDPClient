@@ -25,7 +25,7 @@ import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
 class LongJump : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("NCP", "NCPDamage", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "BlocksMC", "BlocksMC2", "HYT4v4"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("NCP", "NCPDamage", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "OldBlocksMC", "OldBlocksMC2", "HYT4v4"), "NCP")
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
     // redesky
@@ -250,7 +250,7 @@ class LongJump : Module() {
                         }
                     }
 
-                    "blocksmc" -> {
+                    "oldblocksmc" -> {
                         mc.thePlayer.jumpMovementFactor = 0.1f
                         mc.thePlayer.motionY += 0.0132
                         mc.thePlayer.jumpMovementFactor = 0.09f
@@ -258,7 +258,7 @@ class LongJump : Module() {
                         MovementUtils.strafe()
                     }
 
-                    "blocksmc2" -> {
+                    "oldblocksmc2" -> {
                         mc.thePlayer.motionY += 0.01554
                         MovementUtils.strafe(MovementUtils.getSpeed() * 1.114514f)
                         mc.timer.timerSpeed = 0.917555f
