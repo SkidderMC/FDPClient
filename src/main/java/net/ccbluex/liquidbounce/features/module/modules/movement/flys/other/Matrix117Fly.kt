@@ -46,10 +46,10 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
                 break
             }
         }
-        if(!dontPlace || mc.thePlayer.posY + 1 > fly.launchY) {
-            dontPlace = !dontPlace
+        if(!dontPlace) {
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), -1, null, 0f, 0f, 0f))
         }
+        dontPlace = false
         if(mc.thePlayer.onGround) {
             if (mc.gameSettings.keyBindJump.isKeyDown) {
                 fly.launchY += 0.5
