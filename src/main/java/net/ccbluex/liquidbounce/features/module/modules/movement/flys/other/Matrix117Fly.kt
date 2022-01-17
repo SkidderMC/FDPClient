@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
@@ -14,9 +15,11 @@ import net.minecraft.util.BlockPos
 class Matrix117Fly : FlyMode("Matrix1.17") {
 
     private var dontPlace = false
+    private var noRotate = false
 
     override fun onEnable() {
         dontPlace = true
+        noRotate = false
     }
 
     override fun onDisable() {
@@ -28,7 +31,8 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
     override fun onMotion(event: MotionEvent) {
         if(event.eventState == EventState.PRE) {
             if(mc.thePlayer.posY < fly.launchY + 0.15 && mc.thePlayer.posY > fly.launchY + 0.05) {
-                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, true))
+                noRotate = true
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), -1, null, 0f, 0f, 0f))
             }
         }
@@ -43,10 +47,15 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
             }
         }
         if(!dontPlace || mc.thePlayer.posY + 1 > fly.launchY) {
-            dontPlace = true
+            dontPlace = !dontPlace
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), -1, null, 0f, 0f, 0f))
         }
         if(mc.thePlayer.onGround) {
+            if (mc.gameSettings.keyBindJump.isKeyDown) {
+                fly.launchY += 0.5
+            } else if (mc.gameSettings.keyBindSneak.isKeyDown) {
+                fly.launchY -= 0.5
+            }
             mc.thePlayer.jump()
             dontPlace = true
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), -1, null, 0f, 0f, 0f))
@@ -56,7 +65,7 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
             mc.thePlayer.motionX *= 0.8
             mc.thePlayer.motionZ *= 0.8
         }
-        mc.timer.timerSpeed = 1.7f
+//        mc.timer.timerSpeed = 1.7f
     }
 
     override fun onPacket(event: PacketEvent) {
