@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
 import net.ccbluex.liquidbounce.event.BlockBBEvent
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
@@ -39,8 +38,8 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
         }
         mc.thePlayer.onGround = false
         if(mc.thePlayer.motionY < 0) {
-            mc.thePlayer.motionX *= 0.7
-            mc.thePlayer.motionZ *= 0.7
+            mc.thePlayer.motionX *= 0.8
+            mc.thePlayer.motionZ *= 0.8
         }
         mc.timer.timerSpeed = 1.7f
     }
