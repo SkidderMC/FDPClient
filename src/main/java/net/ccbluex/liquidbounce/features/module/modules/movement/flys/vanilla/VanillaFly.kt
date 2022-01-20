@@ -14,6 +14,7 @@ class VanillaFly : FlyMode("Vanilla") {
     private val kickBypassValue = BoolValue("${valuePrefix}KickBypass", false)
     private val keepAliveValue = BoolValue("${valuePrefix}KeepAlive", false) // old KeepAlive fly combined
     private val noClipValue = BoolValue("${valuePrefix}NoClip", false)
+    private val spoofValue = BoolValue("${valuePrefix}SpoofGround", false)
 
     private var packets = 0
 
@@ -48,6 +49,9 @@ class VanillaFly : FlyMode("Vanilla") {
         val packet = event.packet
 
         if (packet is C03PacketPlayer) {
+            if(spoofValue.get()) {
+                packet.onGround = true
+            }
             packets++
             if (packets == 40 && kickBypassValue.get()) {
                 MovementUtils.handleVanillaKickBypass()
