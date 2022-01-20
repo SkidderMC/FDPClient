@@ -472,6 +472,15 @@ public final class RenderUtils extends MinecraftInstance {
         glEnd();
     }
 
+    public static void quickDrawRect(final float x, final float y, final float x2, final float y2, final int color) {
+        glColor(color);
+        quickDrawRect(x, y, x2, y2);
+    }
+
+    public static void quickDrawRect(final float x, final float y, final float x2, final float y2, final Color color) {
+        quickDrawRect(x, y, x2, y2, color.getRGB());
+    }
+
     public static void drawRect(final float x, final float y, final float x2, final float y2, final int color) {
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);

@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -12,11 +13,19 @@ import net.minecraft.util.BlockPos
 
 class Matrix117Fly : FlyMode("Matrix1.17") {
 
+    /**
+     * 在空中发送onGround包会增加FakeGround VL
+     */
+    private val resetFallDistValue = BoolValue("ResetFallDist", true)
+
     private var dontPlace = false
     private var airCount = 0
+    private var yChanged = false
 
     override fun onEnable() {
         dontPlace = true
+//        airCount = 0
+        yChanged = false
     }
 
     override fun onDisable() {
@@ -26,7 +35,7 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
     }
 
     override fun onMotion(event: MotionEvent) {
-        if(event.eventState == EventState.PRE) {
+        if(event.eventState == EventState.PRE && resetFallDistValue.get()) {
             if(mc.thePlayer.posY < fly.launchY + 0.15 && mc.thePlayer.posY > fly.launchY + 0.05) {
                 airCount++
                 if(airCount >= 3) {
@@ -38,6 +47,10 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        if(yChanged) {
+            mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionZ = 0.0
+        }
         for(i in 0..8) {
             // find a empty inventory slot
             if(mc.thePlayer.inventory.mainInventory[i] == null) {
@@ -50,6 +63,16 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), -1, null, 0f, 0f, 0f))
         }
         if(mc.thePlayer.onGround) {
+            if (!yChanged) {
+                if(mc.gameSettings.keyBindJump.pressed) {
+                    yChanged = true
+                    fly.launchY += 1
+                } else if(mc.gameSettings.keyBindSneak.pressed) {
+                    yChanged = true
+                    fly.launchY -= 1
+                }
+            }
+            yChanged = false
             mc.thePlayer.jump()
             dontPlace = true
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), -1, null, 0f, 0f, 0f))
