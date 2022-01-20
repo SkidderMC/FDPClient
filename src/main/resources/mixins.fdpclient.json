@@ -57,6 +57,7 @@
   "client": [
     "gui.MixinGui",
     "gui.MixinGuiKeyBindingList",
+    "gui.MixinGuiPlayerTabOverlay",
     "gui.MixinGuiSlot",
     "render.MixinModelPlayer"
   ]

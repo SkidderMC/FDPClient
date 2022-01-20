@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
@@ -14,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -39,6 +41,10 @@ public abstract class MixinGuiInGame extends MixinGui {
     @Shadow @Final
     protected static ResourceLocation widgetsTexPath;
 
+    @Shadow @Final protected GuiPlayerTabOverlay overlayPlayerList;
+
+    @Shadow @Final protected Minecraft mc;
+
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
     private void renderScoreboard(CallbackInfo callbackInfo) {
         if (LiquidBounce.moduleManager.getModule(HUD.class).getState())
@@ -51,6 +57,16 @@ public abstract class MixinGuiInGame extends MixinGui {
     @Overwrite
     protected void renderTooltip(ScaledResolution sr, float partialTicks) {
         final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
+
+        float tabHope = this.mc.gameSettings.keyBindPlayerList.isKeyDown() ? 1f : 0f;
+        final Animations animations = Animations.INSTANCE;
+        if(animations.getTabHopePercent() != tabHope) {
+            animations.setLastTabSync(System.currentTimeMillis());
+            animations.setTabHopePercent(tabHope);
+        }
+        if(animations.getTabPercent() > 0 && tabHope == 0) {
+            overlayPlayerList.renderPlayerlist(sr.getScaledWidth(), mc.theWorld.getScoreboard(), mc.theWorld.getScoreboard().getObjectiveInDisplaySlot(0));
+        }
 
         if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
             boolean canBetterHotbar = hud.getState() && hud.getBetterHotbarValue().get();
