@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.render
+package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -9,20 +9,25 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 
-@ModuleInfo(name = "Animations", category = ModuleCategory.RENDER)
-class Animations : Module() {
+@ModuleInfo(name = "Animations", category = ModuleCategory.CLIENT, canEnable = false)
+object Animations : Module() {
     val blockingModeValue = ListValue(
         "BlockingMode", arrayOf(
             "Akrien", "Avatar", "ETB", "Exhibition", "Push", "Reverse",
             "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX",
-            "Swank", "Jello", "None", "Rotate"
+            "Swank", "Jello", "Rotate", "Liquid", "None"
         ),
         "SlideDown"
     )
     val invModeValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Slide")
     val invEaseMode = EaseUtils.getEnumEasingList("InvEase")
     val invEaseOrderMode = EaseUtils.getEnumEasingOrderList("InvEaseOrder")
-    val timeValue = IntegerValue("InvTime", 500, 100, 500).displayable { !invModeValue.equals("None") }
+    val invTimeValue = IntegerValue("InvTime", 500, 0, 1000).displayable { !invModeValue.equals("None") }
+    private val tabShowPlayerSkin = BoolValue("TabShowPlayerSkin", false)
+    val tabModeValue = ListValue("TabMode", arrayOf("None", "UpSlide", "DownSlide", "Zoom"), "Zoom")
+    val tabEaseMode = EaseUtils.getEnumEasingList("TabEase")
+    val tabEaseOrderMode = EaseUtils.getEnumEasingOrderList("TabEaseOrder")
+    val tabTimeValue = IntegerValue("TabTime", 500, 0, 1000).displayable { !tabModeValue.equals("None") }
     val translateX = FloatValue("TranslateX", 0.0f, 0.0f, 1.5f)
     val translateY = FloatValue("TranslateY", 0.0f, 0.0f, 0.5f)
     val translateZ = FloatValue("TranslateZ", 0.0f, 0.0f, -2.0f)
@@ -34,6 +39,10 @@ class Animations : Module() {
     val swingSpeed = FloatValue("SwingSpeed", 1f, 0.5f, 5.0f)
     val anythingBlock = BoolValue("AnythingBlock", false)
 
-    override val tag: String
-        get() = blockingModeValue.get()
+    var flagRenderTabOverlay = false
+        get() = field && tabShowPlayerSkin.get()
+
+    var tabPercent = 0f
+    var tabHopePercent = 0f
+    var lastTabSync = 0L
 }

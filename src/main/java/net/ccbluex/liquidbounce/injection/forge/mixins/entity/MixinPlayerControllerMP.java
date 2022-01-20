@@ -23,7 +23,7 @@ public class MixinPlayerControllerMP {
 
     @Inject(method = "attackEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;syncCurrentPlayItem()V"), cancellable = true)
     private void attackEntity(EntityPlayer entityPlayer, Entity targetEntity, CallbackInfo callbackInfo) {
-        AttackEvent event=new AttackEvent(targetEntity);
+        final AttackEvent event = new AttackEvent(targetEntity);
         LiquidBounce.eventManager.callEvent(event);
         if(event.isCancelled())
             callbackInfo.cancel();
