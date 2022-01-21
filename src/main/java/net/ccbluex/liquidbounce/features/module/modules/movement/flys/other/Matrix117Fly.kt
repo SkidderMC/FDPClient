@@ -16,16 +16,28 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
     /**
      * 在空中发送onGround包会增加FakeGround VL
      */
-    private val resetFallDistValue = BoolValue("ResetFallDist", true)
+    private val resetFallDistValue = BoolValue("${valuePrefix}-SpoofGround", true)
 
     private var dontPlace = false
     private var airCount = 0
     private var yChanged = false
+    private var hasEmptySlot = false
 
     override fun onEnable() {
         dontPlace = true
 //        airCount = 0
         yChanged = false
+        hasEmptySlot = false
+        for(i in 0..8) {
+            // find a empty inventory slot
+            if(mc.thePlayer.inventory.mainInventory[i] == null) {
+                hasEmptySlot = true
+            }
+        }
+        if(!hasEmptySlot) {
+            fly.state = false
+            ClientUtils.displayChatMessage("§8[§c§lMatrix1.17-§a§lFly§8] §aYou need to have an empty slot to fly.")
+        }
     }
 
     override fun onDisable() {
