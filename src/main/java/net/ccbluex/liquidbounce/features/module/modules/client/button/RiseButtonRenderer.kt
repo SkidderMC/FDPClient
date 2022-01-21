@@ -30,6 +30,5 @@ class RiseButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
             GL11.glShadeModel(7424)
             GL11.glColor4f(1f, 1f, 1f, 1f)
         }
-        drawButtonText(mc)
     }
 }

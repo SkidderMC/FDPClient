@@ -90,9 +90,9 @@ object GuiCapeManager : GuiScreen() {
 
     // render
     override fun initGui() {
-        this.buttonList.add(GuiButton(0, 0, 0, Fonts.font40.getStringWidth("< QUIT") + 10, 20, "< QUIT"))
-        this.buttonList.add(GuiButton(1, (width * 0.3).toInt(), (height * 0.5).toInt(), Fonts.font40.getStringWidth("<-") + 10, 20, "<-"))
-        this.buttonList.add(GuiButton(2, (width * 0.7).toInt(), (height * 0.5).toInt(), Fonts.font40.getStringWidth("->") + 10, 20, "->"))
+        this.buttonList.add(GuiButton(0, 0, 0, mc.fontRendererObj.getStringWidth("< QUIT") + 10, 20, "< QUIT"))
+        this.buttonList.add(GuiButton(1, (width * 0.3).toInt(), (height * 0.5).toInt(), mc.fontRendererObj.getStringWidth("<-") + 10, 20, "<-"))
+        this.buttonList.add(GuiButton(2, (width * 0.7).toInt(), (height * 0.5).toInt(), mc.fontRendererObj.getStringWidth("->") + 10, 20, "->"))
     }
 
     override fun actionPerformed(p_actionPerformed_1_: GuiButton) {
@@ -125,9 +125,9 @@ object GuiCapeManager : GuiScreen() {
         this.drawDefaultBackground()
 
         GL11.glPushMatrix()
-        Fonts.font40.drawCenteredString(if (nowCape == null) { "§cNONE" } else { "§a${nowCape!!.name}" }, width * 0.50f, height * 0.23f, -1, false)
+        mc.fontRendererObj.drawCenteredString(if (nowCape == null) { "§cNONE" } else { "§a${nowCape!!.name}" }, width * 0.50f, height * 0.23f, -1, false)
         GL11.glScalef(2f, 2f, 2f)
-        Fonts.font40.drawCenteredString("Cape Manager", width * 0.25f, height * 0.03f, -1, false)
+        mc.fontRendererObj.drawCenteredString("Cape Manager", width * 0.25f, height * 0.03f, -1, false)
         GL11.glPopMatrix()
 
         // draw buttons
