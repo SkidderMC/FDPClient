@@ -7,4 +7,4 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.value.FontValue
 
 @ModuleInfo(name = "BetterFont", category = ModuleCategory.RENDER)
-class BetterFont : Module()
+object BetterFont : Module()
