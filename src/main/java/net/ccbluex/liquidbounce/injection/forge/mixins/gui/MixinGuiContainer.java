@@ -4,6 +4,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.KeyEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
+import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -52,8 +53,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                 mc.currentScreen = guiScreen;
                 // hide GUI
                 if (chestStealer.getSilentTitleValue().get()) {
-                    String tipString = "%ui.chest.stealing%";
-                    mc.fontRendererObj.drawString(tipString, (width / 2) - (mc.fontRendererObj.getStringWidth(tipString) / 2), (height / 2) + 30, 0xffffffff);
+                    RendererExtensionKt.drawCenteredString(mc.fontRendererObj, "%ui.chest.stealing%", width / 2, (height / 2) + 30, 0xffffffff, false);
                 }
                 callbackInfo.cancel();
             }

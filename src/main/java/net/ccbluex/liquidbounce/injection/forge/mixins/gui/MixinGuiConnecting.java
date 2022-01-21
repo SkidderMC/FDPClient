@@ -69,8 +69,8 @@ public abstract class MixinGuiConnecting extends GuiScreen {
         if(serverData != null)
             ip = serverData.serverIP;
 
-        RendererExtensionKt.drawCenteredString(Fonts.font40, "Connecting to", scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 4 + 110, 0xFFFFFF, true);
-        RendererExtensionKt.drawCenteredString(Fonts.font40, ip, scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 4 + 120, 0x5281FB, true);
+        RendererExtensionKt.drawCenteredString(mc.fontRendererObj, "Connecting to", scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 4 + 110, 0xFFFFFF, true);
+        RendererExtensionKt.drawCenteredString(mc.fontRendererObj, ip, scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 4 + 120, 0x5281FB, true);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
