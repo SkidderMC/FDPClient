@@ -9,8 +9,9 @@ import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
-import net.ccbluex.liquidbounce.utils.render.glu.TessCallback;
 import net.ccbluex.liquidbounce.utils.render.glu.VertexData;
+import net.ccbluex.liquidbounce.utils.render.glu.tess.CacheTessCallback;
+import net.ccbluex.liquidbounce.utils.render.glu.tess.DirectTessCallback;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -27,6 +28,7 @@ import net.minecraft.util.Timer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.GLUtessellator;
+import org.lwjgl.util.glu.GLUtessellatorCallbackAdapter;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -1076,21 +1078,31 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glHint(3155, 4352);
     }
 
+    public static void directDrawAWTShape(Shape shape, double epsilon) {
+        drawAWTShape(shape, epsilon, DirectTessCallback.INSTANCE);
+    }
+
+    public static CacheTessCallback.VertexCache cacheDrawAWTShape(Shape shape, double epsilon) {
+        CacheTessCallback.INSTANCE.record();
+        drawAWTShape(shape, epsilon, CacheTessCallback.INSTANCE);
+        return CacheTessCallback.INSTANCE.getResult();
+    }
+
     /**
      * 在LWJGL中渲染AWT图形
      * @param shape 准备渲染的图形
      * @param epsilon 图形精细度，传0不做处理
      */
-    public static void drawAWTShape(Shape shape, double epsilon) {
+    public static void drawAWTShape(Shape shape, double epsilon, GLUtessellatorCallbackAdapter gluTessCallback) {
         PathIterator path=shape.getPathIterator(new AffineTransform());
         Double[] cp=new Double[2]; // 记录上次操作的点用于计算曲线
 
         GLUtessellator tess = GLU.gluNewTess(); // 创建GLUtessellator用于渲染凹多边形（GL_POLYGON只能渲染凸多边形）
 
-        tess.gluTessCallback(GLU.GLU_TESS_BEGIN, TessCallback.INSTANCE);
-        tess.gluTessCallback(GLU.GLU_TESS_END, TessCallback.INSTANCE);
-        tess.gluTessCallback(GLU.GLU_TESS_VERTEX, TessCallback.INSTANCE);
-        tess.gluTessCallback(GLU.GLU_TESS_COMBINE, TessCallback.INSTANCE);
+        tess.gluTessCallback(GLU.GLU_TESS_BEGIN, gluTessCallback);
+        tess.gluTessCallback(GLU.GLU_TESS_END, gluTessCallback);
+        tess.gluTessCallback(GLU.GLU_TESS_VERTEX, gluTessCallback);
+        tess.gluTessCallback(GLU.GLU_TESS_COMBINE, gluTessCallback);
 
         switch (path.getWindingRule()){
             case PathIterator.WIND_EVEN_ODD:{

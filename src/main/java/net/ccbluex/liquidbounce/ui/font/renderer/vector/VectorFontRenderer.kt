@@ -21,30 +21,22 @@ import java.awt.geom.AffineTransform
 class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
 
     override fun drawChar(char: String): Int {
-        if (cachedChars.containsKey(char)) {
-            val cached = cachedChars[char]!! as CachedVectorFont
+        if (!cachedChars.containsKey(char)) {
+            val vc = RenderUtils.cacheDrawAWTShape(font.createGlyphVector(FontRenderContext(AffineTransform(), true, false), char)
+                .getOutline(0f, fontMetrics.ascent.toFloat()), HUD.fontEpsilonValue.get().toDouble())
 
-            GL11.glCallList(cached.displayList)
-            if(HUD.fontDoubleRenderValue.get()) {
-                GL11.glCallList(cached.displayList) // TODO: stupid solutions, find a better way
-            }
-            cached.lastUsage = System.currentTimeMillis()
-
-            return cached.width
+            val width = fontMetrics.stringWidth(char)
+            cachedChars[char] = CachedVectorFont(vc, width)
         }
+        val cached = cachedChars[char]!! as CachedVectorFont
 
-        val list = GL11.glGenLists(1)
-        GL11.glNewList(list, GL11.GL_COMPILE_AND_EXECUTE)
+        cached.vc.render()
+        if(HUD.fontDoubleRenderValue.get()) {
+            cached.vc.render() // TODO: stupid solutions, find a better way
+        }
+        cached.lastUsage = System.currentTimeMillis()
 
-        RenderUtils.drawAWTShape(font.createGlyphVector(FontRenderContext(AffineTransform(), true, false), char)
-            .getOutline(0f, fontMetrics.ascent.toFloat()), HUD.fontEpsilonValue.get().toDouble())
-
-        GL11.glEndList()
-
-        val width = fontMetrics.stringWidth(char)
-        cachedChars[char] = CachedVectorFont(list, width)
-
-        return width
+        return cached.width
     }
 
     override fun preGlHints() {

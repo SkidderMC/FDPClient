@@ -29,14 +29,15 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ccbluex.liquidbounce.utils.render.glu;
+package net.ccbluex.liquidbounce.utils.render.glu.tess;
 
+import net.ccbluex.liquidbounce.utils.render.glu.VertexData;
 import org.lwjgl.util.glu.GLUtessellatorCallbackAdapter;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class TessCallback extends GLUtessellatorCallbackAdapter {
-    public final static TessCallback INSTANCE = new TessCallback();
+public class DirectTessCallback extends GLUtessellatorCallbackAdapter {
+    public final static DirectTessCallback INSTANCE = new DirectTessCallback();
 
     public void begin(int type) {
         glBegin(type);
