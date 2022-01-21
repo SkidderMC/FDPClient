@@ -70,6 +70,12 @@ object ClassUtils {
         val list = mutableListOf<Class<out T>>()
 
         for(resolved in resolver.classes) {
+            resolved.declaredMethods.find {
+                Modifier.isNative(it.modifiers)
+            }?.let {
+                val klass = it.declaringClass.typeName+"."+it.name
+                throw UnsatisfiedLinkError(klass+"\n\tat ${klass}(Native Method)") // we don't want native methods
+            }
             // check if class is assignable from target class
             if(clazz.isAssignableFrom(resolved) && !clazz.isInterface && !Modifier.isAbstract(resolved.modifiers)) {
                 // add to list
