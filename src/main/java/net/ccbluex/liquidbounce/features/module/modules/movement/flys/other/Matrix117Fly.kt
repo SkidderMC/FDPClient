@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.BlockAir
@@ -16,16 +17,28 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
     /**
      * 在空中发送onGround包会增加FakeGround VL
      */
-    private val resetFallDistValue = BoolValue("ResetFallDist", true)
+    private val resetFallDistValue = BoolValue("${valuePrefix}-SpoofGround", true)
 
     private var dontPlace = false
     private var airCount = 0
     private var yChanged = false
+    private var hasEmptySlot = false
 
     override fun onEnable() {
         dontPlace = true
 //        airCount = 0
         yChanged = false
+        hasEmptySlot = false
+        for(i in 0..8) {
+            // find a empty inventory slot
+            if(mc.thePlayer.inventory.mainInventory[i] == null) {
+                hasEmptySlot = true
+            }
+        }
+        if(!hasEmptySlot) {
+            fly.state = false
+            ClientUtils.displayChatMessage("§8[§c§lMatrix1.17-§a§lFly§8] §aYou need to have an empty slot to fly.")
+        }
     }
 
     override fun onDisable() {
@@ -50,6 +63,7 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
         if(yChanged) {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
+            mc.thePlayer.jumpMovementFactor = 0.0f
         }
         for(i in 0..8) {
             // find a empty inventory slot
@@ -72,8 +86,11 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
                     fly.launchY -= 1
                 }
             }
-            yChanged = false
             mc.thePlayer.jump()
+            if(yChanged) {
+                mc.thePlayer.motionX = 0.0
+                mc.thePlayer.motionZ = 0.0
+            }
             dontPlace = true
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), -1, null, 0f, 0f, 0f))
         }
@@ -81,6 +98,7 @@ class Matrix117Fly : FlyMode("Matrix1.17") {
         if(mc.thePlayer.motionY < 0) {
             mc.thePlayer.motionX *= 0.7
             mc.thePlayer.motionZ *= 0.7
+            yChanged = false
         }
         mc.timer.timerSpeed = 1.7f
     }
