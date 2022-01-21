@@ -52,7 +52,6 @@ public class MixinGuiPlayerTabOverlay {
                 break;
             }
             case "zoom": {
-                System.out.println(pct);
                 GL11.glScalef(1f, pct, 1f);
             }
         }
