@@ -13,10 +13,7 @@ import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
@@ -34,6 +31,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
     private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
+    private val arrisRoundedValue = BoolValue("ArrisRounded", true)
     private val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
     private val riseSizeValue = FloatValue("Rise-Size", 1f, 0.5f, 3f)
     private val riseAlphaValue = FloatValue("Rise-Alpha", 0.7f, 0.1f, 1f)
@@ -338,7 +336,12 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         val hp = decimalFormat.format(easingHP)
         val additionalWidth = font.getStringWidth("${target.name}  ${hp} hp").coerceAtLeast(75)
-        RenderUtils.drawCircleRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
+        if(arrisRoundedValue.get()){
+            RenderUtils.drawCircleRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
+        } else {
+            RenderUtils.drawRect(0f, 0f, 45f + additionalWidth, 1f, ColorUtils.rainbow())
+            RenderUtils.drawRect(0f, 1f, 45f + additionalWidth, 40f, Color(0, 0, 0, 110).rgb)
+        }
 
         RenderUtils.quickDrawHead(target.skin, 5, 5, 30, 30)
 
