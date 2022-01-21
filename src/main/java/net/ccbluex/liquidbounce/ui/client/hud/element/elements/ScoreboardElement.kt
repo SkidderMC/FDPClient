@@ -56,6 +56,7 @@ class ScoreboardElement(
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
 
+    private val rainbowBarValue = BoolValue("RainbowBar", false)
     private val shadowValue = BoolValue("Shadow", false)
     private val serverValue = ListValue("ServerIp", arrayOf("None", "ClientName", "Website"), "Website")
     private val noPointValue = BoolValue("NoPoints", false)
@@ -112,6 +113,9 @@ class ScoreboardElement(
         val maxHeight = scoreCollection.size * fontRenderer.FONT_HEIGHT
         val l1 = -maxWidth - 3 - if (rectValue.get()) 3 else 0
 
+        if(rainbowBarValue.get()) {
+            Gui.drawRect(l1 - 2, -3, 5, -2, ColorUtils.rainbow().rgb)
+        }
         Gui.drawRect(l1 - 2, -2, 5, maxHeight + fontRenderer.FONT_HEIGHT, backColor)
 
         scoreCollection.forEachIndexed { index, score ->
