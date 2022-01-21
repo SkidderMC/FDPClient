@@ -391,14 +391,12 @@ class NoFall : Module() {
                     currentMlgRotation!!.rotation.toPlayer(mc.thePlayer)
                 }
             } else if (currentMlgRotation != null) {
-                val stack = mc.thePlayer.inventory.getStackInSlot(currentMlgItemIndex + 36)
+                val stack = mc.thePlayer.inventory.mainInventory[currentMlgItemIndex]
 
                 if (stack.item is ItemBucket) {
                     mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, stack)
                 } else {
-                    val dirVec = EnumFacing.UP.directionVec
-
-                    if (mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, stack)) {
+                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, currentMlgBlock, EnumFacing.UP, Vec3(0.0,0.0,0.0))) {
                         mlgTimer.reset()
                     }
                 }
