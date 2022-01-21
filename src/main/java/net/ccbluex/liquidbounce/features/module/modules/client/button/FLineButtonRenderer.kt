@@ -39,8 +39,6 @@ class FLineButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
             RenderUtils.drawRect(center - percent * half, (button.yPosition + button.height - 1).toDouble(), center + percent * half, (button.yPosition + button.height).toDouble(), Color.WHITE.rgb)
         }
 
-        drawButtonText(mc)
-
         lastUpdate = time
     }
 }

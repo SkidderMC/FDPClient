@@ -52,11 +52,10 @@ class GuiAntiForge(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        Fonts.font40.drawCenteredString("%ui.antiForge%", width / 2f, height / 8f + 5f, 4673984, true)
+        mc.fontRendererObj.drawCenteredString("%ui.antiForge%", width / 2f, height / 8f + 5f, 4673984, true)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    @Throws(IOException::class)
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (Keyboard.KEY_ESCAPE == keyCode) {
             mc.displayGuiScreen(prevGui)
