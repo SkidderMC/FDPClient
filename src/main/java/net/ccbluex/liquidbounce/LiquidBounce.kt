@@ -39,6 +39,7 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
 import java.nio.charset.StandardCharsets
+import kotlin.concurrent.thread
 
 object LiquidBounce {
 
@@ -183,10 +184,12 @@ object LiquidBounce {
 
         fileManager.loadConfigs(fileManager.hudConfig, fileManager.xrayConfig)
 
-        try {
-            DiscordRPC.run()
-        } catch (e: Throwable) {
-            ClientUtils.logError("Failed to load DiscordRPC.", e)
+        thread {
+            try {
+                DiscordRPC.run()
+            } catch (e: Throwable) {
+                ClientUtils.logError("Failed to load DiscordRPC.", e)
+            }
         }
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
