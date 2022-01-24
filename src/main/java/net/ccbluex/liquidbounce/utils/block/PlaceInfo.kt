@@ -20,7 +20,6 @@ class PlaceInfo(
         /**
          * Allows you to find a specific place info for your [blockPos]
          */
-        @JvmStatic
         fun get(blockPos: BlockPos): PlaceInfo? {
             return when {
                 BlockUtils.canBeClicked(blockPos.add(0, -1, 0)) ->
