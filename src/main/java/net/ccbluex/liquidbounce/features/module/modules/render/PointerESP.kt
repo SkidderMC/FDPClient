@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -26,7 +27,7 @@ import kotlin.math.*
 
 @ModuleInfo(name = "PointerESP", category = ModuleCategory.RENDER)
 class PointerESP : Module() {
-//    private val dimensionValue = ListValue("Dimension", arrayOf("2d", "3d"), "2d")
+    private val dimensionValue = ListValue("Dimension", arrayOf("2d", "3d"), "2d")
     private val modeValue = ListValue("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
     private val lineWidthValue = FloatValue("LineWidth", 4f, 1f, 10f).displayable { modeValue.get().contains("Line") }
     private val redValue = IntegerValue("Red", 255, 0, 255).displayable { !rainbowValue.get() }
@@ -48,7 +49,10 @@ class PointerESP : Module() {
     private val radiusValue = IntegerValue("Radius", 70, 10, 100)
 
     @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    fun onRender2d(event: Render2DEvent) {
+        if(!dimensionValue.equals("2d"))
+            return
+
         val sr = ScaledResolution(mc)
 
         GL11.glPushMatrix()
@@ -57,6 +61,27 @@ class PointerESP : Module() {
         draw()
 
         GL11.glPopMatrix()
+    }
+
+    @EventTarget
+    fun onRender3d(event: Render3DEvent) {
+        if(dimensionValue.equals("2d"))
+            return
+
+        GL11.glDisable(GL11.GL_CULL_FACE)
+        GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
+        GL11.glPolygonOffset(1.0f, -1000000f)
+
+        GL11.glPushMatrix()
+        GL11.glScaled(0.01, 0.01, 0.01)
+        GL11.glRotatef(90f, 1f, 0f, 0f)
+        GL11.glRotatef(180f + mc.thePlayer.rotationYaw, 0f, 0f, 1f)
+        draw()
+        GL11.glPopMatrix()
+
+        GL11.glPolygonOffset(1.0f, 1000000f)
+        GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL)
+        GL11.glEnable(GL11.GL_CULL_FACE)
     }
 
     private fun draw() {
