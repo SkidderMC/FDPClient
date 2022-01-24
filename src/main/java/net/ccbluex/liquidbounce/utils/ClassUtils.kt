@@ -16,7 +16,6 @@ object ClassUtils {
     /**
      * Allows you to check for existing classes with the [className]
      */
-    @JvmStatic
     fun hasClass(className: String): Boolean {
         return if (cachedClasses.containsKey(className)) {
             cachedClasses[className]!!
@@ -32,7 +31,6 @@ object ClassUtils {
         }
     }
 
-    @JvmStatic
     fun getObjectInstance(clazz: Class<*>): Any {
         clazz.declaredFields.forEach {
             if (it.name.equals("INSTANCE")) {
@@ -42,7 +40,6 @@ object ClassUtils {
         throw IllegalAccessException("This class not a kotlin object")
     }
 
-    @JvmStatic
     fun getValues(clazz: Class<*>, instance: Any) = clazz.declaredFields.map { valueField ->
         valueField.isAccessible = true
         valueField[instance]

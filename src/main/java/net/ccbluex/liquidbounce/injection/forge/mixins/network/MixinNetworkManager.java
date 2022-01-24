@@ -36,7 +36,7 @@ public abstract class MixinNetworkManager {
 
     @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
     private void read(ChannelHandlerContext context, Packet<?> packet, CallbackInfo callback) {
-        if(PacketUtils.getPacketType(packet) != PacketUtils.PacketType.SERVERSIDE)
+        if(PacketUtils.INSTANCE.getPacketType(packet) != PacketUtils.PacketType.SERVERSIDE)
             return;
 
         final PacketEvent event = new PacketEvent(packet, PacketEvent.Type.RECEIVE);
@@ -48,10 +48,10 @@ public abstract class MixinNetworkManager {
 
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
     private void send(Packet<?> packet, CallbackInfo callback) {
-        if(PacketUtils.getPacketType(packet) != PacketUtils.PacketType.CLIENTSIDE)
+        if(PacketUtils.INSTANCE.getPacketType(packet) != PacketUtils.PacketType.CLIENTSIDE)
             return;
 
-        if(!PacketUtils.handleSendPacket(packet)){
+        if(!PacketUtils.INSTANCE.handleSendPacket(packet)){
             final PacketEvent event = new PacketEvent(packet, PacketEvent.Type.SEND);
             LiquidBounce.eventManager.callEvent(event);
 

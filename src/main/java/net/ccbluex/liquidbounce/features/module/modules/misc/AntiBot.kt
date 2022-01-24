@@ -63,7 +63,6 @@ object AntiBot : Module() {
     private val duplicate = mutableListOf<UUID>()
     private val regex = Regex("\\w{3,16}")
 
-    @JvmStatic
     fun isBot(entity: EntityLivingBase): Boolean {
         // Check if entity is a player
         if (entity !is EntityPlayer) {

@@ -33,7 +33,8 @@ package net.ccbluex.liquidbounce.utils.render.glu.tess;
 
 import net.ccbluex.liquidbounce.utils.render.glu.VertexData;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.util.glu.GLUtessellatorCallbackAdapter;
 
 import java.nio.FloatBuffer;

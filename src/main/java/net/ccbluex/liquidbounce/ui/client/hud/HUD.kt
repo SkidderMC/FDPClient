@@ -29,7 +29,6 @@ open class HUD : MinecraftInstance() {
         /**
          * Create default HUD
          */
-        @JvmStatic
         fun createDefault(): HUD {
             val text1 = Text(x = 15.0, y = 15.0)
             text1.displayString.set("FDPClient | %serverIp% | %fps% FPS")
