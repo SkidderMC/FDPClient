@@ -82,7 +82,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 ServerUtils.connectToLastServer();
                 break;
             case 4:
-                LoginUtils.randomCracked();
+                LoginUtils.INSTANCE.randomCracked();
                 ServerUtils.connectToLastServer();
                 break;
             case 5:

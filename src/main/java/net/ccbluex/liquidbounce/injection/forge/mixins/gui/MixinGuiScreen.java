@@ -99,7 +99,7 @@ public abstract class MixinGuiScreen {
 
         if(GuiBackground.Companion.getEnabled()) {
             if (LiquidBounce.INSTANCE.getBackground() == null) {
-                RenderUtils.glColor(ColorUtils.hslRainbow(1,0.41f,0.58f,300,4000, 0.7f,1f));
+                RenderUtils.glColor(ColorUtils.INSTANCE.hslRainbow(1,0.41f,0.58f,300,4000, 0.7f,1f));
                 mc.getTextureManager().bindTexture(new ResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/misc/bg.png"));
             }else{
                 mc.getTextureManager().bindTexture(LiquidBounce.INSTANCE.getBackground());

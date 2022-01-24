@@ -11,72 +11,120 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTriAngle
+import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.MathHelper
+import net.minecraft.entity.EntityLivingBase
+import org.lwjgl.opengl.GL11
 import java.awt.Color
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
 @ModuleInfo(name = "PointerESP", category = ModuleCategory.RENDER)
 class PointerESP : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Solid", "Line"), "Solid")
-    private val redValue = IntegerValue("Red", 140, 0, 255)
-    private val greenValue = IntegerValue("Green", 140, 0, 255)
-    private val blueValue = IntegerValue("Blue", 255, 0, 255)
+//    private val dimensionValue = ListValue("Dimension", arrayOf("2d", "3d"), "2d")
+    private val modeValue = ListValue("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
+    private val lineWidthValue = FloatValue("LineWidth", 4f, 1f, 10f).displayable { modeValue.get().contains("Line") }
+    private val redValue = IntegerValue("Red", 255, 0, 255).displayable { !rainbowValue.get() }
+    private val greenValue = IntegerValue("Green", 255, 0, 255).displayable { !rainbowValue.get() }
+    private val blueValue = IntegerValue("Blue", 255, 0, 255).displayable { !rainbowValue.get() }
+    private val rainbowValue = BoolValue("Rainbow", false)
+    private val damageColorValue = BoolValue("DamageColor", true)
+    private val smoothDamageColorValue = BoolValue("SmoothDamageColor", false)
+    private val dmgRedValue = IntegerValue("DamageRed", 255, 0, 255).displayable { !dmgRainbowValue.get() && damageColorValue.get() }
+    private val dmgGreenValue = IntegerValue("DamageGreen", 0, 0, 255).displayable { !dmgRainbowValue.get() && damageColorValue.get() }
+    private val dmgBlueValue = IntegerValue("DamageBlue", 0, 0, 255).displayable { !dmgRainbowValue.get() && damageColorValue.get() }
+    private val dmgRainbowValue = BoolValue("DamageRainbow", false).displayable { damageColorValue.get() }
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
-    private val sizeValue = IntegerValue("Size", 100, 50, 200)
+    private val distanceAlphaValue = BoolValue("DistanceAlpha", true)
+    private val distanceValue = IntegerValue("Distance", 70, 0, 128).displayable { distanceAlphaValue.get() }
+    private val alphaMinValue = IntegerValue("AlphaMin", 100, 0, 255).displayable { distanceAlphaValue.get() }
+    private val sizeValue = IntegerValue("ArrowSize", 10, 1, 30)
+    private val angleValue = IntegerValue("AngleSize", 50, 10, 90)
+    private val radiusValue = IntegerValue("Radius", 70, 10, 100)
 
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         val sr = ScaledResolution(mc)
-        val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
 
-        GlStateManager.pushMatrix()
-        val size = 50 + sizeValue.get()
-        val xOffset = sr.scaledWidth / 2 - 24.5 - sizeValue.get() / 2.0
-        val yOffset = sr.scaledHeight / 2 - 25.2 - sizeValue.get() / 2.0
-        val playerOffsetX = mc.thePlayer.posX
-        val playerOffSetZ = mc.thePlayer.posZ
+        GL11.glPushMatrix()
+        GL11.glTranslatef(sr.scaledWidth / 2f, sr.scaledHeight / 2f, 0.0f)
+
+        draw()
+
+        GL11.glPopMatrix()
+    }
+
+    private fun draw() {
+        val halfAngle = angleValue.get() / 2
+        val radius = -radiusValue.get()
+        val size = sizeValue.get()
+        val playerPosX = mc.thePlayer.posX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks
+        val playerPosZ = mc.thePlayer.posZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks
+        val color = if(rainbowValue.get()) { ColorUtils.rainbow() } else { Color(redValue.get(), greenValue.get(), blueValue.get()) }
+        val damageColor = if(damageColorValue.get()) {
+            if(dmgRainbowValue.get()) { ColorUtils.reverseColor(ColorUtils.rainbow()) } else { Color(dmgRedValue.get(), dmgGreenValue.get(), dmgBlueValue.get()) }
+        } else {
+            color
+        }
+
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
 
         for (entity in mc.theWorld.loadedEntityList) {
-            if (EntityUtils.isSelected(entity, true)) {
-                val pos1 = (((entity.posX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks) - playerOffsetX) * 0.2)
-                val pos2 = (((entity.posZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks) - playerOffSetZ) * 0.2)
-                val cos = cos(mc.thePlayer.rotationYaw * (Math.PI * 2 / 360))
-                val sin = sin(mc.thePlayer.rotationYaw * (Math.PI * 2 / 360))
+            if (EntityUtils.isSelected(entity, true) && entity is EntityLivingBase) {
+                val entX = entity.posX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks
+                val entZ = entity.posZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks
+                val pos1 = (entX - playerPosX) * 0.2
+                val pos2 = (entZ - playerPosZ) * 0.2
+                val cos = cos(mc.thePlayer.rotationYaw * (Math.PI / 180))
+                val sin = sin(mc.thePlayer.rotationYaw * (Math.PI / 180))
                 val rotY = -(pos2 * cos - pos1 * sin)
                 val rotX = -(pos1 * cos + pos2 * sin)
-                val var7 = 0 - rotX
-                val var9 = 0 - rotY
-                if (MathHelper.sqrt_double(var7 * var7 + var9 * var9) < size / 2 - 4) {
-                    val angle = (atan2(rotY - 0, rotX - 0) * 180 / Math.PI).toFloat()
-                    val x = ((size / 2) * cos(Math.toRadians(angle.toDouble()))) + xOffset + size / 2
-                    val y = ((size / 2) * sin(Math.toRadians(angle.toDouble()))) + yOffset + size / 2
-                    GlStateManager.pushMatrix()
-                    GlStateManager.translate(x, y, 0.0)
-                    GlStateManager.rotate(angle, 0F, 0F, 1F)
-                    GlStateManager.scale(1.5, 1.0, 1.0)
-                    when (modeValue.get().lowercase()) {
-                        "solid" -> {
-                            drawTriAngle(0F, 0F, 2.2F, 3F, color)
-                            drawTriAngle(0F, 0F, 1.5F, 3F, color)
-                            drawTriAngle(0F, 0F, 1.0F, 3F, color)
-                            drawTriAngle(0F, 0F, 0.5F, 3F, color)
-                        }
-                        "line" -> {
-                            drawTriAngle(0F, 0F, 2.2F, 3F, color)
+                val angle = (atan2(rotY, rotX) * 180 / Math.PI).toFloat() + 90f
+                RenderUtils.glColor(if(entity.hurtTime > 0) { if(smoothDamageColorValue.get()) {
+                    val percent = entity.hurtPercent.let { if(it > 0.5) { it - 0.5f } else { 0.5f - it } } * 2
+                    ColorUtils.mixColors(damageColor, color, percent)
+                } else {
+                    damageColor
+                } } else { color },
+                    if (distanceAlphaValue.get()) {
+                        (alphaValue.get() - (sqrt((playerPosX - entX).pow(2) + (playerPosZ - entZ).pow(2)) / distanceValue.get()).coerceAtMost(1.0) * (alphaValue.get() - alphaMinValue.get())).toInt()
+                    } else {
+                        alphaValue.get()
+                    })
+                GL11.glRotatef(angle, 0.0f, 0.0f, 1.0f)
+                when(modeValue.get().lowercase()) {
+                    "solid" -> {
+                        GL11.glBegin(GL11.GL_TRIANGLES)
+                        GL11.glVertex2f(0f, radius.toFloat())
+                        GL11.glVertex2d(sin(-halfAngle * Math.PI / 180) * size, radius + cos(-halfAngle * Math.PI / 180) * size)
+                        GL11.glVertex2d(sin(halfAngle * Math.PI / 180) * size, radius + cos(halfAngle * Math.PI / 180) * size)
+                    }
+                    "line","loopline" -> {
+                        GL11.glLineWidth(lineWidthValue.get())
+                        GL11.glBegin(GL11.GL_LINE_STRIP)
+                        GL11.glVertex2d(sin(-halfAngle * Math.PI / 180) * size, radius + cos(-halfAngle * Math.PI / 180) * size)
+                        GL11.glVertex2f(0f, radius.toFloat())
+                        GL11.glVertex2d(sin(halfAngle * Math.PI / 180) * size, radius + cos(halfAngle * Math.PI / 180) * size)
+                        if(modeValue.equals("LoopLine")) {
+                            GL11.glVertex2d(sin(-halfAngle * Math.PI / 180) * size, radius + cos(-halfAngle * Math.PI / 180) * size)
                         }
                     }
-                    GlStateManager.popMatrix()
                 }
+                GL11.glEnd()
+                GL11.glRotatef(-angle, 0.0f, 0.0f, 1.0f)
             }
         }
 
-        GlStateManager.popMatrix()
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_BLEND)
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
     }
 }
