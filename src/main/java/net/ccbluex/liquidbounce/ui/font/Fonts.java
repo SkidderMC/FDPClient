@@ -105,7 +105,7 @@ public class Fonts {
     private static void initSingleFont(String name, String resourcePath) throws IOException {
         File file=new File(LiquidBounce.fileManager.getFontsDir(), name);
         if(!file.exists())
-            FileUtils.unpackFile(file, resourcePath);
+            FileUtils.INSTANCE.unpackFile(file, resourcePath);
     }
 
     public static FontRenderer getFontRenderer(final String name, final int size) {

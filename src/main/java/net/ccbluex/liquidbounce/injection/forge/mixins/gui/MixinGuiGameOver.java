@@ -20,7 +20,7 @@ public abstract class MixinGuiGameOver extends MixinGuiScreen {
     private void actionPerformed(GuiButton button, CallbackInfo callbackInfo) {
         switch (button.id) {
             case 114514:
-                PacketUtils.handlePacket(new S07PacketRespawn(mc.thePlayer.dimension,mc.theWorld.getDifficulty(),mc.theWorld.getWorldType(),mc.theWorld.getWorldInfo().getGameType()));
+                PacketUtils.INSTANCE.handlePacket(new S07PacketRespawn(mc.thePlayer.dimension,mc.theWorld.getDifficulty(),mc.theWorld.getWorldType(),mc.theWorld.getWorldInfo().getGameType()));
                 break;
         }
     }

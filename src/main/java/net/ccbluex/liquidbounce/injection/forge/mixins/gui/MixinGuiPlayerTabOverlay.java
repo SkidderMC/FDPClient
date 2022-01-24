@@ -37,7 +37,7 @@ public class MixinGuiPlayerTabOverlay {
         }
 
         GL11.glPushMatrix();
-        float pct = (float) EaseUtils.apply(EaseUtils.EnumEasingType.valueOf(animations.getTabEaseMode().get()),
+        float pct = (float) EaseUtils.INSTANCE.apply(EaseUtils.EnumEasingType.valueOf(animations.getTabEaseMode().get()),
                 EaseUtils.EnumEasingOrder.valueOf(animations.getTabEaseOrderMode().get()), animations.getTabPercent());
 
         switch (animations.getTabModeValue().get().toLowerCase()) {

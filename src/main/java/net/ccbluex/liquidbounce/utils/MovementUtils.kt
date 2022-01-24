@@ -13,32 +13,27 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 object MovementUtils : MinecraftInstance() {
-    @JvmStatic
+
     fun getSpeed(): Float {
         return sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ).toFloat()
     }
 
-    @JvmStatic
     fun strafe() {
         strafe(getSpeed())
     }
 
-    @JvmStatic
     fun move() {
         move(getSpeed())
     }
 
-    @JvmStatic
     fun isMoving(): Boolean {
         return mc.thePlayer != null && (mc.thePlayer.movementInput.moveForward != 0f || mc.thePlayer.movementInput.moveStrafe != 0f)
     }
 
-    @JvmStatic
     fun hasMotion(): Boolean {
         return mc.thePlayer.motionX != 0.0 && mc.thePlayer.motionZ != 0.0 && mc.thePlayer.motionY != 0.0
     }
 
-    @JvmStatic
     fun strafe(speed: Float) {
         if (!isMoving()) return
         val yaw = direction
@@ -46,7 +41,6 @@ object MovementUtils : MinecraftInstance() {
         mc.thePlayer.motionZ = cos(yaw) * speed
     }
 
-    @JvmStatic
     fun move(speed: Float) {
         if (!isMoving()) return
         val yaw = direction
@@ -54,7 +48,6 @@ object MovementUtils : MinecraftInstance() {
         mc.thePlayer.motionZ += cos(yaw) * speed
     }
 
-    @JvmStatic
     fun limitSpeed(speed: Float) {
         val yaw = direction
         val maxXSpeed = -sin(yaw) * speed
@@ -71,13 +64,11 @@ object MovementUtils : MinecraftInstance() {
      * make player move slowly like when using item
      * @author liulihaocai
      */
-    @JvmStatic
     fun limitSpeedByPercent(percent: Float) {
         mc.thePlayer.motionX *= percent
         mc.thePlayer.motionZ *= percent
     }
 
-    @JvmStatic
     fun forward(length: Double) {
         val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
         mc.thePlayer.setPosition(mc.thePlayer.posX + -sin(yaw) * length, mc.thePlayer.posY, mc.thePlayer.posZ + cos(yaw) * length)
@@ -100,7 +91,6 @@ object MovementUtils : MinecraftInstance() {
     private var lastY = 0.0
     private var lastZ = 0.0
 
-    @JvmStatic
     fun setMotion(speed: Double) {
         var forward = mc.thePlayer.movementInput.moveForward.toDouble()
         var strafe = mc.thePlayer.movementInput.moveStrafe.toDouble()
@@ -131,7 +121,6 @@ object MovementUtils : MinecraftInstance() {
         }
     }
 
-    @JvmStatic
     fun updateBlocksPerSecond() {
         if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 1) {
             bps = 0.0
@@ -143,7 +132,6 @@ object MovementUtils : MinecraftInstance() {
         bps = distance * (20 * mc.timer.timerSpeed)
     }
 
-    @JvmStatic
     fun setSpeed(moveEvent: MoveEvent, moveSpeed: Double, pseudoYaw: Float, pseudoStrafe: Double, pseudoForward: Double) {
         var forward = pseudoForward
         var strafe = pseudoStrafe

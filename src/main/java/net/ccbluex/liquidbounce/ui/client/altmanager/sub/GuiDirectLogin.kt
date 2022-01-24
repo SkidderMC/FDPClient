@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.ui.client.altmanager.sub
 import me.liuli.elixir.manage.AccountSerializer
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.elements.GuiPasswordField
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField

@@ -177,8 +177,6 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
         RIGHT("Right");
 
         companion object {
-
-            @JvmStatic
             fun getByName(name: String) = values().find { it.sideName == name }
         }
     }
@@ -193,8 +191,6 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
         DOWN("Down");
 
         companion object {
-
-            @JvmStatic
             fun getByName(name: String) = values().find { it.sideName == name }
         }
     }
