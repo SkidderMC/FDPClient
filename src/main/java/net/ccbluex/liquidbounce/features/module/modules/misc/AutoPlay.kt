@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.event.ClickEvent
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S2DPacketOpenWindow
@@ -23,7 +24,7 @@ import kotlin.concurrent.schedule
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
 class AutoPlay : Module() {
     private var clickState = 0
-    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel"), "RedeSky")
+    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex"), "RedeSky")
     private val delayValue = IntegerValue("JoinDelay", 3, 0, 7)
 
     private var clicking = false
@@ -120,6 +121,20 @@ class AutoPlay : Module() {
                         }
                     }
                 }
+                "jartex" -> {
+                    val component = packet.chatComponent
+                    if (text.contains("Click here to play again", true)) {
+                        component.siblings.forEach { sib ->
+                            val clickEvent = sib.chatStyle.chatClickEvent
+                            if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.startsWith("/")) {
+                                println("clickEvent: ${clickEvent.value}")
+                                queueAutoPlay {
+                                    mc.thePlayer.sendChatMessage(clickEvent.value)
+                                }
+                            }
+                        }
+                    }
+                }
                 "hypixel" -> {
                     fun process(component: IChatComponent) {
                         val value = component.chatStyle.chatClickEvent?.value
@@ -138,14 +153,15 @@ class AutoPlay : Module() {
         }
     }
 
-    private fun queueAutoPlay(runnable: () -> Unit) {
+    private fun queueAutoPlay(delay: Long = delayValue.get().toLong() * 1000, runnable: () -> Unit) {
         if (queued) {
             return
         }
         queued = true
         AutoDisable.handleGameEnd()
         if (this.state) {
-            Timer().schedule(delayValue.get().toLong() * 1000) {
+            Timer().schedule(delay) {
+                queued = false
                 if (state) {
                     runnable()
                 }
