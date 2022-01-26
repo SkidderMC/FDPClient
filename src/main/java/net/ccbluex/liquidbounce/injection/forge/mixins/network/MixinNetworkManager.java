@@ -35,9 +35,6 @@ import java.net.Proxy;
 
 @Mixin(NetworkManager.class)
 public abstract class MixinNetworkManager {
-    @Shadow
-    @Final
-    public static LazyLoadBase<NioEventLoopGroup> CLIENT_NIO_EVENTLOOP;
 
     /**
      * show player head in tab bar
