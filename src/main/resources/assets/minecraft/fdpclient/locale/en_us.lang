@@ -14,6 +14,10 @@ ui.off=Off
 
 ui.serverSpoof.address=Server Address
 
+ui.proxy.screen=Proxy Manager
+ui.proxy.address=Address
+ui.proxy.type=Proxy Type
+
 ui.background.particles=Particles
 ui.background.change=Change wallpaper
 ui.background.reset=Reset wallpaper
