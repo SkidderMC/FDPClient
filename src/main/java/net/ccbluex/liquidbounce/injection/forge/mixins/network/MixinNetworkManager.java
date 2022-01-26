@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.special.ProxyManager;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.NetworkManager;
@@ -83,14 +84,12 @@ public abstract class MixinNetworkManager {
 
         EventLoopGroup eventLoopGroup;
         Proxy proxy = ProxyManager.INSTANCE.getProxyInstance();
-        if(!Epoll.isAvailable() || !useNativeTransport){
-            System.out.println("Something goes wrong! Maybe you can disable proxy. [Epoll="+ Epoll.isAvailable()+", UNT="+useNativeTransport+"]");
-        }
         eventLoopGroup = new OioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build());
         bootstrap.channelFactory(new ProxyManager.ProxyOioChannelFactory(proxy));
 
         bootstrap.group(eventLoopGroup).handler(new ChannelInitializer<Channel>() {
             protected void initChannel(Channel channel) {
+                ClientUtils.INSTANCE.logWarn("ILLEGAL CHANNEL INITIALIZATION: This should be patched to net/minecraft/network/NetworkManager$5!");
                 try {
                     channel.config().setOption(ChannelOption.TCP_NODELAY, true);
                 } catch (ChannelException var3) {
