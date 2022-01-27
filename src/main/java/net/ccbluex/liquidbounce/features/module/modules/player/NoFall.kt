@@ -429,7 +429,7 @@ class NoFall : Module() {
         val mode = modeValue.get()
         if (event.packet is S12PacketEntityVelocity) {
             if (mode.equals("AAC4.4.X-Flag", ignoreCase = true) && mc.thePlayer.fallDistance > 1.8) {
-                packet.motionY = (packet.motionY * -0.1).toInt()
+                event.packet.motionY = (event.packet.motionY * -0.1).toInt()
             }
         }
         if (event.packet is S08PacketPlayerPosLook) {
@@ -490,7 +490,7 @@ class NoFall : Module() {
                     event.cancelEvent()
                     mc.thePlayer.onGround = false
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 256, packet.z, false))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, -10 , packet.z, true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, (-10).toDouble() , packet.z, true))
                     mc.timer.timerSpeed = 0.18f
                 }
             }
