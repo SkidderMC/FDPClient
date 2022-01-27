@@ -18,6 +18,8 @@ class AccountsConfig(file: File) : FileConfig(file) {
     val altManagerMinecraftAccounts: MutableList<MinecraftAccount> = ArrayList()
 
     override fun loadConfig(config: String) {
+        altManagerMinecraftAccounts.clear()
+
         val json = try {
             JsonParser().parse(config).asJsonArray
         } catch (e: JsonSyntaxException) {
@@ -31,13 +33,7 @@ class AccountsConfig(file: File) : FileConfig(file) {
         }
 
         json.forEach { jsonElement ->
-            if(!jsonElement.isJsonObject) {
-                // not JsonObject it must be string
-                val information = jsonElement.asString.split(":")
-                AccountSerializer.accountInstance(information[0], information[1])
-            } else {
-                AccountSerializer.fromJson(jsonElement.asJsonObject)
-            }.also {
+            AccountSerializer.fromJson(jsonElement.asJsonObject).also {
                 altManagerMinecraftAccounts.add(it)
             }
         }
