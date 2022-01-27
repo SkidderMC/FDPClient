@@ -60,6 +60,7 @@ class GuiAdd(private val prevGui: GuiAltManager) : GuiScreen() {
                 }
                 LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.add(AccountSerializer.accountInstance(username.text, password.text))
                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig)
+                actionPerformed(buttonList.find { it.id == 0 }!!)
             }
             2 -> {
                 val args = getClipboardString().split(":")
