@@ -29,10 +29,14 @@ class Spider : Module() {
     private var groundHeight = 0.0
     private var modifyBB = false
     private var glitch = false
+    private var wasTimer = false
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (!mc.thePlayer.isCollidedHorizontally || !mc.gameSettings.keyBindForward.pressed || mc.thePlayer.posY - heightValue.get()> startHeight) {
+        if(wasTimer) {
+            mc.timer.timerSpeed = 1.0f
+        }
+        if (!mc.thePlayer.isCollidedHorizontally || !mc.gameSettings.keyBindForward.pressed || (mc.thePlayer.posY - heightValue.get()> startHeight && heightValue.get()> 0)) {
             if (mc.thePlayer.onGround) {
                 startHeight = mc.thePlayer.posY
                 groundHeight = mc.thePlayer.posY
@@ -51,6 +55,10 @@ class Spider : Module() {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
                     groundHeight = mc.thePlayer.posY
+                    if(modeValue.get()=="AAC4") {
+                        wasTimer = true
+                        mc.timer.timerSpeed = 0.4f
+                    }
                 }
             }
             "motion" -> {
@@ -68,6 +76,11 @@ class Spider : Module() {
             packet.x = packet.x - sin(yaw) * 0.00000001
             packet.z = packet.z + cos(yaw) * 0.00000001
         }
+    }
+    
+    override fun onDisable() {
+        mc.timer.timerSpeed = 1f
+        wasTimer = false
     }
 
     @EventTarget
