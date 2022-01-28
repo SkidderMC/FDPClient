@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.VecRotation
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.utils.timer.TickTimer
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -40,7 +41,7 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "AAC5.0.4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Damage", "MotionFlag", "OldMatrix", "Matrix", "MatrixPacket"), "SpoofGround")
+    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "AAC4.4.2", "AAC5.0.4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Damage", "MotionFlag", "OldMatrix", "Matrix", "MatrixPacket"), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
     private val minFallDistance = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
     private val flySpeed = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
@@ -66,6 +67,7 @@ class NoFall : Module() {
     private var matrixLastMotionY = 0.0
     private var isDmgFalling = false
     private var matrixFlagWait = 0
+    private val aac4FlagCooldown = MSTimer()
 
     override fun onEnable() {
         aac4Fakelag = false
@@ -83,6 +85,7 @@ class NoFall : Module() {
         matrixLastMotionY = 0.0
         isDmgFalling = false
         matrixFlagWait = 0
+        aac4FlagCooldown.reset()
     }
 
     @EventTarget
@@ -203,9 +206,20 @@ class NoFall : Module() {
                     spartanTimer.reset()
                 }
             }
-            "aac5.0.4","oldmatrix" -> {
+            "aac5.0.4","oldmatrix","aac4.4.2" -> {
                 if (mc.thePlayer.fallDistance > 3) {
                     isDmgFalling = true
+                }
+                if (mode.equals("AAC4.4.2", ignoreCase = true)) {
+                    if(aac4FlagCount>=3 || aac4FlagCooldown.hasTimePassed(1500L)) {
+                        return
+                    }
+                    if(!aac4FlagCooldown.hasTimePassed(1500L) && (mc.thePlayer.onGround || mc.thePlayer.fallDistance < 0.5)) {
+                        mc.thePlayer.motionX = 0.0
+                        mc.thePlayer.motionZ = 0.0
+                        mc.thePlayer.onGround = false
+                        mc.thePlayer.jumpMovementFactor = 0.00f
+                    }
                 }
             }
             "aac5.0.14" -> {
@@ -433,10 +447,14 @@ class NoFall : Module() {
             }
         }
         if (event.packet is S08PacketPlayerPosLook) {
-            if (mode.equals("OldMatrix", ignoreCase = true) && matrixFlagWait > 0) {
+            if ((mode.equals("OldMatrix", ignoreCase = true) || mode.equals("AAC4.4.2", ignoreCase = true)) && matrixFlagWait > 0) {
                 matrixFlagWait = 0
                 mc.timer.timerSpeed = 1.00f
                 event.cancelEvent()
+                if (mode.equals("AAC4.4.2", ignoreCase = true)) {
+                    aac4FlagCooldown.reset()
+                    aac4FlagCount = 1
+                }
             }
         }
         if (event.packet is C03PacketPlayer) {
@@ -483,7 +501,7 @@ class NoFall : Module() {
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 1.0784, packet.z, false))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 0.5, packet.z, true))
                 }
-            } else if (mode.equals("OldMatrix", ignoreCase = true) && isDmgFalling) {
+            } else if ((mode.equals("OldMatrix", ignoreCase = true) || mode.equals("AAC4.4.2", ignoreCase = true)) && isDmgFalling) {
                 if (packet.onGround && mc.thePlayer.onGround) {
                     matrixFlagWait = 2
                     isDmgFalling = false
