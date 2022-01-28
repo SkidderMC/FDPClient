@@ -68,8 +68,10 @@ class NoFall : Module() {
     private var isDmgFalling = false
     private var matrixFlagWait = 0
     private val aac4FlagCooldown = MSTimer()
+    private var aac4FlagCount = 0
 
     override fun onEnable() {
+        aac4FlagCount = 0
         aac4Fakelag = false
         aac5Check = false
         packetModify = false
@@ -210,7 +212,7 @@ class NoFall : Module() {
                 if (mc.thePlayer.fallDistance > 3) {
                     isDmgFalling = true
                 }
-                if (mode.equals("AAC4.4.2", ignoreCase = true)) {
+                if (modeValue.get() == "AAC4.4.2") {
                     if(aac4FlagCount>=3 || aac4FlagCooldown.hasTimePassed(1500L)) {
                         return
                     }
@@ -447,6 +449,9 @@ class NoFall : Module() {
             }
         }
         if (event.packet is S08PacketPlayerPosLook) {
+            if (mode.equals("AAC4.4.2", ignoreCase = true)) {
+                aac4FlagCount++
+            }
             if ((mode.equals("OldMatrix", ignoreCase = true) || mode.equals("AAC4.4.2", ignoreCase = true)) && matrixFlagWait > 0) {
                 matrixFlagWait = 0
                 mc.timer.timerSpeed = 1.00f
