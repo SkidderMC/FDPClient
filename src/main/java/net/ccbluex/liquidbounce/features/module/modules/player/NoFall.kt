@@ -451,15 +451,15 @@ class NoFall : Module() {
         if (event.packet is S08PacketPlayerPosLook) {
             if (mode.equals("AAC4.4.2", ignoreCase = true)) {
                 aac4FlagCount++
-            }
-            if ((mode.equals("OldMatrix", ignoreCase = true) || mode.equals("AAC4.4.2", ignoreCase = true)) && matrixFlagWait > 0) {
-                matrixFlagWait = 0
-                mc.timer.timerSpeed = 1.00f
-                event.cancelEvent()
-                if (mode.equals("AAC4.4.2", ignoreCase = true)) {
+                if(matrixFlagWait > 0) {
                     aac4FlagCooldown.reset()
                     aac4FlagCount = 1
                 }
+            }
+            if (mode.equals("OldMatrix", ignoreCase = true) && matrixFlagWait > 0) {
+                matrixFlagWait = 0
+                mc.timer.timerSpeed = 1.00f
+                event.cancelEvent()
             }
         }
         if (event.packet is C03PacketPlayer) {
