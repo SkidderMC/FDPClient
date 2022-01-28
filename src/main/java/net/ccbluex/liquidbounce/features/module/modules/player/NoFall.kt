@@ -41,7 +41,7 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "AAC4.4.2", "AAC5.0.4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Damage", "MotionFlag", "OldMatrix", "Matrix", "MatrixPacket"), "SpoofGround")
+    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "LoyisaAAC4.4.2", "AAC5.0.4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Damage", "MotionFlag", "OldMatrix", "Matrix", "MatrixPacket"), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
     private val minFallDistance = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
     private val flySpeed = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
@@ -208,11 +208,11 @@ class NoFall : Module() {
                     spartanTimer.reset()
                 }
             }
-            "aac5.0.4","oldmatrix","aac4.4.2" -> {
+            "aac5.0.4","oldmatrix","loyisaaac4.4.2" -> {
                 if (mc.thePlayer.fallDistance > 3) {
                     isDmgFalling = true
                 }
-                if (modeValue.get() == "AAC4.4.2") {
+                if (modeValue.get() == "LoyisaAAC4.4.2") {
                     if(aac4FlagCount>=3 || aac4FlagCooldown.hasTimePassed(1500L)) {
                         return
                     }
@@ -449,11 +449,12 @@ class NoFall : Module() {
             }
         }
         if (event.packet is S08PacketPlayerPosLook) {
-            if (mode.equals("AAC4.4.2", ignoreCase = true)) {
+            if (mode.equals("LoyisaAAC4.4.2", ignoreCase = true)) {
                 aac4FlagCount++
                 if(matrixFlagWait > 0) {
                     aac4FlagCooldown.reset()
                     aac4FlagCount = 1
+                    event.cancelEvent()
                 }
             }
             if (mode.equals("OldMatrix", ignoreCase = true) && matrixFlagWait > 0) {
@@ -506,7 +507,7 @@ class NoFall : Module() {
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 1.0784, packet.z, false))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 0.5, packet.z, true))
                 }
-            } else if ((mode.equals("OldMatrix", ignoreCase = true) || mode.equals("AAC4.4.2", ignoreCase = true)) && isDmgFalling) {
+            } else if ((mode.equals("OldMatrix", ignoreCase = true) || mode.equals("LoyisaAAC4.4.2", ignoreCase = true)) && isDmgFalling) {
                 if (packet.onGround && mc.thePlayer.onGround) {
                     matrixFlagWait = 2
                     isDmgFalling = false
