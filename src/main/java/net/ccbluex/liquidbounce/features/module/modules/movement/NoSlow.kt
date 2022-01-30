@@ -226,4 +226,7 @@ class NoSlow : Module() {
             }
         }
     }
+    
+    override val tag: String
+        get() = modeValue.get()
 }
