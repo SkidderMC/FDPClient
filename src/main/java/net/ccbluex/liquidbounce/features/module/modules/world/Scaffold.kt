@@ -35,6 +35,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
@@ -128,7 +129,8 @@ class Scaffold : Module() {
             "AAC3.3.9",
             "AAC3.6.4",
             "AAC4.4Constant",
-            "AAC4Jump"
+            "AAC4Jump",
+            "Verus"
         ), "Jump"
     )
     private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
@@ -217,12 +219,16 @@ class Scaffold : Module() {
     private var canSameY = false
     private var lastPlaceBlock: BlockPos? = null
     private var afterPlaceC08: C08PacketPlayerBlockPlacement? = null
+    
+    //Other
+    private var doSpoof = false
 
     /**
      * Enable module
      */
     override fun onEnable() {
         slot = mc.thePlayer.inventory.currentItem
+        doSpoof = false
         if (mc.thePlayer == null) return
         lastGroundY = mc.thePlayer.posY.toInt()
         lastPlace = 2
@@ -363,6 +369,13 @@ class Scaffold : Module() {
     fun onPacket(event: PacketEvent) {
         if (mc.thePlayer == null) return
         val packet = event.packet
+        
+        //Verus
+        if (packet is C03PacketPlayer) {
+            if (doSpoof) {
+                packet.onGround = true
+            }
+        }
 
         // AutoBlock
         if (packet is C09PacketHeldItemChange) {
@@ -550,6 +563,19 @@ class Scaffold : Module() {
                     mc.thePlayer.motionY = 0.42
                     jumpGround = mc.thePlayer.posY
                     mc.timer.timerSpeed = 0.75f
+                }
+            }
+            "verus" -> {
+                mc.thePlayer.setPosition(mc.thePlayer.posX, (mc.thePlayer.posY * 2).roundToInt() / 2, mc.thePlayer.posZ)
+                if (mc.thePlayer.ticksExisted % 2 == 0) {
+                    mc.thePlayer.motionY = 0.5
+                    mc.timer.timerSpeed = 0.8f
+                    doSpoof = false
+                }else{
+                    mc.timer.timerSpeed = 1.33f
+                    mc.thePlayer.motionY = 0.0
+                    mc.thePlayer.onGround = true
+                    doSpoof = true
                 }
             }
             "aac4jump" -> {
@@ -867,7 +893,6 @@ class Scaffold : Module() {
                 }
                 "test1" -> {
                     val caluyaw = ((placeRotation.rotation.yaw / 45).roundToInt() * 45).toFloat()
-                    // Co丶Dynamic : Wo Shi Sha Bi
                     Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
                 "test2" -> {
@@ -878,17 +903,6 @@ class Scaffold : Module() {
                 }
                 else -> return false // this should not happen
             }
-            /*if(tolleyBridgeValue.get() > tolleyStayTick && (mc.thePlayer.onGround || lastTickOnGround ||
-                (!mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(
-                        -mc.thePlayer.motionX,
-                        0.98*(mc.thePlayer.motionY-0.08),
-                        -mc.thePlayer.motionZ
-                        )).isEmpty() && mc.thePlayer.motionY<=0)
-              ))
-                rotation = Rotation(
-                    mc.thePlayer.rotationYaw + tolleyYawValue.get(),
-                    placeRotation.rotation.pitch
-                )*/
             if (silentRotationValue.get()) {
                 val limitedRotation =
                     RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
@@ -897,7 +911,6 @@ class Scaffold : Module() {
                 mc.thePlayer.rotationYaw = lockRotation!!.yaw
                 mc.thePlayer.rotationPitch = lockRotation!!.pitch
             }
-            // lastTickOnGround=mc.thePlayer.onGround
         }
         targetPlace = placeRotation.placeInfo
         return true
@@ -920,65 +933,6 @@ class Scaffold : Module() {
 
     private val rotationSpeed: Float
         get() = (Math.random() * (maxRotationSpeedValue.get() - minRotationSpeedValue.get()) + minRotationSpeedValue.get()).toFloat()
-
-    // new scaffold blocksearch algorithm
-    private var lastRecGroundY = 0.0
-
-    private fun isNotSafe(): Boolean {
-        if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -0.015625, 0.0).expand(0.0, 0.0, 0.0)).isNotEmpty() || mc.thePlayer.onGround) {
-            lastRecGroundY = mc.thePlayer.posY
-            return false
-        }
-        if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -1.0, 0.0).expand(0.0, 0.0, 0.0)).isNotEmpty()) {
-            return false
-        }
-        if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -2.0, 0.0).expand(0.0, 0.0, 0.0)).isNotEmpty()) {
-            return false
-        }
-        if (mc.thePlayer.posY <lastRecGroundY - 0.015625) {
-            return true
-        }
-
-        return false
-    }
-
-    private fun unnecessaryCal(x: Float, y: Float, z: Float): Boolean {
-        return (x> 0.05f && y> 0.05f && z> 0.05f && x <0.95f && y <0.95f && z <0.95f)
-    }
-
-    private fun canCatch(blockPos1: BlockPos, blockPos2: BlockPos): Float {
-        return calHeight((abs(blockPos1.x - blockPos2.x) + abs(blockPos1.z - blockPos2.z)).toDouble()
-            .roundToInt())
-        // 忘记把改过的js传上去了
-    }
-
-    private fun calHeight(ticks: Int): Float {
-        var dis = 0f
-        var motY = mc.thePlayer.motionY.toFloat()
-        var tick = 0
-        while (tick <ticks) {
-            tick++
-            dis += motY
-            motY -= 0.08f
-            motY *= 0.98f
-        }
-        return dis
-    }
-
-    private val isOnEdge: Boolean
-        get() = mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX * 0.25, -1.0, mc.thePlayer.motionZ * 0.25).expand(-0.15, 0.0, -0.15)).isEmpty() &&
-                mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -0.625, 0.0).expand(0.0, 0.0, 0.0)).isNotEmpty()
-
-//    fun roundYaw(rYaw: Float):Float{
-//        var lrYaw = rYaw
-//        while(lrYaw>360) {
-//            lrYaw -= 360
-//        }
-//        while(lrYaw<-360) {
-//            lrYaw += 360
-//        }
-//        return lrYaw
-//    }
 
     @EventTarget
     fun onJump(event: JumpEvent) {
