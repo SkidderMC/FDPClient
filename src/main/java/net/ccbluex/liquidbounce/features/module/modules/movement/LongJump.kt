@@ -114,7 +114,7 @@ class LongJump : Module() {
                 airTicks = 0
             }
             if(mc.thePlayer.isInWater) {
-                mc.thePlayer.motionY = jartexYValue.get()
+                mc.thePlayer.motionY = jartexYValue.get().toDouble()
                 MovementUtils.strafe(jartexHValue.get())
             }
         }
