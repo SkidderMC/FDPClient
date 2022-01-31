@@ -25,7 +25,7 @@ import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
 class LongJump : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("NCP", "NCPDamage", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "OldBlocksMC", "OldBlocksMC2", "HYT4v4"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("NCP", "NCPDamage", "JartexWater", "AACv1", "AACv2", "AACv3", "Mineplex", "Mineplex2", "Mineplex3", "RedeSkyTest", "RedeSky", "RedeSky2", "RedeSky3", "OldBlocksMC", "OldBlocksMC2", "HYT4v4"), "NCP")
     private val ncpBoostValue = FloatValue("NCPBoost", 4.25f, 1f, 10f)
 
     // redesky
@@ -51,7 +51,11 @@ class LongJump : Module() {
     private val rs3BoostValue = FloatValue("RedeSky3Boost", 1F, 0.3F, 1.5F).displayable { modeValue.equals("RedeSky3") }
     private val rs3HeightValue = FloatValue("RedeSky3Height", 1F, 0.3F, 1.5F).displayable { modeValue.equals("RedeSky3") }
     private val rs3TimerValue = FloatValue("RedeSky3Timer", 1F, 0.1F, 5F).displayable { modeValue.equals("RedeSky3") }
+    //NCPDamage
     private val ncpdInstantValue = BoolValue("NCPDamageInstant", false).displayable { modeValue.equals("NCPDamage") }
+    //Jartex
+    private val jartexYValue = FloatValue("JartexMotionY", 0.42F, 0.0F, 2F).displayable { modeValue.equals("JartexWater") }
+    private val jartexHValue = FloatValue("JartexHorizon", 1.0F, 0.8F, 4F).displayable { modeValue.equals("JartexWater") }
     // settings
     private val autoJumpValue = BoolValue("AutoJump", true)
     private val autoDisableValue = BoolValue("AutoDisable", true)
@@ -74,7 +78,7 @@ class LongJump : Module() {
         balance = 0
         hasJumped = false
         damageStat = false
-        if (modeValue.equals("ncpdamage")) {
+        if (modeValue.equals("NCPDamage")) {
             x = mc.thePlayer.posX
             y = mc.thePlayer.posY
             z = mc.thePlayer.posZ
@@ -98,8 +102,24 @@ class LongJump : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         mc.thePlayer ?: return
+        
+        if(modeValue.equals("JartexWater")) {
+            if (!mc.thePlayer.onGround && !mc.thePlayer.isInWater) {
+                airTicks++
+            } else {
+                if(airTicks != 0) {
+                    state = false
+                    airTicks = 0
+                }
+                airTicks = 0
+            }
+            if(mc.thePlayer.isInWater) {
+                mc.thePlayer.motionY = jartexYValue.get()
+                MovementUtils.strafe(jartexHValue.get())
+            }
+        }
 
-        if (modeValue.equals("ncpdamage")) {
+        if (modeValue.equals("NCPDamage")) {
             if (!damageStat) {
                 mc.thePlayer.setPosition(x, y, z)
                 if (balance > jumpYPosArr.size * 4) {
@@ -279,7 +299,7 @@ class LongJump : Module() {
             }
         }
 
-        if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving()) {
+        if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving() && !modeValue.equals("JartexWater")) {
             jumped = true
             if (hasJumped && autoDisableValue.get()) {
                 state = false
