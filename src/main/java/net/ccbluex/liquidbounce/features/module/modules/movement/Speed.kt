@@ -77,6 +77,11 @@ class Speed : Module() {
 
         mode.onTick()
     }
+    
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        mode.onPacket()
+    }
 
     @EventTarget
     fun onJump(event: JumpEvent) {
