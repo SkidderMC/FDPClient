@@ -23,7 +23,7 @@ class MatrixHop2 : SpeedMode("MatrixHop2") {
 	    }
 	}
         if(mc.thePlayer.motionY<0) {
-	    mc.timer.timerSpeed =1.16f
+	    mc.timer.timerSpeed =1.15f
 	    if(mc.thePlayer.fallDistance > 1.4)
 	        mc.timer.timerSpeed =1.0f
 	}else{
@@ -31,10 +31,8 @@ class MatrixHop2 : SpeedMode("MatrixHop2") {
 	}
 	if(mc.thePlayer.onGround && MovementUtils.isMoving()) {
             mc.gameSettings.keyBindJump.pressed = false
-            mc.timer.timerSpeed =1.3f
-	    if(MovementUtils.getSpeed() < 0.0776)
-	        MovementUtils.strafe(0.0776f)
-		mc.thePlayer.jump()
+            mc.timer.timerSpeed =1.25f
+	    mc.thePlayer.jump()
 	    if(mc.thePlayer.movementInput.moveStrafe <= 0.01) {
 		MovementUtils.strafe((MovementUtils.getSpeed()*1.0071).toFloat())
 	    }
@@ -67,7 +65,7 @@ class MatrixHop2 : SpeedMode("MatrixHop2") {
                 mc.thePlayer.motionY = packet.motionY/8000.0
             }
           
-	    MovementUtils.strafe((MovementUtils.getSpeed()*1.15).toFloat())
+	    MovementUtils.strafe((MovementUtils.getSpeed()*1.1).toFloat())
 	}
     }
 }
