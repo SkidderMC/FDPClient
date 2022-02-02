@@ -22,6 +22,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.*
 import net.minecraft.network.play.server.S0BPacketAnimation
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.stats.StatList
 
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
@@ -33,12 +34,16 @@ class Criticals : Module() {
     val hoverNoFall = BoolValue("HoverNoFall", true)
     val hoverCombat = BoolValue("HoverOnlyCombat", true)
     val delayValue = IntegerValue("Delay", 0, 0, 500)
+    private val s08FlagValue = BoolValue("FlagPause", false)
+    private val s08DelayValue = IntegerValue("FlagPauseTime", 100, 100, 5000)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
     private val debugValue = BoolValue("DebugMessage", false)
     // private val rsNofallValue = BoolValue("RedeNofall",true)
 
     val msTimer = MSTimer()
+    
+    val flagTimer = MSTimer()
 
     private var target = 0
     var jState = 0
@@ -62,6 +67,9 @@ class Criticals : Module() {
                 LiquidBounce.moduleManager[Fly::class.java]!!.state || !msTimer.hasTimePassed(delayValue.get().toLong())) {
                 return
             }
+            
+            if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get()))
+                return
 
             fun sendCriticalPacket(xOffset: Double = 0.0, yOffset: Double = 0.0, zOffset: Double = 0.0, ground: Boolean) {
                 val x = mc.thePlayer.posX + xOffset
@@ -189,6 +197,16 @@ class Criticals : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
+        
+        if (packet is S08PacketPlayerPosLook) {
+            flagTimer.reset()
+            if (s08FlagValue.get()) {
+                jState = 0
+            }
+        }
+        
+        if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get()))
+            return
 
         if (packet is C03PacketPlayer) {
             when (modeValue.get().lowercase()) {
@@ -200,15 +218,7 @@ class Criticals : Module() {
                 }
                 "hover" -> {
                     if (hoverCombat.get() && !LiquidBounce.combatManager.inCombat) return
-                    if (packet is C05PacketPlayerLook) {
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.yaw, packet.pitch, packet.onGround))
-                        event.cancelEvent()
-                        return
-                    } else if (!(packet is C04PacketPlayerPosition) && !(packet is C06PacketPlayerPosLook)) {
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.onGround))
-                        event.cancelEvent()
-                        return
-                    }
+                    packet.isMoving = true
                     when (hoverValue.get().lowercase()) {
                         "2b2t" -> {
                             if (mc.thePlayer.onGround) {
