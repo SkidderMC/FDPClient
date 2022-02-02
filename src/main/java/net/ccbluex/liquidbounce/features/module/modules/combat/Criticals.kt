@@ -68,7 +68,7 @@ class Criticals : Module() {
                 return
             }
             
-            if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get()))
+            if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
                 return
 
             fun sendCriticalPacket(xOffset: Double = 0.0, yOffset: Double = 0.0, zOffset: Double = 0.0, ground: Boolean) {
@@ -205,7 +205,7 @@ class Criticals : Module() {
             }
         }
         
-        if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get()))
+        if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
             return
 
         if (packet is C03PacketPlayer) {
