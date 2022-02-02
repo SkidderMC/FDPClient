@@ -80,7 +80,7 @@ class Speed : Module() {
     
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        mode.onPacket()
+        mode.onPacket(event)
     }
 
     @EventTarget
