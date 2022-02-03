@@ -49,12 +49,12 @@ object ClassUtils {
      * scan classes with specified superclass like what Reflections do but with log4j [ResolverUtil]
      * @author liulihaocai
      */
-    fun <T : Any> resolvePackage(packagePath: String, clazz: Class<T>): List<Class<out T>> {
+    fun <T : Any> resolvePackage(packagePath: String, klass: Class<T>): List<Class<out T>> {
         // use resolver in log4j to scan classes in target package
         val resolver = ResolverUtil()
 
         // set class loader
-        resolver.classLoader = clazz.classLoader
+        resolver.classLoader = klass.classLoader
 
         // set package to scan
         resolver.findInPackage(object : ResolverUtil.ClassTest() {
@@ -70,11 +70,11 @@ object ClassUtils {
             resolved.declaredMethods.find {
                 Modifier.isNative(it.modifiers)
             }?.let {
-                val klass = it.declaringClass.typeName+"."+it.name
-                throw UnsatisfiedLinkError(klass+"\n\tat ${klass}(Native Method)") // we don't want native methods
+                val klass1 = it.declaringClass.typeName+"."+it.name
+                throw UnsatisfiedLinkError(klass1+"\n\tat ${klass1}(Native Method)") // we don't want native methods
             }
             // check if class is assignable from target class
-            if(clazz.isAssignableFrom(resolved) && !clazz.isInterface && !Modifier.isAbstract(resolved.modifiers)) {
+            if(klass.isAssignableFrom(resolved) && !resolved.isInterface && !Modifier.isAbstract(resolved.modifiers)) {
                 // add to list
                 list.add(resolved as Class<out T>)
             }
