@@ -58,7 +58,7 @@ object ClassUtils {
 
         // set package to scan
         resolver.findInPackage(object : ResolverUtil.ClassTest() {
-            override fun matches(type: Class<*>?): Boolean {
+            override fun matches(type: Class<*>): Boolean {
                 return true
             }
         }, packagePath)

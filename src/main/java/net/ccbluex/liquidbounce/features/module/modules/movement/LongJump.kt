@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
@@ -51,9 +52,9 @@ class LongJump : Module() {
     private val rs3BoostValue = FloatValue("RedeSky3Boost", 1F, 0.3F, 1.5F).displayable { modeValue.equals("RedeSky3") }
     private val rs3HeightValue = FloatValue("RedeSky3Height", 1F, 0.3F, 1.5F).displayable { modeValue.equals("RedeSky3") }
     private val rs3TimerValue = FloatValue("RedeSky3Timer", 1F, 0.1F, 5F).displayable { modeValue.equals("RedeSky3") }
-    //NCPDamage
+    // ncp damage
     private val ncpdInstantValue = BoolValue("NCPDamageInstant", false).displayable { modeValue.equals("NCPDamage") }
-    //Jartex
+    // jartex network
     private val jartexYValue = FloatValue("JartexMotionY", 0.42F, 0.0F, 2F).displayable { modeValue.equals("JartexWater") }
     private val jartexHValue = FloatValue("JartexHorizon", 1.0F, 0.8F, 4F).displayable { modeValue.equals("JartexWater") }
     // settings
@@ -65,12 +66,13 @@ class LongJump : Module() {
     private var teleported = false
     private var canMineplexBoost = false
     private var timer = MSTimer()
-    var airTicks = 0
+    private var airTicks = 0
     private var balance = 0
     private var x = 0.0
     private var y = 0.0
     private var z = 0.0
     private var damageStat = false
+    private var nextClick: BlockPos? = null
     private val jumpYPosArr = arrayOf(0.41999998688698, 0.7531999805212, 1.00133597911214, 1.16610926093821, 1.24918707874468, 1.24918707874468, 1.1707870772188, 1.0155550727022, 0.78502770378924, 0.4807108763317, 0.10408037809304, 0.0)
 
     override fun onEnable() {
@@ -78,6 +80,7 @@ class LongJump : Module() {
         balance = 0
         hasJumped = false
         damageStat = false
+        nextClick = null
         if (modeValue.equals("NCPDamage")) {
             x = mc.thePlayer.posX
             y = mc.thePlayer.posY
@@ -100,45 +103,56 @@ class LongJump : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        mc.thePlayer ?: return
-        
-        if(modeValue.equals("JartexWater")) {
-            if (!mc.thePlayer.onGround && !mc.thePlayer.isInWater) {
-                airTicks++
-            } else {
-                if(airTicks != 0) {
-                    state = false
+    fun onMotion(event: MotionEvent) {
+        if(event.eventState == EventState.PRE) {
+            onPre()
+        } else {
+//            onPost()
+        }
+    }
+
+    private fun onPre() {
+        when (modeValue.get().lowercase()) {
+            "jartexwater" -> {
+                if (!mc.thePlayer.onGround && !mc.thePlayer.isInWater) {
+                    airTicks++
+                } else {
                     airTicks = 0
                 }
-                airTicks = 0
-            }
-            if(mc.thePlayer.isInWater) {
-                mc.thePlayer.motionY = jartexYValue.get().toDouble()
-                MovementUtils.strafe(jartexHValue.get())
-            }
-        }
-
-        if (modeValue.equals("NCPDamage")) {
-            if (!damageStat) {
-                mc.thePlayer.setPosition(x, y, z)
-                if (balance > jumpYPosArr.size * 4) {
-                    repeat(4) {
-                        jumpYPosArr.forEach {
-                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y + it, z, false))
-                        }
-                        PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false))
-                    }
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
-                    damageStat = true
+                if(mc.thePlayer.isInWater) {
+                    mc.thePlayer.motionY = jartexYValue.get().toDouble()
+                    MovementUtils.strafe(jartexHValue.get())
+                    hasJumped = true
                 }
-            } else {
-                MovementUtils.strafe(0.50f * ncpBoostValue.get())
-                mc.thePlayer.jump()
-                state = false
             }
-            return
+            "ncpdamage" -> {
+                if (!damageStat) {
+                    mc.thePlayer.setPosition(x, y, z)
+                    if (balance > jumpYPosArr.size * 4) {
+                        repeat(4) {
+                            jumpYPosArr.forEach {
+                                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y + it, z, false))
+                            }
+                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false))
+                        }
+                        PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
+                        damageStat = true
+                    }
+                } else {
+                    MovementUtils.strafe(0.50f * ncpBoostValue.get())
+                    mc.thePlayer.jump()
+                    hasJumped = true
+                }
+            }
         }
+    }
+
+//    private fun onPost() {
+//    }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        mc.thePlayer ?: return
 
         if (jumped) {
             val mode = modeValue.get()
@@ -299,7 +313,7 @@ class LongJump : Module() {
             }
         }
 
-        if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving() && !modeValue.equals("JartexWater")) {
+        if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving()) {
             jumped = true
             if (hasJumped && autoDisableValue.get()) {
                 state = false
