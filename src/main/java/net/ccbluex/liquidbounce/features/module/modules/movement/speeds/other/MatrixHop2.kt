@@ -33,7 +33,7 @@ class MatrixHop2 : SpeedMode("MatrixHop2") {
             mc.gameSettings.keyBindJump.pressed = false
             mc.timer.timerSpeed =1.03f
 	    mc.thePlayer.jump()
-	    if(mc.thePlayer.movementInput.moveStrafe <= 0.01) {
+	    if(mc.thePlayer.movementInput.moveStrafe <= 0.01 && mc.thePlayer.movementInput.moveStrafe >= -0.01) {
 		MovementUtils.strafe((MovementUtils.getSpeed()*1.0071).toFloat())
 	    }
 	}else if(!MovementUtils.isMoving()) {
