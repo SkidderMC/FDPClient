@@ -38,20 +38,26 @@ object ClientUtils : MinecraftInstance() {
             EnumOSType.UNKNOWN
         }
 
-        val systemInfo = SystemInfo()
-        val hardware = systemInfo.hardware
-        val processors = hardware.processors
-        val memory = hardware.memory
+        hardwareUuid = try {
+            val systemInfo = SystemInfo()
+            val hardware = systemInfo.hardware
+            val processors = hardware.processors
+            val memory = hardware.memory
 
-        val vendor = systemInfo.operatingSystem.manufacturer
-        val processorSerialNumber = processors.joinToString("-") { it.identifier }
-        val processorModel = processors.joinToString("-") { it.model }
+            val vendor = systemInfo.operatingSystem.manufacturer
+            val processorSerialNumber = processors.joinToString("-") { it.identifier }
+            val processorModel = processors.joinToString("-") { it.model }
 
-        hardwareUuid = UUID.nameUUIDFromBytes(("$vendor, " +
-                "$processorSerialNumber, " +
-                "$processorModel, " +
-                "${memory.total}, " +
-                "${hardware.processors.size}").toByteArray())
+            UUID.nameUUIDFromBytes(("$vendor, " +
+                    "$processorSerialNumber, " +
+                    "$processorModel, " +
+                    "${memory.total}, " +
+                    "${hardware.processors.size}").toByteArray())
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            UUID.randomUUID()
+        }
+
         logInfo("Your hardware UUID is $hardwareUuid")
     }
 
