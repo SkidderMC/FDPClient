@@ -35,6 +35,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -66,13 +67,24 @@ public abstract class MixinNetHandlerPlayClient {
             final String scheme = new URI(url).getScheme();
             final boolean isLevelProtocol = "level".equals(scheme);
 
-            if(!"http".equals(scheme) && !"https".equals(scheme) && !isLevelProtocol)
+            if (!"http".equals(scheme) && !"https".equals(scheme) && !isLevelProtocol)
                 throw new URISyntaxException(url, "Wrong protocol");
 
-            if(isLevelProtocol && (url.contains("..") || !url.endsWith("/resources.zip")))
+            if (isLevelProtocol && (url.contains("..") || !url.endsWith("/resources.zip")))
                 throw new URISyntaxException(url, "Invalid levelstorage resourcepack path");
-        } catch(final URISyntaxException e) {
+        } catch (final URISyntaxException e) {
             ClientUtils.INSTANCE.logError("Failed to handle resource pack", e);
+
+            // ensure it performed like vanilla
+            if(url.startsWith("level://")) {
+                String s2 = url.substring("level://".length());
+                File file1 = new File(this.gameController.mcDataDir, "saves");
+                File file2 = new File(file1, s2);
+                if (file2.isFile()) {
+                    netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.ACCEPTED));
+                }
+            }
+
             netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.FAILED_DOWNLOAD));
             callbackInfo.cancel();
         }
@@ -80,7 +92,7 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Inject(method = "handleJoinGame", at = @At("HEAD"), cancellable = true)
     private void handleJoinGameWithAntiForge(S01PacketJoinGame packetIn, final CallbackInfo callbackInfo) {
-        if(!AntiForge.INSTANCE.getEnabled() || !AntiForge.INSTANCE.getBlockFML() || Minecraft.getMinecraft().isIntegratedServerRunning())
+        if (!AntiForge.INSTANCE.getEnabled() || !AntiForge.INSTANCE.getBlockFML() || Minecraft.getMinecraft().isIntegratedServerRunning())
             return;
 
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, (NetHandlerPlayClient) (Object) this, gameController);
@@ -114,7 +126,7 @@ public abstract class MixinNetHandlerPlayClient {
                 this.gameController.thePlayer.motionZ + packetIn.func_149147_e());
         PacketEvent packetEvent = new PacketEvent(packet, PacketEvent.Type.RECEIVE);
         LiquidBounce.eventManager.callEvent(packetEvent);
-        if(!packetEvent.isCancelled()){
+        if (!packetEvent.isCancelled()) {
             handleEntityVelocity(packet);
         }
     }
