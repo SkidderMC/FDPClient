@@ -21,7 +21,8 @@ class NoWeb : Module() {
     private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside", "Horizon", "Spartan", "AAC4", "AAC5", "Matrix", "Test"), "None")
     private val horizonSpeed = FloatValue("HorizonSpeed", 0.1F, 0.01F, 0.8F)
 
-     private var usedTimer = false
+    private var usedTimer = false
+
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (usedTimer) {

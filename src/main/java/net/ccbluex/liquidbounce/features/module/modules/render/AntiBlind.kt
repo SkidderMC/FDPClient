@@ -19,10 +19,10 @@ import net.minecraft.potion.PotionEffect
 
 @ModuleInfo(name = "AntiBlind", category = ModuleCategory.RENDER)
 class AntiBlind : Module() {
-    val confusionEffect = BoolValue("Confusion", true)
-    val pumpkinEffect = BoolValue("Pumpkin", true)
-    val fireEffect = BoolValue("Fire", false)
-    private val bright = ListValue("Bright", arrayOf("None", "Gamma", "NightVision"), "Gamma")
+    val confusionEffectValue = BoolValue("Confusion", true)
+    val pumpkinEffectValue = BoolValue("Pumpkin", true)
+    val fireEffectValue = BoolValue("Fire", false)
+    private val brightValue = ListValue("Bright", arrayOf("None", "Gamma", "NightVision"), "Gamma")
 
     private var prevGamma = -1f
 
@@ -40,7 +40,7 @@ class AntiBlind : Module() {
     @EventTarget(ignoreCondition = true)
     fun onUpdate(event: UpdateEvent) {
         if (state || LiquidBounce.moduleManager[XRay::class.java]!!.state) {
-            when (bright.get().lowercase()) {
+            when (brightValue.get().lowercase()) {
                 "gamma" -> if (mc.gameSettings.gammaSetting <= 100f) mc.gameSettings.gammaSetting++
                 "nightvision" -> mc.thePlayer.addPotionEffect(PotionEffect(Potion.nightVision.id, 1337, 1))
             }

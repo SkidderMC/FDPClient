@@ -16,29 +16,29 @@ class TargetCommand : Command("target", emptyArray()) {
         if (args.size > 1) {
             when {
                 args[1].equals("players", ignoreCase = true) -> {
-                    Target.player.set(!Target.player.get())
-                    alert("§7Target player toggled ${if (Target.player.get()) "on" else "off"}.")
+                    Target.playerValue.set(!Target.playerValue.get())
+                    alert("§7Target player toggled ${if (Target.playerValue.get()) "on" else "off"}.")
                     playEdit()
                     return
                 }
 
                 args[1].equals("mobs", ignoreCase = true) -> {
-                    Target.mob.set(!Target.mob.get())
-                    alert("§7Target mobs toggled ${if (Target.mob.get()) "on" else "off"}.")
+                    Target.mobValue.set(!Target.mobValue.get())
+                    alert("§7Target mobs toggled ${if (Target.mobValue.get()) "on" else "off"}.")
                     playEdit()
                     return
                 }
 
                 args[1].equals("animals", ignoreCase = true) -> {
-                    Target.animal.set(!Target.animal.get())
-                    alert("§7Target animals toggled ${if (Target.animal.get()) "on" else "off"}.")
+                    Target.animalValue.set(!Target.animalValue.get())
+                    alert("§7Target animals toggled ${if (Target.animalValue.get()) "on" else "off"}.")
                     playEdit()
                     return
                 }
 
                 args[1].equals("invisible", ignoreCase = true) -> {
-                    Target.invisible.set(!Target.invisible.get())
-                    alert("§7Target Invisible toggled ${if (Target.invisible.get()) "on" else "off"}.")
+                    Target.invisibleValue.set(!Target.invisibleValue.get())
+                    alert("§7Target Invisible toggled ${if (Target.invisibleValue.get()) "on" else "off"}.")
                     playEdit()
                     return
                 }

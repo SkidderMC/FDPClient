@@ -28,23 +28,23 @@ import java.awt.Color
 @ModuleInfo(name = "Breadcrumbs", category = ModuleCategory.RENDER)
 class Breadcrumbs : Module() {
     private val typeValue = ListValue("Type", arrayOf("Line", "Rect", "Sphere"), "Line")
-    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbow.get() }
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbow.get() }
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbow.get() }
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255)
-    private val colorRainbow = BoolValue("Rainbow", false)
-    private val fade = BoolValue("Fade", true)
-    private val drawThePlayer = BoolValue("DrawThePlayer", true)
-    private val drawTargets = BoolValue("DrawTargets", true)
-    private val fadeTime = IntegerValue("FadeTime", 5, 1, 20)
-    private val precision = IntegerValue("Precision", 1, 1, 20)
-    private val lineWidth = IntegerValue("LineWidth", 1, 1, 10).displayable { typeValue.equals("Line") }
-    private val sphereScale = FloatValue("SphereScale", 1f, 0.1f, 2f).displayable { typeValue.equals("Sphere") }
+    private val colorRainbowValue = BoolValue("Rainbow", false)
+    private val fadeValue = BoolValue("Fade", true)
+    private val drawThePlayerValue = BoolValue("DrawThePlayer", true)
+    private val drawTargetsValue = BoolValue("DrawTargets", true)
+    private val fadeTimeValue = IntegerValue("FadeTime", 5, 1, 20)
+    private val precisionValue = IntegerValue("Precision", 1, 1, 20)
+    private val lineWidthValue = IntegerValue("LineWidth", 1, 1, 10).displayable { typeValue.equals("Line") }
+    private val sphereScaleValue = FloatValue("SphereScale", 1f, 0.1f, 2f).displayable { typeValue.equals("Sphere") }
 
     private val points = mutableMapOf<Int, MutableList<BreadcrumbPoint>>()
 
     val color: Color
-        get() = if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+        get() = if (colorRainbowValue.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
 
     private val sphereList = GL11.glGenLists(1)
 
@@ -60,7 +60,7 @@ class Breadcrumbs : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val fTime = fadeTime.get() * 1000
+        val fTime = fadeTimeValue.get() * 1000
         val fadeSec = System.currentTimeMillis() - fTime
         val colorAlpha = colorAlphaValue.get() / 255.0f
 
@@ -79,7 +79,7 @@ class Breadcrumbs : Module() {
             var lastPosZ = 114514.0
             when(typeValue.get().lowercase()) {
                 "line" -> {
-                    GL11.glLineWidth(lineWidth.get().toFloat())
+                    GL11.glLineWidth(lineWidthValue.get().toFloat())
                     GL11.glEnable(GL11.GL_LINE_SMOOTH)
                     GL11.glBegin(GL11.GL_LINE_STRIP)
                 }
@@ -88,7 +88,7 @@ class Breadcrumbs : Module() {
                 }
             }
             for (point in mutableList.reversed()) {
-                val alpha = if (fade.get()) {
+                val alpha = if (fadeValue.get()) {
                     val pct = (point.time - fadeSec).toFloat() / fTime
                     if (pct < 0 || pct > 1) {
                         mutableList.remove(point)
@@ -115,7 +115,7 @@ class Breadcrumbs : Module() {
                     "sphere" -> {
                         GL11.glPushMatrix()
                         GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                        GL11.glScalef(sphereScale.get(), sphereScale.get(), sphereScale.get())
+                        GL11.glScalef(sphereScaleValue.get(), sphereScaleValue.get(), sphereScaleValue.get())
                         GL11.glCallList(sphereList)
                         GL11.glPopMatrix()
                     }
@@ -147,17 +147,17 @@ class Breadcrumbs : Module() {
             }
         }
         // add new points
-        if(mc.thePlayer.ticksExisted % precision.get() != 0) {
+        if(mc.thePlayer.ticksExisted % precisionValue.get() != 0) {
             return // skip if not on tick
         }
-        if(drawTargets.get()) {
+        if(drawTargetsValue.get()) {
             mc.theWorld.loadedEntityList.forEach {
                 if(EntityUtils.isSelected(it, true)) {
                     updatePoints(it as EntityLivingBase)
                 }
             }
         }
-        if(drawThePlayer.get()) {
+        if(drawThePlayerValue.get()) {
             updatePoints(mc.thePlayer)
         }
     }

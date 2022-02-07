@@ -22,10 +22,10 @@ import net.minecraft.util.BlockPos
 class AntiVoid : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft"), "Blink")
     private val maxFallDistValue = FloatValue("MaxFallDistance", 10F, 5F, 20F)
-    private val resetMotion = BoolValue("ResetMotion", false).displayable { modeValue.equals("Blink") }
+    private val resetMotionValue = BoolValue("ResetMotion", false).displayable { modeValue.equals("Blink") }
     private val startFallDistValue = FloatValue("BlinkStartFallDistance", 2F, 0F, 5F).displayable { modeValue.equals("Blink") }
-    private val autoScaffold = BoolValue("BlinkAutoScaffold", true).displayable { modeValue.equals("Blink") }
-    private val voidOnly = BoolValue("OnlyVoid", true)
+    private val autoScaffoldValue = BoolValue("BlinkAutoScaffold", true).displayable { modeValue.equals("Blink") }
+    private val voidOnlyValue = BoolValue("OnlyVoid", true)
 
     private val packetCache = ArrayList<C03PacketPlayer>()
     private var blink = false
@@ -60,13 +60,13 @@ class AntiVoid : Module() {
 
         when (modeValue.get().lowercase()) {
             "groundspoof" -> {
-                if (!voidOnly.get() || checkVoid()) {
+                if (!voidOnlyValue.get() || checkVoid()) {
                     canSpoof = mc.thePlayer.fallDistance > maxFallDistValue.get()
                 }
             }
 
             "motionflag" -> {
-                if (!voidOnly.get() || checkVoid()) {
+                if (!voidOnlyValue.get() || checkVoid()) {
                     if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried) {
                         mc.thePlayer.motionY += 1
                         mc.thePlayer.fallDistance = 0.0F
@@ -76,7 +76,7 @@ class AntiVoid : Module() {
             }
 
             "packetflag" -> {
-                if (!voidOnly.get() || checkVoid()) {
+                if (!voidOnlyValue.get() || checkVoid()) {
                     if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + 1, mc.thePlayer.posY + 1, mc.thePlayer.posZ + 1, false))
                         tried = true
@@ -90,7 +90,7 @@ class AntiVoid : Module() {
                     posY = mc.thePlayer.prevPosY
                     posZ = mc.thePlayer.prevPosZ
                 }
-                if (!voidOnly.get() || checkVoid()) {
+                if (!voidOnlyValue.get() || checkVoid()) {
                     if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried) {
                         mc.thePlayer.setPositionAndUpdate(posX, posY, posZ)
                         mc.thePlayer.fallDistance = 0F
@@ -104,7 +104,7 @@ class AntiVoid : Module() {
 
             "jartex" -> {
                 canSpoof = false
-                if (!voidOnly.get() || checkVoid()) {
+                if (!voidOnlyValue.get() || checkVoid()) {
                     if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround && !flagged) {
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ *= 0.838
@@ -117,7 +117,7 @@ class AntiVoid : Module() {
 
             "oldcubecraft" -> {
                 canSpoof = false
-                if (!voidOnly.get() || checkVoid()) {
+                if (!voidOnlyValue.get() || checkVoid()) {
                     if (mc.thePlayer.fallDistance> maxFallDistValue.get() && mc.thePlayer.posY <lastRecY + 0.01 && mc.thePlayer.motionY <= 0 && !mc.thePlayer.onGround && !flagged) {
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ = 0.0
@@ -154,7 +154,7 @@ class AntiVoid : Module() {
                 } else {
                     if (mc.thePlayer.fallDistance> maxFallDistValue.get()) {
                         mc.thePlayer.setPositionAndUpdate(posX, posY, posZ)
-                        if (resetMotion.get()) {
+                        if (resetMotionValue.get()) {
                             mc.thePlayer.motionX = 0.0
                             mc.thePlayer.motionY = 0.0
                             mc.thePlayer.motionZ = 0.0
@@ -166,7 +166,7 @@ class AntiVoid : Module() {
                             mc.thePlayer.jumpMovementFactor = 0.00f
                         }
 
-                        if (autoScaffold.get()) {
+                        if (autoScaffoldValue.get()) {
                             LiquidBounce.moduleManager[Scaffold::class.java]!!.state = true
                         }
 
@@ -236,10 +236,10 @@ class AntiVoid : Module() {
                 if (packet is S08PacketPlayerPosLook && mc.thePlayer.fallDistance> 3.125) mc.thePlayer.fallDistance = 3.125f
                 
                 if (packet is C03PacketPlayer) {
-                    if (voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get() && mc.thePlayer.motionY <= 0 && checkVoid()) {
+                    if (voidOnlyValue.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get() && mc.thePlayer.motionY <= 0 && checkVoid()) {
                         packet.y += 11.0
                     }
-                    if (!voidOnly.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get()) packet.y += 11.0
+                    if (!voidOnlyValue.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get()) packet.y += 11.0
                 }
             }
         }

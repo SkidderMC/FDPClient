@@ -27,11 +27,11 @@ class FreeCam : Module() {
     private val noClipValue = BoolValue("NoClip", true)
     private val motionValue = BoolValue("RecordMotion", true)
     private val c03SpoofValue = BoolValue("C03Spoof", true)
+
     private var fakePlayer: EntityOtherPlayerMP? = null
     private var motionX = 0.0
     private var motionY = 0.0
     private var motionZ = 0.0
-
     private var packetCount = 0
 
     override fun onEnable() {

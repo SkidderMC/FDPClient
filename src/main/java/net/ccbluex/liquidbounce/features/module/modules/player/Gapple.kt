@@ -24,7 +24,7 @@ class Gapple : Module() {
     // Auto Mode
     private val healthValue = FloatValue("Health", 10F, 1F, 20F)
     private val delayValue = IntegerValue("Delay", 150, 0, 1000)
-    private val noAbsorption = BoolValue("NoAbsorption", true)
+    private val noAbsorptionValue = BoolValue("NoAbsorption", true)
     private val timer = MSTimer()
 
     private var eating = -1
@@ -35,7 +35,7 @@ class Gapple : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer.health > healthValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) || noAbsorption.get() && mc.thePlayer.absorptionAmount> 0) {
+        if (mc.thePlayer.health > healthValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) || noAbsorptionValue.get() && mc.thePlayer.absorptionAmount> 0) {
             return
         }
 

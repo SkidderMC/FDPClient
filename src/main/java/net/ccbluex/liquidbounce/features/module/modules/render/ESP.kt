@@ -37,24 +37,24 @@ class ESP : Module() {
         arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "CSGO", "Outline", "ShaderOutline", "ShaderGlow", "Jello"),
         "Jello"
     )
-    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
-    val wireframeWidth = FloatValue("WireFrame-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("WireFrame") }
-    private val shaderOutlineRadius = FloatValue("ShaderOutline-Radius", 1.35f, 1f, 2f).displayable { modeValue.equals("ShaderOutline") }
-    private val shaderGlowRadius = FloatValue("ShaderGlow-Radius", 2.3f, 2f, 3f).displayable { modeValue.equals("ShaderGlow") }
-    private val CSGOWidth = FloatValue("CSGO-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("CSGO") }
-    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorTeam.get() }
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorTeam.get() }
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorTeam.get() }
-    private val colorRainbow = BoolValue("Rainbow", false).displayable { !colorTeam.get() }
-    private val colorTeam = BoolValue("Team", false)
+    private val outlineWidthValue = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
+    val wireframeWidthValue = FloatValue("WireFrame-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("WireFrame") }
+    private val shaderOutlineRadiusValue = FloatValue("ShaderOutline-Radius", 1.35f, 1f, 2f).displayable { modeValue.equals("ShaderOutline") }
+    private val shaderGlowRadiusValue = FloatValue("ShaderGlow-Radius", 2.3f, 2f, 3f).displayable { modeValue.equals("ShaderGlow") }
+    private val csgoWidthValue = FloatValue("CSGO-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("CSGO") }
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorTeamValue.get() && !colorRainbowValue.get() }
+    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorTeamValue.get() && !colorRainbowValue.get() }
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorTeamValue.get() && !colorRainbowValue.get() }
+    private val colorRainbowValue = BoolValue("Rainbow", false).displayable { !colorTeamValue.get() }
+    private val colorTeamValue = BoolValue("Team", false)
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val mode = modeValue.get()
+        val mode = modeValue.get().lowercase()
         val mvMatrix = WorldToScreen.getMatrix(GL11.GL_MODELVIEW_MATRIX)
         val projectionMatrix = WorldToScreen.getMatrix(GL11.GL_PROJECTION_MATRIX)
 
-        val need2dTranslate = mode.equals("csgo", ignoreCase = true) || mode.equals("real2d", ignoreCase = true)
+        val need2dTranslate = mode == "csgo" || mode == "real2d"
         if (need2dTranslate) {
             GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
             GL11.glEnable(GL11.GL_BLEND)
@@ -78,10 +78,10 @@ class ESP : Module() {
             if (EntityUtils.isSelected(entity, true)) {
                 val entityLiving = entity as EntityLivingBase
                 val color = getColor(entityLiving)
-                when (mode.lowercase()) {
-                    "box", "otherbox" -> RenderUtils.drawEntityBox(entity, color, !mode.equals("otherbox", ignoreCase = true), true, outlineWidth.get())
+                when (mode) {
+                    "box", "otherbox" -> RenderUtils.drawEntityBox(entity, color, mode != "otherbox", true, outlineWidthValue.get())
 
-                    "outline" -> RenderUtils.drawEntityBox(entity, color, true, false, outlineWidth.get())
+                    "outline" -> RenderUtils.drawEntityBox(entity, color, true, false, outlineWidthValue.get())
 
                     "2d" -> {
                         val renderManager = mc.renderManager
@@ -135,7 +135,7 @@ class ESP : Module() {
                         // out of screen
                         if (!(minX == mc.displayWidth.toFloat() || minY == mc.displayHeight.toFloat() || maxX == 0f || maxY == 0f)) {
                             if (mode.equals("csgo", ignoreCase = true)) {
-                                val width = CSGOWidth.get() * ((maxY - minY) / 50)
+                                val width = csgoWidthValue.get() * ((maxY - minY) / 50)
                                 RenderUtils.drawRect(minX - width, minY - width, minX, maxY, color)
                                 RenderUtils.drawRect(maxX, minY - width, maxX + width, maxY + width, color)
                                 RenderUtils.drawRect(minX - width, maxY, maxX, maxY + width, color)
@@ -218,8 +218,8 @@ class ESP : Module() {
             else -> return
         }
         val radius = when (mode) {
-            "shaderoutline" -> shaderOutlineRadius.get()
-            "shaderglow" -> shaderGlowRadius.get()
+            "shaderoutline" -> shaderOutlineRadiusValue.get()
+            "shaderglow" -> shaderGlowRadiusValue.get()
             else -> 1f
         }
 
@@ -253,7 +253,7 @@ class ESP : Module() {
         if (entity is EntityLivingBase) {
             if (entity.hurtTime > 0) return Color.RED
             if (EntityUtils.isFriend(entity)) return Color.BLUE
-            if (colorTeam.get()) {
+            if (colorTeamValue.get()) {
                 val chars = entity.displayName.formattedText.toCharArray()
                 var color = Int.MAX_VALUE
                 for (i in chars.indices) {
@@ -267,6 +267,6 @@ class ESP : Module() {
             }
         }
 
-        return if (colorRainbow.get()) ColorUtils.rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+        return if (colorRainbowValue.get()) ColorUtils.rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
     }
 }

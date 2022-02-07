@@ -30,14 +30,14 @@ import kotlin.math.*
 class HackerDetector : Module() {
     private val GRAVITY_FRICTION = 0.9800000190734863
 
-    private val combatCheck = BoolValue("Combat", true)
-    private val movementCheck = BoolValue("Movement", true)
-    private val debugMode = BoolValue("Debug", false)
-    private val notify = BoolValue("Notify", true)
-    private val report = BoolValue("AutoReport", true)
+    private val combatCheckValue = BoolValue("Combat", true)
+    private val movementCheckValue = BoolValue("Movement", true)
+    private val debugModeValue = BoolValue("Debug", false)
+    private val notifyValue = BoolValue("Notify", true)
+    private val reportValue = BoolValue("AutoReport", true)
     private val vlValue = IntegerValue("VL", 300, 100, 500)
 
-    private val datas = HashMap<EntityPlayer, HackerData>()
+    private val hackerDataMap = HashMap<EntityPlayer, HackerData>()
     private val hackers = ArrayList<String>()
 
     @EventTarget
@@ -48,14 +48,14 @@ class HackerDetector : Module() {
 
     private fun doGC() {
         val needRemove = ArrayList<EntityPlayer>()
-        for ((player, _) in datas) {
+        for ((player, _) in hackerDataMap) {
             if (player.isDead) {
                 needRemove.add(player)
             }
         }
         for (player in needRemove) {
-            datas.remove(player)
-            if (debugMode.get()) {
+            hackerDataMap.remove(player)
+            if (debugModeValue.get()) {
                 alert("[GC] REMOVE ${player.name}")
             }
         }
@@ -65,16 +65,16 @@ class HackerDetector : Module() {
     fun onPacket(event: PacketEvent) {
         if (event.packet is S19PacketEntityStatus) {
             val packet = event.packet
-            if (combatCheck.get() && packet.opCode.toInt() == 2) {
+            if (combatCheckValue.get() && packet.opCode.toInt() == 2) {
                 Thread { checkCombatHurt(packet.getEntity(mc.theWorld)) }.start()
             }
         } else if (event.packet is S0BPacketAnimation) {
             val packet = event.packet
             val entity = mc.theWorld.getEntityByID(packet.entityID)
             if (entity !is EntityPlayer || packet.animationType != 0) return
-            val data = datas[entity] ?: return
+            val data = hackerDataMap[entity] ?: return
             data.tempAps++
-        } else if (movementCheck.get()) {
+        } else if (movementCheckValue.get()) {
             if (event.packet is S18PacketEntityTeleport) {
                 val packet = event.packet
                 val entity = mc.theWorld.getEntityByID(packet.entityId)
@@ -90,13 +90,13 @@ class HackerDetector : Module() {
     }
 
     override fun onEnable() {
-        datas.clear()
+        hackerDataMap.clear()
         hackers.clear()
     }
 
     @EventTarget
     fun onWorld(event: WorldEvent) {
-        datas.clear()
+        hackerDataMap.clear()
     }
 
     fun isHacker(entity: EntityLivingBase): Boolean {
@@ -106,8 +106,8 @@ class HackerDetector : Module() {
 
     private fun checkPlayer(player: EntityPlayer) {
         if (player.equals(mc.thePlayer) || EntityUtils.isFriend(player)) return
-        if (datas[player] == null) datas[player] = HackerData(player)
-        val data = datas[player] ?: return
+        if (hackerDataMap[player] == null) hackerDataMap[player] = HackerData(player)
+        val data = hackerDataMap[player] ?: return
         data.update()
         if (data.aliveTicks <20) return
 
@@ -254,7 +254,7 @@ class HackerDetector : Module() {
     private fun HackerData.flag(type: String, vl: Int, msg: String) {
         if (!this.useHacks.contains(type)) this.useHacks.add(type)
         // display debug message
-        if (debugMode.get()) {
+        if (debugModeValue.get()) {
             alert("§f${this.player.name} §euse §2$type §7$msg §c${this.vl}+$vl")
         }
         this.vl += vl
@@ -266,12 +266,12 @@ class HackerDetector : Module() {
             }
             use = use.substring(0, use.length - 1)
             alert("§f${this.player.name} §eusing hack §a$use")
-            if (notify.get()) {
+            if (notifyValue.get()) {
                 LiquidBounce.hud.addNotification(Notification(name, "${this.player.name} might use hack ($use)", NotifyType.WARNING))
             }
             this.vl = -vlValue.get()
 
-            if (report.get()) {
+            if (reportValue.get()) {
                 LiquidBounce.moduleManager[AutoReport::class.java]!!.doReport(this.player)
             }
         }
@@ -291,7 +291,7 @@ class HackerDetector : Module() {
         // multi attacker may cause false result
         if (attackerCount != 1) return
         if (attacker!! == entity || EntityUtils.isFriend(attacker)) return // i and my friend is hacker lol
-        val data = datas[attacker] ?: return
+        val data = hackerDataMap[attacker] ?: return
 
         // reach check
         val reach = attacker.getDistanceToEntity(entity)

@@ -33,10 +33,10 @@ class AutoPot : Module() {
     private val selectValue = IntegerValue("SelectSlot", -1, -1, 9)
 
     private val openInventoryValue = BoolValue("OpenInv", false)
-    private val simulateInventory = BoolValue("SimulateInventory", true)
-    private val regen = BoolValue("Regen", true)
-    private val utility = BoolValue("Utility", true)
-    private val notCombat = BoolValue("NotCombat", true)
+    private val simulateInventoryValue = BoolValue("SimulateInventory", true)
+    private val regenValue = BoolValue("Regen", true)
+    private val utilityValue = BoolValue("Utility", true)
+    private val notCombatValue = BoolValue("NotCombat", true)
 
     private var throwing = false
     private var throwTime = 0
@@ -44,7 +44,7 @@ class AutoPot : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (notCombat.get() && LiquidBounce.combatManager.inCombat) return
+        if (notCombatValue.get() && LiquidBounce.combatManager.inCombat) return
         if (!mc.thePlayer.onGround) return
 
         if (throwing) {
@@ -86,7 +86,7 @@ class AutoPot : Module() {
         if (openInventoryValue.get() && !enableSelect) {
             val invPotion = findPotion(9, 36)
             if (invPotion != -1) {
-                val openInventory = mc.currentScreen !is GuiInventory && simulateInventory.get()
+                val openInventory = mc.currentScreen !is GuiInventory && simulateInventoryValue.get()
                 if (InventoryUtils.hasSpaceHotbar()) {
                     if (openInventory) {
                         mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
@@ -142,7 +142,7 @@ class AutoPot : Module() {
 
         val itemPotion = stack.item as ItemPotion
 
-        if (mc.thePlayer.health <healthValue.get() && regen.get()) {
+        if (mc.thePlayer.health <healthValue.get() && regenValue.get()) {
             for (potionEffect in itemPotion.getEffects(stack)) {
                 if (potionEffect.potionID == Potion.heal.id) {
                     return true
@@ -154,7 +154,7 @@ class AutoPot : Module() {
                     if (potionEffect.potionID == Potion.regeneration.id) return true
                 }
             }
-        } else if (utility.get()) {
+        } else if (utilityValue.get()) {
             for (potionEffect in itemPotion.getEffects(stack)) {
                 if (InventoryUtils.isPositivePotionEffect(potionEffect.potionID) && !mc.thePlayer.isPotionActive(potionEffect.potionID)) {
                     return true
