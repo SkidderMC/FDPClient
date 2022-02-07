@@ -18,6 +18,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 @ModuleInfo(name = "NoRotateSet", category = ModuleCategory.MISC)
 class NoRotateSet : Module() {
 
+    private val noLoadingValue = BoolValue("NoLoading", true)
     private val confirmValue = BoolValue("Confirm", true)
     private val illegalRotationValue = BoolValue("ConfirmIllegalRotation", false)
     private val noZeroValue = BoolValue("NoZero", false)
@@ -26,10 +27,9 @@ class NoRotateSet : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        mc.thePlayer ?: return
-
         if (packet is S08PacketPlayerPosLook) {
-            if (noZeroValue.get() && packet.getYaw() == 0F && packet.getPitch() == 0F) {
+            if ((noZeroValue.get() && packet.getYaw() == 0F && packet.getPitch() == 0F) ||
+                (noLoadingValue.get() && !mc.netHandler.doneLoadingTerrain)) {
                 return
             }
 
