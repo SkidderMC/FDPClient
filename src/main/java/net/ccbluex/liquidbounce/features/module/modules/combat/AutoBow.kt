@@ -21,14 +21,14 @@ import net.minecraft.util.EnumFacing
 @ModuleInfo(name = "AutoBow", category = ModuleCategory.COMBAT)
 class AutoBow : Module() {
 
-    private val waitForBowAimbot = BoolValue("WaitForBowAimbot", true)
+    private val waitForBowAimbotValue = BoolValue("WaitForBowAimbot", true)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         val bowAimbot = LiquidBounce.moduleManager[BowAimbot::class.java]!!
 
         if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item == Items.bow &&
-                mc.thePlayer.itemInUseDuration > 20 && (!waitForBowAimbot.get() || !bowAimbot.state || bowAimbot.hasTarget())) {
+                mc.thePlayer.itemInUseDuration > 20 && (!waitForBowAimbotValue.get() || !bowAimbot.state || bowAimbot.hasTarget())) {
             mc.thePlayer.stopUsingItem()
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
         }

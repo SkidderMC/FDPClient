@@ -29,11 +29,11 @@ import net.minecraft.stats.StatList
 class Criticals : Module() {
 
     val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "LitePacket", "Hypixel", "Hypixel2", "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "Visual", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "Motion", "Hover"), "packet")
-    val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
-    val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
-    val hoverNoFall = BoolValue("HoverNoFall", true).displayable { modeValue.equals("Hover") }
-    val hoverCombat = BoolValue("HoverOnlyCombat", true).displayable { modeValue.equals("Hover") }
-    val delayValue = IntegerValue("Delay", 0, 0, 500)
+    private val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
+    private val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
+    private val hoverNoFall = BoolValue("HoverNoFall", true).displayable { modeValue.equals("Hover") }
+    private val hoverCombat = BoolValue("HoverOnlyCombat", true).displayable { modeValue.equals("Hover") }
+    private val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val s08FlagValue = BoolValue("FlagPause", true)
     private val s08DelayValue = IntegerValue("FlagPauseTime", 100, 100, 5000).displayable { s08FlagValue.get() }
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
@@ -64,7 +64,7 @@ class Criticals : Module() {
 
             if (!mc.thePlayer.onGround || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb || mc.thePlayer.isInWater ||
                 mc.thePlayer.isInLava || mc.thePlayer.ridingEntity != null || entity.hurtTime > hurtTimeValue.get() ||
-                LiquidBounce.moduleManager[Fly::class.java]!!.state || !msTimer.hasTimePassed(delayValue.get().toLong())) {
+                !msTimer.hasTimePassed(delayValue.get().toLong())) {
                 return
             }
             

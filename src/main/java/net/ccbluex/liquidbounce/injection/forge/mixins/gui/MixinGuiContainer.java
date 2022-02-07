@@ -65,8 +65,8 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
             if (pct != 0) {
                 GL11.glPushMatrix();
 
-                pct = EaseUtils.INSTANCE.apply(EaseUtils.EnumEasingType.valueOf(animations.getInvEaseMode().get()),
-                        EaseUtils.EnumEasingOrder.valueOf(animations.getInvEaseOrderMode().get()), pct);
+                pct = EaseUtils.INSTANCE.apply(EaseUtils.EnumEasingType.valueOf(animations.getInvEaseModeValue().get()),
+                        EaseUtils.EnumEasingOrder.valueOf(animations.getInvEaseOrderModeValue().get()), pct);
 
                 switch (animations.getInvModeValue().get().toLowerCase()) {
                     case "slide": {

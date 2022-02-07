@@ -18,6 +18,7 @@ import org.lwjgl.input.Mouse
 
 @ModuleInfo(name = "MidClick", category = ModuleCategory.PLAYER)
 class MidClick : Module() {
+
     private var wasDown = false
 
     @EventTarget
@@ -28,7 +29,7 @@ class MidClick : Module() {
             val entity = mc.objectMouseOver.entityHit
 
             if (entity is EntityPlayer) {
-                val playerName = stripColor(entity.getName())!!
+                val playerName = stripColor(entity.getName())
                 val friendsConfig = LiquidBounce.fileManager.friendsConfig
 
                 if (!friendsConfig.isFriend(playerName)) {

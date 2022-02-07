@@ -23,12 +23,13 @@ import kotlin.concurrent.schedule
 
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
 class AutoPlay : Module() {
-    private var clickState = 0
+
     private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex"), "RedeSky")
     private val delayValue = IntegerValue("JoinDelay", 3, 0, 7)
 
     private var clicking = false
     private var queued = false
+    private var clickState = 0
 
     override fun onEnable() {
         clickState = 0

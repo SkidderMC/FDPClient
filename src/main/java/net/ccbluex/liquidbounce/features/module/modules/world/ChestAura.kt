@@ -36,13 +36,13 @@ object ChestAura : Module() {
     private val delayValue = IntegerValue("Delay", 100, 50, 500)
     private val throughWallsValue = BoolValue("ThroughWalls", true)
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
-    private val rotations = BoolValue("Rotations", true)
-    private val discoverDelay = BoolValue("DiscoverDelay", false)
-    private val discoverDelayValue = IntegerValue("DiscoverDelayValue", 200, 50, 300)
-    private val onlyOnGround = BoolValue("OnlyOnGround", true)
-    private val notOpened = BoolValue("NotOpened", false)
-    private val doubleClick = BoolValue("DoubleClick", false) // this bypass redesky
-    private val noCombating = BoolValue("NoCombating", true)
+    private val rotationsValue = BoolValue("Rotations", true)
+    private val discoverDelayEnabledValue = BoolValue("DiscoverDelay", false)
+    private val discoverDelayValue = IntegerValue("DiscoverDelayValue", 200, 50, 300).displayable { discoverDelayEnabledValue.get() }
+    private val onlyOnGroundValue = BoolValue("OnlyOnGround", true)
+    private val notOpenedValue = BoolValue("NotOpened", false)
+    private val noCombatingValue = BoolValue("NoCombating", true)
+
     private var currentBlock: BlockPos? = null
     private var underClick = false
 
@@ -50,58 +50,51 @@ object ChestAura : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (LiquidBounce.moduleManager[Blink::class.java]!!.state) {
+        if ((onlyOnGroundValue.get() && !mc.thePlayer.onGround) || (noCombatingValue.get() && LiquidBounce.combatManager.inCombat)) {
             return
         }
 
-        if (onlyOnGround.get() && !mc.thePlayer.onGround) {
-            return
-        }
-
-        if (noCombating.get() && LiquidBounce.combatManager.inCombat) {
-            return
-        }
         if (event.eventState == EventState.PRE) {
-                if (mc.currentScreen is GuiContainer) {
-                    return
+            if (mc.currentScreen is GuiContainer) {
+                return
+            }
+
+            val radius = rangeValue.get() + 1
+
+            val eyesPos = Vec3(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight(),
+                mc.thePlayer.posZ)
+
+            currentBlock = BlockUtils.searchBlocks(radius.toInt())
+                .filter {
+                    it.value is BlockChest && !clickedBlocks.contains(it.key) &&
+                            BlockUtils.getCenterDistance(it.key) < rangeValue.get()
                 }
-
-                val radius = rangeValue.get() + 1
-
-                val eyesPos = Vec3(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight(),
-                        mc.thePlayer.posZ)
-
-                currentBlock = BlockUtils.searchBlocks(radius.toInt())
-                    .filter {
-                        it.value is BlockChest && !clickedBlocks.contains(it.key) &&
-                                BlockUtils.getCenterDistance(it.key) < rangeValue.get()
+                .filter {
+                    if (throughWallsValue.get()) {
+                        return@filter true
                     }
-                    .filter {
-                        if (throughWallsValue.get()) {
-                            return@filter true
-                        }
 
-                        val blockPos = it.key
-                        val movingObjectPosition = mc.theWorld.rayTraceBlocks(eyesPos,
-                            blockPos.getVec(), false, true, false)
+                    val blockPos = it.key
+                    val movingObjectPosition = mc.theWorld.rayTraceBlocks(eyesPos,
+                        blockPos.getVec(), false, true, false)
 
-                        movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
-                    }
-                    .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key
-
-                if (rotations.get()) {
-                    RotationUtils.setTargetRotation((RotationUtils.faceBlock(currentBlock ?: return)
-                            ?: return).rotation)
+                    movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
                 }
+                .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key
+
+            if (rotationsValue.get()) {
+                RotationUtils.setTargetRotation((RotationUtils.faceBlock(currentBlock ?: return)
+                    ?: return).rotation)
+            }
         } else if (currentBlock != null && InventoryUtils.INV_TIMER.hasTimePassed(delayValue.get().toLong()) && !underClick) {
-                 underClick = true
-                if (discoverDelay.get()) {
-                    java.util.Timer().schedule(discoverDelayValue.get().toLong()) {
-                        click()
-                    }
-                } else {
+            underClick = true
+            if (discoverDelayEnabledValue.get()) {
+                java.util.Timer().schedule(discoverDelayValue.get().toLong()) {
                     click()
                 }
+            } else {
+                click()
+            }
         }
     }
 
@@ -117,17 +110,6 @@ object ChestAura : Module() {
 
                 clickedBlocks.add(currentBlock!!)
                 currentBlock = null
-
-                if (doubleClick.get()) {
-                    val hitPos = currentBlock ?: return
-                    val hitVec = hitPos.getVec()
-                    val f = (hitVec.xCoord - hitPos.x.toDouble()).toFloat()
-                    val f1 = (hitVec.yCoord - hitPos.y.toDouble()).toFloat()
-                    val f2 = (hitVec.zCoord - hitPos.z.toDouble()).toFloat()
-                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(hitPos, EnumFacing.DOWN.index,
-                        mc.thePlayer.inventory.getCurrentItem(), f, f1, f2))
-                    mc.netHandler.addToSendQueue(C0APacketAnimation())
-                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -137,7 +119,7 @@ object ChestAura : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (notOpened.get() && event.packet is S24PacketBlockAction) {
+        if (notOpenedValue.get() && event.packet is S24PacketBlockAction) {
             val packet = event.packet
             if (packet.blockType is BlockChest && packet.data2 == 1 && !clickedBlocks.contains(packet.blockPosition)) {
                     clickedBlocks.add(packet.blockPosition)

@@ -51,19 +51,19 @@ import kotlin.math.*
 class Scaffold : Module() {
 
     // Delay
-    private val placeableDelay = ListValue("PlaceableDelay", arrayOf("Normal", "Smart", "OFF"), "Normal")
+    private val placeableDelayValue = ListValue("PlaceableDelay", arrayOf("Normal", "Smart", "OFF"), "Normal")
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 0, 0, 1000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minDelayValue.get()
             if (i > newValue) set(i)
         }
-    }.displayable { !placeableDelay.equals("OFF") } as IntegerValue
+    }.displayable { !placeableDelayValue.equals("OFF") } as IntegerValue
     private val minDelayValue: IntegerValue = object : IntegerValue("MinDelay", 0, 0, 1000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = maxDelayValue.get()
             if (i < newValue) set(i)
         }
-    }.displayable { !placeableDelay.equals("OFF") } as IntegerValue
+    }.displayable { !placeableDelayValue.equals("OFF") } as IntegerValue
 
     // AutoBlock
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "LiteSpoof")
@@ -85,8 +85,8 @@ class Scaffold : Module() {
     // Rotations
     private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90).displayable { rotationsValue.equals("AAC") }
-    private val customYaw = IntegerValue("CustomYaw", -145, -180, 180).displayable { rotationsValue.equals("Custom") }
-    private val customPitch = IntegerValue("CustomPitch", 79, -90, 90).displayable { rotationsValue.equals("Custom") }
+    private val customYawValue = IntegerValue("CustomYaw", -145, -180, 180).displayable { rotationsValue.equals("Custom") }
+    private val customPitchValue = IntegerValue("CustomPitch", 79, -90, 90).displayable { rotationsValue.equals("Custom") }
     // private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") }
@@ -106,13 +106,13 @@ class Scaffold : Module() {
 
     // Zitter
     private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
-    private val zitterSpeed = FloatValue("ZitterSpeed", 0.13f, 0.1f, 0.3f).displayable { !zitterModeValue.equals("OFF") }
-    private val zitterStrength = FloatValue("ZitterStrength", 0.072f, 0.05f, 0.2f).displayable { !zitterModeValue.equals("OFF") }
+    private val zitterSpeedValue = FloatValue("ZitterSpeed", 0.13f, 0.1f, 0.3f).displayable { !zitterModeValue.equals("OFF") }
+    private val zitterStrengthValue = FloatValue("ZitterStrength", 0.072f, 0.05f, 0.2f).displayable { !zitterModeValue.equals("OFF") }
 
     // Game
     private val timerValue = FloatValue("Timer", 1f, 0.1f, 5f)
-    private val motionSpeedValue = BoolValue("MotionSpeedSet", false)
-    private val motionSpeed = FloatValue("MotionSpeed", 0.1f, 0.05f, 1f).displayable { motionSpeedValue.get() }
+    private val motionSpeedEnabledValue = BoolValue("MotionSpeedSet", false)
+    private val motionSpeedValue = FloatValue("MotionSpeed", 0.1f, 0.05f, 1f).displayable { motionSpeedEnabledValue.get() }
     private val speedModifierValue = FloatValue("SpeedModifier", 1f, 0f, 2f)
 
     // Tower
@@ -133,15 +133,15 @@ class Scaffold : Module() {
             "Verus"
         ), "Jump"
     )
-    private val stopWhenBlockAbove = BoolValue("StopTowerWhenBlockAbove", true)
-    private val towerFakeJump = BoolValue("TowerFakeJump", true)
+    private val stopWhenBlockAboveValue = BoolValue("StopTowerWhenBlockAbove", true)
+    private val towerFakeJumpValue = BoolValue("TowerFakeJump", true)
     private val towerActiveValue = ListValue("TowerActivation", arrayOf("Always", "PressSpace", "NoMove", "OFF"), "PressSpace")
     private val towerTimerValue = FloatValue("TowerTimer", 1f, 0.1f, 5f)
 
     // Safety
     private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "OFF"), "WhenSpeed")
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "OFF")
-    private val hitableCheck = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple")
+    private val hitableCheckValue = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple")
 
     // Extra click
     private val extraClickValue = ListValue("ExtraClick", arrayOf("EmptyC08", "AfterPlace", "RayTrace", "OFF"), "OFF")
@@ -356,10 +356,10 @@ class Scaffold : Module() {
 
             // Zitter
             if (zitterModeValue.equals("teleport")) {
-                MovementUtils.strafe(zitterSpeed.get())
+                MovementUtils.strafe(zitterSpeedValue.get())
                 val yaw = Math.toRadians(mc.thePlayer.rotationYaw + if (zitterDirection) 90.0 else -90.0)
-                mc.thePlayer.motionX -= sin(yaw) * zitterStrength.get()
-                mc.thePlayer.motionZ += cos(yaw) * zitterStrength.get()
+                mc.thePlayer.motionX -= sin(yaw) * zitterStrengthValue.get()
+                mc.thePlayer.motionZ += cos(yaw) * zitterStrengthValue.get()
                 zitterDirection = !zitterDirection
             }
         }
@@ -395,8 +395,8 @@ class Scaffold : Module() {
         val eventState = event.eventState
         towerStatus = false
         // Tower
-        if (motionSpeedValue.get()) MovementUtils.setMotion(motionSpeed.get().toDouble())
-        towerStatus = (!stopWhenBlockAbove.get() || BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 2, mc.thePlayer.posZ)) is BlockAir)
+        if (motionSpeedEnabledValue.get()) MovementUtils.setMotion(motionSpeedValue.get().toDouble())
+        towerStatus = (!stopWhenBlockAboveValue.get() || BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 2, mc.thePlayer.posZ)) is BlockAir)
         if (towerStatus) {
             // further checks
             when (towerActiveValue.get().lowercase()) {
@@ -431,8 +431,8 @@ class Scaffold : Module() {
         if (placeModeValue.equals(eventState.stateName)) place()
 
         // Reset placeable delay
-        if (targetPlace == null && !placeableDelay.equals("OFF")) {
-            if (placeableDelay.equals("Smart")) {
+        if (targetPlace == null && !placeableDelayValue.equals("OFF")) {
+            if (placeableDelayValue.equals("Smart")) {
                 if (lastPlace == 0) {
                     delayTimer.reset()
                 }
@@ -443,7 +443,7 @@ class Scaffold : Module() {
     }
 
     private fun fakeJump() {
-        if (!towerFakeJump.get()) {
+        if (!towerFakeJumpValue.get()) {
             return
         }
 
@@ -639,9 +639,9 @@ class Scaffold : Module() {
      */
     private fun place() {
         if (targetPlace == null) {
-            if (!placeableDelay.equals("OFF")) {
-                if (lastPlace == 0 && placeableDelay.equals("Smart")) delayTimer.reset()
-                if (placeableDelay.equals("Normal")) delayTimer.reset()
+            if (!placeableDelayValue.equals("OFF")) {
+                if (lastPlace == 0 && placeableDelayValue.equals("Smart")) delayTimer.reset()
+                if (placeableDelayValue.equals("Normal")) delayTimer.reset()
                 if (lastPlace> 0) lastPlace--
             }
             return
@@ -652,7 +652,7 @@ class Scaffold : Module() {
 
         if (!rotationsValue.equals("None")) {
             val rayTraceInfo = mc.thePlayer.rayTraceWithServerSideRotation(5.0)
-            when (hitableCheck.get().lowercase()) {
+            when (hitableCheckValue.get().lowercase()) {
                 "simple" -> {
                     if (!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)) {
                         return
@@ -899,7 +899,7 @@ class Scaffold : Module() {
                     Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
                 }
                 "custom" -> {
-                    Rotation(mc.thePlayer.rotationYaw + customYaw.get(), customPitch.get().toFloat())
+                    Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), customPitchValue.get().toFloat())
                 }
                 else -> return false // this should not happen
             }

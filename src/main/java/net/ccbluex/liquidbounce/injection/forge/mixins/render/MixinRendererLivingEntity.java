@@ -100,7 +100,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                     GL11.glEnable(GL11.GL_BLEND);
                     GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                     RenderUtils.glColor(esp.getColor(entitylivingbaseIn));
-                    GL11.glLineWidth(esp.getWireframeWidth().get());
+                    GL11.glLineWidth(esp.getWireframeWidthValue().get());
                     this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
                     GL11.glPopAttrib();
                     GL11.glPopMatrix();

@@ -41,10 +41,10 @@ class InfiniteAura : Module() {
     private val noRegenValue = BoolValue("NoRegen", true)
     private val swingValue = BoolValue("Swing", true).displayable { modeValue.equals("Aura") }
     private val pathRenderValue = BoolValue("PathRender", true)
-    private val colorRedValue = IntegerValue("ColorRed", 0, 0, 255).displayable { pathRenderValue.get() && colorRainbowValue.get() }
-    private val colorGreenValue = IntegerValue("ColorGreen", 160, 0, 255).displayable { pathRenderValue.get() && colorRainbowValue.get() }
-    private val colorBlueValue = IntegerValue("ColorBlue", 255, 0, 255).displayable { pathRenderValue.get() && colorRainbowValue.get() }
-    private val colorAlphaValue = IntegerValue("ColorAlpha", 150, 0, 255).displayable { pathRenderValue.get() && colorRainbowValue.get() }
+    private val colorRedValue = IntegerValue("ColorRed", 0, 0, 255).displayable { pathRenderValue.get() && !colorRainbowValue.get() }
+    private val colorGreenValue = IntegerValue("ColorGreen", 160, 0, 255).displayable { pathRenderValue.get() && !colorRainbowValue.get() }
+    private val colorBlueValue = IntegerValue("ColorBlue", 255, 0, 255).displayable { pathRenderValue.get() && !colorRainbowValue.get() }
+    private val colorAlphaValue = IntegerValue("ColorAlpha", 150, 0, 255).displayable { pathRenderValue.get() }
     private val colorRainbowValue = BoolValue("Rainbow", false).displayable { pathRenderValue.get() }
 
     private val timer = MSTimer()

@@ -69,7 +69,7 @@ class ChinaHat : Module() {
         val radius = radiusValue.get().toDouble()
         for(i in 0..360 step 5) {
             if(colorRainbowValue.get()) {
-                RenderUtils.glColor(Color.getHSBColor(if (i <180) { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (i / 180f) } else { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f), colorAlphaValue.get() / 255f)
+                RenderUtils.glColor(Color.getHSBColor(if (i <180) { HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (i / 180f) } else { HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f), colorAlphaValue.get() / 255f)
             }
             GL11.glVertex3d(cos(i.toDouble() * Math.PI / 180.0) * radius, 0.0, sin(i.toDouble() * Math.PI / 180.0) * radius)
         }

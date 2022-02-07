@@ -42,8 +42,8 @@ class AuthBypass : Module() {
 
     private var skull: String? = null
     private var type = "none"
-    private val packets = ArrayList<Packet<INetHandlerPlayServer>>()
-    private val clickedSlot = ArrayList<Int>()
+    private val packets = mutableListOf<Packet<INetHandlerPlayServer>>()
+    private val clickedSlot = mutableListOf<Int>()
     private val timer = MSTimer()
     private val jsonParser = JsonParser()
 

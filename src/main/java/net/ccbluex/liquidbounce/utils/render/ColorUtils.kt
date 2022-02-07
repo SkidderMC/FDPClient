@@ -120,12 +120,12 @@ object ColorUtils {
 
     fun hslRainbow(
         index: Int,
-        lowest: Float = HUD.rainbowStart.get(),
-        bigest: Float = HUD.rainbowStop.get(),
+        lowest: Float = HUD.rainbowStartValue.get(),
+        bigest: Float = HUD.rainbowStopValue.get(),
         indexOffset: Int = 300,
-        timeSplit: Int = HUD.rainbowSpeed.get(),
-        saturation: Float = HUD.rainbowSaturation.get(),
-        brightness: Float = HUD.rainbowBrightness.get()
+        timeSplit: Int = HUD.rainbowSpeedValue.get(),
+        saturation: Float = HUD.rainbowSaturationValue.get(),
+        brightness: Float = HUD.rainbowBrightnessValue.get()
     ): Color {
         return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
     }

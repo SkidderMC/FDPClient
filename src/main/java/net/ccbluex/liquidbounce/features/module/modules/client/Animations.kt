@@ -20,27 +20,27 @@ object Animations : Module() {
         "SlideDown"
     )
     val invModeValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Slide")
-    val invEaseMode = EaseUtils.getEnumEasingList("InvEase")
-    val invEaseOrderMode = EaseUtils.getEnumEasingOrderList("InvEaseOrder")
+    val invEaseModeValue = EaseUtils.getEnumEasingList("InvEase")
+    val invEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("InvEaseOrder")
     val invTimeValue = IntegerValue("InvTime", 500, 0, 1000).displayable { !invModeValue.equals("None") }
-    private val tabShowPlayerSkin = BoolValue("TabShowPlayerSkin", false)
+    private val tabShowPlayerSkinValue = BoolValue("TabShowPlayerSkin", false)
     val tabModeValue = ListValue("TabMode", arrayOf("None", "UpSlide", "DownSlide", "Zoom"), "Zoom")
-    val tabEaseMode = EaseUtils.getEnumEasingList("TabEase")
-    val tabEaseOrderMode = EaseUtils.getEnumEasingOrderList("TabEaseOrder")
+    val tabEaseModeValue = EaseUtils.getEnumEasingList("TabEase")
+    val tabEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("TabEaseOrder")
     val tabTimeValue = IntegerValue("TabTime", 500, 0, 1000).displayable { !tabModeValue.equals("None") }
-    val translateX = FloatValue("TranslateX", 0.0f, 0.0f, 1.5f)
-    val translateY = FloatValue("TranslateY", 0.0f, 0.0f, 0.5f)
-    val translateZ = FloatValue("TranslateZ", 0.0f, 0.0f, -2.0f)
-    val itemPosX = FloatValue("ItemPosX", 0.56F, -1.0F, 1.0F)
-    val itemPosY = FloatValue("ItemPosY", -0.52F, -1.0F, 1.0F)
-    val itemPosZ = FloatValue("ItemPosZ", -0.71999997F, -1.0F, 1.0F)
-    val itemScale = FloatValue("ItemScale", 0.4f, 0.0f, 2.0f)
-    val swingAnim = BoolValue("SwingAnim", false)
-    val swingSpeed = FloatValue("SwingSpeed", 1f, 0.5f, 5.0f)
-    val anythingBlock = BoolValue("AnythingBlock", false)
+    val translateXValue = FloatValue("TranslateX", 0.0f, 0.0f, 1.5f)
+    val translateYValue = FloatValue("TranslateY", 0.0f, 0.0f, 0.5f)
+    val translateZValue = FloatValue("TranslateZ", 0.0f, 0.0f, -2.0f)
+    val itemPosXValue = FloatValue("ItemPosX", 0.56F, -1.0F, 1.0F)
+    val itemPosYValue = FloatValue("ItemPosY", -0.52F, -1.0F, 1.0F)
+    val itemPosZValue = FloatValue("ItemPosZ", -0.71999997F, -1.0F, 1.0F)
+    val itemScaleValue = FloatValue("ItemScale", 0.4f, 0.0f, 2.0f)
+    val swingAnimValue = BoolValue("SwingAnim", false)
+    val swingSpeedValue = FloatValue("SwingSpeed", 1f, 0.5f, 5.0f)
+    val anythingBlockValue = BoolValue("AnythingBlock", false)
 
     var flagRenderTabOverlay = false
-        get() = field && tabShowPlayerSkin.get()
+        get() = field && tabShowPlayerSkinValue.get()
 
     var tabPercent = 0f
     var tabHopePercent = 0f

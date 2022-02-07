@@ -43,8 +43,8 @@ import kotlin.math.sqrt
 class NoFall : Module() {
     val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "LoyisaAAC4.4.2", "AAC5.0.4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Damage", "MotionFlag", "OldMatrix", "Matrix", "MatrixPacket"), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
-    private val minFallDistance = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
-    private val flySpeed = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
+    private val minFallDistanceValue = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
+    private val flySpeedValue = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
 
     private var oldaacState = 0
     private var jumped = false
@@ -54,7 +54,7 @@ class NoFall : Module() {
     private var aac5doFlag = false
     private var aac5Check = false
     private var aac5Timer = 0
-    private val aac4Packets = ArrayList<C03PacketPlayer>()
+    private val aac4Packets = mutableListOf<C03PacketPlayer>()
     private var needSpoof = false
     private var packet1Count = 0
     private val mlgTimer = TickTimer()
@@ -197,7 +197,7 @@ class NoFall : Module() {
             }
             "motionflag" -> {
                 if (mc.thePlayer.fallDistance > 3) {
-                    mc.thePlayer.motionY = flySpeed.get().toDouble()
+                    mc.thePlayer.motionY = flySpeedValue.get().toDouble()
                 }
             }
             "spartan" -> {
@@ -379,7 +379,7 @@ class NoFall : Module() {
                     return
                 }
 
-                if (mc.thePlayer.fallDistance > minFallDistance.get()) {
+                if (mc.thePlayer.fallDistance > minFallDistanceValue.get()) {
                     val fallingPlayer = FallingPlayer(mc.thePlayer)
 
                     val maxDist = mc.playerController.blockReachDistance + 1.5

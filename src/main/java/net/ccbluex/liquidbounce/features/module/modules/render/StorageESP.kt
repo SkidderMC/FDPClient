@@ -26,7 +26,7 @@ import java.awt.Color
 @ModuleInfo(name = "StorageESP", category = ModuleCategory.RENDER)
 class StorageESP : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "ShaderOutline", "ShaderGlow", "2D", "WireFrame"), "Outline")
-    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
+    private val outlineWidthValue = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
     private val chestValue = BoolValue("Chest", true)
     private val enderChestValue = BoolValue("EnderChest", true)
     private val furnaceValue = BoolValue("Furnace", true)
@@ -53,11 +53,11 @@ class StorageESP : Module() {
             for (tileEntity in mc.theWorld.loadedTileEntityList) {
                 val color = getColor(tileEntity) ?: continue
                 when (mode.lowercase()) {
-                    "otherbox", "box" -> RenderUtils.drawBlockBox(tileEntity.pos, color, !mode.equals("otherbox", ignoreCase = true), true, outlineWidth.get())
+                    "otherbox", "box" -> RenderUtils.drawBlockBox(tileEntity.pos, color, !mode.equals("otherbox", ignoreCase = true), true, outlineWidthValue.get())
 
                     "2d" -> RenderUtils.draw2D(tileEntity.pos, color.rgb, Color.BLACK.rgb)
 
-                    "outline" -> RenderUtils.drawBlockBox(tileEntity.pos, color, true, false, outlineWidth.get())
+                    "outline" -> RenderUtils.drawBlockBox(tileEntity.pos, color, true, false, outlineWidthValue.get())
 
                     "wireframe" -> {
                         GL11.glPushMatrix()
