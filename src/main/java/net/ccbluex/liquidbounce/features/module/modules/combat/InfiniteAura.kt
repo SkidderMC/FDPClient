@@ -33,6 +33,7 @@ import kotlin.concurrent.thread
 
 @ModuleInfo(name = "InfiniteAura", category = ModuleCategory.COMBAT)
 class InfiniteAura : Module() {
+
     private val modeValue = ListValue("Mode", arrayOf("Aura", "Click"), "Aura")
     private val targetsValue = IntegerValue("Targets", 3, 1, 10).displayable { modeValue.equals("Aura") }
     private val cpsValue = IntegerValue("CPS", 1, 1, 10)
@@ -48,7 +49,7 @@ class InfiniteAura : Module() {
     private val colorRainbowValue = BoolValue("Rainbow", false).displayable { pathRenderValue.get() }
 
     private val timer = MSTimer()
-    private var points = ArrayList<Vec3>()
+    private var points = mutableListOf<Vec3>()
     private var thread: Thread? = null
 
     private fun getDelay(): Int {
@@ -137,6 +138,7 @@ class InfiniteAura : Module() {
             val vec = path[i]
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec.xCoord, vec.yCoord, vec.zCoord, true))
         }
+        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
     }
 
     @EventTarget

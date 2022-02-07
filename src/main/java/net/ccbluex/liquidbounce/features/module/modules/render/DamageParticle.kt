@@ -40,7 +40,7 @@ class DamageParticle : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        synchronized(particles ) {
+        synchronized(particles) {
             for(entity in mc.theWorld.loadedEntityList) {
                 if(entity is EntityLivingBase && EntityUtils.isSelected(entity,true)) {
                     val lastHealth = healthData.getOrDefault(entity.entityId,entity.maxHealth)
@@ -48,7 +48,7 @@ class DamageParticle : Module() {
                     if(lastHealth == entity.health) continue
 
                     val prefix = if (!colorRainbowValue.get()) (if(lastHealth>entity.health){"§c❤"}else{"§a§l❤"}) else (if(lastHealth>entity.health){"-"}else{"+"})
-                    particles.add(SingleParticle(prefix+BigDecimal(abs(lastHealth-entity.health).toDouble()).setScale(1,BigDecimal.ROUND_HALF_UP).toDouble()
+                    particles.add(SingleParticle(prefix + BigDecimal(abs(lastHealth - entity.health).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP).toDouble()
                         ,entity.posX - 0.5 + Random(System.currentTimeMillis()).nextInt(5).toDouble() * 0.1
                         ,entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0
                         ,entity.posZ - 0.5 + Random(System.currentTimeMillis() + 1L).nextInt(5).toDouble() * 0.1)
