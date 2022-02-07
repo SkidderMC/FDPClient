@@ -25,21 +25,21 @@ class ChinaHat : Module() {
     private val radiusValue = FloatValue("Radius", 0.7f, 0.3f, 1.5f)
     private val yPosValue = FloatValue("YPos", 0f, -1f, 1f)
     private val rotateSpeedValue = FloatValue("RotateSpeed", 2f, 0f, 5f)
-    private val drawThePlayer = BoolValue("DrawThePlayer", true)
-    private val onlyThirdPersonValue = BoolValue("OnlyThirdPerson", true).displayable { drawThePlayer.get() }
-    private val drawTargets = BoolValue("DrawTargets", true)
-    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbow.get() }
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbow.get() }
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbow.get() }
+    private val drawThePlayerValue = BoolValue("DrawThePlayer", true)
+    private val onlyThirdPersonValue = BoolValue("OnlyThirdPerson", true).displayable { drawThePlayerValue.get() }
+    private val drawTargetsValue = BoolValue("DrawTargets", true)
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorAlphaValue = IntegerValue("Alpha", 200, 0, 255)
-    private val colorRainbow = BoolValue("Rainbow", false)
+    private val colorRainbowValue = BoolValue("Rainbow", false)
 
     @EventTarget
     fun onRender3d(event: Render3DEvent) {
-        if(drawThePlayer.get() && !(onlyThirdPersonValue.get() && mc.gameSettings.thirdPersonView == 0)) {
+        if(drawThePlayerValue.get() && !(onlyThirdPersonValue.get() && mc.gameSettings.thirdPersonView == 0)) {
             drawChinaHatFor(mc.thePlayer)
         }
-        if(drawTargets.get()) {
+        if(drawTargetsValue.get()) {
             mc.theWorld.loadedEntityList.forEach {
                 if(EntityUtils.isSelected(it, true)) {
                     drawChinaHatFor(it as EntityLivingBase)
@@ -56,7 +56,7 @@ class ChinaHat : Module() {
         GL11.glDisable(GL11.GL_DEPTH_TEST)
         GL11.glDepthMask(false)
         GL11.glDisable(GL11.GL_CULL_FACE)
-        if(!colorRainbow.get()) {
+        if(!colorRainbowValue.get()) {
             GL11.glColor4f(colorRedValue.get() / 255f, colorGreenValue.get() / 255f, colorBlueValue.get() / 255f, colorAlphaValue.get() / 255f)
         }
         GL11.glTranslated(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX,
@@ -68,7 +68,7 @@ class ChinaHat : Module() {
         GL11.glVertex3d(0.0, heightValue.get().toDouble(), 0.0)
         val radius = radiusValue.get().toDouble()
         for(i in 0..360 step 5) {
-            if(colorRainbow.get()) {
+            if(colorRainbowValue.get()) {
                 RenderUtils.glColor(Color.getHSBColor(if (i <180) { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (i / 180f) } else { HUD.rainbowStart.get() + (HUD.rainbowStop.get() - HUD.rainbowStart.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f), colorAlphaValue.get() / 255f)
             }
             GL11.glVertex3d(cos(i.toDouble() * Math.PI / 180.0) * radius, 0.0, sin(i.toDouble() * Math.PI / 180.0) * radius)
