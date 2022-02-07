@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -26,12 +27,14 @@ import java.awt.Color
 class Tracers : Module() {
 
     private val colorMode = ListValue("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
-
     private val thicknessValue = FloatValue("Thickness", 2F, 1F, 5F)
-
-    private val colorRedValue = IntegerValue("R", 0, 0, 255)
-    private val colorGreenValue = IntegerValue("G", 160, 0, 255)
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255)
+    private val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { colorMode.equals("Custom") }
+    private val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { colorMode.equals("Custom") }
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { colorMode.equals("Custom") }
+    private val colorAlphaValue = IntegerValue("A", 150, 0, 255)
+    private val distanceMultplierValue = FloatValue("DistanceMultiplier", 5F, 0.1F, 10F).displayable { colorMode.equals("DistanceColor") }
+    private val playerHeightValue = BoolValue("PlayerHeight", true)
+    private val entityHeightValue = BoolValue("EntityHeight", true)
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -43,28 +46,24 @@ class Tracers : Module() {
         GL11.glDisable(GL11.GL_DEPTH_TEST)
         GL11.glDepthMask(false)
 
-        GL11.glBegin(GL11.GL_LINES)
-
         for (entity in mc.theWorld.loadedEntityList) {
             if (entity != null && entity != mc.thePlayer && EntityUtils.isSelected(entity, false)) {
-                var dist = (mc.thePlayer.getDistanceToEntity(entity) * 2).toInt()
+                var dist = (mc.thePlayer.getDistanceToEntity(entity) * distanceMultplierValue.get()).toInt()
 
                 if (dist > 255) dist = 255
 
                 val colorMode = colorMode.get().lowercase()
                 val color = when {
-                    EntityUtils.isFriend(entity) -> Color(0, 0, 255, 150)
-                    colorMode.equals("custom") -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 150)
-                    colorMode.equals("distancecolor") -> Color(255 - dist, dist, 0, 150)
-                    colorMode.equals("rainbow") -> ColorUtils.rainbow()
-                    else -> Color(255, 255, 255, 150)
+                    EntityUtils.isFriend(entity) -> Color(0, 0, 255)
+                    colorMode == "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+                    colorMode == "distancecolor" -> Color(255 - dist, dist, 0)
+                    colorMode == "rainbow" -> ColorUtils.rainbow()
+                    else -> Color.WHITE
                 }
 
                 drawTraces(entity, color)
             }
         }
-
-        GL11.glEnd()
 
         GL11.glEnable(GL11.GL_TEXTURE_2D)
         GL11.glDisable(GL11.GL_LINE_SMOOTH)
@@ -81,16 +80,20 @@ class Tracers : Module() {
                 mc.renderManager.renderPosY)
         val z = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks -
                 mc.renderManager.renderPosZ)
-
         val eyeVector = Vec3(0.0, 0.0, 1.0)
                 .rotatePitch((-Math.toRadians(mc.thePlayer.rotationPitch.toDouble())).toFloat())
                 .rotateYaw((-Math.toRadians(mc.thePlayer.rotationYaw.toDouble())).toFloat())
 
-        RenderUtils.glColor(color)
+        RenderUtils.glColor(color, colorAlphaValue.get())
 
-        GL11.glVertex3d(eyeVector.xCoord, mc.thePlayer.getEyeHeight().toDouble() + eyeVector.yCoord, eyeVector.zCoord)
+        GL11.glBegin(GL11.GL_LINE_STRIP)
+        GL11.glVertex3d(eyeVector.xCoord,
+            if(playerHeightValue.get()) { mc.thePlayer.getEyeHeight().toDouble() } else { 0.0 } + eyeVector.yCoord,
+            eyeVector.zCoord)
         GL11.glVertex3d(x, y, z)
-        GL11.glVertex3d(x, y, z)
-        GL11.glVertex3d(x, y + entity.height, z)
+        if(entityHeightValue.get()) {
+            GL11.glVertex3d(x, y + entity.height, z)
+        }
+        GL11.glEnd()
     }
 }
