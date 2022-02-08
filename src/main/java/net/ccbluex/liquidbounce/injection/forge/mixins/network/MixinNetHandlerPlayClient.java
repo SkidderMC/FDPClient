@@ -82,6 +82,8 @@ public abstract class MixinNetHandlerPlayClient {
                 File file2 = new File(file1, s2);
                 if (file2.isFile()) {
                     netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.ACCEPTED));
+                    return;
+                    //ensure that one instead of two responses is made
                 }
             }
 
