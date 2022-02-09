@@ -70,24 +70,28 @@ public abstract class MixinNetHandlerPlayClient {
             if (!"http".equals(scheme) && !"https".equals(scheme) && !isLevelProtocol)
                 throw new URISyntaxException(url, "Wrong protocol");
 
-            if (isLevelProtocol && (url.contains("..") || !url.endsWith("/resources.zip")))
-                throw new URISyntaxException(url, "Invalid levelstorage resourcepack path");
-        } catch (final URISyntaxException e) {
-            ClientUtils.INSTANCE.logError("Failed to handle resource pack", e);
-
             // ensure it performed like vanilla
-            if(url.startsWith("level://")) {
+            if(isLevelProtocol && (url.contains("..") || !url.endsWith(".zip"))) {
                 String s2 = url.substring("level://".length());
                 File file1 = new File(this.gameController.mcDataDir, "saves");
                 File file2 = new File(file1, s2);
-                if (file2.isFile()) {
+                if (file2.isFile()
+                        && !url.toLowerCase().contains(LiquidBounce.CLIENT_NAME.toLowerCase())
+                        /* lmao imagine check the client legal with this exploit, zqat.top */) {
                     netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.ACCEPTED));
-                    return;
-                    //ensure that one instead of two responses is made
+                    // a legit client will send SUCCESSFULLY_LOADED back even [java.util.zip.ZipException] is thrown
+                    netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.SUCCESSFULLY_LOADED));
+                } else {
+                    netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.FAILED_DOWNLOAD));
                 }
+                throw new IllegalStateException("Exploit founded!");
             }
-
+        } catch (final URISyntaxException e) {
+            ClientUtils.INSTANCE.logError("Failed to handle resource pack (URL=" + url + ")", e);
             netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.FAILED_DOWNLOAD));
+            callbackInfo.cancel();
+        } catch (final IllegalStateException e) {
+            ClientUtils.INSTANCE.logError("Failed to handle resource pack (URL=" + url + ")", e);
             callbackInfo.cancel();
         }
     }
