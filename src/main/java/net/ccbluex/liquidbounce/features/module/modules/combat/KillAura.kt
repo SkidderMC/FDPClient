@@ -35,7 +35,6 @@ import net.minecraft.item.ItemAxe
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
-import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
@@ -47,6 +46,7 @@ import java.awt.Color
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.max
+import kotlin.math.pow
 import kotlin.math.sin
 
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
@@ -99,7 +99,6 @@ class KillAura : Module() {
         }
     }
     private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 15f)
-    private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f)
 
     // Modes
     private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor", "HurtResistantTime"), "Distance")
@@ -279,7 +278,11 @@ class KillAura : Module() {
 
         if (event.eventState == EventState.POST) {
             // AutoBlock
-            if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack") || discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it)> maxRange }.isNotEmpty()) && canBlock) {
+            if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack") || discoveredTargets.any {
+                    mc.thePlayer.getDistanceToEntityBox(
+                        it
+                    ) > maxRange
+                }) && canBlock) {
                 val target = discoveredTargets[0]
                 if (mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get()) {
                     startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) <maxRange))
@@ -383,7 +386,7 @@ class KillAura : Module() {
      * Update event
      */
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate() {
         if (cancelRun) {
             target = null
             currentTarget = null
@@ -777,12 +780,6 @@ class KillAura : Module() {
         mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
         if (keepSprintValue.get()) {
-            // Critical Effect
-            if (mc.thePlayer.fallDistance > 0F && !mc.thePlayer.onGround && !mc.thePlayer.isOnLadder &&
-                !mc.thePlayer.isInWater && !mc.thePlayer.isPotionActive(Potion.blindness) && !mc.thePlayer.isRiding) {
-                mc.thePlayer.onCriticalHit(entity)
-            }
-
             // Enchant Effect
             if (EnchantmentHelper.getModifierForCreature(mc.thePlayer.heldItem, entity.creatureAttribute) > 0F) {
                 mc.thePlayer.onEnchantmentCritical(entity)
@@ -829,7 +826,7 @@ class KillAura : Module() {
                 (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get())
             )
         }
-        var rModes = when (rotationModeValue.get()) {
+        val rModes = when (rotationModeValue.get()) {
             "LiquidBounce", "SmoothLiquid", "Derp" -> "LiquidBounce"
             "ForceCenter", "SmoothCenter", "OldMatrix", "Spin", "FastSpin" -> "CenterLine"
             "LockView" -> "CenterSimple"
@@ -853,12 +850,16 @@ class KillAura : Module() {
         if (diffAngle <0) diffAngle = -diffAngle
         if (diffAngle> 180.0) diffAngle = 180.0
 
-        var calculateSpeed = when (rotationSmoothModeValue.get()) {
+        val calculateSpeed = when (rotationSmoothModeValue.get()) {
             "Custom" -> diffAngle / rotationSmoothValue.get()
             "Line" -> (diffAngle / 180) * maxTurnSpeedValue.get() + (1 - diffAngle / 180) * minTurnSpeedValue.get()
-            "Quad" -> Math.pow((diffAngle / 180.0), 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow((diffAngle / 180.0), 2.0)) * minTurnSpeedValue.get()
+            //"Quad" -> Math.pow((diffAngle / 180.0), 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow((diffAngle / 180.0), 2.0)) * minTurnSpeedValue.get()
+            "Quad" -> (diffAngle / 180.0).pow(2.0) * maxTurnSpeedValue.get() + (1 - (diffAngle / 180.0).pow(2.0)) * minTurnSpeedValue.get()
             "Sine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeedValue.get() + (cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * minTurnSpeedValue.get()
-            "QuadSine" -> Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0)) * minTurnSpeedValue.get()
+            //"QuadSine" -> Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0)) * minTurnSpeedValue.get()
+            "QuadSine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0) * maxTurnSpeedValue.get() + (1 - (-cos(
+                diffAngle / 180 * Math.PI
+            ) * 0.5 + 0.5).pow(2.0)) * minTurnSpeedValue.get()
             else -> 180.0
         }
 
@@ -963,13 +964,16 @@ class KillAura : Module() {
         if (combatDelayValue.get()) {
             var value = 4.0
             if (mc.thePlayer.inventory.getCurrentItem() != null) {
-                val currentItem = mc.thePlayer.inventory.getCurrentItem().item
-                if (currentItem is ItemSword) {
-                    value -= 2.4
-                } else if (currentItem is ItemPickaxe) {
-                    value -= 2.8
-                } else if (currentItem is ItemAxe) {
-                    value -= 3
+                when (mc.thePlayer.inventory.getCurrentItem().item) {
+                    is ItemSword -> {
+                        value -= 2.4
+                    }
+                    is ItemPickaxe -> {
+                        value -= 2.8
+                    }
+                    is ItemAxe -> {
+                        value -= 3
+                    }
                 }
             }
             delay = delay.coerceAtLeast((1000 / value).toLong())
@@ -1002,7 +1006,7 @@ class KillAura : Module() {
         get() = max(rangeValue.get(), throughWallsRangeValue.get())
 
     private fun getRange(entity: Entity) =
-        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRangeValue.get()) rangeValue.get() else throughWallsRangeValue.get()) - if (mc.thePlayer.isSprinting) rangeSprintReducementValue.get() else 0F
+        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRangeValue.get()) rangeValue.get() else throughWallsRangeValue.get())
 
     /**
      * HUD Tag
