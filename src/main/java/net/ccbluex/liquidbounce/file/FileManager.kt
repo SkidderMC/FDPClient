@@ -33,7 +33,7 @@ class FileManager : MinecraftInstance() {
     val hudConfig = HudConfig(File(dir, "hud.json"))
     val specialConfig = SpecialConfig(File(dir, "special.json"))
     val backgroundFile = File(dir, "userbackground.png")
-    private val allowedCacheFolderName = arrayOf("ultralight")
+    private val allowedCacheFolderName = arrayOf("cef", "cef_cache")
 
     /**
      * Setup everything important

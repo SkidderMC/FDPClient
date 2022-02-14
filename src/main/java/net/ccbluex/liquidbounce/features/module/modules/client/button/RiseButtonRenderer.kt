@@ -20,9 +20,9 @@ class RiseButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
             GL11.glBlendFunc(770, 771)
             GL11.glEnable(2848)
             GL11.glShadeModel(7425)
-            for (i in button.xPosition..button.xPosition + button.width step button.width / 20) {
-                RenderUtils.quickDrawGradientSideways(startX.toDouble(), endY - 1.0, endX.toDouble(), endY.toDouble(),
-                    ColorUtils.hslRainbow(startX.toInt(), indexOffset = 70).rgb, ColorUtils.hslRainbow(endX.toInt(), indexOffset = 70).rgb)
+            for (i in button.xPosition..button.xPosition + button.width step 1) {
+                RenderUtils.quickDrawGradientSideways(i.toDouble(), endY - 1.0, i + 1.0, endY.toDouble(),
+                    ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(i + 1, indexOffset = 10).rgb)
             }
             GL11.glEnable(3553)
             GL11.glDisable(3042)
