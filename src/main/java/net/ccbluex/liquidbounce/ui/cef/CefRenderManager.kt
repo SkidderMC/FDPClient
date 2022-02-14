@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.ui.cef.page.ResourceScheme
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiChat
 import org.cef.CefApp
 import org.cef.CefClient
 import org.cef.browser.CefBrowser
@@ -103,7 +104,7 @@ object CefRenderManager : Listenable {
     fun onRender2d(event: Render2DEvent) {
         cefApp.doMessageLoopWork(0L)
         browsers.forEach(CefBrowserCustom::mcefUpdate)
-        if(Minecraft.getMinecraft().currentScreen == null) {
+        if(Minecraft.getMinecraft().currentScreen !is GuiChat) {
             FancyUiLaunchOption.render(false)
         }
     }
