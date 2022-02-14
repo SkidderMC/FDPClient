@@ -5,7 +5,6 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
-    id "io.gitlab.arturbosch.detekt"
 }
 
 repositories {
@@ -14,6 +13,13 @@ repositories {
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
     maven { url = "https://getfdp.today/repo/" }
+    maven {
+        url = "https://maven.pkg.github.com/jcefmaven/jcefmaven/"
+        credentials {
+            username = "jcefmavenbot"
+            password = "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"
+        }
+    }
 }
 
 version = "2.0.0"
@@ -43,8 +49,6 @@ configurations {
 }
 
 dependencies {
-    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
-
     include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
         exclude module: "guava"
@@ -52,23 +56,26 @@ dependencies {
         exclude module: "gson"
         exclude module: "launchwrapper"
         exclude module: "log4j-core"
+        exclude module: "slf4j-api"
     }
 
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
     include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-//    include 'org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.0'
-    // TODO: switch to MCEF
-    include "com.labymedia:ultralight-java-base:0.4.6"
-    include "com.labymedia:ultralight-java-databind:0.4.6"
-    include "com.github.unlegitmc:fuckpcl:2.0"
-    include 'com.jagrosh:DiscordIPC:0.4'
+    include("me.friwi:jcefmaven:$jcef_version") {
+        exclude module: "commons-compress" // minecraft have a old version of this library
+        exclude module: "jogl-all" // we use lwjgl
+        exclude module: "gluegen-rt" // this is the library for joal
+    }
+    include("com.github.unlegitmc:fuckpcl:2.0") {
+        exclude module: "kotlin-stdlib-jdk8"
+        exclude module: "jna-platform"
+    }
+    include("com.jagrosh:DiscordIPC:0.4")
     include("me.liuli:Elixir:1.2.1") {
         exclude module: "kotlin-stdlib"
         exclude module: "authlib"
     }
-
-    include project(":ui")
 
     include fileTree(include: ["*.jar"], dir: "libs")
 }
@@ -82,8 +89,6 @@ shadowJar {
     exclude "native-binaries/**"
 
     exclude "LICENSE.txt"
-
-    exclude "com/sun/jna/**"
 
     exclude "META-INF/maven/**"
     exclude "META-INF/versions/**"
@@ -136,25 +141,5 @@ reobf {
         mappingType = "SEARGE"
     }
 }
-
-detekt {
-    toolVersion = "$detekt_version"
-    input = files("$projectDir")
-    config = files("$project.projectDir/detekt.yml")
-//    buildUponDefaultConfig = true
-    basePath = projectDir
-
-//    reports {
-//        reports {
-//            html.enabled = true
-//            xml.enabled = true
-//            txt.enabled = false
-//            sarif.enabled = false
-//        }
-//    }
-
-    autoCorrect = true
-}
-tasks.getByPath("detekt").onlyIf { gradle.startParameter.taskNames.any { it.contains("detekt") } }
 
 tasks.reobfJar.dependsOn(shadowJar)

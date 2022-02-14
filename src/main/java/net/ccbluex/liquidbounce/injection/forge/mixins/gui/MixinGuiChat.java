@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.launch.options.FancyUiLaunchOption;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -92,7 +94,12 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
      */
     @Inject(method = "keyTyped", at = @At("HEAD"), cancellable = true)
     private void keyTyped(char typedChar, int keyCode, CallbackInfo callbackInfo) {
-        String text=inputField.getText();
+        if (FancyUiLaunchOption.INSTANCE.getHasChatFocus() && keyCode != 1) {
+            FancyUiLaunchOption.INSTANCE.keyTyped(typedChar, keyCode);
+            callbackInfo.cancel();
+            return;
+        }
+        String text = inputField.getText();
         if(text.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
             this.inputField.setMaxStringLength(114514);
             if (keyCode == 28 || keyCode == 156) {
@@ -174,14 +181,16 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
         Gui.drawRect(2, this.height - (int) fade, this.width - 2, this.height, Integer.MIN_VALUE);
         this.inputField.drawTextBox();
 
+        FancyUiLaunchOption.INSTANCE.render(true, mouseX, mouseY);
+
         if (LiquidBounce.commandManager.getLatestAutoComplete().length > 0 && !inputField.getText().isEmpty() && inputField.getText().startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
             String[] latestAutoComplete = LiquidBounce.commandManager.getLatestAutoComplete();
             String[] textArray = inputField.getText().split(" ");
-            String text=textArray[textArray.length - 1];
-            Object[] result=Arrays.stream(latestAutoComplete).filter((str) -> str.toLowerCase().startsWith(text.toLowerCase())).toArray();
-            String resultText="";
+            String text = textArray[textArray.length - 1];
+            Object[] result = Arrays.stream(latestAutoComplete).filter((str) -> str.toLowerCase().startsWith(text.toLowerCase())).toArray();
+            String resultText = "";
             if(result.length>0)
-                resultText=((String)result[0]).substring(Math.min(((String)result[0]).length(),text.length()));
+                resultText = ((String)result[0]).substring(Math.min(((String)result[0]).length(),text.length()));
 
             mc.fontRendererObj.drawStringWithShadow(resultText, inputField.xPosition + mc.fontRendererObj.getStringWidth(inputField.getText()), inputField.yPosition, new Color(165, 165, 165).getRGB());
         }

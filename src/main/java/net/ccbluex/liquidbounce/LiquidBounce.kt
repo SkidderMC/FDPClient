@@ -74,6 +74,9 @@ object LiquidBounce {
     lateinit var mainMenu: GuiScreen
     lateinit var keyBindManager: KeyBindManager
 
+    val mainMenuInitialized: Boolean
+        get() = this::mainMenu.isInitialized
+
     // Menu Background
     var background: ResourceLocation? = null
 

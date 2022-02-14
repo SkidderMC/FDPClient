@@ -1129,4 +1129,12 @@ public final class RenderUtils extends MinecraftInstance {
     public static void tessVertex(GLUtessellator tessellator, double[] coords) {
         tessellator.gluTessVertex(coords, 0, new VertexData(coords));
     }
+
+    public static boolean inArea(float x, float y, float[] area) {
+        return x >= area[0] && x <= area[2] && y >= area[1] && y <= area[3];
+    }
+
+    public static boolean inArea(int x, int y, int[] area) {
+        return x >= area[0] && x <= area[2] && y >= area[1] && y <= area[3];
+    }
 }
