@@ -3,8 +3,8 @@ package net.ccbluex.liquidbounce.launch.data.fancyui
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.cef.view.DynamicGuiView
 import net.ccbluex.liquidbounce.ui.cef.page.Page
+import net.ccbluex.liquidbounce.ui.cef.view.DynamicGuiView
 import org.lwjgl.input.Keyboard
 import java.io.File
 

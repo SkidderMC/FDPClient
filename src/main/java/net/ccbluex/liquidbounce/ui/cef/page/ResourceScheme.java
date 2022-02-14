@@ -1,10 +1,10 @@
 package net.ccbluex.liquidbounce.ui.cef.page;
 
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import org.cef.browser.scheme.IScheme;
 import org.cef.browser.scheme.SchemePreResponse;
 import org.cef.browser.scheme.SchemeResponseData;
 import org.cef.browser.scheme.SchemeResponseHeaders;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

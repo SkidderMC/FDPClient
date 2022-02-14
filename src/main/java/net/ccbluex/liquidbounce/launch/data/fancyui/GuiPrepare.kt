@@ -1,10 +1,8 @@
 package net.ccbluex.liquidbounce.launch.data.fancyui
 
 import me.friwi.jcefmaven.EnumProgress
-import me.friwi.jcefmaven.IProgressHandler
 import me.friwi.jcefmaven.impl.progress.ConsoleProgressHandler
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.opengl.GL11
