@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.ui.cef
 
 import me.friwi.jcefmaven.CefAppBuilder
-import me.friwi.jcefmaven.EnumProgress
 import me.friwi.jcefmaven.IProgressHandler
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget

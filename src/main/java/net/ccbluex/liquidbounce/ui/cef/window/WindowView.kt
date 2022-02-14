@@ -14,7 +14,6 @@ import org.cef.browser.ICefRenderer
 import org.cef.browser.lwjgl.CefRendererLwjgl
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -31,6 +30,7 @@ class WindowView : MinecraftInstance() {
         }
     var width = 140f
     var height = 200f
+    var browserScale = 2
     var lastFocusUpdate = System.currentTimeMillis()
 
     private var handleInput = false
@@ -57,7 +57,7 @@ class WindowView : MinecraftInstance() {
         cefBrowser.setCloseAllowed()
         cefBrowser.createImmediately()
         cefBrowser.setFocus(true)
-        cefBrowser.wasResized_((width * 2).toInt(), (height * 2).toInt())
+        cefBrowser.wasResized_((width * browserScale).toInt(), (height * browserScale).toInt())
     }
 
     /**
@@ -73,9 +73,18 @@ class WindowView : MinecraftInstance() {
             width = mouseX.coerceAtLeast(minWidth)
             height = mouseY.coerceAtLeast(minHeight)
             scale = Mouse.isButtonDown(0)
-            mc.fontRendererObj.drawString("${width.toInt()}x${height.toInt()}", x + width,
+            mc.fontRendererObj.drawString("${width.toInt()}x${height.toInt()} Scale ${browserScale}", x + width,
                 y + height - mc.fontRendererObj.FONT_HEIGHT, Color.WHITE.rgb, false)
-            cefBrowser.wasResized_((width * 2).toInt(), (height * 2).toInt())
+            if (Mouse.hasWheel()) {
+                val wheel = Mouse.getDWheel()
+                if (wheel > 0) {
+                    browserScale++
+                } else if (wheel < 0) {
+                    browserScale--
+                }
+                browserScale = browserScale.coerceAtLeast(1)
+            }
+            cefBrowser.wasResized_((width * browserScale).toInt(), (height * browserScale).toInt())
         }
 
         GL11.glPushMatrix()
@@ -151,8 +160,8 @@ class WindowView : MinecraftInstance() {
             GL11.glDisable(GL11.GL_LINE_SMOOTH)
         }
 
-        val mouseRX = (mouseX * 2).toInt()
-        val mouseRY = ((mouseY - titleHeight) * 2).toInt()
+        val mouseRX = (mouseX * browserScale).toInt()
+        val mouseRY = ((mouseY - titleHeight) * browserScale).toInt()
         if (RenderUtils.inArea(mouseX, mouseY, floatArrayOf(0f, titleHeight, width, height))) {
             cefBrowser.mouseMoved(mouseRX, mouseRY, 0)
             if (Mouse.hasWheel()) {

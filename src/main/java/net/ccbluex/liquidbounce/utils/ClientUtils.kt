@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.utils
 
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.utils.Metrics.SimplePie
 import net.minecraft.util.IChatComponent
 import org.apache.logging.log4j.LogManager

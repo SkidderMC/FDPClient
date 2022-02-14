@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.launch.data.fancyui
 
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.ui.cef.view.DynamicGuiView
 import net.ccbluex.liquidbounce.ui.cef.page.Page
+import net.ccbluex.liquidbounce.ui.cef.view.DynamicGuiView
 
 class BrowseCommand : Command("browse", emptyArray()) {
 

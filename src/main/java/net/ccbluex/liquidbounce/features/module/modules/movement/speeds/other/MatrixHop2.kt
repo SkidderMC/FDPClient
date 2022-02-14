@@ -1,12 +1,10 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
-import kotlin.math.sqrt
 
 class MatrixHop2 : SpeedMode("MatrixHop2") {
     val veloBoostValue = BoolValue("MatrixVelocBoost", true)

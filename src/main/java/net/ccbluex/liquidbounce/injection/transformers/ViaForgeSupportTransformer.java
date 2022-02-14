@@ -1,12 +1,11 @@
 package net.ccbluex.liquidbounce.injection.transformers;
 
 import net.ccbluex.liquidbounce.script.remapper.injection.utils.ClassUtils;
-import net.ccbluex.liquidbounce.script.remapper.injection.utils.NodeUtils;
 import net.minecraft.launchwrapper.IClassTransformer;
-import org.objectweb.asm.tree.*;
-
-import static org.objectweb.asm.Opcodes.*;
-import static org.objectweb.asm.Opcodes.IRETURN;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.TypeInsnNode;
 
 public class ViaForgeSupportTransformer implements IClassTransformer {
 

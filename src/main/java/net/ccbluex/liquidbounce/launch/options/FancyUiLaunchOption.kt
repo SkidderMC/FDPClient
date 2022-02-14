@@ -5,14 +5,12 @@ import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
 import net.ccbluex.liquidbounce.launch.data.fancyui.BrowseCommand
-import net.ccbluex.liquidbounce.launch.data.fancyui.ClickGUIModule
 import net.ccbluex.liquidbounce.launch.data.fancyui.GuiPrepare
 import net.ccbluex.liquidbounce.ui.cef.CefRenderManager
 import net.ccbluex.liquidbounce.ui.cef.window.WindowView
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiMainMenu
 import org.lwjgl.input.Mouse
 import java.awt.Color
 
