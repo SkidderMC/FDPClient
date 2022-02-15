@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.injection.implementations.IMixinGuiSlot;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -21,9 +20,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(GuiSlot.class)
 @SideOnly(Side.CLIENT)
-public abstract class MixinGuiSlot implements IMixinGuiSlot {
-    private int listWidth = 220;
-    private boolean enableScissor = false;
+public abstract class MixinGuiSlot {
 
     @Shadow
     protected boolean field_178041_q;
@@ -82,6 +79,9 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
 
     @Shadow
     protected abstract void func_148142_b(int p_148142_1_, int p_148142_2_);
+
+    @Shadow
+    public abstract int getListWidth();
 
     /**
      * @author CCBlueX
@@ -182,23 +182,4 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
     protected int getScrollBarX() {
         return this.width - 5;
     }
-
-    @Override
-    public void setEnableScissor(boolean enableScissor) {
-        this.enableScissor = enableScissor;
-    }
-
-    /**
-     * @author CCBlueX (superblaubeere27)
-     */
-    @Overwrite
-    public int getListWidth() {
-        return this.listWidth;
-    }
-
-    @Override
-    public void setListWidth(int listWidth) {
-        this.listWidth = listWidth;
-    }
-
 }

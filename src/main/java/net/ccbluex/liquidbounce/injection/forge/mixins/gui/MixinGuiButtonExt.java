@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 @Mixin(GuiButtonExt.class)
 public abstract class MixinGuiButtonExt extends MixinGuiButton {
 
-    private AbstractButtonRenderer buttonRenderer = LiquidBounce.moduleManager.getModule(HUD.class).getButtonRenderer((GuiButton)(Object)this);
+    private final AbstractButtonRenderer buttonRenderer = LiquidBounce.moduleManager.getModule(HUD.class).getButtonRenderer((GuiButton)(Object)this);
 
     /**
      * @author CCBlueX

@@ -64,10 +64,7 @@ public abstract class MixinEntityRenderer {
 
     @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)
     private void injectHurtCameraEffect(CallbackInfo callbackInfo) {
-        HurtCam hurtCam= LiquidBounce.moduleManager.getModule(HurtCam.class);
-        String mode=hurtCam.getModeValue().get();
-
-        if(!mode.equalsIgnoreCase("Vanilla")) {
+        if(!LiquidBounce.moduleManager.getModule(HurtCam.class).getModeValue().get().equalsIgnoreCase("Vanilla")) {
             callbackInfo.cancel();
         }
     }

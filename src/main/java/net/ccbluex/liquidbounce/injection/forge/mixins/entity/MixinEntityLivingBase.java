@@ -59,7 +59,8 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Shadow
     public abstract ItemStack getHeldItem();
 
-    @Shadow protected abstract void updateAITick();
+    @Shadow
+    protected abstract void updateAITick();
 
     /**
      * @author CCBlueX

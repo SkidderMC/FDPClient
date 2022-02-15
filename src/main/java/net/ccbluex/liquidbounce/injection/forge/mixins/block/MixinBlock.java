@@ -44,9 +44,6 @@ public abstract class MixinBlock {
     @Final
     protected BlockState blockState;
 
-    @Shadow
-    public abstract void setBlockBounds(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
-
     // Has to be implemented since a non-virtual call on an abstract method is illegal
     @Shadow
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {

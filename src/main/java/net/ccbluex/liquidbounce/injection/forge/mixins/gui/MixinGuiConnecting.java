@@ -28,24 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Mixin(GuiConnecting.class)
 public abstract class MixinGuiConnecting extends GuiScreen {
 
-    @Shadow
-    private NetworkManager networkManager;
-
-    @Shadow
-    @Final
-    private static Logger logger;
-
-    @Shadow
-    private boolean cancel;
-
-    @Shadow
-    @Final
-    private GuiScreen previousGuiScreen;
-
-    @Shadow
-    @Final
-    private static AtomicInteger CONNECTION_ID;
-
     @Inject(method = "connect", at = @At("HEAD"))
     private void headConnect(final String ip, final int port, CallbackInfo callbackInfo) {
         ServerUtils.serverData = new ServerData("", ip + ":" + port, false);

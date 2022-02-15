@@ -38,7 +38,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     private GuiSlider autoReconnectDelaySlider;
     private GuiButton forgeBypassButton;
     private int reconnectTimer;
-    private String infoStr="null";
+    private String infoStr = "null";
 
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {

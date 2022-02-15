@@ -74,12 +74,6 @@ public abstract class MixinMinecraft {
     public PlayerControllerMP playerController;
 
     @Shadow
-    public int displayWidth;
-
-    @Shadow
-    public int displayHeight;
-
-    @Shadow
     public int rightClickDelayTimer;
 
     @Shadow

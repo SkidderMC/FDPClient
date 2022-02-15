@@ -29,6 +29,7 @@ import java.util.List;
 
 @Mixin(GuiChat.class)
 public abstract class MixinGuiChat extends MixinGuiScreen {
+
     @Shadow
     protected GuiTextField inputField;
 
@@ -37,8 +38,6 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
 
     @Shadow
     private boolean waitingOnAutocomplete;
-    private float yPosOfInputField;
-    private float fade = 0;
 
     @Shadow
     public abstract void onAutocompleteResponse(String[] p_onAutocompleteResponse_1_);
@@ -47,6 +46,9 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     private int sentHistoryCursor;
 
     @Shadow private String historyBuffer;
+
+    private float yPosOfInputField;
+    private float fade = 0;
 
     /**
      * @author Liuli
