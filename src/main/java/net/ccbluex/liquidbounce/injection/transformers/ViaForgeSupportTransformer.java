@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.injection.transformers;
 
-import net.ccbluex.liquidbounce.script.remapper.injection.utils.ClassUtils;
+import net.ccbluex.liquidbounce.utils.ASMUtils;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -15,7 +15,7 @@ public class ViaForgeSupportTransformer implements IClassTransformer {
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if(name.equals("net.ccbluex.liquidbounce.injection.forge.mixins.network.MixinNetworkManager")) {
             try {
-                final ClassNode classNode = ClassUtils.INSTANCE.toClassNode(basicClass);
+                final ClassNode classNode = ASMUtils.INSTANCE.toClassNode(basicClass);
 
                 classNode.methods.stream().filter(methodNode -> methodNode.name.equals("createNetworkManagerAndConnect")).forEach(methodNode -> {
                     for(int i = 0; i < methodNode.instructions.size(); ++i) {
@@ -34,7 +34,7 @@ public class ViaForgeSupportTransformer implements IClassTransformer {
                     }
                 });
 
-                return ClassUtils.INSTANCE.toBytes(classNode);
+                return ASMUtils.INSTANCE.toBytes(classNode);
             }catch(final Throwable throwable) {
                 throwable.printStackTrace();
             }

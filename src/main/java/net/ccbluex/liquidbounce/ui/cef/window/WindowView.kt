@@ -117,14 +117,14 @@ class WindowView : MinecraftInstance() {
             mc.fontRendererObj.drawCenteredString("S", width - (titleHeight * 2.5f), 1f, (if(!showTitle) Color.BLACK else Color.WHITE).rgb)
 
             // handle title events
-            if(mouseEvent && RenderUtils.inArea(mouseX, mouseY, floatArrayOf(0f, 0f, width, titleHeight))) {
+            if(mouseEvent && RenderUtils.inArea(mouseX, mouseY, 0f, 0f, width, titleHeight)) {
                 focus = true
                 if(Mouse.getEventButton() == 0) {
-                    if(RenderUtils.inArea(mouseX, mouseY, floatArrayOf(width - (titleHeight * 2), 0f, width - titleHeight, titleHeight))) {
+                    if(RenderUtils.inArea(mouseX, mouseY, width - (titleHeight * 2), 0f, width - titleHeight, titleHeight)) {
                         transparent = !transparent
-                    } else if(RenderUtils.inArea(mouseX, mouseY, floatArrayOf(width - (titleHeight * 3), 0f, width - (titleHeight * 2), titleHeight))) {
+                    } else if(RenderUtils.inArea(mouseX, mouseY, width - (titleHeight * 3), 0f, width - (titleHeight * 2), titleHeight)) {
                         showTitle = !showTitle
-                    } else if(RenderUtils.inArea(mouseX, mouseY, floatArrayOf(width - titleHeight, 0f, width, titleHeight))) {
+                    } else if(RenderUtils.inArea(mouseX, mouseY, width - titleHeight, 0f, width, titleHeight)) {
                         finalize()
                     } else {
                         drag = true
@@ -160,29 +160,33 @@ class WindowView : MinecraftInstance() {
             GL11.glDisable(GL11.GL_LINE_SMOOTH)
         }
 
-        val mouseRX = (mouseX * browserScale).toInt()
-        val mouseRY = ((mouseY - titleHeight) * browserScale).toInt()
-        if (RenderUtils.inArea(mouseX, mouseY, floatArrayOf(0f, titleHeight, width, height))) {
-            cefBrowser.mouseMoved(mouseRX, mouseRY, 0)
-            if (Mouse.hasWheel()) {
-                val wheel = Mouse.getDWheel()
-                if (wheel != 0) {
-                    cefBrowser.mouseScrolled(mouseRX, mouseRY,
-                        GuiView.keyModifiers(0), 1, wheel)
+        if (fromChat) {
+            val mouseRX = (mouseX * browserScale).toInt()
+            val mouseRY = ((mouseY - titleHeight) * browserScale).toInt()
+            if (RenderUtils.inArea(mouseX, mouseY, 0f, titleHeight, width, height)) {
+                cefBrowser.mouseMoved(mouseRX, mouseRY, 0)
+                if (Mouse.hasWheel()) {
+                    val wheel = Mouse.getDWheel()
+                    if (wheel != 0) {
+                        cefBrowser.mouseScrolled(mouseRX, mouseRY,
+                            GuiView.keyModifiers(0), 1, wheel)
+                    }
                 }
             }
-        }
-        if(mouseEvent && RenderUtils.inArea(mouseX, mouseY, floatArrayOf(0f, titleHeight, width, height))) {
-            focus = true
-            if(Mouse.getEventButton() == 0 && RenderUtils.inArea(mouseX, mouseY, floatArrayOf(width - 5f, height - 5f, width, height))) {
-                scale = true
-            } else {
-                val mod = GuiView.mouseModifiers(GuiView.keyModifiers(0))
-                cefBrowser.mouseInteracted(mouseRX, mouseRY, mod, Mouse.getEventButton(), true, 1)
-                cefBrowser.mouseInteracted(mouseRX, mouseRY, mod, Mouse.getEventButton(), false, 1)
+            if(mouseEvent) {
+                if(RenderUtils.inArea(mouseX, mouseY, 0f, titleHeight, width, height)) {
+                    focus = true
+                    if(Mouse.getEventButton() == 0 && RenderUtils.inArea(mouseX, mouseY, width - 5f, height - 5f, width, height)) {
+                        scale = true
+                    } else {
+                        val mod = GuiView.mouseModifiers(GuiView.keyModifiers(0))
+                        cefBrowser.mouseInteracted(mouseRX, mouseRY, mod, Mouse.getEventButton(), true, 1)
+                        cefBrowser.mouseInteracted(mouseRX, mouseRY, mod, Mouse.getEventButton(), false, 1)
+                    }
+                } else if(!RenderUtils.inArea(mouseX, mouseY, 0f, 0f, width, titleHeight)) {
+                    focus = false
+                }
             }
-        } else if(mouseEvent && !RenderUtils.inArea(mouseX, mouseY, floatArrayOf(0f, 0f, width, titleHeight))) {
-            focus = false
         }
 
         GL11.glPopMatrix()

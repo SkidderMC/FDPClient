@@ -67,7 +67,7 @@ object FancyUiLaunchOption : LaunchOption() {
             val mc = Minecraft.getMinecraft()
             val width = mc.currentScreen.width
             val height = mc.currentScreen.height
-            val inArea = RenderUtils.inArea(mouseX, mouseY, intArrayOf(width - 30, height - 30, width - 15, height - 15))
+            val inArea = RenderUtils.inArea(mouseX, mouseY, width - 30, height - 30, width - 15, height - 15)
             if(inArea && clicked && Mouse.getEventButton() == 0) {
                 windowList.add(WindowView())
             }

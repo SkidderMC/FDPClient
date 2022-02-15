@@ -14,6 +14,9 @@ import org.apache.commons.io.IOUtils
  * @author CCBlueX
  */
 object Remapper {
+
+    private var srgLoaded = false
+
     private val fields: HashMap<String, HashMap<String, String>> = hashMapOf()
     private val methods: HashMap<String, HashMap<String, String>> = hashMapOf()
 
@@ -21,9 +24,12 @@ object Remapper {
      * Load srg
      */
     fun loadSrg() {
+        if (srgLoaded)
+            return
         // Load srg
         ClientUtils.logInfo("[Remapper] Loading srg...")
         parseSrg(IOUtils.readLines(Remapper::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/scriptapi/mcp-stable_22.srg")))
+        srgLoaded = true
         ClientUtils.logInfo("[Remapper] Loaded srg.")
     }
 
