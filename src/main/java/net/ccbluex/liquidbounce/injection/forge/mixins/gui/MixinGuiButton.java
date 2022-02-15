@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,13 +39,14 @@ public abstract class MixinGuiButton extends Gui {
    @Shadow
    public boolean visible;
 
+   @Final
    @Shadow
    protected static ResourceLocation buttonTextures;
 
    @Shadow
    public abstract void mouseDragged(Minecraft mc, int mouseX, int mouseY);
 
-   private AbstractButtonRenderer buttonRenderer = LiquidBounce.moduleManager.getModule(HUD.class).getButtonRenderer((GuiButton)(Object)this);
+   private final AbstractButtonRenderer buttonRenderer = LiquidBounce.moduleManager.getModule(HUD.class).getButtonRenderer((GuiButton)(Object)this);
 
    /**
     * @author liuli

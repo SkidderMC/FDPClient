@@ -823,7 +823,7 @@ class Scaffold : Module() {
             mc.thePlayer.posZ
         )
         var placeRotation: PlaceRotation? = null
-        for (side in StaticStorage.enumFacings) {
+        for (side in StaticStorage.facings()) {
             val neighbor = blockPosition.offset(side)
             if (!BlockUtils.canBeClicked(neighbor)) continue
             val dirVec = Vec3(side.directionVec)

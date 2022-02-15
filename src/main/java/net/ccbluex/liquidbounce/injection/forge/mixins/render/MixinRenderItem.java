@@ -27,7 +27,7 @@ public abstract class MixinRenderItem {
     private static ResourceLocation RES_ITEM_GLINT;
 
     @Shadow
-    public abstract void renderModel(IBakedModel model, int color);
+    protected abstract void renderModel(IBakedModel model, int color);
 
     @Inject(method = "renderEffect", at = @At("HEAD"), cancellable = true)
     private void renderEffect(IBakedModel model, CallbackInfo callbackInfo) {

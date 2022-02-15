@@ -150,13 +150,7 @@ public abstract class MixinEntity {
     private int fire;
 
     @Shadow
-    public float prevRotationPitch;
-
-    @Shadow
-    public float prevRotationYaw;
-
-    @Shadow
-    protected abstract Vec3 getVectorForRotation(float pitch, float yaw);
+    public abstract Vec3 getVectorForRotation(float pitch, float yaw);
 
     @Shadow
     public abstract UUID getUniqueID();
@@ -165,9 +159,7 @@ public abstract class MixinEntity {
     public abstract boolean isSneaking();
 
     @Shadow
-    public abstract boolean isInsideOfMaterial(Material materialIn);
-
-    @Shadow public abstract boolean equals(Object p_equals_1_);
+    public abstract boolean equals(Object p_equals_1_);
 
     public int getNextStepDistance() {
         return nextStepDistance;
@@ -183,7 +175,7 @@ public abstract class MixinEntity {
 
     @Inject(method = "moveFlying", at = @At("HEAD"), cancellable = true)
     private void handleRotations(float strafe, float forward, float friction, final CallbackInfo callbackInfo) {
-        if ((Entity) (Object) this != Minecraft.getMinecraft().thePlayer)
+        if ((Object) this != Minecraft.getMinecraft().thePlayer)
             return;
 
         final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);

@@ -38,12 +38,17 @@ public abstract class MixinGuiInGame extends MixinGui {
     @Shadow
     protected abstract void renderHotbarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer player);
 
-    @Shadow @Final
+    @Shadow
+    @Final
     protected static ResourceLocation widgetsTexPath;
 
-    @Shadow @Final protected GuiPlayerTabOverlay overlayPlayerList;
+    @Shadow
+    @Final
+    protected GuiPlayerTabOverlay overlayPlayerList;
 
-    @Shadow @Final protected Minecraft mc;
+    @Shadow
+    @Final
+    protected Minecraft mc;
 
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
     private void renderScoreboard(CallbackInfo callbackInfo) {
