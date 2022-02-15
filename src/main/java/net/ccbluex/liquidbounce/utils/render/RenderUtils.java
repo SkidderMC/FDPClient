@@ -180,8 +180,6 @@ public final class RenderUtils extends MinecraftInstance {
         glDisable(GL_CULL_FACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
-        glPushMatrix();
-        glLineWidth(1F);
         glBegin(GL_POLYGON);
 
         float xRadius = (float) Math.min((x1 - x) * 0.5, radius);
@@ -192,7 +190,6 @@ public final class RenderUtils extends MinecraftInstance {
         quickPolygonCircle(x+xRadius,y1-yRadius, xRadius, yRadius,270,360,4);
 
         glEnd();
-        glPopMatrix();
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_CULL_FACE);
         glDisable(GL_LINE_SMOOTH);
