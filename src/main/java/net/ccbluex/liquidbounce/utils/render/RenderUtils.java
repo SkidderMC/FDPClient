@@ -33,6 +33,8 @@ import org.lwjgl.util.glu.GLUtessellatorCallbackAdapter;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -173,27 +175,33 @@ public final class RenderUtils extends MinecraftInstance {
         }
     }
 
-    public static void drawCircleRect(float x, float y, float x1, float y1, float radius, int color) {
+    public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius, int color) {
         glColor(color);
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_CULL_FACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
-        glBegin(GL_POLYGON);
 
-        float xRadius = (float) Math.min((x1 - x) * 0.5, radius);
-        float yRadius = (float) Math.min((y1 - y) * 0.5, radius);
-        quickPolygonCircle(x+xRadius,y+yRadius, xRadius, yRadius,180,270,4);
-        quickPolygonCircle(x1-xRadius,y+yRadius, xRadius, yRadius,90,180,4);
-        quickPolygonCircle(x1-xRadius,y1-yRadius, xRadius, yRadius,0,90,4);
-        quickPolygonCircle(x+xRadius,y1-yRadius, xRadius, yRadius,270,360,4);
+        drawRoundedCornerRect(x, y, x1, y1, radius);
 
-        glEnd();
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_CULL_FACE);
         glDisable(GL_LINE_SMOOTH);
         glColor4f(1F, 1F, 1F, 1F);
+    }
+
+    public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius) {
+        glBegin(GL_POLYGON);
+
+        float xRadius = (float) Math.min((x1 - x) * 0.5, radius);
+        float yRadius = (float) Math.min((y1 - y) * 0.5, radius);
+        quickPolygonCircle(x + xRadius,y + yRadius, xRadius, yRadius,180,270,4);
+        quickPolygonCircle(x1 - xRadius,y + yRadius, xRadius, yRadius,90,180,4);
+        quickPolygonCircle(x1 - xRadius,y1 - yRadius, xRadius, yRadius,0,90,4);
+        quickPolygonCircle(x + xRadius,y1 - yRadius, xRadius, yRadius,270,360,4);
+
+        glEnd();
     }
 
     public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
@@ -1133,5 +1141,44 @@ public final class RenderUtils extends MinecraftInstance {
 
     public static boolean inArea(int x, int y, int ax1, int ay1, int ax2, int ay2) {
         return x >= ax1 && x <= ax2 && y >= ay1 && y <= ay2;
+    }
+
+    /**
+     * Reads the image to a byte buffer that works with LWJGL.
+     * @author func16
+     */
+    public static ByteBuffer readImageToBuffer(BufferedImage bufferedImage){
+        int[] rgbArray = bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null, 0, bufferedImage.getWidth());
+
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * rgbArray.length);
+        for(int rgb : rgbArray){
+            byteBuffer.putInt(rgb << 8 | rgb >> 24 & 255);
+        }
+        byteBuffer.flip();
+
+        return byteBuffer;
+    }
+
+    /**
+     * Reads the image into a texture.
+     * @return texture id
+     * @author func16
+     */
+    public static int loadGlTexture(BufferedImage bufferedImage){
+        int textureId = GL11.glGenTextures();
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, bufferedImage.getWidth(), bufferedImage.getHeight(),
+                0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, readImageToBuffer(bufferedImage));
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+
+        return textureId;
     }
 }
