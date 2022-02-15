@@ -81,7 +81,7 @@ public abstract class MixinGuiNewChat {
             return;
         }
 
-        String text=fixString(chatComponent.getFormattedText());
+        String text = fixString(chatComponent.getFormattedText());
 
         if (text.equals(this.lastMessage)) {
             (Minecraft.getMinecraft()).ingameGUI.getChatGUI().deleteChatLine(this.line);
@@ -104,7 +104,7 @@ public abstract class MixinGuiNewChat {
 
         StringBuilder sb=new StringBuilder();
         for(char c:str.toCharArray()){
-            if((int) c >(33+65248)&& (int) c <(128+65248)){
+            if((int) c > (33 + 65248) && (int) c < (128 + 65248)){
                 sb.append(Character.toChars((int) c - 65248));
             }else{
                 sb.append(c);
