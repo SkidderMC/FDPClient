@@ -50,6 +50,8 @@
     "render.MixinTileEntityMobSpawnerRenderer",
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinVisGraph",
+    "splash.MixinSplashProgress",
+    "splash.MixinSplashProgressRunnable",
     "world.MixinWorldClient"
   ],
   "client": [
