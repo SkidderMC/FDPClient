@@ -21,7 +21,6 @@ import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
 import net.ccbluex.liquidbounce.launch.data.GuiLaunchOptionSelectMenu
 import net.ccbluex.liquidbounce.script.ScriptManager
-import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
@@ -149,11 +148,8 @@ object LiquidBounce {
         moduleManager = ModuleManager()
         moduleManager.registerModules()
 
-        // Remapper
         try {
-            Remapper.loadSrg()
-
-            // ScriptManager
+            // ScriptManager, Remapper will be lazy loaded when scripts are enabled
             scriptManager = ScriptManager()
             scriptManager.loadScripts()
             scriptManager.enableScripts()

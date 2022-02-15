@@ -37,6 +37,7 @@
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "network.MixinNetworkPlayerInfo",
+    "render.MixinAnimationModelBase",
     "packets.MixinC00Handshake",
     "render.MixinEffectRenderer",
     "render.MixinEntityRenderer",
