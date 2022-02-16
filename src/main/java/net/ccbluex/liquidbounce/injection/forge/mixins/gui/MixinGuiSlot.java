@@ -4,7 +4,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiSlot;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -117,9 +116,8 @@ public abstract class MixinGuiSlot {
             int i1 = 4;
 
             // ClientCode
-            ScaledResolution scaledResolution = new ScaledResolution(mc);
-            Gui.drawRect(0, 0, scaledResolution.getScaledWidth(), this.top, Integer.MIN_VALUE);
-            Gui.drawRect(0, this.bottom, scaledResolution.getScaledWidth(), this.height, Integer.MIN_VALUE);
+            Gui.drawRect(0, 0, this.width, this.top, Integer.MIN_VALUE);
+            Gui.drawRect(0, this.bottom, this.width, this.height, Integer.MIN_VALUE);
 
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);

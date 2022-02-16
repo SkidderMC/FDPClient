@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.injection.access;
 
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
@@ -23,6 +24,8 @@ public class StaticStorage {
     private static final EnumChatFormatting[] chatFormatting = EnumChatFormatting.values();
     private static final EnumParticleTypes[] particleTypes = EnumParticleTypes.values();
     private static final EnumWorldBlockLayer[] worldBlockLayers = EnumWorldBlockLayer.values();
+
+    public static ScaledResolution scaledResolution;
 
     public static EnumFacing[] facings() {
         return facings;

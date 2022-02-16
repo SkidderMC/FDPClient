@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
+import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.client.shader.ShaderGroup
 import net.minecraft.util.ResourceLocation
@@ -20,7 +20,7 @@ object BlurUtils : MinecraftInstance() {
     }
 
     fun draw(x: Float, y: Float, width: Float, height: Float, radius: Float) {
-        val scale = ScaledResolution(mc)
+        val scale = StaticStorage.scaledResolution
         val factor = scale.scaleFactor
         val factor2 = scale.scaledWidth
         val factor3 = scale.scaledHeight

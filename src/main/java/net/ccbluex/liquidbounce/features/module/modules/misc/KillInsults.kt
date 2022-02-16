@@ -41,11 +41,11 @@ object KillInsults : Module() {
     fun loadFile() {
         fun convertJson() {
             insultWords.clear()
-            insultWords.addAll(Files.readAllBytes(insultFile.toPath()).toString(StandardCharsets.UTF_8).split("\n").filter { it.isNotBlank() })
+            insultWords.addAll(insultFile.readLines(Charsets.UTF_8).filter { it.isNotBlank() })
 
             val json = JsonArray()
             insultWords.map { JsonPrimitive(it) }.forEach(json::add)
-            Files.write(insultFile.toPath(), FileManager.PRETTY_GSON.toJson(json).toByteArray(StandardCharsets.UTF_8))
+            insultFile.writeText(FileManager.PRETTY_GSON.toJson(json), Charsets.UTF_8)
         }
 
         try {
@@ -54,7 +54,7 @@ object KillInsults : Module() {
                 FileUtils.unpackFile(insultFile, "assets/minecraft/fdpclient/misc/insult.json")
             }
             // read it
-            val json = JsonParser().parse(Files.readAllBytes(insultFile.toPath()).toString(StandardCharsets.UTF_8))
+            val json = JsonParser().parse(insultFile.readText(Charsets.UTF_8))
             if (json.isJsonArray) {
                 insultWords.clear()
                 json.asJsonArray.forEach {

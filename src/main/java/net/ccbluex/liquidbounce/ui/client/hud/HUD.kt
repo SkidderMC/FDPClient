@@ -5,13 +5,13 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud
 
+import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
 import kotlin.math.max
 import kotlin.math.min
@@ -122,7 +122,7 @@ open class HUD : MinecraftInstance() {
             return
         }
 
-        val scaledResolution = ScaledResolution(mc)
+        val scaledResolution = StaticStorage.scaledResolution
 
         for (element in elements) {
             val scaledX = mouseX / element.scale

@@ -56,7 +56,7 @@ object GuiCapeManager : GuiScreen() {
             return
         }
 
-        val json = JsonParser().parse(Files.readAllBytes(jsonFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject
+        val json = JsonParser().parse(jsonFile.reader(Charsets.UTF_8)).asJsonObject
 
         if (json.has("name")) {
             val name = json.get("name").asString
@@ -74,7 +74,7 @@ object GuiCapeManager : GuiScreen() {
 
         json.addProperty("name", if (nowCape != null) { nowCape!!.name } else { "NONE" })
 
-        Files.write(jsonFile.toPath(), FileManager.PRETTY_GSON.toJson(json).toByteArray(StandardCharsets.UTF_8))
+        jsonFile.writeText(FileManager.PRETTY_GSON.toJson(json), Charsets.UTF_8)
     }
 
     private fun loadCapeFromResource(name: String, loc: String) = Cape(name, ImageIO.read(GuiCapeManager::class.java.classLoader.getResourceAsStream(loc)))

@@ -28,7 +28,6 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockAir
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.settings.GameSettings
@@ -759,11 +758,9 @@ class Scaffold : Module() {
         if (counterDisplayValue.get()) {
             GlStateManager.pushMatrix()
             val info = LanguageManager.getAndFormat("ui.scaffold.blocks", blocksAmount)
-            val scaledResolution = ScaledResolution(mc)
-            val width = scaledResolution.scaledWidth
-            val height = scaledResolution.scaledHeight
             val slot = InventoryUtils.findAutoBlockBlock()
-            var stack: ItemStack = barrier
+            val height = event.scaledResolution.scaledHeight
+            var stack = barrier
             if (slot != -1) {
                 if (mc.thePlayer.inventory.getCurrentItem() != null) {
                     val handItem = mc.thePlayer.inventory.getCurrentItem().item

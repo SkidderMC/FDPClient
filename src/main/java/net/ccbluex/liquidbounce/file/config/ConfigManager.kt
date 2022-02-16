@@ -38,7 +38,7 @@ class ConfigManager {
         configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
 
         val json = if (configFile.exists()) {
-            JsonParser().parse(Files.readAllBytes(configFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject
+            JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject
         } else {
             JsonObject() // 这样方便一点,虽然效率会低
         }
@@ -70,7 +70,7 @@ class ConfigManager {
             config.add(section.sectionName, section.save())
         }
 
-        Files.write(configFile.toPath(), FileManager.PRETTY_GSON.toJson(config).toByteArray(StandardCharsets.UTF_8))
+        configFile.writeText(FileManager.PRETTY_GSON.toJson(config), Charsets.UTF_8)
 
         if (saveConfigSet) {
             saveConfigSet()
@@ -85,7 +85,7 @@ class ConfigManager {
     }
 
     fun loadConfigSet() {
-        val configSet = if (configSetFile.exists()) { JsonParser().parse(Files.readAllBytes(configSetFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject } else { JsonObject() }
+        val configSet = if (configSetFile.exists()) { JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject } else { JsonObject() }
 
         load(if (configSet.has("file")) {
             configSet.get("file").asString
@@ -99,7 +99,7 @@ class ConfigManager {
 
         configSet.addProperty("file", nowConfig)
 
-        Files.write(configSetFile.toPath(), FileManager.PRETTY_GSON.toJson(configSet).toByteArray(StandardCharsets.UTF_8))
+        configFile.writeText(FileManager.PRETTY_GSON.toJson(configSet), Charsets.UTF_8)
     }
 
     fun loadLegacySupport() {

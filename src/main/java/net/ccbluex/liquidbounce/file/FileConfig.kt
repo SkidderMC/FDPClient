@@ -37,14 +37,14 @@ abstract class FileConfig(val file: File) {
      * Load config file
      */
     fun loadConfigFile(): String {
-        return Files.readAllBytes(file.toPath()).toString(StandardCharsets.UTF_8)
+        return file.readText(Charsets.UTF_8)
     }
 
     /**
      * Save config file
      */
     fun saveConfigFile(config: String) {
-        Files.write(file.toPath(), config.toByteArray(StandardCharsets.UTF_8))
+        file.writeText(config, Charsets.UTF_8)
     }
 
     /**

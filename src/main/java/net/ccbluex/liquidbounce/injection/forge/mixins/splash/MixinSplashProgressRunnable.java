@@ -15,9 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 @Mixin(targets="net.minecraftforge.fml.client.SplashProgress$3", remap=false)
