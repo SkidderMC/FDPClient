@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
+import net.ccbluex.liquidbounce.utils.render.ImageUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.LoadingScreenRenderer;
@@ -32,6 +33,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Util;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -45,7 +47,12 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.file.AccessDeniedException;
 
 @Mixin(Minecraft.class)
@@ -87,6 +94,8 @@ public abstract class MixinMinecraft {
     @Shadow
     @Final
     public File mcDataDir;
+
+    @Shadow protected abstract ByteBuffer readImageToBuffer(InputStream p_readImageToBuffer_1_) throws IOException;
 
     /**
      * @author XiGuaGeGe
@@ -230,6 +239,16 @@ public abstract class MixinMinecraft {
             } else {
                 this.playerController.resetBlockRemoving();
             }
+        }
+    }
+
+    @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
+    private void setWindowIcon(CallbackInfo callbackInfo) throws IOException {
+        if (Util.getOSType() != Util.EnumOS.OSX) {
+            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png"));
+            Display.setIcon(new ByteBuffer[]{ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16)),
+                    ImageUtils.readImageToBuffer(image)});
+            callbackInfo.cancel();
         }
     }
 

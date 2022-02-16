@@ -1144,22 +1144,6 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     /**
-     * Reads the image to a byte buffer that works with LWJGL.
-     * @author func16
-     */
-    public static ByteBuffer readImageToBuffer(BufferedImage bufferedImage){
-        int[] rgbArray = bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null, 0, bufferedImage.getWidth());
-
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * rgbArray.length);
-        for(int rgb : rgbArray){
-            byteBuffer.putInt(rgb << 8 | rgb >> 24 & 255);
-        }
-        byteBuffer.flip();
-
-        return byteBuffer;
-    }
-
-    /**
      * Reads the image into a texture.
      * @return texture id
      * @author func16
@@ -1175,7 +1159,7 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, bufferedImage.getWidth(), bufferedImage.getHeight(),
-                0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, readImageToBuffer(bufferedImage));
+                0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, ImageUtils.readImageToBuffer(bufferedImage));
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 
