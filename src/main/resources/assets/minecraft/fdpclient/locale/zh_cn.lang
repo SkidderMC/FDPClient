@@ -440,12 +440,11 @@ module.Velocity.description=更改你受到的击退
 module.XRay.name=矿物透视
 module.XRay.description=允许你透视指定的方块/矿物
 
-module.IRC.name=IRC
-module.IRC.description=让你能够和其他用户聊天
-
 module.Crosshair.name=准星
 module.Crosshair.description=显示一个更好的准星
 
 module.Damage.name=自伤
 module.Damage.description=允许你对自己造成伤害
 
+module.HitEffect.name=击打特效
+module.HitEffect.description=在你攻击玩家的时候展示一个击打特效
