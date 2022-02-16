@@ -18,6 +18,9 @@ ui.proxy.screen=Proxy Manager
 ui.proxy.address=Address
 ui.proxy.type=Proxy Type
 
+ui.background.gtype=Type
+ui.background.gcurrent=Current
+ui.background.ganimated=Animated
 ui.background.particles=Particles
 ui.background.change=Change wallpaper
 ui.background.reset=Reset wallpaper

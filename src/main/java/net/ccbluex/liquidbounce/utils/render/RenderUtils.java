@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
+import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
@@ -34,7 +35,6 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -204,31 +204,59 @@ public final class RenderUtils extends MinecraftInstance {
         glEnd();
     }
 
-    public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
-        glEnable(3042);
-        glDisable(3553);
-        glBlendFunc(770, 771);
-        glEnable(2848);
-        glShadeModel(7425);
+    public static void drawGradientSidewaysH(double left, double top, double right, double bottom, int col1, int col2) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
 
-        quickDrawGradientSideways(left, top, right, bottom, col1, col2);
+        quickDrawGradientSidewaysH(left, top, right, bottom, col1, col2);
 
-        glEnable(3553);
-        glDisable(3042);
-        glDisable(2848);
-        glShadeModel(7424);
-        glColor4f(1f,1f,1f,1f);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
     }
 
-    public static void quickDrawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
-        glBegin(7);
+    public static void quickDrawGradientSidewaysH(double left, double top, double right, double bottom, int col1, int col2) {
+        glBegin(GL_QUADS);
+
         glColor(col1);
         glVertex2d(left, top);
         glVertex2d(left, bottom);
-
         glColor(col2);
         glVertex2d(right, bottom);
         glVertex2d(right, top);
+
+        glEnd();
+    }
+
+    public static void drawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        quickDrawGradientSidewaysV(left, top, right, bottom, col1, col2);
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+    }
+
+    public static void quickDrawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
+        glBegin(GL_QUADS);
+
+        glColor(col1);
+        glVertex2d(left, top);
+        glVertex2d(right, top);
+        glColor(col2);
+        glVertex2d(right, bottom);
+        glVertex2d(left, bottom);
+
         glEnd();
     }
 
@@ -796,8 +824,8 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void makeScissorBox(final float x, final float y, final float x2, final float y2, final float scaleOffset) {
-        final ScaledResolution scaledResolution = new ScaledResolution(mc);
-        final float factor = scaledResolution.getScaleFactor()*scaleOffset;
+        final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
+        final float factor = scaledResolution.getScaleFactor() * scaleOffset;
         glScissor((int) (x * factor), (int) ((scaledResolution.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
     }
 
@@ -903,29 +931,6 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GlStateManager.disableTexture2D();
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-    }
-
-    public static void drawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
-        GL11.glEnable(3042);
-        GL11.glDisable(3553);
-        GL11.glBlendFunc(770, 771);
-        GL11.glEnable(2848);
-        GL11.glShadeModel(7425);
-        GL11.glPushMatrix();
-        GL11.glBegin(7);
-        glColor(col1);
-        GL11.glVertex2d(left, bottom);
-        GL11.glVertex2d(right, bottom);
-        glColor(col2);
-        GL11.glVertex2d(right, top);
-        GL11.glVertex2d(left, top);
-        GL11.glEnd();
-        GL11.glPopMatrix();
-        GL11.glEnable(3553);
-        GL11.glDisable(3042);
-        GL11.glDisable(2848);
-        GL11.glShadeModel(7424);
-        Gui.drawRect(0, 0, 0, 0, 0);
     }
 
     public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight) {

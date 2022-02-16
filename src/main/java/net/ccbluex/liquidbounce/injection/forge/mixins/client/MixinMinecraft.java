@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
+import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
@@ -143,6 +144,11 @@ public abstract class MixinMinecraft {
         lastFrame = currentTime;
 
         RenderUtils.deltaTime = deltaTime;
+    }
+
+    @Inject(method = "runTick", at = @At("HEAD"))
+    private void runTick(final CallbackInfo callbackInfo) {
+        StaticStorage.scaledResolution = new ScaledResolution((Minecraft)(Object) this);
     }
 
     public long getTime() {

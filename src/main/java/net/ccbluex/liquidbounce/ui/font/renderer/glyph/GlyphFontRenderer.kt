@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.ui.font.renderer.glyph
 
 import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.Font

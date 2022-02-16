@@ -112,7 +112,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.disableBlend();
         }
 
-        LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
+        LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks, sr));
     }
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)

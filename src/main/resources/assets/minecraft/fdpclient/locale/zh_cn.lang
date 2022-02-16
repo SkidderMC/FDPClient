@@ -18,6 +18,9 @@ ui.proxy.screen=代理管理器
 ui.proxy.address=代理地址
 ui.proxy.type=代理类型
 
+ui.background.gtype=类型
+ui.background.gcurrent=现在的背景
+ui.background.ganimated=背景动画
 ui.background.particles=粒子
 ui.background.change=更换背景图
 ui.background.reset=重置背景图

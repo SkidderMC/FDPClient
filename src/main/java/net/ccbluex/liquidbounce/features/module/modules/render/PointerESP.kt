@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -53,10 +52,8 @@ class PointerESP : Module() {
         if(!dimensionValue.equals("2d"))
             return
 
-        val sr = ScaledResolution(mc)
-
         GL11.glPushMatrix()
-        GL11.glTranslatef(sr.scaledWidth / 2f, sr.scaledHeight / 2f, 0.0f)
+        GL11.glTranslatef(event.scaledResolution.scaledWidth / 2f, event.scaledResolution.scaledHeight / 2f, 0.0f)
 
         draw()
 

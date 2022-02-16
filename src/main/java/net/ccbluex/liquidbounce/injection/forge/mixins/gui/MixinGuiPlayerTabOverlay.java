@@ -1,10 +1,10 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import org.lwjgl.opengl.GL11;
@@ -44,13 +44,11 @@ public class MixinGuiPlayerTabOverlay {
 
         switch (animations.getTabModeValue().get().toLowerCase()) {
             case "upslide": {
-                ScaledResolution sr = new ScaledResolution(mc);
-                GL11.glTranslatef(0, sr.getScaledHeight() * (pct - 1), 0);
+                GL11.glTranslatef(0, StaticStorage.scaledResolution.getScaledHeight() * (pct - 1), 0);
                 break;
             }
             case "downslide": {
-                ScaledResolution sr = new ScaledResolution(mc);
-                GL11.glTranslatef(0, sr.getScaledHeight() * (1 - pct), 0);
+                GL11.glTranslatef(0, StaticStorage.scaledResolution.getScaledHeight() * (1 - pct), 0);
                 break;
             }
             case "zoom": {

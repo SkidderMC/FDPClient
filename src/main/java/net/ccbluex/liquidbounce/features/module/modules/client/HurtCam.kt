@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import java.awt.Color
 
@@ -44,12 +43,11 @@ class HurtCam : Module() {
 
         val color = getColor((((timeValue.get() - passedTime) / timeValue.get().toFloat()) * 255).toInt())
         val color1 = getColor(0)
-        val scaledResolution = ScaledResolution(mc)
-        val width = scaledResolution.scaledWidth_double
-        val height = scaledResolution.scaledHeight_double
+        val width = event.scaledResolution.scaledWidth_double
+        val height = event.scaledResolution.scaledHeight_double
 
-        RenderUtils.drawGradientSidewaysV(0.0, 0.0, width, fpsHeightValue.get().toDouble(), color1.rgb, color.rgb)
-        RenderUtils.drawGradientSidewaysV(0.0, height - fpsHeightValue.get(), width, height, color.rgb, color1.rgb)
+        RenderUtils.drawGradientSidewaysH(0.0, 0.0, width, fpsHeightValue.get().toDouble(), color1.rgb, color.rgb)
+        RenderUtils.drawGradientSidewaysH(0.0, height - fpsHeightValue.get(), width, height, color.rgb, color1.rgb)
     }
 
     @EventTarget

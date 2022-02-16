@@ -35,7 +35,7 @@
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "network.MixinNetworkPlayerInfo",
-    "packets.MixinC00Handshake",
+    "network.MixinC00Handshake",
     "render.MixinEffectRenderer",
     "render.MixinEntityRenderer",
     "render.MixinFontRenderer",
@@ -52,7 +52,7 @@
     "render.MixinVisGraph",
     "splash.MixinSplashProgress",
     "splash.MixinSplashProgressRunnable",
-    "world.MixinWorldClient"
+    "client.MixinWorldClient"
   ],
   "client": [
     "gui.MixinGui",
