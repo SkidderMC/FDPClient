@@ -193,7 +193,6 @@ class KillAura : Module() {
 
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "None"), "FDP")
-    private val fakeSharpValue = BoolValue("FakeSharp", true)
     private val circleValue = BoolValue("Circle", false)
     private val circleRedValue = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
     private val circleGreenValue = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
@@ -788,11 +787,6 @@ class KillAura : Module() {
             if (mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR) {
                 mc.thePlayer.attackTargetEntityWithCurrentItem(entity)
             }
-        }
-
-        // Enchant Effect
-        if (EnchantmentHelper.getModifierForCreature(mc.thePlayer.heldItem, target!!.creatureAttribute) > 0.0f || fakeSharpValue.get()) {
-            mc.thePlayer.onEnchantmentCritical(target)
         }
 
         // Start blocking after attack

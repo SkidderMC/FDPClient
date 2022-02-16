@@ -443,9 +443,6 @@ module.Velocity.description=Allows you to modify the amount of knockback taken
 module.XRay.name=XRay
 module.XRay.description=Allows you to see selected blocks through walls
 
-module.IRC.name=IRC
-module.IRC.description=Allow you chat with other users
-
 module.Crosshair.name=Crosshair
 module.Crosshair.description=Change a better crosshair
 
@@ -465,5 +462,8 @@ module.NoAchievements.name=NoAchievements
 module.NoAchievements.description=Disable alert when you earn a achievement
 
 module.TargetStrafe.name=TargetStrafe
-module.TargetStrafe.description=Strafe around your target.
+module.TargetStrafe.description=Strafe around your target
+
+module.HitEffect.name=HitEffect
+module.HitEffect.description=Display a effect when you hit a player
 
