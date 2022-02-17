@@ -1,10 +1,13 @@
 package net.ccbluex.liquidbounce.ui.font.renderer.vector
 
 import net.ccbluex.liquidbounce.ui.font.renderer.AbstractCachedFont
-import net.ccbluex.liquidbounce.utils.render.glu.tess.CacheTessCallback
+import net.minecraft.client.Minecraft
+import org.lwjgl.opengl.GL11
 
-class CachedVectorFont(val vc: CacheTessCallback.VertexCache, val width: Int) : AbstractCachedFont(System.currentTimeMillis()) {
+class CachedVectorFont(val list: Int, val width: Int) : AbstractCachedFont(System.currentTimeMillis()) {
     override fun finalize() {
-        vc.destroy()
+        Minecraft.getMinecraft().addScheduledTask {
+            GL11.glDeleteLists(list, 1)
+        }
     }
 }

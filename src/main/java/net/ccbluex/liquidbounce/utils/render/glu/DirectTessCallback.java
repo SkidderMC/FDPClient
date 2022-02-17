@@ -29,9 +29,8 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.ccbluex.liquidbounce.utils.render.glu.tess;
+package net.ccbluex.liquidbounce.utils.render.glu;
 
-import net.ccbluex.liquidbounce.utils.render.glu.VertexData;
 import org.lwjgl.util.glu.GLUtessellatorCallbackAdapter;
 
 import static org.lwjgl.opengl.GL11.*;
