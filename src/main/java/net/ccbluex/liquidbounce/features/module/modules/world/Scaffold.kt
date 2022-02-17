@@ -760,6 +760,7 @@ class Scaffold : Module() {
             val info = LanguageManager.getAndFormat("ui.scaffold.blocks", blocksAmount)
             val slot = InventoryUtils.findAutoBlockBlock()
             val height = event.scaledResolution.scaledHeight
+            val width = event.scaledResolution.scaledWidth
             var stack = barrier
             if (slot != -1) {
                 if (mc.thePlayer.inventory.getCurrentItem() != null) {
