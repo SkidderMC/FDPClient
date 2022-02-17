@@ -93,10 +93,8 @@ class InventoryCleaner : Module() {
         set(value) {
             if (value != field) {
                 if (value) {
-                    chat("Inventory opened")
                     InventoryUtils.openPacket()
                 } else {
-                    chat("Inventory closed")
                     InventoryUtils.closePacket()
                 }
             }
