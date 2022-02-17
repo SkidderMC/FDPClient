@@ -99,7 +99,7 @@ class ConfigManager {
 
         configSet.addProperty("file", nowConfig)
 
-        configFile.writeText(FileManager.PRETTY_GSON.toJson(configSet), Charsets.UTF_8)
+        configSetFile.writeText(FileManager.PRETTY_GSON.toJson(configSet), Charsets.UTF_8)
     }
 
     fun loadLegacySupport() {
