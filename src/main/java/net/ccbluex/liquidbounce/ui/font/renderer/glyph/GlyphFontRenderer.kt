@@ -45,6 +45,8 @@ class GlyphFontRenderer(font: Font) : AbstractAwtFontRender(font) {
             renderAndCacheTexture(char)
         }
 
+        val originalTex = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D)
+
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, cached.tex)
         GL11.glBegin(GL11.GL_QUADS)
 
@@ -58,7 +60,8 @@ class GlyphFontRenderer(font: Font) : AbstractAwtFontRender(font) {
         GL11.glVertex2d(cached.width.toDouble(), fontHeight.toDouble())
 
         GL11.glEnd()
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0)
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, originalTex)
 
         return cached.width
     }

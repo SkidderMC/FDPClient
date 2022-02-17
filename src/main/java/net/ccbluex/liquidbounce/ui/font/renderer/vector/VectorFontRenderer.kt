@@ -45,24 +45,23 @@ class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
     }
 
     override fun preGlHints() {
-        GlStateManager.enableColorMaterial()
-        GlStateManager.enableAlpha()
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-//        GL11.glBlendFunc(GL11.GL_SRC_ALPHA_SATURATE, GL11.GL_ONE)
-        RenderUtils.clearCaps()
-//        RenderUtils.enableGlCap(GL13.GL_MULTISAMPLE)
-        GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST)
-        RenderUtils.disableGlCap(GL11.GL_DEPTH_TEST) // https://stackoverflow.com/questions/31255870/how-do-i-get-rid-of-jagged-edges-on-my-model-with-opengl
-        RenderUtils.enableGlCap(GL11.GL_POLYGON_SMOOTH)
-        RenderUtils.disableGlCap(GL11.GL_CULL_FACE) // 不要剔除模型的背面
+        GL11.glEnable(GL11.GL_ALPHA_TEST)
+        GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glEnable(GL11.GL_ALPHA_TEST)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glEnable(GL11.GL_COLOR_MATERIAL)
+        GL11.glDisable(GL11.GL_DEPTH_TEST) // https://stackoverflow.com/questions/31255870/how-do-i-get-rid-of-jagged-edges-on-my-model-with-opengl
+        GL11.glEnable(GL11.GL_POLYGON_SMOOTH)
+        GL11.glDisable(GL11.GL_CULL_FACE) // 不要剔除模型的背面
     }
 
     override fun postGlHints() {
-        RenderUtils.resetCaps()
-        GlStateManager.disableBlend()
-        GlStateManager.enableTexture2D()
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glPopAttrib()
+        GL11.glDisable(GL11.GL_BLEND)
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
     }
 }
