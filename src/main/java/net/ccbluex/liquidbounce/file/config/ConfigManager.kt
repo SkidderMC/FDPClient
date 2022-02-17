@@ -85,7 +85,7 @@ class ConfigManager {
     }
 
     fun loadConfigSet() {
-        val configSet = if (configSetFile.exists()) { JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject } else { JsonObject() }
+        val configSet = if (configSetFile.exists()) { JsonParser().parse(configSetFile.reader(Charsets.UTF_8)).asJsonObject } else { JsonObject() }
 
         load(if (configSet.has("file")) {
             configSet.get("file").asString
