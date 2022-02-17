@@ -11,8 +11,7 @@ import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.render.glu.VertexData;
-import net.ccbluex.liquidbounce.utils.render.glu.tess.CacheTessCallback;
-import net.ccbluex.liquidbounce.utils.render.glu.tess.DirectTessCallback;
+import net.ccbluex.liquidbounce.utils.render.glu.DirectTessCallback;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -1047,12 +1046,6 @@ public final class RenderUtils extends MinecraftInstance {
 
     public static void directDrawAWTShape(Shape shape, double epsilon) {
         drawAWTShape(shape, epsilon, DirectTessCallback.INSTANCE);
-    }
-
-    public static CacheTessCallback.VertexCache cacheDrawAWTShape(Shape shape, double epsilon) {
-        CacheTessCallback.INSTANCE.record();
-        drawAWTShape(shape, epsilon, CacheTessCallback.INSTANCE);
-        return CacheTessCallback.INSTANCE.getResult();
     }
 
     /**
