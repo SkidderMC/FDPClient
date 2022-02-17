@@ -13,6 +13,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
 import net.ccbluex.liquidbounce.features.special.ProxyManager;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
@@ -23,9 +24,11 @@ import net.minecraft.util.MessageDeserializer;
 import net.minecraft.util.MessageDeserializer2;
 import net.minecraft.util.MessageSerializer;
 import net.minecraft.util.MessageSerializer2;
+import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -101,5 +104,12 @@ public abstract class MixinNetworkManager {
 
         cir.setReturnValue(networkmanager);
         cir.cancel();
+    }
+
+    @Redirect(method = "checkDisconnected", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;)V"))
+    public void checkDisconnectedLoggerWarn(Logger instance, String s) {
+        if(!LiquidBounce.moduleManager.getModule(SilentDisconnect.class).getState()) {
+            instance.warn(s); // it will spam "handleDisconnection() called twice" in console if SilentDisconnect is enabled
+        }
     }
 }

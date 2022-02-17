@@ -14,8 +14,6 @@ import net.minecraft.client.renderer.RenderHelper
 import org.lwjgl.opengl.GL11
 import java.io.File
 import java.net.URL
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 import javax.imageio.ImageIO
 
 object GuiCapeManager : GuiScreen() {

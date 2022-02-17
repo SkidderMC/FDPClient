@@ -227,8 +227,8 @@ module.ESP.description=Permite que você veja alvos através das paredes
 module.Eagle.name=Eagle
 module.Eagle.description=Torna você águia (também conhecido como FastBridge)
 
-module.EnchantEffect.name=EnchantEffect
-module.EnchantEffect.description=Alterar a cor do efeito Enchant
+module.Glint.name=Glint
+module.Glint.description=Alterar a cor do efeito Enchant
 
 module.FakeDead.name=FakeDead
 
@@ -253,7 +253,7 @@ module.Freeze.description=Permite que você fique preso no ar
 module.Fucker.name=Fucker
 module.Fucker.description=Destrói os blocos selecionados ao seu redor
 
-module.Gapple.name=AutoGapple
+module.Gapple.name=Gapple
 module.Gapple.description=Comer Maças
 
 module.GhostHand.name=GhostHand

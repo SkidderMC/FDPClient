@@ -98,6 +98,8 @@ public abstract class MixinMinecraft {
 
     @Shadow protected abstract ByteBuffer readImageToBuffer(InputStream p_readImageToBuffer_1_) throws IOException;
 
+    @Shadow private boolean fullscreen;
+
     /**
      * @author XiGuaGeGe
      */
@@ -268,5 +270,13 @@ public abstract class MixinMinecraft {
 
     @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Ljava/lang/System;gc()V", remap=false))
     public void loadWorld2() {
+    }
+
+    @Inject(method="toggleFullscreen()V", at=@At(value="INVOKE", target="Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", shift=At.Shift.AFTER, remap=false), require=1, allow=1)
+    private void toggleFullscreen(CallbackInfo callbackInfo) {
+        if (!this.fullscreen) {
+            Display.setResizable(false);
+            Display.setResizable(true);
+        }
     }
 }

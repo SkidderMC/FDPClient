@@ -12,6 +12,7 @@
     "client.MixinLanguageManager",
     "client.MixinMinecraft",
     "client.MixinResourcePackRepository",
+    "client.MixinWorldClient",
     "entity.MixinAbstractClientPlayer",
     "entity.MixinEntity",
     "entity.MixinEntityLivingBase",
@@ -30,12 +31,13 @@
     "gui.MixinGuiNewChat",
     "gui.MixinGuiScreen",
     "gui.MixinGuiSpectator",
-    "item.MixinItemRenderer",
-    "item.MixinItemStack",
+    "render.MixinItemRenderer",
+    "client.MixinItemStack",
+    "network.MixinC00Handshake",
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "network.MixinNetworkPlayerInfo",
-    "network.MixinC00Handshake",
+    "optimize.MixinEnumFacing",
     "render.MixinEffectRenderer",
     "render.MixinEntityRenderer",
     "render.MixinFontRenderer",
@@ -51,14 +53,14 @@
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinVisGraph",
     "splash.MixinSplashProgress",
-    "splash.MixinSplashProgressRunnable",
-    "client.MixinWorldClient"
+    "splash.MixinSplashProgressRunnable"
   ],
   "client": [
     "gui.MixinGui",
     "gui.MixinGuiKeyBindingList",
     "gui.MixinGuiPlayerTabOverlay",
     "gui.MixinGuiSlot",
+    "render.MixinLayerArmorBase",
     "render.MixinModelPlayer"
   ]
 }

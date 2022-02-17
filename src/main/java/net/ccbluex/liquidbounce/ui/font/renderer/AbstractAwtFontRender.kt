@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.ui.font.renderer
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.ui.font.FontsGC
 import net.ccbluex.liquidbounce.ui.font.renderer.glyph.GlyphFontRenderer
 import net.ccbluex.liquidbounce.ui.font.renderer.vector.VectorFontRenderer
