@@ -291,14 +291,12 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             } else {
                 1f
             } * riseAlphaValue.get()
-            RenderUtils.drawCircle(x, y, riseSizeValue.get() * 2, Color(rp.colorR, rp.colorG, rp.colorB, (alpha * 255).toInt()).rgb)
+            RenderUtils.drawCircle(x, y, riseSizeValue.get() * 2, Color(rp.color.red, rp.color.green, rp.color.blue, (alpha * 255).toInt()).rgb)
         }
     }
 
     class RiseParticle {
-        val colorR = RandomUtils.nextInt(0, 255)
-        val colorG = RandomUtils.nextInt(0, 255)
-        val colorB = RandomUtils.nextInt(0, 255)
+        val color = ColorUtils.rainbow(RandomUtils.nextInt(0, 30))
         val alpha = RandomUtils.nextInt(150, 255)
         val time = System.currentTimeMillis()
         val x = RandomUtils.nextInt(-50, 50)
