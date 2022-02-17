@@ -8,9 +8,11 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import net.ccbluex.liquidbounce.ui.client.GuiAntiForge;
 import net.ccbluex.liquidbounce.ui.client.GuiProxySelect;
 import net.ccbluex.liquidbounce.ui.client.GuiServerSpoof;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.ChatComponentText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -38,6 +40,14 @@ public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
             case 999:
                 mc.displayGuiScreen(new GuiProxySelect((GuiScreen) (Object) this));
                 break;
+        }
+    }
+
+    @Inject(method="connectToServer", at=@At(value="HEAD"))
+    public void connectToServer(CallbackInfo callbackInfo) {
+        Minecraft minecraft = Minecraft.getMinecraft();
+        if (minecraft.getNetHandler() != null) {
+            minecraft.getNetHandler().getNetworkManager().closeChannel(new ChatComponentText(""));
         }
     }
 }

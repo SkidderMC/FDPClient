@@ -13,6 +13,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
@@ -21,7 +23,7 @@ import net.minecraft.potion.PotionEffect
 class AntiBlind : Module() {
     val confusionEffectValue = BoolValue("Confusion", true)
     val pumpkinEffectValue = BoolValue("Pumpkin", true)
-    val fireEffectValue = BoolValue("Fire", false)
+    val fireEffectValue = FloatValue("FireAlpha", 0.3f, 0f, 1f)
     private val brightValue = ListValue("Bright", arrayOf("None", "Gamma", "NightVision"), "Gamma")
 
     private var prevGamma = -1f

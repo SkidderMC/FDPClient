@@ -8,8 +8,8 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import java.awt.Color
 
-@ModuleInfo(name = "EnchantEffect", category = ModuleCategory.RENDER)
-class EnchantEffect : Module() {
+@ModuleInfo(name = "Glint", category = ModuleCategory.RENDER)
+class Glint : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Rainbow", "AnotherRainbow", "Custom"), "Custom")
     private val redValue = IntegerValue("Red", 255, 0, 255).displayable { modeValue.equals("Custom") }

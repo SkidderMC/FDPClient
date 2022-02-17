@@ -234,8 +234,8 @@ module.ESP.description=Allows you to see targets through walls
 module.Eagle.name=Eagle
 module.Eagle.description=Makes you eagle (aka. FastBridge)
 
-module.EnchantEffect.name=EnchantEffect
-module.EnchantEffect.description=Change Enchant Effect Color
+module.Glint.name=Glint
+module.Glint.description=Customize color of enchants
 
 module.FakeDead.name=FakeDead
 
@@ -260,7 +260,7 @@ module.Freeze.description=Allows you to stay stuck in mid air
 module.Fucker.name=Fucker
 module.Fucker.description=Destroys selected blocks around you
 
-module.Gapple.name=AutoGapple
+module.Gapple.name=Gapple
 module.Gapple.description=Automatically eats gapples
 
 module.GhostHand.name=GhostHand
@@ -470,3 +470,5 @@ module.TargetStrafe.description=Strafe around your target
 module.HitEffect.name=HitEffect
 module.HitEffect.description=Display a effect when you hit a player
 
+module.SilentDisconnect.name=SilentDisconnect
+module.SilentDisconnect.description=Don't display GuiDisconnect when you disconnected from the server

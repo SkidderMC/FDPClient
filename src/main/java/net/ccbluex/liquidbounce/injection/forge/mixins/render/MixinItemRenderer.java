@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/UnlegitMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.injection.forge.mixins.item;
+package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
@@ -28,6 +28,8 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ItemRenderer.class)
 public abstract class MixinItemRenderer {
@@ -393,51 +395,13 @@ public abstract class MixinItemRenderer {
     /**
      * @author Liuli
      */
-    @Overwrite
-    private void renderFireInFirstPerson(float partialTicks) {
+    @Redirect(method="renderFireInFirstPerson", at=@At(value="INVOKE", target="Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
+    private void renderFireInFirstPerson(float p_color_0_, float p_color_1_, float p_color_2_, float p_color_3_) {
         final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
-
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        float f = 1.0F;
-        if(antiBlind.getState() && antiBlind.getFireEffectValue().get()){
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 0.3F);
-            f = 0.7F;
+        if(p_color_3_ != 1.0f && antiBlind.getState()){
+            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, antiBlind.getFireEffectValue().get());
         }else{
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 0.9F);
+            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, p_color_3_);
         }
-        GlStateManager.depthFunc(519);
-        GlStateManager.depthMask(false);
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-
-        for(int i = 0; i < 2; ++i) {
-            GlStateManager.pushMatrix();
-            TextureAtlasSprite textureatlassprite = this.mc.getTextureMapBlocks().getAtlasSprite("minecraft:blocks/fire_layer_1");
-            this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-            float f1 = textureatlassprite.getMinU();
-            float f2 = textureatlassprite.getMaxU();
-            float f3 = textureatlassprite.getMinV();
-            float f4 = textureatlassprite.getMaxV();
-            float f5 = (0.0F - f) / 2.0F;
-            float f6 = f5 + f;
-            float f7 = 0.0F - f / 2.0F;
-            float f8 = f7 + f;
-            float f9 = -0.5F;
-            GlStateManager.translate((float)(-(i * 2 - 1)) * 0.24F, -0.3F, 0.0F);
-            GlStateManager.rotate((float)(i * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
-            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-            worldrenderer.pos(f5, f7, f9).tex(f2, f4).endVertex();
-            worldrenderer.pos(f6, f7, f9).tex(f1, f4).endVertex();
-            worldrenderer.pos(f6, f8, f9).tex(f1, f3).endVertex();
-            worldrenderer.pos(f5, f8, f9).tex(f2, f3).endVertex();
-            tessellator.draw();
-            GlStateManager.popMatrix();
-        }
-
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableBlend();
-        GlStateManager.depthMask(true);
-        GlStateManager.depthFunc(515);
     }
 }

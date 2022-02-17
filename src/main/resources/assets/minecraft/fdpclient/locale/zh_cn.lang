@@ -234,8 +234,8 @@ module.ESP.description=允许你隔墙透视目标
 module.Eagle.name=自动蹲搭
 module.Eagle.description=让你在方块边缘自动蹲下
 
-module.EnchantEffect.name=附魔效果
-module.EnchantEffect.description=更改附魔效果颜色
+module.Glint.name=附魔效果
+module.Glint.description=更改附魔效果颜色
 
 module.FakeDead.name=假死
 
@@ -451,3 +451,6 @@ module.Damage.description=允许你对自己造成伤害
 
 module.HitEffect.name=击打特效
 module.HitEffect.description=在你攻击玩家的时候展示一个击打特效
+
+module.SilentDisconnect.name=静默断连
+module.SilentDisconnect.description=当你与服务器断开连接时，不会显示GuiDisconnect
