@@ -197,21 +197,21 @@ public abstract class MixinEntity {
             callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());
     }
 
-//    @Inject(method="getBrightnessForRender", at=@At(value="HEAD"), cancellable=true)
-//    private void getBrightnessForRender(float f, CallbackInfoReturnable<Integer> callbackInfoReturnable) {
-//        if (Performance.INSTANCE.getFastEntityLightningValue().get()) {
-//            int n, n2, n3 = MathHelper.floor_double(this.posX);
-//            IWorld world = (IWorld)this.worldObj;
-//            callbackInfoReturnable.setReturnValue(world.isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double)this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.getCombinedLight(n3, n2, n, 0) : 0);
-//        }
-//    }
-//
-//    @Inject(method="getBrightness", at=@At(value="HEAD"), cancellable=true)
-//    public void getBrightness(float f, CallbackInfoReturnable<Float> callbackInfoReturnable) {
-//        if (Performance.INSTANCE.getFastEntityLightningValue().get()) {
-//            int n, n2, n3 = MathHelper.floor_double(this.posX);
-//            IWorld world = (IWorld)this.worldObj;
-//            callbackInfoReturnable.setReturnValue(world.isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double) this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.getLightBrightness(n3, n2, n) : 0.0f);
-//        }
-//    }
+    @Inject(method="getBrightnessForRender", at=@At(value="HEAD"), cancellable=true)
+    private void getBrightnessForRender(float f, CallbackInfoReturnable<Integer> callbackInfoReturnable) {
+        if (Performance.fastEntityLightningValue.get()) {
+            int n, n2, n3 = MathHelper.floor_double(this.posX);
+            IWorld world = (IWorld)this.worldObj;
+            callbackInfoReturnable.setReturnValue(world.isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double)this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.getCombinedLight(n3, n2, n, 0) : 0);
+        }
+    }
+
+    @Inject(method="getBrightness", at=@At(value="HEAD"), cancellable=true)
+    public void getBrightness(float f, CallbackInfoReturnable<Float> callbackInfoReturnable) {
+        if (Performance.fastEntityLightningValue.get()) {
+            int n, n2, n3 = MathHelper.floor_double(this.posX);
+            IWorld world = (IWorld)this.worldObj;
+            callbackInfoReturnable.setReturnValue(world.isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double) this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.getLightBrightness(n3, n2, n) : 0.0f);
+        }
+    }
 }

@@ -10,6 +10,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class MixinEntityFX {
     @Redirect(method={"renderParticle"}, at=@At(value="INVOKE", target="Lnet/minecraft/client/particle/EntityFX;getBrightnessForRender(F)I"))
     private int renderParticle(EntityFX entityFX, float f) {
-        return Performance.INSTANCE.getStaticParticleColorValue().get() ? 0xF000F0 : entityFX.getBrightnessForRender(f);
+        return Performance.staticParticleColorValue.get() ? 0xF000F0 : entityFX.getBrightnessForRender(f);
     }
 }

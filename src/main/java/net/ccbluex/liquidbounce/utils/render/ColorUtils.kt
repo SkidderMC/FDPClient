@@ -188,4 +188,12 @@ object ColorUtils {
     fun mixColors(color1: Color, color2: Color, percent: Float): Color {
         return Color(color1.red + ((color2.red - color1.red) * percent).toInt(), color1.green + ((color2.green - color1.green) * percent).toInt(), color1.blue + ((color2.blue - color1.blue) * percent).toInt(), color1.alpha + ((color2.alpha - color1.alpha) * percent).toInt())
     }
+
+    fun toRGB(n: Int, n2: Int, n3: Int, n4: Int): Int {
+        return (n4 and 0xFF shl 24) or (n3 and 0xFF shl 16) or (n2 and 0xFF shl 8) or (n and 0xFF)
+    }
+
+    fun toRGB(f: Float, f2: Float, f3: Float, f4: Float): Int {
+        return toRGB((f * 255.0f).toInt(), (f2 * 255.0f).toInt(), (f3 * 255.0f).toInt(), (f4 * 255.0f).toInt())
+    }
 }
