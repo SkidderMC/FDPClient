@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.injection.forge.mixins.optimize;
+package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import java.util.Random;
 
