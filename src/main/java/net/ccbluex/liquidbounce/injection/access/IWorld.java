@@ -36,6 +36,8 @@ public interface IWorld {
 
     float getLightBrightness(int var1, int var2, int var3);
 
+    IBlockState getBlockState(int n, int n2, int n3);
+
     boolean setBlockState(int var1, int var2, int var3, IBlockState var4, int var5);
 
     void markBlockForUpdate(int var1, int var2, int var3);

@@ -9,6 +9,7 @@
     "block.MixinBlockAnvil",
     "block.MixinBlockModelRenderer",
     "block.MixinBlockSoulSand",
+    "client.MixinEnumFacing",
     "client.MixinItemStack",
     "client.MixinLanguageManager",
     "client.MixinMinecraft",
@@ -36,7 +37,10 @@
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
     "network.MixinNetworkPlayerInfo",
-    "client.MixinEnumFacing",
+    "performance.MixinBlock",
+    "performance.MixinChunk",
+    "performance.MixinWorld",
+    "performance.MixinWorldManager",
     "render.MixinEffectRenderer",
     "render.MixinEntityRenderer",
     "render.MixinFontRenderer",
@@ -61,6 +65,7 @@
     "gui.MixinGuiPlayerTabOverlay",
     "gui.MixinGuiSlot",
     "performance.MixinEntityFX",
+    "performance.MixinRenderGlobal",
     "render.MixinLayerArmorBase",
     "render.MixinModelPlayer"
   ]
