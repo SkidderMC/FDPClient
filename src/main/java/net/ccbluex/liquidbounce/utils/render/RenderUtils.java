@@ -254,7 +254,7 @@ public final class RenderUtils extends MinecraftInstance {
         glVertex2d(right, top);
         glColor(col2);
         glVertex2d(right, bottom);
-        glVertex2d(left, bottom);
+        glVertex2d(left, bottom); // TODO: Fix this, this may have been a mistake
 
         glEnd();
     }
