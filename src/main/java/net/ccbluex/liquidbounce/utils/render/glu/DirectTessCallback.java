@@ -38,10 +38,12 @@ import static org.lwjgl.opengl.GL11.*;
 public class DirectTessCallback extends GLUtessellatorCallbackAdapter {
     public final static DirectTessCallback INSTANCE = new DirectTessCallback();
 
+    @Override
     public void begin(int type) {
         glBegin(type);
     }
 
+    @Override
     public void combine(double[] coords, Object[] data, float[] weight, Object[] outData) {
         double[] combined = new double[6];
         combined[0] = coords[0];
@@ -51,7 +53,7 @@ public class DirectTessCallback extends GLUtessellatorCallbackAdapter {
         combined[4] = 1;
         combined[5] = 1;
 
-        for (int i=0;i<outData.length;i++) {
+        for (int i=0;i < outData.length;i++) {
             outData[i] = new VertexData(combined);
         }
     }
@@ -60,9 +62,10 @@ public class DirectTessCallback extends GLUtessellatorCallbackAdapter {
         glEnd();
     }
 
+    @Override
     public void vertex(Object vertexData) {
         VertexData vertex = (VertexData) vertexData;
 
-        glVertex3d(vertex.data[0], vertex.data[1], vertex.data[2]);
+        glVertex3f((float)vertex.data[0], (float)vertex.data[1], (float)vertex.data[2]);
     }
 }
