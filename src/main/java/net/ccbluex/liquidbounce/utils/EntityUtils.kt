@@ -6,11 +6,11 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.animal
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.dead
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisible
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.mob
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.player
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.animalValue
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.deadValue
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisibleValue
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.mobValue
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.playerValue
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot.isBot
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
@@ -29,9 +29,9 @@ import net.minecraft.entity.player.EntityPlayer
 
 object EntityUtils : MinecraftInstance() {
     fun isSelected(entity: Entity, canAttackCheck: Boolean): Boolean {
-        if (entity is EntityLivingBase && (dead.get() || entity.isEntityAlive()) && entity !== mc.thePlayer) {
-            if (invisible.get() || !entity.isInvisible()) {
-                if (player.get() && entity is EntityPlayer) {
+        if (entity is EntityLivingBase && (deadValue.get() || entity.isEntityAlive()) && entity !== mc.thePlayer) {
+            if (invisibleValue.get() || !entity.isInvisible()) {
+                if (playerValue.get() && entity is EntityPlayer) {
                     if (canAttackCheck) {
                         if (isBot(entity)) {
                             return false
@@ -59,7 +59,7 @@ object EntityUtils : MinecraftInstance() {
 
                     return true
                 }
-                return mob.get() && isMob(entity) || animal.get() && isAnimal(entity)
+                return mobValue.get() && isMob(entity) || animalValue.get() && isAnimal(entity)
             }
         }
         return false

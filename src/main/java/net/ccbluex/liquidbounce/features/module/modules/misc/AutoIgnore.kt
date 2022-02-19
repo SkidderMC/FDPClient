@@ -8,7 +8,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C01PacketChatMessage
 import net.minecraft.network.play.server.S02PacketChat
@@ -21,7 +20,6 @@ class AutoIgnore : Module() {
     private val chatTimes = HashMap<String, Long>()
     private val chatVL = HashMap<String, Float>()
     private val blockedPlayer = ArrayList<String>()
-    private val timer = MSTimer()
 
     @EventTarget
     fun onPacket(event: PacketEvent) {

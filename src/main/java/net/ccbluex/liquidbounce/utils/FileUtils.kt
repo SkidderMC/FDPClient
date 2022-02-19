@@ -10,14 +10,12 @@ import java.nio.file.StandardCopyOption
 import java.util.zip.ZipInputStream
 
 object FileUtils {
-    @JvmStatic
     fun unpackFile(file: File, name: String) {
         val fos = FileOutputStream(file)
         IOUtils.copy(FileUtils::class.java.classLoader.getResourceAsStream(name), fos)
         fos.close()
     }
 
-    @JvmStatic
     fun extractZip(zipStream: InputStream, folder: File) {
         if (!folder.exists()) {
             folder.mkdir()
@@ -45,7 +43,6 @@ object FileUtils {
         }
     }
 
-    @JvmStatic
     fun extractZip(zipFile: File, folder: File) = extractZip(FileInputStream(zipFile), folder)
 
     fun copyDir(fromDir: File, toDir: File) {

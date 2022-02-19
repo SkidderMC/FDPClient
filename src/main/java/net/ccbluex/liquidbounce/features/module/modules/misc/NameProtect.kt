@@ -18,10 +18,7 @@ import net.ccbluex.liquidbounce.value.TextValue
 
 @ModuleInfo(name = "NameProtect", category = ModuleCategory.MISC)
 class NameProtect : Module() {
-    @JvmField
     val allPlayersValue = BoolValue("AllPlayers", false)
-
-    @JvmField
     val skinProtectValue = BoolValue("SkinProtect", true)
     private val fakeNameValue = TextValue("FakeName", "FDPUser")
     private val playerNameValue = TextValue("PlayerName", "SIGMA_HATAR")

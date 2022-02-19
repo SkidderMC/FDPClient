@@ -5,47 +5,20 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.network.NetworkManager;
-import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 @Mixin(GuiConnecting.class)
 public abstract class MixinGuiConnecting extends GuiScreen {
-
-    @Shadow
-    private NetworkManager networkManager;
-
-    @Shadow
-    @Final
-    private static Logger logger;
-
-    @Shadow
-    private boolean cancel;
-
-    @Shadow
-    @Final
-    private GuiScreen previousGuiScreen;
-
-    @Shadow
-    @Final
-    private static AtomicInteger CONNECTION_ID;
 
     @Inject(method = "connect", at = @At("HEAD"))
     private void headConnect(final String ip, final int port, CallbackInfo callbackInfo) {
@@ -57,11 +30,9 @@ public abstract class MixinGuiConnecting extends GuiScreen {
      */
     @Overwrite
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-
         this.drawDefaultBackground();
 
-        RenderUtils.drawLoadingCircle(scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 4 + 70);
+        RenderUtils.drawLoadingCircle(this.width / 2, this.height / 4 + 70);
 
         String ip = "Unknown";
 
@@ -69,8 +40,8 @@ public abstract class MixinGuiConnecting extends GuiScreen {
         if(serverData != null)
             ip = serverData.serverIP;
 
-        RendererExtensionKt.drawCenteredString(Fonts.font40, "Connecting to", scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 4 + 110, 0xFFFFFF, true);
-        RendererExtensionKt.drawCenteredString(Fonts.font40, ip, scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 4 + 120, 0x5281FB, true);
+        RendererExtensionKt.drawCenteredString(mc.fontRendererObj, "Connecting to", this.width / 2, this.height / 4 + 110, 0xFFFFFF, true);
+        RendererExtensionKt.drawCenteredString(mc.fontRendererObj, ip, this.width / 2, this.height / 4 + 120, 0x5281FB, true);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

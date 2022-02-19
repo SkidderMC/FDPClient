@@ -321,7 +321,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             this.setSprinting(false);
         
         final InventoryMove inventoryMove = LiquidBounce.moduleManager.getModule(InventoryMove.class);
-        if(inventoryMove.getNoSprint().equals("Real") && inventoryMove.getInvOpen())
+        if(inventoryMove.getNoSprintValue().equals("Real") && inventoryMove.getInvOpen())
             this.setSprinting(false);
 
         //aac may check it :(

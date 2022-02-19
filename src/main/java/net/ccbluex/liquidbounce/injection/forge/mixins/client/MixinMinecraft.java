@@ -12,12 +12,15 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
+import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
+import net.ccbluex.liquidbounce.utils.render.ImageUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
@@ -31,6 +34,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Util;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -40,10 +44,16 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.file.AccessDeniedException;
 
 @Mixin(Minecraft.class)
@@ -74,12 +84,6 @@ public abstract class MixinMinecraft {
     public PlayerControllerMP playerController;
 
     @Shadow
-    public int displayWidth;
-
-    @Shadow
-    public int displayHeight;
-
-    @Shadow
     public int rightClickDelayTimer;
 
     @Shadow
@@ -91,6 +95,10 @@ public abstract class MixinMinecraft {
     @Shadow
     @Final
     public File mcDataDir;
+
+    @Shadow protected abstract ByteBuffer readImageToBuffer(InputStream p_readImageToBuffer_1_) throws IOException;
+
+    @Shadow private boolean fullscreen;
 
     /**
      * @author XiGuaGeGe
@@ -138,6 +146,11 @@ public abstract class MixinMinecraft {
         lastFrame = currentTime;
 
         RenderUtils.deltaTime = deltaTime;
+    }
+
+    @Inject(method = "runTick", at = @At("HEAD"))
+    private void runTick(final CallbackInfo callbackInfo) {
+        StaticStorage.scaledResolution = new ScaledResolution((Minecraft)(Object) this);
     }
 
     public long getTime() {
@@ -196,17 +209,14 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "getRenderViewEntity", at = @At("HEAD"))
     public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir){
-        if(renderViewEntity instanceof EntityLivingBase && RotationUtils.serverRotation!=null){
-            final Rotations rotations=LiquidBounce.moduleManager.getModule(Rotations.class);
-            final EntityLivingBase entityLivingBase=(EntityLivingBase) renderViewEntity;
-            final float yaw=RotationUtils.serverRotation.getYaw();
+        if(RotationUtils.targetRotation != null && thePlayer != null) {
+            final Rotations rotations = LiquidBounce.moduleManager.getModule(Rotations.class);
+            final float yaw = RotationUtils.targetRotation.getYaw();
             if(rotations.getHeadValue().get()){
-                entityLivingBase.rotationYawHead=yaw;
-                entityLivingBase.prevRotationYawHead=yaw;
+                thePlayer.rotationYawHead = yaw;
             }
             if(rotations.getBodyValue().get()){
-                entityLivingBase.renderYawOffset=yaw;
-                entityLivingBase.prevRenderYawOffset=yaw;
+                thePlayer.renderYawOffset = yaw;
             }
         }
     }
@@ -234,6 +244,36 @@ public abstract class MixinMinecraft {
             } else {
                 this.playerController.resetBlockRemoving();
             }
+        }
+    }
+
+    @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
+    private void setWindowIcon(CallbackInfo callbackInfo) throws IOException {
+        if (Util.getOSType() != Util.EnumOS.OSX) {
+            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png"));
+            Display.setIcon(new ByteBuffer[]{ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16)),
+                    ImageUtils.readImageToBuffer(image)});
+            callbackInfo.cancel();
+        }
+    }
+
+    @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Lnet/minecraft/client/LoadingScreenRenderer;resetProgressAndMessage(Ljava/lang/String;)V"))
+    public void loadWorld(LoadingScreenRenderer loadingScreenRenderer, String string) {
+    }
+
+    @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Lnet/minecraft/client/LoadingScreenRenderer;displayLoadingString(Ljava/lang/String;)V"))
+    public void loadWorld1(LoadingScreenRenderer loadingScreenRenderer, String string) {
+    }
+
+    @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Ljava/lang/System;gc()V", remap=false))
+    public void loadWorld2() {
+    }
+
+    @Inject(method="toggleFullscreen()V", at=@At(value="INVOKE", target="Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", shift=At.Shift.AFTER, remap=false), require=1, allow=1)
+    private void toggleFullscreen(CallbackInfo callbackInfo) {
+        if (!this.fullscreen) {
+            Display.setResizable(false);
+            Display.setResizable(true);
         }
     }
 }

@@ -42,15 +42,15 @@ class AuthBypass : Module() {
 
     private var skull: String? = null
     private var type = "none"
-    private val packets = ArrayList<Packet<INetHandlerPlayServer>>()
-    private val clickedSlot = ArrayList<Int>()
+    private val packets = mutableListOf<Packet<INetHandlerPlayServer>>()
+    private val clickedSlot = mutableListOf<Int>()
     private val timer = MSTimer()
     private val jsonParser = JsonParser()
 
     private val brLangMap = HashMap<String, String>()
 
     init {
-        val localeJson = JsonParser().parse(IOUtils.toString(AuthBypass::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/item_names_in_pt_BR.json"), StandardCharsets.UTF_8)).asJsonObject
+        val localeJson = JsonParser().parse(AuthBypass::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/item_names_in_pt_BR.json").reader(Charsets.UTF_8)).asJsonObject
 
         brLangMap.clear()
         for ((key, element) in localeJson.entrySet()) {

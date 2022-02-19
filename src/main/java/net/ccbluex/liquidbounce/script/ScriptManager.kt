@@ -6,13 +6,13 @@
 package net.ccbluex.liquidbounce.script
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.io.File
 
 class ScriptManager {
 
     val scripts = mutableListOf<Script>()
-
     val scriptsFolder = File(LiquidBounce.fileManager.dir, "scripts")
 
     /**
@@ -25,6 +25,7 @@ class ScriptManager {
 
         scriptsFolder.listFiles().forEach {
             if (it.name.endsWith(".js", true)) {
+                Remapper.loadSrg() // load SRG if needed, this will optimize the performance
                 loadJsScript(it)
             }
         }

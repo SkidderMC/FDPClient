@@ -9,7 +9,6 @@ import me.liuli.elixir.manage.AccountSerializer
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.elements.GuiPasswordField
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
@@ -25,24 +24,24 @@ class GuiAdd(private val prevGui: GuiAltManager) : GuiScreen() {
         buttonList.add(GuiButton(1, width / 2 - 100, height / 4 + 72, "%ui.alt.add%"))
         buttonList.add(GuiButton(2, width / 2 - 100, height / 4 + 96, "%ui.alt.clipBoardLogin%"))
         buttonList.add(GuiButton(0, width / 2 - 100, height / 4 + 120, "%ui.back%"))
-        username = GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20)
+        username = GuiTextField(2, mc.fontRendererObj, width / 2 - 100, 60, 200, 20)
         username.isFocused = true
         username.maxStringLength = Int.MAX_VALUE
-        password = GuiPasswordField(3, Fonts.font40, width / 2 - 100, 85, 200, 20)
+        password = GuiPasswordField(3, mc.fontRendererObj, width / 2 - 100, 85, 200, 20)
         password.maxStringLength = Int.MAX_VALUE
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        drawCenteredString(Fonts.font40, "%ui.alt.add%", width / 2, 34, 0xffffff)
-        drawCenteredString(Fonts.font35, if (status == null) "" else status, width / 2, height / 4 + 60, 0xffffff)
+        drawCenteredString(mc.fontRendererObj, "%ui.alt.add%", width / 2, 34, 0xffffff)
+        drawCenteredString(mc.fontRendererObj, if (status == null) "" else status, width / 2, height / 4 + 60, 0xffffff)
         username.drawTextBox()
         password.drawTextBox()
         if (username.text.isEmpty() && !username.isFocused) {
-            drawCenteredString(Fonts.font40, "§7%ui.alt.loginUsername%", width / 2 - 55, 66, 0xffffff)
+            drawCenteredString(mc.fontRendererObj, "§7%ui.alt.loginUsername%", width / 2 - 55, 66, 0xffffff)
         }
         if (password.text.isEmpty() && !password.isFocused) {
-            drawCenteredString(Fonts.font40, "§7%ui.alt.loginPassword%", width / 2 - 74, 91, 0xffffff)
+            drawCenteredString(mc.fontRendererObj, "§7%ui.alt.loginPassword%", width / 2 - 74, 91, 0xffffff)
         }
         "Add ms@ before your real username can login microsoft account without browser!".also {
             mc.fontRendererObj.drawString(it, width - mc.fontRendererObj.getStringWidth(it), height - mc.fontRendererObj.FONT_HEIGHT, 0xffffff)
@@ -61,6 +60,7 @@ class GuiAdd(private val prevGui: GuiAltManager) : GuiScreen() {
                 }
                 LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.add(AccountSerializer.accountInstance(username.text, password.text))
                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig)
+                actionPerformed(buttonList.find { it.id == 0 }!!)
             }
             2 -> {
                 val args = getClipboardString().split(":")

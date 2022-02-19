@@ -1,5 +1,6 @@
 package net.vitox;
 
+import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -89,7 +90,7 @@ class Particle {
 
     void fall() {
         final Minecraft mc = Minecraft.getMinecraft();
-        final ScaledResolution scaledResolution = new ScaledResolution(mc);
+        final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
         y = (y + ySpeed);
         x = (x + xSpeed);
 

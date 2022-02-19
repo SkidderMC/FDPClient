@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -15,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
@@ -63,42 +63,25 @@ public abstract class MixinGuiNewChat {
     private boolean isScrolled;
 
     @Shadow
-    public abstract void deleteChatLine(int p_deleteChatLine_1_);
-
-    @Shadow
-    @Final
-    private List<ChatLine> chatLines;
-
-    @Shadow
-    public abstract void scroll(int p_scroll_1_);
-
-    @Shadow
     public abstract void printChatMessageWithOptionalDeletion(IChatComponent chatComponent, int chatLineId);
 
     private String lastMessage;
     private int sameMessageAmount;
     private int line;
 
-    private HUD hud;
-
-    private void checkHud(){
-        if(hud==null){
-            hud = LiquidBounce.moduleManager.getModule(HUD.class);
-        }
-    }
+    private final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
 
     /**
      * @author Liuli
      */
     @Overwrite
     public void printChatMessage(IChatComponent chatComponent) {
-        checkHud();
         if(!hud.getChatCombineValue().get()) {
             printChatMessageWithOptionalDeletion(chatComponent, 0);
             return;
         }
 
-        String text=fixString(chatComponent.getFormattedText());
+        String text = fixString(chatComponent.getFormattedText());
 
         if (text.equals(this.lastMessage)) {
             (Minecraft.getMinecraft()).ingameGUI.getChatGUI().deleteChatLine(this.line);
@@ -121,7 +104,7 @@ public abstract class MixinGuiNewChat {
 
         StringBuilder sb=new StringBuilder();
         for(char c:str.toCharArray()){
-            if((int) c >(33+65248)&& (int) c <(128+65248)){
+            if((int) c > (33 + 65248) && (int) c < (128 + 65248)){
                 sb.append(Character.toChars((int) c - 65248));
             }else{
                 sb.append(c);
@@ -137,8 +120,7 @@ public abstract class MixinGuiNewChat {
      */
     @Overwrite
     public void drawChat(int updateCounter) {
-        checkHud();
-        boolean canFont=hud.getState() && hud.getFontChatValue().get();
+        boolean canFont = hud.getState() && hud.getFontChatValue().get();
 
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
             int i = this.getLineCount();
@@ -186,10 +168,10 @@ public abstract class MixinGuiNewChat {
 
                                 if(hud.getChatAnimValue().get()&&!flag) {
                                     if (j1 <= 20) {
-                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(1 - ((j1+mc.timer.renderPartialTicks) / 20.0))), 0F, 0F);
+                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.INSTANCE.easeInQuart(1 - ((j1+mc.timer.renderPartialTicks) / 20.0))), 0F, 0F);
                                     }
                                     if (j1 >= 180) {
-                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.easeInQuart(((j1+mc.timer.renderPartialTicks) - 180) / 20.0)), 0F, 0F);
+                                        GL11.glTranslatef((float) (-(l + 4) * EaseUtils.INSTANCE.easeInQuart(((j1+mc.timer.renderPartialTicks) - 180) / 20.0)), 0F, 0F);
                                     }
                                 }
 
@@ -197,7 +179,7 @@ public abstract class MixinGuiNewChat {
                                     RenderUtils.drawRect(i2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
                                 }
                                 GlStateManager.enableBlend();
-                                (canFont?Fonts.font40 :this.mc.fontRendererObj).drawString(chatline.getChatComponent().getFormattedText(), (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24), false);
+                                (canFont ? Fonts.font40 : this.mc.fontRendererObj).drawString(chatline.getChatComponent().getFormattedText(), (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24), false);
                                 GlStateManager.disableAlpha();
                                 GlStateManager.disableBlend();
 
@@ -229,13 +211,11 @@ public abstract class MixinGuiNewChat {
 
     @Inject(method = "getChatComponent", at = @At("HEAD"), cancellable = true)
     private void getChatComponent(int p_getChatComponent_1_, int p_getChatComponent_2_, final CallbackInfoReturnable<IChatComponent> callbackInfo) {
-        checkHud();
         if(hud.getState() && hud.getFontChatValue().get()) {
             if(!this.getChatOpen()) {
                 callbackInfo.setReturnValue(null);
             }else{
-                ScaledResolution lvt_3_1_ = new ScaledResolution(this.mc);
-                int lvt_4_1_ = lvt_3_1_.getScaleFactor();
+                int lvt_4_1_ = StaticStorage.scaledResolution.getScaleFactor();
                 float lvt_5_1_ = this.getChatScale();
                 int lvt_6_1_ = p_getChatComponent_1_ / lvt_4_1_ - 3;
                 int lvt_7_1_ = p_getChatComponent_2_ / lvt_4_1_ - 27;
@@ -246,7 +226,7 @@ public abstract class MixinGuiNewChat {
                     if(lvt_6_1_ <= MathHelper.floor_float((float) this.getChatWidth() / this.getChatScale()) && lvt_7_1_ < Fonts.font40.FONT_HEIGHT * lvt_8_1_ + lvt_8_1_) {
                         int lvt_9_1_ = lvt_7_1_ / Fonts.font40.FONT_HEIGHT + this.scrollPos;
                         if(lvt_9_1_ >= 0 && lvt_9_1_ < this.drawnChatLines.size()) {
-                            ChatLine lvt_10_1_ = (ChatLine) this.drawnChatLines.get(lvt_9_1_);
+                            ChatLine lvt_10_1_ = this.drawnChatLines.get(lvt_9_1_);
                             int lvt_11_1_ = 0;
                             Iterator lvt_12_1_ = lvt_10_1_.getChatComponent().iterator();
 

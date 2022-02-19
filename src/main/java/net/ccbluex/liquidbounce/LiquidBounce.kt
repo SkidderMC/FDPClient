@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/Project-EZ4H/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce
 
@@ -15,14 +15,12 @@ import net.ccbluex.liquidbounce.features.special.CombatManager
 import net.ccbluex.liquidbounce.features.special.DiscordRPC
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.file.FileManager
-import net.ccbluex.liquidbounce.file.MetricsLite
 import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
 import net.ccbluex.liquidbounce.launch.data.GuiLaunchOptionSelectMenu
 import net.ccbluex.liquidbounce.script.ScriptManager
-import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
@@ -39,16 +37,16 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import org.apache.commons.io.IOUtils
 import java.nio.charset.StandardCharsets
+import kotlin.concurrent.thread
 
 object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
     const val COLORED_NAME = "§c§lFDP§6§lClient"
-    const val CLIENT_REAL_VERSION = "v2.0.2"
+    const val CLIENT_REAL_VERSION = "v2.1.2"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE = "GetFDP.Today"
-    const val CLIENT_STORAGE = "https://res.getfdp.today/"
     const val MINECRAFT_VERSION = "1.8.9"
 
     // 自动读取客户端版本
@@ -74,8 +72,6 @@ object LiquidBounce {
     lateinit var mainMenu: GuiScreen
     lateinit var keyBindManager: KeyBindManager
 
-    lateinit var metricsLite: MetricsLite
-
     // Menu Background
     var background: ResourceLocation? = null
 
@@ -97,16 +93,9 @@ object LiquidBounce {
         CLIENT_VERSION = if (commitId == null) {
             CLIENT_REAL_VERSION
         } else {
-            val str = IOUtils.toString(commitId, StandardCharsets.UTF_8).replace("\n", "")
+            val str = commitId.reader(Charsets.UTF_8).readLines().first()
             "git-" + (str.substring(0, 7.coerceAtMost(str.length)))
         }
-
-        // initialize dynamic launch options
-//        if(System.getProperty("fdp-legacy-ui")!=null){
-//            launchFilters.add(EnumLaunchFilter.LEGACY_UI)
-//        }else{
-//            launchFilters.add(EnumLaunchFilter.ULTRALIGHT)
-//        }
     }
 
     /**
@@ -148,11 +137,8 @@ object LiquidBounce {
         moduleManager = ModuleManager()
         moduleManager.registerModules()
 
-        // Remapper
         try {
-            Remapper.loadSrg()
-
-            // ScriptManager
+            // ScriptManager, Remapper will be lazy loaded when scripts are enabled
             scriptManager = ScriptManager()
             scriptManager.loadScripts()
             scriptManager.enableScripts()
@@ -169,7 +155,7 @@ object LiquidBounce {
         keyBindManager = KeyBindManager()
 
         // bstats.org user count display
-        metricsLite = MetricsLite(11076)
+        ClientUtils.buildMetrics()
 
         combatManager = CombatManager()
         eventManager.registerListener(combatManager)
@@ -183,10 +169,12 @@ object LiquidBounce {
 
         fileManager.loadConfigs(fileManager.hudConfig, fileManager.xrayConfig)
 
-        try {
-            DiscordRPC.run()
-        } catch (e: Throwable) {
-            ClientUtils.logError("Failed to load DiscordRPC.", e)
+        thread {
+            try {
+                DiscordRPC.run()
+            } catch (e: Throwable) {
+                ClientUtils.logError("Failed to load DiscordRPC.", e)
+            }
         }
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")

@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.features.special.AutoReconnect;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
-import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.login.LoginUtils;
@@ -39,7 +38,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     private GuiSlider autoReconnectDelaySlider;
     private GuiButton forgeBypassButton;
     private int reconnectTimer;
-    private String infoStr="null";
+    private String infoStr = "null";
 
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
@@ -48,7 +47,17 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
         infoStr="§fPlaying on: "+mc.session.getUsername()+" | "+server.serverIP;
         buttonList.add(reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "%ui.reconnect%"));
 
-        this.drawReconnectDelaySlider();
+        buttonList.add(autoReconnectDelaySlider =
+                new GuiSlider(2, this.width / 2 + 2, this.height / 2 + field_175353_i / 2
+                        + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "AutoReconnect: ",
+                        "ms", AutoReconnect.MIN, AutoReconnect.MAX, AutoReconnect.INSTANCE.getDelay(), false, true,
+                        guiSlider -> {
+                            AutoReconnect.INSTANCE.setDelay(guiSlider.getValueInt());
+
+                            this.reconnectTimer = 0;
+                            this.updateReconnectButton();
+                            this.updateSliderText();
+                        }));
 
         buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "%ui.disconnect.randomAlt%"));
         buttonList.add(new GuiButton(4, this.width / 2 + 2, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "%ui.disconnect.randomOffline%"));
@@ -72,7 +81,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 ServerUtils.connectToLastServer();
                 break;
             case 4:
-                LoginUtils.randomCracked();
+                LoginUtils.INSTANCE.randomCracked();
                 ServerUtils.connectToLastServer();
                 break;
             case 5:
@@ -94,24 +103,10 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(CallbackInfo callbackInfo) {
-        RendererExtensionKt.drawCenteredString(Fonts.font40, infoStr, this.width / 2F, this.height / 2F + field_175353_i / 2F + this.fontRendererObj.FONT_HEIGHT + 100, 0,false);
+        RendererExtensionKt.drawCenteredString(mc.fontRendererObj, infoStr, this.width / 2F, this.height / 2F + field_175353_i / 2F + this.fontRendererObj.FONT_HEIGHT + 100, 0,false);
         if (AutoReconnect.INSTANCE.isEnabled()) {
             this.updateReconnectButton();
         }
-    }
-
-    private void drawReconnectDelaySlider() {
-        buttonList.add(autoReconnectDelaySlider =
-                new GuiSlider(2, this.width / 2 + 2, this.height / 2 + field_175353_i / 2
-                        + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "AutoReconnect: ",
-                        "ms", AutoReconnect.MIN, AutoReconnect.MAX, AutoReconnect.INSTANCE.getDelay(), false, true,
-                        guiSlider -> {
-                            AutoReconnect.INSTANCE.setDelay(guiSlider.getValueInt());
-
-                            this.reconnectTimer = 0;
-                            this.updateReconnectButton();
-                            this.updateSliderText();
-                        }));
     }
 
     private void updateSliderText() {

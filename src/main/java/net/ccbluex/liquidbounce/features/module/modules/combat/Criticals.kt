@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -20,25 +19,31 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.network.play.client.C03PacketPlayer.*
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S0BPacketAnimation
 import net.minecraft.stats.StatList
 
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "LitePacket", "Hypixel", "Hypixel2", "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "Visual", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "Motion", "Hover"), "packet")
-    val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
-    val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
-    val hoverNoFall = BoolValue("HoverNoFall", true)
-    val hoverCombat = BoolValue("HoverOnlyCombat", true)
-    val delayValue = IntegerValue("Delay", 0, 0, 500)
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "LitePacket", "Hypixel", "Hypixel2", "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "Motion", "Hover"), "packet")
+    private val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
+    private val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
+    private val hoverNoFall = BoolValue("HoverNoFall", true).displayable { modeValue.equals("Hover") }
+    private val hoverCombat = BoolValue("HoverOnlyCombat", true).displayable { modeValue.equals("Hover") }
+    private val delayValue = IntegerValue("Delay", 0, 0, 500)
+    private val s08FlagValue = BoolValue("FlagPause", true)
+    private val s08DelayValue = IntegerValue("FlagPauseTime", 100, 100, 5000).displayable { s08FlagValue.get() }
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
     private val debugValue = BoolValue("DebugMessage", false)
     // private val rsNofallValue = BoolValue("RedeNofall",true)
 
     val msTimer = MSTimer()
+    
+    val flagTimer = MSTimer()
 
     private var target = 0
     var jState = 0
@@ -59,9 +64,12 @@ class Criticals : Module() {
 
             if (!mc.thePlayer.onGround || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb || mc.thePlayer.isInWater ||
                 mc.thePlayer.isInLava || mc.thePlayer.ridingEntity != null || entity.hurtTime > hurtTimeValue.get() ||
-                LiquidBounce.moduleManager[Fly::class.java]!!.state || !msTimer.hasTimePassed(delayValue.get().toLong())) {
+                !msTimer.hasTimePassed(delayValue.get().toLong())) {
                 return
             }
+            
+            if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
+                return
 
             fun sendCriticalPacket(xOffset: Double = 0.0, yOffset: Double = 0.0, zOffset: Double = 0.0, ground: Boolean) {
                 val x = mc.thePlayer.posX + xOffset
@@ -163,8 +171,6 @@ class Criticals : Module() {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.01, mc.thePlayer.posZ)
                 }
 
-                "visual" -> mc.thePlayer.onCriticalHit(entity)
-
                 "motion" -> {
                     when (motionValue.get().lowercase()) {
                         "jump" -> mc.thePlayer.motionY = 0.42
@@ -189,6 +195,16 @@ class Criticals : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
+        
+        if (packet is S08PacketPlayerPosLook) {
+            flagTimer.reset()
+            if (s08FlagValue.get()) {
+                jState = 0
+            }
+        }
+        
+        if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
+            return
 
         if (packet is C03PacketPlayer) {
             when (modeValue.get().lowercase()) {
@@ -200,15 +216,7 @@ class Criticals : Module() {
                 }
                 "hover" -> {
                     if (hoverCombat.get() && !LiquidBounce.combatManager.inCombat) return
-                    if (packet is C05PacketPlayerLook) {
-                        mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.yaw, packet.pitch, packet.onGround))
-                        event.cancelEvent()
-                        return
-                    } else if (!(packet is C04PacketPlayerPosition) && !(packet is C06PacketPlayerPosLook)) {
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, packet.onGround))
-                        event.cancelEvent()
-                        return
-                    }
+                    packet.isMoving = true
                     when (hoverValue.get().lowercase()) {
                         "2b2t" -> {
                             if (mc.thePlayer.onGround) {

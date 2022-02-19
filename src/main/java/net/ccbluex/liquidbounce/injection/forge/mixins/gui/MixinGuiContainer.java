@@ -2,8 +2,9 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.KeyEvent;
-import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
+import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -30,7 +31,14 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     @Shadow
     protected int guiTop;
 
+    private long guiOpenTime = -1;
+
     private boolean translated = false;
+
+    @Inject(method = "initGui", at = @At("RETURN"))
+    private void initGuiReturn(CallbackInfo callbackInfo) {
+        guiOpenTime = System.currentTimeMillis();
+    }
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo) {
@@ -40,41 +48,41 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         if (chestStealer.getState() && chestStealer.getSilentValue().get() && guiScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) guiScreen;
             if (!(chestStealer.getChestTitleValue().get() && (chest.lowerChestInventory == null || !chest.lowerChestInventory.getName().contains(new ItemStack(Item.itemRegistry.getObject(new ResourceLocation("minecraft:chest"))).getDisplayName())))) {
-                //mouse focus
+                // mouse focus
                 mc.setIngameFocus();
                 mc.currentScreen = guiScreen;
-                //hide GUI
+                // hide GUI
                 if (chestStealer.getSilentTitleValue().get()) {
-                    String tipString = "%ui.chest.stealing%";
-                    mc.fontRendererObj.drawString(tipString, (width / 2) - (mc.fontRendererObj.getStringWidth(tipString) / 2), (height / 2) + 30, 0xffffffff);
+                    RendererExtensionKt.drawCenteredString(mc.fontRendererObj, "%ui.chest.stealing%", width / 2, (height / 2) + 30, 0xffffffff, false);
                 }
                 callbackInfo.cancel();
             }
         } else {
             mc.currentScreen.drawWorldBackground(0);
 
-            Animations animations = LiquidBounce.moduleManager.getModule(Animations.class);
-            if (animations.getState()) {
-                long guiOpenTime = -1;
-                float pct = Math.max(animations.getTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((float) animations.getTimeValue().get());
-                if (pct != 0) {
-                    GL11.glPushMatrix();
+            final Animations animations = Animations.INSTANCE;
+            double pct = Math.max(animations.getInvTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((double) animations.getInvTimeValue().get());
+            if (pct != 0) {
+                GL11.glPushMatrix();
 
-                    switch (animations.getModeValue().get().toLowerCase()) {
-                        case "slide": {
-                            pct = (float) EaseUtils.easeInBack(pct);
-                            GL11.glTranslatef(0F, -(guiTop + ySize) * pct, 0F);
-                            break;
-                        }
-                        case "zoom": {
-                            float scale = 1 - pct;
-                            GL11.glScalef(scale, scale, scale);
-                            GL11.glTranslatef(((guiLeft + (xSize * 0.5F * pct)) / scale) - guiLeft, ((guiTop + (ySize * 0.5F * pct)) / scale) - guiTop, 0F);
-                        }
+                pct = EaseUtils.INSTANCE.apply(EaseUtils.EnumEasingType.valueOf(animations.getInvEaseModeValue().get()),
+                        EaseUtils.EnumEasingOrder.valueOf(animations.getInvEaseOrderModeValue().get()), pct);
+
+                switch (animations.getInvModeValue().get().toLowerCase()) {
+                    case "slide": {
+                        GL11.glTranslated(0, -(guiTop + ySize) * pct, 0);
+                        break;
                     }
-
-                    translated = true;
+                    case "zoom": {
+                        double scale = 1 - pct;
+                        GL11.glScaled(scale, scale, scale);
+                        GL11.glTranslated(((guiLeft + (xSize * 0.5 * pct)) / scale) - guiLeft,
+                                ((guiTop + (ySize * 0.5d * pct)) / scale) - guiTop,
+                                0);
+                    }
                 }
+
+                translated = true;
             }
         }
     }

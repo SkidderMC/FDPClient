@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.ui.i18n
 import java.io.InputStreamReader
 import java.util.*
 
-class Language(val locale: String, private val defaultLocale: String) {
+class Language(val locale: String, defaultLocale: String) {
 
     private val translateMap = HashMap<String, String>()
 

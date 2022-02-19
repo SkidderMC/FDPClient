@@ -59,11 +59,11 @@ class Text(
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
     val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
-    val rectValue = ListValue("Rect", arrayOf("Normal", "OneTap", "Skeet", "None"), "None")
+    val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "None"), "None")
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 10, 1, 10)
     private val rainbowIndex = IntegerValue("RainbowIndex", 1, 1, 20)
-    private var fontValue = FontValue("Font", Fonts.font40)
+    private val fontValue = FontValue("Font", Fonts.font40)
 
     private var editMode = false
     private var editTicks = 0
@@ -163,9 +163,13 @@ class Text(
             "normal" -> {
                 RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, rectColor)
             }
+            "rnormal" -> {
+                RenderUtils.drawRect(-expand, -expand - 1, fontRenderer.getStringWidth(displayText) + expand, -expand, ColorUtils.rainbow())
+                RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, rectColor)
+            }
             "onetap" -> {
                 RenderUtils.drawRect(-4.0f, -8.0f, (fontRenderer.getStringWidth(displayText) + 3).toFloat(), fontRenderer.FONT_HEIGHT.toFloat(), Color(43, 43, 43).rgb)
-                RenderUtils.drawGradientSideways(-3.0, -7.0, fontRenderer.getStringWidth(displayText) + 2.0, -3.0, Color(rectColor).darker().rgb, rectColor)
+                RenderUtils.drawGradientSidewaysH(-3.0, -7.0, fontRenderer.getStringWidth(displayText) + 2.0, -3.0, Color(rectColor).darker().rgb, rectColor)
             }
             "skeet" -> {
                 RenderUtils.drawRect(-11.0, -11.0, (fontRenderer.getStringWidth(displayText) + 10).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 8.0, Color(0, 0, 0).rgb)

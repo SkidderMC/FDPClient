@@ -7,12 +7,10 @@ package net.ccbluex.liquidbounce.ui.client
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.special.AntiForge
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
-import java.io.IOException
 
 class GuiAntiForge(private val prevGui: GuiScreen) : GuiScreen() {
     private lateinit var enabledButton: GuiButton
@@ -52,11 +50,10 @@ class GuiAntiForge(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        Fonts.font40.drawCenteredString("%ui.antiForge%", width / 2f, height / 8f + 5f, 4673984, true)
+        mc.fontRendererObj.drawCenteredString("%ui.antiForge%", width / 2f, height / 8f + 5f, 4673984, true)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
-    @Throws(IOException::class)
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (Keyboard.KEY_ESCAPE == keyCode) {
             mc.displayGuiScreen(prevGui)

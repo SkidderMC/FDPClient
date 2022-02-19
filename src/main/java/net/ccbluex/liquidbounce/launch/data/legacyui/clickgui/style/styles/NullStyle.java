@@ -35,7 +35,7 @@ public class NullStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.drawGradientSideways((float) panel.getX() - 3, (float) panel.getY(), (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 19, ClickGUIModule.generateColor().getRGB(), ColorUtils.reAlpha(ClickGUIModule.generateColor(),50).getRGB());
+        RenderUtils.drawGradientSidewaysH((float) panel.getX() - 3, (float) panel.getY(), (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 19, ClickGUIModule.generateColor().getRGB(), ColorUtils.INSTANCE.reAlpha(ClickGUIModule.generateColor(),50).getRGB());
         if(panel.getFade() > 0)
             RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() + 19, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), 1, Integer.MIN_VALUE, Integer.MIN_VALUE);
         GlStateManager.resetColor();

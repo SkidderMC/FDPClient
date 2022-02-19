@@ -5,13 +5,13 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element
 
+import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.Value
-import net.minecraft.client.gui.ScaledResolution
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -35,8 +35,8 @@ abstract class Element(
     var renderX: Double
         get() = when (side.horizontal) {
             Side.Horizontal.LEFT -> x
-            Side.Horizontal.MIDDLE -> (ScaledResolution(mc).scaledWidth / 2) - x
-            Side.Horizontal.RIGHT -> ScaledResolution(mc).scaledWidth - x
+            Side.Horizontal.MIDDLE -> (StaticStorage.scaledResolution.scaledWidth / 2) - x
+            Side.Horizontal.RIGHT -> StaticStorage.scaledResolution.scaledWidth - x
         }
         set(value) = when (side.horizontal) {
             Side.Horizontal.LEFT -> {
@@ -50,8 +50,8 @@ abstract class Element(
     var renderY: Double
         get() = when (side.vertical) {
             Side.Vertical.UP -> y
-            Side.Vertical.MIDDLE -> (ScaledResolution(mc).scaledHeight / 2) - y
-            Side.Vertical.DOWN -> ScaledResolution(mc).scaledHeight - y
+            Side.Vertical.MIDDLE -> (StaticStorage.scaledResolution.scaledHeight / 2) - y
+            Side.Vertical.DOWN -> StaticStorage.scaledResolution.scaledHeight - y
         }
         set(value) = when (side.vertical) {
             Side.Vertical.UP -> {
@@ -177,8 +177,6 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
         RIGHT("Right");
 
         companion object {
-
-            @JvmStatic
             fun getByName(name: String) = values().find { it.sideName == name }
         }
     }
@@ -193,8 +191,6 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
         DOWN("Down");
 
         companion object {
-
-            @JvmStatic
             fun getByName(name: String) = values().find { it.sideName == name }
         }
     }

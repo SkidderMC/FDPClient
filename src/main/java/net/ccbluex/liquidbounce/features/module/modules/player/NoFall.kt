@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.VecRotation
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -27,6 +28,8 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemBucket
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C09PacketHeldItemChange
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
@@ -38,10 +41,10 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", /*"AAC5.0.4", */"AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Damage", "MotionFlag",/*"OldMatrix", */ "Matrix", "MatrixPacket"), "SpoofGround")
+    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "LoyisaAAC4.4.2", "AAC5.0.4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Medusa", "Damage", "MotionFlag", "OldMatrix", "Matrix", "MatrixPacket"), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
-    private val minFallDistance = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
-    private val flySpeed = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
+    private val minFallDistanceValue = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
+    private val flySpeedValue = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
 
     private var oldaacState = 0
     private var jumped = false
@@ -51,7 +54,7 @@ class NoFall : Module() {
     private var aac5doFlag = false
     private var aac5Check = false
     private var aac5Timer = 0
-    private val aac4Packets = ArrayList<C03PacketPlayer>()
+    private val aac4Packets = mutableListOf<C03PacketPlayer>()
     private var needSpoof = false
     private var packet1Count = 0
     private val mlgTimer = TickTimer()
@@ -62,8 +65,13 @@ class NoFall : Module() {
     private var matrixCanSpoof = false
     private var matrixFallTicks = 0
     private var matrixLastMotionY = 0.0
+    private var isDmgFalling = false
+    private var matrixFlagWait = 0
+    private val aac4FlagCooldown = MSTimer()
+    private var aac4FlagCount = 0
 
     override fun onEnable() {
+        aac4FlagCount = 0
         aac4Fakelag = false
         aac5Check = false
         packetModify = false
@@ -77,10 +85,19 @@ class NoFall : Module() {
         matrixCanSpoof = false
         matrixFallTicks = 0
         matrixLastMotionY = 0.0
+        isDmgFalling = false
+        matrixFlagWait = 0
+        aac4FlagCooldown.reset()
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (matrixFlagWait > 0) {
+            matrixFlagWait--
+            if(matrixFlagWait == 0) {
+                mc.timer.timerSpeed = 1f
+            }
+        }
         if (mc.thePlayer.onGround) {
             jumped = false
         }
@@ -180,7 +197,7 @@ class NoFall : Module() {
             }
             "motionflag" -> {
                 if (mc.thePlayer.fallDistance > 3) {
-                    mc.thePlayer.motionY = flySpeed.get().toDouble()
+                    mc.thePlayer.motionY = flySpeedValue.get().toDouble()
                 }
             }
             "spartan" -> {
@@ -189,6 +206,22 @@ class NoFall : Module() {
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 10, mc.thePlayer.posZ, true))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 10, mc.thePlayer.posZ, true))
                     spartanTimer.reset()
+                }
+            }
+            "aac5.0.4","oldmatrix","loyisaaac4.4.2" -> {
+                if (mc.thePlayer.fallDistance > 3) {
+                    isDmgFalling = true
+                }
+                if (modeValue.get() == "LoyisaAAC4.4.2") {
+                    if(aac4FlagCount>=3 || aac4FlagCooldown.hasTimePassed(1500L)) {
+                        return
+                    }
+                    if(!aac4FlagCooldown.hasTimePassed(1500L) && (mc.thePlayer.onGround || mc.thePlayer.fallDistance < 0.5)) {
+                        mc.thePlayer.motionX = 0.0
+                        mc.thePlayer.motionZ = 0.0
+                        mc.thePlayer.onGround = false
+                        mc.thePlayer.jumpMovementFactor = 0.00f
+                    }
                 }
             }
             "aac5.0.14" -> {
@@ -346,7 +379,7 @@ class NoFall : Module() {
                     return
                 }
 
-                if (mc.thePlayer.fallDistance > minFallDistance.get()) {
+                if (mc.thePlayer.fallDistance > minFallDistanceValue.get()) {
                     val fallingPlayer = FallingPlayer(mc.thePlayer)
 
                     val maxDist = mc.playerController.blockReachDistance + 1.5
@@ -391,14 +424,12 @@ class NoFall : Module() {
                     currentMlgRotation!!.rotation.toPlayer(mc.thePlayer)
                 }
             } else if (currentMlgRotation != null) {
-                val stack = mc.thePlayer.inventory.getStackInSlot(currentMlgItemIndex + 36)
+                val stack = mc.thePlayer.inventory.mainInventory[currentMlgItemIndex]
 
                 if (stack.item is ItemBucket) {
                     mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, stack)
                 } else {
-                    val dirVec = EnumFacing.UP.directionVec
-
-                    if (mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, stack)) {
+                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, stack, currentMlgBlock, EnumFacing.UP, Vec3(0.0,0.0,0.0))) {
                         mlgTimer.reset()
                     }
                 }
@@ -412,6 +443,26 @@ class NoFall : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val mode = modeValue.get()
+        if (event.packet is S12PacketEntityVelocity) {
+            if (mode.equals("AAC4.4.X-Flag", ignoreCase = true) && mc.thePlayer.fallDistance > 1.8) {
+                event.packet.motionY = (event.packet.motionY * -0.1).toInt()
+            }
+        }
+        if (event.packet is S08PacketPlayerPosLook) {
+            if (mode.equals("LoyisaAAC4.4.2", ignoreCase = true)) {
+                aac4FlagCount++
+                if(matrixFlagWait > 0) {
+                    aac4FlagCooldown.reset()
+                    aac4FlagCount = 1
+                    event.cancelEvent()
+                }
+            }
+            if (mode.equals("OldMatrix", ignoreCase = true) && matrixFlagWait > 0) {
+                matrixFlagWait = 0
+                mc.timer.timerSpeed = 1.00f
+                event.cancelEvent()
+            }
+        }
         if (event.packet is C03PacketPlayer) {
             val packet = event.packet
             if (mode.equals("SpoofGround", ignoreCase = true) && mc.thePlayer.fallDistance > 2.5) {
@@ -445,6 +496,33 @@ class NoFall : Module() {
             } else if (mode.equals("Matrix", ignoreCase = true) && matrixCanSpoof) {
                 packet.onGround = true
                 matrixCanSpoof = false
+            } else if (mode.equals("AAC4.4.X-Flag", ignoreCase = true) && mc.thePlayer.fallDistance > 1.6) {
+                packet.onGround = true
+            } else if (mode.equals("AAC5.0.4", ignoreCase = true) && isDmgFalling) {
+                if (packet.onGround && mc.thePlayer.onGround) {
+                    isDmgFalling = false
+                    packet.onGround = true
+                    mc.thePlayer.onGround = false
+                    packet.y += 1.0
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 1.0784, packet.z, false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 0.5, packet.z, true))
+                }
+            } else if ((mode.equals("OldMatrix", ignoreCase = true) || mode.equals("LoyisaAAC4.4.2", ignoreCase = true)) && isDmgFalling) {
+                if (packet.onGround && mc.thePlayer.onGround) {
+                    matrixFlagWait = 2
+                    isDmgFalling = false
+                    event.cancelEvent()
+                    mc.thePlayer.onGround = false
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 256, packet.z, false))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, (-10).toDouble() , packet.z, true))
+                    mc.timer.timerSpeed = 0.18f
+                }
+            } else if(mode.equals("Medusa", true)) {
+                if(mc.thePlayer.fallDistance > 2.3f) {
+                    event.cancelEvent()
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
+                    mc.thePlayer.fallDistance = 0.0f
+                }
             }
         }
     }

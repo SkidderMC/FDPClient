@@ -13,10 +13,7 @@ import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
@@ -34,6 +31,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
     private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
+    private val arrisRoundedValue = BoolValue("ArrisRounded", true)
     private val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
     private val riseSizeValue = FloatValue("Rise-Size", 1f, 0.5f, 3f)
     private val riseAlphaValue = FloatValue("Rise-Alpha", 0.7f, 0.1f, 1f)
@@ -203,19 +201,19 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         val font = fontValue.get()
 
         // Frame
-        RenderUtils.drawCircleRect(0f, 0f, 150f, 55f, 5f, Color(0, 0, 0, 70).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 150f, 55f, 5f, Color(0, 0, 0, 70).rgb)
         RenderUtils.drawRect(7f, 7f, 35f, 40f, Color(0, 0, 0, 70).rgb)
         GL11.glColor4f(1f, 1f, 1f, 1f)
         RenderUtils.drawEntityOnScreen(21, 38, 15, target)
 
         // Healthbar
         val barLength = 143 - 7f
-        RenderUtils.drawCircleRect(7f, 45f, 143f, 50f, 2.5f, Color(0, 0, 0, 70).rgb)
-        RenderUtils.drawCircleRect(7f, 45f, 7 + ((easingHP / target.maxHealth) * barLength), 50f, 2.5f, ColorUtils.rainbowWithAlpha(90).rgb)
-        RenderUtils.drawCircleRect(7f, 45f, 7 + ((target.health / target.maxHealth) * barLength), 50f, 2.5f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRoundedCornerRect(7f, 45f, 143f, 50f, 2.5f, Color(0, 0, 0, 70).rgb)
+        RenderUtils.drawRoundedCornerRect(7f, 45f, 7 + ((easingHP / target.maxHealth) * barLength), 50f, 2.5f, ColorUtils.rainbowWithAlpha(90).rgb)
+        RenderUtils.drawRoundedCornerRect(7f, 45f, 7 + ((target.health / target.maxHealth) * barLength), 50f, 2.5f, ColorUtils.rainbow().rgb)
 
         // Info
-        RenderUtils.drawCircleRect(43f, 15f - font.FONT_HEIGHT, 143f, 17f, (font.FONT_HEIGHT + 1) * 0.45f, Color(0, 0, 0, 70).rgb)
+        RenderUtils.drawRoundedCornerRect(43f, 15f - font.FONT_HEIGHT, 143f, 17f, (font.FONT_HEIGHT + 1) * 0.45f, Color(0, 0, 0, 70).rgb)
         font.drawCenteredString("${target.name} ${if (target.ping != -1) { "§f${target.ping}ms" } else { "" }}", 93f, 16f - font.FONT_HEIGHT, ColorUtils.rainbow().rgb, false)
         font.drawString("Health: ${decimalFormat.format(easingHP)} §7/ ${decimalFormat.format(target.maxHealth)}", 43, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
         font.drawString("Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 43, 11 + font.FONT_HEIGHT * 2, Color.WHITE.rgb)
@@ -226,7 +224,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private fun drawRise(target: EntityLivingBase) {
         val font = fontValue.get()
 
-        RenderUtils.drawCircleRect(0f, 0f, 150f, 50f, 5f, Color(0, 0, 0, 130).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 150f, 50f, 5f, Color(0, 0, 0, 130).rgb)
 
         val hurtPercent = target.hurtPercent
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
@@ -256,12 +254,11 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glBlendFunc(770, 771)
         GL11.glEnable(2848)
         GL11.glShadeModel(7425)
-        fun renderSideway(x: Int, x1: Int) {
-            RenderUtils.quickDrawGradientSideways(x.toDouble(), 39.0, x1.toDouble(), 45.0, ColorUtils.hslRainbow(x, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1, indexOffset = 10).rgb)
-        }
         val stopPos = (5 + ((135 - font.getStringWidth(decimalFormat.format(target.maxHealth))) * (easingHP / target.maxHealth))).toInt()
         for (i in 5..stopPos step 5) {
-            renderSideway(i, (i + 5).coerceAtMost(stopPos))
+            val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
+            RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), 39.0, x1, 45.0,
+                ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
         }
         GL11.glEnable(3553)
         GL11.glDisable(3042)
@@ -294,14 +291,12 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             } else {
                 1f
             } * riseAlphaValue.get()
-            RenderUtils.drawCircle(x, y, riseSizeValue.get() * 2, Color(rp.colorR, rp.colorG, rp.colorB, (alpha * 255).toInt()).rgb)
+            RenderUtils.drawCircle(x, y, riseSizeValue.get() * 2, Color(rp.color.red, rp.color.green, rp.color.blue, (alpha * 255).toInt()).rgb)
         }
     }
 
     class RiseParticle {
-        val colorR = RandomUtils.nextInt(0, 255)
-        val colorG = RandomUtils.nextInt(0, 255)
-        val colorB = RandomUtils.nextInt(0, 255)
+        val color = ColorUtils.rainbow(RandomUtils.nextInt(0, 30))
         val alpha = RandomUtils.nextInt(150, 255)
         val time = System.currentTimeMillis()
         val x = RandomUtils.nextInt(-50, 50)
@@ -339,7 +334,12 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         val hp = decimalFormat.format(easingHP)
         val additionalWidth = font.getStringWidth("${target.name}  ${hp} hp").coerceAtLeast(75)
-        RenderUtils.drawCircleRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
+        if(arrisRoundedValue.get()){
+            RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
+        } else {
+            RenderUtils.drawRect(0f, 0f, 45f + additionalWidth, 1f, ColorUtils.rainbow())
+            RenderUtils.drawRect(0f, 1f, 45f + additionalWidth, 40f, Color(0, 0, 0, 110).rgb)
+        }
 
         RenderUtils.quickDrawHead(target.skin, 5, 5, 30, 30)
 
@@ -359,7 +359,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         val font = fontValue.get()
 
         val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
-        RenderUtils.drawCircleRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
 
         // circle player avatar
         mc.textureManager.bindTexture(target.skin)
@@ -373,8 +373,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         }
 
         // hp bar
-        RenderUtils.drawCircleRect(40f, 28f, 40f + additionalWidth, 33f, 2.5f, Color(0, 0, 0, 70).rgb)
-        RenderUtils.drawCircleRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + additionalWidth, 33f, 2.5f, Color(0, 0, 0, 70).rgb)
+        RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
     }
 
     private fun getTBorder(): Border? {

@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.ui.client
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
@@ -15,7 +14,7 @@ class GuiServerSpoof(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun initGui() {
         Keyboard.enableRepeatEvents(true)
-        textField = GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20)
+        textField = GuiTextField(2, mc.fontRendererObj, width / 2 - 100, 60, 200, 20)
         textField.isFocused = true
         textField.text = ServerSpoof.address
         textField.maxStringLength = 114514
@@ -30,10 +29,10 @@ class GuiServerSpoof(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        drawCenteredString(Fonts.font40, "%ui.serverSpoof%", width / 2, 34, 0xffffff)
+        drawCenteredString(mc.fontRendererObj, "%ui.serverSpoof%", width / 2, 34, 0xffffff)
         textField.drawTextBox()
         if (textField.text.isEmpty() && !textField.isFocused) {
-            drawString(Fonts.font40, "§7%ui.serverSpoof.address%", width / 2 - 100, 66, 0xffffff)
+            drawString(mc.fontRendererObj, "§7%ui.serverSpoof.address%", width / 2 - 100, 66, 0xffffff)
         }
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

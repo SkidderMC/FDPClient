@@ -7,9 +7,9 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.JumpEvent;
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
-import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -59,7 +59,8 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Shadow
     public abstract ItemStack getHeldItem();
 
-    @Shadow protected abstract void updateAITick();
+    @Shadow
+    protected abstract void updateAITick();
 
     /**
      * @author CCBlueX
@@ -111,7 +112,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     private void isPotionActive(Potion p_isPotionActive_1_, final CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
 
-        if((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && antiBlind.getState() && antiBlind.getConfusionEffect().get())
+        if((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && antiBlind.getState() && antiBlind.getConfusionEffectValue().get())
             callbackInfoReturnable.setReturnValue(false);
     }
 
@@ -123,9 +124,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         int speed = this.isPotionActive(Potion.digSpeed) ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) : (this.isPotionActive(Potion.digSlowdown) ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6);
 
         if (this.equals(Minecraft.getMinecraft().thePlayer)) {
-            Animations animations=LiquidBounce.moduleManager.getModule(Animations.class);
-            if(animations.getState())
-                speed = (int) (speed * animations.getSwingSpeed().get());
+            speed = (int) (speed * Animations.INSTANCE.getSwingSpeedValue().get());
         }
 
         return speed;

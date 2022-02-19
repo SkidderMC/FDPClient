@@ -4,7 +4,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.file.FileManager
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.minecraft.client.gui.GuiButton
@@ -15,8 +14,6 @@ import net.minecraft.client.renderer.RenderHelper
 import org.lwjgl.opengl.GL11
 import java.io.File
 import java.net.URL
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 import javax.imageio.ImageIO
 
 object GuiCapeManager : GuiScreen() {
@@ -57,7 +54,7 @@ object GuiCapeManager : GuiScreen() {
             return
         }
 
-        val json = JsonParser().parse(Files.readAllBytes(jsonFile.toPath()).toString(StandardCharsets.UTF_8)).asJsonObject
+        val json = JsonParser().parse(jsonFile.reader(Charsets.UTF_8)).asJsonObject
 
         if (json.has("name")) {
             val name = json.get("name").asString
@@ -75,7 +72,7 @@ object GuiCapeManager : GuiScreen() {
 
         json.addProperty("name", if (nowCape != null) { nowCape!!.name } else { "NONE" })
 
-        Files.write(jsonFile.toPath(), FileManager.PRETTY_GSON.toJson(json).toByteArray(StandardCharsets.UTF_8))
+        jsonFile.writeText(FileManager.PRETTY_GSON.toJson(json), Charsets.UTF_8)
     }
 
     private fun loadCapeFromResource(name: String, loc: String) = Cape(name, ImageIO.read(GuiCapeManager::class.java.classLoader.getResourceAsStream(loc)))
@@ -90,9 +87,9 @@ object GuiCapeManager : GuiScreen() {
 
     // render
     override fun initGui() {
-        this.buttonList.add(GuiButton(0, 0, 0, Fonts.font40.getStringWidth("< QUIT") + 10, 20, "< QUIT"))
-        this.buttonList.add(GuiButton(1, (width * 0.3).toInt(), (height * 0.5).toInt(), Fonts.font40.getStringWidth("<-") + 10, 20, "<-"))
-        this.buttonList.add(GuiButton(2, (width * 0.7).toInt(), (height * 0.5).toInt(), Fonts.font40.getStringWidth("->") + 10, 20, "->"))
+        this.buttonList.add(GuiButton(0, 0, 0, mc.fontRendererObj.getStringWidth("< QUIT") + 10, 20, "< QUIT"))
+        this.buttonList.add(GuiButton(1, (width * 0.3).toInt(), (height * 0.5).toInt(), mc.fontRendererObj.getStringWidth("<-") + 10, 20, "<-"))
+        this.buttonList.add(GuiButton(2, (width * 0.7).toInt(), (height * 0.5).toInt(), mc.fontRendererObj.getStringWidth("->") + 10, 20, "->"))
     }
 
     override fun actionPerformed(p_actionPerformed_1_: GuiButton) {
@@ -125,9 +122,9 @@ object GuiCapeManager : GuiScreen() {
         this.drawDefaultBackground()
 
         GL11.glPushMatrix()
-        Fonts.font40.drawCenteredString(if (nowCape == null) { "§cNONE" } else { "§a${nowCape!!.name}" }, width * 0.50f, height * 0.23f, -1, false)
+        mc.fontRendererObj.drawCenteredString(if (nowCape == null) { "§cNONE" } else { "§a${nowCape!!.name}" }, width * 0.50f, height * 0.23f, -1, false)
         GL11.glScalef(2f, 2f, 2f)
-        Fonts.font40.drawCenteredString("Cape Manager", width * 0.25f, height * 0.03f, -1, false)
+        mc.fontRendererObj.drawCenteredString("Cape Manager", width * 0.25f, height * 0.03f, -1, false)
         GL11.glPopMatrix()
 
         // draw buttons
