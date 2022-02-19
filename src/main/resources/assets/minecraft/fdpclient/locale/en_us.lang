@@ -472,3 +472,6 @@ module.HitEffect.description=Display a effect when you hit a player
 
 module.SilentDisconnect.name=SilentDisconnect
 module.SilentDisconnect.description=Don't display GuiDisconnect when you disconnected from the server
+
+module.Performance.name=Performance
+module.Performance.description=Make the game faster
