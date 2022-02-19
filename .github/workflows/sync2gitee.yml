@@ -21,7 +21,7 @@ jobs:
           script: |
             return context.repo.repo;
       - name: Mirror the GitHub repos to Gitee
-        uses: Yikun/hub-mirror-action@v0.13
+        uses: Yikun/hub-mirror-action@v1.2
         with:
           src: github/UnlegitMC
           dst: gitee/fdpclient-cn

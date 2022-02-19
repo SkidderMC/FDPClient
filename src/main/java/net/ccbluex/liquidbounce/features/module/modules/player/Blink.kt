@@ -29,13 +29,15 @@ import java.util.concurrent.LinkedBlockingQueue
 
 @ModuleInfo(name = "Blink", category = ModuleCategory.PLAYER)
 class Blink : Module() {
+
+    private val pulseValue = BoolValue("Pulse", false)
+    private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000).displayable { pulseValue.get() }
+
+    private val pulseTimer = MSTimer()
     private val packets = LinkedBlockingQueue<Packet<*>>()
     private var fakePlayer: EntityOtherPlayerMP? = null
     private var disableLogger = false
     private val positions = LinkedList<DoubleArray>()
-    private val pulseValue = BoolValue("Pulse", false)
-    private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000).displayable { pulseValue.get() }
-    private val pulseTimer = MSTimer()
 
     override fun onEnable() {
         if (mc.thePlayer == null) return

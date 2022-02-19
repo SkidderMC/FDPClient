@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.block.Block
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11
@@ -28,15 +27,15 @@ import java.awt.Color
 
 @ModuleInfo(name = "BlockOverlay", category = ModuleCategory.RENDER)
 class BlockOverlay : Module() {
-    private val colorRedValue = IntegerValue("Red", 68, 0, 255)
-    private val colorGreenValue = IntegerValue("Green", 117, 0, 255)
-    private val colorBlueValue = IntegerValue("Blue", 255, 0, 255)
+    private val colorRedValue = IntegerValue("Red", 68, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorGreenValue = IntegerValue("Green", 117, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorAlphaValue = IntegerValue("Alpha", 100, 0, 255)
+    private val colorRainbowValue = BoolValue("Rainbow", false)
     private val colorWidthValue = FloatValue("LineWidth", 2.0F, 0.0F, 10.0F)
-    private val colorRainbow = BoolValue("Rainbow", false)
-    val infoValue = BoolValue("Info", false)
+    private val infoValue = BoolValue("Info", false)
 
-    val currentBlock: BlockPos?
+    private val currentBlock: BlockPos?
         get() {
             val blockPos = mc.objectMouseOver?.blockPos ?: return null
 
@@ -52,7 +51,7 @@ class BlockOverlay : Module() {
         val blockPos = currentBlock ?: return
         val block = mc.theWorld.getBlockState(blockPos).block ?: return
         val partialTicks = event.partialTicks
-        val color = if (colorRainbow.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
+        val color = if (colorRainbowValue.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
 
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
@@ -86,17 +85,16 @@ class BlockOverlay : Module() {
             val block = getBlock(blockPos) ?: return
 
             val info = "${block.localizedName} §7ID: ${Block.getIdFromBlock(block)}"
-            val scaledResolution = ScaledResolution(mc)
 
             RenderUtils.drawBorderedRect(
-                    scaledResolution.scaledWidth / 2 - 2F,
-                    scaledResolution.scaledHeight / 2 + 5F,
-                    scaledResolution.scaledWidth / 2 + Fonts.font40.getStringWidth(info) + 2F,
-                    scaledResolution.scaledHeight / 2 + 16F,
+                event.scaledResolution.scaledWidth / 2 - 2F,
+                event.scaledResolution.scaledHeight / 2 + 5F,
+                event.scaledResolution.scaledWidth / 2 + Fonts.font40.getStringWidth(info) + 2F,
+                event.scaledResolution.scaledHeight / 2 + 16F,
                     3F, Color.BLACK.rgb, Color.BLACK.rgb
             )
             GlStateManager.resetColor()
-            Fonts.font40.drawString(info, scaledResolution.scaledWidth / 2, scaledResolution.scaledHeight / 2 + 7,
+            Fonts.font40.drawString(info, event.scaledResolution.scaledWidth / 2, event.scaledResolution.scaledHeight / 2 + 7,
                     Color.WHITE.rgb)
         }
     }

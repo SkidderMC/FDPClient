@@ -7,15 +7,17 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
+import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
+import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -150,13 +152,7 @@ public abstract class MixinEntity {
     private int fire;
 
     @Shadow
-    public float prevRotationPitch;
-
-    @Shadow
-    public float prevRotationYaw;
-
-    @Shadow
-    protected abstract Vec3 getVectorForRotation(float pitch, float yaw);
+    public abstract Vec3 getVectorForRotation(float pitch, float yaw);
 
     @Shadow
     public abstract UUID getUniqueID();
@@ -165,9 +161,9 @@ public abstract class MixinEntity {
     public abstract boolean isSneaking();
 
     @Shadow
-    public abstract boolean isInsideOfMaterial(Material materialIn);
+    public abstract boolean equals(Object p_equals_1_);
 
-    @Shadow public abstract boolean equals(Object p_equals_1_);
+    @Shadow public abstract float getEyeHeight();
 
     public int getNextStepDistance() {
         return nextStepDistance;
@@ -183,7 +179,7 @@ public abstract class MixinEntity {
 
     @Inject(method = "moveFlying", at = @At("HEAD"), cancellable = true)
     private void handleRotations(float strafe, float forward, float friction, final CallbackInfo callbackInfo) {
-        if ((Entity) (Object) this != Minecraft.getMinecraft().thePlayer)
+        if ((Object) this != Minecraft.getMinecraft().thePlayer)
             return;
 
         final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
@@ -199,5 +195,23 @@ public abstract class MixinEntity {
 
         if (hitBox.getState() && EntityUtils.INSTANCE.isSelected(((Entity)((Object)this)),true))
             callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());
+    }
+
+    @Inject(method="getBrightnessForRender", at=@At(value="HEAD"), cancellable=true)
+    private void getBrightnessForRender(float f, CallbackInfoReturnable<Integer> callbackInfoReturnable) {
+        if (Performance.fastEntityLightningValue.get()) {
+            int n, n2, n3 = MathHelper.floor_double(this.posX);
+            IWorld world = (IWorld)this.worldObj;
+            callbackInfoReturnable.setReturnValue(world.isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double)this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.getCombinedLight(n3, n2, n, 0) : 0);
+        }
+    }
+
+    @Inject(method="getBrightness", at=@At(value="HEAD"), cancellable=true)
+    public void getBrightness(float f, CallbackInfoReturnable<Float> callbackInfoReturnable) {
+        if (Performance.fastEntityLightningValue.get()) {
+            int n, n2, n3 = MathHelper.floor_double(this.posX);
+            IWorld world = (IWorld)this.worldObj;
+            callbackInfoReturnable.setReturnValue(world.isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double) this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.getLightBrightness(n3, n2, n) : 0.0f);
+        }
     }
 }

@@ -23,12 +23,12 @@ public final class PathUtils extends MinecraftInstance {
     }
 
     public static List<Vec3> findBlinkPath(final double tpX, final double tpY, final double tpZ,final double dist){
-        return findBlinkPath(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,tpX,tpY,tpZ,dist);
+        return findBlinkPath(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, tpX, tpY, tpZ, dist);
     }
 
     public static List<Vec3> findBlinkPath(double curX, double curY, double curZ,final double tpX, final double tpY, final double tpZ, final double dashDistance) {
-        Vec3 topFrom=new Vec3(curX,curY,curZ);
-        Vec3 to=new Vec3(tpX,tpY,tpZ);
+        Vec3 topFrom = new Vec3(curX,curY,curZ);
+        Vec3 to = new Vec3(tpX,tpY,tpZ);
 
         if (!canPassThrow(new BlockPos(topFrom))) {
             topFrom = topFrom.addVector(0, 1, 0);
@@ -43,10 +43,9 @@ public final class PathUtils extends MinecraftInstance {
         ArrayList<Vec3> pathFinderPath = pathfinder.getPath();
         for (Vec3 pathElm : pathFinderPath) {
             if (i == 0 || i == pathFinderPath.size() - 1) {
-                if (lastLoc != null) {
-                    path.add(lastLoc.addVector(0.5, 0, 0.5));
+                if (i == pathFinderPath.size() - 1) {
+                    path.add(pathElm.addVector(0.5, 0, 0.5));
                 }
-                path.add(pathElm.addVector(0.5, 0, 0.5));
                 lastDashLoc = pathElm;
             } else {
                 boolean canContinue = true;

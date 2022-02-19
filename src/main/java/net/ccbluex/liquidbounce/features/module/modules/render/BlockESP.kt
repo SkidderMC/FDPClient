@@ -28,10 +28,10 @@ class BlockESP : Module() {
     private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
     private val blockValue = BlockValue("Block", 168)
     private val radiusValue = IntegerValue("Radius", 40, 5, 120)
-    private val colorRedValue = IntegerValue("R", 255, 0, 255)
-    private val colorGreenValue = IntegerValue("G", 179, 0, 255)
-    private val colorBlueValue = IntegerValue("B", 72, 0, 255)
-    private val colorRainbow = BoolValue("Rainbow", false)
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorGreenValue = IntegerValue("G", 179, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorBlueValue = IntegerValue("B", 72, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorRainbowValue = BoolValue("Rainbow", false)
     private val searchTimer = MSTimer()
     private val posList: MutableList<BlockPos> = ArrayList()
     private var color = Color.CYAN
@@ -39,7 +39,7 @@ class BlockESP : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        color = if (colorRainbow.get()) rainbow() else Color(
+        color = if (colorRainbowValue.get()) rainbow() else Color(
             colorRedValue.get(),
             colorGreenValue.get(),
             colorBlueValue.get()

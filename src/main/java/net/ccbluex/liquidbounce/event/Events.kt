@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.event
 
 import net.minecraft.block.Block
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.model.ModelPlayer
 import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.entity.Entity
@@ -22,7 +23,7 @@ import net.minecraft.util.EnumFacing
  *
  * @param targetEntity Attacked entity
  */
-class AttackEvent(val targetEntity: Entity?) : CancellableEvent()
+class AttackEvent(val targetEntity: Entity) : CancellableEvent()
 
 /**
  * Called when player killed other entity
@@ -130,7 +131,7 @@ class PushOutEvent : CancellableEvent()
 /**
  * Called when screen is going to be rendered
  */
-class Render2DEvent(val partialTicks: Float) : Event()
+class Render2DEvent(val partialTicks: Float, val scaledResolution: ScaledResolution) : Event()
 
 /**
  * Called when world is going to be rendered

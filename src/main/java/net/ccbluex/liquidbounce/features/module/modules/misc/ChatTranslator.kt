@@ -15,10 +15,12 @@ import org.apache.http.util.EntityUtils
 
 @ModuleInfo(name = "ChatTranslator", category = ModuleCategory.MISC)
 class ChatTranslator : Module() {
-    private val client = HttpClients.createDefault()
-    private val cache = HashMap<String, String>()
+
     private val languageValue = ListValue("Language", arrayOf("Chinese", "English"), "Chinese")
     private val apiValue = ListValue("API", arrayOf("Google", "Bing", "YouDao"), "Bing")
+
+    private val client = HttpClients.createDefault()
+    private val cache = HashMap<String, String>()
 
     @EventTarget
     fun onPacket(event: PacketEvent) {

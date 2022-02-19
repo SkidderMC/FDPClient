@@ -19,14 +19,14 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "BoatJump", category = ModuleCategory.MOVEMENT)
 class BoatJump : Module() {
-    private val mode = ListValue("Mode", arrayOf("Boost", "Launch", "Matrix"), "Boost")
-    private val hBoost = FloatValue("HBoost", 2f, 0f, 6f)
-    private val vBoost = FloatValue("VBoost", 2f, 0f, 6f)
-    private val matrixTimerStart = FloatValue("MatrixTimerStart", 0.3f, 0.1f, 1f).displayable { mode.equals("Matrix") }
-    private val matrixTimerAir = FloatValue("MatrixTimerAir", 0.5f, 0.1f, 1.5f).displayable { mode.equals("Matrix") }
-    private val launchRadius = FloatValue("LaunchRadius", 4F, 3F, 10F).displayable { mode.equals("Launch") }
-    private val delay = IntegerValue("Delay", 200, 100, 500)
-    private val autoHit = BoolValue("AutoHit", true)
+    private val modeValue = ListValue("Mode", arrayOf("Boost", "Launch", "Matrix"), "Boost")
+    private val hBoostValue = FloatValue("HBoost", 2f, 0f, 6f)
+    private val vBoostValue = FloatValue("VBoost", 2f, 0f, 6f)
+    private val matrixTimerStartValue = FloatValue("MatrixTimerStart", 0.3f, 0.1f, 1f).displayable { modeValue.equals("Matrix") }
+    private val matrixTimerAirValue = FloatValue("MatrixTimerAir", 0.5f, 0.1f, 1.5f).displayable { modeValue.equals("Matrix") }
+    private val launchRadiusValue = FloatValue("LaunchRadius", 4F, 3F, 10F).displayable { modeValue.equals("Launch") }
+    private val delayValue = IntegerValue("Delay", 200, 100, 500)
+    private val autoHitValue = BoolValue("AutoHit", true)
 
     private var jumpState = 1
     private val timer = MSTimer()
@@ -54,10 +54,10 @@ class BoatJump : Module() {
             mc.thePlayer.speedInAir = 0.02f
         }
 
-        when (mode.get().lowercase()) {
+        when (modeValue.get().lowercase()) {
             "matrix" -> {
                 if (hasStopped) {
-                    mc.timer.timerSpeed = matrixTimerAir.get()
+                    mc.timer.timerSpeed = matrixTimerAirValue.get()
                 } else {
                     mc.timer.timerSpeed = 1f
                 }
@@ -69,11 +69,11 @@ class BoatJump : Module() {
                 timer.reset()
             }
 
-            if (timer.hasTimePassed(delay.get().toLong())) {
+            if (timer.hasTimePassed(delayValue.get().toLong())) {
                 jumpState = 2
-                when (mode.get().lowercase()) {
+                when (modeValue.get().lowercase()) {
                     "matrix" -> {
-                        mc.timer.timerSpeed = matrixTimerStart.get()
+                        mc.timer.timerSpeed = matrixTimerStartValue.get()
                         mc.netHandler.addToSendQueue(
                             C0CPacketInput(
                                 mc.thePlayer.moveStrafing,
@@ -98,21 +98,21 @@ class BoatJump : Module() {
         } else if (jumpState == 2 && !mc.thePlayer.isRiding) {
             val radiansYaw = mc.thePlayer.rotationYaw * Math.PI / 180
 
-            when (mode.get().lowercase()) {
+            when (modeValue.get().lowercase()) {
                 "boost" -> {
-                    mc.thePlayer.motionX = hBoost.get() * -sin(radiansYaw)
-                    mc.thePlayer.motionZ = hBoost.get() * cos(radiansYaw)
-                    mc.thePlayer.motionY = vBoost.get().toDouble()
+                    mc.thePlayer.motionX = hBoostValue.get() * -sin(radiansYaw)
+                    mc.thePlayer.motionZ = hBoostValue.get() * cos(radiansYaw)
+                    mc.thePlayer.motionY = vBoostValue.get().toDouble()
                     jumpState = 1
                 }
                 "launch" -> {
-                    mc.thePlayer.motionX += (hBoost.get() * 0.1) * -sin(radiansYaw)
-                    mc.thePlayer.motionZ += (hBoost.get() * 0.1) * cos(radiansYaw)
-                    mc.thePlayer.motionY += vBoost.get() * 0.1
+                    mc.thePlayer.motionX += (hBoostValue.get() * 0.1) * -sin(radiansYaw)
+                    mc.thePlayer.motionZ += (hBoostValue.get() * 0.1) * cos(radiansYaw)
+                    mc.thePlayer.motionY += vBoostValue.get() * 0.1
 
                     var hasBoat = false
                     for (entity in mc.theWorld.loadedEntityList) {
-                        if (entity is EntityBoat && mc.thePlayer.getDistanceToEntity(entity) < launchRadius.get()) {
+                        if (entity is EntityBoat && mc.thePlayer.getDistanceToEntity(entity) < launchRadiusValue.get()) {
                             hasBoat = true
                             break
                         }
@@ -123,10 +123,10 @@ class BoatJump : Module() {
                 }
                 "matrix" -> {
                     hasStopped = true
-                    mc.timer.timerSpeed = matrixTimerAir.get()
-                    mc.thePlayer.motionX = hBoost.get() * -sin(radiansYaw)
-                    mc.thePlayer.motionZ = hBoost.get() * cos(radiansYaw)
-                    mc.thePlayer.motionY = vBoost.get().toDouble()
+                    mc.timer.timerSpeed = matrixTimerAirValue.get()
+                    mc.thePlayer.motionX = hBoostValue.get() * -sin(radiansYaw)
+                    mc.thePlayer.motionZ = hBoostValue.get() * cos(radiansYaw)
+                    mc.thePlayer.motionY = vBoostValue.get().toDouble()
                     jumpState = 1
                 }
             }
@@ -137,7 +137,7 @@ class BoatJump : Module() {
 
         lastRide = mc.thePlayer.isRiding
 
-        if (autoHit.get() && !mc.thePlayer.isRiding && hitTimer.hasTimePassed(1500)) {
+        if (autoHitValue.get() && !mc.thePlayer.isRiding && hitTimer.hasTimePassed(1500)) {
             for (entity in mc.theWorld.loadedEntityList) {
                 if (entity is EntityBoat && mc.thePlayer.getDistanceToEntity(entity) < 3) {
                     mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, Vec3(0.5, 0.5, 0.5)))

@@ -177,13 +177,13 @@ class Arraylist(
                         }, textShadow)
 
                     fontRenderer.drawString(mTag, xPos - (if (rectMode.equals("right", true)) 3 else 0) + fontRenderer.getStringWidth(mName), yPos + textY,
-                        ColorUtils.antiColor(when (tagColorModeValue.get().lowercase()) {
-                            "rainbow" -> ColorUtils.antiColor(ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()))
+                        ColorUtils.reverseColor(when (tagColorModeValue.get().lowercase()) {
+                            "rainbow" -> ColorUtils.reverseColor(ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()))
                             "random" -> Color(moduleColor)
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get())
-                            "anotherrainbow" -> ColorUtils.antiColor(ColorUtils.fade(tagCustomColor, 100, index + 1))
-                            else -> ColorUtils.antiColor(tagCustomColor)
+                            "anotherrainbow" -> ColorUtils.reverseColor(ColorUtils.fade(tagCustomColor, 100, index + 1))
+                            else -> ColorUtils.reverseColor(tagCustomColor)
                         }).rgb, textShadow)
 
                     if (!rectMode.equals("none", true)) {
@@ -272,13 +272,13 @@ class Arraylist(
                     }, textShadow)
 
                     fontRenderer.drawString(mTag, xPos + fontRenderer.getStringWidth(mName), yPos + textY,
-                        ColorUtils.antiColor(when (tagColorModeValue.get().lowercase()) {
-                            "rainbow" -> ColorUtils.antiColor(ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()))
+                        ColorUtils.reverseColor(when (tagColorModeValue.get().lowercase()) {
+                            "rainbow" -> ColorUtils.reverseColor(ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()))
                             "random" -> Color(moduleColor)
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get())
-                            "anotherrainbow" -> ColorUtils.antiColor(ColorUtils.fade(tagCustomColor, 100, index + 1))
-                            else -> ColorUtils.antiColor(tagCustomColor)
+                            "anotherrainbow" -> ColorUtils.reverseColor(ColorUtils.fade(tagCustomColor, 100, index + 1))
+                            else -> ColorUtils.reverseColor(tagCustomColor)
                         }).rgb, textShadow)
 
                     if (!rectMode.equals("none", true)) {

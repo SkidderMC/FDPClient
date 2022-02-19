@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.designer
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.elements
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -17,7 +18,6 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.MathHelper
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
@@ -244,8 +244,8 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             element.side.horizontal = values[if (currIndex + 1 >= values.size) 0 else currIndex + 1]
             element.x = when (element.side.horizontal) {
                 Side.Horizontal.LEFT -> x
-                Side.Horizontal.MIDDLE -> (ScaledResolution(mc).scaledWidth / 2) - x
-                Side.Horizontal.RIGHT -> ScaledResolution(mc).scaledWidth - x
+                Side.Horizontal.MIDDLE -> (StaticStorage.scaledResolution.scaledWidth / 2) - x
+                Side.Horizontal.RIGHT -> StaticStorage.scaledResolution.scaledWidth - x
             }
         }
 
@@ -266,8 +266,8 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             element.side.vertical = values[if (currIndex + 1 >= values.size) 0 else currIndex + 1]
             element.y = when (element.side.vertical) {
                 Side.Vertical.UP -> y
-                Side.Vertical.MIDDLE -> (ScaledResolution(mc).scaledHeight / 2) - y
-                Side.Vertical.DOWN -> ScaledResolution(mc).scaledHeight - y
+                Side.Vertical.MIDDLE -> (StaticStorage.scaledResolution.scaledHeight / 2) - y
+                Side.Vertical.DOWN -> StaticStorage.scaledResolution.scaledHeight - y
             }
         }
 

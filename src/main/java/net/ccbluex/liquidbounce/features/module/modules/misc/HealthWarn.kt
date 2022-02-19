@@ -12,7 +12,9 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 
 @ModuleInfo(name = "HealthWarn", category = ModuleCategory.MISC, array = false, defaultOn = true)
 class HealthWarn : Module() {
+
     private val healthValue = IntegerValue("Health", 7, 1, 20)
+
     private var canWarn = true
 
     override fun onEnable() {

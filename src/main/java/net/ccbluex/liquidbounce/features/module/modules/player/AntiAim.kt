@@ -13,8 +13,8 @@ import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "AntiAim", category = ModuleCategory.PLAYER)
 class AntiAim : Module() {
-    private val yawMode = ListValue("YawMove", arrayOf("Jitter", "Spin", "Back", "BackJitter"), "Spin")
-    private val pitchMode = ListValue("PitchMode", arrayOf("Down", "Up", "Jitter", "AnotherJitter"), "Down")
+    private val yawModeValue = ListValue("YawMove", arrayOf("Jitter", "Spin", "Back", "BackJitter"), "Spin")
+    private val pitchModeValue = ListValue("PitchMode", arrayOf("Down", "Up", "Jitter", "AnotherJitter"), "Down")
     private val rotateValue = BoolValue("SilentRotate", true)
 
     private var yaw = 0f
@@ -22,7 +22,7 @@ class AntiAim : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        when (yawMode.get().lowercase()) {
+        when (yawModeValue.get().lowercase()) {
             "spin" -> {
                 yaw += 20.0f
                 if (yaw > 180.0f) {
@@ -32,7 +32,7 @@ class AntiAim : Module() {
                 }
             }
             "jitter" -> {
-                yaw = mc.thePlayer.rotationYaw + if (mc.thePlayer.ticksExisted % 2 === 0) 90F else -90F
+                yaw = mc.thePlayer.rotationYaw + if (mc.thePlayer.ticksExisted % 2 == 0) 90F else -90F
             }
             "back" -> {
                 yaw = mc.thePlayer.rotationYaw + 180f
@@ -42,7 +42,7 @@ class AntiAim : Module() {
             }
         }
 
-        when (pitchMode.get().lowercase()) {
+        when (pitchModeValue.get().lowercase()) {
             "up" -> {
                 pitch = -90.0f
             }

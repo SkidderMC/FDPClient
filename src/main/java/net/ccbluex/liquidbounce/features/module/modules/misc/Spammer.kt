@@ -28,7 +28,6 @@ class Spammer : Module() {
             delay = TimeUtils.randomDelay(minDelayValue.get(), this.get())
         }
     }
-
     private val minDelayValue: IntegerValue = object : IntegerValue("MinDelay", 500, 0, 5000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val maxDelayValueObject = maxDelayValue.get()

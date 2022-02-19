@@ -12,12 +12,10 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.minecraft.util.Session
 
 object LoginUtils : MinecraftInstance() {
-    @JvmStatic
     fun loginCracked(username: String) {
         mc.session = CrackedAccount().also { it.name = username }.session.let { Session(it.username, it.uuid, it.token, it.type) }
     }
 
-    @JvmStatic
     fun randomCracked() {
         var name = GuiAltManager.randomAltField.text
 

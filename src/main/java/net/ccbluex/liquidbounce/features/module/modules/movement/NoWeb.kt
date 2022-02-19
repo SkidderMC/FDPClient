@@ -21,7 +21,8 @@ class NoWeb : Module() {
     private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside", "Horizon", "Spartan", "AAC4", "AAC5", "Matrix", "Test"), "None")
     private val horizonSpeed = FloatValue("HorizonSpeed", 0.1F, 0.01F, 0.8F)
 
-     private var usedTimer = false
+    private var usedTimer = false
+
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (usedTimer) {
@@ -85,10 +86,7 @@ class NoWeb : Module() {
                 mc.thePlayer.jumpMovementFactor = 0.12425f
                 mc.thePlayer.motionY = -0.0125
                 if (mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY = -0.1625
-                if (mc.thePlayer.onGround) {
-                    mc.thePlayer.jump()
-                    mc.thePlayer.motionY = 0.2425
-                }
+                
                 if (mc.thePlayer.ticksExisted % 40 == 0) {
                     mc.timer.timerSpeed = 3.0F
                     usedTimer = true
@@ -102,14 +100,14 @@ class NoWeb : Module() {
                 }
             }
             "test" -> {
-                if (mc.thePlayer.ticksExisted % 6 == 0) {
+                if (mc.thePlayer.ticksExisted % 7 == 0) {
                     mc.thePlayer.jumpMovementFactor = 0.42f
                 }
-                if (mc.thePlayer.ticksExisted % 6 == 1) {
-                    mc.thePlayer.jumpMovementFactor = 0.40f
+                if (mc.thePlayer.ticksExisted % 7 == 1) {
+                    mc.thePlayer.jumpMovementFactor = 0.33f
                 }
-                if (mc.thePlayer.ticksExisted % 6 == 2) {
-                    mc.thePlayer.jumpMovementFactor = 0.25f
+                if (mc.thePlayer.ticksExisted % 7 == 2) {
+                    mc.thePlayer.jumpMovementFactor = 0.08f
                 }
             }
             "rewinside" -> {

@@ -255,7 +255,6 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     }
 
     companion object {
-        @JvmStatic
         fun getColorIndex(type: Char): Int {
             return when (type) {
                 in '0'..'9' -> type - '0'

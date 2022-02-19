@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.EntityLivingBase;
 import org.lwjgl.opengl.GL11;
@@ -23,6 +24,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -100,7 +102,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                     GL11.glEnable(GL11.GL_BLEND);
                     GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                     RenderUtils.glColor(esp.getColor(entitylivingbaseIn));
-                    GL11.glLineWidth(esp.getWireframeWidth().get());
+                    GL11.glLineWidth(esp.getWireframeWidthValue().get());
                     this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
                     GL11.glPopAttrib();
                     GL11.glPopMatrix();
@@ -142,5 +144,10 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 GlStateManager.depthMask(true);
             }
         }
+    }
+
+    @Redirect(method={"renderName(Lnet/minecraft/entity/EntityLivingBase;DDD)V"}, at=@At(value="FIELD", target="Lnet/minecraft/client/renderer/entity/RenderManager;playerViewX:F"))
+    private float renderName(RenderManager renderManager) {
+        return Minecraft.getMinecraft().gameSettings.thirdPersonView == 2 ? -renderManager.playerViewX : renderManager.playerViewX;
     }
 }

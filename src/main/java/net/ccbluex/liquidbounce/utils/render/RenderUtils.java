@@ -5,12 +5,13 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
+import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
-import net.ccbluex.liquidbounce.utils.render.glu.TessCallback;
 import net.ccbluex.liquidbounce.utils.render.glu.VertexData;
+import net.ccbluex.liquidbounce.utils.render.glu.DirectTessCallback;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -27,10 +28,12 @@ import net.minecraft.util.Timer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.GLUtessellator;
+import org.lwjgl.util.glu.GLUtessellatorCallbackAdapter;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -171,57 +174,88 @@ public final class RenderUtils extends MinecraftInstance {
         }
     }
 
-    public static void drawCircleRect(float x, float y, float x1, float y1, float radius, int color) {
+    public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius, int color) {
         glColor(color);
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_CULL_FACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
-        glPushMatrix();
-        glLineWidth(1F);
-        glBegin(GL_POLYGON);
 
-        float xRadius = (float) Math.min((x1 - x) * 0.5, radius);
-        float yRadius = (float) Math.min((y1 - y) * 0.5, radius);
-        quickPolygonCircle(x+xRadius,y+yRadius, xRadius, yRadius,180,270,4);
-        quickPolygonCircle(x1-xRadius,y+yRadius, xRadius, yRadius,90,180,4);
-        quickPolygonCircle(x1-xRadius,y1-yRadius, xRadius, yRadius,0,90,4);
-        quickPolygonCircle(x+xRadius,y1-yRadius, xRadius, yRadius,270,360,4);
+        drawRoundedCornerRect(x, y, x1, y1, radius);
 
-        glEnd();
-        glPopMatrix();
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_CULL_FACE);
         glDisable(GL_LINE_SMOOTH);
         glColor4f(1F, 1F, 1F, 1F);
     }
 
-    public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
-        glEnable(3042);
-        glDisable(3553);
-        glBlendFunc(770, 771);
-        glEnable(2848);
-        glShadeModel(7425);
+    public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius) {
+        glBegin(GL_POLYGON);
 
-        quickDrawGradientSideways(left, top, right, bottom, col1, col2);
+        float xRadius = (float) Math.min((x1 - x) * 0.5, radius);
+        float yRadius = (float) Math.min((y1 - y) * 0.5, radius);
+        quickPolygonCircle(x + xRadius,y + yRadius, xRadius, yRadius,180,270,4);
+        quickPolygonCircle(x1 - xRadius,y + yRadius, xRadius, yRadius,90,180,4);
+        quickPolygonCircle(x1 - xRadius,y1 - yRadius, xRadius, yRadius,0,90,4);
+        quickPolygonCircle(x + xRadius,y1 - yRadius, xRadius, yRadius,270,360,4);
 
-        glEnable(3553);
-        glDisable(3042);
-        glDisable(2848);
-        glShadeModel(7424);
-        glColor4f(1f,1f,1f,1f);
+        glEnd();
     }
 
-    public static void quickDrawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
-        glBegin(7);
+    public static void drawGradientSidewaysH(double left, double top, double right, double bottom, int col1, int col2) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        quickDrawGradientSidewaysH(left, top, right, bottom, col1, col2);
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+    }
+
+    public static void quickDrawGradientSidewaysH(double left, double top, double right, double bottom, int col1, int col2) {
+        glBegin(GL_QUADS);
+
         glColor(col1);
         glVertex2d(left, top);
         glVertex2d(left, bottom);
-
         glColor(col2);
         glVertex2d(right, bottom);
         glVertex2d(right, top);
+
+        glEnd();
+    }
+
+    public static void drawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        quickDrawGradientSidewaysV(left, top, right, bottom, col1, col2);
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+    }
+
+    public static void quickDrawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
+        glBegin(GL_QUADS);
+
+        glColor(col1);
+        glVertex2d(left, top);
+        glVertex2d(right, top);
+        glColor(col2);
+        glVertex2d(right, bottom);
+        glVertex2d(left, bottom); // TODO: Fix this, this may have been a mistake
+
         glEnd();
     }
 
@@ -470,6 +504,15 @@ public final class RenderUtils extends MinecraftInstance {
         glVertex2d(x2, y2);
 
         glEnd();
+    }
+
+    public static void quickDrawRect(final float x, final float y, final float x2, final float y2, final int color) {
+        glColor(color);
+        quickDrawRect(x, y, x2, y2);
+    }
+
+    public static void quickDrawRect(final float x, final float y, final float x2, final float y2, final Color color) {
+        quickDrawRect(x, y, x2, y2, color.getRGB());
     }
 
     public static void drawRect(final float x, final float y, final float x2, final float y2, final int color) {
@@ -780,8 +823,8 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void makeScissorBox(final float x, final float y, final float x2, final float y2, final float scaleOffset) {
-        final ScaledResolution scaledResolution = new ScaledResolution(mc);
-        final float factor = scaledResolution.getScaleFactor()*scaleOffset;
+        final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
+        final float factor = scaledResolution.getScaleFactor() * scaleOffset;
         glScissor((int) (x * factor), (int) ((scaledResolution.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
     }
 
@@ -889,29 +932,6 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 
-    public static void drawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
-        GL11.glEnable(3042);
-        GL11.glDisable(3553);
-        GL11.glBlendFunc(770, 771);
-        GL11.glEnable(2848);
-        GL11.glShadeModel(7425);
-        GL11.glPushMatrix();
-        GL11.glBegin(7);
-        glColor(col1);
-        GL11.glVertex2d(left, bottom);
-        GL11.glVertex2d(right, bottom);
-        glColor(col2);
-        GL11.glVertex2d(right, top);
-        GL11.glVertex2d(left, top);
-        GL11.glEnd();
-        GL11.glPopMatrix();
-        GL11.glEnable(3553);
-        GL11.glDisable(3042);
-        GL11.glDisable(2848);
-        GL11.glShadeModel(7424);
-        Gui.drawRect(0, 0, 0, 0, 0);
-    }
-
     public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight) {
         float f = 1.0F / tileWidth;
         float f1 = 1.0F / tileHeight;
@@ -959,49 +979,6 @@ public final class RenderUtils extends MinecraftInstance {
                 64F, 64F);
         RenderUtils.drawScaledCustomSizeModalRect(x, y, 40F, 8F, 8, 8, width, height,
                 64F, 64F);
-    }
-
-    public static void drawTriAngle(float cx,float cy,float r,float n,Color color){
-        GL11.glPushMatrix();
-        cx *= 2.0;
-        cy *= 2.0;
-        double b = 6.2831852 / n;
-        double p = Math.cos(b);
-        double s = Math.sin(b);
-        r *= 2.0;
-        double x = r;
-        double y = 0.0;
-        GL11.glDisable(2929);
-        GL11.glEnable(3042);
-        GL11.glDisable(3553);
-        GL11.glBlendFunc(770, 771);
-        GL11.glDepthMask(true);
-        GL11.glEnable(2848);
-        GL11.glHint(3154, 4354);
-        GL11.glHint(3155, 4354);
-        GL11.glScalef(0.5f, 0.5f, 0.5f);
-        GlStateManager.color(0,0,0);
-        GlStateManager.resetColor();
-        glColor(color);
-        GL11.glBegin(2);
-        int ii = 0;
-        while (ii < n) {
-            GL11.glVertex2d(x + cx, y + cy);
-            double t = x;
-            x = p * x - s * y;
-            y = s * t + p * y;
-            ii++;
-        }
-        GL11.glEnd();
-        GL11.glScalef(2f, 2f, 2f);
-        GL11.glEnable(3553);
-        GL11.glDisable(3042);
-        GL11.glEnable(2929);
-        GL11.glDisable(2848);
-        GL11.glHint(3154, 4352);
-        GL11.glHint(3155, 4352);
-        GlStateManager.color(1, 1, 1, 1);
-        GL11.glPopMatrix();
     }
 
     // skid in https://github.com/WYSI-Foundation/LiquidBouncePlus/
@@ -1067,21 +1044,25 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glHint(3155, 4352);
     }
 
+    public static void directDrawAWTShape(Shape shape, double epsilon) {
+        drawAWTShape(shape, epsilon, DirectTessCallback.INSTANCE);
+    }
+
     /**
      * 在LWJGL中渲染AWT图形
      * @param shape 准备渲染的图形
      * @param epsilon 图形精细度，传0不做处理
      */
-    public static void drawAWTShape(Shape shape, double epsilon) {
+    public static void drawAWTShape(Shape shape, double epsilon, GLUtessellatorCallbackAdapter gluTessCallback) {
         PathIterator path=shape.getPathIterator(new AffineTransform());
         Double[] cp=new Double[2]; // 记录上次操作的点用于计算曲线
 
         GLUtessellator tess = GLU.gluNewTess(); // 创建GLUtessellator用于渲染凹多边形（GL_POLYGON只能渲染凸多边形）
 
-        tess.gluTessCallback(GLU.GLU_TESS_BEGIN, TessCallback.INSTANCE);
-        tess.gluTessCallback(GLU.GLU_TESS_END, TessCallback.INSTANCE);
-        tess.gluTessCallback(GLU.GLU_TESS_VERTEX, TessCallback.INSTANCE);
-        tess.gluTessCallback(GLU.GLU_TESS_COMBINE, TessCallback.INSTANCE);
+        tess.gluTessCallback(GLU.GLU_TESS_BEGIN, gluTessCallback);
+        tess.gluTessCallback(GLU.GLU_TESS_END, gluTessCallback);
+        tess.gluTessCallback(GLU.GLU_TESS_VERTEX, gluTessCallback);
+        tess.gluTessCallback(GLU.GLU_TESS_COMBINE, gluTessCallback);
 
         switch (path.getWindingRule()){
             case PathIterator.WIND_EVEN_ODD:{
@@ -1150,5 +1131,36 @@ public final class RenderUtils extends MinecraftInstance {
 
     public static void tessVertex(GLUtessellator tessellator, double[] coords) {
         tessellator.gluTessVertex(coords, 0, new VertexData(coords));
+    }
+
+    public static boolean inArea(float x, float y, float ax1, float ay1, float ax2, float ay2) {
+        return x >= ax1 && x <= ax2 && y >= ay1 && y <= ay2;
+    }
+
+    public static boolean inArea(int x, int y, int ax1, int ay1, int ax2, int ay2) {
+        return x >= ax1 && x <= ax2 && y >= ay1 && y <= ay2;
+    }
+
+    /**
+     * Reads the image into a texture.
+     * @return texture id
+     * @author func16
+     */
+    public static int loadGlTexture(BufferedImage bufferedImage){
+        int textureId = GL11.glGenTextures();
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, bufferedImage.getWidth(), bufferedImage.getHeight(),
+                0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, ImageUtils.readImageToBuffer(bufferedImage));
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+
+        return textureId;
     }
 }

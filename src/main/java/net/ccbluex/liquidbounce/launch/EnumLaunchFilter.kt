@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.launch
 
 enum class EnumLaunchFilter {
-    ULTRALIGHT,
+    FANCY_UI,
     LEGACY_UI
 }

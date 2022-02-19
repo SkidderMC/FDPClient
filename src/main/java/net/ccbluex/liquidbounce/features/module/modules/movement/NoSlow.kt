@@ -25,7 +25,6 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
-    private val msTimer = MSTimer()
     private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", /*"AAC4",*/ "AAC5"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
@@ -45,10 +44,11 @@ class NoSlow : Module() {
     private val teleportCustomYValue = BoolValue("Teleport-CustomY", false).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
     private val teleportDecreasePercentValue = FloatValue("Teleport-DecreasePercent", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Decrease") }
 
-    var pendingFlagApplyPacket = false
-    var lastMotionX = 0.0
-    var lastMotionY = 0.0
-    var lastMotionZ = 0.0
+    private var pendingFlagApplyPacket = false
+    private var lastMotionX = 0.0
+    private var lastMotionY = 0.0
+    private var lastMotionZ = 0.0
+    private val msTimer = MSTimer()
 
     override fun onDisable() {
         msTimer.reset()
@@ -226,4 +226,7 @@ class NoSlow : Module() {
             }
         }
     }
+    
+    override val tag: String
+        get() = modeValue.get()
 }

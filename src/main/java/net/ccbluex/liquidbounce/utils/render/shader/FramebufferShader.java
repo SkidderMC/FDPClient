@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render.shader;
 
+import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -91,7 +92,7 @@ public abstract class FramebufferShader extends Shader {
      * @author TheSlowly
      */
     public void drawFramebuffer(final Framebuffer framebuffer) {
-        final ScaledResolution scaledResolution = new ScaledResolution(mc);
+        final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
         glBindTexture(GL_TEXTURE_2D, framebuffer.framebufferTexture);
         glBegin(GL_QUADS);
         glTexCoord2d(0, 1);

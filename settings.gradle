@@ -25,5 +25,3 @@ pluginManagement {
 }
 
 rootProject.name = 'FDPClient'
-
-include 'ui'

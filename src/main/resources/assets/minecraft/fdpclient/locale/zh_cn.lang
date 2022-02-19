@@ -14,6 +14,13 @@ ui.off=关
 
 ui.serverSpoof.address=服务器地址
 
+ui.proxy.screen=代理管理器
+ui.proxy.address=代理地址
+ui.proxy.type=代理类型
+
+ui.background.gtype=类型
+ui.background.gcurrent=现在的背景
+ui.background.ganimated=背景动画
 ui.background.particles=粒子
 ui.background.change=更换背景图
 ui.background.reset=重置背景图
@@ -227,8 +234,8 @@ module.ESP.description=允许你隔墙透视目标
 module.Eagle.name=自动蹲搭
 module.Eagle.description=让你在方块边缘自动蹲下
 
-module.EnchantEffect.name=附魔效果
-module.EnchantEffect.description=更改附魔效果颜色
+module.Glint.name=附魔效果
+module.Glint.description=更改附魔效果颜色
 
 module.FakeDead.name=假死
 
@@ -436,12 +443,14 @@ module.Velocity.description=更改你受到的击退
 module.XRay.name=矿物透视
 module.XRay.description=允许你透视指定的方块/矿物
 
-module.IRC.name=IRC
-module.IRC.description=让你能够和其他用户聊天
-
 module.Crosshair.name=准星
 module.Crosshair.description=显示一个更好的准星
 
 module.Damage.name=自伤
 module.Damage.description=允许你对自己造成伤害
 
+module.HitEffect.name=击打特效
+module.HitEffect.description=在你攻击玩家的时候展示一个击打特效
+
+module.SilentDisconnect.name=静默断连
+module.SilentDisconnect.description=当你与服务器断开连接时，不会显示GuiDisconnect

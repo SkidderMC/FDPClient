@@ -20,8 +20,8 @@ class AutoLogin : Module() {
     private val loginCommand = TextValue("Login", "/login %p")
     private val passwordValue = TextValue("Password", "password")
     private val delayValue = IntegerValue("Delay", 1500, 100, 5000)
-    private val title = BoolValue("Title", true)
-    private val chat = BoolValue("Chat", true)
+    private val titleValue = BoolValue("Title", true)
+    private val chatValue = BoolValue("Chat", true)
 
     private var logined = false
 
@@ -39,12 +39,12 @@ class AutoLogin : Module() {
         if (logined) return
         val packet = event.packet
 
-        if (title.get() && packet is S45PacketTitle) {
+        if (titleValue.get() && packet is S45PacketTitle) {
             packet.message ?: return
             processMessage(packet.message.unformattedText)
         }
 
-        if (chat.get() && packet is S02PacketChat) {
+        if (chatValue.get() && packet is S02PacketChat) {
             processMessage(packet.chatComponent.unformattedText)
         }
     }

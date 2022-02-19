@@ -64,10 +64,7 @@ public abstract class MixinEntityRenderer {
 
     @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)
     private void injectHurtCameraEffect(CallbackInfo callbackInfo) {
-        HurtCam hurtCam= LiquidBounce.moduleManager.getModule(HurtCam.class);
-        String mode=hurtCam.getModeValue().get();
-
-        if(!mode.equalsIgnoreCase("Vanilla")) {
+        if(!LiquidBounce.moduleManager.getModule(HurtCam.class).getModeValue().get().equalsIgnoreCase("Vanilla")) {
             callbackInfo.cancel();
         }
     }
@@ -93,7 +90,7 @@ public abstract class MixinEntityRenderer {
                     GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
                 }
             }else if(this.mc.gameSettings.thirdPersonView > 0) {
-                double d3 = (double) (this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks);
+                double d3 = this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks;
 
                 if(this.mc.gameSettings.debugCamEnable) {
                     GlStateManager.translate(0.0F, 0.0F, (float) (-d3));

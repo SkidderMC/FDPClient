@@ -20,7 +20,6 @@ object ColorUtils {
     private val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
     private val startTime = System.currentTimeMillis()
 
-    @JvmField
     val hexColors = IntArray(16)
 
     init {
@@ -35,12 +34,10 @@ object ColorUtils {
         }
     }
 
-    @JvmStatic
     fun stripColor(input: String): String {
         return COLOR_PATTERN.matcher(input).replaceAll("")
     }
 
-    @JvmStatic
     fun translateAlternateColorCodes(textToTranslate: String): String {
         val chars = textToTranslate.toCharArray()
 
@@ -68,7 +65,6 @@ object ColorUtils {
         return stringBuilder.toString()
     }
 
-    @JvmStatic
     fun colorCode(code: String, alpha: Int = 255): Color {
         when (code.lowercase()) {
             "0" -> {
@@ -122,70 +118,52 @@ object ColorUtils {
         }
     }
 
-    @JvmStatic
     fun hslRainbow(
         index: Int,
-        lowest: Float = HUD.rainbowStart.get(),
-        bigest: Float = HUD.rainbowStop.get(),
+        lowest: Float = HUD.rainbowStartValue.get(),
+        bigest: Float = HUD.rainbowStopValue.get(),
         indexOffset: Int = 300,
-        timeSplit: Int = HUD.rainbowSpeed.get(),
-        saturation: Float = HUD.rainbowSaturation.get(),
-        brightness: Float = HUD.rainbowBrightness.get()
+        timeSplit: Int = HUD.rainbowSpeedValue.get(),
+        saturation: Float = HUD.rainbowSaturationValue.get(),
+        brightness: Float = HUD.rainbowBrightnessValue.get()
     ): Color {
         return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
     }
 
-    @JvmStatic
     fun rainbow(): Color {
         return hslRainbow(1)
     }
 
-    @JvmStatic
     fun rainbow(index: Int): Color {
         return hslRainbow(index)
     }
 
-    @JvmStatic
     fun rainbow(alpha: Float) = reAlpha(hslRainbow(1), alpha)
 
-    @JvmStatic
     fun rainbowWithAlpha(alpha: Int) = reAlpha(hslRainbow(1), alpha)
 
-    @JvmStatic
     fun rainbow(index: Int, alpha: Int) = reAlpha(hslRainbow(index), alpha)
 
-    @JvmStatic
     fun rainbow(index: Int, alpha: Float) = reAlpha(hslRainbow(index), alpha)
 
-    @JvmStatic
     fun reAlpha(color: Color, alpha: Int): Color {
         return Color(color.red, color.green, color.blue, alpha)
     }
 
-    @JvmStatic
     fun reAlpha(color: Color, alpha: Float): Color {
         return Color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha)
     }
 
-    @JvmStatic
     fun slowlyRainbow(time: Long, count: Int, qd: Float, sq: Float): Color {
         val color = Color(Color.HSBtoRGB((time.toFloat() + count * -3000000f) / 2 / 1.0E9f, qd, sq))
         return Color(color.red / 255.0f * 1, color.green / 255.0f * 1, color.blue / 255.0f * 1, color.alpha / 255.0f)
     }
 
-    @JvmStatic
-    fun twoRainbow(offset: Long, alpha: Float): Color {
-        val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
-        return Color(currentColor.red / 255.0F * 1.0F, currentColor.green / 255.0F * 1.0F, currentColor.blue / 255.0F * 1.0F, alpha)
-    }
-
-    @JvmStatic
     fun skyRainbow(var2: Int, bright: Float, st: Float, speed: Double): Color {
         var v1 = ceil(System.currentTimeMillis() / speed + var2 * 109L) / 5
         return Color.getHSBColor(if ((360.0.also { v1 %= it } / 360.0) <0.5) { -(v1 / 360.0).toFloat() } else { (v1 / 360.0).toFloat() }, st, bright)
     }
 
-    @JvmStatic
     fun fade(color: Color, index: Int, count: Int): Color {
         val hsb = FloatArray(3)
         Color.RGBtoHSB(color.red, color.green, color.blue, hsb)
@@ -196,17 +174,26 @@ object ColorUtils {
         return Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]))
     }
 
-    @JvmStatic
-    fun antiColor(color: Color) = Color(255 - color.red, 255 - color.green, 255 - color.blue, color.alpha)
+    fun reverseColor(color: Color) = Color(255 - color.red, 255 - color.green, 255 - color.blue, color.alpha)
 
-    @JvmStatic
     fun healthColor(hp: Float, maxHP: Float, alpha: Int = 255): Color {
         val pct = ((hp / maxHP) * 255F).toInt()
         return Color(max(min(255 - pct, 255), 0), max(min(pct, 255), 0), 0, alpha)
     }
 
-    @JvmStatic
     fun darker(color: Color, percentage: Float): Color {
         return Color((color.red * percentage).toInt(), (color.green * percentage).toInt(), (color.blue * percentage).toInt(), (color.alpha * percentage).toInt())
+    }
+
+    fun mixColors(color1: Color, color2: Color, percent: Float): Color {
+        return Color(color1.red + ((color2.red - color1.red) * percent).toInt(), color1.green + ((color2.green - color1.green) * percent).toInt(), color1.blue + ((color2.blue - color1.blue) * percent).toInt(), color1.alpha + ((color2.alpha - color1.alpha) * percent).toInt())
+    }
+
+    fun toRGB(n: Int, n2: Int, n3: Int, n4: Int): Int {
+        return (n4 and 0xFF shl 24) or (n3 and 0xFF shl 16) or (n2 and 0xFF shl 8) or (n and 0xFF)
+    }
+
+    fun toRGB(f: Float, f2: Float, f3: Float, f4: Float): Int {
+        return toRGB((f * 255.0f).toInt(), (f2 * 255.0f).toInt(), (f3 * 255.0f).toInt(), (f4 * 255.0f).toInt())
     }
 }

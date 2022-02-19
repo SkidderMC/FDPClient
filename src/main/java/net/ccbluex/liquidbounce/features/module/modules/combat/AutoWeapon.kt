@@ -26,8 +26,8 @@ class AutoWeapon : Module() {
     private val onlySwordValue = BoolValue("OnlySword", false)
     private val silentValue = BoolValue("SpoofItem", false)
     private val ticksValue = IntegerValue("SpoofTicks", 10, 1, 20)
-    private var attackEnemy = false
 
+    private var attackEnemy = false
     private var spoofedSlot = 0
 
     @EventTarget

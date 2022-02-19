@@ -38,21 +38,8 @@ abstract class AbstractAwtFontRender(val font: Font) {
         GL11.glTranslated(x * 2F, y * 2.0 - 2.0, 0.0)
         RenderUtils.glColor(color)
 
-        var isLastUTF16 = false
-        var highSurrogate = '\u0000'
-        for (char in text.toCharArray()) {
-            if (char in '\ud800'..'\udfff') {
-                if (isLastUTF16) {
-                    val utf16Char = "$highSurrogate$char"
-                    GL11.glTranslatef(drawChar(utf16Char, 0f, 0f).toFloat(), 0f, 0f)
-                } else {
-                    highSurrogate = char
-                }
-                isLastUTF16 = !isLastUTF16
-            } else {
-                GL11.glTranslatef(drawChar(char.toString(), 0f, 0f).toFloat(), 0f, 0f)
-                isLastUTF16 = false
-            }
+        text.forEach { // this is faster than toCharArray()
+            GL11.glTranslatef(drawChar(it.toString()).toFloat(), 0f, 0f)
         }
 
         GL11.glPopMatrix()
@@ -65,7 +52,7 @@ abstract class AbstractAwtFontRender(val font: Font) {
      * @param x        target position x to render
      * @param y        target position y to render
      */
-    abstract fun drawChar(char: String, x: Float, y: Float): Int
+    abstract fun drawChar(char: String): Int
 
     /**
      * Get the width of a string

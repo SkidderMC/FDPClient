@@ -21,13 +21,13 @@ import kotlin.math.abs
 @ModuleInfo(name = "PrevFallPos", category = ModuleCategory.PLAYER)
 class PrevFallPos : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
-    private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
-    private val fallDist = FloatValue("FallDist", 1.15F, 0F, 5F)
-    private val colorRedValue = IntegerValue("R", 255, 0, 255)
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255)
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255)
+    private val outlineWidthValue = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
+    private val fallDistValue = FloatValue("FallDist", 1.15F, 0F, 5F)
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorAlphaValue = IntegerValue("A", 130, 0, 255)
-    private val colorRainbow = BoolValue("Rainbow", false)
+    private val colorRainbowValue = BoolValue("Rainbow", false)
 
     private var pos: BlockPos? = null
 
@@ -40,7 +40,7 @@ class PrevFallPos : Module() {
         pos = if (!mc.thePlayer.onGround) {
             val fallingPlayer = FallingPlayer(mc.thePlayer)
             val collLoc = fallingPlayer.findCollision(60) // null -> too far to calc or fall pos in void
-            if (abs((collLoc?.y ?: 0) - mc.thePlayer.posY) > (fallDist.get() + 1)) {
+            if (abs((collLoc?.y ?: 0) - mc.thePlayer.posY) > (fallDistValue.get() + 1)) {
                 collLoc
             } else {
                 null
@@ -54,16 +54,16 @@ class PrevFallPos : Module() {
     fun onRender3d(event: Render3DEvent) {
         pos ?: return
 
-        val color = if (colorRainbow.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
+        val color = if (colorRainbowValue.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
         when (modeValue.get().lowercase()) {
             "box" -> {
-                RenderUtils.drawBlockBox(pos, color, true, true, outlineWidth.get())
+                RenderUtils.drawBlockBox(pos, color, true, true, outlineWidthValue.get())
             }
             "otherbox" -> {
-                RenderUtils.drawBlockBox(pos, color, false, true, outlineWidth.get())
+                RenderUtils.drawBlockBox(pos, color, false, true, outlineWidthValue.get())
             }
             "outline" -> {
-                RenderUtils.drawBlockBox(pos, color, true, false, outlineWidth.get())
+                RenderUtils.drawBlockBox(pos, color, true, false, outlineWidthValue.get())
             }
         }
     }
