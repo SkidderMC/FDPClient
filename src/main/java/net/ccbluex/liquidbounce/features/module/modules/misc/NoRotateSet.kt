@@ -34,7 +34,7 @@ class NoRotateSet : Module() {
 
         if (packet is S08PacketPlayerPosLook) {
             if ((noZeroValue.get() && packet.getYaw() == 0F && packet.getPitch() == 0F) ||
-                (noLoadingValue.get() && !mc.netHandler.doneLoadingTerrain)) {
+                (noLoadingValue.get() && mc.netHandler?.doneLoadingTerrain == false)) {
                 return
             }
 

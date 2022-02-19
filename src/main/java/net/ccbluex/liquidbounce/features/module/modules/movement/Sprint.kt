@@ -25,6 +25,7 @@ class Sprint : Module() {
     val allDirectionsValue = BoolValue("AllDirections", true)
     private val allDirectionsBypassValue = ListValue("AllDirectionsBypass", arrayOf("Rotate", "Toggle", "Minemora", "Spoof", "LimitSpeed", "None"), "None").displayable { allDirectionsValue.get() }
     private val blindnessValue = BoolValue("Blindness", true)
+    val useItemValue = BoolValue("UseItem", false)
     val foodValue = BoolValue("Food", true)
     val checkServerSide = BoolValue("CheckServerSide", false)
     val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false).displayable { checkServerSide.get() }
@@ -51,6 +52,7 @@ class Sprint : Module() {
         if (!MovementUtils.isMoving() || mc.thePlayer.isSneaking || blindnessValue.get() &&
                 mc.thePlayer.isPotionActive(Potion.blindness) || foodValue.get() &&
                 !(mc.thePlayer.foodStats.foodLevel > 6.0f || mc.thePlayer.capabilities.allowFlying) ||
+                (useItemValue.get() && mc.thePlayer.isUsingItem) ||
                 (checkServerSide.get() && (mc.thePlayer.onGround || !checkServerSideGround.get()) &&
                 !allDirectionsValue.get() && RotationUtils.targetRotation != null &&
                 RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30)) {
