@@ -36,7 +36,7 @@ class HurtCam : Module() {
         if (hurt == 0L) return
 
         val passedTime = System.currentTimeMillis() - hurt
-        if (passedTime> timeValue.get()) {
+        if (passedTime > timeValue.get()) {
             hurt = 0L
             return
         }
@@ -46,8 +46,8 @@ class HurtCam : Module() {
         val width = event.scaledResolution.scaledWidth_double
         val height = event.scaledResolution.scaledHeight_double
 
-        RenderUtils.drawGradientSidewaysH(0.0, 0.0, width, fpsHeightValue.get().toDouble(), color1.rgb, color.rgb)
-        RenderUtils.drawGradientSidewaysH(0.0, height - fpsHeightValue.get(), width, height, color.rgb, color1.rgb)
+        RenderUtils.drawGradientSidewaysV(0.0, 0.0, width, fpsHeightValue.get().toDouble(), color.rgb, color1.rgb)
+        RenderUtils.drawGradientSidewaysV(0.0, height - fpsHeightValue.get(), width, height, color1.rgb, color.rgb)
     }
 
     @EventTarget

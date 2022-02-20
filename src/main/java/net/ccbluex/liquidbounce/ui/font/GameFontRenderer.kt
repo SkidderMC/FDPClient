@@ -35,6 +35,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
     init {
         FONT_HEIGHT = height
+        FontsGC.register(this)
     }
 
     fun drawString(s: String, x: Float, y: Float, color: Int) = drawString(s, x, y, color, false)
