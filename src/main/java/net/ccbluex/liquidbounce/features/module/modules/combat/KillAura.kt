@@ -111,6 +111,8 @@ class KillAura : Module() {
 
     // AutoBlock
     val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Off")
+    // vanilla will send block packet at pre
+    private val blockTimingValue = ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") }
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
@@ -269,25 +271,26 @@ class KillAura : Module() {
             return
         }
 
-        if ((attackTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
-                    (attackTimingValue.equals("Post") && event.eventState == EventState.POST) ||
-                    attackTimingValue.equals("Both") || attackTimingValue.equals("All")) {
+        if (attackTimingValue.equals("All") || attackTimingValue.equals("Both") ||
+                (attackTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
+                (attackTimingValue.equals("Post") && event.eventState == EventState.POST)) {
             runAttackLoop()
         }
 
-        if (event.eventState == EventState.POST) {
+        if (blockTimingValue.equals("Both") ||
+            (blockTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
+            (blockTimingValue.equals("Post") && event.eventState == EventState.POST)) {
             // AutoBlock
-            if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack") || discoveredTargets.any {
-                    mc.thePlayer.getDistanceToEntityBox(
-                        it
-                    ) > maxRange
-                }) && canBlock) {
-                val target = discoveredTargets[0]
+            if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
+                        || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock) {
+                val target = discoveredTargets.first()
                 if (mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get()) {
-                    startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) <maxRange))
+                    startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
                 }
             }
+        }
 
+        if (event.eventState == EventState.POST) {
             target ?: return
             currentTarget ?: return
 

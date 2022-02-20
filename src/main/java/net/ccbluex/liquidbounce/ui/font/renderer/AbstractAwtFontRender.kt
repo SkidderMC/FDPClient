@@ -18,10 +18,6 @@ abstract class AbstractAwtFontRender(val font: Font) {
 
     protected val cachedChars = mutableMapOf<String, AbstractCachedFont>()
 
-    init {
-        FontsGC.register(this)
-    }
-
     /**
      * Allows you to draw a string with the target font
      *

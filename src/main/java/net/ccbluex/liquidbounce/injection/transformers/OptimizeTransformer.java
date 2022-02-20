@@ -15,15 +15,26 @@ public class OptimizeTransformer implements IClassTransformer {
     private static final HashMap<String, String> transformMap = new HashMap<>();
 
     static {
-        transformMap.put("net.minecraft.util.EnumFacing", "facings");
-        transformMap.put("net.minecraft.util.EnumChatFormatting", "chatFormatting");
-        transformMap.put("net.minecraft.util.EnumParticleTypes", "particleTypes");
-        transformMap.put("net.minecraft.util.EnumWorldBlockLayer", "worldBlockLayers");
+        addTransform("net.minecraft.util.EnumFacing", "cq", "facings");
+        addTransform("net.minecraft.util.EnumChatFormatting", "a", "chatFormatting");
+        addTransform("net.minecraft.util.EnumParticleTypes", "cy", "particleTypes");
+        addTransform("net.minecraft.util.EnumWorldBlockLayer", "adf", "worldBlockLayers");
+    }
+
+    /**
+     * Add transform to transformMap
+     * @param mcpName the normal name look like in developing env
+     * @param notchName the obfuscated name in player env
+     * @param targetName the target method in [StaticStorage]
+     */
+    private static void addTransform(final String mcpName, final String notchName, final String targetName) {
+        transformMap.put(mcpName, targetName);
+        transformMap.put(notchName, targetName);
     }
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if(transformedName.startsWith("net.minecraft") && !transformMap.containsKey(transformedName)) {
+        if(!(name.startsWith("net.ccbluex") || name.startsWith("kotlin")) && basicClass != null && !transformMap.containsKey(transformedName)) {
             try {
                 final ClassNode classNode = ASMUtils.INSTANCE.toClassNode(basicClass);
                 AtomicBoolean changed = new AtomicBoolean(false);
