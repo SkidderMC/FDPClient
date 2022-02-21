@@ -46,6 +46,15 @@ public abstract class MixinGuiButton extends Gui {
    @Shadow
    public abstract void mouseDragged(Minecraft mc, int mouseX, int mouseY);
 
+   @Shadow
+   protected abstract int getHoverState(boolean p_getHoverState_1_);
+
+   @Shadow
+   public int packedFGColour;
+
+   @Shadow
+   public String displayString;
+
    protected final AbstractButtonRenderer buttonRenderer = LiquidBounce.moduleManager.getModule(HUD.class).getButtonRenderer((GuiButton)(Object)this);
 
    /**
