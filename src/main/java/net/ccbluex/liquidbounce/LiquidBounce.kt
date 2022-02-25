@@ -55,6 +55,7 @@ object LiquidBounce {
 
     var isStarting = true
     var isLoadingConfig = true
+    val isEarlyAccess: Boolean
 
     // Managers
     lateinit var moduleManager: ModuleManager
@@ -96,6 +97,7 @@ object LiquidBounce {
             val str = commitId.reader(Charsets.UTF_8).readLines().first()
             "git-" + (str.substring(0, 7.coerceAtMost(str.length)))
         }
+        isEarlyAccess = CLIENT_VERSION != CLIENT_REAL_VERSION
     }
 
     /**

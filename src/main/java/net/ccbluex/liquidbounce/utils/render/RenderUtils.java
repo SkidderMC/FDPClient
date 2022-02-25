@@ -175,19 +175,17 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius, int color) {
-        glColor(color);
         glEnable(GL_BLEND);
         glDisable(GL_TEXTURE_2D);
-        glDisable(GL_CULL_FACE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
 
+        glColor(color);
         drawRoundedCornerRect(x, y, x1, y1, radius);
 
         glEnable(GL_TEXTURE_2D);
-        glEnable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
-        glColor4f(1F, 1F, 1F, 1F);
     }
 
     public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius) {
