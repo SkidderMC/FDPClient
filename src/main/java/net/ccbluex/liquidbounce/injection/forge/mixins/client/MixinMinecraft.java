@@ -90,15 +90,11 @@ public abstract class MixinMinecraft {
     public GameSettings gameSettings;
 
     @Shadow
-    private Entity renderViewEntity;
-
-    @Shadow
     @Final
     public File mcDataDir;
 
-    @Shadow protected abstract ByteBuffer readImageToBuffer(InputStream p_readImageToBuffer_1_) throws IOException;
-
-    @Shadow private boolean fullscreen;
+    @Shadow
+    private boolean fullscreen;
 
     /**
      * @author XiGuaGeGe
