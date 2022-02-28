@@ -15,6 +15,7 @@ object DiscordRPC {
     private val ipcClient = IPCClient(871606857981128724)
     private val timestamp = OffsetDateTime.now()
     private var running = false
+    private var fdpwebsite = "getfdp.today - "
 
     fun run() {
         ipcClient.setListener(object : IPCListener {
@@ -42,9 +43,9 @@ object DiscordRPC {
         val builder = RichPresence.Builder()
         builder.setStartTimestamp(timestamp)
         builder.setLargeImage("cfb8fe2fe9169dc68f7f8c1236b885")
-        builder.setDetails(LiquidBounce.CLIENT_VERSION)
+        builder.setDetails(fdpwebsite + LiquidBounce.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
-            builder.setState(if(it.equals("idling", true)) "Idling" else "Server: $it IGN: ${Minecraft.getMinecraft().session.username}")
+            builder.setState(if(it.equals("idling", true)) "Idling" else "Server: $it ")
         }
 
         // Check ipc client is connected and send rpc
