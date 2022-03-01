@@ -283,7 +283,7 @@ class KillAura : Module() {
             // AutoBlock
             if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
                         || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock) {
-                val target = discoveredTargets.first()
+                val target = this.target ?: discoveredTargets.first()
                 if (mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get()) {
                     startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
                 }
