@@ -74,18 +74,6 @@ Timer().schedule(object : TimerTask(){
 ### Skid codes
 Please use original code if you can, and no direct code steals, but we welcome skid using packet logger or anything else like that to skid from a close source and make the cheating community more open!
 
-there is a list of name of clients we skidded
-
-1. LiquidBounce? maybe
-2. Jello
-3. Rise 
-4. Zamorozka 
-5. LiquidSense 
-6. Flux
-7. feather
-
-add this list for fun
-
 ### Useless features
 Useless features means feature only you think its usable ,or feature can be have with config change.  
 Like the "TimerSpeed" option to InfiniteAura, this feature can be added with bind Timer to the key with InfiniteAura, or use macro system in FDP Client.
