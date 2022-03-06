@@ -47,15 +47,17 @@ class AuthBypass : Module() {
     private val timer = MSTimer()
     private val jsonParser = JsonParser()
 
-    private val brLangMap = HashMap<String, String>()
+    private val brLangMap : HashMap<String, String> by lazy {
+        val map = HashMap<String, String>()
 
-    init {
         val localeJson = JsonParser().parse(AuthBypass::class.java.classLoader.getResourceAsStream("assets/minecraft/fdpclient/misc/item_names_in_pt_BR.json").reader(Charsets.UTF_8)).asJsonObject
 
         brLangMap.clear()
         for ((key, element) in localeJson.entrySet()) {
             brLangMap["item.$key"] = element.asString.lowercase()
         }
+
+        map
     }
 
     override fun onEnable() {
