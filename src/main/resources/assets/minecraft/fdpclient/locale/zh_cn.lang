@@ -33,7 +33,7 @@ ui.gameover.close=关闭此界面
 ui.disconnect.randomAlt=随机正版账号
 ui.disconnect.randomOffline=随机离线账号
 
-ui.update.released=FDP Client %s 发布了!
+ui.update.released=FDPClient 新版本 %s 可用!
 ui.update.dismiss=忽略
 ui.update.download=下载
 

@@ -18,8 +18,6 @@ jobs:
           distribution: "adopt"
           java-version: 8
           cache: "gradle"
-      - name: Add version info
-        run: echo "${{ github.event.head_commit.id }}" > src/main/resources/FDP_GIT_COMMIT_ID
       - name: Build
         run: ./gradlew setupCiWorkspace && ./gradlew build
       - name: Rename build artifacts

@@ -33,7 +33,7 @@ ui.gameover.close=Hide This Screen
 ui.disconnect.randomAlt=Random Alt
 ui.disconnect.randomOffline=Random Offline
 
-ui.update.released=FDPClient %s released!
+ui.update.released=FDPClient %s is available!
 ui.update.dismiss=Dismiss
 ui.update.download=Download
 

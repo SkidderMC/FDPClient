@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce
 
+import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
@@ -32,11 +33,13 @@ import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.misc.HttpUtils
+import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
-import org.apache.commons.io.IOUtils
-import java.nio.charset.StandardCharsets
+import java.util.*
+import javax.swing.JOptionPane
 import kotlin.concurrent.thread
 
 object LiquidBounce {
@@ -44,18 +47,32 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "FDPClient"
     const val COLORED_NAME = "§c§lFDP§6§lClient"
-    const val CLIENT_REAL_VERSION = "v2.1.2"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE = "GetFDP.Today"
     const val MINECRAFT_VERSION = "1.8.9"
 
+    @JvmField
+    val gitInfo = Properties().also {
+        val inputStream = LiquidBounce::class.java.classLoader.getResourceAsStream("git.properties")
+        if(inputStream != null) {
+            it.load(inputStream)
+        } else {
+            it["git.branch"] = "unofficial" // fill with default values or we'll get null pointer exceptions
+        }
+    }
+
     // 自动读取客户端版本
     @JvmField
-    val CLIENT_VERSION: String
+    val CLIENT_VERSION = gitInfo["git.commit.id.abbrev"]?.let { "git-$it" } ?: "unknown"
+    @JvmField
+    val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "unknown").let {
+        if(it == "main") "stable" else it
+    }
 
     var isStarting = true
     var isLoadingConfig = true
-    val isEarlyAccess: Boolean
+    var latest = ""
+        private set
 
     // Managers
     lateinit var moduleManager: ModuleManager
@@ -87,18 +104,6 @@ object LiquidBounce {
                 false
             }
             .map { try { it.newInstance() } catch (e: IllegalAccessException) { ClassUtils.getObjectInstance(it) as LaunchOption } }.toTypedArray()
-
-    init {
-        // check if this artifact is build from github actions
-        val commitId = LiquidBounce::class.java.classLoader.getResourceAsStream("FDP_GIT_COMMIT_ID")
-        CLIENT_VERSION = if (commitId == null) {
-            CLIENT_REAL_VERSION
-        } else {
-            val str = commitId.reader(Charsets.UTF_8).readLines().first()
-            "git-" + (str.substring(0, 7.coerceAtMost(str.length)))
-        }
-        isEarlyAccess = CLIENT_VERSION != CLIENT_REAL_VERSION
-    }
 
     /**
      * Execute if client will be started
@@ -171,6 +176,7 @@ object LiquidBounce {
 
         fileManager.loadConfigs(fileManager.hudConfig, fileManager.xrayConfig)
 
+        // start discord rpc
         thread {
             try {
                 DiscordRPC.run()
@@ -179,7 +185,38 @@ object LiquidBounce {
             }
         }
 
+        // run update checker
+        if(CLIENT_VERSION != "unknown") {
+            thread(block = this::checkUpdate)
+        }
+
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
+    }
+
+    private fun checkUpdate() {
+        try {
+            val get = HttpUtils.get("https://api.github.com/repos/UnlegitMC/FDPClient/commits/${gitInfo["git.branch"]}")
+
+            val jsonObj = JsonParser()
+                .parse(get).asJsonObject
+
+            latest = jsonObj.get("sha").asString.substring(0, 7)
+
+            if (latest != gitInfo["git.commit.id.abbrev"]) {
+                ClientUtils.logInfo("New version available: $latest")
+
+                val buttons = arrayOf(LanguageManager.get("ui.update.download"), LanguageManager.get("ui.update.dismiss"))
+                val selection = JOptionPane.showOptionDialog(null, LanguageManager.getAndFormat("ui.update.released", latest), "Alert",
+                    JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[0])
+                if (selection == 0) {
+                    MiscUtils.showURL("https://$CLIENT_WEBSITE")
+                }
+            } else {
+                ClientUtils.logInfo("No new version available")
+            }
+        } catch (t: Throwable) {
+            ClientUtils.logError("Failed to check for updates.", t)
+        }
     }
 
     /**

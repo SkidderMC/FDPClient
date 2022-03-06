@@ -26,7 +26,7 @@ ui.gameover.close=Ocultar tela
 ui.disconnect.randomAlt=randomAlt
 ui.disconnect.randomOffline=randomOffline
 
-ui.update.released=FDP Client %s foi lançado!
+ui.update.released=FDP Client %s está disponível!
 ui.update.dismiss=Dispensar
 ui.update.download=Baixar
 
