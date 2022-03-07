@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "idea"
     id "org.jetbrains.kotlin.jvm"
-    id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
     id "com.gorylenko.gradle-git-properties" version "2.4.0"
