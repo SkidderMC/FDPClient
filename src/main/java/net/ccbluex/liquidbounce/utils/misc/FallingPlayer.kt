@@ -43,9 +43,9 @@ class FallingPlayer(
             if (v < 1.0f) {
                 v = 1.0f
             }
-            var fixedJumpFactor = jumpMovementFactor
+            var fixedJumpFactor = (jumpMovementFactor).toFloat()
             if (mc.thePlayer.isSprinting) {
-                fixedJumpFactor *= 1.3
+                fixedJumpFactor = (fixedJumpFactor * 1.3).toFloat()
             }
             v = fixedJumpFactor / v
             strafe *= v
