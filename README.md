@@ -11,6 +11,13 @@ Latest: [github-actions](https://github.com/UnlegitMC/FDPClient/actions/workflow
 Discord: https://discord.gg/55x7TaHWXG  
 Gitee mirror: https://gitee.com/fdpclient-cn/FDPClient
 
+## WARNING!!!!
+不允许对FDPClient进行任何形式的修改然后售卖,也不能出售配置文件，修改后必须开源，更多请遵循GPLv3!!!  
+It is not allowed to modify the FDPClient in any form and then sell it, nor sell the configuration file. After modification, it must be open source. For more, please follow the GPLv3.  
+如有需要可以使用[Mashiro Base](https://github.com/UnlegitMC/Mashiro)  
+Can be changed to [Mashiro Base](https://github.com/UnlegitMC/Mashiro) if needed.  
+
+
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/UnlegitMC/FDPClient/issues).
 
