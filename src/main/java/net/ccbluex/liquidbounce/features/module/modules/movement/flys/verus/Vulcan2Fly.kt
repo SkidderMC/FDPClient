@@ -98,7 +98,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 doCancel = false
                 jitterY(0.5, 3)
                 mc.thePlayer.setPosition(lastAirX, mc.thePlayer.posY, lastAirZ)
-                if(flagTimes>4 && mc.thePlayer.ticksExisted % 3 == 0) {
+                if(flagTimes>7 && mc.thePlayer.ticksExisted % 3 == 0) {
                     mc.thePlayer.setPosition(groundX, mc.thePlayer.posY - (mc.thePlayer.posY % 1), groundZ)
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     mc.thePlayer.isAirBorne = true
@@ -120,11 +120,6 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionY = 0.0
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.jumpMovementFactor = 0.00f
-                if(vticks % 10 == 6) {
-                    mc.thePlayer.motionY = 0.5
-                }else if(vticks % 10 == 7) {
-                    mc.thePlayer.motionY = -0.5
-                }
                 val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 1, mc.thePlayer.posZ, true))
             }
