@@ -51,13 +51,11 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        val underBlock = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - (mc.thePlayer.posY % 1) -1, mc.thePlayer.posZ))?
-            if(!underBlock.isFullBlock) {
-                lastAirY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                lastAirX = mc.thePlayer.posX
-                lastAirZ = mc.thePlayer.posZ
-            }
-            : false
+        if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0,-2.0,0.0)).isEmpty()) {
+            lastAirY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
+            lastAirX = mc.thePlayer.posX
+            lastAirZ = mc.thePlayer.posZ
+        }
         
         mc.thePlayer.jumpMovementFactor = 0.0265f
         when(stage) {
