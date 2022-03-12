@@ -84,6 +84,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 doCancel = false
                 jitterY(0.5, 3)
                 if(flagTimes>2 && mc.thePlayer.ticksExisted % 3 == 0) {
+                    val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     mc.thePlayer.isAirBorne = true
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
                     stage = FlyStage.WAIT_APPLY
