@@ -51,7 +51,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        val underBlock = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: false
+        val underBlock = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - (mc.thePlayer.posY % 1) -1, mc.thePlayer.posZ)) ?: false
         if(underBlock != false) {
             if(!underBlock.isFullBlock) {
                 lastAirY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
