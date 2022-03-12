@@ -21,12 +21,10 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     private var lastZ = 0.0
     private var isSuccess = false
     private var vticks = 0
-    private var flagTimes = 0
     private var doCancel = false
 
     override fun onEnable() {
         vticks = 0
-        flagTimes = 0
         doCancel = false
         if(mc.thePlayer.posY % 1 != 0.0) {
             fly.state = false
@@ -88,7 +86,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionX = 0.0
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.jumpMovementFactor = 0.001f
-                if(flagTimes>2 && mc.thePlayer.ticksExisted % 3 == 0) {
+                if(mc.thePlayer.ticksExisted % 3 == 0) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ)
                     stage = FlyStage.WAIT_APPLY
@@ -155,9 +153,6 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
             } else {
                 lastX = packet.x
                 lastZ = packet.z
-                if (stage == FlyStage.WAIT_UPDATE) {
-                    flagTimes++
-                }
             }
             event.cancelEvent()
         }
