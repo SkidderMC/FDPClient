@@ -87,8 +87,8 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 jitterY(0.5, 3)
                 mc.thePlayer.motionX = 0.0
                 mc.thePlayer.motionZ = 0.0
-                mc.thePlayer.jumpMovementFactor = 0.00f
-                if(flagTimes>3 && mc.thePlayer.ticksExisted % 3 == 0) {
+                mc.thePlayer.jumpMovementFactor = 0.001f
+                if(flagTimes>2 && mc.thePlayer.ticksExisted % 3 == 0) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ)
                     stage = FlyStage.WAIT_APPLY
