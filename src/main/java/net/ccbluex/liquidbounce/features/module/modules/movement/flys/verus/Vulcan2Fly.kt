@@ -14,47 +14,54 @@ import net.minecraft.util.BlockPos
 
 class Vulcan2Fly : FlyMode("Vulcan2") {
 
-    private val timerValue = FloatValue("${valuePrefix}Speed", 1f, 0.5f, 3f)
+    private val timerValue = FloatValue("${valuePrefix}Speed", 1f, 0.1f, 3f)
 
     private var stage = FlyStage.WAIT_FLAG
     private var lastX = 0.0
     private var lastZ = 0.0
+    private var lastAirY =0.0
+    private var lastAirX =0.0
+    private var lastAirZ =0.0
+    private var groundX = 0.0
+    private var groundZ = 0.0
     private var isSuccess = false
     private var vticks = 0
     private var flagTimes = 0
     private var doCancel = false
-    private var spoofGround = false
 
     override fun onEnable() {
         vticks = 0
         flagTimes = 0
         doCancel = false
-        spoofGround = false
         if(mc.thePlayer.posY % 1 != 0.0) {
             fly.state = false
             ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cPlease stand on a solid block to fly!")
             isSuccess = true
-            return
         }
         stage = FlyStage.WAIT_FLAG
         isSuccess = false
-        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
+        ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
     }
     
     override fun onDisable() {
         mc.timer.timerSpeed = 1.0f
         if (!isSuccess) {
-            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
+            ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
         }
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0,-2.0,0.0)).isEmpty()) {
+            lastAirY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
+            lastAirX = mc.thePlayer.posX
+            lastAirZ = mc.thePlayer.posZ
+        }
         
         mc.thePlayer.jumpMovementFactor = 0.0265f
         when(stage) {
             FlyStage.WAIT_FLAG -> {
-                stage = FlyStage.FLYING
-                doCancel = true
+                isSuccess = true
+                jitterY(0.5, 3)
             }
             FlyStage.FLYING -> {
                 isSuccess = false
@@ -65,66 +72,69 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 
                 MovementUtils.strafe(timerValue.get())
                 doCancel = true
-                if(mc.gameSettings.keyBindJump.pressed) {
-                    mc.thePlayer.motionY = 0.5
-                }
 
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 3 == 0) {
-                    mc.thePlayer.motionY = -0.5
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
                     if(underBlock2.isFullBlock) {
                         stage = FlyStage.WAIT_UPDATE
-                        doCancel = false
-                        spoofGround = true
                         mc.thePlayer.motionX = 0.0
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ = 0.0
-                        mc.thePlayer.onGround = false
                         mc.thePlayer.jumpMovementFactor = 0.00f
+                        groundX = mc.thePlayer.posX
+                        groundZ = mc.thePlayer.posZ
                     } else {
-                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
+                        ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
                     }
                 }
             }
             FlyStage.WAIT_UPDATE -> {
+                mc.thePlayer.motionX = 0.1
                 mc.thePlayer.motionY = 0.0
-                mc.thePlayer.onGround = false
+                mc.thePlayer.motionZ = 0.0
+                mc.thePlayer.jumpMovementFactor = 0.00f
                 doCancel = false
-                spoofGround = true
                 jitterY(0.5, 3)
-                mc.thePlayer.jumpMovementFactor = 0.02f
-                if(flagTimes>0 && mc.thePlayer.ticksExisted % 3 == 0) {
+                mc.thePlayer.setPosition(lastAirX, mc.thePlayer.posY, lastAirZ)
+                if(flagTimes>4 && mc.thePlayer.ticksExisted % 3 == 0) {
+                    mc.thePlayer.setPosition(groundX, mc.thePlayer.posY - (mc.thePlayer.posY % 1), groundZ)
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY+1, mc.thePlayer.posZ)
+                    mc.thePlayer.isAirBorne = true
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
+                    stage = FlyStage.WAIT_APPLY
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ, true))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.41999998688698, mc.thePlayer.posZ, true))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.7531999805212, mc.thePlayer.posZ, true))
-                    stage = FlyStage.WAIT_APPLY
                 }
             }
             FlyStage.WAIT_APPLY -> {
-                spoofGround = false
                 vticks++
+                doCancel = false
                 if(vticks == 80) {
-                    ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
+                    ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
+                mc.timer.timerSpeed = 1f
                 mc.thePlayer.motionX = 0.0
                 mc.thePlayer.motionY = 0.0
-                mc.thePlayer.onGround = false
-                mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ)
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.jumpMovementFactor = 0.00f
+                if(vticks % 10 == 6) {
+                    mc.thePlayer.motionY = 0.5
+                }else if(vticks % 10 == 7) {
+                    mc.thePlayer.motionY = -0.5
+                }
+                val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
+                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 1, mc.thePlayer.posZ, true))
             }
         }
     }
 
     private fun jitterY(offset: Double, tick: Int) {
         if(mc.thePlayer.ticksExisted % tick == 0) {
-            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - (mc.thePlayer.posY % 1) + offset, mc.thePlayer.posZ)
+            mc.thePlayer.setPosition(mc.thePlayer.posX, fly.launchY + offset, mc.thePlayer.posZ)
         } else {
-            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - (mc.thePlayer.posY % 1) , mc.thePlayer.posZ)
+            mc.thePlayer.setPosition(mc.thePlayer.posX, fly.launchY, mc.thePlayer.posZ)
         }
         mc.thePlayer.motionY = 0.0
     }
@@ -137,10 +147,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 event.cancelEvent()
                 doCancel = false
             }
-            if(spoofGround) {
-                packet.onGround = true
-                spoofGround = false
-            }
+            packet.onGround = true
         } else if(packet is S08PacketPlayerPosLook) {
             if(stage == FlyStage.WAIT_FLAG) {
                 mc.thePlayer.setPosition(mc.thePlayer.posX, fly.launchY, mc.thePlayer.posZ)
