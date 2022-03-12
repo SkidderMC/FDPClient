@@ -62,6 +62,9 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 
                 MovementUtils.strafe(timerValue.get())
                 doCancel = true
+                if(mc.gameSettings.keyBindJump.pressed) {
+                    mc.thePlayer.motionY = 0.25
+                }
 
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 3 == 0) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
@@ -81,7 +84,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionY = 0.0
                 doCancel = false
                 jitterY(0.5, 3)
-                if(flagTimes>5 && mc.thePlayer.ticksExisted % 3 == 0) {
+                if(flagTimes>3 && mc.thePlayer.ticksExisted % 3 == 0) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ)
                     stage = FlyStage.WAIT_APPLY
