@@ -19,6 +19,11 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     private var stage = FlyStage.WAIT_FLAG
     private var lastX = 0.0
     private var lastZ = 0.0
+    private var lastAirY =0.0
+    private var lastAirX =0.0
+    private var lastAirZ =0.0
+    private var groundX = 0.0
+    private var groundZ = 0.0
     private var isSuccess = false
     private var vticks = 0
     private var flagTimes = 0
@@ -46,6 +51,15 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        val underBlock = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: false
+        if(underBlock != false) {
+            if(!underBlock.isFullBlock) {
+                lastAirY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
+                lastAirX = mc.thePlayer.posX
+                lastAirZ = mc.thePlayer.posZ
+            }
+        }
+        
         mc.thePlayer.jumpMovementFactor = 0.0265f
         when(stage) {
             FlyStage.WAIT_FLAG -> {
@@ -71,19 +85,23 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ = 0.0
                         mc.thePlayer.jumpMovementFactor = 0.00f
+                        groundX = mc.thePlayer.posX
+                        groundZ = mc.thePlayer.posZ
                     } else {
                         ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
                     }
                 }
             }
             FlyStage.WAIT_UPDATE -> {
-                mc.thePlayer.motionX = 0.0
+                mc.thePlayer.motionX = 0.1
                 mc.thePlayer.motionY = 0.0
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.jumpMovementFactor = 0.00f
                 doCancel = false
                 jitterY(0.5, 3)
-                if(flagTimes>2 && mc.thePlayer.ticksExisted % 3 == 0) {
+                mc.thePlayer.setPosition(lastAirX, mc.thePlayer.posY, lastAirZ)
+                if(flagTimes>5 && mc.thePlayer.ticksExisted % 3 == 0) {
+                    mc.thePlayer.setPosition(groundX, mc.thePlayer.posY, groundZ)
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     mc.thePlayer.isAirBorne = true
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
