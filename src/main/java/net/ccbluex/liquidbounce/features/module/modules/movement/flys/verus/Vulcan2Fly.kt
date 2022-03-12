@@ -19,22 +19,37 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     private var stage = FlyStage.WAIT_FLAG
     private var lastX = 0.0
     private var lastZ = 0.0
+    private var isSuccess = false
+    private var vticks = 0
 
     override fun onEnable() {
+        vticks = 0
         if(mc.thePlayer.posY % 1 != 0.0) {
             fly.state = false
             ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cPlease stand on a solid block to fly!")
+            isSuccess = true
         }
         stage = FlyStage.WAIT_FLAG
+        isSuccess = false
+        ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cPlease press Sneak before you land on ground!")
+    }
+    
+    override fun onDisable() {
+        mc.timer.timerSpeed = 1.0f
+        if (!isSuccess) {
+            ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
+        }
     }
 
     override fun onUpdate(event: UpdateEvent) {
         mc.thePlayer.jumpMovementFactor = 0.0265f
         when(stage) {
             FlyStage.WAIT_FLAG -> {
+                isSuccess = true
                 jitterY(0.5, 3)
             }
             FlyStage.FLYING -> {
+                isSuccess = false
                 jitterY(0.5, 3)
                 MovementUtils.strafe()
                 mc.timer.timerSpeed = timerValue.get()
@@ -58,10 +73,15 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 }
             }
             FlyStage.WAIT_APPLY -> {
+                vticks++
+                if(vticks == 80) {
+                    ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
+                }
                 mc.timer.timerSpeed = 1f
                 mc.thePlayer.motionX = 0.0
                 mc.thePlayer.motionY = 0.0
                 mc.thePlayer.motionZ = 0.0
+                mc.thePlayer.jumpMovementFactor = 0.00f
                 val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                 mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 1, mc.thePlayer.posZ, true))
             }
@@ -88,6 +108,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 stage = FlyStage.FLYING
             } else if (stage == FlyStage.WAIT_APPLY) {
                 if(packet.x != lastX && packet.z != lastZ) {
+                    isSuccess = true
                     fly.state = false
                     return
                 }
