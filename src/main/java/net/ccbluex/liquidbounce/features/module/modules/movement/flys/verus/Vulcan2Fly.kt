@@ -89,7 +89,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 doCancel = false
                 jitterY(0.5, 3)
                 mc.thePlayer.jumpMovementFactor = 0.02f
-                if(flagTimes>1 && mc.thePlayer.ticksExisted % 3 == 0) {
+                if(flagTimes>0 && mc.thePlayer.ticksExisted % 3 == 0) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ)
                     stage = FlyStage.WAIT_APPLY
@@ -101,26 +101,12 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
                 mc.thePlayer.motionX = 0.0
-                mc.thePlayer.motionY = 0.0
-                mc.thePlayer.motionZ = 0.0
-                mc.thePlayer.onGround = false
-                mc.thePlayer.jumpMovementFactor = 0.00f
-                val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ)
-                if(mc.thePlayer.ticksExisted % 10 == 0) {
-                    mc.timer.timerSpeed = 0.3f
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY+1 , mc.thePlayer.posZ)
-                    mc.thePlayer.isAirBorne = true
-                    mc.thePlayer.triggerAchievement(StatList.jumpStat)
-                    
-                    doCancel = false
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ, true))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 5, mc.thePlayer.posZ, true))
-                }else{
-                    mc.timer.timerSpeed = 1.0f
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 1, mc.thePlayer.posZ, true))
+                if(mc.thePlayer.onGround) {
+                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.onGround = false
                 }
-                doCancel = true
+                mc.thePlayer.motionZ = 0.0
+                mc.thePlayer.jumpMovementFactor = 0.00f
             }
         }
     }
