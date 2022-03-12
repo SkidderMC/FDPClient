@@ -112,10 +112,10 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY+1 , mc.thePlayer.posZ)
                     mc.thePlayer.isAirBorne = true
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
+                    
+                    doCancel = false
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ, true))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.41999998688698, mc.thePlayer.posZ, true))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.7531999805212, mc.thePlayer.posZ, true))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 1, mc.thePlayer.posZ, true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 5, mc.thePlayer.posZ, true))
                 }else{
                     mc.timer.timerSpeed = 1.0f
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 1, mc.thePlayer.posZ, true))
