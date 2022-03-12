@@ -78,8 +78,8 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
 
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 3 == 0) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                    val underBlock = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
-                    if(underBlock.isFullBlock) {
+                    val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
+                    if(underBlock2.isFullBlock) {
                         stage = FlyStage.WAIT_UPDATE
                         mc.thePlayer.motionX = 0.0
                         mc.thePlayer.motionY = 0.0
