@@ -72,8 +72,6 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ = 0.0
                         mc.thePlayer.jumpMovementFactor = 0.00f
-                        groundX = mc.thePlayer.posX
-                        groundZ = mc.thePlayer.posZ
                     } else {
                         ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
                     }
