@@ -37,16 +37,17 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
             fly.state = false
             ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cPlease stand on a solid block to fly!")
             isSuccess = true
+            return
         }
         stage = FlyStage.WAIT_FLAG
         isSuccess = false
-        ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
+        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
     }
     
     override fun onDisable() {
         mc.timer.timerSpeed = 1.0f
         if (!isSuccess) {
-            ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
         }
     }
 
@@ -85,7 +86,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                         groundX = mc.thePlayer.posX
                         groundZ = mc.thePlayer.posZ
                     } else {
-                        ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
+                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
                     }
                 }
             }
@@ -112,7 +113,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 vticks++
                 doCancel = false
                 if(vticks == 80) {
-                    ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
+                    ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
                 mc.timer.timerSpeed = 1f
                 mc.thePlayer.motionX = 0.0
