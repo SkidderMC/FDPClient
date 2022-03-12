@@ -101,9 +101,15 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
                 mc.thePlayer.motionX = 0.0
-                if(mc.thePlayer.onGround) {
-                    mc.thePlayer.motionY = 0.42
-                    mc.thePlayer.onGround = false
+                mc.thePlayer.motionY = 0.0
+                mc.thePlayer.onGround = false
+                if(vticks % 10 == 1) {
+                    val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
+                    mc.thePlayer.triggerAchievement(StatList.jumpStat)
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ, true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.41999998688698, mc.thePlayer.posZ, true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.7531999805212, mc.thePlayer.posZ, true))
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ)
                 }
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.jumpMovementFactor = 0.00f
