@@ -63,10 +63,11 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 MovementUtils.strafe(timerValue.get())
                 doCancel = true
                 if(mc.gameSettings.keyBindJump.pressed) {
-                    mc.thePlayer.motionY = 0.25
+                    mc.thePlayer.motionY = 0.5
                 }
 
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 3 == 0) {
+                    mc.thePlayer.motionY = -0.5
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
                     if(underBlock2.isFullBlock) {
@@ -125,9 +126,9 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
 
     private fun jitterY(offset: Double, tick: Int) {
         if(mc.thePlayer.ticksExisted % tick == 0) {
-            mc.thePlayer.setPosition(mc.thePlayer.posX, fly.launchY + offset, mc.thePlayer.posZ)
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - (mc.thePlayer.posY % 1) + offset, mc.thePlayer.posZ)
         } else {
-            mc.thePlayer.setPosition(mc.thePlayer.posX, fly.launchY, mc.thePlayer.posZ)
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - (mc.thePlayer.posY % 1) , mc.thePlayer.posZ)
         }
         mc.thePlayer.motionY = 0.0
     }
