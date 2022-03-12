@@ -85,9 +85,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionY = 0.0
                 doCancel = false
                 jitterY(0.5, 3)
-                mc.thePlayer.motionX = 0.0
-                mc.thePlayer.motionZ = 0.0
-                mc.thePlayer.jumpMovementFactor = 0.005f
+                mc.thePlayer.jumpMovementFactor = 0.02f
                 if(flagTimes>1 && mc.thePlayer.ticksExisted % 3 == 0) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ)
@@ -99,7 +97,6 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 if(vticks == 80) {
                     ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
-                mc.timer.timerSpeed = 1f
                 mc.thePlayer.motionX = 0.0
                 mc.thePlayer.motionY = 0.0
                 mc.thePlayer.motionZ = 0.0
@@ -107,6 +104,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                 mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ)
                 if(mc.thePlayer.ticksExisted % 10 == 0) {
+                    mc.timer.timerSpeed = 0.3f
                     mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY+1 , mc.thePlayer.posZ)
                     mc.thePlayer.isAirBorne = true
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
@@ -114,9 +112,8 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.41999998688698, mc.thePlayer.posZ, true))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.7531999805212, mc.thePlayer.posZ, true))
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 1, mc.thePlayer.posZ, true))
-                }else if(mc.thePlayer.ticksExisted % 3 == 0) {
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 1.5, mc.thePlayer.posZ, true))
                 }else{
+                    mc.timer.timerSpeed = 1.0f
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 1, mc.thePlayer.posZ, true))
                 }
                 doCancel = true
