@@ -545,7 +545,7 @@ class NoFall : Module() {
             } else if (mode.equals("Packet2", ignoreCase = true) && packetModify) {
                 packet.onGround = true
                 packetModify = false
-            } else if (mode.equals("Matrix", ignoreCase = true) && matrixCanSpoof) {
+            } else if (mode.equals("Matrix6.2.X", ignoreCase = true) && matrixCanSpoof) {
                 packet.onGround = true
                 matrixCanSpoof = false
             } else if (mode.equals("AAC4.4.X-Flag", ignoreCase = true) && mc.thePlayer.fallDistance > 1.6) {
