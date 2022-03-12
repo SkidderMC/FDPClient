@@ -23,25 +23,28 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     private var vticks = 0
     private var flagTimes = 0
     private var doCancel = false
+    private var spoofGround = false
 
     override fun onEnable() {
         vticks = 0
         flagTimes = 0
         doCancel = false
+        spoofGround = false
         if(mc.thePlayer.posY % 1 != 0.0) {
             fly.state = false
             ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cPlease stand on a solid block to fly!")
             isSuccess = true
+            return
         }
         stage = FlyStage.WAIT_FLAG
         isSuccess = false
-        ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
+        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
     }
     
     override fun onDisable() {
         mc.timer.timerSpeed = 1.0f
         if (!isSuccess) {
-            ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
         }
     }
 
@@ -73,13 +76,14 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     if(underBlock2.isFullBlock) {
                         stage = FlyStage.WAIT_UPDATE
                         doCancel = false
+                        spoofGround = true
                         mc.thePlayer.motionX = 0.0
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ = 0.0
                         mc.thePlayer.onGround = false
                         mc.thePlayer.jumpMovementFactor = 0.00f
                     } else {
-                        ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
+                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
                     }
                 }
             }
@@ -87,6 +91,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionY = 0.0
                 mc.thePlayer.onGround = false
                 doCancel = false
+                spoofGround = true
                 jitterY(0.5, 3)
                 mc.thePlayer.jumpMovementFactor = 0.02f
                 if(flagTimes>0 && mc.thePlayer.ticksExisted % 3 == 0) {
@@ -96,12 +101,13 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 }
             }
             FlyStage.WAIT_APPLY -> {
+                spoofGround = false
                 vticks++
                 if(vticks == 80) {
-                    ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
+                    ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
                 mc.thePlayer.motionX = 0.0
-                mc.thePlayer.motionY = 0.0
+                if (mc.thePlayer.onGround) mc.thePlayer.motionY = 0.0
                 mc.thePlayer.onGround = false
                 if(vticks % 10 == 1) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
@@ -134,7 +140,10 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 event.cancelEvent()
                 doCancel = false
             }
-            packet.onGround = true
+            if(spoofGround) {
+                packet.onGround = true
+                spoofGround = false
+            }
         } else if(packet is S08PacketPlayerPosLook) {
             if(stage == FlyStage.WAIT_FLAG) {
                 mc.thePlayer.setPosition(mc.thePlayer.posX, fly.launchY, mc.thePlayer.posZ)
