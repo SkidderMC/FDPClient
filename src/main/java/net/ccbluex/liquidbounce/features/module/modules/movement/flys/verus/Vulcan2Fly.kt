@@ -29,6 +29,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        mc.thePlayer.jumpMovementFactor = 0.0265f
         when(stage) {
             FlyStage.WAIT_FLAG -> {
                 jitterY(0.5, 3)
