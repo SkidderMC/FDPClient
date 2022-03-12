@@ -72,9 +72,11 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
                     if(underBlock2.isFullBlock) {
                         stage = FlyStage.WAIT_UPDATE
+                        doCancel = false
                         mc.thePlayer.motionX = 0.0
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ = 0.0
+                        mc.thePlayer.onGround = false
                         mc.thePlayer.jumpMovementFactor = 0.00f
                     } else {
                         ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
@@ -83,6 +85,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
             }
             FlyStage.WAIT_UPDATE -> {
                 mc.thePlayer.motionY = 0.0
+                mc.thePlayer.onGround = false
                 doCancel = false
                 jitterY(0.5, 3)
                 mc.thePlayer.jumpMovementFactor = 0.02f
@@ -100,6 +103,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionX = 0.0
                 mc.thePlayer.motionY = 0.0
                 mc.thePlayer.motionZ = 0.0
+                mc.thePlayer.onGround = false
                 mc.thePlayer.jumpMovementFactor = 0.00f
                 val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                 mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ)
