@@ -78,6 +78,7 @@ class NoFall : Module() {
     private val aac4FlagCooldown = MSTimer()
     private var aac4FlagCount = 0
     private var wasTimer = false
+    private var matrixSend = false
 
     override fun onEnable() {
         aac4FlagCount = 0
@@ -100,6 +101,7 @@ class NoFall : Module() {
     }
     
     override fun onDisable() {
+        matrixSend = false
         aac4FlagCount = 0
         aac4Fakelag = false
         aac5Check = false
@@ -347,7 +349,7 @@ class NoFall : Module() {
             "matrix6.6.3" -> {
                 if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3) {
                     mc.thePlayer.fallDistance = 0.0f
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
+                    matrixSend = true
                     mc.timer.timerSpeed = 0.5f
                     wasTimer = true
                 }
@@ -511,6 +513,10 @@ class NoFall : Module() {
         }
         if (event.packet is C03PacketPlayer) {
             val packet = event.packet
+            if (matrixSend) {
+                matrixSend = false
+                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
+            }
             if (mode.equals("SpoofGround", ignoreCase = true) && mc.thePlayer.fallDistance > 2.5) {
                 packet.onGround = true
             } else if (mode.equals("AlwaysSpoofGround", ignoreCase = true)) {
