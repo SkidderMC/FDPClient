@@ -104,7 +104,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.jumpMovementFactor = 0.00f
                 val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ)
+                mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY+1 , mc.thePlayer.posZ)
                 if(mc.thePlayer.ticksExisted % 10 == 0) {
                     mc.thePlayer.isAirBorne = true
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
