@@ -96,7 +96,11 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.jumpMovementFactor = 0.02f
                 if(flagTimes>0 && mc.thePlayer.ticksExisted % 3 == 0) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ)
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, fixedY+1, mc.thePlayer.posZ)
+                    mc.thePlayer.triggerAchievement(StatList.jumpStat)
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ, true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.41999998688698, mc.thePlayer.posZ, true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.7531999805212, mc.thePlayer.posZ, true))
                     stage = FlyStage.WAIT_APPLY
                 }
             }
@@ -107,16 +111,9 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
                 mc.thePlayer.motionX = 0.0
-                if (mc.thePlayer.onGround) mc.thePlayer.motionY = 0.0
+                mc.thePlayer.motionY = 0.0
                 mc.thePlayer.onGround = false
-                if(vticks % 10 == 1) {
-                    val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                    mc.thePlayer.triggerAchievement(StatList.jumpStat)
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY, mc.thePlayer.posZ, true))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.41999998688698, mc.thePlayer.posZ, true))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY + 0.7531999805212, mc.thePlayer.posZ, true))
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ)
-                }
+                mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ)
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.jumpMovementFactor = 0.00f
             }
