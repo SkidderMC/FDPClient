@@ -31,7 +31,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
         }
         stage = FlyStage.WAIT_FLAG
         isSuccess = false
-        ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §cPlease press Sneak before you land on ground!")
+        ClientUtils.displayAlert("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
     }
     
     override fun onDisable() {
