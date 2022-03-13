@@ -1,0 +1,3 @@
+[submodule "src/main/resources/assets/minecraft/fdpclient/FDPTranslations"]
+	path = src/main/resources/assets/minecraft/fdpclient/translations
+	url = git@github.com:UnlegitMC/FDPTranslations.git
