@@ -52,7 +52,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionZ = 0.0
                 
                 MovementUtils.strafe(timerValue.get())
-                doCancel = false
+                doCancel = true
                 
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 2 == 1) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
@@ -63,6 +63,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                         mc.thePlayer.motionY = 0.0
                         mc.thePlayer.motionZ = 0.0
                         mc.thePlayer.jumpMovementFactor = 0.00f
+                        doCancel = false
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ, true))
                         doCancel = true
                     } else {
