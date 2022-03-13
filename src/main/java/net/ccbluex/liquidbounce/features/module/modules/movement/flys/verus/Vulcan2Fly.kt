@@ -52,7 +52,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionZ = 0.0
                 
                 MovementUtils.strafe(timerValue.get())
-                doCancel = true
+                doCancel = false
                 
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 2 == 1) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
@@ -64,6 +64,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                         mc.thePlayer.motionZ = 0.0
                         mc.thePlayer.jumpMovementFactor = 0.00f
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ, true))
+                        doCancel = true
                     } else {
                         ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
                     }
