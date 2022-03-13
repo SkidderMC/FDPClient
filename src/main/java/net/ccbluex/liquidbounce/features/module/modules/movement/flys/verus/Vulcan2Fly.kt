@@ -83,7 +83,11 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.jumpMovementFactor = 0.00f
                 val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 10, mc.thePlayer.posZ, true))
+                if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -10.0, 0.0)).isEmpty()) {
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 10, mc.thePlayer.posZ, true))
+                }else{
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 114514, mc.thePlayer.posZ, true))
+                }
                 doCancel = true
             }
         }
