@@ -19,6 +19,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     private var isSuccess = false
     private var vticks = 0
     private var doCancel = false
+    private var stage = FlyStage.FLYING
 
     override fun onEnable() {
         vticks = 0
