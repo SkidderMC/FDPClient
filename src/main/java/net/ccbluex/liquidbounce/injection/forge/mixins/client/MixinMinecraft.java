@@ -247,6 +247,9 @@ public abstract class MixinMinecraft {
     private void setWindowIcon(CallbackInfo callbackInfo) throws IOException {
         if (Util.getOSType() != Util.EnumOS.OSX) {
             BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png"));
+            if(image.getWidth() != 32 || image.getHeight() != 32) {
+                image = ImageUtils.resizeImage(image, 32, 32);
+            }
             Display.setIcon(new ByteBuffer[]{ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16)),
                     ImageUtils.readImageToBuffer(image)});
             callbackInfo.cancel();
