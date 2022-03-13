@@ -39,6 +39,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
         mc.timer.timerSpeed = 1.0f
         if (!isSuccess) {
             ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cIf it keeps happen, DONT use it again in CURRENT gameplay")
         }
     }
 
