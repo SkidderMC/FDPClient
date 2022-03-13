@@ -134,9 +134,9 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
 
     private fun jitterY(offset: Double, tick: Int) {
         if(mc.thePlayer.ticksExisted % tick == 0) {
-            mc.thePlayer.setPosition(mc.thePlayer.posX, fly.launchY + offset, mc.thePlayer.posZ)
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - (mc.thePlayer.posY % 1) + offset, mc.thePlayer.posZ)
         } else {
-            mc.thePlayer.setPosition(mc.thePlayer.posX, fly.launchY, mc.thePlayer.posZ)
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - (mc.thePlayer.posY % 1), mc.thePlayer.posZ)
         }
         mc.thePlayer.motionY = 0.0
     }
@@ -152,7 +152,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
             packet.onGround = true
         } else if(packet is S08PacketPlayerPosLook) {
             if(stage == FlyStage.WAIT_FLAG) {
-                mc.thePlayer.setPosition(mc.thePlayer.posX, fly.launchY, mc.thePlayer.posZ)
+                mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - (mc.thePlayer.posY % 1), mc.thePlayer.posZ)
                 stage = FlyStage.FLYING
             } else if (stage == FlyStage.WAIT_APPLY) {
                 if(packet.x != lastX && packet.z != lastZ) {
