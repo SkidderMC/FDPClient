@@ -75,11 +75,11 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 doCancel = true
                 
                 if(mc.gameSettings.keyBindJump.pressed && mc.thePlayer.ticksExisted % 2 == 0) {
-                    mc.thePlayer.motionY = 0.5
+                    mc.thePlayer.motionY = 1.0
                 }
 
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 2 == 1) {
-                    mc.thePlayer.motionY = -0.5
+                    mc.thePlayer.motionY = -1.0
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
                     if(underBlock2.isFullBlock) {
