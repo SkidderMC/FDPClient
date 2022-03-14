@@ -163,6 +163,12 @@ object ColorUtils {
         var v1 = ceil(System.currentTimeMillis() / speed + var2 * 109L) / 5
         return Color.getHSBColor(if ((360.0.also { v1 %= it } / 360.0) <0.5) { -(v1 / 360.0).toFloat() } else { (v1 / 360.0).toFloat() }, st, bright)
     }
+    
+    fun TwoRainbow(offset: Long, alpha: Float): Color {
+        val color = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
+        return Color(color.red / 255.0F * 1.0F, color.green / 255.0F * 1.0F, ccolor.blue / 255.0f * 1, color.alpha / 255.0f)
+    
+    }
 
     fun fade(color: Color, index: Int, count: Int): Color {
         val hsb = FloatArray(3)
