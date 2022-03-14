@@ -219,7 +219,7 @@ class NoSlow : Module() {
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && nextTemp && isBlocking) {
             if(packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
                 event.cancelEvent()
-            } else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C0FPacketConfirmTransaction || packet is C00PacketKeepAlive || packet is C02PacketUseEntity) {
+            } else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity) {
                 if (modeValue.equals("Vulcan") && waitC03 && packet is C03PacketPlayer) {
                     waitC03 = false
                     return
