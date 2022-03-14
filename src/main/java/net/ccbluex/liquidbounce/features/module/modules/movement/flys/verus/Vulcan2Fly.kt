@@ -22,6 +22,9 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     private var vticks = 0
     private var doCancel = false
     private var stage = FlyStage.FLYING
+    private var startX = 0.0
+    private var startZ = 0.0
+    private var startY = 0.0
 
     override fun onEnable() {
         vticks = 0
@@ -35,11 +38,16 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
         stage = FlyStage.FLYING
         isSuccess = false
         ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
+        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §7Tips: DO NOT Use killaura when you're flying!")
+        startX = mc.thePlayer.posX
+        startY = mc.thePlayer.posY
+        startZ = mc.thePlayer.posZ
     }
     
     override fun onDisable() {
         mc.timer.timerSpeed = 1.0f
         if (!isSuccess) {
+            mc.thePlayer.setPosition(startX, startY, startZ)
             ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
             ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cIf it keeps happen, DONT use it again in CURRENT gameplay")
         }
@@ -69,6 +77,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                         doCancel = false
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ, true))
                         doCancel = true
+                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aWaiting for landing...")
                     } else {
                         ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
                     }
@@ -77,7 +86,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
             FlyStage.WAIT_APPLY -> {
                 vticks++
                 doCancel = false
-                if(vticks == 80) {
+                if(vticks == 60) {
                     ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
                 mc.timer.timerSpeed = 1f
@@ -89,7 +98,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -10.0, 0.0)).isEmpty()) {
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 10, mc.thePlayer.posZ, true))
                 }else{
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 114514, mc.thePlayer.posZ, true))
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 1024, mc.thePlayer.posZ, true))
                 }
                 doCancel = true
             }
@@ -109,7 +118,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
             if (stage == FlyStage.WAIT_APPLY) {
                 if(sqrt((packet.x-mc.thePlayer.posX)*(packet.x-mc.thePlayer.posX)
                              +(packet.y-mc.thePlayer.posY)*(packet.y-mc.thePlayer.posY)
-                             +(packet.z-mc.thePlayer.posZ)*(packet.z-mc.thePlayer.posZ)) < 1.0) {
+                             +(packet.z-mc.thePlayer.posZ)*(packet.z-mc.thePlayer.posZ)) < 1.4) {
                     isSuccess = true
                     fly.state = false
                     return
