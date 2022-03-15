@@ -8,8 +8,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClassUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import org.lwjgl.input.Keyboard
@@ -39,6 +41,8 @@ class Fly : Module() {
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Up", "Down", "Off"), "Up")
     private val fakeDamageValue = BoolValue("FakeDamage", false)
+    private val viewBobbingValue = BoolValue("ViewBobbing", false)
+    private val viewBobbingYawValue = FloatValue("ViewBobbingYaw", 0.1f, 0f, 0.5f)
 
     var launchX = 0.0
     var launchY = 0.0
@@ -100,6 +104,10 @@ class Fly : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        if(viewBobbingValue.get()) {
+            mc.thePlayer.cameraYaw = viewBobbingYawValue.get()
+            mc.thePlayer.prevCameraYaw = viewBobbingYawValue.get()
+        }
         mode.onMotion(event)
     }
 
