@@ -61,6 +61,7 @@ class NoSlow : Module() {
     private var packetBuf = LinkedList<Packet<INetHandlerPlayServer>>()
     private var nextTemp = false
     private var waitC03 = false
+    private var lastBlockingStat = false
 
     override fun onDisable() {
         msTimer.reset()
@@ -191,7 +192,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && isBlocking) {
+        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
                 nextTemp = false
                 PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
@@ -209,6 +210,10 @@ class NoSlow : Module() {
                 }
             }
             if(!nextTemp) {
+                lastBlockingStat = isBlocking
+                if (!isBlocking) {
+                    return
+                }
                 PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
                 nextTemp = true
                 waitC03 = modeValue.equals("Vulcan")
@@ -224,10 +229,10 @@ class NoSlow : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && nextTemp && isBlocking) {
-            if(packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
+        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && nextTemp) {
+            if((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlocking) {
                 event.cancelEvent()
-            } else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity) {
+            }else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
                 if (modeValue.equals("Vulcan") && waitC03 && packet is C03PacketPlayer) {
                     waitC03 = false
                     return
