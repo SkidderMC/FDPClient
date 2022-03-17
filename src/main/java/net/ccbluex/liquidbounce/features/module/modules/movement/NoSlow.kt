@@ -254,7 +254,7 @@ class NoSlow : Module() {
                     if (diff <= 8) {
                         event.cancelEvent()
                         pendingFlagApplyPacket = false
-                        PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.getYaw(), packet.getPitch(), true))
+                        PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.getYaw(), packet.getPitch(), mc.thePlayer.onGround))
                     }
                 }
             }
