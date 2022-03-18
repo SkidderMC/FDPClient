@@ -66,7 +66,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 doCancel = true
                 
                 if(mc.gameSettings.keyBindSneak.pressed) {
-                    MovementUtils.strafe(0.45)
+                    MovementUtils.strafe(0.45f)
                     //More easy to land on ground ....
                 }
                 
