@@ -80,6 +80,8 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                         mc.thePlayer.motionZ = 0.0
                         mc.thePlayer.jumpMovementFactor = 0.00f
                         doCancel = false
+                        mc.thePlayer.onGround = false
+                        mc.thePlayer.setPosition(mc.thePlayer.posX - (mc.thePlayer.posX % 1) + 0.5, fixedY, mc.thePlayer.posZ - (mc.thePlayer.posZ % 1) + 0.5)
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ, true))
                         doCancel = true
                         ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aWaiting for landing...")
