@@ -22,8 +22,8 @@ import net.minecraft.potion.Potion
 
 @ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
 class Sprint : Module() {
+    val jumpDirectionsValue = BoolValue("JumpDirection", true)
     val allDirectionsValue = BoolValue("AllDirections", true)
-    val allDirectionsJumpValue = BoolValue("AllDirectionsJump", true).displayable { allDirectionsValue.get() }
     private val allDirectionsBypassValue = ListValue("AllDirectionsBypass", arrayOf("Rotate", "Toggle", "Minemora", "Spoof", "LimitSpeed", "None"), "None").displayable { allDirectionsValue.get() }
     private val blindnessValue = BoolValue("Blindness", true)
     val useItemValue = BoolValue("UseItem", false)

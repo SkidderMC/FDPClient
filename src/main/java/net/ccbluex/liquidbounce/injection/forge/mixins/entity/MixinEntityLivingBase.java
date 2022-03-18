@@ -78,7 +78,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
         if(this.isSprinting()) {
             final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
-            float f = ((sprint.getState() && sprint.getAllDirectionsJumpValue().get()) ? MovementUtils.INSTANCE.getMovingYaw() : this.rotationYaw) * 0.017453292F;
+            float f = ((sprint.getState() && sprint.getJumpDirectionsValue().get()) ? MovementUtils.INSTANCE.getMovingYaw() : this.rotationYaw) * 0.017453292F;
             this.motionX -= MathHelper.sin(f) * 0.2F;
             this.motionZ += MathHelper.cos(f) * 0.2F;
         }
