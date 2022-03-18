@@ -7,7 +7,7 @@ class VulcanHop : SpeedMode("VulcanHop") {
 
     override fun onUpdate() {
         mc.timer.timerSpeed = 1.00f
-        if (Math.abs(mc.thePlayer.movementInput.moveStrafe) == 0) {
+        if (Math.abs(mc.thePlayer.movementInput.moveStrafe) < 0.1f) {
             mc.thePlayer.jumpMovementFactor = 0.0265f
         }else {
             mc.thePlayer.jumpMovementFactor = 0.0244f
