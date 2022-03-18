@@ -81,8 +81,8 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                         mc.thePlayer.jumpMovementFactor = 0.00f
                         doCancel = false
                         mc.thePlayer.onGround = false
-                        val fixedX = mc.thePlayer.posX - (mc.thePlayer.posX % 1)
-                        val fixedZ = mc.thePlayer.posZ - (mc.thePlayer.posZ % 1)
+                        var fixedX = mc.thePlayer.posX - (mc.thePlayer.posX % 1)
+                        var fixedZ = mc.thePlayer.posZ - (mc.thePlayer.posZ % 1)
                         if(fixedX>0) {
                             fixedX += 0.5
                         }else{
