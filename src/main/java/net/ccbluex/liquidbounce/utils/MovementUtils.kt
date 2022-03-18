@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
 import kotlin.math.cos
 import kotlin.math.sin
@@ -84,6 +85,18 @@ object MovementUtils : MinecraftInstance() {
             if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward
             return Math.toRadians(rotationYaw.toDouble())
         }
+
+    val jumpMotion: Float
+        get() {
+            var mot = 0.42f
+            if (mc.thePlayer.isPotionActive(Potion.jump)) {
+                mot += (mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1).toFloat() * 0.1f
+            }
+            return mot
+        }
+
+    val movingYaw: Float
+        get() = (direction * 180f / Math.PI).toFloat()
 
     var bps = 0.0
         private set

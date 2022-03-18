@@ -55,6 +55,7 @@ class VulcanFly : FlyMode("Vulcan") {
             mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
             mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, false))
             event.cancelEvent()
+            mc.thePlayer.jump()
             clip(0.127318f, 0f)
             clip(3.425559f, 3.7f)
             clip(3.14285f, 3.54f)
