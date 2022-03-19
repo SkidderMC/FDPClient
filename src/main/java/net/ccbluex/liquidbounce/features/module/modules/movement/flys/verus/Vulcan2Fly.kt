@@ -16,7 +16,7 @@ import kotlin.math.sqrt
 
 class Vulcan2Fly : FlyMode("Vulcan2") {
 
-    private val timerValue = FloatValue("${valuePrefix}Speed", 1f, 0.1f, 3f)
+    private val timerValue = FloatValue("${valuePrefix}Speed", 1f, 0.1f, 6f)
 
     private var isSuccess = false
     private var vticks = 0
@@ -65,6 +65,11 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 MovementUtils.strafe(timerValue.get())
                 doCancel = true
                 
+                if(mc.gameSettings.keyBindSneak.pressed) {
+                    MovementUtils.strafe(0.45f)
+                    //More easy to land on ground ....
+                }
+                
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 2 == 1) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
@@ -75,6 +80,20 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                         mc.thePlayer.motionZ = 0.0
                         mc.thePlayer.jumpMovementFactor = 0.00f
                         doCancel = false
+                        mc.thePlayer.onGround = false
+                        var fixedX = mc.thePlayer.posX - (mc.thePlayer.posX % 1)
+                        var fixedZ = mc.thePlayer.posZ - (mc.thePlayer.posZ % 1)
+                        if(fixedX>0) {
+                            fixedX += 0.5
+                        }else{
+                            fixedX -= 0.5
+                        }
+                        if(fixedZ>0) {
+                            fixedZ += 0.5
+                        }else{
+                            fixedZ -= 0.5
+                        }
+                        mc.thePlayer.setPosition(fixedX, fixedY, fixedZ)
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ, true))
                         doCancel = true
                         ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aWaiting for landing...")
@@ -95,9 +114,9 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.jumpMovementFactor = 0.00f
                 val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -10.0, 0.0)).isEmpty()) {
+                if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -10.0, 0.0)).isEmpty() && mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -12.0, 0.0)).isEmpty()) {
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 10, mc.thePlayer.posZ, true))
-                }else{
+                }else {
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 1024, mc.thePlayer.posZ, true))
                 }
                 doCancel = true
