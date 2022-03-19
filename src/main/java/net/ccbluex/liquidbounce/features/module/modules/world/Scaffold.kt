@@ -384,9 +384,9 @@ class Scaffold : Module() {
             // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
             packet.stack = mc.thePlayer.inventory.mainInventory[slot]
             // illegal facing checks
-            packet.facingX %= 1
-            packet.facingY %= 1
-            packet.facingZ %= 1
+            packet.facingX = packet.facingX.coerceIn(-1.0000F, 1.0000F)
+			packet.facingY = packet.facingY.coerceIn(-1.0000F, 1.0000F)
+			packet.facingZ = packet.facingZ.coerceIn(-1.0000F, 1.0000F)
         }
     }
 
