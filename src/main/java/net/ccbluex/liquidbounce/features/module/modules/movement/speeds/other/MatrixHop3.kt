@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 
-class MatrixHop2 : SpeedMode("Matrix6.7.0") {
+class MatrixHop3 : SpeedMode("Matrix6.7.0") {
 
     override fun onUpdate() {
         if (!mc.thePlayer.onGround) {
