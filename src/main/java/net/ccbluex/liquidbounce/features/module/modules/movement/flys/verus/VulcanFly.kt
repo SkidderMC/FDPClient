@@ -5,6 +5,7 @@ import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -13,12 +14,14 @@ import kotlin.math.sin
 
 class VulcanFly : FlyMode("Vulcan") {
 
+    val canClipValue = BoolValue("CanClip", true)
+
     private var waitFlag = false
     private var canGlide = false
     private var ticks = 0
 
     override fun onEnable() {
-        if(mc.thePlayer.onGround) {
+        if(mc.thePlayer.onGround && canClipValue.get()) {
             clip(0f, -0.1f)
             waitFlag = true
             canGlide = false
@@ -52,6 +55,7 @@ class VulcanFly : FlyMode("Vulcan") {
             mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
             mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, false))
             event.cancelEvent()
+            mc.thePlayer.jump()
             clip(0.127318f, 0f)
             clip(3.425559f, 3.7f)
             clip(3.14285f, 3.54f)
