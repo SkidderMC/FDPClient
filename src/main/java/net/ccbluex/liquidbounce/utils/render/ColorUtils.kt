@@ -166,7 +166,7 @@ object ColorUtils {
     
     fun TwoRainbow(offset: Long, alpha: Float): Color {
         val color = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
-        return Color(color.red / 255.0F * 1.0F, color.green / 255.0F * 1.0F, ccolor.blue / 255.0f * 1, color.alpha / 255.0f)
+        return Color(color.red / 255.0F * 1.0F, color.green / 255.0F * 1.0F, color.blue / 255.0f * 1, color.alpha / 255.0f)
     
     }
 
