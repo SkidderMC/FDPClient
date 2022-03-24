@@ -24,7 +24,7 @@ class VulcanHop : SpeedMode("VulcanHop") {
             mc.thePlayer.jump()
             MovementUtils.strafe()
 			if(MovementUtils.getSpeed() < 0.5f) {
-			    MovementUtils.strafe(0.485f)
+			    MovementUtils.strafe(0.4849f)
 			}
         }else if (!MovementUtils.isMoving()) {
             mc.timer.timerSpeed = 1.00f
