@@ -14,21 +14,21 @@ class MatrixHop3 : SpeedMode("Matrix6.7.0") {
 		}
         if (!mc.thePlayer.onGround) {
             mc.gameSettings.keyBindJump.pressed = mc.gameSettings.keyBindJump.isKeyDown
-            if (MovementUtils.getSpeed() < 0.218) {
-                MovementUtils.strafe(0.218f)
+            if (MovementUtils.getSpeed() < 0.2177) {
+                MovementUtils.strafe(0.2177f)
             }
         }
         if (Math.abs(mc.thePlayer.movementInput.moveStrafe) < 0.1) {
-            mc.thePlayer.jumpMovementFactor = 0.02605f
+            mc.thePlayer.jumpMovementFactor = 0.026f
         }else{
-            mc.thePlayer.jumpMovementFactor = 0.025f
+            mc.thePlayer.jumpMovementFactor = 0.0247f
         }
         if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
             mc.gameSettings.keyBindJump.pressed = false
             mc.thePlayer.jump()
             mc.thePlayer.motionY = 0.41050001145141919810
             if (Math.abs(mc.thePlayer.movementInput.moveStrafe) < 0.1) {
-                MovementUtils.strafe((MovementUtils.getSpeed() * 1.00299601145141919810).toFloat())
+                MovementUtils.strafe()
             }
         }
         if (!MovementUtils.isMoving()) {
