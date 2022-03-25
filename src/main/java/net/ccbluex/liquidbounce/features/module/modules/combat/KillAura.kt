@@ -233,6 +233,9 @@ class KillAura : Module() {
     // Fake block status
     var blockingStatus = false
 
+    val displayBlocking: Boolean
+        get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
+
     /**
      * Enable kill aura module
      */

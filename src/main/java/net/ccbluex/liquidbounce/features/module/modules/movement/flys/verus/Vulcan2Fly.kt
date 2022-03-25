@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.stats.StatList
 import net.minecraft.util.BlockPos
 import kotlin.math.sqrt
 

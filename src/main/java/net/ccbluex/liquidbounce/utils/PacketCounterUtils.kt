@@ -7,7 +7,6 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.TickEvent
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 
-
 object PacketCounterUtils : Listenable {
 
     init {
@@ -22,20 +21,20 @@ object PacketCounterUtils : Listenable {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (event.packet.javaClass.simpleName.startsWith("C")) {
-            outBound++
-        } else if (event.packet.javaClass.simpleName.startsWith("S")) {
+        if (event.isServerSide()) {
             inBound++
+        } else {
+            outBound++
         }
     }
 
     @EventTarget
-    fun onTick(event: TickEvent?) {
+    fun onTick(event: TickEvent) {
         if (packetTimer.hasTimePassed(1000L)) {
             avgInBound = inBound
             avgOutBound = outBound
             outBound = 0
-            inBound = outBound
+            inBound = 0
             packetTimer.reset()
         }
     }

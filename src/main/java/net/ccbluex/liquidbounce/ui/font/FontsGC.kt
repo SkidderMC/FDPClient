@@ -3,7 +3,6 @@ package net.ccbluex.liquidbounce.ui.font
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.TickEvent
-import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
 
 object FontsGC : Listenable {
     private val fontRenderers = mutableListOf<GameFontRenderer>()

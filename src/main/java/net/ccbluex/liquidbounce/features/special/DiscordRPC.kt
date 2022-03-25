@@ -6,7 +6,6 @@ import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ServerUtils
-import net.minecraft.client.Minecraft
 import org.json.JSONObject
 import java.time.OffsetDateTime
 import kotlin.concurrent.thread
