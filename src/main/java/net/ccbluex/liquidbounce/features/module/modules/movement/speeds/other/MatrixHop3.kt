@@ -50,6 +50,9 @@ class MatrixHop3 : SpeedMode("Matrix6.7.0") {
     override fun onPacket(event: PacketEvent) {
     	val packet = event.packet
         if (packet is S12PacketEntityVelocity) {
+	    if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
+                return
+            }
 	    noVelocityY = 10
 	}
     }
