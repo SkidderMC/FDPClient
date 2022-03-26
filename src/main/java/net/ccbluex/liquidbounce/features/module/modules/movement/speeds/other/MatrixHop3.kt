@@ -9,8 +9,8 @@ class MatrixHop3 : SpeedMode("Matrix6.7.0") {
     private var noVelocityY = 0
 
     override fun onUpdate() {
-	if (noVelocityY > 0) {
-	    noVelocityY--
+	if (noVelocityY >= 0) {
+	    noVelocityY = noVelocityY - 1
 	}
         if (!mc.thePlayer.onGround && noVelocityY <= 0) {
             if (mc.thePlayer.motionY > 0) {
@@ -45,6 +45,7 @@ class MatrixHop3 : SpeedMode("Matrix6.7.0") {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1f
+        noVelocityY = 0
     }
     override fun onPacket(event: PacketEvent) {
     	val packet = event.packet
