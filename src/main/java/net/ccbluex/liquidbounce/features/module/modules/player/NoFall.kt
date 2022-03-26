@@ -352,7 +352,6 @@ class NoFall : Module() {
                     matrixSend = true
                     mc.timer.timerSpeed = 0.5f
                     wasTimer = true
-                    mc.thePlayer.jumpMovementFactor = 0.01f
                 }
             }
             "matrix6.2.x" -> {
