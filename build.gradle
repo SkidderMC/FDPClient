@@ -43,7 +43,7 @@ configurations {
 }
 
 dependencies {
-    include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+    include("org.spongepowered:mixin:0.8.5") {
         transitive = false
         exclude module: "guava"
         exclude module: "commons-io"
