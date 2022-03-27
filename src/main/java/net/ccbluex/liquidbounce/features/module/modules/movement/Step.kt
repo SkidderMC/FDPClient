@@ -347,7 +347,7 @@ class Step : Module() {
                             rstepHeight <= 2.005 && rstepHeight > 1.5 -> {
                                 val stpPacket = arrayOf(0.41999998688698, 0.7531999805212, 1.17319996740818, 1.5064, 1.75454, 1.91931)
                                 stpPacket.forEach {
-                                    if(it == 0.7532) {
+                                    if(it >= 0.753 && it <= 0.754) {
                                         mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                             stepY + it, stepZ, true))
                                     }else {
