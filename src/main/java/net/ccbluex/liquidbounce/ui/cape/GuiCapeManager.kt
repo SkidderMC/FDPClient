@@ -19,19 +19,21 @@ import javax.imageio.ImageIO
 object GuiCapeManager : GuiScreen() {
     private val jsonFile = File(LiquidBounce.fileManager.capesDir, "cape.json")
 
-    val FDP_CAPE_1 = loadCapeFromResource("FDP Cape 1", "assets/minecraft/fdpclient/cape/cape1.png")
-    val FDP_CAPE_2 = loadCapeFromResource("FDP Cape 2", "assets/minecraft/fdpclient/cape/cape2.png")
+    private val embeddedCapes = mutableListOf<ICape>()
 
-    var nowCape: ICape? = FDP_CAPE_1
+    var nowCape: ICape?
     val capeList = mutableListOf<ICape>()
 
     init {
+        arrayOf("aurora", "forest", "hot", "indigo", "lava", "lime", "night").forEach {
+            embeddedCapes.add(loadCapeFromResource(it, "assets/minecraft/fdpclient/cape/$it.png"))
+        }
+        nowCape = embeddedCapes.random()
         pushEmbeddedCape()
     }
 
     private fun pushEmbeddedCape() {
-        capeList.add(FDP_CAPE_1)
-        capeList.add(FDP_CAPE_2)
+        capeList.addAll(embeddedCapes)
     }
 
     fun load() {
@@ -66,7 +68,7 @@ object GuiCapeManager : GuiScreen() {
         if (json.has("name")) {
             val name = json.get("name").asString
             if (!name.equals("NONE")) {
-                val result = capeList.find { it.name == name } ?: FDP_CAPE_1
+                val result = capeList.find { it.name == name } ?: embeddedCapes.random()
                 nowCape = result
             }
         }
