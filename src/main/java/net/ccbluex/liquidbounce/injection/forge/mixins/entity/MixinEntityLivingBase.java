@@ -69,6 +69,10 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
      */
     @Overwrite
     protected void jump() {
+        if(!this.equals(Minecraft.getMinecraft().thePlayer)) {
+            return;
+        }
+
         final JumpEvent jumpEvent = new JumpEvent(MovementUtils.INSTANCE.getJumpMotion());
         LiquidBounce.eventManager.callEvent(jumpEvent);
         if(jumpEvent.isCancelled())

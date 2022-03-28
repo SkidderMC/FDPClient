@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
 import org.lwjgl.opengl.GL11
 import java.io.File
-import java.net.URL
+import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 object GuiCapeManager : GuiScreen() {
@@ -22,10 +22,14 @@ object GuiCapeManager : GuiScreen() {
     val FDP_CAPE_1 = loadCapeFromResource("FDP Cape 1", "assets/minecraft/fdpclient/cape/cape1.png")
     val FDP_CAPE_2 = loadCapeFromResource("FDP Cape 2", "assets/minecraft/fdpclient/cape/cape2.png")
 
-    var nowCape: Cape? = FDP_CAPE_1
-    val capeList = mutableListOf<Cape>()
+    var nowCape: ICape? = FDP_CAPE_1
+    val capeList = mutableListOf<ICape>()
 
     init {
+        pushEmbeddedCape()
+    }
+
+    private fun pushEmbeddedCape() {
         capeList.add(FDP_CAPE_1)
         capeList.add(FDP_CAPE_2)
     }
@@ -33,16 +37,19 @@ object GuiCapeManager : GuiScreen() {
     fun load() {
         capeList.clear()
 
-        // add default capes
-        capeList.add(FDP_CAPE_1)
-        capeList.add(FDP_CAPE_2)
+        pushEmbeddedCape()
 
         // add capes from files
         for (file in LiquidBounce.fileManager.capesDir.listFiles()) {
             if (file.isFile && !file.name.equals(jsonFile.name)) {
                 try {
                     val args = file.name.split(".").toTypedArray()
-                    capeList.add(loadCapeFromFile(java.lang.String.join(".", *args.copyOfRange(0, args.size - 1)), file))
+                    val name = java.lang.String.join(".", *args.copyOfRange(0, args.size - 1))
+                    capeList.add(if(args.last() == "gif") {
+                        loadGifCapeFromFile(name, file)
+                    } else {
+                        loadCapeFromFile(name, file)
+                    })
                 } catch (e: Exception) {
                     ClientUtils.logError("Occurred an error while loading cape from file: ${file.name}")
                     e.printStackTrace()
@@ -59,10 +66,8 @@ object GuiCapeManager : GuiScreen() {
         if (json.has("name")) {
             val name = json.get("name").asString
             if (!name.equals("NONE")) {
-                val result = capeList.filter { it.name == name }
-                if (result.isNotEmpty()) {
-                    nowCape = result[0]
-                }
+                val result = capeList.find { it.name == name } ?: FDP_CAPE_1
+                nowCape = result
             }
         }
     }
@@ -75,11 +80,13 @@ object GuiCapeManager : GuiScreen() {
         jsonFile.writeText(FileManager.PRETTY_GSON.toJson(json), Charsets.UTF_8)
     }
 
-    private fun loadCapeFromResource(name: String, loc: String) = Cape(name, ImageIO.read(GuiCapeManager::class.java.classLoader.getResourceAsStream(loc)))
+    private fun loadCapeFromResource(name: String, loc: String) = SingleImageCape(name, ImageIO.read(GuiCapeManager::class.java.classLoader.getResourceAsStream(loc)))
 
-    private fun loadCapeFromFile(name: String, file: File) = Cape(name, ImageIO.read(file))
+    private fun loadCapeFromFile(name: String, file: File) = SingleImageCape(name, ImageIO.read(file))
 
-    private fun loadCapeFromURL(name: String, url: URL) = Cape(name, ImageIO.read(url))
+    private fun loadGifCapeFromResource(name: String, loc: String) = GifCape(name, GuiCapeManager::class.java.classLoader.getResourceAsStream(loc))
+
+    private fun loadGifCapeFromFile(name: String, file: File) = GifCape(name, FileInputStream(file))
 
     override fun onGuiClosed() {
         save()
@@ -99,12 +106,12 @@ object GuiCapeManager : GuiScreen() {
                 chooseIndex = -1
             }
 
-            if (chooseIndex <-1) {
+            if (chooseIndex < -1) {
                 chooseIndex = capeList.size - 1
             }
 
             nowCape = if (chooseIndex != -1) {
-                capeList.get(chooseIndex)
+                capeList[chooseIndex]
             } else {
                 null
             }
@@ -132,6 +139,7 @@ object GuiCapeManager : GuiScreen() {
 
         // draw entity
         mc.thePlayer ?: return
+        GL11.glEnable(GL11.GL_CULL_FACE)
         GlStateManager.resetColor()
         GL11.glColor4f(1F, 1F, 1F, 1F)
         GlStateManager.enableColorMaterial()

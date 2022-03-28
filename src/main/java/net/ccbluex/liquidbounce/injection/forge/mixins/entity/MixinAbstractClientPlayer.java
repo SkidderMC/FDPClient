@@ -27,7 +27,7 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
 
         if(GuiCapeManager.INSTANCE.getNowCape()!=null)
-            callbackInfoReturnable.setReturnValue(GuiCapeManager.INSTANCE.getNowCape().getResource());
+            callbackInfoReturnable.setReturnValue(GuiCapeManager.INSTANCE.getNowCape().getCape());
     }
 
     @Inject(method = "getFovModifier", at = @At("HEAD"), cancellable = true)
