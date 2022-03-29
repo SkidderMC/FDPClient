@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.value.*
 import org.lwjgl.input.Keyboard
 import java.io.File
-import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
 class ConfigManager {

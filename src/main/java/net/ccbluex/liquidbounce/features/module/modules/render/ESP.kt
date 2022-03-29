@@ -27,6 +27,8 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.ItemArmor
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
@@ -48,11 +50,11 @@ class ESP : Module() {
     private val csgoShowHeldItemValue = BoolValue("CSGO-ShowHeldItem", true).displayable { modeValue.equals("CSGO") }
     private val csgoShowNameValue = BoolValue("CSGO-ShowName", true).displayable { modeValue.equals("CSGO") }
     private val csgoWidthValue = FloatValue("CSGOOld-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("CSGO-Old") }
-    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorTeamValue.get() && !colorRainbowValue.get() }
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorTeamValue.get() && !colorRainbowValue.get() }
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorTeamValue.get() && !colorRainbowValue.get() }
-    private val colorRainbowValue = BoolValue("Rainbow", false).displayable { !colorTeamValue.get() }
-    private val colorTeamValue = BoolValue("Team", false)
+    private val colorModeValue = ListValue("Mode", arrayOf("Name", "Armor", "OFF"), "Name")
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
+    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
+    private val colorRainbowValue = BoolValue("Rainbow", false).displayable { colorModeValue.get() == "OFF" }
 
     private val decimalFormat = DecimalFormat("0.0")
 
@@ -324,20 +326,24 @@ class ESP : Module() {
         if (entity is EntityLivingBase) {
             if (entity.hurtTime > 0) return Color.RED
             if (EntityUtils.isFriend(entity)) return Color.BLUE
-            if (colorTeamValue.get()) {
+            if (colorModeValue.get() == "Name") {
                 val chars = entity.displayName.formattedText.toCharArray()
-                var color = Int.MAX_VALUE
                 for (i in chars.indices) {
                     if (chars[i] != '§' || i + 1 >= chars.size) continue
                     val index = getColorIndex(chars[i + 1])
                     if (index < 0 || index > 15) continue
-                    color = ColorUtils.hexColors[index]
-                    break
+                    return Color(ColorUtils.hexColors[index])
                 }
-                return Color(color)
+            } else if (colorModeValue.get() == "Armor") {
+                if (entity is EntityPlayer) {
+                    val entityHead = entity.inventory.armorInventory[3] ?: return Color(Int.MAX_VALUE)
+                    if (entityHead.item is ItemArmor) {
+                        val entityItemArmor = entityHead.item as ItemArmor
+                        return Color(entityItemArmor.getColor(entityHead))
+                    }
+                }
             }
         }
-
         return if (colorRainbowValue.get()) ColorUtils.rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
     }
 }

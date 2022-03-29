@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.event.ClickWindowEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -71,17 +70,14 @@ object InventoryUtils : MinecraftInstance(), Listenable {
     }
 
     @EventTarget
-    fun onClick(event: ClickWindowEvent) {
-        CLICK_TIMER.reset()
-    }
-
-    @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if (packet is C0EPacketClickWindow || packet is C08PacketPlayerBlockPlacement) {
             INV_TIMER.reset()
         }
         if (packet is C08PacketPlayerBlockPlacement) {
+            CLICK_TIMER.reset()
+        } else if (packet is C0EPacketClickWindow) {
             CLICK_TIMER.reset()
         }
     }

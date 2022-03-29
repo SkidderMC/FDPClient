@@ -41,7 +41,15 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val modeValue = ListValue("Mode", arrayOf("SpoofGround", "AlwaysSpoofGround", "NoGround", "Packet", "Packet1", "Packet2", "MLG", "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "LoyisaAAC4.4.2", "AAC5.0.4", "AAC5.0.14", "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Medusa", "Damage", "MotionFlag", "OldMatrix", "Matrix", "MatrixPacket"), "SpoofGround")
+    val modeValue = ListValue("Mode", arrayOf(
+        "SpoofGround", "AlwaysSpoofGround", "NoGround",
+        "Packet", "Packet1", "Packet2",
+        "MLG",
+        "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "LoyisaAAC4.4.2", "AAC5.0.4", "AAC5.0.14",
+        "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Medusa",
+        "Damage", "MotionFlag",
+        "OldMatrix", "Matrix6.2.X", "Matrix6.2.X-Packet", "Matrix6.6.3"
+    ), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
     private val minFallDistanceValue = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
     private val flySpeedValue = FloatValue("MotionSpeed", -0.01f, -5f, 5f).displayable { modeValue.equals("MotionFlag") }
@@ -69,6 +77,8 @@ class NoFall : Module() {
     private var matrixFlagWait = 0
     private val aac4FlagCooldown = MSTimer()
     private var aac4FlagCount = 0
+    private var wasTimer = false
+    private var matrixSend = false
 
     override fun onEnable() {
         aac4FlagCount = 0
@@ -89,9 +99,38 @@ class NoFall : Module() {
         matrixFlagWait = 0
         aac4FlagCooldown.reset()
     }
+    
+    override fun onDisable() {
+        matrixSend = false
+        aac4FlagCount = 0
+        aac4Fakelag = false
+        aac5Check = false
+        packetModify = false
+        aac4Packets.clear()
+        needSpoof = false
+        aac5doFlag = false
+        aac5Timer = 0
+        packet1Count = 0
+        oldaacState = 0
+        matrixIsFall = false
+        matrixCanSpoof = false
+        matrixFallTicks = 0
+        matrixLastMotionY = 0.0
+        isDmgFalling = false
+        matrixFlagWait = 0
+        aac4FlagCooldown.reset()
+        if (wasTimer) {
+            mc.timer.timerSpeed = 1.0f
+            wasTimer = false
+        }
+    }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (wasTimer) {
+            mc.timer.timerSpeed = 1.0f
+            wasTimer = false
+        }
         if (matrixFlagWait > 0) {
             matrixFlagWait--
             if(matrixFlagWait == 0) {
@@ -125,13 +164,14 @@ class NoFall : Module() {
                     mc.thePlayer.fallDistance = 0f
                 }
             }
-            "matrixpacket" -> {
+            "matrix6.2.x-packet" -> {
 //                mc.timer.timerSpeed = if(abs((FallingPlayer(mc.thePlayer).findCollision(100)?.y ?: 0) - mc.thePlayer.posY) > 3) {
 //                    (mc.timer.timerSpeed * 0.8f).coerceAtLeast(0.3f)
 //                } else { 1f }
                 if(mc.thePlayer.onGround) {
-                    mc.timer.timerSpeed = 1f
+                    //mc.timer.timerSpeed = 1f
                 } else if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3f){
+                    wasTimer = true
                     mc.timer.timerSpeed = (mc.timer.timerSpeed * if(mc.timer.timerSpeed < 0.6) { 0.25f } else { 0.5f }).coerceAtLeast(0.2f)
                     mc.netHandler.addToSendQueue(C03PacketPlayer(false))
                     mc.netHandler.addToSendQueue(C03PacketPlayer(false))
@@ -306,7 +346,15 @@ class NoFall : Module() {
                     packet1Count = 0
                 }
             }
-            "matrix" -> {
+            "matrix6.6.3" -> {
+                if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3) {
+                    mc.thePlayer.fallDistance = 0.0f
+                    matrixSend = true
+                    mc.timer.timerSpeed = 0.5f
+                    wasTimer = true
+                }
+            }
+            "matrix6.2.x" -> {
                 if(matrixIsFall) {
                     mc.thePlayer.motionX=0.0
                     mc.thePlayer.jumpMovementFactor=0f
@@ -465,6 +513,12 @@ class NoFall : Module() {
         }
         if (event.packet is C03PacketPlayer) {
             val packet = event.packet
+            if (matrixSend) {
+                matrixSend = false
+                event.cancelEvent()
+                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
+                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, false))
+            }
             if (mode.equals("SpoofGround", ignoreCase = true) && mc.thePlayer.fallDistance > 2.5) {
                 packet.onGround = true
             } else if (mode.equals("AlwaysSpoofGround", ignoreCase = true)) {
@@ -493,7 +547,7 @@ class NoFall : Module() {
             } else if (mode.equals("Packet2", ignoreCase = true) && packetModify) {
                 packet.onGround = true
                 packetModify = false
-            } else if (mode.equals("Matrix", ignoreCase = true) && matrixCanSpoof) {
+            } else if (mode.equals("Matrix6.2.X", ignoreCase = true) && matrixCanSpoof) {
                 packet.onGround = true
                 matrixCanSpoof = false
             } else if (mode.equals("AAC4.4.X-Flag", ignoreCase = true) && mc.thePlayer.fallDistance > 1.6) {

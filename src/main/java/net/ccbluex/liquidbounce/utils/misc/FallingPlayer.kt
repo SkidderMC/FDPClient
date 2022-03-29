@@ -43,7 +43,11 @@ class FallingPlayer(
             if (v < 1.0f) {
                 v = 1.0f
             }
-            v = jumpMovementFactor / v
+            var fixedJumpFactor = (jumpMovementFactor).toFloat()
+            if (mc.thePlayer.isSprinting) {
+                fixedJumpFactor = (fixedJumpFactor * 1.3).toFloat()
+            }
+            v = fixedJumpFactor / v
             strafe *= v
             forward *= v
             val f1 = MathHelper.sin(yaw * Math.PI.toFloat() / 180.0f)
@@ -54,7 +58,6 @@ class FallingPlayer(
         motionY -= 0.08
         motionX *= 0.91
         motionY *= 0.9800000190734863
-        motionY *= 0.91
         motionZ *= 0.91
         x += motionX
         y += motionY
