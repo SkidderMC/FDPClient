@@ -4,6 +4,7 @@
 ![GitHub lines of code](https://tokei.rs/b1/github/UnlegitMC/FDPClient)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a41ae7bde63c143e426a/maintainability)](https://codeclimate.com/github/UnlegitMC/FDPClient/maintainability)
 ![Minecraft](https://img.shields.io/badge/game-Minecraft-brightgreen)  
+[![Crowdin](https://badges.crowdin.net/fdpclient/localized.svg)](https://translate.getfdp.today/project/fdpclient)
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.
 
 Website: https://getfdp.today/  
@@ -33,7 +34,7 @@ Do the above and share your source code with everyone; just like we do.
 
 ## Setting up a Workspace
 FDPClient uses gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
-1. Clone the repository using `git clone https://github.com/UnlegitMC/FDPClient.git`. 
+1. Clone the repository using `git clone --recurse-submodules https://github.com/UnlegitMC/FDPClient.git`. 
 2. CD into the local repository folder.
 3. Depending on which IDE you are using execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`

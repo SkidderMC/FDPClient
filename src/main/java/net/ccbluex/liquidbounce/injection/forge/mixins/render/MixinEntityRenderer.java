@@ -110,8 +110,9 @@ public abstract class MixinEntityRenderer {
                     GlStateManager.rotate(f1 - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
                     GlStateManager.rotate(f2 - entity.rotationPitch, 1.0F, 0.0F, 0.0F);
                 }
-            }else
+            } else {
                 GlStateManager.translate(0.0F, 0.0F, -0.1F);
+            }
 
             if(!this.mc.gameSettings.debugCamEnable) {
                 float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F;

@@ -5,6 +5,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
+    id "com.gorylenko.gradle-git-properties" version "2.4.0"
 }
 
 repositories {
@@ -12,17 +13,10 @@ repositories {
     mavenCentral()
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
-    maven { url = "https://getfdp.today/repo/" }
-    maven {
-        url = "https://maven.pkg.github.com/jcefmaven/jcefmaven/"
-        credentials {
-            username = "jcefmavenbot"
-            password = "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"
-        }
-    }
+    maven { url = "https://repo.getfdp.today/" }
 }
 
-version = "2.0.0"
+version = "3.0.0"
 group = "org.unlegitmc.fdp"
 archivesBaseName = "FDPClient"
 
@@ -49,7 +43,7 @@ configurations {
 }
 
 dependencies {
-    include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+    include("org.spongepowered:mixin:0.8.5") {
         transitive = false
         exclude module: "guava"
         exclude module: "commons-io"

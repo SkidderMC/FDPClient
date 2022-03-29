@@ -271,13 +271,13 @@ class Scaffold : Module() {
 
         if (clickTimer.hasTimePassed(clickDelay)) {
             fun sendPacket(c08: C08PacketPlayerBlockPlacement) {
-                if (clickDelay <35) {
-                    PacketUtils.sendPacketNoEvent(c08)
+                if (clickDelay < 35) {
+                    mc.netHandler.addToSendQueue(c08)
                 }
-                if (clickDelay <50) {
-                    PacketUtils.sendPacketNoEvent(c08)
+                if (clickDelay < 50) {
+                    mc.netHandler.addToSendQueue(c08)
                 }
-                PacketUtils.sendPacketNoEvent(c08)
+                mc.netHandler.addToSendQueue(c08)
             }
             when (extraClickValue.get().lowercase()) {
                 "emptyc08" -> sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
@@ -383,6 +383,10 @@ class Scaffold : Module() {
         } else if (packet is C08PacketPlayerBlockPlacement) {
             // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
             packet.stack = mc.thePlayer.inventory.mainInventory[slot]
+            // illegal facing checks
+            packet.facingX = packet.facingX.coerceIn(-1.0000F, 1.0000F)
+			packet.facingY = packet.facingY.coerceIn(-1.0000F, 1.0000F)
+			packet.facingZ = packet.facingZ.coerceIn(-1.0000F, 1.0000F)
         }
     }
 

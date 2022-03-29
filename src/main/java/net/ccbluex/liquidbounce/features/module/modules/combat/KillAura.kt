@@ -233,6 +233,9 @@ class KillAura : Module() {
     // Fake block status
     var blockingStatus = false
 
+    val displayBlocking: Boolean
+        get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
+
     /**
      * Enable kill aura module
      */
@@ -283,7 +286,7 @@ class KillAura : Module() {
             // AutoBlock
             if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
                         || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock) {
-                val target = discoveredTargets.first()
+                val target = this.target ?: discoveredTargets.first()
                 if (mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get()) {
                     startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
                 }
@@ -872,15 +875,15 @@ class KillAura : Module() {
         if (silentRotationValue.get()) {
             if (rotationRevTickValue.get()> 0 && rotationRevValue.get()) {
                 if (keepDirectionValue.get()) {
-                    RotationUtils.setTargetRotationReverse(rotation, 0, rotationRevTickValue.get())
-                } else {
                     RotationUtils.setTargetRotationReverse(rotation, keepDirectionTickValue.get(), rotationRevTickValue.get())
+                } else {
+                    RotationUtils.setTargetRotationReverse(rotation, 1, rotationRevTickValue.get())
                 }
             } else {
                 if (keepDirectionValue.get()) {
                     RotationUtils.setTargetRotation(rotation, keepDirectionTickValue.get())
                 } else {
-                    RotationUtils.setTargetRotation(rotation, 0)
+                    RotationUtils.setTargetRotation(rotation, 1)
                 }
             }
         } else {

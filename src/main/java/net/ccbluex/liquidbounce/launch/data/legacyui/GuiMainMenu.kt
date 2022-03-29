@@ -8,7 +8,9 @@ package net.ccbluex.liquidbounce.launch.data.legacyui
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
 import net.minecraftforge.fml.client.GuiModList
@@ -41,6 +43,14 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         "§cWebsite: §fhttps://${LiquidBounce.CLIENT_WEBSITE}/".also { str ->
             mc.fontRendererObj.drawString(str, (this.width - mc.fontRendererObj.getStringWidth(str) - 3).toFloat(), (height - mc.fontRendererObj.FONT_HEIGHT - 2).toFloat(), 0xffffff, false)
         }
+
+        if(LiquidBounce.latest != LiquidBounce.CLIENT_VERSION && LiquidBounce.latest.isNotEmpty()) {
+            val str = LanguageManager.getAndFormat("ui.update.released", LiquidBounce.latest)
+            val start = width / 2f - (mc.fontRendererObj.getStringWidth(str) / 2f)
+            RenderUtils.drawRect(start, 15f, start + mc.fontRendererObj.getStringWidth(str), 15f + mc.fontRendererObj.FONT_HEIGHT, Color.BLACK.rgb)
+            mc.fontRendererObj.drawString(str, start, 15f, Color.WHITE.rgb, false)
+        }
+
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 

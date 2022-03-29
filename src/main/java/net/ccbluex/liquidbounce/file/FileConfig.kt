@@ -6,8 +6,6 @@
 package net.ccbluex.liquidbounce.file
 
 import java.io.File
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 
 /**
  * Constructor of config

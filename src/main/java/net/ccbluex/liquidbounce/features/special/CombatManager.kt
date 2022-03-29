@@ -19,12 +19,18 @@ class CombatManager : Listenable, MinecraftInstance() {
     val attackedEntityList = mutableListOf<EntityLivingBase>()
     val focusedPlayerList = mutableListOf<EntityPlayer>()
 
-    private val hackerWords = arrayOf("hack", "cheat", "bhop", "fly", "nokb", "antikb")
-
-  @EventTarget
+    @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer == null) return
         MovementUtils.updateBlocksPerSecond()
+
+        // bypass java.util.ConcurrentModificationException
+        attackedEntityList.map { it }.forEach {
+            if (it.isDead) {
+                LiquidBounce.eventManager.callEvent(EntityKilledEvent(it))
+                attackedEntityList.remove(it)
+            }
+        }
 
         inCombat = false
 
@@ -38,14 +44,6 @@ class CombatManager : Listenable, MinecraftInstance() {
                 target = null
             } else {
                 inCombat = true
-            }
-        }
-
-        // bypass java.util.ConcurrentModificationException
-        attackedEntityList.map { it }.forEach {
-            if (it.isDead) {
-                LiquidBounce.eventManager.callEvent(EntityKilledEvent(it))
-                attackedEntityList.remove(it)
             }
         }
     }

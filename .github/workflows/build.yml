@@ -1,8 +1,7 @@
 name: build
 
 on:
-  push:
-    branches: [ main ]
+  - push
 
 jobs:
   build:
@@ -18,14 +17,15 @@ jobs:
           distribution: "adopt"
           java-version: 8
           cache: "gradle"
-      - name: Add version info
-        run: echo "${{ github.event.head_commit.id }}" > src/main/resources/FDP_GIT_COMMIT_ID
+      - name: Set outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Build
         run: ./gradlew setupCiWorkspace && ./gradlew build
       - name: Rename build artifacts
-        run: mv build/libs/FDPClient-2.0.0.jar build/libs/FDPClient-${{ github.event.head_commit.id }}.jar
+        run: mv build/libs/FDPClient-*.jar build/libs/FDPClient-${{ steps.vars.outputs.sha_short }}.jar
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: FDPClient
-          path: build/libs/FDPClient-${{ github.event.head_commit.id }}.jar
+          path: build/libs/FDPClient-${{ steps.vars.outputs.sha_short }}.jar

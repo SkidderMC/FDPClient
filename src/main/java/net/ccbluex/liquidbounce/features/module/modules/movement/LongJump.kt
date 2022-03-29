@@ -95,6 +95,7 @@ class LongJump : Module() {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1F
+        hasJumped = false
         when (modeValue.get().lowercase()) {
             "redesky2" -> {
                 mc.thePlayer.speedInAir = 0.02F
@@ -138,7 +139,7 @@ class LongJump : Module() {
                         PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
                         damageStat = true
                     }
-                } else {
+                } else if (!hasJumped) {
                     MovementUtils.strafe(0.50f * ncpBoostValue.get())
                     mc.thePlayer.jump()
                     hasJumped = true

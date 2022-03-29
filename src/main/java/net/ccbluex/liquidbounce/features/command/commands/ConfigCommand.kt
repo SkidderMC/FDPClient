@@ -14,7 +14,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                         val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
                         if (!file.exists()) {
                             LiquidBounce.configManager.load(args[2], true)
-                            alert("Create config ${args[2]}")
+                            alert("Created config ${args[2]}")
                         } else {
                             alert("Config ${args[2]} already exists")
                         }
@@ -30,7 +30,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                             LiquidBounce.configManager.load(args[2], args[1].equals("load", true))
                             alert("Loaded config ${args[2]}")
                         } else {
-                            alert("Config ${args[2]} not exists")
+                            alert("Config ${args[2]} does not exist")
                         }
                     } else {
                         chatSyntax("${args[1]} <configName>")
@@ -44,7 +44,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                             file.delete()
                             alert("Successfully deleted config ${args[2]}")
                         } else {
-                            alert("Config ${args[2]} not exist")
+                            alert("Config ${args[2]} does not exist")
                         }
                     } else {
                         chatSyntax("${args[1]} <configName>")
@@ -92,7 +92,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                             file.renameTo(newFile)
                             alert("Renamed config ${args[2]} to ${args[3]}")
                         } else if (!file.exists()) {
-                            alert("Config ${args[2]} not exist")
+                            alert("Config ${args[2]} does not exist")
                         } else if (newFile.exists()) {
                             alert("Config ${args[3]} already exists")
                         }
@@ -117,7 +117,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                             Files.copy(file.toPath(), newFile.toPath())
                             alert("Copied config ${args[2]} to ${args[3]}")
                         } else if (!file.exists()) {
-                            alert("Config ${args[2]} not exist")
+                            alert("Config ${args[2]} does not exist")
                         } else if (newFile.exists()) {
                             alert("Config ${args[3]} already exists")
                         }
