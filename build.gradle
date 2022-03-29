@@ -71,7 +71,12 @@ dependencies {
         exclude module: "authlib"
     }
 
-    include("com.sksamuel.scrimage:scrimage-core:4.0.31") // for read dynamic capes
+    include("com.github.zh79325:open-gif:1.0.4") {
+        exclude module: "slf4j-api"
+        exclude module: "logback-core"
+        exclude module: "logback-classic"
+        exclude module: "junit"
+    } // for read dynamic capes
 
     include fileTree(include: ["*.jar"], dir: "libs")
 }

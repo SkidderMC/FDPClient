@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.ui.cape
 
-import com.sksamuel.scrimage.nio.AnimatedGifReader
-import com.sksamuel.scrimage.nio.ImageSource
+import at.dhyan.open_imaging.GifDecoder
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
@@ -10,13 +9,14 @@ import java.io.InputStream
 class GifCape(name: String, imageIS: InputStream) : DynamicCape(name) {
 
     init {
-        val gif = AnimatedGifReader.read(ImageSource.of(imageIS))
+        val gif = GifDecoder.read(imageIS)
+        imageIS.close()
 
         var delay = 0
         for(i in 0 until gif.frameCount) {
-            frames.add(gif.frames[i].awt())
+            frames.add(gif.getFrame(i))
 
-            delay += gif.getDelay(i).toMillis().toInt()
+            delay += gif.getDelay(i) * 10
             delays.add(delay)
         }
 
