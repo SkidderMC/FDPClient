@@ -1,20 +1,26 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 
 class MatrixHop3 : SpeedMode("Matrix6.7.0") {
+    private var noVelocityY = 0
 
     override fun onUpdate() {
-        if(!mc.thePlayer.onGround) {
-			if(mc.thePlayer.motionY > 0) {
-				mc.thePlayer.motionY -= 0.0005
-			}
-			mc.thePlayer.motionY -= 0.0094001145141919810
-		}
+	if (noVelocityY >= 0) {
+	    noVelocityY = noVelocityY - 1
+	}
+        if (!mc.thePlayer.onGround && noVelocityY <= 0) {
+            if (mc.thePlayer.motionY > 0) {
+                mc.thePlayer.motionY -= 0.0005
+            }
+            mc.thePlayer.motionY -= 0.0094001145141919810
+        }
         if (!mc.thePlayer.onGround) {
             mc.gameSettings.keyBindJump.pressed = mc.gameSettings.keyBindJump.isKeyDown
-            if (MovementUtils.getSpeed() < 0.2177) {
+            if (MovementUtils.getSpeed() < 0.2177 && noVelocityY < 8) {
                 MovementUtils.strafe(0.2177f)
             }
         }
@@ -39,5 +45,15 @@ class MatrixHop3 : SpeedMode("Matrix6.7.0") {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1f
+        noVelocityY = 0
+    }
+    override fun onPacket(event: PacketEvent) {
+    	val packet = event.packet
+        if (packet is S12PacketEntityVelocity) {
+	    if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
+                return
+            }
+	    noVelocityY = 10
+	}
     }
 }

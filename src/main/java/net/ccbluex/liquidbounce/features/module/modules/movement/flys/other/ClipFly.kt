@@ -1,10 +1,14 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.minecraft.network.play.client.C03PacketPlayer
+
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -16,6 +20,7 @@ class ClipFly : FlyMode("Clip") {
     private val motionXValue = FloatValue("${valuePrefix}MotionX", 0f, -1f, 1f)
     private val motionYValue = FloatValue("${valuePrefix}MotionY", 0f, -1f, 1f)
     private val motionZValue = FloatValue("${valuePrefix}MotionZ", 0f, -1f, 1f)
+    private val spoofValue = BoolValue("${valuePrefix}SpoofGround", false)
     private val timerValue = FloatValue("${valuePrefix}Timer", 0.7f, 0.02f, 2.5f)
 
     private val timer = MSTimer()
@@ -25,7 +30,6 @@ class ClipFly : FlyMode("Clip") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        mc.thePlayer.onGround = false
         mc.timer.timerSpeed = timerValue.get()
         mc.thePlayer.motionX = motionXValue.get().toDouble()
         mc.thePlayer.motionY = motionYValue.get().toDouble()
@@ -36,5 +40,15 @@ class ClipFly : FlyMode("Clip") {
             timer.reset()
         }
         mc.thePlayer.jumpMovementFactor = 0.00f
+    }
+
+    override fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+
+        if (packet is C03PacketPlayer) {
+            if(spoofValue.get()) {
+                packet.onGround = true
+            }
+        }
     }
 }
