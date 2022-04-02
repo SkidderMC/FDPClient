@@ -68,7 +68,6 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     MovementUtils.strafe(0.45f)
                     //More easy to land on ground ....
                 }
-                
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 2 == 1) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                     val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
