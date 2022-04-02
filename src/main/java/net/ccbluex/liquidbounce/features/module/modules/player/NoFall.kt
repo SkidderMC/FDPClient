@@ -515,7 +515,9 @@ class NoFall : Module() {
             val packet = event.packet
             if (matrixSend) {
                 matrixSend = false
+                event.cancelEvent()
                 PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
+                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, false))
             }
             if (mode.equals("SpoofGround", ignoreCase = true) && mc.thePlayer.fallDistance > 2.5) {
                 packet.onGround = true

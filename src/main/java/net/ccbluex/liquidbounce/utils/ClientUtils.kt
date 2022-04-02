@@ -12,10 +12,12 @@ import net.minecraft.util.IChatComponent
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.opengl.Display
 import oshi.SystemInfo
+import oshi.software.os.windows.nt.CentralProcessor
 import java.io.File
 import java.util.*
 
-object ClientUtils : MinecraftInstance() {
+object
+ClientUtils : MinecraftInstance() {
     private val logger = LogManager.getLogger("FDPClient")
 
     /**
@@ -32,7 +34,11 @@ object ClientUtils : MinecraftInstance() {
 
             val vendor = systemInfo.operatingSystem.manufacturer
             val processorSerialNumber = processors.joinToString("-") { it.identifier }
-            val processorModel = processors.joinToString("-") { it.model }
+            val processorModel = if(processors.first() !is CentralProcessor) {
+                processors.joinToString("-") { it.model }
+            } else {
+                "Unknown"
+            }
 
             UUID.nameUUIDFromBytes(("$vendor, " +
                     "$processorSerialNumber, " +

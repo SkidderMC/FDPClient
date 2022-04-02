@@ -27,8 +27,6 @@ import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
-import org.apache.commons.io.IOUtils
-import java.nio.charset.StandardCharsets
 import java.util.*
 
 /***

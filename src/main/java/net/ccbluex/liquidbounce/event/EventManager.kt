@@ -11,6 +11,9 @@ class EventManager : MinecraftInstance() {
 
     private val registry = HashMap<Class<out Event>, MutableList<EventHook>>()
 
+//    private val counter = HashMap<Class<out Event>, Int>()
+//    private var lastSyncTime = System.currentTimeMillis()
+
     /**
      * Register [listener]
      */
@@ -25,7 +28,7 @@ class EventManager : MinecraftInstance() {
                     val eventClass = method.parameterTypes[0] as Class<out Event>
                     val eventTarget = method.getAnnotation(EventTarget::class.java)
 
-                    val invokableEventTargets = registry.getOrDefault(eventClass, ArrayList())
+                    val invokableEventTargets = registry.getOrPut(eventClass) { mutableListOf() }
                     invokableEventTargets.add(EventHook(listener, method, eventTarget))
                     registry[eventClass] = invokableEventTargets
                 } catch (t: Throwable) {
@@ -48,12 +51,31 @@ class EventManager : MinecraftInstance() {
         }
     }
 
+//    private fun printProfiler() {
+//        println("--- Event Profiler(${Date()}) ---")
+//
+//        var total = 0
+//        for((key, value) in counter.toList().sortedBy { it.second }) {
+//            println("${key.simpleName}: $value")
+//            total += value
+//        }
+//        println("total: $total")
+//
+//        counter.clear()
+//    }
+
     /**
      * Call event to listeners
      *
      * @param event to call
      */
     fun callEvent(event: Event) {
+//        if(System.currentTimeMillis() - lastSyncTime > 1000) {
+//            printProfiler()
+//            lastSyncTime = System.currentTimeMillis()
+//        }
+//        counter[event.javaClass] = counter.getOrDefault(event.javaClass, 0) + 1
+
         val targets = registry[event.javaClass] ?: return
 
         for (invokableEventTarget in targets) {
