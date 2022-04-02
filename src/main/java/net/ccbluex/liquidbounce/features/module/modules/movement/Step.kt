@@ -354,7 +354,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.5).toFloat()
+                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.9).toFloat()
                                 wasTimer = true
                             }
                             
@@ -369,7 +369,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.5).toFloat()
+                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.8).toFloat()
                                 wasTimer = true
                             }
                             
@@ -384,7 +384,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.5).toFloat()
+                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.65).toFloat()
                                 wasTimer = true
                             }
                             
@@ -414,7 +414,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.5).toFloat()
+                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.35).toFloat()
                                 wasTimer = true
                             }
                             
@@ -429,7 +429,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.5).toFloat()
+                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.2).toFloat()
                                 wasTimer = true
                             }
                             
@@ -444,7 +444,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.5).toFloat()
+                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.1).toFloat()
                                 wasTimer = true
                             }
                             
@@ -454,6 +454,8 @@ class Step : Module() {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
+                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.1).toFloat()
+                                wasTimer = true
                             }
                             
                             rstepHeight <= 1.3525 && rstepHeight > 1.02 -> {
@@ -462,6 +464,7 @@ class Step : Module() {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
+                                wasTimer = true
                             }
                             
                             rstepHeight <= 1.02 && rstepHeight > 0.6 -> {
@@ -470,6 +473,7 @@ class Step : Module() {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
+                                wasTimer = true
                             }
                         }
                         timer.reset()
