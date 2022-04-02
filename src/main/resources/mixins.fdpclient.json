@@ -36,7 +36,6 @@
     "network.MixinC00Handshake",
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
-    "network.MixinNetworkPlayerInfo",
     "performance.MixinBlock",
     "performance.MixinChunk",
     "performance.MixinWorld",
@@ -47,7 +46,6 @@
     "render.MixinItemRenderer",
     "render.MixinLayerHeldItem",
     "render.MixinModelBiped",
-    "render.MixinRender",
     "render.MixinRenderEntityItem",
     "render.MixinRendererLivingEntity",
     "render.MixinRenderItem",
@@ -67,6 +65,6 @@
     "performance.MixinEntityFX",
     "performance.MixinRenderGlobal",
     "render.MixinLayerArmorBase",
-    "render.MixinModelPlayer"
+    "render.MixinRender"
   ]
 }

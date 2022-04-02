@@ -1,13 +1,13 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
-import java.util.Random;
-
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.minecraft.util.EnumFacing;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.Random;
 
 @Mixin(value=EnumFacing.class)
 public class MixinEnumFacing {

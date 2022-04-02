@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.TextEvent;
 import net.ccbluex.liquidbounce.features.module.modules.render.BetterFont;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
@@ -24,11 +23,7 @@ public abstract class MixinFontRenderer {
         if (string == null || LiquidBounce.eventManager == null)
             return string;
 
-        string = LanguageManager.INSTANCE.replace(string);
-
-        final TextEvent textEvent = new TextEvent(string);
-        LiquidBounce.eventManager.callEvent(textEvent);
-        return textEvent.getText();
+        return LanguageManager.INSTANCE.replace(string);
     }
 
     @ModifyVariable(method = "getStringWidth", at = @At("HEAD"), ordinal = 0)
@@ -36,11 +31,7 @@ public abstract class MixinFontRenderer {
         if (string == null || LiquidBounce.eventManager == null)
             return string;
 
-        string = LanguageManager.INSTANCE.replace(string);
-
-        final TextEvent textEvent = new TextEvent(string);
-        LiquidBounce.eventManager.callEvent(textEvent);
-        return textEvent.getText();
+        return LanguageManager.INSTANCE.replace(string);
     }
 
     @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)

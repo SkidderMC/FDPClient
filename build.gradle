@@ -71,6 +71,13 @@ dependencies {
         exclude module: "authlib"
     }
 
+    include("com.github.zh79325:open-gif:1.0.4") {
+        exclude module: "slf4j-api"
+        exclude module: "logback-core"
+        exclude module: "logback-classic"
+        exclude module: "junit"
+    } // for read dynamic capes
+
     include fileTree(include: ["*.jar"], dir: "libs")
 }
 
@@ -86,6 +93,9 @@ shadowJar {
 
     exclude "META-INF/maven/**"
     exclude "META-INF/versions/**"
+
+    exclude "org/apache/**"
+    exclude "org/junit/**"
 }
 
 processResources {

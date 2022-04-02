@@ -50,11 +50,11 @@ class ESP : Module() {
     private val csgoShowHeldItemValue = BoolValue("CSGO-ShowHeldItem", true).displayable { modeValue.equals("CSGO") }
     private val csgoShowNameValue = BoolValue("CSGO-ShowName", true).displayable { modeValue.equals("CSGO") }
     private val csgoWidthValue = FloatValue("CSGOOld-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("CSGO-Old") }
-    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { colorTeamValue.get() == "OFF" && !colorRainbowValue.get() }
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { colorTeamValue.get() == "OFF" && !colorRainbowValue.get() }
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { colorTeamValue.get() == "OFF" && !colorRainbowValue.get() }
-    private val colorRainbowValue = BoolValue("Rainbow", false).displayable { colorTeamValue.get() == "OFF" }
-    private val colorTeamValue = ListValue("Team", arrayOf("Name", "Armor", "OFF"), "Name")
+    private val colorModeValue = ListValue("Mode", arrayOf("Name", "Armor", "OFF"), "Name")
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
+    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
+    private val colorRainbowValue = BoolValue("Rainbow", false).displayable { colorModeValue.get() == "OFF" }
 
     private val decimalFormat = DecimalFormat("0.0")
 
@@ -326,26 +326,23 @@ class ESP : Module() {
         if (entity is EntityLivingBase) {
             if (entity.hurtTime > 0) return Color.RED
             if (EntityUtils.isFriend(entity)) return Color.BLUE
-            var color = Int.MAX_VALUE
-            if (colorTeamValue.get() == "Name") {
+            if (colorModeValue.get() == "Name") {
                 val chars = entity.displayName.formattedText.toCharArray()
                 for (i in chars.indices) {
                     if (chars[i] != '§' || i + 1 >= chars.size) continue
                     val index = getColorIndex(chars[i + 1])
                     if (index < 0 || index > 15) continue
-                    color = ColorUtils.hexColors[index]
-                    break
+                    return Color(ColorUtils.hexColors[index])
                 }
-            } else if (colorTeamValue.get() == "Armor") {
+            } else if (colorModeValue.get() == "Armor") {
                 if (entity is EntityPlayer) {
                     val entityHead = entity.inventory.armorInventory[3] ?: return Color(Int.MAX_VALUE)
                     if (entityHead.item is ItemArmor) {
-                        var entityItemArmor = entityHead.item as ItemArmor
-                        color = entityItemArmor.getColor(entityHead)
+                        val entityItemArmor = entityHead.item as ItemArmor
+                        return Color(entityItemArmor.getColor(entityHead))
                     }
                 }
             }
-            return Color(color)
         }
         return if (colorRainbowValue.get()) ColorUtils.rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
     }

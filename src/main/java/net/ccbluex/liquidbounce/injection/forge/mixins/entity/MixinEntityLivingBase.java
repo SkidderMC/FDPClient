@@ -10,7 +10,9 @@ import net.ccbluex.liquidbounce.event.JumpEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -67,18 +69,20 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
      */
     @Overwrite
     protected void jump() {
-        final JumpEvent jumpEvent = new JumpEvent(this.getJumpUpwardsMotion());
+        if(!this.equals(Minecraft.getMinecraft().thePlayer)) {
+            return;
+        }
+
+        final JumpEvent jumpEvent = new JumpEvent(MovementUtils.INSTANCE.getJumpMotion());
         LiquidBounce.eventManager.callEvent(jumpEvent);
         if(jumpEvent.isCancelled())
             return;
 
         this.motionY = jumpEvent.getMotion();
 
-        if(this.isPotionActive(Potion.jump))
-            this.motionY += (double) ((float) (this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F);
-
         if(this.isSprinting()) {
-            float f = this.rotationYaw * 0.017453292F;
+            final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
+            float f = ((sprint.getState() && sprint.getJumpDirectionsValue().get()) ? MovementUtils.INSTANCE.getMovingYaw() : this.rotationYaw) * 0.017453292F;
             this.motionX -= MathHelper.sin(f) * 0.2F;
             this.motionZ += MathHelper.cos(f) * 0.2F;
         }
