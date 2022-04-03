@@ -156,6 +156,23 @@ class InventoryCleaner : Module() {
             }
         }
 
+        if (sortValue.get()) {
+            for (index in 0..8) {
+                val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index)) ?: continue
+
+                if (bestItem != index) {
+                    if (checkOpen()) {
+                        return
+                    }
+
+                    mc.playerController.windowClick(0, if (bestItem < 9) bestItem + 36 else bestItem, index, 2, mc.thePlayer)
+
+                    delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+                    return
+                }
+            }
+        }
+
         if (throwValue.get()) {
             val garbageItems = items(9, if (hotbarValue.get()) 45 else 36)
                 .filter { !isUseful(it.value, it.key) }
@@ -182,23 +199,6 @@ class InventoryCleaner : Module() {
                 delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
 
                 return
-            }
-        }
-
-        if (sortValue.get()) {
-            for (index in 0..8) {
-                val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index)) ?: continue
-
-                if (bestItem != index) {
-                    if (checkOpen()) {
-                        return
-                    }
-
-                    mc.playerController.windowClick(0, if (bestItem < 9) bestItem + 36 else bestItem, index, 2, mc.thePlayer)
-
-                    delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
-                    return
-                }
             }
         }
 
@@ -312,7 +312,7 @@ class InventoryCleaner : Module() {
                 }
 
                 mc.thePlayer.inventory.mainInventory.forEachIndexed { index, itemStack ->
-                    if (itemStack != null && itemStack.item.javaClass == currentType && !type(index).equals(type, ignoreCase = true)) {
+                    if (itemStack?.item?.javaClass == currentType && !type(index).equals(type, ignoreCase = true)) {
                         if (bestWeapon == -1) {
                             bestWeapon = index
                         } else {
@@ -373,7 +373,7 @@ class InventoryCleaner : Module() {
                 mc.thePlayer.inventory.mainInventory.forEachIndexed { index, stack ->
                     val item = stack?.item
 
-                    if (item is ItemBlock && !InventoryUtils.isBlockListBlock(item) &&
+                    if (item is ItemBlock && !InventoryUtils.BLOCK_BLACKLIST.contains(item.block) &&
                         !type(index).equals("Block", ignoreCase = true)) {
                         val replaceCurr = slotStack == null || slotStack.item !is ItemBlock
 
