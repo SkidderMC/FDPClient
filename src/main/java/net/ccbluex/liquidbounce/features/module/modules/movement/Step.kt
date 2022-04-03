@@ -34,8 +34,8 @@ class Step : Module() {
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
     private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") || modeValue.equals("TimerJump") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
-    private val timerValue = FloatValue("Timer", 1F, 0.05F, 1F)
-    private val timerDynValue = BoolValue("UseDynamicTimer", false)
+    private val timerValue = FloatValue("Timer", 1F, 0.05F, 1F).displayable { !modeValue.equals("Matrix6.7.0") }
+    private val timerDynValue = BoolValue("UseDynamicTimer", false).displayable { !modeValue.equals("Matrix6.7.0") }
 
     /**
      * VALUES
@@ -354,7 +354,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.9).toFloat()
+                                mc.timer.timerSpeed = 0.11f
                                 wasTimer = true
                             }
                             
@@ -369,7 +369,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.8).toFloat()
+                                mc.timer.timerSpeed = 0.12f
                                 wasTimer = true
                             }
                             
@@ -384,7 +384,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.65).toFloat()
+                                mc.timer.timerSpeed = 0.13f
                                 wasTimer = true
                             }
                             
@@ -399,7 +399,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.5).toFloat()
+                                mc.timer.timerSpeed = 0.14f
                                 wasTimer = true
                             }
                             
@@ -414,7 +414,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.35).toFloat()
+                                mc.timer.timerSpeed = 0.16f
                                 wasTimer = true
                             }
                             
@@ -429,7 +429,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.2).toFloat()
+                                mc.timer.timerSpeed = 0.21f
                                 wasTimer = true
                             }
                             
@@ -444,7 +444,7 @@ class Step : Module() {
                                             stepY + it, stepZ, false))
                                     }
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.1).toFloat()
+                                mc.timer.timerSpeed = 0.28f
                                 wasTimer = true
                             }
                             
@@ -454,7 +454,7 @@ class Step : Module() {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
-                                mc.timer.timerSpeed = (mc.timer.timerSpeed / 1.1).toFloat()
+                                mc.timer.timerSpeed = 0.28f
                                 wasTimer = true
                             }
                             
@@ -464,6 +464,7 @@ class Step : Module() {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
+                                mc.timer.timerSpeed = 0.34f
                                 wasTimer = true
                             }
                             
@@ -473,6 +474,7 @@ class Step : Module() {
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
+                                mc.timer.timerSpeed = 0.5f
                                 wasTimer = true
                             }
                         }
