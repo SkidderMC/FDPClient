@@ -21,7 +21,7 @@ import kotlin.random.Random
 @ModuleInfo(name = "AutoClicker", category = ModuleCategory.COMBAT)
 class AutoClicker : Module() {
 
-    private val maxCPSValue: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 20) {
+    private val maxCPSValue: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 40) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val minCPS = minCPSValue.get()
             if (minCPS > newValue) {
@@ -29,7 +29,7 @@ class AutoClicker : Module() {
             }
         }
     }
-    private val minCPSValue: IntegerValue = object : IntegerValue("MinCPS", 5, 1, 20) {
+    private val minCPSValue: IntegerValue = object : IntegerValue("MinCPS", 5, 1, 40) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val maxCPS = maxCPSValue.get()
             if (maxCPS < newValue) {
@@ -50,7 +50,7 @@ class AutoClicker : Module() {
     @EventTarget
     fun onRender(event: Render3DEvent) {
         // Left click
-        if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && leftLastSwing.hasTimePassed(leftDelay)) {
+        if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && leftLastSwing.hasTimePassed(leftDelay) && !mc.thePlayer.isUsingItem) {
             mc.clickMouse()
 
             leftLastSwing.reset()
