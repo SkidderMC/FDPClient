@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.item.ArmorPiece
 import net.ccbluex.liquidbounce.utils.item.ItemUtils
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -159,14 +160,17 @@ class InventoryCleaner : Module() {
             val garbageItems = items(9, if (hotbarValue.get()) 45 else 36)
                 .filter { !isUseful(it.value, it.key) }
                 .keys
-                .toMutableList()
 
-            // Shuffle items
-            if (randomSlotValue.get()) {
-                garbageItems.shuffle()
+            val garbageItem = if(garbageItems.isNotEmpty()) {
+                if(randomSlotValue.get()) {
+                    // pick random one
+                    garbageItems.toList()[RandomUtils.nextInt(0, garbageItems.size)]
+                } else {
+                    garbageItems.first()
+                }
+            } else {
+                null
             }
-
-            val garbageItem = garbageItems.firstOrNull()
             if (garbageItem != null) {
                 // Drop all useless items
                 if (checkOpen()) {
