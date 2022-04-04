@@ -64,28 +64,26 @@ class InfiniteAura : Module() {
     override fun onDisable() {
         timer.reset()
         points.clear()
+        thread?.stop()
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (!timer.hasTimePassed(getDelay().toLong())) return
+        if (thread?.isAlive == true) return
         when (modeValue.get().lowercase()) {
             "aura" -> {
-                if (thread == null || !thread!!.isAlive) {
-                    thread = thread {
-                        // do it async because a* pathfinding need some time
-                        doTpAura()
-                    }
-                    points.clear()
-                    timer.reset()
-                } else {
-                    timer.reset()
+                thread = thread(name = "InfiniteAura") {
+                    // do it async because a* pathfinding need some time
+                    doTpAura()
                 }
+                points.clear()
+                timer.reset()
             }
 
             "click" -> {
-                if (mc.gameSettings.keyBindAttack.isKeyDown && (thread == null || !thread!!.isAlive)) {
-                    thread = thread {
+                if (mc.gameSettings.keyBindAttack.isKeyDown) {
+                    thread = thread(name = "InfiniteAura") {
                         // do it async because a* pathfinding need some time
                         val entity = RaycastUtils.raycastEntity(distValue.get().toDouble()) { entity -> entity != null && EntityUtils.isSelected(entity, true) } ?: return@thread
                         if (mc.thePlayer.getDistanceToEntity(entity) <3) {
