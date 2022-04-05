@@ -90,7 +90,7 @@ class InfiniteAura : Module() {
                             return@thread
                         }
 
-                        hit(entity as EntityLivingBase)
+                        hit(entity as EntityLivingBase, true)
                     }
                     timer.reset()
                 }
@@ -108,24 +108,28 @@ class InfiniteAura : Module() {
 
         var count = 0
         for (entity in targets) {
-            count++
-            if (count > targetsValue.get()) break
 
-            hit(entity as EntityLivingBase)
+            if(hit(entity as EntityLivingBase)) {
+                count++
+            }
+            if (count > targetsValue.get()) break
         }
     }
 
-    private fun hit(entity: EntityLivingBase) {
+    private fun hit(entity: EntityLivingBase, force: Boolean = false): Boolean {
         val path = PathUtils.findBlinkPath(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, entity.posX, entity.posY, entity.posZ, moveDistanceValue.get().toDouble())
+        if (path.isEmpty()) return false
+        val lastDistance = path.last().let { entity.getDistance(it.xCoord, it.yCoord, it.zCoord) }
+        if(!force && lastDistance > 10) return false // pathfinding has failed
 
         path.forEach {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord, it.yCoord, it.zCoord, true))
             points.add(it)
         }
 
-//            val it=Vec3(entity.posX,entity.posY,entity.posZ)
-//            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(it.xCoord,it.yCoord,it.zCoord,true))
-//            points.add(it)
+        if(lastDistance > 3) {
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(entity.posX, entity.posY, entity.posZ, true))
+        }
 
         if (swingValue.get()) {
             mc.thePlayer.swingItem()
@@ -137,6 +141,8 @@ class InfiniteAura : Module() {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(vec.xCoord, vec.yCoord, vec.zCoord, true))
         }
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+
+        return true
     }
 
     @EventTarget
@@ -220,5 +226,5 @@ class InfiniteAura : Module() {
     }
 
     override val tag: String
-        get() = modeValue.get()
+        get() = modeValue.get() + if (thread?.isAlive == true) "!" else ""
 }
