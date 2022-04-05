@@ -15,8 +15,12 @@ import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.login.LoginUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;
+import net.minecraft.client.gui.GuiMultiplayer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraftforge.fml.client.config.GuiSlider;
+import org.lwjgl.input.Keyboard;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,6 +38,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     @Shadow
     private int field_175353_i;
 
+    @Shadow @Final private GuiScreen parentScreen;
     private GuiButton reconnectButton;
     private GuiSlider autoReconnectDelaySlider;
     private GuiButton forgeBypassButton;
@@ -123,5 +128,12 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     private void updateReconnectButton() {
         if (reconnectButton != null)
             reconnectButton.displayString = "Reconnect" + (AutoReconnect.INSTANCE.isEnabled() ? " (" + (AutoReconnect.INSTANCE.getDelay() / 1000 - reconnectTimer / 20) + ")" : "");
+    }
+
+    @Inject(method = "keyTyped", at = @At("HEAD"))
+    private void keyTyped(char typedChar, int keyCode, CallbackInfo callbackInfo) {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            mc.displayGuiScreen(parentScreen);
+        }
     }
 }

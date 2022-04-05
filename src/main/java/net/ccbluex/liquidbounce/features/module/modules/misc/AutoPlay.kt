@@ -24,7 +24,7 @@ import kotlin.concurrent.schedule
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
 class AutoPlay : Module() {
 
-    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex"), "RedeSky")
+    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "HyCraft"), "RedeSky")
     private val delayValue = IntegerValue("JoinDelay", 3, 0, 7)
 
     private var clicking = false
@@ -102,11 +102,22 @@ class AutoPlay : Module() {
             }
         } else if (packet is S02PacketChat) {
             val text = packet.chatComponent.unformattedText
+            val component = packet.chatComponent
             when (modeValue.get().lowercase()) {
                 "minemora" -> {
                     if (text.contains("Has click en alguna de las siguientes opciones", true)) {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/join")
+                        }
+                    }
+                }
+                "hycraft" -> {
+                    component.siblings.forEach { sib ->
+                        val clickEvent = sib.chatStyle.chatClickEvent
+                        if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.contains("playagain")) {
+                            queueAutoPlay {
+                                mc.thePlayer.sendChatMessage(clickEvent.value)
+                            }
                         }
                     }
                 }
@@ -123,12 +134,10 @@ class AutoPlay : Module() {
                     }
                 }
                 "jartex" -> {
-                    val component = packet.chatComponent
                     if (text.contains("Click here to play again", true)) {
                         component.siblings.forEach { sib ->
                             val clickEvent = sib.chatStyle.chatClickEvent
                             if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.startsWith("/")) {
-                                println("clickEvent: ${clickEvent.value}")
                                 queueAutoPlay {
                                     mc.thePlayer.sendChatMessage(clickEvent.value)
                                 }

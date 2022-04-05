@@ -126,6 +126,9 @@ public abstract class MixinItemRenderer {
                         break;
                     case BLOCK:
                         GL11.glTranslated(animations.getTranslateXValue().get(), animations.getTranslateYValue().get(), animations.getTranslateZValue().get());
+                        GlStateManager.rotate(animations.getRotateXValue().get(), 1.0F, 0.0F, 0.0F);
+                        GlStateManager.rotate(animations.getRotateYValue().get(), 0.0F, 1.0F, 0.0F);
+                        GlStateManager.rotate(animations.getRotateZValue().get(), 0.0F, 1.0F, 0.0F);
                         switch (animations.getBlockingModeValue().get()) {
                             case "Akrien": {
                                 transformFirstPersonItem(f1, 0.0F);

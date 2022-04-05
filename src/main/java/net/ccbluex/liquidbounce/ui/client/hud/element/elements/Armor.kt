@@ -33,8 +33,6 @@ class Armor(
      */
     override fun drawElement(partialTicks: Float): Border {
         if (mc.playerController.isNotCreative) {
-            GL11.glPushMatrix()
-
             val renderItem = mc.renderItem
 
             var x = 1
@@ -57,8 +55,6 @@ class Armor(
             GlStateManager.enableAlpha()
             GlStateManager.disableBlend()
             GlStateManager.disableLighting()
-            GlStateManager.disableCull()
-            GL11.glPopMatrix()
         }
 
         return if (modeValue.equals("Horizontal")) {
