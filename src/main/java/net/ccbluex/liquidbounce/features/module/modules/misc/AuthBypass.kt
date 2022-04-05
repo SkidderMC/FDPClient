@@ -35,11 +35,12 @@ import java.util.*
  */
 @ModuleInfo(name = "AuthBypass", category = ModuleCategory.MISC)
 class AuthBypass : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("RedeSky", "RemiCraft"), "RedeSky")
+    private val modeValue = ListValue("Mode", arrayOf("RedeSky", "RemiCraft", "HyCraft"), "RedeSky")
     private val delayValue = IntegerValue("Delay", 1500, 100, 5000)
 
     private var skull: String? = null
     private var type = "none"
+    private var captcha = ""
     private val packets = mutableListOf<Packet<INetHandlerPlayServer>>()
     private val clickedSlot = mutableListOf<Int>()
     private val timer = MSTimer()
@@ -81,6 +82,31 @@ class AuthBypass : Module() {
         when(modeValue.get().lowercase()) {
             "redesky" -> handleRedeSky(event)
             "remicraft" -> handleRemiCraft(event)
+            "hycraft" -> handleHyCraft(event)
+        }
+    }
+
+    private fun handleHyCraft(event: PacketEvent) {
+        val packet = event.packet
+        if (packet is S02PacketChat) {
+            val component = packet.chatComponent
+            val raw = component.unformattedText
+            if(raw.startsWith("/reg")) {
+                val split = raw.split(" ").filter { it.isNotEmpty() }
+                captcha = if(!split.last().equals("pass", ignoreCase = true)) {
+                    split.last()
+                } else {
+                    ""
+                }
+            }
+        } else if (packet is C01PacketChatMessage) {
+            if(captcha.isNotEmpty() && packet.message.startsWith("/reg")) {
+                packet.message = if(packet.message.endsWith(" ")) {
+                    packet.message + captcha
+                } else {
+                    packet.message + " " + captcha
+                }
+            }
         }
     }
 

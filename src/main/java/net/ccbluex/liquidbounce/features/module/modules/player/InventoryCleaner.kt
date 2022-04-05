@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.item.ArmorPiece
 import net.ccbluex.liquidbounce.utils.item.ItemUtils
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -155,32 +156,6 @@ class InventoryCleaner : Module() {
             }
         }
 
-        if (throwValue.get()) {
-            val garbageItems = items(9, if (hotbarValue.get()) 45 else 36)
-                .filter { !isUseful(it.value, it.key) }
-                .keys
-                .toMutableList()
-
-            // Shuffle items
-            if (randomSlotValue.get()) {
-                garbageItems.shuffle()
-            }
-
-            val garbageItem = garbageItems.firstOrNull()
-            if (garbageItem != null) {
-                // Drop all useless items
-                if (checkOpen()) {
-                    return
-                }
-
-                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 4, 4, mc.thePlayer)
-
-                delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
-
-                return
-            }
-        }
-
         if (sortValue.get()) {
             for (index in 0..8) {
                 val bestItem = findBetterItem(index, mc.thePlayer.inventory.getStackInSlot(index)) ?: continue
@@ -195,6 +170,35 @@ class InventoryCleaner : Module() {
                     delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
                     return
                 }
+            }
+        }
+
+        if (throwValue.get()) {
+            val garbageItems = items(9, if (hotbarValue.get()) 45 else 36)
+                .filter { !isUseful(it.value, it.key) }
+                .keys
+
+            val garbageItem = if(garbageItems.isNotEmpty()) {
+                if(randomSlotValue.get()) {
+                    // pick random one
+                    garbageItems.toList()[RandomUtils.nextInt(0, garbageItems.size)]
+                } else {
+                    garbageItems.first()
+                }
+            } else {
+                null
+            }
+            if (garbageItem != null) {
+                // Drop all useless items
+                if (checkOpen()) {
+                    return
+                }
+
+                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 4, 4, mc.thePlayer)
+
+                delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+
+                return
             }
         }
 
@@ -308,7 +312,7 @@ class InventoryCleaner : Module() {
                 }
 
                 mc.thePlayer.inventory.mainInventory.forEachIndexed { index, itemStack ->
-                    if (itemStack != null && itemStack.item.javaClass == currentType && !type(index).equals(type, ignoreCase = true)) {
+                    if (itemStack?.item?.javaClass == currentType && !type(index).equals(type, ignoreCase = true)) {
                         if (bestWeapon == -1) {
                             bestWeapon = index
                         } else {
@@ -369,7 +373,7 @@ class InventoryCleaner : Module() {
                 mc.thePlayer.inventory.mainInventory.forEachIndexed { index, stack ->
                     val item = stack?.item
 
-                    if (item is ItemBlock && !InventoryUtils.isBlockListBlock(item) &&
+                    if (item is ItemBlock && !InventoryUtils.BLOCK_BLACKLIST.contains(item.block) &&
                         !type(index).equals("Block", ignoreCase = true)) {
                         val replaceCurr = slotStack == null || slotStack.item !is ItemBlock
 
@@ -475,8 +479,9 @@ class InventoryCleaner : Module() {
             }
             if (throwValue.get() && isArmorSlot) {
                 mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, item, 0, 4, mc.thePlayer)
+            } else {
+                mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, if (isArmorSlot) item else if (item < 9) item + 36 else item, 0, 1, mc.thePlayer)
             }
-            mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, if (isArmorSlot) item else if (item < 9) item + 36 else item, 0, 1, mc.thePlayer)
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             return true
         }

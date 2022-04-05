@@ -19,7 +19,9 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.network.NetHandlerPlayServer
 import net.minecraft.network.Packet
+import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
@@ -30,11 +32,13 @@ import java.util.concurrent.LinkedBlockingQueue
 @ModuleInfo(name = "Blink", category = ModuleCategory.PLAYER)
 class Blink : Module() {
 
+    private val inboundValue = BoolValue("Inbound", false)
+    private val outboundValue = BoolValue("Outbound", true)
     private val pulseValue = BoolValue("Pulse", false)
     private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000).displayable { pulseValue.get() }
 
     private val pulseTimer = MSTimer()
-    private val packets = LinkedBlockingQueue<Packet<*>>()
+    private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
     private var fakePlayer: EntityOtherPlayerMP? = null
     private var disableLogger = false
     private val positions = LinkedList<DoubleArray>()
@@ -49,13 +53,7 @@ class Blink : Module() {
             mc.theWorld.addEntityToWorld(-1337, fakePlayer)
         }
         synchronized(positions) {
-            positions.add(
-                doubleArrayOf(
-                    mc.thePlayer.posX,
-                    mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight() / 2,
-                    mc.thePlayer.posZ
-                )
-            )
+            positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight() / 2, mc.thePlayer.posZ))
             positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ))
         }
         pulseTimer.reset()
@@ -82,7 +80,7 @@ class Blink : Module() {
             packet is C0APacketAnimation ||
             packet is C0BPacketEntityAction || packet is C02PacketUseEntity) {
             event.cancelEvent()
-            packets.add(packet)
+            packets.add(packet as Packet<INetHandlerPlayServer>)
         }
     }
 
@@ -138,11 +136,10 @@ class Blink : Module() {
         try {
             disableLogger = true
             while (!packets.isEmpty()) {
-                mc.netHandler.networkManager.sendPacket(packets.take())
+                mc.netHandler.addToSendQueue(packets.take())
             }
             disableLogger = false
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } finally {
             disableLogger = false
         }
         synchronized(positions) { positions.clear() }
