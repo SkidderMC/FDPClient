@@ -20,6 +20,8 @@ import java.awt.geom.AffineTransform
  */
 class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
 
+    private var texId = 0
+
     override fun drawChar(char: String): Int {
         val cached =  if (!cachedChars.containsKey(char)) {
             val list = GL11.glGenLists(1)
@@ -29,9 +31,7 @@ class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
                 .getOutline(0f, fontMetrics.ascent.toFloat()), HUD.fontEpsilonValue.get().toDouble())
             GL11.glEndList()
 
-            val cached_ = CachedVectorFont(list, fontMetrics.stringWidth(char))
-            cachedChars[char] = cached_
-            cached_
+            CachedVectorFont(list, fontMetrics.stringWidth(char)).also { cachedChars[char] = it }
         } else {
             cachedChars[char]!! as CachedVectorFont
         }
@@ -50,14 +50,16 @@ class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-//        GL11.glHint(GL11.GL_POLYGON_SMOOTH_HINT, GL11.GL_NICEST)
-        GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
-        GL11.glEnable(GL11.GL_POLYGON_SMOOTH)
-        GL11.glDisable(GL11.GL_CULL_FACE) // 不要剔除模型的背面
+        RenderUtils.clearCaps()
+        RenderUtils.enableGlCap(GL11.GL_POLYGON_SMOOTH)
+        RenderUtils.disableGlCap(GL11.GL_DEPTH_TEST)
+        GL11.glDepthMask(false)
+        RenderUtils.disableGlCap(GL11.GL_CULL_FACE)
     }
 
     override fun postGlHints() {
-        GL11.glPopAttrib()
+        RenderUtils.resetCaps()
+        GL11.glDepthMask(true)
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }
