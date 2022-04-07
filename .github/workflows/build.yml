@@ -14,7 +14,7 @@ jobs:
       - name: Java setup
         uses: actions/setup-java@v2
         with:
-          distribution: "adopt"
+          distribution: "zulu"
           java-version: 8
           cache: "gradle"
       - name: Set outputs
