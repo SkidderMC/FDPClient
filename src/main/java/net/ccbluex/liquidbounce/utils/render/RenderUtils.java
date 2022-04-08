@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils.render;
 
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
@@ -43,7 +44,7 @@ import static java.lang.Math.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public final class RenderUtils extends MinecraftInstance {
-    private static final Map<Integer, Boolean> glCapMap = new HashMap<>();
+    private static final Map<String, Map<Integer, Boolean>> glCapMap = new HashMap<>();
 
     public static int deltaTime;
 
@@ -827,36 +828,73 @@ public final class RenderUtils extends MinecraftInstance {
         glScissor((int) (x * factor), (int) ((scaledResolution.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
     }
 
+    public static void resetCaps(final String scale) {
+        if(!glCapMap.containsKey(scale)) {
+            return;
+        }
+        Map<Integer, Boolean> map = glCapMap.get(scale);
+        map.forEach(RenderUtils::setGlState);
+        map.clear();
+    }
+
     public static void resetCaps() {
-        glCapMap.forEach(RenderUtils::setGlState);
-        glCapMap.clear();
+        resetCaps("COMMON");
+    }
+
+    public static void clearCaps(final String scale) {
+        if(!glCapMap.containsKey(scale)) {
+            return;
+        }
+        Map<Integer, Boolean> map = glCapMap.get(scale);
+        if(!map.isEmpty()) {
+            ClientUtils.INSTANCE.logWarn("Cap map is not empty! [" + map.size() + "]");
+        }
+        map.clear();
     }
 
     public static void clearCaps() {
-        glCapMap.clear();
+        clearCaps("COMMON");
+    }
+
+    public static void enableGlCap(final int cap, final String scale) {
+        setGlCap(cap, true, scale);
     }
 
     public static void enableGlCap(final int cap) {
-        setGlCap(cap, true);
+        enableGlCap(cap, "COMMON");
     }
 
-    public static void enableGlCap(final int... caps) {
-        for (final int cap : caps)
-            setGlCap(cap, true);
+    public static void disableGlCap(final int cap, final String scale) {
+        setGlCap(cap, false, scale);
     }
 
     public static void disableGlCap(final int cap) {
-        setGlCap(cap, false);
+        disableGlCap(cap, "COMMON");
+    }
+
+
+    public static void enableGlCap(final int... caps) {
+        for(int cap : caps) {
+            setGlCap(cap, true, "COMMON");
+        }
     }
 
     public static void disableGlCap(final int... caps) {
-        for (final int cap : caps)
-            setGlCap(cap, false);
+        for(int cap : caps) {
+            setGlCap(cap, false, "COMMON");
+        }
+    }
+
+    public static void setGlCap(final int cap, final boolean state, final String scale) {
+        if(!glCapMap.containsKey(scale)) {
+            glCapMap.put(scale, new HashMap<>());
+        }
+        glCapMap.get(scale).put(cap, glGetBoolean(cap));
+        setGlState(cap, state);
     }
 
     public static void setGlCap(final int cap, final boolean state) {
-        glCapMap.put(cap, glGetBoolean(cap));
-        setGlState(cap, state);
+        setGlCap(cap, state, "COMMON");
     }
 
     public static void setGlState(final int cap, final boolean state) {
