@@ -20,8 +20,6 @@ import java.awt.geom.AffineTransform
  */
 class VectorFontRenderer(font: Font) : AbstractAwtFontRender(font) {
 
-    private var texId = 0
-
     override fun drawChar(char: String): Int {
         val cached =  if (!cachedChars.containsKey(char)) {
             val list = GL11.glGenLists(1)
