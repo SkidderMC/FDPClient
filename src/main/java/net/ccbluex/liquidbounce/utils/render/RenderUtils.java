@@ -169,23 +169,24 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     private static void quickPolygonCircle(float x, float y, float xRadius, float yRadius, int start, int end, int split) {
-        for(int i = end; i >= start; i-=split) {
+        for(int i = end; i >= start; i -= split) {
             glVertex2d(x + Math.sin(i * Math.PI / 180.0D) * xRadius, y + Math.cos(i * Math.PI / 180.0D) * yRadius);
         }
     }
 
     public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius, int color) {
         glEnable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
+        glDisable(GL_TEXTURE_2D);
+        final boolean hasCull = glIsEnabled(GL_CULL_FACE);
+        glDisable(GL_CULL_FACE);
 
         glColor(color);
         drawRoundedCornerRect(x, y, x1, y1, radius);
 
         glEnable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
+        setGlState(GL_CULL_FACE, hasCull);
     }
 
     public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius) {
@@ -991,10 +992,10 @@ public final class RenderUtils extends MinecraftInstance {
 
         glBegin(GL_LINE_LOOP);
 
-        glVertex2d(x2, y);
-        glVertex2d(x, y);
-        glVertex2d(x, y2);
-        glVertex2d(x2, y2);
+        glVertex2d(x2 + 1, y - 1);
+        glVertex2d(x - 1, y - 1);
+        glVertex2d(x - 1, y2 + 1);
+        glVertex2d(x2 + 1, y2 + 1);
 
         glEnd();
 

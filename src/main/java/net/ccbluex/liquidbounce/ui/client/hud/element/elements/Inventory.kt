@@ -5,15 +5,17 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import org.lwjgl.opengl.GL11
+import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
 /**
@@ -22,6 +24,8 @@ import java.awt.Color
  */
 @ElementInfo(name = "Inventory", blur = true)
 class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vertical.UP)) {
+
+    private val themeValue = ListValue("Theme", arrayOf("Default", "New"/*, "Vanilla"*/), "Default")
     private val bgRedValue = IntegerValue("BGRed", 0, 0, 255)
     private val bgGreenValue = IntegerValue("BGGreen", 0, 0, 255)
     private val bgBlueValue = IntegerValue("BGBlue", 0, 0, 255)
@@ -29,31 +33,39 @@ class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vert
     private val bdRedValue = IntegerValue("BDRed", 255, 0, 255)
     private val bdGreenValue = IntegerValue("BDGreen", 255, 0, 255)
     private val bdBlueValue = IntegerValue("BDBlue", 255, 0, 255)
-    private val title = BoolValue("Title", true)
+    private val fontRedValue = IntegerValue("FontRed", 255, 0, 255)
+    private val fontGreenValue = IntegerValue("FontGreen", 255, 0, 255)
+    private val fontBlueValue = IntegerValue("FontBlue", 255, 0, 255)
+    private val titleValue = ListValue("Title", arrayOf("Center", "Left", "Right", "None"), "Center")
     private val bdRainbow = BoolValue("BDRainbow", false)
+    private val fontRainbow = BoolValue("FontRainbow", false)
     private val fontValue = FontValue("Font", Fonts.font35)
 
     override fun drawElement(partialTicks: Float): Border {
         val borderColor = if (bdRainbow.get()) { ColorUtils.rainbow() } else { Color(bdRedValue.get(), bdGreenValue.get(), bdBlueValue.get()) }
+        val fontColor = if (fontRainbow.get()) { ColorUtils.rainbow() } else { Color(fontRedValue.get(), fontGreenValue.get(), fontBlueValue.get()) }
         val backgroundColor = Color(bgRedValue.get(), bgGreenValue.get(), bgBlueValue.get(), bgAlphaValue.get())
         val font = fontValue.get()
-        val startY = if (title.get()) { -(6+font.FONT_HEIGHT) } else { 0 }.toFloat()
+        val startY = if (!titleValue.equals("None")) { -(6 + font.FONT_HEIGHT) } else { 0 }.toFloat()
 
         // draw rect
         RenderUtils.drawRect(0F, startY, 174F, 66F, backgroundColor)
-        RenderUtils.drawRect(0F, startY, 1F, 66F, borderColor)
-        RenderUtils.drawRect(0F, startY, 174F, startY + 1, borderColor)
-        RenderUtils.drawRect(0F, 0F, 174F, 1F, borderColor)
-        RenderUtils.drawRect(0F, 65F, 174F, 66F, borderColor)
-        RenderUtils.drawRect(173F, startY, 174F, 66F, borderColor)
-        if (title.get()) {
-            // GameFontRender will shift y axis 3F when render string
-            val str = mc.thePlayer.inventory.displayName.formattedText
-            font.drawString(str, (174F / 2F) - (font.getStringWidth(str) * 0.5F), -(font.FONT_HEIGHT).toFloat(), borderColor.rgb, false)
+
+        if(themeValue.equals("New")) {
+            RenderUtils.drawRect(0F, startY, 174F, startY + 1f, borderColor)
+        } else {
+            RenderUtils.drawBorder(0f, startY, 174f, 66f, 3f, borderColor.rgb)
+            RenderUtils.drawRect(0F, 0f, 174F, 1f, borderColor)
+        }
+
+        val invDisplayName = mc.thePlayer.inventory.displayName.formattedText
+        when(titleValue.get().lowercase()) {
+            "center" -> font.drawCenteredString(invDisplayName, 174f / 2, -(font.FONT_HEIGHT).toFloat(), fontColor.rgb, false)
+            "left" -> font.drawString(invDisplayName, 6f, -(font.FONT_HEIGHT).toFloat(), fontColor.rgb, false)
+            "right" -> font.drawString(invDisplayName, 168f - font.getStringWidth(invDisplayName), -(font.FONT_HEIGHT).toFloat(), fontColor.rgb, false)
         }
 
         // render item
-        GL11.glPushMatrix()
         RenderHelper.enableGUIStandardItemLighting()
         renderInv(9, 17, 6, 6, font)
         renderInv(18, 26, 6, 24, font)
@@ -62,8 +74,6 @@ class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vert
         GlStateManager.enableAlpha()
         GlStateManager.disableBlend()
         GlStateManager.disableLighting()
-        GlStateManager.disableCull()
-        GL11.glPopMatrix()
 
         return Border(0F, startY, 174F, 66F)
     }
