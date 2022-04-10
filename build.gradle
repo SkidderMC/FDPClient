@@ -43,7 +43,7 @@ configurations {
 }
 
 dependencies {
-    include("org.spongepowered:mixin:0.8.5") {
+    include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
         exclude module: "guava"
         exclude module: "commons-io"
@@ -71,6 +71,15 @@ dependencies {
         exclude module: "authlib"
     }
 
+    include("com.github.zh79325:open-gif:1.0.4") {
+        exclude module: "slf4j-api"
+        exclude module: "logback-core"
+        exclude module: "logback-classic"
+        exclude module: "junit"
+    } // for read dynamic capes
+
+    include("com.github.UnlegitMC:Astar3d:bec2291cf2") // pathfinding
+
     include fileTree(include: ["*.jar"], dir: "libs")
 }
 
@@ -86,6 +95,9 @@ shadowJar {
 
     exclude "META-INF/maven/**"
     exclude "META-INF/versions/**"
+
+    exclude "org/apache/**"
+    exclude "org/junit/**"
 }
 
 processResources {

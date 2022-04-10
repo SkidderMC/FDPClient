@@ -74,7 +74,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         if (mc.currentScreen is GuiHudDesigner) {
             target = mc.thePlayer
-        } else if (target != null) {
+        }
+        if (target != null) {
             prevTarget = target
         }
         prevTarget ?: return getTBorder()
@@ -333,7 +334,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         val font = fontValue.get()
 
         val hp = decimalFormat.format(easingHP)
-        val additionalWidth = font.getStringWidth("${target.name}  ${hp} hp").coerceAtLeast(75)
+        val additionalWidth = font.getStringWidth("${target.name}  $hp hp").coerceAtLeast(75)
         if(arrisRoundedValue.get()){
             RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
         } else {
@@ -341,7 +342,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             RenderUtils.drawRect(0f, 1f, 45f + additionalWidth, 40f, Color(0, 0, 0, 110).rgb)
         }
 
-        RenderUtils.quickDrawHead(target.skin, 5, 5, 30, 30)
+        RenderUtils.drawHead(target.skin, 5, 5, 30, 30)
 
         // info text
         font.drawString(target.name, 40, 5, Color.WHITE.rgb)
@@ -362,6 +363,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
 
         // circle player avatar
+        GL11.glColor4f(1f, 1f, 1f, 1f)
         mc.textureManager.bindTexture(target.skin)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
