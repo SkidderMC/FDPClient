@@ -600,6 +600,19 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         return new Rotation(currentRotation.getYaw()+((targetRotation.getYaw()-currentRotation.getYaw())/smooth),
                 currentRotation.getPitch()+((targetRotation.getPitch()-currentRotation.getPitch())/smooth));
     }
+    public static Rotation getRotationFromEyeHasPrev(EntityLivingBase target) {
+        final double x = (target.prevPosX + (target.posX - target.prevPosX));
+        final double y = (target.prevPosY + (target.posY - target.prevPosY));
+        final double z = (target.prevPosZ + (target.posZ - target.prevPosZ));
+        return getRotationFromEyeHasPrev(x, y, z);
+    }
+    public static Rotation getRotationFromEyeHasPrev(double x, double y, double z) {
+        double xDiff = x - (mc.thePlayer.prevPosX + (mc.thePlayer.posX - mc.thePlayer.prevPosX));
+        double yDiff = y - ((mc.thePlayer.prevPosY + (mc.thePlayer.posY - mc.thePlayer.prevPosY)) + (mc.thePlayer.getEntityBoundingBox().maxY - mc.thePlayer.getEntityBoundingBox().minY));
+        double zDiff = z - (mc.thePlayer.prevPosZ + (mc.thePlayer.posZ - mc.thePlayer.prevPosZ));
+        final double dist = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff);
+        return new Rotation((float) (Math.atan2(zDiff, xDiff) * 180D / Math.PI) - 90F, (float) -(Math.atan2(yDiff, dist) * 180D / Math.PI));
+    }
 
     /**
      * @return YESSSS!!!
