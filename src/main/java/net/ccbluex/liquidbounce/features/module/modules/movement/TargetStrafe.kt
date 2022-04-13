@@ -1,136 +1,132 @@
-
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/UnlegitMC/FDPClient/
+ */
+//QQ3040438566 FengXiaoGod
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
-import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
+import net.ccbluex.liquidbounce.utils.PlayerUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.network.play.server.S12PacketEntityVelocity
-import org.lwjgl.opengl.GL11
-import java.awt.Color
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
-@ModuleInfo(name = "TargetStrafe", category = ModuleCategory.MOVEMENT)
+
+@ModuleInfo(name = "TargetStrafe",  category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
-    private val radiusValue = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
-    private val airRotateValue = FloatValue("AirRotate", 0.0f, 0.0f, 180f)
-    private val airInstaRotateValue = FloatValue("AirInstaRotate", 180f, 0.0f, 180f)
-    private val holdSpaceValue = BoolValue("HoldSpace", false)
-    private val onlySpeedValue = BoolValue("OnlySpeed", false)
-    private val velocityChangeValue = BoolValue("VelocityChange", true)
-    private val renderValue = BoolValue("Render", true)
-    private var direction = true
-    private var yaw = 0f
+    private val thirdPersonViewValue = BoolValue("ThirdPersonView", false)
+    private val radiusValue = FloatValue("Radius", 0.1f, 0.5f, 5.0f)
+    private val killAura = LiquidBounce.moduleManager[KillAura::class.java]
+    private var direction = -1
 
+    /**
+     *
+     * @param event MoveEvent
+     */
     @EventTarget
-    fun onMotion(event: MotionEvent) {
-        if (event.eventState === EventState.PRE) {
-            if (mc.gameSettings.keyBindLeft.isKeyDown) {
-                direction = true
-            } else if (mc.gameSettings.keyBindRight.isKeyDown) {
-                direction = false
-            } else if (mc.thePlayer.isCollidedHorizontally) {
-                direction = !direction
+    fun onMove(event: MoveEvent) {
+        if(!canStrafe) return
+        var aroundVoid = false
+        for (x in -1..0) for (z in -1..0) if (isVoid(x, z)) aroundVoid = true
+
+        var yaw = RotationUtils.getRotationFromEyeHasPrev(killAura!!.target).yaw
+
+        if (mc.thePlayer.isCollidedHorizontally || aroundVoid) direction *= -1
+
+        var targetStrafe = (if (mc.thePlayer.moveStrafing != 0F) mc.thePlayer.moveStrafing * direction else direction.toFloat())
+        if (!PlayerUtils.isBlockUnder()) targetStrafe = 0f
+
+        val rotAssist = 45 / mc.thePlayer.getDistanceToEntity(killAura.target)
+        val moveAssist = (45f / getStrafeDistance(killAura.target!!)).toDouble()
+
+        var mathStrafe = 0f
+
+        if (targetStrafe > 0) {
+            if ((killAura.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY || killAura.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
+                    killAura.target!!
+                ) < radiusValue.get()
+            ) yaw += -rotAssist
+            mathStrafe += -moveAssist.toFloat()
+        } else if (targetStrafe < 0) {
+            if ((killAura.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY || killAura.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
+                    killAura.target!!
+                ) < radiusValue.get()
+            ) yaw += rotAssist
+            mathStrafe += moveAssist.toFloat()
+        }
+
+        val doSomeMath = doubleArrayOf(
+            cos(Math.toRadians((yaw + 90f + mathStrafe).toDouble())),
+            sin(Math.toRadians((yaw + 90f + mathStrafe).toDouble()))
+        )
+        val moveSpeed = sqrt(event.x.pow(2.0) + event.z.pow(2.0))
+
+        val asLast = doubleArrayOf(
+            moveSpeed * doSomeMath[0],
+            moveSpeed * doSomeMath[1]
+        )
+
+        event.x = asLast[0]
+        event.z = asLast[1]
+        //        if (mc.thePlayer.isCollidedHorizontally || checkVoid()) direction = if (direction == 1) -1 else 1
+//        if(checkVoid() && canStrafe) return
+//        if (mc.gameSettings.keyBindLeft.isKeyDown) {
+//            direction = 1
+//        }
+//        if (mc.gameSettings.keyBindRight.isKeyDown) {
+//            direction = -1
+//        }
+//
+//        if (!isVoid(0, 0) && canStrafe) {
+//            MovementUtils.setSpeed(
+//                event,
+//                sqrt(event.x.pow(2.0) + event.z.pow(2.0)),
+//                RotationUtils.toRotation(RotationUtils.getCenter(killAura.target?.entityBoundingBox), true).yaw,
+//                direction.toDouble(),
+//                if (mc.thePlayer.getDistanceToEntity(killAura.target) <= radiusValue.get()) 0.0 else 1.0
+//            )
+//        }
+        if (!thirdPersonViewValue.get()) return
+        mc.gameSettings.thirdPersonView = if (canStrafe) 3 else 0
+    }
+
+    private val canStrafe: Boolean
+        get() = killAura!!.state && killAura.target != null && !mc.thePlayer.isSneaking
+
+    private fun checkVoid(): Boolean {
+        for (x in -2..2) for (z in -2..2) if (isVoid(x, z)) return true
+        return false
+    }
+
+    private fun getStrafeDistance(target: EntityLivingBase): Float {
+        return (mc.thePlayer.getDistanceToEntity(target) - radiusValue.get()).coerceAtLeast(
+            mc.thePlayer.getDistanceToEntity(
+                target
+            ) - (mc.thePlayer.getDistanceToEntity(target) - radiusValue.get() / (radiusValue.get() * 2))
+        )
+    }
+
+    private fun isVoid(xPos: Int, zPos: Int): Boolean {
+        if (mc.thePlayer.posY < 0.0) return true
+        var off = 0
+        while (off < mc.thePlayer.posY.toInt() + 2) {
+            val bb = mc.thePlayer.entityBoundingBox.offset(xPos.toDouble(), -off.toDouble(), zPos.toDouble())
+            if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty()) {
+                off += 2
+                continue
             }
+            return false
         }
+        return true
     }
 
-    @EventTarget
-    fun strafe(event: MoveEvent) {
-        val target = LiquidBounce.combatManager.target
-        if (canStrafe(target)) {
-            val bestYaw = RotationUtils.getRotationsEntity(target).yaw
-
-            val rotation = if(mc.thePlayer.onGround) {
-                180f
-            } else {
-                airRotateValue.get()
-            }
-            val diff = getAngleDifference(bestYaw, yaw)
-            val newYaw = yaw + abs(diff).coerceAtMost(rotation).let { if (diff < 0) -it else it }
-            if(abs(getAngleDifference(bestYaw, newYaw)) > abs(getAngleDifference(bestYaw, yaw + airInstaRotateValue.get()))) {
-                yaw += airInstaRotateValue.get()
-            } else {
-                yaw = newYaw
-            }
-            yaw %= 360
-            MovementUtils.setSpeed(event, MovementUtils.getSpeed().toDouble(), yaw, if (direction) 1.0 else -1.0, if (mc.thePlayer.getDistanceToEntity(target) <= radiusValue.get()) 0.0 else 1.0)
-        }
-    }
-
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val target = LiquidBounce.combatManager.target
-        if (renderValue.get() && canStrafe(target)) {
-            GL11.glDisable(3553)
-            GL11.glEnable(2848)
-            GL11.glEnable(2881)
-            GL11.glEnable(2832)
-            GL11.glEnable(3042)
-            GL11.glBlendFunc(770, 771)
-            GL11.glHint(3154, 4354)
-            GL11.glHint(3155, 4354)
-            GL11.glHint(3153, 4354)
-            GL11.glDisable(2929)
-            GL11.glDepthMask(false)
-            GL11.glLineWidth(3f)
-
-            GL11.glBegin(3)
-            val x = target!!.lastTickPosX + (target.posX - target.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-            val y = target.lastTickPosY + (target.posY - target.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
-            val z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
-            val radius = radiusValue.get()
-            for (i in 0..360 step 5) {
-                RenderUtils.glColor(Color.getHSBColor(if (i < 180) { HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (i / 180f) } else { HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f))
-                GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
-            }
-            GL11.glEnd()
-
-            GL11.glDepthMask(true)
-            GL11.glEnable(2929)
-            GL11.glDisable(2848)
-            GL11.glDisable(2881)
-            GL11.glEnable(2832)
-            GL11.glEnable(3553)
-        }
-    }
-
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val packet = event.packet
-        if(packet is S12PacketEntityVelocity && velocityChangeValue.get()) {
-            if (mc.thePlayer == null
-                || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer
-                || LiquidBounce.combatManager.target == null) {
-                return
-            }
-            yaw = RotationUtils.getRotationsEntity(LiquidBounce.combatManager.target).yaw
-        }
-    }
-
-    private fun getAngleDifference(a: Float, b: Float): Float {
-        val aAngle = (a % 360).let {
-            if (it > 180) it - 360 else it
-        }
-        val bAngle = (b % 360).let {
-            if (it > 180) it - 360 else it
-        }
-        return aAngle - bAngle
-    }
-
-    private fun canStrafe(target: EntityLivingBase?): Boolean {
-        return target != null &&
-                (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) &&
-                (!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state)
-    }
 }
