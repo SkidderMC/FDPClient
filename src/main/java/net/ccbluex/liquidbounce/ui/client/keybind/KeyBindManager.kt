@@ -119,7 +119,7 @@ class KeyBindManager : GuiScreen() {
 
     override fun onGuiClosed() {
         // save keybind data
-        LiquidBounce.configManager.save()
+        LiquidBounce.configManager.smartSave()
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
