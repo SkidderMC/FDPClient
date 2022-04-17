@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import kotlin.math.*
 
-@ModuleInfo(name = "Strafe", description = "Allows you to freely move in mid air.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "Strafe", category = ModuleCategory.MOVEMENT)
 class Strafe : Module() {
 
     private var strengthValue= FloatValue("Strength", 0.5F, 0F, 1F)
@@ -19,8 +19,8 @@ class Strafe : Module() {
     private var onGroundStrafeValue = BoolValue("OnGroundStrafe", false)
     private var allDirectionsJumpValue = BoolValue("AllDirectionsJump", false)
 
-    private var wasDown: Boolean = false
-    private var jump: Boolean = false
+    private var wasDown = false
+    private var jump = false
 
     @EventTarget
     fun onJump(event: JumpEvent) {
