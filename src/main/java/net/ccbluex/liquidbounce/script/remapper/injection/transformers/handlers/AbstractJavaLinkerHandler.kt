@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.script.remapper.injection.transformers.handlers
 
+import net.ccbluex.liquidbounce.script.ScriptSafetyManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import org.objectweb.asm.Type
 import java.lang.reflect.AccessibleObject
@@ -36,6 +37,9 @@ object AbstractJavaLinkerHandler {
 
         var currentClass = clazz
         while (currentClass.name != "java.lang.Object") {
+            if(ScriptSafetyManager.isRestrictedSimple(currentClass, name)) {
+                return "RESTRICTED"
+            }
             val remapped = Remapper.remapMethod(currentClass, name, Type.getMethodDescriptor(accessibleObject))
 
             if (remapped != name) {
@@ -66,6 +70,9 @@ object AbstractJavaLinkerHandler {
     fun addMember(clazz: Class<*>, name: String): String {
         var currentClass = clazz
         while (currentClass.name != "java.lang.Object") {
+            if(ScriptSafetyManager.isRestrictedSimple(currentClass, name)) {
+                return "RESTRICTED"
+            }
             val remapped = Remapper.remapField(currentClass, name)
 
             if (remapped != name) {
@@ -96,6 +103,9 @@ object AbstractJavaLinkerHandler {
     fun setPropertyGetter(clazz: Class<*>, name: String): String {
         var currentClass = clazz
         while (currentClass.name != "java.lang.Object") {
+            if(ScriptSafetyManager.isRestrictedSimple(currentClass, name)) {
+                return "RESTRICTED"
+            }
             val remapped = Remapper.remapField(currentClass, name)
 
             if (remapped != name) {
