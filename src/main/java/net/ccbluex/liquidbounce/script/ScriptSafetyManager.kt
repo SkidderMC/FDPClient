@@ -13,12 +13,13 @@ import java.net.URL
 import java.net.URLConnection
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.*
 
 object ScriptSafetyManager {
 
     private val level = ProtectionLevel.valueOf((System.getProperty("fdp.script.safety") ?: "safe").uppercase()).level
-    private val restrictedClasses = mutableMapOf<Class<*>, Int>()
-    private val restrictedChilds = mutableMapOf<Class<*>, Pair<String, Int>>()
+    private val restrictedClasses: Map<Class<*>, Int>
+    private val restrictedChilds: Map<Class<*>, Pair<String, Int>>
 
     val classFilter = ClassFilter { name ->
         try {
@@ -31,7 +32,11 @@ object ScriptSafetyManager {
     init {
         ClientUtils.logInfo("[ScriptAPI] Script safety level: ${ProtectionLevel.values().find { it.level == level }?.name}($level)") // maybe we should think about performance here?
 
+        val restrictedClasses = mutableMapOf<Class<*>, Int>()
+        val restrictedChilds = mutableMapOf<Class<*>, Pair<String, Int>>()
+
         // this can be used by a malicious script to remote control the user
+        restrictedClasses[ScriptSafetyManager::class.java] = ProtectionLevel.HARMFUL.level
         restrictedClasses[ClassLoader::class.java] = ProtectionLevel.HARMFUL.level
         restrictedClasses[Native::class.java] = ProtectionLevel.HARMFUL.level
         restrictedClasses[Runtime::class.java] = ProtectionLevel.HARMFUL.level
@@ -68,6 +73,10 @@ object ScriptSafetyManager {
         restrictedClasses[OutputStream::class.java] = ProtectionLevel.DANGER.level
         restrictedClasses[com.google.common.io.Files::class.java] = ProtectionLevel.DANGER.level
         restrictedClasses[net.ccbluex.liquidbounce.utils.FileUtils::class.java] = ProtectionLevel.DANGER.level
+
+        // make it UNMODIFIABLE
+        this.restrictedClasses = Collections.unmodifiableMap(restrictedClasses)
+        this.restrictedChilds = Collections.unmodifiableMap(restrictedChilds)
     }
 
     fun isRestricted(classIn: Class<*>): Boolean {

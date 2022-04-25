@@ -23,7 +23,7 @@ import javax.script.ScriptEngineManager
 
 class Script(private val scriptFile: File) : MinecraftInstance() {
 
-    private var scriptEngine = NashornScriptEngineFactory().getScriptEngine(emptyArray(), this.javaClass.classLoader, ScriptSafetyManager.classFilter)
+    private val scriptEngine = NashornScriptEngineFactory().getScriptEngine(emptyArray(), this.javaClass.classLoader, ScriptSafetyManager.classFilter)
     private val scriptText = scriptFile.readText(Charsets.UTF_8)
 
     // Script information
