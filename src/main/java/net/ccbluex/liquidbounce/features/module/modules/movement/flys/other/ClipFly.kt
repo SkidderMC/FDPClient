@@ -1,5 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
+import net.ccbluex.liquidbounce.event.EventState
+import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
@@ -21,15 +23,21 @@ class ClipFly : FlyMode("Clip") {
     private val motionYValue = FloatValue("${valuePrefix}MotionY", 0f, -1f, 1f)
     private val motionZValue = FloatValue("${valuePrefix}MotionZ", 0f, -1f, 1f)
     private val spoofValue = BoolValue("${valuePrefix}SpoofGround", false)
+    private val groundValue = BoolValue("${valuePrefix}GroundWhenClip", true)
     private val timerValue = FloatValue("${valuePrefix}Timer", 0.7f, 0.02f, 2.5f)
 
     private val timer = MSTimer()
+    private var lastJump = false
 
     override fun onEnable() {
         timer.reset()
+        lastJump = false
     }
 
-    override fun onUpdate(event: UpdateEvent) {
+    override fun onMotion(event: MotionEvent) {
+        if (event.eventState != EventState.POST)
+            return
+
         mc.timer.timerSpeed = timerValue.get()
         mc.thePlayer.motionX = motionXValue.get().toDouble()
         mc.thePlayer.motionY = motionYValue.get().toDouble()
@@ -38,6 +46,7 @@ class ClipFly : FlyMode("Clip") {
             val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
             mc.thePlayer.setPosition(mc.thePlayer.posX + (-sin(yaw) * xValue.get()), mc.thePlayer.posY + yValue.get(), mc.thePlayer.posZ + (cos(yaw) * zValue.get()))
             timer.reset()
+            lastJump = true
         }
         mc.thePlayer.jumpMovementFactor = 0.00f
     }
@@ -48,6 +57,10 @@ class ClipFly : FlyMode("Clip") {
         if (packet is C03PacketPlayer) {
             if(spoofValue.get()) {
                 packet.onGround = true
+            }
+            if(groundValue.get() && (timer.hasTimePassed(delayValue.get().toLong()) || lastJump)) {
+                packet.onGround = true
+                lastJump = false
             }
         }
     }

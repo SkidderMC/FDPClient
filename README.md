@@ -45,8 +45,6 @@ FDPClient uses gradle, so make sure that it is installed properly. Instructions 
 ## Additional libraries
 ### Mixins
 Mixins can be used to modify classes at runtime before they are loaded. FDPClient uses it to inject its code into the Minecraft client. This way, we do not have to ship Mojangs copyrighted code. If you want to learn more about it, check out its [Documentation](https://docs.spongepowered.org/5.1.0/en/plugin/internals/mixins.html).
-### Ultralight
-Ultralight is a HTML renderer and can be works with LWJGL. If you want to learn more about it, check out its [repo](https://github.com/labymod/ultralight-java)
 
 ## Contributing
 We are welcome for your contributing, but you have to follow these rules to make us merge your pull request.
