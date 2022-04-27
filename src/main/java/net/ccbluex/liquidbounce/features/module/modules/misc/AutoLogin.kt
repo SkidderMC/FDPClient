@@ -67,7 +67,9 @@ class AutoLogin : Module() {
     private fun delayedMessage(message: String) {
         logined = true
         Timer().schedule(delayValue.get().toLong()) {
-            mc.thePlayer.sendChatMessage(message)
+            if (state && mc.thePlayer != null) {
+                mc.thePlayer.sendChatMessage(message)
+            }
         }
     }
 }

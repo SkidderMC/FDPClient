@@ -13,6 +13,8 @@ import net.ccbluex.liquidbounce.value.*
 import org.lwjgl.input.Keyboard
 import java.io.File
 import java.nio.file.Files
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 class ConfigManager {
     private val configSetFile = File(LiquidBounce.fileManager.dir, "config-settings.json")
@@ -20,11 +22,18 @@ class ConfigManager {
     private val sections = mutableListOf<ConfigSection>()
 
     var nowConfig = "default"
+    private var nowConfigInFile = "default"
     var configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
+    var needSave = false
 
     init {
         ClassUtils.resolvePackage("${this.javaClass.`package`.name}.sections", ConfigSection::class.java)
             .forEach(this::registerSection)
+
+        // add an interval timer to save the config every 30 seconds
+        Timer().schedule(30000, 30000) {
+            saveTicker()
+        }
     }
 
     fun load(name: String, save: Boolean = true) {
@@ -58,7 +67,7 @@ class ConfigManager {
         LiquidBounce.isLoadingConfig = false
     }
 
-    fun save(saveConfigSet: Boolean = true, forceSave: Boolean = false) {
+    fun save(saveConfigSet: Boolean = nowConfigInFile != nowConfig, forceSave: Boolean = false) {
         if (LiquidBounce.isLoadingConfig && !forceSave) {
             return
         }
@@ -71,26 +80,35 @@ class ConfigManager {
 
         configFile.writeText(FileManager.PRETTY_GSON.toJson(config), Charsets.UTF_8)
 
-        if (saveConfigSet) {
+        if (saveConfigSet || forceSave) {
             saveConfigSet()
         }
+        needSave = false
 
         ClientUtils.logInfo("Config $nowConfig.json saved.")
     }
 
-    fun smartSave() {
-        // TODO: Save smartly to save disk I/O
+    private fun saveTicker() {
+        if(!needSave) {
+            return
+        }
         save()
+    }
+
+    fun smartSave() {
+        needSave = true
     }
 
     fun loadConfigSet() {
         val configSet = if (configSetFile.exists()) { JsonParser().parse(configSetFile.reader(Charsets.UTF_8)).asJsonObject } else { JsonObject() }
 
-        load(if (configSet.has("file")) {
+        nowConfigInFile = if (configSet.has("file")) {
             configSet.get("file").asString
         } else {
             "default"
-        }, false)
+        }
+
+        load(nowConfigInFile, false)
     }
 
     fun saveConfigSet() {
