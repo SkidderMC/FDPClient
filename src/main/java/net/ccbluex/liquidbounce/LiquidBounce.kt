@@ -69,7 +69,7 @@ object LiquidBounce {
     val CLIENT_VERSION = gitInfo["git.commit.id.abbrev"]?.let { "git-$it" } ?: "unknown"
     @JvmField
     val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "unknown").let {
-        if(it == "main") "stable" else it
+        if(it == "main") "Main Reborn" else it
     }
 
     var isStarting = true
