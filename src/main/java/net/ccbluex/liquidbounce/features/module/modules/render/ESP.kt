@@ -49,8 +49,8 @@ class ESP : Module() {
     private val csgoShowHealthValue = BoolValue("CSGO-ShowHealth", true).displayable { modeValue.equals("CSGO") }
     private val csgoShowHeldItemValue = BoolValue("CSGO-ShowHeldItem", true).displayable { modeValue.equals("CSGO") }
     private val csgoShowNameValue = BoolValue("CSGO-ShowName", true).displayable { modeValue.equals("CSGO") }
-    private val csgoWidthValue = FloatValue("CSGOOld-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("CSGO-Old", "CSGO") }
-    private val colorModeValue = ListValue("Mode", arrayOf("Name", "Armor", "OFF"), "Name")
+    private val csgoWidthValue = FloatValue("CSGOOld-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("CSGO-Old") }
+    private val colorModeValue = ListValue("ColorMode", arrayOf("Name", "Armor", "OFF"), "Name")
     private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
     private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
     private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
@@ -204,7 +204,7 @@ class ESP : Module() {
                                 if (csgoShowNameValue.get()) {
                                     GL11.glEnable(GL11.GL_TEXTURE_2D)
                                     GL11.glEnable(GL11.GL_DEPTH_TEST)
-                                    mc.fontRendererObj.drawCenteredString(entityLiving.displayName.formattedText, minX + (maxX - minX) / 2.0f, minY - 12.0f, -1)   
+                                    mc.fontRendererObj.drawCenteredString(entityLiving.displayName.formattedText, minX + (maxX - minX) / 2.0f, minY - 12.0f, -1)
                                     GL11.glDisable(GL11.GL_TEXTURE_2D)
                                     GL11.glDisable(GL11.GL_DEPTH_TEST)
                                 }
