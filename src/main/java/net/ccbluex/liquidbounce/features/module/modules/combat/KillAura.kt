@@ -282,8 +282,8 @@ class KillAura : Module() {
         }
 
         if (attackTimingValue.equals("All") || attackTimingValue.equals("Both") ||
-                (attackTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
-                (attackTimingValue.equals("Post") && event.eventState == EventState.POST)) {
+            (attackTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
+            (attackTimingValue.equals("Post") && event.eventState == EventState.POST)) {
             runAttackLoop()
         }
 
@@ -328,7 +328,7 @@ class KillAura : Module() {
         }
 
         // if(event.eventState == EventState.PRE)
-            update()
+        update()
 
         if (strafeOnlyGroundValue.get() && !mc.thePlayer.onGround) {
             return
@@ -858,14 +858,14 @@ class KillAura : Module() {
         }
 
         val (_, directRotation) =
-        RotationUtils.calculateCenter(
-            rModes,
-            randomCenterModeValue.get(),
-            (randomCenRangeValue.get()).toDouble(),
-            boundingBox,
-            predictValue.get() && rotationModeValue.get() != "Test",
-            mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
-        ) ?: return false
+            RotationUtils.calculateCenter(
+                rModes,
+                randomCenterModeValue.get(),
+                (randomCenRangeValue.get()).toDouble(),
+                boundingBox,
+                predictValue.get() && rotationModeValue.get() != "Test",
+                mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
+            ) ?: return false
 
         if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = (89.9).toFloat()
 
