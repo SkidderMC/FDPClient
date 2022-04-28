@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.features.special.DiscordRPC
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.config.ConfigManager
+import net.ccbluex.liquidbounce.font.TTFFontManager
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
@@ -50,7 +51,9 @@ object LiquidBounce {
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE = "GetFDP.Today"
     const val MINECRAFT_VERSION = "1.8.9"
+    const val VERSIONTYPE = "Preview"
 
+    var fontMgr: TTFFontManager? = null
     @JvmField
     val gitInfo = Properties().also {
         val inputStream = LiquidBounce::class.java.classLoader.getResourceAsStream("git.properties")
@@ -91,7 +94,7 @@ object LiquidBounce {
     lateinit var keyBindManager: KeyBindManager
 
     // Menu Background
-    var background: ResourceLocation? = null
+    var background: ResourceLocation? = ResourceLocation("fdpclient/background.png")
 
     val launchFilters = mutableListOf<EnumLaunchFilter>()
     private val dynamicLaunchOptions: Array<LaunchOption>
@@ -111,7 +114,6 @@ object LiquidBounce {
     fun initClient() {
         ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
         val startTime = System.currentTimeMillis()
-
         // Create file manager
         fileManager = FileManager()
         configManager = ConfigManager()
