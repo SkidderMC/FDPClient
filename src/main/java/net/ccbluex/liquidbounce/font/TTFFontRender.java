@@ -30,7 +30,7 @@ public class TTFFontRender extends TTFCFont {
     }
 
     public float drawString(String text, float x, float y, int color) {
-        return drawString(text, (double) x, (double) y, color, false);
+        return drawString(text, x, y, color, false);
     }
 
     public float drawCenteredString(String text, float x, float y, int color) {
