@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
+    /* For modification, please keep "Designed by XiGua" */
     override fun initGui() {
         val defaultHeight = (this.height / 3.5).toInt()
         this.buttonList.add(TestBtn(1, (this.width / 2) - (130 / 2), this.height / 2 - 20, 130, 23,  I18n.format("menu.singleplayer"), null, 2,
@@ -62,6 +63,8 @@ override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
     val defaultHeight1 = (this.height).toDouble()
     val defaultWidth1 = (this.width).toDouble()
     FontLoaders.F40.drawCenteredString(LiquidBounce.CLIENT_NAME,this.width.toDouble()/2,this.height.toDouble()/2 - 60,Color(255,255,255,200).rgb)
+    
+    /* For modification, please keep "Designed by XiGua" */
     FontLoaders.F16.drawString("Made by UnlegitMC Team & Designed by XiGua",10f,this.height-15f,Color(255,255,255,170).rgb)
     var versionMsg="Version: "+LiquidBounce.CLIENT_VERSION+if (LiquidBounce.VERSIONTYPE.contains("Release")) " | Release" else " | "+LiquidBounce.VERSIONTYPE+" (May be isn't work)"
     FontLoaders.F16.drawString(versionMsg,this.width - FontLoaders.F16.getStringWidth(versionMsg) - 10F,this.height-15f,Color(255,255,255,170).rgb)
