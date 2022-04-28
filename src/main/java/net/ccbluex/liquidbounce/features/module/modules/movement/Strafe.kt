@@ -19,6 +19,7 @@ class Strafe : Module() {
     private var onGroundStrafeValue = BoolValue("OnGroundStrafe", false)
     private var allDirectionsJumpValue = BoolValue("AllDirectionsJump", false)
 
+
     private var wasDown = false
     private var jump = false
 

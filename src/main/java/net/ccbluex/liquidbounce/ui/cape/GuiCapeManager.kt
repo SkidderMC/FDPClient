@@ -25,7 +25,7 @@ object GuiCapeManager : GuiScreen() {
     val capeList = mutableListOf<ICape>()
 
     init {
-        arrayOf("aurora", "forest", "hot", "indigo", "lava", "lime", "night").forEach {
+        arrayOf("classic", "classic2", "aurora", "forest", "hot", "indigo", "lava", "lime", "night", "nightlife", "abstract", "blur").forEach {
             embeddedCapes.add(loadCapeFromResource(it, "assets/minecraft/fdpclient/cape/$it.png"))
         }
         nowCape = embeddedCapes.random()

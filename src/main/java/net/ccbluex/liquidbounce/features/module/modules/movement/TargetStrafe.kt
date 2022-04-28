@@ -83,24 +83,6 @@ class TargetStrafe : Module() {
 
             event.x = asLast[0]
             event.z = asLast[1]
-            //        if (mc.thePlayer.isCollidedHorizontally || checkVoid()) direction = if (direction == 1) -1 else 1
-//        if(checkVoid() && canStrafe) return
-//        if (mc.gameSettings.keyBindLeft.isKeyDown) {
-//            direction = 1
-//        }
-//        if (mc.gameSettings.keyBindRight.isKeyDown) {
-//            direction = -1
-//        }
-//
-//        if (!isVoid(0, 0) && canStrafe) {
-//            MovementUtils.setSpeed(
-//                event,
-//                sqrt(event.x.pow(2.0) + event.z.pow(2.0)),
-//                RotationUtils.toRotation(RotationUtils.getCenter(killAura.target?.entityBoundingBox), true).yaw,
-//                direction.toDouble(),
-//                if (mc.thePlayer.getDistanceToEntity(killAura.target) <= radiusValue.get()) 0.0 else 1.0
-//            )
-//        }
            if (!thirdPersonViewValue.get()) return
            mc.gameSettings.thirdPersonView = if (canStrafe) 3 else 0
        }
