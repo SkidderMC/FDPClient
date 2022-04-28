@@ -14,6 +14,9 @@ Gitee mirror: https://gitee.com/fdpclient-cn/FDPClient
 
 ## For the bright future!
 因为UnlegitMC Team内部原因，Liulihaocai#3747退出开发团队
+FDP may continue to update and is looking for suitable candidates
+Most developers remain the same, but we have lost liulihaocai
+
 
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/UnlegitMC/FDPClient/issues).
