@@ -30,7 +30,7 @@ class Vulcan3Fly : FlyMode("VulcanLegit") {
         ticks = 0
         modifyTicks = 0
         flags = 0
-        mc.thePlayer.setPosition(mc.thePlayer.posX, Math.round(mc.thePlayer.posY*2)/2, mc.thePlayer.posZ)
+        mc.thePlayer.setPosition(mc.thePlayer.posX, Math.round(mc.thePlayer.posY*2).toDouble() / 2, mc.thePlayer.posZ)
         stage = FlyStage.WAITING
         ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
         ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aYou can go Up/Down by pressing Jump/Sneak")
@@ -66,11 +66,11 @@ class Vulcan3Fly : FlyMode("VulcanLegit") {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY-0.5, mc.thePlayer.posZ)
                     modifyTicks = 0
                 }else if(ticks == 2 && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && !mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -0.5, 0.0)).isEmpty()) {
-                    PacketUtils.sendPacketNoEvent(C04(mc.thePlayer.posX+0.05,mc.thePlayer.posY,mc.thePlayer.posZ,true))
-                    PacketUtils.sendPacketNoEvent(C04(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,true))
-                    PacketUtils.sendPacketNoEvent(C04(mc.thePlayer.posX,mc.thePlayer.posY+0.42,mc.thePlayer.posZ,true))
-                    PacketUtils.sendPacketNoEvent(C04(mc.thePlayer.posX,mc.thePlayer.posY+0.7532,mc.thePlayer.posZ,true))
-                    PacketUtils.sendPacketNoEvent(C04(mc.thePlayer.posX,mc.thePlayer.posY+1.0,mc.thePlayer.posZ,true))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX+0.05,mc.thePlayer.posY,mc.thePlayer.posZ,true))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,true))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY+0.42,mc.thePlayer.posZ,true))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY+0.7532,mc.thePlayer.posZ,true))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY+1.0,mc.thePlayer.posZ,true))
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY+1.0, mc.thePlayer.posZ)
                     stage = FlyStage.WAIT_APPLY
                     modifyTicks = 0
