@@ -78,8 +78,8 @@ public abstract class MixinGuiTextField {
             String s = this.fontRendererInstance.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
             boolean flag = j >= 0 && j <= s.length();
             boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag;
-            int l = this.enableBackgroundDrawing ? this.xPosition + 0 : this.xPosition;
-            int i1 = this.enableBackgroundDrawing ? this.yPosition + (this.height) / 2 : this.yPosition;
+            int l = this.enableBackgroundDrawing ? this.xPosition + 4 : this.xPosition;
+            int i1 = this.enableBackgroundDrawing ? this.yPosition + (this.height - 8) / 2 : this.yPosition;
             int j1 = l;
 
             if (k > s.length())
