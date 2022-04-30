@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.ui.btn.TestBtn
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
+import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
@@ -41,6 +42,9 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             Color(20, 20, 20, 130)))
 
         this.buttonList.add(TestBtn(102, this.width - 95, 10, 25, 25, "Announcement", ResourceLocation("fdpclient/imgs/icon/announcement.png"), 2,
+            Color(20, 20, 20, 130)))
+
+        this.buttonList.add(TestBtn(514, this.width - 125, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
             Color(20, 20, 20, 130)))
 
         drawed=true;
@@ -161,6 +165,7 @@ when (button.id) {
     100 -> mc.displayGuiScreen(GuiAltManager(this))
     102 -> displayed=false
     103 -> mc.displayGuiScreen(GuiModList(this))
+    514 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}/discord.html")
 }
 }
 
