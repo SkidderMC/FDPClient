@@ -54,14 +54,14 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         val defaultHeight = (this.height / 3.5).toInt()
 
         Thread {
-            if(LiquidBounce.CLIENTTEXT.contains("Waiting")) {
+            if(LiquidBounce.CLIENTTEXT.contains("Waiting") || LiquidBounce.CLIENTTEXT.contains("Oops")) {
                 try {
                     LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
                 } catch (e: Exception) {
                     try {
                         LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
                     } catch (e: Exception) {
-                        LiquidBounce.CLIENTTEXT = "Oops.. :(\$Can't get information!\$100\$80"
+                        LiquidBounce.CLIENTTEXT = "Oops.. :(\$Can't get information!#Try reopen the main menu\$140\$80"
                     }
                 }
             }
