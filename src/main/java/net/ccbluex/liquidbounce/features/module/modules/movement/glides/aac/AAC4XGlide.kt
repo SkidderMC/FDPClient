@@ -1,9 +1,9 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.flys.aac
+package net.ccbluex.liquidbounce.features.module.modules.movement.glides.aac
 
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
+import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMode
 
-class AAC4XGlideFly : FlyMode("AAC4.X-Glide") {
+class AAC4XGlide : GlideMode("AAC4.X") {
     private var delay = 0
 
     override fun onEnable() {
