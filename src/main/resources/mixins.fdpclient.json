@@ -30,6 +30,7 @@
     "gui.MixinGuiInGame",
     "gui.MixinGuiIngameMenu",
     "gui.MixinGuiMultiplayer",
+    "gui.MixinServerListEntryNormal",
     "gui.MixinGuiNewChat",
     "gui.MixinGuiScreen",
     "gui.MixinGuiSpectator",
