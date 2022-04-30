@@ -8,21 +8,20 @@ package net.ccbluex.liquidbounce.launch.data.legacyui
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.btn.TestBtn
-import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
-import net.ccbluex.liquidbounce.ui.i18n.Language
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
+import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.GuiModList
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
-    /* For modification, please keep "Designed by XiGua" */
-    override fun initGui() {
-        val defaultHeight = (this.height / 3.5).toInt()
+    var drawed=false;
+    var clicked=false;
+    var displayed=false;
+    fun drawBtns(){
         this.buttonList.add(TestBtn(1, (this.width / 2) - (130 / 2), this.height / 2 - 20, 130, 23,  I18n.format("menu.singleplayer"), null, 2,
             Color(20, 20, 20, 130)))
 
@@ -41,6 +40,30 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         this.buttonList.add(TestBtn(4, this.width - 65, 10, 25, 25, I18n.format("menu.quit"), ResourceLocation("fdpclient/imgs/icon/quit.png"), 2,
             Color(20, 20, 20, 130)))
 
+        this.buttonList.add(TestBtn(102, this.width - 95, 10, 25, 25, "Announcement", ResourceLocation("fdpclient/imgs/icon/announcement.png"), 2,
+            Color(20, 20, 20, 130)))
+
+        drawed=true;
+    }
+    /* For modification, please keep "Designed by XiGua" */
+    override fun initGui() {
+        val defaultHeight = (this.height / 3.5).toInt()
+
+        Thread {
+            if(LiquidBounce.CLIENTTEXT.contains("Waiting")) {
+                try {
+                    LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
+                } catch (e: Exception) {
+                    try {
+                        LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
+                    } catch (e: Exception) {
+                        LiquidBounce.CLIENTTEXT = "Oops.. :(\$Can't get information!\$100\$80"
+                    }
+                }
+            }
+        }.start()
+
+        drawBtns()
         //this.buttonList.add(TestBtn(102, this.width - 95, 10, 25, 25, LanguageManager.get("ui.background"), ResourceLocation("fdpclient/imgs/icon/wallpaper.png"), 2,
         //    Color(20, 20, 20, 130)))
 
@@ -88,9 +111,47 @@ override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         mc.fontRendererObj.drawString(str, start, 15f, Color.WHITE.rgb, false)
     }*/
 
+
+    //displayed = false
+    try {
+        if (!displayed) {
+            var back = Layer.draw(
+                defaultWidth.toInt(),
+                defaultHeight1.toInt(),
+                LiquidBounce.CLIENTTEXT.split("$")[2].toFloat(),
+                LiquidBounce.CLIENTTEXT.split("$")[3].toFloat(),
+                LiquidBounce.CLIENTTEXT.split("$")[0],
+                LiquidBounce.CLIENTTEXT.split("$")[1].replace("%VERSION%",LiquidBounce.CLIENT_VERSION),
+                255,
+                mouseX,
+                mouseY,
+                clicked
+            )
+            if (back == 1) {
+                drawed = false;
+                buttonList.removeAll(buttonList)
+            } else if (back == 2) {
+                displayed = true
+                drawBtns()
+            }
+            if (drawed && back != 1) {
+                //drawBtns()
+            }
+            clicked = false;
+        }else{
+            if(!drawed){
+                drawBtns()
+            }
+        }
+    }catch (e:Exception){
+        e.printStackTrace()
+    }
     super.drawScreen(mouseX, mouseY, partialTicks)
 }
-
+override fun mouseClicked(p_mouseClicked_1_: Int, i2: Int, i3: Int) {
+    clicked=true;
+    super.mouseClicked(p_mouseClicked_1_,i2 ,i3)
+}
 override fun actionPerformed(button: GuiButton) {
 when (button.id) {
     0 -> mc.displayGuiScreen(GuiOptions(this, mc.gameSettings))
@@ -98,7 +159,7 @@ when (button.id) {
     2 -> mc.displayGuiScreen(GuiMultiplayer(this))
     4 -> mc.shutdown()
     100 -> mc.displayGuiScreen(GuiAltManager(this))
-    102 -> mc.displayGuiScreen(GuiBackground(this))
+    102 -> displayed=false
     103 -> mc.displayGuiScreen(GuiModList(this))
 }
 }

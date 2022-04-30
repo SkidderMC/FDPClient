@@ -44,8 +44,10 @@ import kotlin.concurrent.thread
 
 object LiquidBounce {
 
+
     // Client information
     const val CLIENT_NAME = "FDPClient"
+    var CLIENTTEXT = "Waiting..."
     const val COLORED_NAME = "§c§lFDP§6§lClient"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE = "GetFDP.Today"
