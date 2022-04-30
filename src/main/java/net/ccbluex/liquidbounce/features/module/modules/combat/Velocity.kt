@@ -41,7 +41,7 @@ class Velocity : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Simple", "Tick", "Vanilla", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
                                                       "Redesky1", "Redesky2",
                                                       "AAC5.2.0", "AAC5.2.0Combat",
-                                                      "MatrixReduce", "MatrixSimple", "MatrixGround",
+                                                      "MatrixReduce", "MatrixSimple",
                                                       "Reverse", "SmoothReverse",
                                                       "Jump",
                                                       "Phase", "PacketPhase", "Glitch", "Spoof",
