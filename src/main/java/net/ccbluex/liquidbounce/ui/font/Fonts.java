@@ -23,6 +23,9 @@ public class Fonts {
     @FontDetails(fontName = "Small", fontSize = 35, fileName = "regular.ttf")
     public static GameFontRenderer font35;
 
+    @FontDetails(fontName = "Light", fontSize = 32, fileName = "regular.ttf")
+    public static GameFontRenderer font32;
+
     @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
     public static GameFontRenderer font40;
 
@@ -129,7 +132,6 @@ public class Fonts {
     public static Object[] getFontDetails(final FontRenderer fontRenderer) {
         if (fontRenderer instanceof GameFontRenderer) {
             final Font font = ((GameFontRenderer) fontRenderer).getDefaultFont().getFont();
-
             return new Object[] {font.getName(), font.getSize()};
         }
 

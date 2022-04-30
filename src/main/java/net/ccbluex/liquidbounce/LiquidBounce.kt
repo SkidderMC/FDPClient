@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.features.special.DiscordRPC
 import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.config.ConfigManager
-import net.ccbluex.liquidbounce.font.TTFFontManager
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
@@ -53,7 +52,6 @@ object LiquidBounce {
     const val MINECRAFT_VERSION = "1.8.9"
     const val VERSIONTYPE = "Preview"
 
-    var fontMgr: TTFFontManager? = null
     @JvmField
     val gitInfo = Properties().also {
         val inputStream = LiquidBounce::class.java.classLoader.getResourceAsStream("git.properties")

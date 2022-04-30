@@ -89,22 +89,26 @@ class Particle {
     }
 
     void fall() {
-        final Minecraft mc = Minecraft.getMinecraft();
-        final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
-        y = (y + ySpeed);
-        x = (x + xSpeed);
+        try {
+            final Minecraft mc = Minecraft.getMinecraft();
+            final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
+            y = (y + ySpeed);
+            x = (x + xSpeed);
 
-        if(y > mc.displayHeight)
-            y = 1;
+            if (y > mc.displayHeight)
+                y = 1;
 
-        if(x > mc.displayWidth)
-            x = 1;
+            if (x > mc.displayWidth)
+                x = 1;
 
-        if(x < 1)
-            x = scaledResolution.getScaledWidth();
+            if (x < 1)
+                x = scaledResolution.getScaledWidth();
 
-        if(y < 1)
-            y = scaledResolution.getScaledHeight();
+            if (y < 1)
+                y = scaledResolution.getScaledHeight();
+        }catch (Exception E){
+            E.printStackTrace();
+        }
     }
 
     private float genRandom() {

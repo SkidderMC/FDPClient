@@ -60,21 +60,26 @@ public abstract class MixinGuiScreen {
     @Shadow
     protected abstract void actionPerformed(GuiButton p_actionPerformed_1_);
 
-    @Inject(method = "drawWorldBackground", at = @At("HEAD"))
+    @Inject(method = "drawWorldBackground", at = @At("HEAD"), cancellable = true)
     private void drawWorldBackground(final CallbackInfo callbackInfo) {
-        if(mc.theWorld==null) {
+        try {
             final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
-            final ScaledResolution scaledResolution = new ScaledResolution(mc);
-            final int width = scaledResolution.getScaledWidth();
-            final int height = scaledResolution.getScaledHeight();
+            if (mc.theWorld == null) {
+                final ScaledResolution scaledResolution = new ScaledResolution(mc);
+                final int width = scaledResolution.getScaledWidth();
+                final int height = scaledResolution.getScaledHeight();
 
-            mc.getTextureManager().bindTexture(LiquidBounce.INSTANCE.getBackground());
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
+                mc.getTextureManager().bindTexture(LiquidBounce.INSTANCE.getBackground());
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
+            }
             if (hud.getInventoryParticle().get() && mc.thePlayer != null) {
                 ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+        callbackInfo.cancel();
     }
 
     @ModifyVariable(method = "sendChatMessage(Ljava/lang/String;)V", at = @At("HEAD"))
