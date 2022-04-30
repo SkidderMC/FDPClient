@@ -148,7 +148,7 @@ class TestBtn : GuiButton {
                     displayString,
                     xPosition + width / 2 - (FontLoaders.C16.DisplayFontWidths(displayString,FontLoaders.C16) / 2).toFloat(),
                     (
-                            yPosition + font.height / 2 - 3).toFloat() + height + 5 + 4,
+                            yPosition + font.height / 2 - 3).toFloat() + height + 5 + 3,
                     Color(50, 50, 50, (254*percent).toInt()).rgb,FontLoaders.C16
                 )
             }
@@ -157,7 +157,7 @@ class TestBtn : GuiButton {
             val s = font.DisplayFonts(
                 displayString,
                 xPosition + width / 2 - (font.DisplayFontWidths(displayString,font) / 2).toFloat(), (
-                        yPosition + height / 2 - 2).toFloat() + yOffset, Color(50, 50, 50, 255).rgb,FontLoaders.C16
+                        yPosition + height / 2 - 4).toFloat() + yOffset, Color(50, 50, 50, 255).rgb,FontLoaders.C16
             )
         }
         GL11.glPopAttrib()

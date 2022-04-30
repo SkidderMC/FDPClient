@@ -87,7 +87,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
 
     @Inject(method = "initGui", at = @At("RETURN"))
     private void init(CallbackInfo callbackInfo) {
-        inputField.yPosition = height - 2;
+        inputField.yPosition = height - 5;
         yPosOfInputField = inputField.yPosition;
     }
 
@@ -139,7 +139,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
         if (yPosOfInputField > height - 12) yPosOfInputField -= 0.4F * delta;
         if (yPosOfInputField < height - 12) yPosOfInputField = height - 12;
 
-        inputField.yPosition = (int) yPosOfInputField;
+        inputField.yPosition = (int) yPosOfInputField - 1;
     }
 
     @Inject(method = "autocompletePlayerNames", at = @At("HEAD"))
@@ -197,7 +197,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
             if(result.length>0)
                 resultText = ((String)result[0]).substring(Math.min(((String)result[0]).length(),text.length()));
 
-            mc.fontRendererObj.drawStringWithShadow(resultText, inputField.xPosition + mc.fontRendererObj.getStringWidth(inputField.getText()), inputField.yPosition, new Color(165, 165, 165).getRGB());
+            mc.fontRendererObj.drawStringWithShadow(resultText, 5.5F + inputField.xPosition + mc.fontRendererObj.getStringWidth(inputField.getText()), inputField.yPosition+2f, new Color(165, 165, 165).getRGB());
         }
 
         IChatComponent ichatcomponent =

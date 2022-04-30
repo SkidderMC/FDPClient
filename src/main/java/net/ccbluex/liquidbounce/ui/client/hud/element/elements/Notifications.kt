@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.gui.FontRenderer
 import org.lwjgl.opengl.GL11
@@ -34,6 +35,9 @@ class Notifications(
 ) : Element(x, y, scale, side) {
 
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 235, 0, 255)
+
+    private val TitleShadow = BoolValue("Title Shadow", false)
+    private val ContentShadow = BoolValue("Content Shadow", true)
     //private val fontValue = FontValue("Font", Fonts.font35)
 
     /**
@@ -49,7 +53,7 @@ class Notifications(
         LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
-            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale)) {
+            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get())) {
                 LiquidBounce.hud.notifications.remove(notify)
             }
 
@@ -93,7 +97,7 @@ class Notification(
     /**
      * Draw notification
      */
-    fun drawNotification(index: Int, font: CFontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float): Boolean {
+    fun drawNotification(index: Int, font: CFontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float,ContentShadow: Boolean,TitleShadow: Boolean): Boolean {
         this.width = 100.coerceAtLeast(font.getStringWidth(content)
             .coerceAtLeast(font.getStringWidth(title)) + 15)
         val realY = -(index+1) * height
@@ -161,8 +165,9 @@ class Notification(
         RenderUtils.drawRoundedCornerRect(0F, 0F, width.toFloat(), height.toFloat()-5f,2f ,colors.rgb)
         RenderUtils.drawRoundedCornerRect(0F, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), height.toFloat()-5f,2f ,Color(0,0,0,26).rgb)
         //RenderUtils.drawRoundedCornerRect(2F, 2F, width.toFloat()-2F, height.toFloat()-7F,1f ,Color(242,242,242, 100).rgb)
-        font.DisplayFont2(FontLoaders.C16,content, 4F, 9F, Color(31,41,55).rgb,true)
-        FontLoaders.C12.DisplayFonts(title, 4F, 3F, Color(31,41,55).rgb, FontLoaders.C12)
+        //font.DisplayFont2(FontLoaders.C16,content, 4F, 9F, Color(31,41,55).rgb,true)
+        FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, Color(31,41,55).rgb,TitleShadow)
+        font.DisplayFont2(font,content, 4F, 10F, Color(31,41,55).rgb,ContentShadow)
         return false
     }
 }

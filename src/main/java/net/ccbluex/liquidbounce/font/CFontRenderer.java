@@ -128,7 +128,11 @@ public class CFontRenderer extends CFont {
     }
 
     public float DisplayFont2(CFontRenderer font,String str, float x, float y, int color,boolean shadow) {
-        return DisplayFont(str,x,y,color,shadow,font);
+        if(shadow)
+            return DisplayFont(str,x,y,color,shadow,font);
+        else{
+            return DisplayFont(str,x,y,color,font);
+        }
     }
     public static float DisplayFont(String str, float x, float y, int color,boolean shadow, CFontRenderer font) {
         str = LanguageManager.INSTANCE.get(LanguageManager.INSTANCE.replace(str));
