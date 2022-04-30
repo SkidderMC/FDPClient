@@ -1,10 +1,10 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
+package net.ccbluex.liquidbounce.features.module.modules.movement.glides.other
 
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
+import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMode
 import net.ccbluex.liquidbounce.value.IntegerValue
 
-class NeruxVaceFly : FlyMode("NeruxVace") {
+class NeruxVaceGlide : GlideMode("NeruxVace") {
     private val ticksValue = IntegerValue("${valuePrefix}Ticks", 6, 0, 20)
 
     private var glideDelay = 0
