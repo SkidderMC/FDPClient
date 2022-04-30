@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.launch.options.FancyUiLaunchOption;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -86,7 +87,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
 
     @Inject(method = "initGui", at = @At("RETURN"))
     private void init(CallbackInfo callbackInfo) {
-        inputField.yPosition = height + 1;
+        inputField.yPosition = height - 2;
         yPosOfInputField = inputField.yPosition;
     }
 
@@ -173,15 +174,18 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     private void onAutocompleteResponse(String[] autoCompleteResponse, CallbackInfo callbackInfo) {
         if (LiquidBounce.commandManager.getLatestAutoComplete().length != 0) callbackInfo.cancel();
     }
-
+    public void draw(){
+    }
     /**
      * @author CCBlueX
      */
-    @Overwrite
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        Gui.drawRect(2, this.height - (int) fade, this.width - 2, this.height, Integer.MIN_VALUE);
-        this.inputField.drawTextBox();
+    @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
+    public void drawScreen(int mouseX, int mouseY, float partialTicks,CallbackInfo ci) {
+        //RenderUtils.drawRect(10,10,20,20,new Color(255,255,255,255).getRGB());
+        RenderUtils.drawRoundedCornerRect(1, this.height - (int) fade - 2, this.width - 4, this.height - 1 , 2f, new Color(255,255,255,50).getRGB());
+        RenderUtils.drawRoundedCornerRect(2, this.height - (int) fade - 1, this.width - 3, this.height - 2 ,3f, new Color(0,0,0,200).getRGB());
 
+        this.inputField.drawTextBox();
         FancyUiLaunchOption.INSTANCE.render(true, mouseX, mouseY);
 
         if (LiquidBounce.commandManager.getLatestAutoComplete().length > 0 && !inputField.getText().isEmpty() && inputField.getText().startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
@@ -201,5 +205,6 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
 
         if (ichatcomponent != null)
             this.handleComponentHover(ichatcomponent, mouseX, mouseY);
+        ci.cancel();
     }
 }

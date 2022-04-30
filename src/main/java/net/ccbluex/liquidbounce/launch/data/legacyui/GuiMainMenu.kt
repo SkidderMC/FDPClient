@@ -40,6 +40,9 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         this.buttonList.add(TestBtn(4, this.width - 65, 10, 25, 25, I18n.format("menu.quit"), ResourceLocation("fdpclient/imgs/icon/quit.png"), 2,
             Color(20, 20, 20, 130)))
 
+        //this.buttonList.add(TestBtn(102, this.width - 95, 10, 25, 25, LanguageManager.get("ui.background"), ResourceLocation("fdpclient/imgs/icon/wallpaper.png"), 2,
+        //    Color(20, 20, 20, 130)))
+
 
         /*
         this.buttonList.add(GuiButton(1, this.width / 2 - 50, defaultHeight, 100, 20, I18n.format("menu.singleplayer")))

@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.ui.client.keybind
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
@@ -15,7 +16,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 /**
- * @author liulihaocai
+ * @author XiGua And LiuLihaocai
  * FDPClient
  */
 class KeyInfo(
@@ -97,8 +98,8 @@ class KeyInfo(
         // 覆盖多出来的部分
         RenderUtils.drawRect(0F, 0F, baseTabWidth.toFloat(), 12F + Fonts.font40.height + 10F, Color.WHITE.rgb)
         RenderUtils.drawRect(0F, baseTabHeight - 22F - Fonts.font40.height, baseTabWidth.toFloat(), baseTabHeight.toFloat(), Color.WHITE.rgb)
-        Fonts.font40.drawString(LanguageManager.getAndFormat("ui.keybind.key", keyDisplayName), 12F, 12F, Color.BLACK.rgb, false)
-        Fonts.font40.drawString("%ui.keybind.add%", baseTabWidth - 12F - Fonts.font40.getStringWidth("%ui.keybind.add%"), baseTabHeight - 12F - Fonts.font40.height, Color(0, 191, 255).rgb/*sky blue*/, false)
+        FontLoaders.C18.DisplayFonts(LanguageManager.getAndFormat("ui.keybind.key", keyDisplayName), 12F, 12F, Color.BLACK.rgb, FontLoaders.C18)
+        FontLoaders.C18.DisplayFonts("%ui.keybind.add%", baseTabWidth - 12F - Fonts.font40.getStringWidth("%ui.keybind.add%"), baseTabHeight - 12F - Fonts.font40.height, Color(0, 191, 255).rgb/*sky blue*/, FontLoaders.C18)
 
         GL11.glPopMatrix()
     }

@@ -30,10 +30,10 @@ open class HUD : MinecraftInstance() {
          * Create default HUD
          */
         fun createDefault(): HUD {
-            val text1 = Text(x = 15.0, y = 15.0)
-            text1.displayString.set("FDPClient | %serverIp% | %fps% FPS")
+            val text1 = Text(x = 5.0, y = 8.0)
+            text1.displayString.set("FDPClient")
             text1.colorModeValue.set("Rainbow")
-            text1.rectValue.set("OneTap")
+            text1.rectValue.set("Logo")
             text1.rectColorModeValue.set("Rainbow")
 
             return HUD()

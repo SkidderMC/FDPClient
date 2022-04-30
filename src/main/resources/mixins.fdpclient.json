@@ -33,6 +33,7 @@
     "gui.MixinGuiNewChat",
     "gui.MixinGuiScreen",
     "gui.MixinGuiSpectator",
+    "gui.MixinGuiTextField",
     "network.MixinC00Handshake",
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",

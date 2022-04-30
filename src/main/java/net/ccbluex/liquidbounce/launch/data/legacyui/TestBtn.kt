@@ -1,6 +1,8 @@
 package net.ccbluex.liquidbounce.ui.btn
 
+import net.ccbluex.liquidbounce.font.CFontRenderer
 import net.ccbluex.liquidbounce.font.FontLoaders
+import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.client.Minecraft
@@ -24,6 +26,8 @@ class TestBtn : GuiButton {
     var timer1 = MSTimer()
     private var reachTime: Int
 
+    private var animation = 0.0
+    private var lastUpdate = System.currentTimeMillis()
     constructor(
         buttonId: Int, x: Int, y: Int, widthIn: Int, heightIn: Int, buttonText: String?,
         image: ResourceLocation?, reachTime: Int, color: Color
@@ -70,7 +74,18 @@ class TestBtn : GuiButton {
         GlStateManager.blendFunc(770, 771)
         var yOffset=0;
         var offsetLength=2;
+
+        val time = System.currentTimeMillis()
+        val pct = (time - lastUpdate) / 500.0
+        val percent = EaseUtils.easeInOutQuad(animation)
+
         if (this.isMouseOver) {
+            if (animation < 1) {
+                animation += pct
+            }
+            if (animation > 1) {
+                animation = 1.0
+            }
             timer1.reset()
             for (i in 0..offsetLength) {
                 if (timer.hasTimePassed((i*10 * reachTime).toLong())) {
@@ -78,6 +93,12 @@ class TestBtn : GuiButton {
                 }
             }
         } else if (!this.isMouseOver) {
+            if (animation > 0) {
+                animation -= pct
+            }
+            if (animation < 0) {
+                animation = 0.0
+            }
             timer.reset()
             wi = offsetLength
             for (i in 0 until offsetLength) {
@@ -106,6 +127,7 @@ class TestBtn : GuiButton {
         GL11.glPushAttrib(1048575)
         GL11.glScaled(1.0, 1.0, 1.0)
 
+        lastUpdate = time
         if (image != null) RenderUtils.drawImage(
             image, xPosition - 1 + height / 3, (yPosition - 1 + height / 3) + yOffset,
             height / 2, height / 2
@@ -114,28 +136,28 @@ class TestBtn : GuiButton {
             if(this.isMouseOver) {
                 var font = FontLoaders.C12
                 RenderUtils.drawRoundedCornerRect(
-                    xPosition + width / 2 - (font.getStringWidth(displayString) / 2).toFloat() - 3,
+                    xPosition + width / 2 - (FontLoaders.C16.DisplayFontWidths(displayString,FontLoaders.C16)  / 2).toFloat() - 3,
                     yPosition.toFloat() - 0.5f + yOffset + height + 5,
-                    3 + xPosition + width / 2 + (font.getStringWidth(displayString) / 2).toFloat(),
+                    3 + xPosition + width / 2 + (FontLoaders.C16.DisplayFontWidths(displayString,FontLoaders.C16)  / 2).toFloat(),
                     (
                             yPosition + font.height).toFloat() + 0.5f  + height + 5 + 8,
                     3f,
-                    Color(255, 255, 255, (150)*(-yOffset/3)).rgb
+                    Color(255, 255, 255, (150*percent).toInt()).rgb
                 )
-                font.drawString(
+                FontLoaders.C16.DisplayFonts(
                     displayString,
-                    xPosition + width / 2 - (font.getStringWidth(displayString) / 2).toFloat(),
+                    xPosition + width / 2 - (FontLoaders.C16.DisplayFontWidths(displayString,FontLoaders.C16) / 2).toFloat(),
                     (
                             yPosition + font.height / 2 - 3).toFloat() + height + 5 + 4,
-                    Color(50, 50, 50, 255).rgb
+                    Color(50, 50, 50, (254*percent).toInt()).rgb,FontLoaders.C16
                 )
             }
         }else{
-            var font = FontLoaders.C16
-            font.drawString(
+            val font = FontLoaders.C16;
+            val s = font.DisplayFonts(
                 displayString,
-                xPosition + width / 2 - (font.getStringWidth(displayString) / 2).toFloat(), (
-                        yPosition + height / 2 - 2).toFloat() + yOffset, Color(50, 50, 50, 255).rgb
+                xPosition + width / 2 - (font.DisplayFontWidths(displayString,font) / 2).toFloat(), (
+                        yPosition + height / 2 - 2).toFloat() + yOffset, Color(50, 50, 50, 255).rgb,FontLoaders.C16
             )
         }
         GL11.glPopAttrib()

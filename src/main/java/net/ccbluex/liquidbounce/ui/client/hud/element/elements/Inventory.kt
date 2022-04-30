@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
 /**

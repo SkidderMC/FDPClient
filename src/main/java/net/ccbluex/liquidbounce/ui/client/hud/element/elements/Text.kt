@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -59,7 +60,7 @@ class Text(
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
     val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
-    val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "None"), "None")
+    val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "None","Logo"), "None")
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 10, 1, 10)
     private val rainbowIndex = IntegerValue("RainbowIndex", 1, 1, 20)
@@ -177,14 +178,34 @@ class Text(
                 RenderUtils.drawOutLineRect(-9.0, -9.0, (fontRenderer.getStringWidth(displayText) + 8).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 6.0, 4.0, Color(59, 59, 59).rgb, Color(40, 40, 40).rgb)
                 RenderUtils.drawOutLineRect(-4.0, -4.0, (fontRenderer.getStringWidth(displayText) + 3).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 1.0, 1.0, Color(18, 18, 18).rgb, Color(0, 0, 0).rgb)
             }
-        }
+            "logo" -> {
 
-        fontRenderer.drawString(displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
-            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
-            "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-            "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
-            else -> color.rgb
-        }, shadow.get())
+            }
+        }
+        if(!rectValue.get().contains("Logo")) {
+            fontRenderer.drawString(
+                displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
+                    "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
+                    "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+                    "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
+                    else -> color.rgb
+                }, shadow.get()
+            )
+        }else{
+            FontLoaders.F40.drawString(
+                displayText.substring(0,3), 5F, 0F,Color(255,255,255,180).rgb
+            )
+            FontLoaders.C16.drawString(
+                displayText.substring(3,displayText.length), 5F + FontLoaders.F40.getStringWidth(displayText.substring(0,3)), 13F,Color(255,255,255,180).rgb
+            )
+            RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,120).rgb)
+            FontLoaders.C14.drawString(
+                LiquidBounce.CLIENT_VERSION + " | "+LiquidBounce.VERSIONTYPE, 5F, 27F,Color(255,255,255,180).rgb
+            )
+            FontLoaders.C14.drawString(
+                "REBORN 2022", 5F, 37F,Color(255,255,255,180).rgb
+            )
+        }
 
         if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) {
             fontRenderer.drawString("_", fontRenderer.getStringWidth(displayText) + 2F,

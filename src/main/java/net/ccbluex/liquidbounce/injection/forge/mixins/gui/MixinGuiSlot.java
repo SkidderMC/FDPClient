@@ -16,6 +16,11 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.awt.*;
 
 @Mixin(GuiSlot.class)
 @SideOnly(Side.CLIENT)
@@ -26,6 +31,12 @@ public abstract class MixinGuiSlot {
 
     @Shadow
     protected int mouseX;
+
+    @Shadow
+    protected int slotHeight;
+
+    @Shadow
+    protected int headerPadding;
 
     @Shadow
     protected int mouseY;
@@ -52,10 +63,16 @@ public abstract class MixinGuiSlot {
     protected boolean hasListHeader;
 
     @Shadow
+    protected boolean showSelectionBox;
+
+    @Shadow
     protected abstract void drawListHeader(int p_148129_1_, int p_148129_2_, Tessellator p_148129_3_);
 
     @Shadow
     protected abstract void drawSelectionBox(int p_148120_1_, int p_148120_2_, int mouseXIn, int mouseYIn);
+
+    @Shadow
+    protected abstract int getSize();
 
     @Shadow
     public int right;
@@ -81,6 +98,58 @@ public abstract class MixinGuiSlot {
 
     @Shadow
     public abstract int getListWidth();
+
+    @Shadow
+    protected abstract void func_178040_a(int p_178040_1_, int p_178040_2_, int p_178040_3_);
+
+    @Shadow
+    protected abstract void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn);
+
+
+    @Shadow
+    protected abstract boolean isSelected(int slotIndex);
+    /**
+     * @author XiGua
+     */
+    @Inject(method = "drawSelectionBox", at = @At("HEAD"), cancellable = true)
+    public void drawSelectionBoxs(int p_148120_1_, int p_148120_2_, int mouseXIn, int mouseYIn, CallbackInfo ci) {
+        int i = this.getSize();
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+
+        for (int j = 0; j < i; ++j) {
+            int k = p_148120_2_ + j * this.slotHeight + this.headerPadding;
+            int l = this.slotHeight - 4;
+
+            if (k > this.bottom || k + l < this.top) {
+                this.func_178040_a(j, p_148120_1_, k);
+            }
+
+            if (this.showSelectionBox && this.isSelected(j)) {
+                int i1 = this.left + (this.width / 2 - this.getListWidth() / 2);
+                int j1 = this.left + this.width / 2 + this.getListWidth() / 2;
+                //GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                //GlStateManager.disableTexture2D();
+                int color = new Color(0, 0, 0, 90).getRGB();
+                int radius = 4;
+                float xPosition = p_148120_1_ - 3;
+                float yPosition = k - 3;
+                float width = j1 - i1 + 3;
+                float height = l + 6;
+
+                RenderUtils.drawRoundedCornerRect(xPosition, yPosition, xPosition + width ,
+                        yPosition + height,radius, color);
+                RenderUtils.drawRoundedCornerRect(xPosition-0.3f, yPosition-0.3f, xPosition + width + 0.3f ,
+                        yPosition + height + 0.3f,radius-1, color);
+                //GlStateManager.enableTexture2D();
+            }
+
+            this.drawSlot(j, p_148120_1_, k, l, mouseXIn, mouseYIn);
+        }
+        ci.cancel();
+    }
+
+
 
     /**
      * @author CCBlueX
