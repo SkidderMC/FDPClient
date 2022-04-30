@@ -193,10 +193,10 @@ class Text(
             )
         }else{
             FontLoaders.F40.drawString(
-                displayText.substring(0,3), 5F, 0F,Color(255,255,255,180).rgb
+                "FDP", 5F, 0F,Color(255,255,255,180).rgb
             )
             FontLoaders.C16.drawString(
-                displayText.substring(3,displayText.length), 5F + FontLoaders.F40.getStringWidth(displayText.substring(0,3)), 13F,Color(255,255,255,180).rgb
+                "Client", 5F + FontLoaders.F40.getStringWidth("FDP"), 13F,Color(255,255,255,180).rgb
             )
             RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,120).rgb)
             FontLoaders.C14.drawString(
