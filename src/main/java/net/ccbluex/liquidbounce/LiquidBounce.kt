@@ -50,7 +50,7 @@ object LiquidBounce {
     var CLIENTTEXT = "Waiting..."
     const val COLORED_NAME = "§c§lFDP§6§lClient"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
-    const val CLIENT_WEBSITE = "GetFDP.Today"
+    const val CLIENT_WEBSITE = "FDPClient.Club"
     const val MINECRAFT_VERSION = "1.8.9"
     const val VERSIONTYPE = "Preview"
 
