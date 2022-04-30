@@ -28,7 +28,7 @@ class RoundedButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) 
             GlStateManager.blendFunc(770, 771)
             //button.drawTexturedModalRect(button.xPosition, button.yPosition, 0, 46 + i * 20, button.width / 2, button.height);
             //button.drawTexturedModalRect(button.xPosition + button.width / 2, button.yPosition, 200 - button.width / 2, 46 + i * 20, button.width / 2, button.height);
-            button.mouseDragged(mc, mouseX, mouseY)
+            //button.mouseDragged(mc, mouseX, mouseY)
             var j = 14737632
             //BlurUtil.doBlur(0);
             //BlurUtil.blurAreaBoarder(button.xPosition, button.yPosition, button.width, button.height, 1f)
