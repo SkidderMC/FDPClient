@@ -18,6 +18,8 @@ Due to some problems, something happened inside UnlegitMC of FDPClient developme
 We have the new domain name: "fdpclient.club"  
 Most developers will remain the same, but unfortunately we lost Liulihaocai temporarily.  
 
+Message from Co丶Dynamic: I will NEVER terminate this project :)
+
 
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/UnlegitMC/FDPClient/issues).
