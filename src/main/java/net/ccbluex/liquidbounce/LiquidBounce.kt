@@ -52,7 +52,7 @@ object LiquidBounce {
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE = "FDPClient.Club"
     const val MINECRAFT_VERSION = "1.8.9"
-    const val VERSIONTYPE = "Preview"
+    const val VERSIONTYPE = "Release"//"Preview"
 
     @JvmField
     val gitInfo = Properties().also {
@@ -65,12 +65,12 @@ object LiquidBounce {
     }
 
     // 自动读取客户端版本
-    @JvmField
-    val CLIENT_VERSION = gitInfo["git.commit.id.abbrev"]?.let { "git-$it" } ?: "unknown"
-    @JvmField
-    val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "unknown").let {
-        if(it == "main") "Main Reborn" else it
-    }
+   // @JvmField
+    val CLIENT_VERSION = "v3.1.1"//gitInfo["git.commit.id.abbrev"]?.let { "git-$it" } ?: "unknown"
+    //@JvmField
+    val CLIENT_BRANCH = "Main Reborn"//(gitInfo["git.branch"] ?: "unknown").let {
+    //    if(it == "main") "Main Reborn" else it
+    //}
 
     var isStarting = true
     var isLoadingConfig = true
