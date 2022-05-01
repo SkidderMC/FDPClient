@@ -74,7 +74,7 @@ class Vulcan3Fly : FlyMode("VulcanLegit") {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY+1.0, mc.thePlayer.posZ)
                     stage = FlyStage.WAIT_APPLY
                     modifyTicks = 0
-                    groundY = mc.thePlayer.posY
+                    groundY = mc.thePlayer.posY - 1.0
                     groundX = mc.thePlayer.posX
                     groundZ = mc.thePlayer.posZ
                     ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aWaiting to land...")
@@ -129,7 +129,7 @@ class Vulcan3Fly : FlyMode("VulcanLegit") {
             }
             if (stage == FlyStage.WAIT_APPLY) {
                 if(Math.sqrt((packet.x - groundX) * (packet.x - groundX)
-                    + (packet.z - groundZ) * (packet.z - groundZ)) < 1.4 && packet.y >= groundY - 0.5) {
+                    + (packet.z - groundZ) * (packet.z - groundZ)) < 1.4 && packet.y >= (groundY - 0.5)) {
                     fly.state = false
                     return
                 }
