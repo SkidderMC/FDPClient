@@ -28,7 +28,7 @@ import net.minecraft.stats.StatList
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "MiPacket", "Hypixel", "Hypixel2", "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "Motion", "Hover"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "MiPacket", "Hypixel", "Hypixel2", "VulcanSemi", "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "Motion", "Hover"), "packet")
     private val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
     private val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
     private val hoverNoFall = BoolValue("HoverNoFall", true).displayable { modeValue.equals("Hover") }
@@ -48,12 +48,14 @@ class Criticals : Module() {
     private var target = 0
     var jState = 0
     var aacLastState = false
+    var attacks = 0
 
     override fun onEnable() {
         if (modeValue.equals("NoGround")) {
             mc.thePlayer.jump()
         }
         jState = 0
+        attacks = 0
     }
 
     @EventTarget
@@ -119,7 +121,16 @@ class Criticals : Module() {
                     sendCriticalPacket(yOffset = 0.0014749900000101, ground = false)
                     sendCriticalPacket(yOffset = 0.0000007451816400000, ground = false)
                 }
-
+                
+                "vulcansemi" -> {
+                    attacks++
+                    if(attacks > 6) {
+                        sendCriticalPacket(yOffset = 0.2, ground = false)
+                        sendCriticalPacket(yOffset = 0.1216, ground = false)
+                        attacks = 0
+                    }
+                }
+                
                 "hypixel2" -> {
                     sendCriticalPacket(yOffset = 0.05250000001304, ground = false)
                     sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
