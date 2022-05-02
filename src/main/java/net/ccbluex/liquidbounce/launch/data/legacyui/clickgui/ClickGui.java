@@ -113,7 +113,6 @@ public class ClickGui extends GuiScreen {
             if (mouseButton == 0 && panel.isHovering(mouseX, mouseY))
                 clickedPanel = panel;
         }
-
         if (clickedPanel != null) {
             clickedPanel.x2 = clickedPanel.x - mouseX;
             clickedPanel.y2 = clickedPanel.y - mouseY;

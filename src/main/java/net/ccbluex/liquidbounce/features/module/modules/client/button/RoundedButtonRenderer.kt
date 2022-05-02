@@ -49,7 +49,7 @@ class RoundedButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) 
                 RenderUtils.drawRoundedCornerRect(
                     button.xPosition.toFloat(), button.yPosition.toFloat(),
                     button.xPosition.toFloat() + button.width.toFloat(), button.yPosition.toFloat() + button.height.toFloat(),
-                    2F, Color(150, 150, 150, 180).rgb
+                    2F, Color(100, 100, 100, 180).rgb
                 )
                 j = 10526880
             } else if (button.hovered) {
