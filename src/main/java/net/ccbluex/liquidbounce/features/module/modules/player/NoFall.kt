@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.VecRotation
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
@@ -48,7 +49,8 @@ class NoFall : Module() {
         "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "LoyisaAAC4.4.2", "AAC5.0.4", "AAC5.0.14",
         "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Medusa",
         "Damage", "MotionFlag",
-        "OldMatrix", "Matrix6.2.X", "Matrix6.2.X-Packet", "Matrix6.6.3"
+        "OldMatrix", "Matrix6.2.X", "Matrix6.2.X-Packet", "Matrix6.6.3",
+        "Vulcan"
     ), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
     private val minFallDistanceValue = FloatValue("MinMLGHeight", 5f, 2f, 50f).displayable { modeValue.equals("MLG") }
@@ -79,8 +81,12 @@ class NoFall : Module() {
     private var aac4FlagCount = 0
     private var wasTimer = false
     private var matrixSend = false
+    private var nextSpoof = false
+    private var doSpoof = false
 
     override fun onEnable() {
+        nextSpoof = false
+        doSpoof = false
         aac4FlagCount = 0
         aac4Fakelag = false
         aac5Check = false
@@ -379,6 +385,18 @@ class NoFall : Module() {
                     matrixCanSpoof=false
                 }
             }
+            "vulcan" -> {
+                if(nextSpoof) {
+                    mc.thePlayer.motionY = -0.1
+                    MovementUtils.strafe(0.343f)
+                    nextSpoof = false
+                }
+                if(mc.thePlayer.fallDistance > 3.65) {
+                    mc.thePlayer.fallDistance = 0.0f
+                    doSpoof = true
+                    nextSpoof = true
+                }
+            }
         }
     }
 
@@ -518,6 +536,12 @@ class NoFall : Module() {
                 event.cancelEvent()
                 PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
                 PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, false))
+            }
+            if (doSpoof) {
+                packet.onGround = true
+                doSpoof = false
+                packet.y = Math.round(mc.thePlayer.posY*2).toDouble() / 2
+                mc.thePlayer.setPosition(mc.thePlayer.posX, packet.y, mc.thePlayer.posZ)
             }
             if (mode.equals("SpoofGround", ignoreCase = true) && mc.thePlayer.fallDistance > 2.5) {
                 packet.onGround = true
