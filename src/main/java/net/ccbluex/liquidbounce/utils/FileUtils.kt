@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.utils
 
+import com.sun.jna.platform.mac.MacFileUtils
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileInputStream
@@ -15,7 +16,10 @@ object FileUtils {
         IOUtils.copy(FileUtils::class.java.classLoader.getResourceAsStream(name), fos)
         fos.close()
     }
-
+    fun writeFile(str:String,path: String){
+        val file=File(path)
+        file.writeText(str, Charsets.UTF_8)
+    }
     fun extractZip(zipStream: InputStream, folder: File) {
         if (!folder.exists()) {
             folder.mkdir()

@@ -39,7 +39,6 @@ ClientUtils : MinecraftInstance() {
             } else {
                 "Unknown"
             }
-
             UUID.nameUUIDFromBytes(("$vendor, " +
                     "$processorSerialNumber, " +
                     "$processorModel, " +
@@ -91,7 +90,7 @@ ClientUtils : MinecraftInstance() {
     }
 
     fun setTitle() {
-        Display.setTitle("${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION} (${LiquidBounce.CLIENT_BRANCH})")
+        Display.setTitle("${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION} (${LiquidBounce.CLIENT_BRANCH}) | ${LiquidBounce.CLIENT_WEBSITE}")
     }
 
     fun displayAlert(message: String) {

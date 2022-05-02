@@ -114,9 +114,9 @@ class ScoreboardElement(
         val l1 = -maxWidth - 3 - if (rectValue.get()) 3 else 0
 
         if(rainbowBarValue.get()) {
-            Gui.drawRect(l1 - 2, -3, 5, -2, ColorUtils.rainbow().rgb)
+            Gui.drawRect(l1 - 7, -6, 9, - 5, ColorUtils.rainbow().rgb)
         }
-        Gui.drawRect(l1 - 2, -2, 5, maxHeight + fontRenderer.FONT_HEIGHT, backColor)
+        Gui.drawRect(l1 - 7, -5, 9, maxHeight + fontRenderer.FONT_HEIGHT + 5, backColor)
 
         scoreCollection.forEachIndexed { index, score ->
             val team = scoreboard.getPlayersTeam(score.playerName)
@@ -174,7 +174,7 @@ class ScoreboardElement(
             }
         }
 
-        return Border(-maxWidth.toFloat() - 5 - if (rectValue.get()) 3 else 0, -2F, 5F, maxHeight.toFloat() + fontRenderer.FONT_HEIGHT)
+        return Border(-maxWidth.toFloat() - 10f - if (rectValue.get()) 3 else 0, -5F, 9F, maxHeight.toFloat() + fontRenderer.FONT_HEIGHT + 5)
     }
 
     private fun backgroundColor() = Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(),

@@ -116,7 +116,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         }
         lastClick = key.isKeyDown
 
-        font.drawString(keyName, centerX - (font.getStringWidth(keyName) / 2), centerY - (font.FONT_HEIGHT / 2), textColor.rgb)
+        font.drawString(keyName, centerX - (font.getStringWidth(keyName) / 2) + 1, centerY - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
         if (outline) {
             RenderUtils.drawRect(0F, 0F, outlineBold.toFloat(), height.toFloat(), textColor.rgb)
             RenderUtils.drawRect((width - outlineBold).toFloat(), 0F, width.toFloat(), height.toFloat(), textColor.rgb)

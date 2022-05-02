@@ -12,9 +12,11 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
+import net.ccbluex.liquidbounce.features.special.FDPProtectManager;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.FDPProtectUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 import net.ccbluex.liquidbounce.utils.render.ImageUtils;
@@ -111,11 +113,14 @@ public abstract class MixinMinecraft {
             throw new AccessDeniedException(warnStr);
         }
         LiquidBounce.INSTANCE.initClient();
+        LiquidBounce.setFdpProtectManager(new FDPProtectManager());
     }
-
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
+        File file =new File("./", "FDPProtect");
+        file.delete();
         ClientUtils.INSTANCE.setTitle();
+        FDPProtectUtils.load();
     }
 
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))

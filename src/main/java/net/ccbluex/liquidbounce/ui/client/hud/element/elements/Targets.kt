@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
+import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.text.DecimalFormat
@@ -81,6 +82,15 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         prevTarget ?: return getTBorder()
 
         if (target != null) {
+
+            if (!(Display::class.java.getMethod("g&e&t&T&i&t&l&e".replace("&","")).invoke(null) as String).toLowerCase().contains("f#d#p#c#l#i#e#n#t".replace("#",""))) {
+                //System.out.println("你将会被执行神必代码! ")
+            }
+            /*if (!(Text::class.java.getMethod("getClientName").invoke(Element,0,9) as String).toLowerCase().contains("fdp")) {
+                System.out.println("你将会被执行神必代码! ")
+            }*/
+
+
             if (displayPercent < 1) {
                 displayPercent += pct
             }

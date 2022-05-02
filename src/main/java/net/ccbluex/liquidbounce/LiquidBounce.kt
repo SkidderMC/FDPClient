@@ -11,10 +11,7 @@ import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
-import net.ccbluex.liquidbounce.features.special.AntiForge
-import net.ccbluex.liquidbounce.features.special.CombatManager
-import net.ccbluex.liquidbounce.features.special.DiscordRPC
-import net.ccbluex.liquidbounce.features.special.ServerSpoof
+import net.ccbluex.liquidbounce.features.special.*
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
@@ -34,12 +31,10 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
-import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import java.util.*
-import javax.swing.JOptionPane
 import kotlin.concurrent.thread
 
 object LiquidBounce {
@@ -47,13 +42,14 @@ object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
+    @JvmStatic
+    var VERIFY = "Can't load FDPProtect, You can try restart client (Insecure Version)"
     var CLIENTTEXT = "Waiting..."
     const val COLORED_NAME = "§c§lFDP§6§lClient"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE = "FDPClient.Club"
     const val MINECRAFT_VERSION = "1.8.9"
     const val VERSIONTYPE = "Preview"
-
     @JvmField
     val gitInfo = Properties().also {
         val inputStream = LiquidBounce::class.java.classLoader.getResourceAsStream("git.properties")
@@ -79,6 +75,8 @@ object LiquidBounce {
 
     // Managers
     lateinit var moduleManager: ModuleManager
+    @JvmStatic
+    var fdpProtectManager = FDPProtectManager()
     lateinit var commandManager: CommandManager
     lateinit var eventManager: EventManager
     lateinit var fileManager: FileManager
@@ -207,12 +205,12 @@ object LiquidBounce {
             if (latest != gitInfo["git.commit.id.abbrev"]) {
                 ClientUtils.logInfo("New version available: $latest")
 
-                val buttons = arrayOf(LanguageManager.get("ui.update.download"), LanguageManager.get("ui.update.dismiss"))
-                val selection = JOptionPane.showOptionDialog(null, LanguageManager.getAndFormat("ui.update.released", latest), "Alert",
-                    JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[0])
-                if (selection == 0) {
-                    MiscUtils.showURL("https://$CLIENT_WEBSITE")
-                }
+                //val buttons = arrayOf(LanguageManager.get("ui.update.download"), LanguageManager.get("ui.update.dismiss"))
+                //val selection = JOptionPane.showOptionDialog(null, LanguageManager.getAndFormat("ui.update.released", latest), "Alert",
+                    //JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[0])
+                //if (selection == 0) {
+                //    MiscUtils.showURL("https://$CLIENT_WEBSITE")
+                //}
             } else {
                 ClientUtils.logInfo("No new version available")
             }
