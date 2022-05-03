@@ -61,6 +61,10 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         this.buttonList.add(TestBtn(114, this.width - 185, 10, 25, 25, "Website", ResourceLocation("fdpclient/imgs/icon/website.png"), 2,
             Color(20, 20, 20, 130)))
 
+
+        this.buttonList.add(TestBtn(191, 20, 10, 25, 25, "Change exterior", ResourceLocation("fdpclient/imgs/icon/moon-night.png"), 2,
+            Color(20, 20, 20, 130)))
+
         drawed=true;
     }
     /* For modification, please keep "Designed by XiGua" */
@@ -192,6 +196,7 @@ when (button.id) {
     104 -> mc.displayGuiScreen(GuiBackground(this))
     514 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}/discord.html")
     114 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}=")
+    191 -> LiquidBounce.Darkmode=!LiquidBounce.Darkmode
 }
 }
 

@@ -45,6 +45,7 @@ object LiquidBounce {
     @JvmStatic
     var VERIFY = "Can't load FDPProtect, You can try restart client (Insecure Version)"
     var CLIENTTEXT = "Waiting..."
+    var Darkmode = false
     const val COLORED_NAME = "§c§lFDP§6§lClient"
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE = "FDPClient.Club"

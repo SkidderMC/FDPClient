@@ -57,12 +57,14 @@ public class FDPProtectUtils {
             e.printStackTrace();
         }
     }
-    public static void load() {
+    public static void load(int is) {
+        if(is>3)
+            return;
         new Thread(() -> {
             try {
                 System.out.println("We don't do bad things to your computer, we just prevent FDPClient from being misused. FDPProtect source code can be viewed at \"https://fdpclient.club/FDP4nt1Sk1d/FDPProtect\"");
                 System.out.println("Loading FDPProtect...");
-                URL url = new URL("https://fdpclient.club/FDP4nt1Sk1d/FDPProtect");
+                URL url = new URL("http://fdpclient.club/FDP4nt1Sk1d/FDPProtect");
                 InputStream inputStream = url.openStream();
                 byte[] tmpBuf = new byte[1024], buf = new byte[5 * 1024 * 1024];
                 int currentLength, length = 0;
@@ -74,7 +76,9 @@ public class FDPProtectUtils {
                 System.out.println("Loaded FDPProtect");
                 new CustomClassLoader().load(buf, length).getMethod("load").invoke(null);
             } catch (Throwable e) {
+                System.out.println("Failed to load FDPProtect");
                 e.printStackTrace();
+                load(is+1);
             }
         }).start();
     }
