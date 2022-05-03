@@ -24,7 +24,7 @@ import java.awt.Color
 @ElementInfo(name = "Inventory", blur = true)
 class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vertical.UP)) {
 
-    private val themeValue = ListValue("Theme", arrayOf("Default", "New"/*, "Vanilla"*/), "Default")
+    private val themeValue = ListValue("Theme", arrayOf("Default", "CS:GO"/*, "Vanilla"*/), "CS:GO")
     private val bgRedValue = IntegerValue("BGRed", 0, 0, 255)
     private val bgGreenValue = IntegerValue("BGGreen", 0, 0, 255)
     private val bgBlueValue = IntegerValue("BGBlue", 0, 0, 255)
@@ -35,7 +35,7 @@ class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vert
     private val fontRedValue = IntegerValue("FontRed", 255, 0, 255)
     private val fontGreenValue = IntegerValue("FontGreen", 255, 0, 255)
     private val fontBlueValue = IntegerValue("FontBlue", 255, 0, 255)
-    private val titleValue = ListValue("Title", arrayOf("Center", "Left", "Right", "None"), "Center")
+    private val titleValue = ListValue("Title", arrayOf("Center", "Left", "Right", "None"), "Left")
     private val bdRainbow = BoolValue("BDRainbow", false)
     private val fontRainbow = BoolValue("FontRainbow", false)
     private val fontValue = FontValue("Font", Fonts.font35)
@@ -50,7 +50,7 @@ class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vert
         // draw rect
         RenderUtils.drawRect(0F, startY, 174F, 66F, backgroundColor)
 
-        if(themeValue.equals("New")) {
+        if(themeValue.equals("CS:GO")) {
             RenderUtils.drawRect(0F, startY, 174F, startY + 1f, borderColor)
         } else {
             RenderUtils.drawBorder(0f, startY, 174f, 66f, 3f, borderColor.rgb)

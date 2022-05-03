@@ -25,9 +25,11 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
     companion object {
         var enabled = true
         var particles = false
+        var blur = false
     }
 
     private lateinit var enabledButton: GuiButton
+    private lateinit var blurButton: GuiButton
     private lateinit var particlesButton: GuiButton
     private lateinit var typeButton: GuiButton
     private lateinit var lastButton: GuiButton
@@ -37,6 +39,8 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
     override fun initGui() {
         enabledButton = GuiButton(1, width / 2 - 100, height / 4 + 35, "")
         buttonList.add(enabledButton)
+        blurButton = GuiButton(9, width / 2 - 100, height / 4, "")
+        buttonList.add(blurButton)
 
         typeButton = GuiButton(5, width / 2 - 100, height / 4 + 40 + 25, "")
         buttonList.add(typeButton)
@@ -59,6 +63,7 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
 
     private fun updateButtons() {
         enabledButton.displayString = "%ui.status% (${if (enabled) "%ui.on%" else "%ui.off%"})"
+        blurButton.displayString = "Background Blur (${if (blur) "%ui.on%" else "%ui.off%"})"
         typeButton.displayString = "%ui.background.gtype%: ${GradientBackground.gradientSide}"
         particlesButton.displayString = "%ui.background.particles% (${if (particles) "%ui.on%" else "%ui.off%"})"
         animatedButton.displayString = "%ui.background.ganimated% (${if (GradientBackground.animated) "%ui.on%" else "%ui.off%"})"
@@ -73,6 +78,9 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
         when (button.id) {
             1 -> {
                 enabled = !enabled
+            }
+            9 -> {
+                blur = !blur
             }
             2 -> {
                 particles = !particles

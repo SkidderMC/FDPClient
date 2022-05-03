@@ -22,7 +22,7 @@ class ModuleManager : Listenable {
 
     val modules = mutableListOf<Module>()
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
-
+    fun getModuleInCategory(category: ModuleCategory) = modules.filter { it.category == category }
     var pendingBindModule: Module? = null
 
     init {
@@ -140,7 +140,6 @@ class ModuleManager : Listenable {
         if (pendingBindModule != null || Minecraft.getMinecraft().currentScreen != null) {
             return
         }
-
         modules.filter { it.triggerType == EnumTriggerType.PRESS }.forEach { it.state = Keyboard.isKeyDown(it.keyBind) }
     }
 

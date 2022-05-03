@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.LiquidBounce.fdpProtectManager
 import net.ccbluex.liquidbounce.features.special.FDPProtectManager
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.btn.TestBtn
+import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.FDP4nt1Sk1dUtils
@@ -40,19 +41,24 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         this.buttonList.add(TestBtn(103, (this.width / 2) - (130 / 2), this.height / 2 + 70, 130, 23,  LanguageManager.get("ui.mods"), null, 2,
             Color(20, 20, 20, 130)))
 
-        this.buttonList.add(TestBtn(0, this.width - 35, 10, 25, 25, I18n.format("menu.options"), ResourceLocation("fdpclient/imgs/icon/setting.png"), 2,
+
+        this.buttonList.add(TestBtn(4, this.width - 35, 10, 25, 25, I18n.format("menu.quit"), ResourceLocation("fdpclient/imgs/icon/quit.png"), 2,
             Color(20, 20, 20, 130)))
 
-        this.buttonList.add(TestBtn(4, this.width - 65, 10, 25, 25, I18n.format("menu.quit"), ResourceLocation("fdpclient/imgs/icon/quit.png"), 2,
+        this.buttonList.add(TestBtn(0, this.width - 65, 10, 25, 25, I18n.format("menu.options"), ResourceLocation("fdpclient/imgs/icon/setting.png"), 2,
             Color(20, 20, 20, 130)))
 
-        this.buttonList.add(TestBtn(102, this.width - 95, 10, 25, 25, "Announcement", ResourceLocation("fdpclient/imgs/icon/announcement.png"), 2,
+
+        this.buttonList.add(TestBtn(104, this.width - 95, 10, 25, 25, I18n.format("ui.background"), ResourceLocation("fdpclient/imgs/icon/wallpaper.png"), 2,
             Color(20, 20, 20, 130)))
 
-        this.buttonList.add(TestBtn(514, this.width - 125, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
+        this.buttonList.add(TestBtn(102, this.width - 125, 10, 25, 25, "Announcement", ResourceLocation("fdpclient/imgs/icon/announcement.png"), 2,
             Color(20, 20, 20, 130)))
 
-        this.buttonList.add(TestBtn(114, this.width - 155, 10, 25, 25, "Website", ResourceLocation("fdpclient/imgs/icon/website.png"), 2,
+        this.buttonList.add(TestBtn(514, this.width - 155, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
+            Color(20, 20, 20, 130)))
+
+        this.buttonList.add(TestBtn(114, this.width - 185, 10, 25, 25, "Website", ResourceLocation("fdpclient/imgs/icon/website.png"), 2,
             Color(20, 20, 20, 130)))
 
         drawed=true;
@@ -183,6 +189,7 @@ when (button.id) {
     100 -> mc.displayGuiScreen(GuiAltManager(this))
     102 -> displayed=false
     103 -> mc.displayGuiScreen(GuiModList(this))
+    104 -> mc.displayGuiScreen(GuiBackground(this))
     514 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}/discord.html")
     114 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}=")
 }

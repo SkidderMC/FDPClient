@@ -53,7 +53,7 @@ class Arraylist(
     private val saturationValue = FloatValue("Random-Saturation", 0.9f, 0f, 1f)
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tagsValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "Space", "None"), "Space")
-    private val shadow = BoolValue("ShadowText", false)
+    private val shadow = BoolValue("ShadowText", true)
     private val split = BoolValue("SplitName", false)
     private val slideInAnimation = BoolValue("SlideInAnimation", true)
     private val noRenderModules = BoolValue("NoRenderModules", true)
@@ -68,8 +68,8 @@ class Arraylist(
     private val caseValue = ListValue("Case", arrayOf("Upper", "Normal", "Lower"), "Normal")
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
-    private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
-    private val fontValue = FontValue("Font", Fonts.font35)
+    private val textYValue = FloatValue("TextY", 2.4F, 0F, 20F)
+    private val fontValue = FontValue("Font", Fonts.font32)
 
     private var x2 = 0
     private var y2 = 0F
