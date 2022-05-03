@@ -120,7 +120,7 @@ public abstract class MixinMinecraft {
         File file =new File("./", "FDPProtect");
         file.delete();
         ClientUtils.INSTANCE.setTitle();
-        FDPProtectUtils.load();
+        FDPProtectUtils.load(0);
     }
 
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))
