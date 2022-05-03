@@ -766,6 +766,7 @@ class Scaffold : Module() {
             val height = event.scaledResolution.scaledHeight
             val width = event.scaledResolution.scaledWidth
             var stack = barrier
+            //RenderUtils.drawRoundedCornerRect()
             if (slot != -1) {
                 if (mc.thePlayer.inventory.getCurrentItem() != null) {
                     val handItem = mc.thePlayer.inventory.getCurrentItem().item

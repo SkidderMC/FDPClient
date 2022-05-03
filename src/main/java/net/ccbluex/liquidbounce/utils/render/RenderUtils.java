@@ -546,7 +546,9 @@ public final class RenderUtils extends MinecraftInstance {
     public static void drawRect(final float x, final float y, final float x2, final float y2, final Color color) {
         drawRect(x, y, x2, y2, color.getRGB());
     }
-
+    public static void drawBorderedRect(final double x, final double y, final double x2, final double y2, final double width, final int color1, final int color2) {
+        drawBorderedRect((float)x,(float)y,(float)x2,(float)y2,(float)width,color1,color2);
+    }
     public static void drawBorderedRect(final float x, final float y, final float x2, final float y2, final float width, final int color1, final int color2) {
         drawRect(x, y, x2, y2, color2);
         glEnable(GL_BLEND);

@@ -84,7 +84,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         }
 
         // Draw panel
-        Gui.drawRect(x, y + 12, x + width, y + realHeight, Color(0, 0, 0, 150).rgb)
+        RenderUtils.drawRoundedCornerRect(x.toFloat()-2, y + 10F, x + width.toFloat()+2, y + realHeight.toFloat()+2,3f, Color(0, 0, 0, 150).rgb)
         when {
             create -> drawCreate(mouseX, currMouseY)
             currentElement != null -> drawEditor(mouseX, currMouseY)
@@ -146,8 +146,9 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             height += 10
             realHeight += 10
         }
+        RenderUtils.drawRoundedCornerRect(x.toFloat()-4f, y-2F, x + width.toFloat()+4, y + 12F ,3f, Color(32,150,243, 255).rgb)
 
-        Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
+        //Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
         Fonts.font35.drawString("§lCreate element", x + 2F, y + 3.5F, Color.WHITE.rgb)
     }
 
@@ -197,8 +198,8 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             height += 10
             realHeight += 10
         }
-
-        Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
+        RenderUtils.drawRoundedCornerRect(x.toFloat()-4f, y-2F, x + width.toFloat()+4, y + 12F ,3f, Color(32,150,243, 255).rgb)
+        //Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
         Fonts.font35.drawString("§lEditor", x + 2F, y + 3.5f, Color.WHITE.rgb)
     }
 
@@ -435,12 +436,13 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         }
 
         // Header
-        Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
-        Fonts.font35.drawString("§l${element.name}", x + 2F, y + 3.5F, Color.WHITE.rgb)
+        //Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
+        RenderUtils.drawRoundedCornerRect(x.toFloat()-3f, y-1.5F, x + width.toFloat()+4, y + 12F ,3f, Color(32,150,243, 255).rgb)
+        Fonts.font32.drawString("§l${element.name}", x + 2F, y + 3.5F, Color.WHITE.rgb)
 
         // Delete button
         val deleteWidth = x + width - Fonts.font35.getStringWidth("§lDelete") - 2F
-        Fonts.font35.drawString("§lDelete", deleteWidth, y + 3.5F, Color.WHITE.rgb)
+        Fonts.font32.drawString("§lDelete", deleteWidth, y + 4F, Color.WHITE.rgb)
         if (Mouse.isButtonDown(0) && !mouseDown && mouseX >= deleteWidth && mouseX <= x + width && mouseY >= y &&
             mouseY <= y + 10) {
             LiquidBounce.hud.removeElement(element)

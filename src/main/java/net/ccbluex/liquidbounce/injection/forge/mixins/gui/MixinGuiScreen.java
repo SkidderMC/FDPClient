@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.special.GradientBackground;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
+import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -64,22 +65,12 @@ public abstract class MixinGuiScreen {
     private void drawWorldBackground(final CallbackInfo callbackInfo) {
         try {
             final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
-            if (mc.theWorld == null) {
-                final ScaledResolution scaledResolution = new ScaledResolution(mc);
-                final int width = scaledResolution.getScaledWidth();
-                final int height = scaledResolution.getScaledHeight();
-
-                mc.getTextureManager().bindTexture(LiquidBounce.INSTANCE.getBackground());
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
-            }
             if (hud.getInventoryParticle().get() && mc.thePlayer != null) {
                 ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-        callbackInfo.cancel();
     }
 
     @ModifyVariable(method = "sendChatMessage(Ljava/lang/String;)V", at = @At("HEAD"))
@@ -100,11 +91,10 @@ public abstract class MixinGuiScreen {
     /**
      * @author CCBlueX
      */
-    @Inject(method = "drawBackground", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "drawBackground", at = @At("RETURN"), cancellable = true)
     private void drawClientBackground(final CallbackInfo callbackInfo) {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
-
         if(GuiBackground.Companion.getEnabled()) {
             if (LiquidBounce.INSTANCE.getBackground() == null) {
                 GradientBackground.INSTANCE.draw(width, height);
@@ -112,15 +102,12 @@ public abstract class MixinGuiScreen {
                 mc.getTextureManager().bindTexture(LiquidBounce.INSTANCE.getBackground());
                 Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
             }
-
-//            if (LiquidBounce.INSTANCE.getBackground() == null) {
-//                BlurUtils.INSTANCE.blurAll(60f);
-//            }
+            if (GuiBackground.Companion.getBlur()) {
+                BlurUtils.INSTANCE.draw(0,0,mc.displayWidth, mc.displayHeight,20);
+            }
             GlStateManager.resetColor();
-
             if (GuiBackground.Companion.getParticles())
                 ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
-            callbackInfo.cancel();
         }
     }
 
