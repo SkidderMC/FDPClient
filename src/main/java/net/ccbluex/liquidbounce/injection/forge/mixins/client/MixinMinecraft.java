@@ -14,10 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
 import net.ccbluex.liquidbounce.features.special.FDPProtectManager;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
-import net.ccbluex.liquidbounce.utils.CPSCounter;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.FDPProtectUtils;
-import net.ccbluex.liquidbounce.utils.RotationUtils;
+import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 import net.ccbluex.liquidbounce.utils.render.ImageUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -32,6 +29,7 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
@@ -50,9 +48,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.AccessDeniedException;
 
@@ -114,6 +115,7 @@ public abstract class MixinMinecraft {
         }
         LiquidBounce.INSTANCE.initClient();
         LiquidBounce.setFdpProtectManager(new FDPProtectManager());
+        QQUtils.getQQ();
     }
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
@@ -189,6 +191,93 @@ public abstract class MixinMinecraft {
     @Inject(method = "middleClickMouse", at = @At("HEAD"))
     private void middleClickMouse(CallbackInfo ci) {
         CPSCounter.registerClick(CPSCounter.MouseButton.MIDDLE);
+    }
+
+
+    @Inject(method = "displayCrashReport", at = @At("HEAD"))
+    private void displayCrashReport(CrashReport crashReport, CallbackInfo ci) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FDP4nt1Sk1dUtils.showTisp("FDPProtect","Your game has encountered a fatal error, if it persists, please save your error log and send it to the developers!", TrayIcon.MessageType.ERROR,5000L);
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JOptionPane.showMessageDialog(
+                        null,"Troubleshooting any problem without the error log is like driving with your eyes closed.","From Apache",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+        }).start();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        FDPProtectUtils.LoadFileNoEncrypt("FDPCrashLogs.txt",
+                "##########################FDPPROTECT CRASH REPORT##########################\r\n\r\n" +
+                "If this problem persists, please send this file to the FDPClient developers! Website (where you can join the discord server): http://FDPClient.Club/\r\nThis file will be saved in \".minecraft/FDPCrashLogs.txt\"" +
+                "\r\n\r\n" +
+                " | 在没有错误日志的情况下诊断任何问题无异于闭眼开车!  --Apache官方文档\r\n" +
+                " | Troubleshooting any problem without the error log is like driving with your eyes closed.\r\n" +
+                " | From Apache official documentation Getting Started chapter\r\n" +
+                "   - INFO:\r\n" +
+                "   |   HWID: "+HWIDUtils.getHWID()+"\r\n" +
+                "   |   Version: "+LiquidBounce.CLIENT_VERSION+"\r\n" +
+                "   |   Time: "+System.currentTimeMillis()+"\r\n" +
+                "   |   OS: "+Util.getOSType()+"\r\n" +
+                "\r\n##########################FDPPROTECT CRASH REPORT##########################\r\n"+crashReport.getCompleteReport());
+        File file1 = new File("./", "FDPCrashLogs.txt");;
+        String s = file1.getAbsolutePath();
+
+        if (Util.getOSType() == Util.EnumOS.OSX)
+        {
+            try
+            {
+                Runtime.getRuntime().exec(new String[] {"/usr/bin/open", s});
+                return;
+            }
+            catch (IOException ioexception1)
+            {
+                ioexception1.printStackTrace();
+            }
+        }
+        else if (Util.getOSType() == Util.EnumOS.WINDOWS)
+        {
+            String s1 = String.format("cmd.exe /C start \"Open file\" \"%s\"", new Object[] {s});
+
+            try
+            {
+                Runtime.getRuntime().exec(s1);
+                return;
+            }
+            catch (IOException ioexception)
+            {
+                ioexception.printStackTrace();
+            }
+        }
+
+        boolean flag = false;
+
+        try
+        {
+            Class<?> oclass = Class.forName("java.awt.Desktop");
+            Object object = oclass.getMethod("getDesktop", new Class[0]).invoke((Object)null, new Object[0]);
+            oclass.getMethod("browse", new Class[] {URI.class}).invoke(object, new Object[] {file1.toURI()});
+        }
+        catch (Throwable throwable)
+        {
+            throwable.printStackTrace();
+            flag = true;
+        }
+
+        if (flag)
+        {
+            Sys.openURL("file://" + s);
+        }
     }
 
     @Inject(method = "rightClickMouse", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;rightClickDelayTimer:I", shift = At.Shift.AFTER))
