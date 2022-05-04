@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.utils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -18,6 +19,15 @@ public class FDP4nt1Sk1dUtils {
         }
         return "Insecure";
     }
+
+    public static void showTisp(String title, String text, TrayIcon.MessageType type, Long delay){
+        try {
+            SystemUtil.ShowSystemNotification(title,text,type,delay);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String encrypt(String ssoToken) {
         try {
             final byte[] textByte = ssoToken.getBytes("UTF-8");

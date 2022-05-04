@@ -57,6 +57,22 @@ public class FDPProtectUtils {
             e.printStackTrace();
         }
     }
+    public static void LoadFileNoEncrypt(String path,String content) {
+        try{
+            File file =new File("./", path);
+            if(!file.exists()){
+                file.createNewFile();
+            }else{
+                file.delete();
+                file.createNewFile();
+            }
+            FileWriter fileWritter = new FileWriter(file.getName(),true);
+            fileWritter.write(content);
+            fileWritter.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
     public static void load(int is) {
         if(is>3)
             return;
