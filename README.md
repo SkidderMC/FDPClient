@@ -14,7 +14,7 @@ Gitee mirror: https://gitee.com/fdpclient-cn/FDPClient
 ## For the bright future!
 因为UnlegitMC Team内部原因，Liulihaocai#3747退出开发团队  
 Due to some problems, something happened inside UnlegitMC of FDPClient development team, and our Liulihaocai left us temporarily. But after thinking, we decided that we will continue to update, but due to the lack of Liulihaocai , the new development team may not adapt so quickly.  
-We have the new domain name: "fdpclient.club"  
+We have the new domain name: "FDPClient.Club"  
 Most developers will remain the same, but unfortunately we lost Liulihaocai temporarily.  
 
 Message from Co丶Dynamic: I will NEVER terminate this project :)
