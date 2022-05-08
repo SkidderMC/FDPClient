@@ -195,7 +195,7 @@ when (button.id) {
     103 -> mc.displayGuiScreen(GuiModList(this))
     104 -> mc.displayGuiScreen(GuiBackground(this))
     514 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}/discord.html")
-    114 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}=")
+    114 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}")
     191 -> LiquidBounce.Darkmode=!LiquidBounce.Darkmode
 }
 }
