@@ -19,7 +19,7 @@ object Animations : Module() {
         ),
         "SlideDown"
     )
-    val invModeValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Slide")
+    val invModeValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Zoom")
     val invEaseModeValue = EaseUtils.getEnumEasingList("InvEase")
     val invEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("InvEaseOrder")
     val invTimeValue = IntegerValue("InvTime", 500, 0, 1000).displayable { !invModeValue.equals("None") }
