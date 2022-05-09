@@ -6,8 +6,7 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.LiquidBounce.fdpProtectManager
-import net.ccbluex.liquidbounce.features.special.FDPProtectManager
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD.genshinImpactAnim
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.btn.TestBtn
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
@@ -16,11 +15,11 @@ import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.FDP4nt1Sk1dUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.GuiModList
-import org.lwjgl.Sys
 import java.awt.Color
 import java.io.File
 
@@ -115,6 +114,7 @@ override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
     val i=0;
     val defaultHeight1 = (this.height).toDouble()
     val defaultWidth1 = (this.width).toDouble()
+    if (genshinImpactAnim.get()) RenderUtils.drawImage(LiquidBounce.venti,defaultWidth1.toInt()-(0.6*defaultWidth1).toInt() ,defaultHeight1.toInt()-(0.3*defaultWidth1).toInt(),(0.6*defaultWidth1).toInt(),(0.3*defaultWidth1).toInt())
     FontLoaders.F40.drawCenteredString(LiquidBounce.CLIENT_NAME,this.width.toDouble()/2,this.height.toDouble()/2 - 60,Color(255,255,255,200).rgb)
     
     /* For modification, please keep "Designed by XiGua" */

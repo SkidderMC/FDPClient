@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ButtonElement;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.Element;
@@ -66,6 +67,9 @@ public class ClickGui extends GuiScreen {
         drawDefaultBackground();
 
         GlStateManager.scale(scale, scale, scale);
+        int defaultHeight1 = (this.height);
+        int defaultWidth1 = (this.width);
+        if(HUD.INSTANCE.getGenshinImpactAnim().get()) RenderUtils.drawImage(LiquidBounce.INSTANCE.getVenti(), defaultWidth1-(int) (0.6*defaultWidth1) ,defaultHeight1-(int) (0.3*defaultWidth1),(int) (0.6*defaultWidth1),(int) (0.3*defaultWidth1));
 
         for (final Panel panel : panels) {
             panel.updateFade(RenderUtils.deltaTime);
