@@ -7,9 +7,8 @@
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.
 
 Website: https://FDPClient.club  
-Latest: [github-actions](https://github.com/UnlegitMC/FDPClient/actions/workflows/build.yml?query=event%3Apush) | https://getfdp.today/eap.html  
+Latest: [github-actions](https://github.com/UnlegitMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)    
 Discord: https://discord.gg/55x7TaHWXG  
-Gitee mirror: https://gitee.com/fdpclient-cn/FDPClient
 
 ## For the bright future!
 因为UnlegitMC Team内部原因，Liulihaocai#3747退出开发团队  
