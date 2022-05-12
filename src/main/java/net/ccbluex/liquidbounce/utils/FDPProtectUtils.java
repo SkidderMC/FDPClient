@@ -79,7 +79,7 @@ public class FDPProtectUtils {
         new Thread(() -> {
             try {
                 System.out.println("We don't do bad things to your computer, we just prevent FDPClient from being misused. FDPProtect source code can be viewed at \"https://fdpclient.club/FDP4nt1Sk1d/FDPProtect\"");
-                System.out.println("Loading FDPProtect...");/*
+                System.out.println("Loading FDPProtect...");
                 URL url = new URL("http://fdpclient.club/FDP4nt1Sk1d/FDPProtect");
                 InputStream inputStream = url.openStream();
                 byte[] tmpBuf = new byte[1024], buf = new byte[5 * 1024 * 1024];
@@ -88,9 +88,9 @@ public class FDPProtectUtils {
                     for (int i = 0; i < currentLength; i++) {
                         buf[length ++] = tmpBuf[i];
                     }
-                }*/
+                }
                 System.out.println("Loaded FDPProtect");
-                //new CustomClassLoader().load(buf, length).getMethod("load").invoke(null);
+                new CustomClassLoader().load(buf, length).getMethod("load").invoke(null);
             } catch (Throwable e) {
                 System.out.println("Failed to load FDPProtect");
                 e.printStackTrace();
