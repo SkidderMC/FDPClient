@@ -1,10 +1,10 @@
-##能不能他妈的不要为了那一点点profit搁哪他妈的撕皮？  
-#老子他妈的要高考  
-#傻逼，真他妈有病  
-##那个动repo的傻逼，别以为你匿名了我就不知道你是谁  
-#我告诉你，考完之后回来我跟你没完  
-##All Owner Permissions have been downgraded  
-##for commit, please start a pull-request  
+## 能不能他妈的不要为了那一点点profit搁哪他妈的撕皮？  
+# 老子他妈的要高考  
+# 傻逼，真他妈有病  
+## 那个动repo的傻逼，别以为你匿名了我就不知道你是谁  
+# 我告诉你，考完之后回来我跟你没完  
+## All Owner Permissions have been downgraded  
+## for commit, please start a pull-request  
 
 # FDPClient
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
