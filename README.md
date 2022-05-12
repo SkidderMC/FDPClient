@@ -1,8 +1,5 @@
-## 能不能他妈的不要为了那一点点profit搁哪他妈的撕皮？  
-# 老子他妈的要高考  
-# 傻逼，真他妈有病  
-## 那个动repo的傻逼，别以为你匿名了我就不知道你是谁  
-# 我告诉你，考完之后回来我跟你没完  
+搁着小丑竟是我自己
+谁清楚发生啥事的跟我说说 bruh  
 ## All Owner Permissions have been downgraded  
 ## for commit, please start a pull-request  
 
