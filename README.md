@@ -1,3 +1,8 @@
+# Don't trust bread cat
+Security is not guaranteed without downloading from the official Github repository（Unlegitmc\FDPClient）and please don't trust bread cat.  
+Of course, if you feel unsafe, you can no longer use FDPClient!  
+Both FDPLoader and [FDPProtect](https://github.com/UnlegitMC/FDPProtect/) are safe.  
+Dimples#1337 is a Chinese hacker,he often hacks other people's computers....  
 # FDPClient
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/UnlegitMC/FDPClient)
