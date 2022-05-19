@@ -1,6 +1,3 @@
-# nightly.link Boom again...
-![image](https://user-images.githubusercontent.com/63942405/168472432-1251e69c-69cd-4894-aee4-f45455165b81.png)
-
 # FDPClient
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/UnlegitMC/FDPClient)
@@ -13,13 +10,6 @@ Website: https://FDPClient.club
 Latest: [github-actions](https://github.com/UnlegitMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)    
 Discord: https://discord.gg/55x7TaHWXG  
 
-## For the bright future!
-因为UnlegitMC Team内部原因，Liulihaocai#3747退出开发团队  
-Due to some problems, something happened inside UnlegitMC of FDPClient development team, and our Liulihaocai left us temporarily. But after thinking, we decided that we will continue to update, but due to the lack of Liulihaocai , the new development team may not adapt so quickly.  
-We have the new domain name: "FDPClient.Club"  
-Most developers will remain the same, but unfortunately we lost Liulihaocai temporarily.  
-
-Message from Co丶Dynamic: I will NEVER terminate this project :)
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/UnlegitMC/FDPClient/issues).
 
