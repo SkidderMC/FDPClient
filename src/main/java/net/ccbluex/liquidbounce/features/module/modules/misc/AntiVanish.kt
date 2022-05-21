@@ -38,7 +38,7 @@ class AntiVanish : Module() {
 
     private fun vanish(){
         if((System.currentTimeMillis()-lastNotify)>5000){
-            LiquidBounce.hud.addNotification(Notification("Found a vanished entity!", Notification.Type.WARNING, notifyLast.get().toLong() * 1000L))
+            LiquidBounce.hud.addNotification(Notification("Found a vanished entity!", NotifyType.WARNING, notifyLast.get().toLong() * 1000L))
         }
         lastNotify=System.currentTimeMillis()
 
