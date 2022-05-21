@@ -19,6 +19,8 @@ import net.minecraft.network.play.server.S1DPacketEntityEffect
 @ModuleInfo(name = "AntiVanish", category = ModuleCategory.MISC, array = false, defaultOn = true)
 class AntiVanish : Module() {
     private var lastNotify=-1L
+    
+    private val notifyLast = IntegerValue("Notification-Seconds", 2, 1, 30)
 
     @EventTarget
     fun onPacket(event: PacketEvent){
@@ -36,8 +38,7 @@ class AntiVanish : Module() {
 
     private fun vanish(){
         if((System.currentTimeMillis()-lastNotify)>5000){
-            LiquidBounce.hud.addNotification(
-                Notification("Found a vanished entity!", NotifyType.ERROR, 3000))
+            LiquidBounce.hud.addNotification(Notification("Found a vanished entity!", Notification.Type.WARNING, notifyLast.get().toLong() * 1000L))
         }
         lastNotify=System.currentTimeMillis()
 
