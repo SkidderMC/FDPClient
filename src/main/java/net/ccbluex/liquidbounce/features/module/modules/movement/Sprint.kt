@@ -28,6 +28,7 @@ class Sprint : Module() {
     private val blindnessValue = BoolValue("Blindness", true)
     val useItemValue = BoolValue("UseItem", false)
     val foodValue = BoolValue("Food", true)
+    val noStopServerSide = BoolValue("ServerSideKeepSprint", false).displayable { !noPacket.get() }
     val checkServerSide = BoolValue("CheckServerSide", false)
     val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false).displayable { checkServerSide.get() }
     private val noPacket = BoolValue("NoPacket", false)
@@ -91,6 +92,9 @@ class Sprint : Module() {
         val packet = event.packet
 
         if (noPacket.get() && packet is C0BPacketEntityAction && (packet.action == C0BPacketEntityAction.Action.START_SPRINTING || packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING)) {
+            event.cancelEvent()
+        }
+        if (noStopServerSide.get() && packet is C0BPacketEntityAction && packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING) {
             event.cancelEvent()
         }
     }
