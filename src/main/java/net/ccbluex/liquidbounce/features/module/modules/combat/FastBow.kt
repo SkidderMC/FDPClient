@@ -24,8 +24,7 @@ import net.minecraft.util.EnumFacing
 class FastBow : Module() {
 
     private val packetsValue = IntegerValue("Packets", 20, 3, 20)
-    // :V i saw someone want to add delay
-    private val delay = IntegerValue("Delay", 0, 0, 500, "ms")
+    private val delay = IntegerValue("Delay", 0, 0, 500)
 
 
     val timer = MSTimer()
