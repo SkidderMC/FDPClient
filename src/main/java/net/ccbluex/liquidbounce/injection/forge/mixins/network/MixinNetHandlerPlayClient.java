@@ -9,6 +9,7 @@ import io.netty.buffer.Unpooled;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
+import net.ccbluex.liquidbounce.features.module.modules.misc.AntiExploit;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.client.ClientBrandRetriever;
