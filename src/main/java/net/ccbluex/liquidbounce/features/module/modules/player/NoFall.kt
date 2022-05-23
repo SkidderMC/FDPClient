@@ -397,7 +397,7 @@ class NoFall : Module() {
                 if(!vulCanNoFall && mc.thePlayer.fallDistance > 3.25) {
                     vulCanNoFall = true
                 }
-                if(vulCanNoFall && mc.thePlayer.onGround && !vulCantNoFall) {
+                if(vulCanNoFall && mc.thePlayer.onGround && vulCantNoFall) {
                     vulCantNoFall = false
                 }
                 if(vulCantNoFall) {
