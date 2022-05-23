@@ -452,7 +452,7 @@ class NoFall : Module() {
             if (!aac4Fakelag) {
                 aac4Fakelag = true
             }
-        } else if (modeValue.equals("MLG", true)) {
+        } else if (modeValue.equals("MLG")) {
             if (event.eventState == EventState.PRE) {
                 currentMlgRotation = null
                 mlgTimer.update()
