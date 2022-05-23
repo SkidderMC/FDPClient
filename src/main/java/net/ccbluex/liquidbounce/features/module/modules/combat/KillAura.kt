@@ -300,7 +300,9 @@ class KillAura : Module() {
                 if (mc.thePlayer.getDistanceToEntityBox(target) <= autoBlockRangeValue.get()) {
                     startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
                 }else{
-                    stopBlocking()
+                    if (!mc.thePlayer.isBlocking) {
+                        stopBlocking()
+                    }
                 }
             }
         }
