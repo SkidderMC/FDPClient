@@ -83,6 +83,8 @@ class NoFall : Module() {
     private var matrixSend = false
     private var nextSpoof = false
     private var doSpoof = false
+    private var vulCantNoFall = true
+    private var vulCanNoFall = false
 
     override fun onEnable() {
         nextSpoof = false
@@ -129,6 +131,12 @@ class NoFall : Module() {
             mc.timer.timerSpeed = 1.0f
             wasTimer = false
         }
+    }
+    
+    @EventTarget
+    fun onWorld(event: WorldEvent) {
+        vulCantNoFall = true
+        vulCanNoFall = false
     }
 
     @EventTarget
@@ -386,6 +394,15 @@ class NoFall : Module() {
                 }
             }
             "vulcan" -> {
+                if(!vulCanNoFall && mc.thePlayer.fallDistance > 3.25) {
+                    vulCanNoFall = true
+                }
+                if(vulCanNoFall && mc.thePlayer.onGround && !vulCantNoFall) {
+                    vulCantNoFall = false
+                }
+                if(vulCantNoFall) {
+                    return //Vulcan Antihake
+                }
                 if(nextSpoof) {
                     mc.thePlayer.motionY = -0.1
                     MovementUtils.strafe(0.343f)
