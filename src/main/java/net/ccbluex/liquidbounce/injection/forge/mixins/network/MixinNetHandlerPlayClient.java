@@ -88,6 +88,11 @@ public abstract class MixinNetHandlerPlayClient {
                 } else {
                     netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.FAILED_DOWNLOAD));
                 }
+                
+                if (antiExploit.getState() && antiExploit.getNotifyValue().get()) {
+                    ClientUtils.displayChatMessage("§B[§6§lFDPCLIENT§8] §6Resourcepack exploit detected.");
+                    ClientUtils.displayChatMessage("§B[§6§lFDPCLIENT§8] §BExploit target directory: §r" + url);
+                
                 throw new IllegalStateException("Exploit founded!");
             }
         } catch (final URISyntaxException e) {
