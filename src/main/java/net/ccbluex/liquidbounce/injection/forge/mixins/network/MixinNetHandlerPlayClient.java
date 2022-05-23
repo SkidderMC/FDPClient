@@ -9,7 +9,7 @@ import io.netty.buffer.Unpooled;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiExploit;
+//import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiExploit;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.client.ClientBrandRetriever;
@@ -68,7 +68,7 @@ public abstract class MixinNetHandlerPlayClient {
         final String url = p_handleResourcePack_1_.getURL();
         final String hash = p_handleResourcePack_1_.getHash();
         
-        final AntiExploit antiExploit = (AntiExploit) LiquidBounce.moduleManager.getModule(AntiExploit.class);
+        // fix this later final AntiExploit antiExploit = (AntiExploit) LiquidBounce.moduleManager.getModule(AntiExploit.class);
 
         try {
             final String scheme = new URI(url).getScheme();
@@ -92,9 +92,9 @@ public abstract class MixinNetHandlerPlayClient {
                     netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.FAILED_DOWNLOAD));
                 }
                 
-                if (antiExploit.getState() && antiExploit.getNotifyValue().get()) {
+                /* fix this later if (antiExploit.getState() && antiExploit.getNotifyValue().get()) {
                     ClientUtils.displayChatMessage("§B[§6§lFDPCLIENT§8] §6Resourcepack exploit detected.");
-                    ClientUtils.displayChatMessage("§B[§6§lFDPCLIENT§8] §BExploit target directory: §r" + url);
+                    ClientUtils.displayChatMessage("§B[§6§lFDPCLIENT§8] §BExploit target directory: §r" + url);*/
                 
                 throw new IllegalStateException("Exploit founded!");
             }
