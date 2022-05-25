@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.Panel;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ButtonElement;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.Style;
+import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
@@ -40,27 +41,27 @@ public class AstolfoStyle extends Style {
   
     private boolean mouseDown;
     private boolean rightMouseDown;
-
-    private Color getCategoryColor(String categoryName) {
-        if ((categoryName = categoryName.toLowerCase()).equals("Combat")) {
+  
+      private Color(ModuleCategory category) {
+        if (category.name().equals("Combat")) {
             return new Color(231, 75, 58, 175);
         }
-        if (categoryName.equals("Player")) {
+        if (category.name().equals("Player")) {
             return new Color(142, 69, 174, 175);
         }
-        if (categoryName.equals("Movement")) {
+        if (category.name().equals("Movement")) {
             return new Color(46, 205, 111, 175);
         }
-        if (categoryName.equals("Render")) {
+        if (category.name().equals("Render")) {
             return new Color(76, 143, 200, 175);
         }
-        if (categoryName.equals("World")) {
+         if (category.name().equals("World")) {
             return new Color(233, 215, 100, 175);
         }
-        if (categoryName.equals("Other")) {
+         if (category.name().equals("Client")) {
             return new Color(244, 157, 19, 175);
         }
-        return ClickGUI.generateColor();
+        return ClickGUIModule.generateColor();
     }
 
     @Override
@@ -74,15 +75,15 @@ public class AstolfoStyle extends Style {
 
     @Override
     public void drawDescription(int mouseX, int mouseY, String text) {
-        int textWidth = Fonts.font35.drawString(text);
-        RenderUtils.drawRect((float)(mouseX + 9), (float)mouseY, (float)(mouseX + textWidth + 14), (float)(mouseY + Fonts.font35.drawString + 3), new Color(26, 26, 26).getRGB());
+        int textWidth = Fonts.minecraftFont.getStringWidth(text);
+        RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.minecraftFont.FONT_HEIGHT + 3, new Color(26, 26, 26).getRGB());
         GlStateManager.resetColor();
-        Fonts.font35.drawString(text.toLowerCase(), mouseX + 12, mouseY + Fonts.font35.drawString / 2, Integer.MAX_VALUE);
+        Fonts.minecraftFont.drawString(text.toLowerCase(), mouseX + 12, mouseY + Fonts.font35.drawString / 2, Integer.MAX_VALUE);
     }
 
     @Override
     public void drawButtonElement(int mouseX, int mouseY, ButtonElement buttonElement) {
-        Gui.drawRect((int)(buttonElement.getX() - 1), (int)(buttonElement.getY() + 1), (int)(buttonElement.getX() + buttonElement.getWidth() + 1), (int)(buttonElement.getY() + buttonElement.getHeight() + 2), (int)this.hoverColor(buttonElement.getColor() != Integer.MAX_VALUE ? ClickGUI.generateColor() : new Color(26, 26, 26), buttonElement.hoverTime).getRGB());
+        Gui.drawRect(int)(buttonElement.getX() - 1), (int)(buttonElement.getY() + 1), (int)(buttonElement.getX() + buttonElement.getWidth() + 1), (int)(buttonElement.getY() + buttonElement.getHeight() + 2), (int)this.hoverColor(buttonElement.getColor() != Integer.MAX_VALUE ? ClickGUIModule.generateColor() : new Color(26, 26, 26), buttonElement.hoverTime).getRGB());
         GlStateManager.resetColor();
         Fonts.font35.drawString(buttonElement.getDisplayName().toLowerCase(), buttonElement.getX() + 3, buttonElement.getY() + 6, Color.WHITE.getRGB());
     }
@@ -91,10 +92,12 @@ public class AstolfoStyle extends Style {
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
        Gui.drawRect((int)(moduleElement.getX() + 1), (int)(moduleElement.getY() + 1), (int)(moduleElement.getX() + moduleElement.getWidth() - 1), (int)(moduleElement.getY() + moduleElement.getHeight() + 2), (int)this.hoverColor(new Color(26, 26, 26), moduleElement.hoverTime).getRGB());
         Gui.drawRect((int)(moduleElement.getX() + 1), (int)(moduleElement.getY() + 1), (int)(moduleElement.getX() + moduleElement.getWidth() - 1), (int)(moduleElement.getY() + moduleElement.getHeight() + 2), (int)this.hoverColor(new Color(this.getCategoryColor(moduleElement.getModule().getCategory().getDisplayName()).getRed(), this.getCategoryColor(moduleElement.getModule().getCategory().getDisplayName()).getGreen(), this.getCategoryColor(moduleElement.getModule().getCategory().getDisplayName()).getBlue(), moduleElement.slowlyFade), moduleElement.hoverTime).getRGB());
-        int guiColor = ClickGUI.generateColor().getRGB();
+       final int guiColor = ClickGUIModule.generateColor().getRGB();
         GlStateManager.resetColor();
         Fonts.font35.drawString(moduleElement.getDisplayName().toLowerCase(), moduleElement.getX() + 3, moduleElement.getY() + 7, Integer.MAX_VALUE);
-        List<Value<?>> moduleValues = moduleElement.getModule().getValues();
+      
+       final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
+      
         if (!moduleValues.isEmpty()) {
             Fonts.font35.drawString("+", moduleElement.getX() + moduleElement.getWidth() - 8, moduleElement.getY() + moduleElement.getHeight() / 2, new Color(255, 255, 255, 200).getRGB());
             if (moduleElement.isShowSettings()) {
@@ -121,10 +124,10 @@ public class AstolfoStyle extends Style {
                     }
                     if (value instanceof ListValue) {
                         ListValue listValue = (ListValue)value;
-                        String text2 = value.getName();
-                        float textWidth2 = Fonts.font35.drawString(text2);
-                        if (moduleElement.getSettingsWidth() < textWidth2 + 16.0f) {
-                            moduleElement.setSettingsWidth(textWidth2 + 16.0f);
+                        String text = value.getName();
+                        float textWidth2 = Fonts.font35.drawString(text);
+                        if (moduleElement.getSettingsWidth() < textWidth + 16.0f) {
+                            moduleElement.setSettingsWidth(textWidth + 16.0f);
                         }
                         RenderUtils.drawRect((float)(moduleElement.getX() + moduleElement.getWidth() + 4), (float)(yPos + 2), (float)(moduleElement.getX() + moduleElement.getWidth()) + moduleElement.getSettingsWidth(), (float)(yPos + 14), new Color(26, 26, 26).getRGB());
                         GlStateManager.resetColor();
