@@ -5,10 +5,7 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles;
 
-import java.awt.Color;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
+
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.Panel;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ButtonElement;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ModuleElement;
@@ -33,6 +30,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
+
+import java.awt.Color;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 
 public class AstolfoStyle extends Style {
   
@@ -110,7 +112,7 @@ public class AstolfoStyle extends Style {
                         if (mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && (float)mouseX <= (float)(moduleElement.getX() + moduleElement.getWidth()) + moduleElement.getSettingsWidth() && mouseY >= yPos + 2 && mouseY <= yPos + 14 && Mouse.isButtonDown((int)0) && moduleElement.isntPressed()) {
                             BoolValue boolValue;
                             boolValue.set((Boolean)(boolValue = (BoolValue)value).get() == false);
-                            mc.getSoundHandler().playSound(ISound)PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
+                            mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
                         }
                         GlStateManager.resetColor();
                         Fonts.font35.drawString(text.toLowerCase(), moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, (Boolean)((BoolValue)value).get() != false ? guiColor : Integer.MAX_VALUE);
@@ -130,7 +132,7 @@ public class AstolfoStyle extends Style {
                         Fonts.font35.drawString(listValue.openList ? "-" : "+", (int)((float)(moduleElement.getX() + moduleElement.getWidth()) + moduleElement.getSettingsWidth() - (float)(listValue.openList ? 5 : 6)), yPos + 4, 0xFFFFFF);
                         if (mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && (float)mouseX <= (float)(moduleElement.getX() + moduleElement.getWidth()) + moduleElement.getSettingsWidth() && mouseY >= yPos + 2 && mouseY <= yPos + 14 && Mouse.isButtonDown((int)0) && moduleElement.isntPressed()) {
                             listValue.openList = !listValue.openList;
-                             mc.getSoundHandler().playSound(ISound)PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
+                             mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
                         }
                         yPos += 12;
                         for (String valueOfList : listValue.getValues()) {
@@ -142,7 +144,7 @@ public class AstolfoStyle extends Style {
                             RenderUtils.drawRect((float)(moduleElement.getX() + moduleElement.getWidth() + 4), (float)(yPos + 2), (float)(moduleElement.getX() + moduleElement.getWidth()) + moduleElement.getSettingsWidth(), (float)(yPos + 14), new Color(26, 26, 26).getRGB());
                             if (mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && (float)mouseX <= (float)(moduleElement.getX() + moduleElement.getWidth()) + moduleElement.getSettingsWidth() && mouseY >= yPos + 2 && mouseY <= yPos + 14 && Mouse.isButtonDown((int)0) && moduleElement.isntPressed()) {
                                 listValue.set(valueOfList);
-                                 mc.getSoundHandler().playSound(ISound)PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
+                                 mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
                             }
                             GlStateManager.resetColor();
                             Fonts.font35.drawString(">", moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, Integer.MAX_VALUE);
