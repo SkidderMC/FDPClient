@@ -8,7 +8,8 @@ public class PotionData {
     public float animationX = 0;
     public final Translate translate;
     public final int level;
-    public PotionData(potion, translate, level) {
+    
+    public PotionData(Potion potion, Translate translate, int level) {
         this.potion = potion;
         this.translate = translate;
         this.level = level;
