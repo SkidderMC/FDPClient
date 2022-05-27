@@ -1,11 +1,10 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles;
 
-import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.Panel;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ButtonElement;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ModuleElement;
