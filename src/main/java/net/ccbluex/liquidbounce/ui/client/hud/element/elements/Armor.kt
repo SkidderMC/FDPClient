@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -35,9 +36,9 @@ class Armor(
     private val modeValue = ListValue("Alignment", arrayOf("Horizontal", "Vertical"), "Horizontal")
     private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Rainbow"), "Custom")
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
-    private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
-    private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
-    private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
+    private val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { colorModeValue.equals("Custom") }
+    private val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { colorModeValue.equals("Custom") }
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { colorModeValue.equals("Custom") }
     private val newRainbowIndex = IntegerValue("NewRainbowOffset", 1, 1, 50)
     private val saturationValue = FloatValue("Saturation", 0.9f, 0f, 1f)
     private val speed = IntegerValue("AllSpeed", 0, 0, 400)
@@ -57,8 +58,8 @@ class Armor(
             var x = 1
             var i = 0
             var y = if (isInsideWater) -10 else 0
-            val colorMode = colorModeValue.get()
-            val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
+            val colorMode = colorModeValue.get().lowercase()
+            val color = Color(redValue.get(), greenValue.get(), blueValue.get())
             val rainbow = colorMode.equals("Rainbow", ignoreCase = true)
             for (index in 0..3) {
                 if(mc.thePlayer.inventory.armorInventory[index] != null)
@@ -69,7 +70,7 @@ class Armor(
             for (index in 3 downTo 0) {
                 val colorall = when {
                     rainbow -> 0
-                    colorMode.equals("Rainbow", ignoreCase = true) -> Rainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
+                    colorMode.equals("Rainbow", ignoreCase = true) -> ColorUtils.rainbow()
                     else -> color
                 }
                 val stack = mc.thePlayer.inventory.armorInventory[index] ?: continue
