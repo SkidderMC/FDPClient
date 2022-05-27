@@ -58,8 +58,8 @@ class Armor(
             var x = 1
             var i = 0
             var y = if (isInsideWater) -10 else 0
-            val colorMode = colorModeValue.get().lowercase()
-            val color = Color(redValue.get(), greenValue.get(), blueValue.get())
+            val colorMode = colorModeValue.get()
+            val color = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
             val rainbow = colorMode.equals("Rainbow", ignoreCase = true)
             for (index in 0..3) {
                 if(mc.thePlayer.inventory.armorInventory[index] != null)
