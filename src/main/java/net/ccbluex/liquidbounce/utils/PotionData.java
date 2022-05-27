@@ -3,13 +3,14 @@ package net.ccbluex.liquidbounce.utils.render;
 import net.minecraft.potion.Potion;
 
 public class PotionData {
-    public final potion Potion;
+    public final Potion potion;
     public int maxTimer = 0;
     public float animationX = 0;
-    public final translate Translate;
+    public final Translate translate;
     public final int level;
     
     public PotionData(Potion potion, Translate translate, int level) {
+        
         this.potion = potion;
         this.translate = translate;
         this.level = level;
