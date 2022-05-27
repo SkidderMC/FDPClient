@@ -68,12 +68,12 @@ public class AstolfoStyle extends Style {
                 panel.getY() + 18 + panel.getFade(), new Color(26, 26, 26).getRGB());
 
         GlStateManager.resetColor();
-        Fonts.SFUI35.drawString("§l" + panel.getName().toLowerCase(), panel.getX() + 2, panel.getY() + 6, Integer.MAX_VALUE);
+        Fonts.font35.drawString("§l" + panel.getName().toLowerCase(), panel.getX() + 2, panel.getY() + 6, Integer.MAX_VALUE);
     }
 
     @Override
     public void drawDescription(int mouseX, int mouseY, String text) {
-        int textWidth = FontLoaders.C18.DisplayFontWidths(FontLoaders.C18,text);
+        int textWidth = Fonts.font35.getStringWidth(text);
 
         RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.font35.FONT_HEIGHT + 3, new Color(26, 26, 26).getRGB());
         GlStateManager.resetColor();
@@ -102,7 +102,7 @@ public class AstolfoStyle extends Style {
         final int guiColor = ClickGUI.generateColor().getRGB();
 
         GlStateManager.resetColor();
-        Fonts.SFUI35.drawString(moduleElement.getDisplayName().toLowerCase(), moduleElement.getX() + 3,
+        Fonts.font35.drawString(moduleElement.getDisplayName().toLowerCase(), moduleElement.getX() + 3,
                 moduleElement.getY() + 7, Integer.MAX_VALUE);
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
