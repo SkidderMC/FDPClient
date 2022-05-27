@@ -14,6 +14,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+
+import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 
@@ -31,7 +33,7 @@ class Armor(
 ) : Element(x, y, scale, side) {
     
     private val modeValue = ListValue("Alignment", arrayOf("Horizontal", "Vertical"), "Horizontal")
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "AnotherRainbow"), "Custom")
+    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Rainbow"), "Custom")
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
     private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
@@ -56,7 +58,7 @@ class Armor(
             var i = 0
             var y = if (isInsideWater) -10 else 0
             val colorMode = colorModeValue.get()
-            val color = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()).rgb
+            val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
             val rainbow = colorMode.equals("Rainbow", ignoreCase = true)
             for (index in 0..3) {
                 if(mc.thePlayer.inventory.armorInventory[index] != null)
@@ -67,7 +69,7 @@ class Armor(
             for (index in 3 downTo 0) {
                 val colorall = when {
                     rainbow -> 0
-                    colorMode.equals("AnotherRainbow", ignoreCase = true) -> AnotherRainbow(index * speed.get(), saturationValue.get(), brightnessValue.get())
+                    colorMode.equals("Rainbow", ignoreCase = true) -> Rainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
                     else -> color
                 }
                 val stack = mc.thePlayer.inventory.armorInventory[index] ?: continue
