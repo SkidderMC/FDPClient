@@ -55,7 +55,7 @@ public class AstolfoStyle extends Style {
         if (categoryName.equals("misc")) {
             return new Color(244, 157, 19, 175);
         }
-        return ClickGUI.generateColor();
+        return ClickGUIModule.generateColor();
     }
 
     @Override
@@ -77,14 +77,14 @@ public class AstolfoStyle extends Style {
 
         RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.font35.FONT_HEIGHT + 3, new Color(26, 26, 26).getRGB());
         GlStateManager.resetColor();
-        Fonts.SFUI35.drawString(text.toLowerCase(), mouseX + 12, mouseY + (Fonts.font35.FONT_HEIGHT / 2), Integer.MAX_VALUE);
+        Fonts.font35.drawString(text.toLowerCase(), mouseX + 12, mouseY + (Fonts.font35.FONT_HEIGHT / 2), Integer.MAX_VALUE);
     }
 
     @Override
     public void drawButtonElement(int mouseX, int mouseY, ButtonElement buttonElement) {
         Gui.drawRect(buttonElement.getX() - 1, buttonElement.getY() + 1, buttonElement.getX() + buttonElement.getWidth() + 1,
                 buttonElement.getY() + buttonElement.getHeight() + 2, hoverColor(buttonElement.getColor() != Integer.MAX_VALUE
-                        ? ClickGUI.generateColor() : new Color(26, 26, 26), buttonElement.hoverTime).getRGB());
+                        ? ClickGUIModule.generateColor() : new Color(26, 26, 26), buttonElement.hoverTime).getRGB());
 
         GlStateManager.resetColor();
         Fonts.font35.drawString(buttonElement.getDisplayName().toLowerCase(), buttonElement.getX() + 3,
@@ -99,7 +99,7 @@ public class AstolfoStyle extends Style {
                 + moduleElement.getWidth() - 1, moduleElement.getY() + moduleElement.getHeight() + 2, hoverColor(
                 new Color(getCategoryColor(moduleElement.getModule().getCategory().name()).getRed(), getCategoryColor(moduleElement.getModule().getCategory().name()).getGreen(), getCategoryColor(moduleElement.getModule().getCategory().name()).getBlue(), moduleElement.slowlyFade), moduleElement.hoverTime).getRGB());
 
-        final int guiColor = ClickGUI.generateColor().getRGB();
+        final int guiColor = ClickGUIModule.generateColor().getRGB();
 
         GlStateManager.resetColor();
         Fonts.font35.drawString(moduleElement.getDisplayName().toLowerCase(), moduleElement.getX() + 3,
@@ -108,7 +108,7 @@ public class AstolfoStyle extends Style {
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
         if (!moduleValues.isEmpty()) {
-            Fonts.SFUI35.drawString("+", moduleElement.getX() + moduleElement.getWidth() - 8,
+             Fonts.font35.drawString("+", moduleElement.getX() + moduleElement.getWidth() - 8,
                     moduleElement.getY() + (moduleElement.getHeight() / 2), new Color(255, 255, 255, 200).getRGB());
 
             if (moduleElement.isShowSettings()) {
