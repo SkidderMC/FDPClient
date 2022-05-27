@@ -9,7 +9,11 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 
@@ -29,9 +33,9 @@ class Armor(
     private val modeValue = ListValue("Alignment", arrayOf("Horizontal", "Vertical"), "Horizontal")
     private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "AnotherRainbow"), "Custom")
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
-    private val redValue = IntegerValue("Text-R", 255, 0, 255)
-    private val greenValue = IntegerValue("Text-G", 255, 0, 255)
-    private val blueValue = IntegerValue("Text-B", 255, 0, 255)
+    private val colorRedValue = IntegerValue("Text-R", 0, 0, 255)
+    private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255)
+    private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
     private val newRainbowIndex = IntegerValue("NewRainbowOffset", 1, 1, 50)
     private val saturationValue = FloatValue("Saturation", 0.9f, 0f, 1f)
     private val speed = IntegerValue("AllSpeed", 0, 0, 400)
@@ -52,7 +56,7 @@ class Armor(
             var i = 0
             var y = if (isInsideWater) -10 else 0
             val colorMode = colorModeValue.get()
-            val color = Color(redValue.get(), greenValue.get(), blueValue.get()).rgb
+            val color = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()).rgb
             val rainbow = colorMode.equals("Rainbow", ignoreCase = true)
             for (index in 0..3) {
                 if(mc.thePlayer.inventory.armorInventory[index] != null)
