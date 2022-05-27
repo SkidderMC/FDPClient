@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles;
 
+import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.Panel;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ButtonElement;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ModuleElement;
