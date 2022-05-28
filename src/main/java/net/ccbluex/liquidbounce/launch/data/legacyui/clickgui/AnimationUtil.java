@@ -1,12 +1,13 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui;
 
-import net.ccbluex.liquidbounce.launch.data.legacyui.AnimationUtil;
-public final class Translate {
+import net.ccbluex.liquidbounce.utils.render.Translate;
+
+public final class legacyTranslate {
     private float x;
     private float y;
     private boolean first = false;
 
-    public Translate(float x, float y) {
+    public legacyTranslate(float x, float y) {
         this.x = x;
         this.y = y;
     }
@@ -21,11 +22,11 @@ public final class Translate {
             first = true;
         }
     }
-    public void translate(float targetX, float targetY) {
+    public void legacytranslate(float targetX, float targetY) {
         x = AnimationUtils.lstransition(x, targetX, 0.0);
         y = AnimationUtils.lstransition(y, targetY, 0.0);
     }
-    public void translate(float targetX, float targetY, double speed) {
+    public void legacytranslate(float targetX, float targetY, double speed) {
         x = AnimationUtils.lstransition(x, targetX, speed);
         y = AnimationUtils.lstransition(y, targetY, speed);
     }
