@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui;
 
-import net.ccbluex.liquidbounce.launch.data.legacyui.AnimationUtil;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.novoline.AnimationUtil;
 public final class legacyTranslate {
     private float x;
     private float y;
