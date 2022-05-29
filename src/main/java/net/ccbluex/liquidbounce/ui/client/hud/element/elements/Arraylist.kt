@@ -46,6 +46,8 @@ class Arraylist(
     private val tagColorRedValue = IntegerValue("Tag-R", 195, 0, 255)
     private val tagColorGreenValue = IntegerValue("Tag-G", 195, 0, 255)
     private val tagColorBlueValue = IntegerValue("Tag-B", 195, 0, 255)
+    private val astolfoRainbowOffset = IntegerValue("AstolfoRainbowOffset", 5, 1, 20).displayable { modeValue.equals("Astolfo") }
+    private val astolfoRainbowIndex = IntegerValue("AstolfoRainbowIndex", 109, 1, 300).displayable { modeValue.equals("Astolfo") }
     private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow", "Astolfo"), "Rainbow")
     private val rectColorRedValue = IntegerValue("Rect-R", 255, 0, 255)
     private val rectColorGreenValue = IntegerValue("Rect-G", 255, 0, 255)
@@ -76,6 +78,8 @@ class Arraylist(
     private var y2 = 0F
 
     private var modules = emptyList<Module>()
+    
+    val delay = intArrayOf(0)
 
     private fun shouldExpect(module: Module): Boolean {
         return noRenderModules.get() && module.category == ModuleCategory.RENDER
