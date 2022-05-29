@@ -163,7 +163,7 @@ class Arraylist(
                             "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            colorMode.equals("Astolfo", ignoreCase = true) -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
+                            "Astolfo" -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(backgroundCustomColor, 100, index + 1).rgb
                             else -> backgroundCustomColor.rgb
@@ -177,7 +177,7 @@ class Arraylist(
                             "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            colorMode.equals("Astolfo", ignoreCase = true) -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
+                            "Astolfo" -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(customColor, 100, index + 1).rgb
                             else -> customColor.rgb
@@ -188,7 +188,7 @@ class Arraylist(
                             "rainbow" -> ColorUtils.reverseColor(ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()))
                             "random" -> Color(moduleColor)
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
-                            colorMode.equals("Astolfo", ignoreCase = true) -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
+                            "Astolfo" -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get())
                             "anotherrainbow" -> ColorUtils.reverseColor(ColorUtils.fade(tagCustomColor, 100, index + 1))
                             else -> ColorUtils.reverseColor(tagCustomColor)
@@ -199,7 +199,7 @@ class Arraylist(
                             "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            colorMode.equals("Astolfo", ignoreCase = true) -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
+                            "Astolfo" -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(rectCustomColor, 100, index + 1).rgb
                             else -> rectCustomColor.rgb
@@ -263,7 +263,7 @@ class Arraylist(
                             "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            colorMode.equals("Astolfo", ignoreCase = true) -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
+                            "Astolfo" -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(backgroundCustomColor, 100, index + 1).rgb
                             else -> backgroundCustomColor.rgb
@@ -276,7 +276,7 @@ class Arraylist(
                         "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
                         "random" -> moduleColor
                         "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                        colorMode.equals("Astolfo", ignoreCase = true) -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
+                        "Astolfo" -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
                         "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
                         "anotherrainbow" -> ColorUtils.fade(customColor, 100, index + 1).rgb
                         else -> customColor.rgb
@@ -287,7 +287,7 @@ class Arraylist(
                             "rainbow" -> ColorUtils.reverseColor(ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()))
                             "random" -> Color(moduleColor)
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
-                            colorMode.equals("Astolfo", ignoreCase = true) -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
+                            "Astolfo" -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get())
                             "anotherrainbow" -> ColorUtils.reverseColor(ColorUtils.fade(tagCustomColor, 100, index + 1))
                             else -> ColorUtils.reverseColor(tagCustomColor)
@@ -298,7 +298,7 @@ class Arraylist(
                             "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            colorMode.equals("Astolfo", ignoreCase = true) -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
+                            "Astolfo" -> ColorManager.astolfoRainbow(delay[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
                             "anotherrainbow" -> ColorUtils.fade(rectCustomColor, 100, index + 1).rgb
                             else -> rectCustomColor.rgb
