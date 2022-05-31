@@ -31,6 +31,7 @@ class FileManager : MinecraftInstance() {
     val friendsConfig = FriendsConfig(File(dir, "friends.json"))
     val xrayConfig = XRayConfig(File(dir, "xray-blocks.json"))
     val hudConfig = HudConfig(File(dir, "hud.json"))
+    val subscriptsConfig = ScriptConfig(File(dir, "subscripts.json"))
     val specialConfig = SpecialConfig(File(dir, "special.json"))
     val backgroundFile = File(dir, "userbackground.png")
     private val allowedCacheFolderName = arrayOf("cef", "cef_cache")

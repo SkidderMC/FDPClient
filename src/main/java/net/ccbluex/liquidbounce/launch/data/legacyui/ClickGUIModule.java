@@ -27,7 +27,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[] {"Novoline","LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo"}, "Novoline") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"Novoline", "LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo"}, "Novoline") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -48,17 +48,17 @@ public class ClickGUIModule extends Module {
 
     @Override
     public void onEnable() {
-        if(styleValue.get().contains("Novoline")) {
+        if (styleValue.get().contains("Novoline")) {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
-        }else {
+        } else {
             updateStyle();
             mc.displayGuiScreen(LegacyUiLaunchOption.clickGui);
         }
     }
 
     private void updateStyle() {
-        switch(styleValue.get().toLowerCase()) {
+        switch (styleValue.get().toLowerCase()) {
             case "liquidbounce":
                 LegacyUiLaunchOption.clickGui.style = new LiquidBounceStyle();
                 break;
