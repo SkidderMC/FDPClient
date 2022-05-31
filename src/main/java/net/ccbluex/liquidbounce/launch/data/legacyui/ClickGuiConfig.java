@@ -24,13 +24,13 @@ public class ClickGuiConfig extends FileConfig {
     public void loadConfig(String config) {
         final JsonElement jsonElement = new JsonParser().parse(config);
 
-        if(jsonElement instanceof JsonNull)
+        if (jsonElement instanceof JsonNull)
             return;
 
         final JsonObject jsonObject = (JsonObject) jsonElement;
 
         for (final Panel panel : LegacyUiLaunchOption.clickGui.panels) {
-            if(!jsonObject.has(panel.getCategory().getConfigName()))
+            if (!jsonObject.has(panel.getCategory().getConfigName()))
                 continue;
 
             try {
@@ -41,24 +41,24 @@ public class ClickGuiConfig extends FileConfig {
                 panel.setX(panelObject.get("posX").getAsInt());
                 panel.setY(panelObject.get("posY").getAsInt());
 
-                for(final Element element : panel.getElements()) {
-                    if(!(element instanceof ModuleElement))
+                for (final Element element : panel.getElements()) {
+                    if (!(element instanceof ModuleElement))
                         continue;
 
                     final ModuleElement moduleElement = (ModuleElement) element;
 
-                    if(!panelObject.has(moduleElement.getModule().getName()))
+                    if (!panelObject.has(moduleElement.getModule().getName()))
                         continue;
 
                     try {
                         final JsonObject elementObject = panelObject.getAsJsonObject(moduleElement.getModule().getName());
 
                         moduleElement.setShowSettings(elementObject.get("Settings").getAsBoolean());
-                    }catch(final Exception e) {
+                    } catch (final Exception e) {
                         ClientUtils.INSTANCE.logError("Error while loading clickgui module element with the name '" + moduleElement.getModule().getName() + "' (Panel Name: " + panel.getCategory().getConfigName() + ").", e);
                     }
                 }
-            }catch(final Exception e) {
+            } catch (final Exception e) {
                 ClientUtils.INSTANCE.logError("Error while loading clickgui panel with the name '" + panel.getCategory().getConfigName() + "'.", e);
             }
         }
@@ -76,8 +76,8 @@ public class ClickGuiConfig extends FileConfig {
             panelObject.addProperty("posX", panel.getX());
             panelObject.addProperty("posY", panel.getY());
 
-            for(final Element element : panel.getElements()) {
-                if(!(element instanceof ModuleElement))
+            for (final Element element : panel.getElements()) {
+                if (!(element instanceof ModuleElement))
                     continue;
 
                 final ModuleElement moduleElement = (ModuleElement) element;

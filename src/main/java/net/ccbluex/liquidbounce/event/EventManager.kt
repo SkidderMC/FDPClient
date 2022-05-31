@@ -77,17 +77,20 @@ class EventManager : MinecraftInstance() {
 //        counter[event.javaClass] = counter.getOrDefault(event.javaClass, 0) + 1
 
         val targets = registry[event.javaClass] ?: return
+        try {
+            for (invokableEventTarget in targets) {
+                try {
+                    if (!invokableEventTarget.eventClass.handleEvents() && !invokableEventTarget.isIgnoreCondition) {
+                        continue
+                    }
 
-        for (invokableEventTarget in targets) {
-            try {
-                if (!invokableEventTarget.eventClass.handleEvents() && !invokableEventTarget.isIgnoreCondition) {
-                    continue
+                    invokableEventTarget.method.invoke(invokableEventTarget.eventClass, event)
+                } catch (throwable: Throwable) {
+                    throwable.printStackTrace()
                 }
-
-                invokableEventTarget.method.invoke(invokableEventTarget.eventClass, event)
-            } catch (throwable: Throwable) {
-                throwable.printStackTrace()
             }
+        }catch (e :Exception){
+            e.printStackTrace();
         }
     }
 }

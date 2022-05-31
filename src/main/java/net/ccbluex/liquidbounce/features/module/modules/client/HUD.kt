@@ -31,8 +31,10 @@ object HUD : Module() {
     val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255).displayable { betterHotbarValue.get() }
     val hotbarEaseValue = BoolValue("HotbarEase", true)
     private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
-    private val hotbarAnimTypeValue = EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
-    private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
+    private val hotbarAnimTypeValue =
+        EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
+    private val hotbarAnimOrderValue =
+        EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
     val inventoryParticle = BoolValue("InventoryParticle", false)
     private val blurValue = BoolValue("Blur", false)
     val fontChatValue = BoolValue("FontChat", false)
@@ -52,7 +54,7 @@ object HUD : Module() {
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder")
     val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
-    private val buttonValue = ListValue("Button", arrayOf("Better","FLine", "Rise", "Vanilla"), "Better")
+    private val buttonValue = ListValue("Button", arrayOf("Better", "FLine", "Rise", "Vanilla"), "Better")
 
     private var lastFontEpsilon = 0f
 
@@ -69,7 +71,13 @@ object HUD : Module() {
         }
         set(value) {
             if (easeAnimation == null || (easeAnimation != null && easeAnimation!!.to != value.toDouble())) {
-                easeAnimation = Animation(EaseUtils.EnumEasingType.valueOf(hotbarAnimTypeValue.get()), EaseUtils.EnumEasingOrder.valueOf(hotbarAnimOrderValue.get()), field.toDouble(), value.toDouble(), hotbarAnimSpeedValue.get() * 30L).start()
+                easeAnimation = Animation(
+                    EaseUtils.EnumEasingType.valueOf(hotbarAnimTypeValue.get()),
+                    EaseUtils.EnumEasingOrder.valueOf(hotbarAnimOrderValue.get()),
+                    field.toDouble(),
+                    value.toDouble(),
+                    hotbarAnimSpeedValue.get() * 30L
+                ).start()
             }
         }
 
@@ -82,7 +90,7 @@ object HUD : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         LiquidBounce.hud.update()
-        if(mc.currentScreen == null && lastFontEpsilon != fontEpsilonValue.get()) {
+        if (mc.currentScreen == null && lastFontEpsilon != fontEpsilonValue.get()) {
             lastFontEpsilon = fontEpsilonValue.get()
             alert("You need to reload FDPClient to apply changes!")
         }
@@ -112,7 +120,7 @@ object HUD : Module() {
     }
 
     fun getHotbarEasePos(x: Int): Int {
-        if(!state || !hotbarEaseValue.get()) return x
+        if (!state || !hotbarEaseValue.get()) return x
         easingValue = x
         return easingValue
     }

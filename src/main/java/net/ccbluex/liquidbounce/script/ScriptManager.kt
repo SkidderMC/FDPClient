@@ -37,10 +37,12 @@ class ScriptManager {
     fun unloadScripts() {
         scripts.clear()
     }
-    fun unloadScript(script:Script) {
+
+    fun unloadScript(script: Script) {
         scripts.remove(script)
     }
-    fun loadScript(script:Script) {
+
+    fun loadScript(script: Script) {
         scripts.add(script)
     }
 
