@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.legacyui.GuiScriptLoadMenu;
 
-@ModuleInfo(name = "MurderDetector", category = ModuleCategory.MISC)
+@ModuleInfo(name = "FDPScriptManager", category = ModuleCategory.CLIENT)
 public class FDPScriptManager extends Module {
     @Override
     public void onEnable() {
