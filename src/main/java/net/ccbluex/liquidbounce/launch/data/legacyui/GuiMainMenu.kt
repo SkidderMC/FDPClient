@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.ui.btn.TestBtn
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
-import net.ccbluex.liquidbounce.utils.FDP4nt1Sk1dUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -170,25 +169,20 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     /* For modification, please keep "Designed by XiGua" */
     override fun initGui() {
         val defaultHeight = (this.height / 3.5).toInt()
-        try {
-            LiquidBounce.VERIFY = FDP4nt1Sk1dUtils.decrypt(File("./", "FDPProtect").readText())
-        } catch (e: Exception) {
-            System.out.println("Cant load FDPProtect")
-        }
         //我急了，写破防了，写了7个小时没写好
-        Thread {
-            if (LiquidBounce.CLIENTTEXT.contains("Waiting") || LiquidBounce.CLIENTTEXT.contains("Oops")) {
-                try {
-                    LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
-                } catch (e: Exception) {
-                    try {
-                        LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
-                    } catch (e: Exception) {
-                        LiquidBounce.CLIENTTEXT = "Oops.. :(\$Can't get information!#Try reopen the main menu\$140\$80"
-                    }
-                }
-            }
-        }.start()
+//        Thread {
+//            if (LiquidBounce.CLIENTTEXT.contains("Waiting") || LiquidBounce.CLIENTTEXT.contains("Oops")) {
+//                try {
+//                    LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
+//                } catch (e: Exception) {
+//                    try {
+//                        LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
+//                    } catch (e: Exception) {
+//                        LiquidBounce.CLIENTTEXT = "Oops.. :(\$Can't get information!#Try reopen the main menu\$140\$80"
+//                    }
+//                }
+//            }
+//        }.start()
 
         drawBtns()
         //this.buttonList.add(TestBtn(102, this.width - 95, 10, 25, 25, LanguageManager.get("ui.background"), ResourceLocation("fdpclient/imgs/icon/wallpaper.png"), 2,
@@ -229,9 +223,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             Color(255, 255, 255, 200).rgb
         )
 
-        /* For modification, please keep "Designed by XiGua" */
-        //FDPProtect.setVerify("1")
-
         FontLoaders.F16.drawString(
             "Made by UnlegitMC Team & Designed by XiGua",
             10f,
@@ -239,10 +230,10 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             Color(255, 255, 255, 170).rgb
         )
         FontLoaders.F16.drawString(
-            LiquidBounce.VERIFY,
+            "FUCK FDPPROTECT THIS SHIT",
             10f,
             this.height - 25f,
-            if (LiquidBounce.VERIFY.contains("Insecure")) Color(255, 58, 58, 170).rgb else Color(255, 255, 255, 170).rgb
+            Color(255, 255, 255, 170).rgb
         )
         var versionMsg =
             "Version: " + LiquidBounce.CLIENT_VERSION + if (LiquidBounce.VERSIONTYPE.contains("Release")) " | Release" else " | " + LiquidBounce.VERSIONTYPE + " (May be isn't work)"
