@@ -1,20 +1,23 @@
 package net.ccbluex.liquidbounce.file.configs
 
 import net.ccbluex.liquidbounce.file.FileConfig
-import net.ccbluex.liquidbounce.utils.FDP4nt1Sk1dUtils
 import java.io.File
+import java.nio.charset.Charset
+import java.util.*
 
 class ScriptConfig(file: File) : FileConfig(file) {
     val subscripts = mutableListOf<Subscript>()
+
+    // note from Liulihaocai: WHAT THE FUCK IS THIS SHIT?
 
     override fun loadConfig(config: String) {
         clearSubscripts()
         config.split("\n").forEach { line ->
             if (line.contains(":")) {
                 val data = line.split(":").toTypedArray()
-                addSubscripts(FDP4nt1Sk1dUtils.decrypt(data[0]), FDP4nt1Sk1dUtils.decrypt(data[1]))
+                addSubscripts(Base64.getDecoder().decode(data[0]).toString(Charset.defaultCharset()), Base64.getDecoder().decode(data[1]).toString(Charset.defaultCharset()))
             } else {
-                FDP4nt1Sk1dUtils.decrypt(line)
+                Base64.getDecoder().decode(line).toString(Charset.defaultCharset())
             }
         }
     }
@@ -23,8 +26,8 @@ class ScriptConfig(file: File) : FileConfig(file) {
         val builder = StringBuilder()
 
         for (subscript in subscripts)
-            builder.append(FDP4nt1Sk1dUtils.encrypt(subscript.url)).append(":")
-                .append(FDP4nt1Sk1dUtils.encrypt(subscript.name)).append("\n")
+            builder.append(Base64.getEncoder().encode(subscript.url.toByteArray())).append(":")
+                .append(Base64.getEncoder().encode(subscript.name.toByteArray())).append("\n")
 
         return builder.toString()
     }
