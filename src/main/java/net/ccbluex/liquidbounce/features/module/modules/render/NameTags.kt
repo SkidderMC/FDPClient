@@ -41,6 +41,11 @@ class NameTags : Module() {
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.equals("Jello") }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
+    private val onlyTarget = BoolValue("OnlyTarget",true)
+    private val translateY = FloatValue("TanslateY", 0.55F,-2F,2F)
+    
+    private var targetTicks = 0
+    private var entityKeep = "AntiXiGuahanHan worst femboy every23r8g3gij4wgj34gjiergjiejgierjgiejgiejrgiejgie43jgi5q"
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -77,6 +82,26 @@ class NameTags : Module() {
     }
 
     private fun renderNameTag(entity: EntityLivingBase, tag: String) {
+        if (onlyTarget.get() && entity != LiquidBounce.combatManager.target && entity.getName() != entityKeep) {
+            return
+        } else if (onlyTarget.get() && entity == LiquidBounce.combatManager.target) {
+            entityKeep = entity.getName()
+            targetTicks++
+            if (targetTicks >= 5) {
+                targetTicks = 4
+            }
+        } else if (onlyTarget.get() && LiquidBounce.combatManager.target == null) {
+            targetTicks--
+            if (targetTicks <= -1) {
+                targetTicks = 0
+                entityKeep = "grsiajerguaji4tjaigji4gjaiwg4jia"
+            }
+        }
+        
+        if (onlyTarget.get() && targetTicks == 0) {
+            return
+        }
+        
         // Set fontrenderer local
         val fontRenderer = fontValue.get()
 
@@ -89,7 +114,7 @@ class NameTags : Module() {
 
         glTranslated( // Translate to player position with render pos and interpolate it
             entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX,
-            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + 0.55,
+            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + translateY.get().toDouble(),
             entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
         )
 
