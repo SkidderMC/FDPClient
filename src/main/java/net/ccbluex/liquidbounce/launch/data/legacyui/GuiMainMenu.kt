@@ -224,13 +224,13 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         )
 
         FontLoaders.F16.drawString(
-            "Made by UnlegitMC Team & Designed by XiGua",
+            "Made by UnlegitMC",
             10f,
             this.height - 15f,
             Color(255, 255, 255, 170).rgb
         )
         FontLoaders.F16.drawString(
-            "FUCK FDPPROTECT THIS SHIT",
+            "FDPClient",
             10f,
             this.height - 25f,
             Color(255, 255, 255, 170).rgb

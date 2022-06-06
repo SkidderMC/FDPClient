@@ -43,11 +43,11 @@ object LiquidBounce {
 
 
     // Client information
-    const val CLIENT_NAME = "FDPClient"
+    const val CLIENT_NAME = "FDPCLIENT"
 
     var CLIENTTEXT = "Waiting..."
     var Darkmode = true
-    const val COLORED_NAME = "§c§lFDP§6§lClient"
+    const val COLORED_NAME = "§b[§b!§7] §b§lFDPCLIENT §b» "
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
     const val CLIENT_WEBSITE = "FDPClient.Club"
     val venti = ResourceLocation("fdpclient/imgs/GenshinImpact/venti.png")
