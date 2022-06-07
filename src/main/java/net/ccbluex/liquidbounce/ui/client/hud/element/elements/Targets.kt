@@ -341,7 +341,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         font.drawString("Name ${target.name}", 40, 11, Color.WHITE.rgb)
         font.drawString("Health ${getHealth(target)}", 40, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
-        RenderUtils.drawRoundedCornerRect(40f, 13 + font.FONT_HEIGHT  + font.FONT_HEIGHT, 40f + (easingHP / target.maxHealth) * additionalWidth, 25 + font.FONT_HEIGHT + font.FONT_HEIGHT, 2.5f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRoundedCornerRect(40f, (13 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 40f + (easingHP / target.maxHealth), (25 + font.FONT_HEIGHT + font.FONT_HEIGHT).toFloat(), 2.5f, ColorUtils.rainbow().rgb)
         
     }
 
