@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -15,6 +16,9 @@ import net.minecraft.util.AxisAlignedBB
 
 class Verus2Fly : FlyMode("Verus2") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 5f)
+    private val yMotionZero = BoolValue("SetYMotion0",true)
+    private val blocksBB = BoolValue("useBlocksBBfly",true)
+    private val groundSpoof = BoolValue("groundSpoof",true)
 
     private var flyable = false
     private val timer = MSTimer()
@@ -34,6 +38,9 @@ class Verus2Fly : FlyMode("Verus2") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        if (yMotionZero.get()) {
+            mc.thePlayer.motionY = 0.0
+        }
         if (timer.hasTimePassed(300)) {
             mc.timer.timerSpeed = 1f
         }
@@ -58,12 +65,12 @@ class Verus2Fly : FlyMode("Verus2") {
         val packet = event.packet
 
         if (packet is C03PacketPlayer) {
-            packet.onGround = true
+            packet.onGround = groundSpoof.get()
         }
     }
 
     override fun onBlockBB(event: BlockBBEvent) {
-        if (event.block is BlockAir && event.y <= fly.launchY) {
+        if (event.block is BlockAir && event.y <= fly.launchY && blocksBB.get()) {
             event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, fly.launchY, event.z + 1.0)
         }
     }
