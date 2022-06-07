@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
+    private val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
     private val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
@@ -125,6 +125,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         }
 
         when (modeValue.get().lowercase()) {
+            "fdp" -> drawFDP(prevTarget!!)
             "novoline" -> drawNovo(prevTarget!!)
             "astolfo" -> drawAstolfo(prevTarget!!)
             "liquid" -> drawLiquid(prevTarget!!)
@@ -313,6 +314,50 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         val x = RandomUtils.nextInt(-50, 50)
         val y = RandomUtils.nextInt(-50, 50)
     }
+    
+    private fun drawFDP(target: EntityLivingBase) {
+        val font = fontValue.get()
+
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 150f, 50f, 4f, Color(0, 0, 0, 100).rgb)
+
+        val hurtPercent = target.hurtPercent
+        val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
+            1 - (0.2f * hurtPercent * 2)
+        } else {
+            0.8f + (0.2f * (hurtPercent - 0.5f) * 2)
+        }
+        val size = 30
+
+        GL11.glPushMatrix()
+        GL11.glTranslatef(5f, 5f, 0f)
+        // 受伤的缩放效果
+        GL11.glScalef(scale, scale, scale)
+        GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
+        // 受伤的红色效果
+        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+        // 绘制头部图片
+        RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
+        GL11.glPopMatrix()
+
+        font.drawString("Name ${target.name}", 40, 11, Color.WHITE.rgb)
+        font.drawString("Health ${getHealth(target)}", 40, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
+        GL11.glEnable(3042)
+        GL11.glDisable(3553)
+        GL11.glBlendFunc(770, 771)
+        GL11.glEnable(2848)
+        GL11.glShadeModel(7425)
+        val stopPos = (5 + ((135 - font.getStringWidth(decimalFormat.format(target.maxHealth))) * (easingHP / target.maxHealth))).toInt()
+        for (i in 5..stopPos step 5) {
+            val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
+            RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), 45.0, x1, 55.0,
+                ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
+        }
+        GL11.glEnable(3553)
+        GL11.glDisable(3042)
+        GL11.glDisable(2848)
+        GL11.glShadeModel(7424)
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+
 
     private fun drawFlux(target: EntityLivingBase) {
         val width = (38 + target.name.let(Fonts.font40::getStringWidth))
