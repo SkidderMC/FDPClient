@@ -341,22 +341,9 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         font.drawString("Name ${target.name}", 40, 11, Color.WHITE.rgb)
         font.drawString("Health ${getHealth(target)}", 40, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
-        GL11.glEnable(3042)
-        GL11.glDisable(3553)
-        GL11.glBlendFunc(770, 771)
-        GL11.glEnable(2848)
-        GL11.glShadeModel(7425)
-        val stopPos = (5 + ((135 - font.getStringWidth(decimalFormat.format(target.maxHealth))) * (easingHP / target.maxHealth))).toInt()
-        for (i in 5..stopPos step 5) {
-            val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
-            RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), 45.0, x1, 55.0,
-                ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
-        }
-        GL11.glEnable(3553)
-        GL11.glDisable(3042)
-        GL11.glDisable(2848)
-        GL11.glShadeModel(7424)
-        GL11.glColor4f(1f, 1f, 1f, 1f)
+        RenderUtils.drawRoundedCornerRect(40f, 13 + font.FONT_HEIGHT  + font.FONT_HEIGHT, 40f + (easingHP / target.maxHealth) * additionalWidth, 25 + font.FONT_HEIGHT + font.FONT_HEIGHT, 2.5f, ColorUtils.rainbow().rgb)
+        
+    }
 
 
     private fun drawFlux(target: EntityLivingBase) {
@@ -439,6 +426,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "novoline" -> Border(0F, 0F, 140F, 40F)
             "astolfo" -> Border(0F, 0F, 140F, 60F)
             "liquid" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(), 36F)
+            "fdp" -> Border(0F, 0F, 150F, 50F)
             "flux" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
                 .coerceAtLeast(70)
                 .toFloat(), 34F)
