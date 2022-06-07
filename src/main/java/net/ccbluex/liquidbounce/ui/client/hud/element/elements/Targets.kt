@@ -322,11 +322,11 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         val hurtPercent = target.hurtPercent
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
-            1 - (0.2f * hurtPercent * 2)
+            1 - (0.1f * hurtPercent * 2)
         } else {
-            0.8f + (0.2f * (hurtPercent - 0.5f) * 2)
+            0.9f + (0.1f * (hurtPercent - 0.5f) * 2)
         }
-        val size = 30
+        val size = 35
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
@@ -341,7 +341,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         font.drawString("Name ${target.name}", 45, 5, Color.WHITE.rgb)
         font.drawString("Health ${getHealth(target)}", 45, 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
-        RenderUtils.drawRoundedCornerRect(40f, (7 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 40f + (getHealth(target) / target.maxHealth) * 100f, (19 + font.FONT_HEIGHT + font.FONT_HEIGHT).toFloat(), 2.5f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRoundedCornerRect(45f, (7 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 45f + (getHealth(target) / target.maxHealth) * 95f, (19 + font.FONT_HEIGHT + font.FONT_HEIGHT).toFloat(), 4f, ColorUtils.rainbow().rgb)
         
     }
 
@@ -426,7 +426,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "novoline" -> Border(0F, 0F, 140F, 40F)
             "astolfo" -> Border(0F, 0F, 140F, 60F)
             "liquid" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(), 36F)
-            "fdp" -> Border(0F, 0F, 150F, 50F)
+            "fdp" -> Border(0F, 0F, 150F, 47F)
             "flux" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
                 .coerceAtLeast(70)
                 .toFloat(), 34F)
