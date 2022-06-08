@@ -25,7 +25,7 @@ import kotlin.concurrent.thread
 @ModuleInfo(name = "AntiStaff", category = ModuleCategory.MISC)
 class AntiStaff : Module() {
 
-    val server  = ListValue("Server", arrayOf("BlocksMC","Jartex","Pika","Minebox","Zonecraft","hycraft","Librecraft"),"BlocksMC")
+    val server  = ListValue("Server", arrayOf("BlocksMC","Jartex","Pika","Minebox","Minemora","Zonecraft","hycraft","Librecraft"),"BlocksMC")
     val chat    = BoolValue("SendChatMessage",false)
     val message = TextValue("Message", "%staff% was detected as a staff member [DG-Client]")
         .displayable { chat.get() }
@@ -42,6 +42,7 @@ class AntiStaff : Module() {
     private var zonecraftStaff : String = "002Aren Agu5 augusmaster BetTD d411 dunshbey85 ElMaGnific Pv ErCris Eugene FelmaxMC Gudaa ¡Enux ImMarvolo sleepless ismq ItzOmar16 joescam LuisPoMC Nicoxrm pacorro "
     private var hycraftStaff : String = "Alexander245 arqui Blandih Chony_15 jac0mc Ragen06 TheBryaan TMT_131 Yapecito MartynaGamer830 archeriam"
     private var librecraftStaff : String = "Kudos  H0DKIER  Iker_XD9  acreate  iJeanSC  acreate  Janet  Rosse_RM  aldoum23neko_  DERGO  MJKINGPAND"
+    private var minemoraStaff : String = "Ruficraft MariSG iSebaas MaxyMC LuhGleh Esmorall SrLucchel_ ninjagod98 DarkFumado iDrecs CuencaDeDiamante"
     
     
     private var detected = false
@@ -65,6 +66,10 @@ class AntiStaff : Module() {
             
             "minebox" -> {
                 staffs = mineboxStaff
+            }
+
+            "minemora" -> {
+                staffs = minemoraStaff
             }
             
             "zonecraft" -> {
