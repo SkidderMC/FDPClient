@@ -1,8 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
