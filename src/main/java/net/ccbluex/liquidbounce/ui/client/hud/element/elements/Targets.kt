@@ -340,7 +340,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glBlendFunc(770, 771)
         GL11.glEnable(2848)
         GL11.glShadeModel(7425)
-        val stopPos = (45 + ((135 - font.getStringWidth(decimalFormat.format(target.maxHealth))) * (easingHP / target.maxHealth))).toInt()
+        val stopPos = 145
         for (i in 45..stopPos step 5) {
             val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
             RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), (13 + font.FONT_HEIGHT).toDouble(), x1, 45.0,
