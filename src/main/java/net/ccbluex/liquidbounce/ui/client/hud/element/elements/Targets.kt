@@ -343,7 +343,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         val stopPos = (5 + ((135 - font.getStringWidth(decimalFormat.format(target.maxHealth))) * (easingHP / target.maxHealth))).toInt()
         for (i in 5..stopPos step 5) {
             val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
-            RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), 13 + font.FONT_HEIGHT, x1, 45.0,
+            RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), (13 + font.FONT_HEIGHT).toDouble(), x1, 45.0,
                 ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
         }
         GL11.glEnable(3553)
