@@ -35,14 +35,14 @@ class MinemoraFly : FlyMode("Minemora") {
         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
     }
-    override fun onWorld() {
+    fun onWorld() {
         tick = 0
         while (!packetBuffer.isEmpty()) {
             packetBuffer.take()
         }
     }
     @EventTarget
-    fun onPacket(event: PacketEvent) {
+    override fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if (mc.thePlayer == null || tick == 0) return
         if (tick == 11451 && packet is C03PacketPlayer) {
@@ -60,7 +60,7 @@ class MinemoraFly : FlyMode("Minemora") {
             packetBuffer.add(packet as Packet<INetHandlerPlayServer>)
         }
     }
-    override fun onUpdate() {
+    fun onUpdate() {
         if (tick == 11451) {
             tick = 0
         }
