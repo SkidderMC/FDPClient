@@ -30,11 +30,14 @@ class VerusFly : FlyMode("Verus") {
         flyable = true
         timer.reset()
         fly.launchY += 0.42
+        fly.antiDesync = true
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        fly.antiDesync = true
         if (timer.hasTimePassed(1500)) {
             flyable = false
+            fly.antiDesync = false
         }
 
         if (flyable && timer.hasTimePassed(100)) {

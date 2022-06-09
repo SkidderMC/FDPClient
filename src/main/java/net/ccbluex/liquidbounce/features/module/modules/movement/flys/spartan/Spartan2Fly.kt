@@ -7,6 +7,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 
 class Spartan2Fly : FlyMode("Spartan2") {
     override fun onUpdate(event: UpdateEvent) {
+        fly.antiDesync = true
         MovementUtils.strafe(0.264f)
 
         if (mc.thePlayer.ticksExisted % 8 == 0) {

@@ -22,6 +22,7 @@ class BugSpartanFly : FlyMode("BugSpartan") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        fly.antiDesync = true
         mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionY = 0.0
         mc.thePlayer.motionZ = 0.0
