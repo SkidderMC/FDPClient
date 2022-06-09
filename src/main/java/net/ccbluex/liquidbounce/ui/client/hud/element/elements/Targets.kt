@@ -319,10 +319,10 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         } else {
             0.8f + (0.2f * (hurtPercent - 0.5f) * 2)
         }
-        val size = 37
+        val size = 38
 
         GL11.glPushMatrix()
-        GL11.glTranslatef(5f, 7f, 0f)
+        GL11.glTranslatef(5f, 8f, 0f)
         // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
@@ -332,7 +332,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
-        font.drawString("${target.name}", 45, 8, Color.WHITE.rgb)
+        font.drawString("${target.name}", 48, 8, Color.WHITE.rgb)
 
         // 渐变血量条
         GL11.glEnable(3042)
@@ -340,8 +340,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glBlendFunc(770, 771)
         GL11.glEnable(2848)
         GL11.glShadeModel(7425)
-        val stopPos = 145
-        for (i in 45..stopPos step 5) {
+        val stopPos = 48 + ((getHealth(target) / target.maxHealth) * 97f).toInt()
+        for (i in 48..stopPos step 5) {
             val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
             RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), (13 + font.FONT_HEIGHT).toDouble(), x1, 45.0,
                 ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
