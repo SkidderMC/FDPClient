@@ -28,7 +28,7 @@ import net.minecraft.stats.StatList
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "MiPacket", "Hypixel", "Hypixel2", "VulcanSemi", "MatrixSemi",  "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "MiniPhase", "NanoPacket", "non-calculable", "invalid", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "VerusSmart","Motion", "Hover"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "MiPacket", "Hypixel", "Hypixel2", "VulcanSemi", "MatrixSemi",  "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "VerusSmart","Motion", "Hover"), "packet")
     private val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
     private val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
     private val hoverNoFall = BoolValue("HoverNoFall", true).displayable { modeValue.equals("Hover") }
@@ -39,11 +39,14 @@ class Criticals : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
     private val debugValue = BoolValue("DebugMessage", false)
-    // private val rsNofallValue = BoolValue("RedeNofall",true)
+    
+    var antiDesync = false
 
     val msTimer = MSTimer()
     
     val flagTimer = MSTimer()
+
+    val syncTimer = MSTimer()
 
     private var target = 0
     var jState = 0
@@ -83,6 +86,9 @@ class Criticals : Module() {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, ground))
                 }
             }
+
+            antiDesync = true
+            syncTimer.reset()
 
             when (modeValue.get().lowercase()) {
                 "packet" -> {
@@ -128,28 +134,34 @@ class Criticals : Module() {
                         sendCriticalPacket(yOffset = 0.2, ground = false)
                         sendCriticalPacket(yOffset = 0.1216, ground = false)
                         attacks = 0
+                    }else{
+                        antiDesync = false
                     }
                 }
                 
                 "matrixsemi" -> {
                     attacks++
                     if(attacks > 3) {
-                    sendCriticalPacket(yOffset = 0.110314, ground = false)
-                    sendCriticalPacket(yOffset = 0.0200081, ground = false)
-                    sendCriticalPacket(yOffset = 0.00000001300009, ground = false)
-                    sendCriticalPacket(yOffset = 0.000000000022, ground = false)
-                    sendCriticalPacket(ground = true)
-                    attacks = 0
+                        sendCriticalPacket(yOffset = 0.110314, ground = false)
+                        sendCriticalPacket(yOffset = 0.0200081, ground = false)
+                        sendCriticalPacket(yOffset = 0.00000001300009, ground = false)
+                        sendCriticalPacket(yOffset = 0.000000000022, ground = false)
+                        sendCriticalPacket(ground = true)
+                        attacks = 0
+                    }else{
+                        antiDesync = false
                     }
                 }
                 
-                "verus" -> {
+                "verussmart" -> {
                     attacks ++
                     if (attacks > 4) {
                         attacks = 0
                         
                         sendCriticalPacket(yOffset = 0.001, ground = true)
                         sendCriticalPacket(ground = false)
+                    }else{
+                        antiDesync = false
                     }
                 }
                 
@@ -197,34 +209,6 @@ class Criticals : Module() {
                     sendCriticalPacket(xOffset = motionX / 3, yOffset = 0.20000004768372, zOffset = motionZ / 3, ground = false)
                     sendCriticalPacket(xOffset = motionX / 1.5, yOffset = 0.12160004615784, zOffset = motionZ / 1.5, ground = false)
                 }
-                
-                "miniphase" -> {
-                    sendCriticalPacket(yOffset = -0.0125, ground = false)
-                    sendCriticalPacket(yOffset =  0.01275, ground = false)
-                    sendCriticalPacket(yOffset = -0.00025, ground = false)
-                }
-
-                "nanopacket" -> {
-                    sendCriticalPacket(yOffset =  0.00973333333333, ground = false)
-                    sendCriticalPacket(yOffset =  0.001, ground = false)
-                    sendCriticalPacket(yOffset = -0.01200000000007, ground = false)
-                    sendCriticalPacket(yOffset = -0.0005, ground = false)
-
-                }
-
-                "non-calculable" -> {
-                    sendCriticalPacket(yOffset =  1E-5, ground = false)
-                    sendCriticalPacket(yOffset =  1E-7, ground = false)
-                    sendCriticalPacket(yOffset = -1E-6, ground = false)
-                    sendCriticalPacket(yOffset = -1E-4, ground = false)
-
-                }
-
-                "invalid" -> {
-                    sendCriticalPacket(yOffset =  1E+27, ground = false)
-                    sendCriticalPacket(yOffset = -1E+68, ground = false)
-                    sendCriticalPacket(yOffset =  1E+41, ground = false)
-                }
 
                 "tphop" -> {
                     sendCriticalPacket(yOffset = 0.02, ground = false)
@@ -259,10 +243,14 @@ class Criticals : Module() {
         
         if (packet is S08PacketPlayerPosLook) {
             flagTimer.reset()
+            antiDesync = false
             if (s08FlagValue.get()) {
                 jState = 0
             }
         }
+
+        if (packet is C03PacketPlayer && (MovementUtils.isMoving() || syncTimer.hasTimePassed(1000L) || msTimer.hasTimePassed(((delayValue.get() / 5) + 75).toLong())))
+            antiDesync = false
         
         if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
             return

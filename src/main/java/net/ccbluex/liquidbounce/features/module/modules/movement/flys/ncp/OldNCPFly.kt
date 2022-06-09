@@ -21,6 +21,7 @@ class OldNCPFly : FlyMode("OldNCP") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        fly.antiDesync = true
         if (fly.launchY > mc.thePlayer.posY) {
             mc.thePlayer.motionY = -0.000000000000000000000000000000001
         }

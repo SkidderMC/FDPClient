@@ -20,6 +20,7 @@ class HypixelFly : FlyMode("Hypixel") {
     private val flyTimer = MSTimer()
 
     override fun onUpdate(event: UpdateEvent) {
+        fly.antiDesync = true
         val boostDelay: Long = boostDelayValue.get().toLong()
         if (boostValue.get() && !flyTimer.hasTimePassed(boostDelay)) {
             mc.timer.timerSpeed = 1f + boostTimerValue.get() * (flyTimer.hasTimeLeft(boostDelay).toFloat() / boostDelay.toFloat())
