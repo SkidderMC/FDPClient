@@ -16,12 +16,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @ModuleInfo(name = "Wings", category = ModuleCategory.CLIENT, array = false)
 public class Wings extends Module {
     
-    private val onlyThirdPerson = BoolValue("OnlyThirdPerson",true)
+    private final BoolValue onlyThirdPerson = new BoolValue("OnlyThirdPerson",true);
 
     @EventTarget
     public void onRenderPlayer(Render3DEvent event) {
         if (onlyThirdPerson && mc.gameSettings.thirdPersonView != 0) {
-            return
+            return;
         }
         
         RenderWings renderWings = new RenderWings();
