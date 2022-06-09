@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Astolfo", "Liquid", "Flux", "Rise", "RiseNew", "Zamorozka", "Arris", "Tenacity"), "Rise")
+    private val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "RiseNew", "Zamorozka", "Arris", "Tenacity"), "Rise")
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
     private val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
@@ -127,6 +127,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         when (modeValue.get().lowercase()) {
             "fdp" -> drawFDP(prevTarget!!)
             "novoline" -> drawNovo(prevTarget!!)
+            "novoline2" -> drawNovo2(prevTarget!!)
             "astolfo" -> drawAstolfo(prevTarget!!)
             "liquid" -> drawLiquid(prevTarget!!)
             "flux" -> drawFlux(prevTarget!!)
@@ -173,6 +174,20 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         RenderUtils.drawRect(33F, 18F, hpPos, 25F, color)
         font.drawString("❤", 33, 30, Color.RED.rgb)
         font.drawString(decimalFormat.format(getHealth(target)), 43, 30, Color.WHITE.rgb)
+    }
+    
+    private fun drawNovo2(target: EntityLivingBase) {
+        val font = fontValue.get()
+        val color = ColorUtils.healthColor(getHealth(target), target.maxHealth)
+        val darkColor = ColorUtils.darker(color, 0.6F)
+
+        RenderUtils.drawRect(0F, 0F, 140F, 40F, Color(40, 40, 40).rgb)
+        font.drawString(target.name, 35, 5, Color.WHITE.rgb)
+        RenderUtils.drawHead(target.skin, 2, 2, 30, 30)
+         RenderUtils.drawRect(35F, 17F, ((getHealth(target) / target.maxHealth) * 135) + 35F,
+            25F, Color(252, 96, 66).rgb)
+
+        font.drawString((decimalFormat.format((easingHP / target.maxHealth) * 100)) + "%", 40, 20, Color.WHITE.rgb)
     }
 
     private fun drawLiquid(target: EntityLivingBase) {
@@ -498,6 +513,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private fun getTBorder(): Border? {
         return when (modeValue.get().lowercase()) {
             "novoline" -> Border(0F, 0F, 140F, 40F)
+            "novoline2" -> Border(0F, 0F, 140F, 40F)
             "astolfo" -> Border(0F, 0F, 140F, 60F)
             "liquid" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(), 36F)
             "fdp" -> Border(0F, 0F, 150F, 47F)
