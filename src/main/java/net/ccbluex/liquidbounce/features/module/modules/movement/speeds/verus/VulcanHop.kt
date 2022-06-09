@@ -8,7 +8,7 @@ class VulcanHop : SpeedMode("VulcanHop") {
     override fun onUpdate() {
         mc.timer.timerSpeed = 1.00f
         if (Math.abs(mc.thePlayer.movementInput.moveStrafe) < 0.1f) {
-            mc.thePlayer.jumpMovementFactor = 0.0265f
+            mc.thePlayer.jumpMovementFactor = 0.026499f
         }else {
             mc.thePlayer.jumpMovementFactor = 0.0244f
         }
@@ -22,10 +22,13 @@ class VulcanHop : SpeedMode("VulcanHop") {
             mc.timer.timerSpeed = 1.25f
             mc.gameSettings.keyBindJump.pressed = false
             mc.thePlayer.jump()
+	    if (!mc.thePlayer.isAirBorne) {
+                return //Prevent flag with Fly
+            }
             MovementUtils.strafe()
-			if(MovementUtils.getSpeed() < 0.5f) {
-			    MovementUtils.strafe(0.4849f)
-			}
+	    if(MovementUtils.getSpeed() < 0.5f) {
+	        MovementUtils.strafe(0.4849f)
+	    }
         }else if (!MovementUtils.isMoving()) {
             mc.timer.timerSpeed = 1.00f
             mc.thePlayer.motionX = 0.0
