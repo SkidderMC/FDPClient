@@ -55,9 +55,7 @@
     "render.MixinTileEntityItemStackRenderer",
     "render.MixinTileEntityMobSpawnerRenderer",
     "render.MixinTileEntityRendererDispatcher",
-    "render.MixinVisGraph",
-    "splash.MixinSplashProgress",
-    "splash.MixinSplashProgressRunnable"
+    "render.MixinVisGraph"
   ],
   "client": [
     "gui.MixinGui",
