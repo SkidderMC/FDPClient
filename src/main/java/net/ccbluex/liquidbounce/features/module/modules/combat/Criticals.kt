@@ -28,7 +28,7 @@ import net.minecraft.stats.StatList
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "MiPacket", "Hypixel", "Hypixel2", "VulcanSemi", "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "MiniPhase", "NanoPacket", "non-calculable", "invalid", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "VerusSmart","Motion", "Hover"), "packet")
+    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "MiPacket", "Hypixel", "Hypixel2", "VulcanSemi", "MatrixSemi",  "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "MiniPhase", "NanoPacket", "non-calculable", "invalid", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "VerusSmart","Motion", "Hover"), "packet")
     private val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
     private val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
     private val hoverNoFall = BoolValue("HoverNoFall", true).displayable { modeValue.equals("Hover") }
@@ -128,6 +128,18 @@ class Criticals : Module() {
                         sendCriticalPacket(yOffset = 0.2, ground = false)
                         sendCriticalPacket(yOffset = 0.1216, ground = false)
                         attacks = 0
+                    }
+                }
+                
+                "matrixsemi" -> {
+                    attacks++
+                    if(attacks > 3) {
+                    sendCriticalPacket(yOffset = 0.110314, ground = false)
+                    sendCriticalPacket(yOffset = 0.0200081, ground = false)
+                    sendCriticalPacket(yOffset = 0.00000001300009, ground = false)
+                    sendCriticalPacket(yOffset = 0.000000000022, ground = false)
+                    sendCriticalPacket(ground = true)
+                    attacks = 0
                     }
                 }
                 
