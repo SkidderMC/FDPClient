@@ -8,15 +8,22 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.RenderWings;
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 
 @ModuleInfo(name = "Wings", category = ModuleCategory.CLIENT, array = false)
 public class Wings extends Module {
+    
+    private val onlyThirdPerson = BoolValue("OnlyThirdPerson",true)
 
     @EventTarget
     public void onRenderPlayer(Render3DEvent event) {
+        if (onlyThirdPerson && mc.gameSettings.thirdPersonView != 0) {
+            return
+        }
+        
         RenderWings renderWings = new RenderWings();
         renderWings.renderWings(event.getPartialTicks());
     }
