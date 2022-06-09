@@ -338,7 +338,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         val size = 38
 
         GL11.glPushMatrix()
-        GL11.glTranslatef(5f, 8f, 0f)
+        GL11.glTranslatef(5f, 7f, 0f)
         // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
@@ -356,7 +356,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glBlendFunc(770, 771)
         GL11.glEnable(2848)
         GL11.glShadeModel(7425)
-        val stopPos = 48 + (( easingHP/ target.maxHealth) * 97f).toInt()
+        val stopPos = 48 + ( (easingHP/ target.maxHealth) * 97f).toInt()
         for (i in 48..stopPos step 5) {
             val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
             RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), (13 + font.FONT_HEIGHT).toDouble(), x1, 45.0,
@@ -428,9 +428,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glPopMatrix()
 
         font.drawString("Name ${target.name}", 45, 5, Color.WHITE.rgb)
-        ease += ((45f + (getHealth(target) / target.maxHealth) * 95f) - ease) /2
         font.drawString("Health ${getHealth(target)}", 45, 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
-        RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), ease, 42f, 3f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 45f + (easingHP / target.maxHealth) * 100f, 42f, 3f, ColorUtils.rainbow().rgb)
         
     }
     
