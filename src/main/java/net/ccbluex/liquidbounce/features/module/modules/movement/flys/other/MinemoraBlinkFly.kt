@@ -36,13 +36,6 @@ class MinemoraFly : FlyMode("Minemora") {
         mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
     }
 
-    override fun onWorld(event: WorldEvent) {
-        tick = 0
-        while (!packetBuffer.isEmpty()) {
-            packetBuffer.take()
-        }
-    }
-
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if (mc.thePlayer == null || tick == 0) return
