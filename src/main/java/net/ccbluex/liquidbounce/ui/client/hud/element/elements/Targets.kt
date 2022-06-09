@@ -48,6 +48,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
     private var hpEaseAnimation: Animation? = null
     private var easingHP = 0f
+    private var ease = 0f
         get() {
             if (hpEaseAnimation != null) {
                 field = hpEaseAnimation!!.value.toFloat()
@@ -427,8 +428,9 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glPopMatrix()
 
         font.drawString("Name ${target.name}", 45, 5, Color.WHITE.rgb)
+        ease += ((45f + (getHealth(target) / target.maxHealth) * 95f) - ease) /2
         font.drawString("Health ${getHealth(target)}", 45, 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
-        RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 45f + (getHealth(target) / target.maxHealth) * 95f, 42f, 5f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), ease, 42f, 3f, ColorUtils.rainbow().rgb)
         
     }
     
