@@ -20,29 +20,30 @@ import net.minecraft.client.settings.GameSettings
 class MinemoraFly : FlyMode("Minemora") {
     
     private var tick = 0
+    private var disableLogger = false
     private val packetBuffer = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
 
     override fun onEnable() {
-        tick = 11451 //4
+        tick = 0
         mc.gameSettings.keyBindJump.pressed = false
         mc.gameSettings.keyBindSneak.pressed = false
     }
     override fun onDisable() {
         tick = 0
-        while (!packetBuffer.isEmpty()) {
-            mc.netHandler.addToSendQueue(packetBuffer.take())
+        try {
+            disableLogger = true
+            while (!packetBuffer.isEmpty()) {
+                mc.netHandler.addToSendQueue(packetBuffer.take())
+            }
+            disableLogger = false
+        } finally {
+            disableLogger = false
         }
-        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-        mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
     }
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (mc.thePlayer == null || tick == 0) return
-        if (tick == 11451 && packet is C03PacketPlayer) {
-            event.cancelEvent()
-            return
-        }
+        if (mc.thePlayer == null || disableLogger) return
         if (packet is C03PacketPlayer) {
             event.cancelEvent()
         }
@@ -55,12 +56,9 @@ class MinemoraFly : FlyMode("Minemora") {
         }
     }
     override fun onUpdate(event: UpdateEvent) {
-        fly.antiDesync = false
-        if (tick == 11451) {
-            tick = 0
-        }
-        mc.gameSettings.keyBindJump.pressed = false
-        mc.gameSettings.keyBindSneak.pressed = false
+          fly.antiDesync = false
+    }
+    override fun onMotion(event: MotionEvent) {
         tick++
         mc.timer.timerSpeed = 1.0f
         if (tick == 1) {
@@ -71,14 +69,14 @@ class MinemoraFly : FlyMode("Minemora") {
             mc.thePlayer.jump()
         } else {
             if (MovementUtils.isMoving()) {
-                MovementUtils.strafe(((1.7-0.02)/0.98).toFloat()) //no need MotionPre
+                MovementUtils.strafe(1.7f)
             } else {
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.motionX = 0.0
             }
-            if (GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
+            if (mc.gameSettings.keyBindJump.pressed) {
                 mc.thePlayer.motionY = 1.7
-            } else if (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
+            } else if (mc.gameSettings.keyBindSneak.pressed) {
                 mc.thePlayer.motionY = -1.7
             } else {
                 mc.thePlayer.motionY = 0.0
