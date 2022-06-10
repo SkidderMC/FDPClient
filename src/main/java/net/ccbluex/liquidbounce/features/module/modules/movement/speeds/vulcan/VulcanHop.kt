@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus
+package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
@@ -8,18 +8,17 @@ class VulcanHop : SpeedMode("VulcanHop") {
     private var wasTimer = false
 
     override fun onUpdate() {
-	if (wasTimer) {
+        if (wasTimer) {
             mc.timer.timerSpeed = 1.00f
-	    wasTimer = false
-	}
+            wasTimer = false
+        }
         if (Math.abs(mc.thePlayer.movementInput.moveStrafe) < 0.1f) {
             mc.thePlayer.jumpMovementFactor = 0.026499f
         }else {
             mc.thePlayer.jumpMovementFactor = 0.0244f
         }
-        if (!mc.thePlayer.onGround) {
-            mc.gameSettings.keyBindJump.pressed = mc.gameSettings.keyBindJump.isKeyDown
-        }
+        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+
         if (MovementUtils.getSpeed() < 0.215f && !mc.thePlayer.onGround) {
             MovementUtils.strafe(0.215f)
         }
@@ -31,7 +30,7 @@ class VulcanHop : SpeedMode("VulcanHop") {
             }
 	    mc.timer.timerSpeed = 1.25f
 	    wasTimer = true
-            MovementUtils.strafe()
+	    MovementUtils.strafe()
 	    if(MovementUtils.getSpeed() < 0.5f) {
 	        MovementUtils.strafe(0.4849f)
 	    }

@@ -7,14 +7,16 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.BlockAir
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.client.settings.GameSettings
 
 class Verus3Fly : FlyMode("Verus3") {
 
     private val airStrafeValue = BoolValue("${valuePrefix}AirStrafe", true)
 
     override fun onUpdate(event: UpdateEvent) {
-        mc.gameSettings.keyBindJump.pressed = false
+        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
+            mc.gameSettings.keyBindJump.pressed = false
             mc.thePlayer.jump()
             MovementUtils.strafe(0.48F)
         } else if(airStrafeValue.get()) {
