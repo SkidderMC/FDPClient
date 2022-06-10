@@ -5,6 +5,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import kotlin.math.sqrt
+import net.minecraft.client.settings.GameSettings
 
 class MatrixBHop : SpeedMode("MatrixBHop") {
     private val speedMultiValue = FloatValue("MatrixBHopSpeed", 1f, 0.7f, 1.2f)
@@ -25,7 +26,7 @@ class MatrixBHop : SpeedMode("MatrixBHop") {
             setTimer(1.0f)
         }
         if (jumped) {
-            mc.gameSettings.keyBindJump.pressed = mc.gameSettings.keyBindJump.isKeyDown
+            mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
             jumped = false
             setTimer(0.9f)
             dist = sqrt((recX - mc.thePlayer.posX) * (recX - mc.thePlayer.posX) + (recZ - mc.thePlayer.posZ) * (recZ - mc.thePlayer.posZ))
