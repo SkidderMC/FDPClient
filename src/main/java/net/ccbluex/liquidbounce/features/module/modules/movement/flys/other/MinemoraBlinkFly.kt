@@ -23,7 +23,7 @@ class MinemoraFly : FlyMode("Minemora") {
     private val packetBuffer = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
 
     override fun onEnable() {
-        tick = 11451 //4
+        tick = 0
         mc.gameSettings.keyBindJump.pressed = false
         mc.gameSettings.keyBindSneak.pressed = false
     }
@@ -32,17 +32,11 @@ class MinemoraFly : FlyMode("Minemora") {
         while (!packetBuffer.isEmpty()) {
             mc.netHandler.addToSendQueue(packetBuffer.take())
         }
-        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-        mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
     }
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (mc.thePlayer == null || tick == 0) return
-        if (tick == 11451 && packet is C03PacketPlayer) {
-            event.cancelEvent()
-            return
-        }
+        if (mc.thePlayer == null) return
         if (packet is C03PacketPlayer) {
             event.cancelEvent()
         }
@@ -56,11 +50,6 @@ class MinemoraFly : FlyMode("Minemora") {
     }
     override fun onUpdate(event: UpdateEvent) {
         fly.antiDesync = false
-        if (tick == 11451) {
-            tick = 0
-        }
-        mc.gameSettings.keyBindJump.pressed = false
-        mc.gameSettings.keyBindSneak.pressed = false
         tick++
         mc.timer.timerSpeed = 1.0f
         if (tick == 1) {
@@ -76,9 +65,9 @@ class MinemoraFly : FlyMode("Minemora") {
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.motionX = 0.0
             }
-            if (GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
+            if (mc.gameSettings.keyBindJump.pressed) {
                 mc.thePlayer.motionY = 1.7
-            } else if (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
+            } else if (mc.gameSettings.keyBindSneak.pressed) {
                 mc.thePlayer.motionY = -1.7
             } else {
                 mc.thePlayer.motionY = 0.0
