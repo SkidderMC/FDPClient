@@ -59,7 +59,7 @@ class MinemoraFly : FlyMode("Minemora") {
           fly.antiDesync = false
     }
     override fun onMotion(event: MotionEvent) {
-        if (event.eventState !== EventState.PRE) return
+        if (event.eventState != EventState.PRE) return
         tick++
         mc.timer.timerSpeed = 1.0f
         if (tick == 1) {
