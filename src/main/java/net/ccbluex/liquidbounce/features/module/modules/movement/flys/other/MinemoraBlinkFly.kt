@@ -20,6 +20,7 @@ import net.minecraft.client.settings.GameSettings
 class MinemoraFly : FlyMode("Minemora") {
     
     private var tick = 0
+    private var disableLogger = false
     private val packetBuffer = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
 
     override fun onEnable() {
@@ -29,14 +30,20 @@ class MinemoraFly : FlyMode("Minemora") {
     }
     override fun onDisable() {
         tick = 0
-        while (!packetBuffer.isEmpty()) {
-            mc.netHandler.addToSendQueue(packetBuffer.take())
+        try {
+            disableLogger = true
+            while (!packetBuffer.isEmpty()) {
+                mc.netHandler.addToSendQueue(packetBuffer.take())
+            }
+            disableLogger = false
+        } finally {
+            disableLogger = false
         }
     }
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (mc.thePlayer == null) return
+        if (mc.thePlayer == null || disableLogger) return
         if (packet is C03PacketPlayer) {
             event.cancelEvent()
         }
@@ -49,7 +56,9 @@ class MinemoraFly : FlyMode("Minemora") {
         }
     }
     override fun onUpdate(event: UpdateEvent) {
-        fly.antiDesync = false
+          fly.antiDesync = false
+    }
+    override fun onMotion(event: MotionEvent) {
         tick++
         mc.timer.timerSpeed = 1.0f
         if (tick == 1) {
@@ -60,7 +69,7 @@ class MinemoraFly : FlyMode("Minemora") {
             mc.thePlayer.jump()
         } else {
             if (MovementUtils.isMoving()) {
-                MovementUtils.strafe(((1.7-0.02)/0.98).toFloat()) //no need MotionPre
+                MovementUtils.strafe(1.7f)
             } else {
                 mc.thePlayer.motionZ = 0.0
                 mc.thePlayer.motionX = 0.0
