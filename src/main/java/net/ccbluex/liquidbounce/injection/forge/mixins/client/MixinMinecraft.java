@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import com.guimc.fuckpcl.PCLChecker;
+import com.guimc.fuckpcl.utils.WindowUtils;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
@@ -28,6 +29,7 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
@@ -46,9 +48,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.AccessDeniedException;
 
@@ -102,14 +107,15 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
     private void startGame(CallbackInfo callbackInfo) throws AccessDeniedException {
-        if(PCLChecker.INSTANCE.fullCheck(this.mcDataDir)){
+        if (PCLChecker.INSTANCE.fullCheck(this.mcDataDir)) {
             Display.destroy();
-            String warnStr="Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
+            String warnStr = "Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
             MiscUtils.INSTANCE.showErrorPopup(warnStr);
             throw new AccessDeniedException(warnStr);
         }
         LiquidBounce.INSTANCE.initClient();
     }
+
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
         ClientUtils.INSTANCE.setTitle();
@@ -117,7 +123,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))
     private void displayGuiScreen(CallbackInfo callbackInfo) {
-        if(currentScreen instanceof net.minecraft.client.gui.GuiMainMenu || (currentScreen != null && currentScreen.getClass().getName().startsWith("net.labymod") && currentScreen.getClass().getSimpleName().equals("ModGuiMainMenu"))) {
+        if (currentScreen instanceof net.minecraft.client.gui.GuiMainMenu || (currentScreen != null && currentScreen.getClass().getName().startsWith("net.labymod") && currentScreen.getClass().getSimpleName().equals("ModGuiMainMenu"))) {
             currentScreen = LiquidBounce.mainMenu;
 
             ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
@@ -141,7 +147,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runTick", at = @At("HEAD"))
     private void runTick(final CallbackInfo callbackInfo) {
-        StaticStorage.scaledResolution = new ScaledResolution((Minecraft)(Object) this);
+        StaticStorage.scaledResolution = new ScaledResolution((Minecraft) (Object) this);
     }
 
     public long getTime() {
@@ -158,7 +164,7 @@ public abstract class MixinMinecraft {
         try {
             if (Keyboard.getEventKeyState() && (currentScreen == null || (Modules.INSTANCE.getToggleIgnoreScreenValue().get() && this.currentScreen instanceof GuiContainer)))
                 LiquidBounce.eventManager.callEvent(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
-        } catch (Exception e){
+        } catch (Exception e) {
             //e.printStackTrace();
         }
     }
@@ -178,7 +184,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "clickMouse", at = @At("HEAD"))
     private void clickMouse(CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
-        if(LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
+        if (LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
             leftClickCounter = 0; // fix hit delay lol
     }
 
@@ -203,14 +209,14 @@ public abstract class MixinMinecraft {
     }
 
     @Inject(method = "getRenderViewEntity", at = @At("HEAD"))
-    public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir){
-        if(RotationUtils.targetRotation != null && thePlayer != null) {
+    public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir) {
+        if (RotationUtils.targetRotation != null && thePlayer != null) {
             final Rotations rotations = LiquidBounce.moduleManager.getModule(Rotations.class);
             final float yaw = RotationUtils.targetRotation.getYaw();
-            if(rotations.getHeadValue().get()){
+            if (rotations.getHeadValue().get()) {
                 thePlayer.rotationYawHead = yaw;
             }
-            if(rotations.getBodyValue().get()){
+            if (rotations.getBodyValue().get()) {
                 thePlayer.renderYawOffset = yaw;
             }
         }
@@ -221,18 +227,18 @@ public abstract class MixinMinecraft {
      */
     @Overwrite
     private void sendClickBlockToController(boolean leftClick) {
-        if(!leftClick)
+        if (!leftClick)
             this.leftClickCounter = 0;
 
         if (this.leftClickCounter <= 0 && !this.thePlayer.isUsingItem()) {
-            if(leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 BlockPos blockPos = this.objectMouseOver.getBlockPos();
 
-                if(this.leftClickCounter == 0)
+                if (this.leftClickCounter == 0)
                     LiquidBounce.eventManager.callEvent(new ClickBlockEvent(blockPos, this.objectMouseOver.sideHit));
 
 
-                if(this.theWorld.getBlockState(blockPos).getBlock().getMaterial() != Material.air && this.playerController.onPlayerDamageBlock(blockPos, this.objectMouseOver.sideHit)) {
+                if (this.theWorld.getBlockState(blockPos).getBlock().getMaterial() != Material.air && this.playerController.onPlayerDamageBlock(blockPos, this.objectMouseOver.sideHit)) {
                     this.effectRenderer.addBlockHitEffects(blockPos, this.objectMouseOver.sideHit);
                     this.thePlayer.swingItem();
                 }
@@ -242,11 +248,76 @@ public abstract class MixinMinecraft {
         }
     }
 
+    @Inject(method = "displayCrashReport", at = @At("HEAD"))
+    private void displayCrashReport(CrashReport crashReport, CallbackInfo ci) {
+        if (!WindowUtils.isWindows()) return;
+        try {
+            File file = new File("./", "FDPCrashLogs.txt");
+            if (!file.exists()) {
+                file.createNewFile();
+            } else {
+                file.delete();
+                file.createNewFile();
+            }
+            FileWriter fileWritter = new FileWriter(file.getName(), true);
+            fileWritter.write("##########################FDPPROTECT CRASH REPORT##########################\r\n\r\n" +
+                    "If this problem persists, please send this file to the FDPClient developers! Website (where you can join the discord server): http://FDPClient.Club/\r\nThis file will be saved in \".minecraft/FDPCrashLogs.txt\"" +
+                    "\r\n\r\n" +
+                    " | 在没有错误日志的情况下诊断任何问题无异于闭眼开车!  --Apache官方文档\r\n" +
+                    " | Troubleshooting any problem without the error log is like driving with your eyes closed.\r\n" +
+                    " | From Apache official documentation Getting Started chapter\r\n" +
+                    "   - INFO:\r\n" +
+                    "   |   Version: " + LiquidBounce.CLIENT_VERSION + "\r\n" +
+                    "   |   Time: " + System.currentTimeMillis() + "\r\n" +
+                    "   |   OS: " + Util.getOSType() + "\r\n" +
+                    "\r\n##########################FDPPROTECT CRASH REPORT##########################\r\n" + crashReport.getCompleteReport());
+            fileWritter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        File file1 = new File("./", "FDPCrashLogs.txt");
+        ;
+        String s = file1.getAbsolutePath();
+
+        if (Util.getOSType() == Util.EnumOS.OSX) {
+            try {
+                Runtime.getRuntime().exec(new String[]{"/usr/bin/open", s});
+                return;
+            } catch (IOException ioexception1) {
+                ioexception1.printStackTrace();
+            }
+        } else if (Util.getOSType() == Util.EnumOS.WINDOWS) {
+            String s1 = String.format("cmd.exe /C start \"Open file\" \"%s\"", new Object[]{s});
+
+            try {
+                Runtime.getRuntime().exec(s1);
+                return;
+            } catch (IOException ioexception) {
+                ioexception.printStackTrace();
+            }
+        }
+
+        boolean flag = false;
+
+        try {
+            Class<?> oclass = Class.forName("java.awt.Desktop");
+            Object object = oclass.getMethod("getDesktop", new Class[0]).invoke((Object) null, new Object[0]);
+            oclass.getMethod("browse", new Class[]{URI.class}).invoke(object, new Object[]{file1.toURI()});
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            flag = true;
+        }
+
+        if (flag) {
+            Sys.openURL("file://" + s);
+        }
+    }
+
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setWindowIcon(CallbackInfo callbackInfo) throws IOException {
         if (Util.getOSType() != Util.EnumOS.OSX) {
             BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png"));
-            if(image.getWidth() != 32 || image.getHeight() != 32) {
+            if (image.getWidth() != 32 || image.getHeight() != 32) {
                 image = ImageUtils.resizeImage(image, 32, 32);
             }
             Display.setIcon(new ByteBuffer[]{ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16)),
@@ -255,19 +326,19 @@ public abstract class MixinMinecraft {
         }
     }
 
-    @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Lnet/minecraft/client/LoadingScreenRenderer;resetProgressAndMessage(Ljava/lang/String;)V"))
+    @Redirect(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/LoadingScreenRenderer;resetProgressAndMessage(Ljava/lang/String;)V"))
     public void loadWorld(LoadingScreenRenderer loadingScreenRenderer, String string) {
     }
 
-    @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Lnet/minecraft/client/LoadingScreenRenderer;displayLoadingString(Ljava/lang/String;)V"))
+    @Redirect(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/LoadingScreenRenderer;displayLoadingString(Ljava/lang/String;)V"))
     public void loadWorld1(LoadingScreenRenderer loadingScreenRenderer, String string) {
     }
 
-    @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Ljava/lang/System;gc()V", remap=false))
+    @Redirect(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Ljava/lang/System;gc()V", remap = false))
     public void loadWorld2() {
     }
 
-    @Inject(method="toggleFullscreen()V", at=@At(value="INVOKE", target="Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", shift=At.Shift.AFTER, remap=false), require=1, allow=1)
+    @Inject(method = "toggleFullscreen()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", shift = At.Shift.AFTER, remap = false), require = 1, allow = 1)
     private void toggleFullscreen(CallbackInfo callbackInfo) {
         if (!this.fullscreen) {
             Display.setResizable(false);
