@@ -170,19 +170,19 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun initGui() {
         val defaultHeight = (this.height / 3.5).toInt()
         //我急了，写破防了，写了7个小时没写好
-//        Thread {
-//            if (LiquidBounce.CLIENTTEXT.contains("Waiting") || LiquidBounce.CLIENTTEXT.contains("Oops")) {
-//                try {
-//                    LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
-//                } catch (e: Exception) {
-//                    try {
-//                        LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
-//                    } catch (e: Exception) {
-//                        LiquidBounce.CLIENTTEXT = "Oops.. :(\$Can't get information!#Try reopen the main menu\$140\$80"
-//                    }
-//                }
-//            }
-//        }.start()
+        Thread {
+            if (LiquidBounce.CLIENTTEXT.contains("Waiting") || LiquidBounce.CLIENTTEXT.contains("Oops")) {
+                try {
+                    LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
+                } catch (e: Exception) {
+                    try {
+                        LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
+                    } catch (e: Exception) {
+                        LiquidBounce.CLIENTTEXT = "Oops.. :(\$Can't get information!#Try reopen the main menu\$140\$80"
+                    }
+                }
+            }
+        }.start()
 
         drawBtns()
         //this.buttonList.add(TestBtn(102, this.width - 95, 10, 25, 25, LanguageManager.get("ui.background"), ResourceLocation("fdpclient/imgs/icon/wallpaper.png"), 2,
@@ -295,7 +295,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 }
             }
         } catch (e: Exception) {
-            //e.printStackTrace()
+            e.printStackTrace()
         }
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
