@@ -349,6 +349,10 @@ class Arraylist(
         return null
     }
 
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
+
     override fun updateElement() {
         modules = LiquidBounce.moduleManager.modules
             .filter { it.array && !shouldExpect(it) && (it.state || it.slide > 0 || !(it.yPosAnimation==null || it.yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED)) }

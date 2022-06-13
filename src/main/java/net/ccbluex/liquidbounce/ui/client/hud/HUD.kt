@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.hud
 
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Effect
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
 import net.ccbluex.liquidbounce.utils.ClassUtils
@@ -31,10 +32,14 @@ open class HUD : MinecraftInstance() {
          */
         fun createDefault(): HUD {
             val text1 = Text(x = 5.0, y = 8.0)
-            text1.displayString.set("FDPClient")
+            text1.displayString.set("Zywl")
             text1.colorModeValue.set("Rainbow")
             text1.rectValue.set("Logo")
             text1.rectColorModeValue.set("Rainbow")
+
+            val elements = arrayOf(
+                Effect::class.java
+            )
 
             return HUD()
                 .addElement(text1)
@@ -94,7 +99,7 @@ open class HUD : MinecraftInstance() {
         if (button == 0) {
             for (element in elements.reversed()) {
                 if (!element.isInBorder((mouseX / element.scale) - element.renderX,
-                                (mouseY / element.scale) - element.renderY)) {
+                        (mouseY / element.scale) - element.renderY)) {
                     continue
                 }
 

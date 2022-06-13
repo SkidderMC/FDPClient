@@ -177,6 +177,10 @@ class ScoreboardElement(
         return Border(-maxWidth.toFloat() - 10f - if (rectValue.get()) 3 else 0, -5F, 9F, maxHeight.toFloat() + fontRenderer.FONT_HEIGHT + 5)
     }
 
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
+
     private fun backgroundColor() = Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(),
             backgroundColorBlueValue.get(), backgroundColorAlphaValue.get())
 

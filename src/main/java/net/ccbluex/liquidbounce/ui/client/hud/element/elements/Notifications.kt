@@ -76,6 +76,10 @@ class Notifications(
         return null
     }
 
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
+
     override fun drawBoarderBlur(blurRadius: Float) {}
 }
 

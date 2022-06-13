@@ -143,6 +143,10 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
         return Border(1F, 0F, width.get(), guiHeight)
     }
 
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
+
     override fun handleKey(c: Char, keyCode: Int) {
         when (keyCode) {
             Keyboard.KEY_UP -> parseAction(Action.UP)

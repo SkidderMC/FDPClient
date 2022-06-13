@@ -80,6 +80,10 @@ class Model(x: Double = 40.0, y: Double = 100.0) : Element(x, y) {
         return Border(30F, 10F, -30F, -100F)
     }
 
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
+
     /**
      * Draw [entityLivingBase] to screen
      */

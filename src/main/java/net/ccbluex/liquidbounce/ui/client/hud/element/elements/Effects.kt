@@ -91,4 +91,8 @@ class Effects(
 
         return Border(0F, 0F, width, y)
     }
+
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
 }

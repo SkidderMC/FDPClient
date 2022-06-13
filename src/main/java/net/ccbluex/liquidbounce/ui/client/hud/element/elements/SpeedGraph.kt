@@ -123,4 +123,8 @@ class SpeedGraph(
 
         return Border(0F, 0F, width.toFloat(), height.get().toFloat() + 2)
     }
+
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
 }

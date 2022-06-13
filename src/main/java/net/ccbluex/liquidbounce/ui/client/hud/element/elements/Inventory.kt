@@ -77,6 +77,10 @@ class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vert
         return Border(0F, startY, 174F, 66F)
     }
 
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
+
     /**
      * render single line of inventory
      * @param endSlot slot+9

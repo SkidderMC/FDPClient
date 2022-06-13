@@ -61,6 +61,10 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
         return Border(0F, 0F, 47F, 47F)
     }
 
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
+
     override fun drawBoarderBlur(blurRadius: Float) {}
 }
 

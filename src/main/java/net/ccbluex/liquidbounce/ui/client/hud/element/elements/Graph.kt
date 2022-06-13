@@ -187,4 +187,8 @@ class Graph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
 
         return Border(0F, 0F, width, maxHeight.get() + 2F)
     }
+
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
 }

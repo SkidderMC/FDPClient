@@ -142,6 +142,10 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         return getTBorder()
     }
 
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
+
     private fun drawAstolfo(target: EntityLivingBase) {
         val font = fontValue.get()
         val color = ColorUtils.skyRainbow(1, 1F, 0.9F, 5.0)
@@ -432,8 +436,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 45f + (easingHP / target.maxHealth) * 100f, 42f, 3f, ColorUtils.rainbow().rgb)
         
     }
-    
-    
+
+
 
 
     private fun drawFlux(target: EntityLivingBase) {

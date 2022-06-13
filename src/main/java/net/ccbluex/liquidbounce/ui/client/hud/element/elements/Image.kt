@@ -78,6 +78,10 @@ class Image : Element() {
         return Border(0F, 0F, width / 2F, height / 2F)
     }
 
+    override fun drawElement(): Border? {
+        TODO("Not yet implemented")
+    }
+
     override fun createElement(): Boolean {
         val file = MiscUtils.openFileChooser() ?: return false
 
