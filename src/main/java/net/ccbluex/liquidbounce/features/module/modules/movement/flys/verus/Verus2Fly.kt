@@ -16,9 +16,9 @@ import net.minecraft.util.AxisAlignedBB
 
 class Verus2Fly : FlyMode("Verus2") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 5f)
-    private val yMotionZero = BoolValue("SetYMotion0",true)
-    private val blocksBB = BoolValue("useBlocksBBfly",true)
-    private val groundSpoof = BoolValue("groundSpoof",true)
+    private val yMotionZero = BoolValue("${valuePrefix}SetYMotion0",true)
+    private val blocksBB = BoolValue("${valuePrefix}useBlocksBBfly",true)
+    private val groundSpoof = BoolValue("${valuePrefix}groundSpoof",true)
 
     private var flyable = false
     private val timer = MSTimer()
