@@ -6,20 +6,27 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.MoveEvent
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
-import net.minecraft.entity.EntityLivingBase
 
 object MovementUtils : MinecraftInstance() {
 
     fun getSpeed(): Float {
         return sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ).toFloat()
     }
+
+    /**
+     * Calculate speed based on the speed potion effect level/amplifier
+     */
+    fun getSpeedWithPotionEffects(speed: Double) =
+        mc.thePlayer.getActivePotionEffect(Potion.moveSpeed)?.let {
+            speed * (1 + (it.amplifier + 1) * 0.2)
+        } ?: speed
 
     fun strafe() {
         strafe(getSpeed())
