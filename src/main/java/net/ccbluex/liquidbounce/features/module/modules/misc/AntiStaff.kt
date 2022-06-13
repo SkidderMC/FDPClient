@@ -20,6 +20,7 @@ import net.minecraft.network.play.server.S1DPacketEntityEffect
 class AntiStaff : Module() {
 
     val server  = ListValue("Server", arrayOf("BlocksMC","Jartex","Pika","Minebox","Minemora","Zonecraft","Hycraft","Librecraft"),"BlocksMC")
+    val notify  = BoolValue("Notification",true)
     val chat    = BoolValue("SendChatMessage",false)
     val message = TextValue("Message", "%staff% was detected as a staff member!").displayable { chat.get() }
 
@@ -90,10 +91,12 @@ class AntiStaff : Module() {
             val entity = mc.theWorld.getEntityByID(packet.entityId)
             if (entity != null && (staffs.contains(entity.name) || staffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification(name, "Detected staff members with invis. You should quit ASAP.", NotifyType.WARNING, 8000))
+                    if (notify.get()){
+                        LiquidBounce.hud.addNotification(Notification(name, "Detected staff members with invis. You should quit ASAP.", NotifyType.WARNING, 8000))
+                    }
                     
                     if (chat.get()) {
-                        ClientUtils.displayChatMessage((message.get()).replace("%staff%", entity.name))
+                        mc.thePlayer.sendChatMessage((message.get()).replace("%staff%", entity.name))
                     }
                     if (leave.get()) {
                         mc.thePlayer.sendChatMessage(leaveMessage.get())
@@ -108,7 +111,9 @@ class AntiStaff : Module() {
 
             if (entity != null && (staffs.contains(entity.name) || staffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
+                    if (notify.get()){
                     LiquidBounce.hud.addNotification(Notification(name, "Detected staff members. You should quit ASAP.", NotifyType.WARNING,8000))
+                    }
                     
                     if (chat.get()) {
                         ClientUtils.displayChatMessage((message.get()).replace("%staff%", entity.name))
