@@ -24,7 +24,7 @@ import kotlin.concurrent.schedule
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
 class AutoPlay : Module() {
 
-    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "HyCraft"), "RedeSky")
+    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "Pika", "HyCraft"), "RedeSky")
     private val delayValue = IntegerValue("JoinDelay", 3, 0, 7)
 
     private var clicking = false
@@ -134,6 +134,18 @@ class AutoPlay : Module() {
                     }
                 }
                 "jartex" -> {
+                    if (text.contains("Play Again?", true)) {
+                        component.siblings.forEach { sib ->
+                            val clickEvent = sib.chatStyle.chatClickEvent
+                            if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.startsWith("/")) {
+                                queueAutoPlay {
+                                    mc.thePlayer.sendChatMessage(clickEvent.value)
+                                }
+                            }
+                        }
+                    }
+                }
+                "pika" -> {
                     if (text.contains("Click here to play again", true)) {
                         component.siblings.forEach { sib ->
                             val clickEvent = sib.chatStyle.chatClickEvent
