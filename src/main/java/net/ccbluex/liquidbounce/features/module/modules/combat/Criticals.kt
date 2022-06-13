@@ -181,6 +181,7 @@ class Criticals : Module() {
                         sendCriticalPacket(ground = false)
                         sendCriticalPacket(ground = false)
                     }
+                }
 
                 "more" -> {
                     sendCriticalPacket(yOffset = 0.00000000001, ground = false)
