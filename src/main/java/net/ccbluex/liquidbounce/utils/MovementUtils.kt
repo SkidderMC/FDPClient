@@ -66,7 +66,13 @@ object MovementUtils : MinecraftInstance() {
             strafe_ = 1.0
         }
         strafe_ *= _direction
-        val strafeYaw = RotationUtils.getRotationsEntity(curTarget).yaw
+        var strafeYaw = RotationUtils.getRotationsEntity(curTarget).yaw.toFloat()
+        if (forward_ < 0f) strafeYaw += 180f
+        var _forward = 1f
+        if (forward_ < 0f) _forward = -0.5f else if (forward_ > 0f) _forward = 0.5f
+        if (strafe_ > 0f) strafeYaw -= 90f * _forward
+        if (strafe_ < 0f) strafeYaw += 90f * _forward
+        strafeYaw = Math.toRadians(strafeYaw.toDouble())
         mc.thePlayer.motionX = -sin(strafeYaw) * speed_.toDouble()
         mc.thePlayer.motionZ = cos(strafeYaw) * speed_.toDouble()
     }
