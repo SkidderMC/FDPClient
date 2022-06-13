@@ -72,9 +72,9 @@ object MovementUtils : MinecraftInstance() {
         if (forward_ < 0f) _forward = -0.5f else if (forward_ > 0f) _forward = 0.5f
         if (strafe_ > 0f) strafeYaw -= 90f * _forward
         if (strafe_ < 0f) strafeYaw += 90f * _forward
-        strafeYaw = Math.toRadians(strafeYaw.toDouble())
-        mc.thePlayer.motionX = -sin(strafeYaw) * speed_.toDouble()
-        mc.thePlayer.motionZ = cos(strafeYaw) * speed_.toDouble()
+        strafeYaw = Math.toRadians(strafeYaw.toDouble()).toFloat()
+        mc.thePlayer.motionX = -sin(strafeYaw.toDouble()) * speed_.toDouble()
+        mc.thePlayer.motionZ = cos(strafeYaw.toDouble()) * speed_.toDouble()
     }
 
     fun move(speed: Float) {
