@@ -33,6 +33,7 @@ class Criticals : Module() {
     private val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
     private val hoverNoFall = BoolValue("HoverNoFall", true).displayable { modeValue.equals("Hover") }
     private val hoverCombat = BoolValue("HoverOnlyCombat", true).displayable { modeValue.equals("Hover") }
+    private val alwaysNoGround = BoolValue("AlwaysNoGround", false) .displayable { modeValue.equals("NoGround") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val s08FlagValue = BoolValue("FlagPause", true)
     private val s08DelayValue = IntegerValue("FlagPauseTime", 100, 100, 5000).displayable { s08FlagValue.get() }
@@ -174,6 +175,12 @@ class Criticals : Module() {
                     sendCriticalPacket(yOffset = 0.0000000000000045, ground = false)
                     sendCriticalPacket(ground = false)
                 }
+                
+                "noground" -> {
+                    if (!alwaysNoGround.get()){
+                        sendCriticalPacket(ground = false)
+                        sendCriticalPacket(ground = false)
+                    }
 
                 "more" -> {
                     sendCriticalPacket(yOffset = 0.00000000001, ground = false)
@@ -257,7 +264,11 @@ class Criticals : Module() {
 
         if (packet is C03PacketPlayer) {
             when (modeValue.get().lowercase()) {
-                "noground" -> packet.onGround = false
+                "noground" -> {
+                    if (alwaysNoGround.get()){
+                        packet.onGround = false
+                    }
+                }
                 "motion" -> {
                     when (motionValue.get().lowercase()) {
                         "minemoratest" -> if (!LiquidBounce.combatManager.inCombat) mc.timer.timerSpeed = 1.00f
