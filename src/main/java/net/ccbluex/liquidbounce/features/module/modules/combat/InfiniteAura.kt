@@ -18,13 +18,11 @@ import net.ccbluex.liquidbounce.utils.RaycastUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.player.PlayerCapabilities
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -43,7 +41,6 @@ class InfiniteAura : Module() {
     private val distValue = IntegerValue("Distance", 30, 20, 100)
     private val moveDistanceValue = FloatValue("MoveDistance", 5F, 2F, 15F)
     private val noRegenValue = BoolValue("NoRegen", true)
-    private val noLagBackValue = BoolValue("NoLagback", true)
     private val swingValue = BoolValue("Swing", true).displayable { modeValue.equals("Aura") }
 
     //Colors
@@ -169,26 +166,6 @@ class InfiniteAura : Module() {
         )
             event.cancelEvent()
     }
-    
-    @EventTarget
-    fun onPacket(event: PacketEvent {
-        
-        if (noLagBackValue.get() && event.packet is S08PacketPlayerPosLook) { // when S08 packet
-            
-                    val capabilities = PlayerCapabilities()
-                    capabilities.allowFlying = true
-                    mc.netHandler.addToSendQueue(C13PacketPlayerAbilities(capabilities)) // Packet C13
-                    
-                    val x = packet.x - mc.thePlayer.posX
-                    val y = packet.y - mc.thePlayer.posY
-                    val z = packet.z - mc.thePlayer.posZ
-                    val diff = sqrt(x * x + y * y + z * z)
-                    
-                        mc.timer.timerSpeed = 0.42F // timer
-                        event.cancelEvent() // cancel
-                        PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.getYaw(), packet.getPitch(), true))
-                        
-        }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -257,7 +234,6 @@ class InfiniteAura : Module() {
             GL11.glPopMatrix()
             GL11.glColor4f(1F, 1F, 1F, 1F)
         }
-        
     }
 
     override val tag: String
