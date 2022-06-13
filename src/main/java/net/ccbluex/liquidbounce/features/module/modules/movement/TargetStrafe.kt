@@ -29,13 +29,14 @@ class TargetStrafe : Module() {
     private val radiusValue = FloatValue("Radius", 0.1f, 0.5f, 5.0f)
     private var direction = -1.0
 
-    var targetEntity : EntityLivingBase ?= null
+    var targetEntity : EntityLivingBase
     var isEnabled = false
+    var doStrafe = false
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        if((targetEntity?) != null && (!ongroundValue.get() || mc.thePlayer.onGround)) {
-            MovementUtils.doTargetStrafe((targetEntity?), direction.toFloat(), radiusValue.get())
+        if(doStrafe && (!ongroundValue.get() || mc.thePlayer.onGround)) {
+            MovementUtils.doTargetStrafe(targetEntity, direction.toFloat(), radiusValue.get())
             event.cancelEvent()
             isEnabled = true
         }else {

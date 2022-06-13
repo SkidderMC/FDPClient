@@ -44,8 +44,8 @@ object MovementUtils : MinecraftInstance() {
         mc.thePlayer.motionZ = cos(yaw) * speed
     }
 
-    fun doTargetStrafe(curTarget: EntityLivingBase?, direction_: Float, radius: Float) {
-        if(!isMoving() || (curTarget?) ==null)
+    fun doTargetStrafe(curTarget: EntityLivingBase, direction_: Float, radius: Float) {
+        if(!isMoving())
             return
         var forward_ = 0.0
         var strafe_ = 0.0

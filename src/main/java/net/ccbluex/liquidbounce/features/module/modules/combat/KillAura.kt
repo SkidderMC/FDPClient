@@ -256,7 +256,7 @@ class KillAura : Module() {
      * Disable kill aura module
      */
     override fun onDisable() {
-        targetStrafe.targetEntity = null
+        targetStrafe.doStrafe = false
         target = null
         currentTarget = null
         hitable = false
@@ -404,7 +404,8 @@ class KillAura : Module() {
             target = currentTarget
         }
 
-        targetStrafe.targetEntity = currentTarget
+        targetStrafe.targetEntity = currentTarget?:return
+        targetStrafe.doStrafe = true
     }
 
     /**
@@ -768,14 +769,15 @@ class KillAura : Module() {
             // Set target to current entity
             if (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange) {
                 target = entity
-                targetStrafe.targetEntity = target
                 canSwing = false
+                targetStrafe.targetEntity = target?:return
+                targetStrafe.doStrafe = true
                 return
             }
         }
 
         target = null
-        targetStrafe.targetEntity = null
+        targetStrafe.doStrafe = false
         canSwing = discoveredTargets.find { mc.thePlayer.getDistanceToEntityBox(it) < swingRangeValue.get() } != null
     }
 
