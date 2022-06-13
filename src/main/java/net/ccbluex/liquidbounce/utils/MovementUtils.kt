@@ -44,8 +44,8 @@ object MovementUtils : MinecraftInstance() {
         mc.thePlayer.motionZ = cos(yaw) * speed
     }
 
-    fun doTargetStrafe(curTarget: EntityLivingBase, direction_: Float, radius: Float) {
-        if(!isMoving())
+    fun doTargetStrafe(curTarget: EntityLivingBase?, direction_: Float, radius: Float) {
+        if(!isMoving() || curTarget? ==null)
             return
         var forward_ = 0.0
         var strafe_ = 0.0
@@ -66,7 +66,7 @@ object MovementUtils : MinecraftInstance() {
             strafe_ = 1.0
         }
         strafe_ *= _direction
-        val strafeYaw = RotationUtils.getRotationsEntity(curTarget).getYaw()
+        val strafeYaw = RotationUtils.getRotationsEntity(curTarget).yaw
         mc.thePlayer.motionX = -sin(strafeYaw) * speed_
         mc.thePlayer.motionZ = cos(strafeYaw) * speed_
     }
