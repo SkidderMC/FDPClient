@@ -1,7 +1,5 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.novoline;
 
-
-
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 
 import java.awt.*;

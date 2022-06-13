@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.novoline;
 
-
 import com.google.common.collect.Lists;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;

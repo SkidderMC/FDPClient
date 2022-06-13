@@ -27,7 +27,7 @@ abstract class Element(
 ) : MinecraftInstance() {
 
     val info = javaClass.getAnnotation(ElementInfo::class.java)
-            ?: throw IllegalArgumentException("Passed element with missing element info")
+        ?: throw IllegalArgumentException("Passed element with missing element info")
 
     val name: String
         get() = info.name
@@ -144,6 +144,7 @@ abstract class Element(
      * Called when key pressed
      */
     open fun handleKey(c: Char, keyCode: Int) {}
+    abstract fun drawElement(): Border?
 }
 
 /**

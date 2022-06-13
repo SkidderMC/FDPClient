@@ -28,6 +28,7 @@ open class Module : MinecraftInstance(), Listenable {
         get() = field.ifEmpty { name }
     var description: String
     var category: ModuleCategory
+    var expanded: Boolean = false
     var keyBind = Keyboard.CHAR_NONE
         set(keyBind) {
             field = keyBind

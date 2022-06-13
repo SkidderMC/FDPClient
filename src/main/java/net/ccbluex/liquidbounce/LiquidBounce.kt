@@ -47,8 +47,8 @@ object LiquidBounce {
 
     var CLIENTTEXT = "Waiting..."
     var Darkmode = true
-    const val COLORED_NAME = "§b[§b!§7] §b§lFDPCLIENT §b» "
-    const val CLIENT_CREATOR = "CCBlueX & UnlegitMC"
+    const val COLORED_NAME = "§7[§b!§7] §b§lFDPCLIENT §b» "
+    const val CLIENT_CREATOR = "CCBlueX & UnlegitMC Team"
     const val CLIENT_WEBSITE = "FDPClient.Club"
     val venti = ResourceLocation("fdpclient/imgs/GenshinImpact/venti.png")
     val lumine = ResourceLocation("fdpclient/imgs/GenshinImpact/lumine.png")
@@ -71,7 +71,7 @@ object LiquidBounce {
 
     @JvmField
     val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "unknown").let {
-        if (it == "main") "Main Reborn" else it
+        if (it == "main") "Main" else it
     }
 
     var isStarting = true

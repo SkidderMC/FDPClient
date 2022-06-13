@@ -37,10 +37,13 @@ class InfiniteAura : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Aura", "Click"), "Aura")
     private val targetsValue = IntegerValue("Targets", 3, 1, 10).displayable { modeValue.equals("Aura") }
     private val cpsValue = IntegerValue("CPS", 1, 1, 10)
+    private val noPureC03Value = BoolValue("NoStandingPackets", true)
     private val distValue = IntegerValue("Distance", 30, 20, 100)
     private val moveDistanceValue = FloatValue("MoveDistance", 5F, 2F, 15F)
     private val noRegenValue = BoolValue("NoRegen", true)
     private val swingValue = BoolValue("Swing", true).displayable { modeValue.equals("Aura") }
+
+    //Colors
     private val pathRenderValue = BoolValue("PathRender", true)
     private val colorRedValue = IntegerValue("ColorRed", 0, 0, 255).displayable { pathRenderValue.get() && !colorRainbowValue.get() }
     private val colorGreenValue = IntegerValue("ColorGreen", 160, 0, 255).displayable { pathRenderValue.get() && !colorRainbowValue.get() }
@@ -51,6 +54,7 @@ class InfiniteAura : Module() {
     private val timer = MSTimer()
     private var points = mutableListOf<Vec3>()
     private var thread: Thread? = null
+    private val clickTimer = MSTimer()
 
     private fun getDelay(): Int {
         return 1000 / cpsValue.get()
@@ -59,6 +63,7 @@ class InfiniteAura : Module() {
     override fun onEnable() {
         timer.reset()
         points.clear()
+        clickTimer.reset()
     }
 
     override fun onDisable() {
@@ -147,13 +152,19 @@ class InfiniteAura : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (event.packet is S08PacketPlayerPosLook) {
-            timer.reset()
-        }
+        val packet = event.packet
+        if (packet is S08PacketPlayerPosLook)
+            clickTimer.reset()
+
         val isMovePacket = (event.packet is C04PacketPlayerPosition || event.packet is C03PacketPlayer.C06PacketPlayerPosLook)
         if (noRegenValue.get() && event.packet is C03PacketPlayer && !isMovePacket) {
             event.cancelEvent()
         }
+
+        if (noPureC03Value.get() && packet is C03PacketPlayer
+            && packet !is C04PacketPlayerPosition && packet !is C03PacketPlayer.C06PacketPlayerPosLook
+        )
+            event.cancelEvent()
     }
 
     @EventTarget

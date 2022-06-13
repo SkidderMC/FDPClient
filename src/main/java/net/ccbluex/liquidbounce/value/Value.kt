@@ -6,10 +6,12 @@
 package net.ccbluex.liquidbounce.value
 
 import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import kotlin.math.roundToInt
 
-abstract class Value<T>(val name: String, protected var value: T) {
+abstract class Value<T>(val name: String, var value: T) {
     val default = value
 
     private var displayableFunc: () -> Boolean = { true }
@@ -45,6 +47,29 @@ abstract class Value<T>(val name: String, protected var value: T) {
 
     open fun changeValue(value: T) {
         this.value = value
+    }
+
+    open class NumberValue(name: String, value: Double, val minimum: Double = 0.0, val maximum: Double = Double.MAX_VALUE,val inc: Double/* = 1.0*/)
+        : Value<Double>(name, value) {
+
+        fun set(newValue: Number) {
+            set(newValue.toDouble())
+        }
+
+        override fun toJson() = JsonPrimitive(value)
+
+        override fun fromJson(element: JsonElement) {
+            if (element.isJsonPrimitive)
+                value = element.asDouble
+        }
+        open fun getDouble(): Double {
+            return ((this.get() as Number).toDouble() / this.inc).roundToInt() * this.inc
+        }
+
+        fun append(o: Double): NumberValue {
+            set(get() + o)
+            return this
+        }
     }
 
     abstract fun toJson(): JsonElement?
