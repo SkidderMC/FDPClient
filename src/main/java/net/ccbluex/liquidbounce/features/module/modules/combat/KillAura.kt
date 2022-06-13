@@ -236,6 +236,8 @@ class KillAura : Module() {
     // Fake block status
     var blockingStatus = false
 
+    val targetStrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java) as TargetStrafe
+
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
 
@@ -253,6 +255,7 @@ class KillAura : Module() {
      * Disable kill aura module
      */
     override fun onDisable() {
+        targetStrafe.targetEntity = null
         target = null
         currentTarget = null
         hitable = false
@@ -399,6 +402,8 @@ class KillAura : Module() {
         if (!targetModeValue.equals("Switch") && (currentTarget != null && EntityUtils.isSelected(currentTarget!!, true))) {
             target = currentTarget
         }
+
+        targetStrafe.targetEntity = currentTarget
     }
 
     /**
@@ -762,12 +767,14 @@ class KillAura : Module() {
             // Set target to current entity
             if (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange) {
                 target = entity
+                targetStrafe.targetEntity = target
                 canSwing = false
                 return
             }
         }
 
         target = null
+        targetStrafe.targetEntity = null
         canSwing = discoveredTargets.find { mc.thePlayer.getDistanceToEntityBox(it) < swingRangeValue.get() } != null
     }
 
