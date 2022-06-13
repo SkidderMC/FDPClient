@@ -34,8 +34,8 @@ class TargetStrafe : Module() {
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        if(targetEntity? != null && (!ongroundValue.get() || mc.thePlayer.onGround)) {
-            MovementUtils.doTargetStrafe(targetEntity?, direction.toFloat(), radiusValue.get())
+        if((targetEntity?) != null && (!ongroundValue.get() || mc.thePlayer.onGround)) {
+            MovementUtils.doTargetStrafe((targetEntity?), direction.toFloat(), radiusValue.get())
             event.cancelEvent()
             isEnabled = true
         }else {
