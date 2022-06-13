@@ -29,7 +29,7 @@ class TargetStrafe : Module() {
     private val radiusValue = FloatValue("Radius", 0.1f, 0.5f, 5.0f)
     private var direction = -1.0
 
-    var targetEntity = EntityLivingBase?=null
+    var targetEntity : EntityLivingBase?=null
     var isEnabled = false
     var doStrafe = false
 
