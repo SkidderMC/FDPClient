@@ -260,7 +260,7 @@ public abstract class MixinMinecraft {
                 file.createNewFile();
             }
             FileWriter fileWritter = new FileWriter(file.getName(), true);
-            fileWritter.write("##########################FDPPROTECT CRASH REPORT##########################\r\n\r\n" +
+            fileWritter.write("######################### FDP CRASH REPORT #########################\r\n\r\n" +
                     "If this problem persists, please send this file to the FDPClient developers! Website (where you can join the discord server): http://FDPClient.Club/\r\nThis file will be saved in \".minecraft/FDPCrashLogs.txt\"" +
                     "\r\n\r\n" +
                     " | 在没有错误日志的情况下诊断任何问题无异于闭眼开车!  --Apache官方文档\r\n" +
@@ -270,7 +270,7 @@ public abstract class MixinMinecraft {
                     "   |   Version: " + LiquidBounce.CLIENT_VERSION + "\r\n" +
                     "   |   Time: " + System.currentTimeMillis() + "\r\n" +
                     "   |   OS: " + Util.getOSType() + "\r\n" +
-                    "\r\n##########################FDPPROTECT CRASH REPORT##########################\r\n" + crashReport.getCompleteReport());
+                    "\r\n######################### FDP CRASH REPORT #########################\r\n" + crashReport.getCompleteReport());
             fileWritter.close();
         } catch (IOException e) {
             e.printStackTrace();
