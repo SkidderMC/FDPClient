@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PathUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -25,8 +26,8 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.PlayerCapabilities
-import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.C03PacketPlayer.*
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
@@ -157,27 +158,20 @@ class InfiniteAura : Module() {
         if (noRegenValue.get() && event.packet is C03PacketPlayer && !isMovePacket) {
             event.cancelEvent()
         }
-    }
-    
-    @EventTarget
-    fun onPacket(event: PacketEvent {
-        
-        if (noLagBackValue.get() && event.packet is S08PacketPlayerPosLook) { // when S08 packet
-            
-                    val capabilities = PlayerCapabilities()
-                    capabilities.allowFlying = true
-                    mc.netHandler.addToSendQueue(C13PacketPlayerAbilities(capabilities)) // Packet C13
+        if (noLagBackValue.get() && event.packet is S08PacketPlayerPosLook) {
+            val capabilities = PlayerCapabilities()
+            capabilities.allowFlying = true
+            mc.netHandler.addToSendQueue(C13PacketPlayerAbilities(capabilities)) // Packet C13
                     
-                    val x = packet.x - mc.thePlayer.posX
-                    val y = packet.y - mc.thePlayer.posY
-                    val z = packet.z - mc.thePlayer.posZ
-                    val diff = sqrt(x * x + y * y + z * z)
-                    
-                        mc.timer.timerSpeed = 0.42F // timer
-                        event.cancelEvent() // cancel
-                        PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.getYaw(), packet.getPitch(), true))
+            val x = event.packet.getX() - mc.thePlayer.posX
+            val y = event.packet.getY() - mc.thePlayer.posY
+            val z = event.packet.getZ() - mc.thePlayer.posZ
+            val diff = Math.sqrt(x * x + y * y + z * z)
+            event.cancelEvent() // cancel
+            PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(event.packet.getX(), event.packet.getY(), event.packet.getZ(), event.packet.getYaw(), event.packet.getPitch(), true))
                         
         }
+    }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -246,9 +240,5 @@ class InfiniteAura : Module() {
             GL11.glPopMatrix()
             GL11.glColor4f(1F, 1F, 1F, 1F)
         }
-        
     }
-
-    override val tag: String
-        get() = modeValue.get() + if (thread?.isAlive == true) "!" else ""
 }
