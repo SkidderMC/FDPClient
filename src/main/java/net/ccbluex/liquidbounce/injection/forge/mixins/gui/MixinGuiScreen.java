@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.special.GradientBackground;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.render.BlurUtils;
-import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
+import net.ccbluex.liquidbounce.utils.particles.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
