@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
+import com.ibm.icu.text.NumberFormat
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
@@ -116,6 +117,78 @@ object ColorUtils {
                 return Color(255, 255, 255, alpha)
             }
         }
+    }
+
+    fun blend(color1: Color, color2: Color, ratio: Double): Color? {
+        val r = ratio.toFloat()
+        val ir = 1.0f - r
+        val rgb1 = FloatArray(3)
+        val rgb2 = FloatArray(3)
+        color1.getColorComponents(rgb1)
+        color2.getColorComponents(rgb2)
+        var red = rgb1[0] * r + rgb2[0] * ir
+        var green = rgb1[1] * r + rgb2[1] * ir
+        var blue = rgb1[2] * r + rgb2[2] * ir
+        if (red < 0.0f) {
+            red = 0.0f
+        } else if (red > 255.0f) {
+            red = 255.0f
+        }
+        if (green < 0.0f) {
+            green = 0.0f
+        } else if (green > 255.0f) {
+            green = 255.0f
+        }
+        if (blue < 0.0f) {
+            blue = 0.0f
+        } else if (blue > 255.0f) {
+            blue = 255.0f
+        }
+        var color3: Color? = null
+        try {
+            color3 = Color(red, green, blue)
+        } catch (exp: IllegalArgumentException) {
+            val nf = NumberFormat.getNumberInstance()
+            // System.out.println(nf.format(red) + "; " + nf.format(green) + "; " + nf.format(blue));
+            exp.printStackTrace()
+        }
+        return color3
+    }
+
+    fun blendColors(fractions: FloatArray?, colors: Array<Color>?, progress: Float): Color? {
+        requireNotNull(fractions) { "Fractions can't be null" }
+        requireNotNull(colors) { "Colours can't be null" }
+        if (fractions.size == colors.size) {
+            val getFractionBlack = getFraction(fractions, progress)
+            val range = floatArrayOf(fractions[getFractionBlack[0]], fractions[getFractionBlack[1]])
+            val colorRange = arrayOf(colors[getFractionBlack[0]], colors[getFractionBlack[1]])
+            val max = range[1] - range[0]
+            val value = progress - range[0]
+            val weight = value / max
+            return blend(colorRange[0], colorRange[1], (1.0f - weight).toDouble())
+        }
+        throw IllegalArgumentException("Fractions and colours must have equal number of elements")
+    }
+
+    fun getFraction(fractions: FloatArray, progress: Float): IntArray {
+        var startPoint: Int
+        val range = IntArray(2)
+        startPoint = 0
+        while (startPoint < fractions.size && fractions[startPoint] <= progress) {
+            ++startPoint
+        }
+        if (startPoint >= fractions.size) {
+            startPoint = fractions.size - 1
+        }
+        range[0] = startPoint - 1
+        range[1] = startPoint
+        return range
+    }
+
+    fun getColor(hueoffset: Float, saturation: Float, brightness: Float): Int {
+        val speed = 4500f
+        val hue = System.currentTimeMillis() % speed.toInt() / speed
+        return Color.HSBtoRGB(hue - hueoffset / 54, saturation, brightness)
     }
 
     fun hslRainbow(
