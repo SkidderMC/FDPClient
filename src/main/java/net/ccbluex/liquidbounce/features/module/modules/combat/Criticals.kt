@@ -28,22 +28,52 @@ import net.minecraft.stats.StatList
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NCPPacket", "MiPacket", "Hypixel", "Hypixel2", "VulcanSemi", "MatrixSemi",  "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4", "NoGround", "TPHop", "FakeCollide", "Mineplex", "More", "TestMinemora", "VerusSmart","Motion", "Hover"), "packet")
-    private val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
-    private val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
+    val modeValue = ListValue(
+        "Mode",
+        arrayOf(
+            "Packet",
+            "NCPPacket",
+            "MiPacket",
+            "Hypixel",
+            "Hypixel2",
+            "VulcanSemi",
+            "MatrixSemi",
+            "AACPacket",
+            "AAC4.3.11OldHYT",
+            "AAC5.0.4",
+            "NoGround",
+            "TPHop",
+            "FakeCollide",
+            "Mineplex",
+            "More",
+            "TestMinemora",
+            "VerusSmart",
+            "Motion",
+            "Hover"
+        ),
+        "packet"
+    )
+    private val motionValue =
+        ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest"), "Jump")
+    private val hoverValue = ListValue(
+        "HoverMode",
+        arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Minis", "Minis2", "TPCollide", "2b2t"),
+        "AAC4"
+    )
     private val hoverNoFall = BoolValue("HoverNoFall", true).displayable { modeValue.equals("Hover") }
     private val hoverCombat = BoolValue("HoverOnlyCombat", true).displayable { modeValue.equals("Hover") }
+    private val sNoGround = BoolValue("SmartNoGround", false) .displayable { modeValue.equals("NoGround") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val s08FlagValue = BoolValue("FlagPause", true)
     private val s08DelayValue = IntegerValue("FlagPauseTime", 100, 100, 5000).displayable { s08FlagValue.get() }
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val lookValue = BoolValue("UseC06Packet", false)
     private val debugValue = BoolValue("DebugMessage", false)
-    
+
     var antiDesync = false
 
     val msTimer = MSTimer()
-    
+
     val flagTimer = MSTimer()
 
     val syncTimer = MSTimer()
@@ -69,19 +99,34 @@ class Criticals : Module() {
 
             if (!mc.thePlayer.onGround || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb || mc.thePlayer.isInWater ||
                 mc.thePlayer.isInLava || mc.thePlayer.ridingEntity != null || entity.hurtTime > hurtTimeValue.get() ||
-                !msTimer.hasTimePassed(delayValue.get().toLong())) {
+                !msTimer.hasTimePassed(delayValue.get().toLong())
+            ) {
                 return
             }
-            
-            if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
+
+            if (s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
                 return
 
-            fun sendCriticalPacket(xOffset: Double = 0.0, yOffset: Double = 0.0, zOffset: Double = 0.0, ground: Boolean) {
+            fun sendCriticalPacket(
+                xOffset: Double = 0.0,
+                yOffset: Double = 0.0,
+                zOffset: Double = 0.0,
+                ground: Boolean
+            ) {
                 val x = mc.thePlayer.posX + xOffset
                 val y = mc.thePlayer.posY + yOffset
                 val z = mc.thePlayer.posZ + zOffset
                 if (lookValue.get()) {
-                    mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(x, y, z, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, ground))
+                    mc.netHandler.addToSendQueue(
+                        C06PacketPlayerPosLook(
+                            x,
+                            y,
+                            z,
+                            mc.thePlayer.rotationYaw,
+                            mc.thePlayer.rotationPitch,
+                            ground
+                        )
+                    )
                 } else {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, ground))
                 }
@@ -103,12 +148,12 @@ class Criticals : Module() {
                     sendCriticalPacket(yOffset = 0.1100013579, ground = false)
                     sendCriticalPacket(yOffset = 0.0000013579, ground = false)
                 }
-                
+
                 "mipacket" -> {
                     sendCriticalPacket(yOffset = 0.0625, ground = false)
                     sendCriticalPacket(ground = false)
                 }
-                
+
                 "aac5.0.4" -> { //aac5.0.4 moment but with bad cfg(cuz it will flag for timer)
                     sendCriticalPacket(yOffset = 0.00133545, ground = false)
                     sendCriticalPacket(yOffset = -0.000000433, ground = false)
@@ -127,44 +172,44 @@ class Criticals : Module() {
                     sendCriticalPacket(yOffset = 0.0014749900000101, ground = false)
                     sendCriticalPacket(yOffset = 0.0000007451816400000, ground = false)
                 }
-                
+
                 "vulcansemi" -> {
                     attacks++
-                    if(attacks > 6) {
+                    if (attacks > 6) {
                         sendCriticalPacket(yOffset = 0.2, ground = false)
                         sendCriticalPacket(yOffset = 0.1216, ground = false)
                         attacks = 0
-                    }else{
+                    } else {
                         antiDesync = false
                     }
                 }
-                
+
                 "matrixsemi" -> {
                     attacks++
-                    if(attacks > 3) {
+                    if (attacks > 3) {
                         sendCriticalPacket(yOffset = 0.110314, ground = false)
                         sendCriticalPacket(yOffset = 0.0200081, ground = false)
                         sendCriticalPacket(yOffset = 0.00000001300009, ground = false)
                         sendCriticalPacket(yOffset = 0.000000000022, ground = false)
                         sendCriticalPacket(ground = true)
                         attacks = 0
-                    }else{
+                    } else {
                         antiDesync = false
                     }
                 }
-                
+
                 "verussmart" -> {
-                    attacks ++
+                    attacks++
                     if (attacks > 4) {
                         attacks = 0
-                        
+
                         sendCriticalPacket(yOffset = 0.001, ground = true)
                         sendCriticalPacket(ground = false)
-                    }else{
+                    } else {
                         antiDesync = false
                     }
                 }
-                
+
                 "hypixel2" -> {
                     sendCriticalPacket(yOffset = 0.05250000001304, ground = false)
                     sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
@@ -173,6 +218,13 @@ class Criticals : Module() {
                 "mineplex" -> {
                     sendCriticalPacket(yOffset = 0.0000000000000045, ground = false)
                     sendCriticalPacket(ground = false)
+                }
+                
+                "noground" -> {
+                    if (sNoGround.get()){
+                        sendCriticalPacket(ground = false)
+                        sendCriticalPacket(ground = false)
+                    }
                 }
 
                 "more" -> {
@@ -206,8 +258,18 @@ class Criticals : Module() {
                         motionZ = 0.00
                     }
                     mc.thePlayer.triggerAchievement(StatList.jumpStat)
-                    sendCriticalPacket(xOffset = motionX / 3, yOffset = 0.20000004768372, zOffset = motionZ / 3, ground = false)
-                    sendCriticalPacket(xOffset = motionX / 1.5, yOffset = 0.12160004615784, zOffset = motionZ / 1.5, ground = false)
+                    sendCriticalPacket(
+                        xOffset = motionX / 3,
+                        yOffset = 0.20000004768372,
+                        zOffset = motionZ / 3,
+                        ground = false
+                    )
+                    sendCriticalPacket(
+                        xOffset = motionX / 1.5,
+                        yOffset = 0.12160004615784,
+                        zOffset = motionZ / 1.5,
+                        ground = false
+                    )
                 }
 
                 "tphop" -> {
@@ -240,7 +302,7 @@ class Criticals : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        
+
         if (packet is S08PacketPlayerPosLook) {
             flagTimer.reset()
             antiDesync = false
@@ -249,15 +311,22 @@ class Criticals : Module() {
             }
         }
 
-        if (packet is C03PacketPlayer && (MovementUtils.isMoving() || syncTimer.hasTimePassed(1000L) || msTimer.hasTimePassed(((delayValue.get() / 5) + 75).toLong())))
+        if (packet is C03PacketPlayer && (MovementUtils.isMoving() || syncTimer.hasTimePassed(1000L) || msTimer.hasTimePassed(
+                ((delayValue.get() / 5) + 75).toLong()
+            ))
+        )
             antiDesync = false
-        
-        if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
+
+        if (s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
             return
 
         if (packet is C03PacketPlayer) {
             when (modeValue.get().lowercase()) {
-                "noground" -> packet.onGround = false
+                "noground" -> {
+                    if (!sNoGround.get()){
+                        packet.onGround = false
+                    }
+                }
                 "motion" -> {
                     when (motionValue.get().lowercase()) {
                         "minemoratest" -> if (!LiquidBounce.combatManager.inCombat) mc.timer.timerSpeed = 1.00f
@@ -294,7 +363,7 @@ class Criticals : Module() {
                                 jState++
                                 if (jState % 2 == 0) {
                                     packet.y += 0.015625
-                                } else if (jState> 100) {
+                                } else if (jState > 100) {
                                     if (hoverNoFall.get()) packet.onGround = true
                                     jState = 1
                                 }
@@ -327,7 +396,7 @@ class Criticals : Module() {
                                 jState++
                                 if (jState % 2 == 0) {
                                     packet.y += 0.0625
-                                } else if (jState> 50) {
+                                } else if (jState > 50) {
                                     if (hoverNoFall.get()) packet.onGround = true
                                     jState = 1
                                 }
@@ -389,7 +458,7 @@ class Criticals : Module() {
                             } else jState = 0
                         }
                         "oldredesky" -> {
-                            if (hoverNoFall.get() && mc.thePlayer.fallDistance> 0) {
+                            if (hoverNoFall.get() && mc.thePlayer.fallDistance > 0) {
                                 packet.onGround = true
                                 return
                             }

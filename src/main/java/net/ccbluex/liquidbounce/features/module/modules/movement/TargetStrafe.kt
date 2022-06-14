@@ -5,21 +5,17 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.StrafeEvent
-import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.OnGround
-import net.ccbluex.liquidbounce.utils.PlayerUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.entity.EntityLivingBase
-import kotlin.math.*
 
 
 @ModuleInfo(name = "TargetStrafe",  category = ModuleCategory.MOVEMENT)
@@ -33,12 +29,23 @@ class TargetStrafe : Module() {
     var isEnabled = false
     var doStrafe = false
 
+    var callBackYaw = 0.0
+
+    fun modifyStrafe(event: StrafeEvent):Boolean {
+        if(!isEnabled || event.isCancelled) {
+            return false
+        }else {
+            MovementUtils.strafe()
+            return true
+        }
+    }
+
     @EventTarget
-    fun onStrafe(event: StrafeEvent) {
+    fun onMove(event: MoveEvent) {
         if(doStrafe && (!ongroundValue.get() || mc.thePlayer.onGround)) {
             val _entity : EntityLivingBase = targetEntity?:return
-            MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get())
-            event.cancelEvent()
+            MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event)
+            callBackYaw = RotationUtils.getRotationsEntity(_entity).yaw.toDouble()
             isEnabled = true
         }else {
             isEnabled = false

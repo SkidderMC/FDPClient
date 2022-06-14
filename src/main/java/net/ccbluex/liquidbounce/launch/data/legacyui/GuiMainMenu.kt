@@ -20,12 +20,11 @@ import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.GuiModList
 import java.awt.Color
-import java.io.File
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
-    var drawed = false;
-    var clicked = false;
-    var displayed = false;
+    var drawed = false
+    var clicked = false
+    var displayed = false
     fun drawBtns() {
         this.buttonList.add(
             TestBtn(
@@ -105,13 +104,12 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 10,
                 25,
                 25,
-                I18n.format("menu.options"),
+                I18n.format("menu.options").replace(".", ""),
                 ResourceLocation("fdpclient/imgs/icon/setting.png"),
                 2,
                 Color(20, 20, 20, 130)
             )
         )
-
 
         this.buttonList.add(
             TestBtn(
@@ -155,15 +153,14 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             )
         )
 
-
         this.buttonList.add(
             TestBtn(
-                191, 20, 10, 25, 25, "Change exterior", ResourceLocation("fdpclient/imgs/icon/moon-night.png"), 2,
+                191, 20, 10, 25, 25, "Toggle theme", ResourceLocation("fdpclient/imgs/icon/moon-night.png"), 2,
                 Color(20, 20, 20, 130)
             )
         )
 
-        drawed = true;
+        drawed = true
     }
 
     /* For modification, please keep "Designed by XiGua" */
@@ -206,7 +203,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         val defaultHeight = (this.height).toFloat()
         val defaultWidth = (this.width).toFloat()
         //RenderUtils.drawCircle(defaultWidth/2,defaultHeight/2 + 60F, 150F,Color(0,0,0,100).rgb);
-        val i = 0;
+        val i = 0
         val defaultHeight1 = (this.height).toDouble()
         val defaultWidth1 = (this.width).toDouble()
         if (genshinImpactAnim.get()) RenderUtils.drawImage(
@@ -220,28 +217,33 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             LiquidBounce.CLIENT_NAME,
             this.width.toDouble() / 2,
             this.height.toDouble() / 2 - 60,
-            Color(255, 255, 255, 200).rgb
+            if (LiquidBounce.Darkmode) {
+                Color(255, 255, 255, 200).rgb
+            } else {
+                Color(1, 1, 1, 170).rgb
+            }
         )
+
 
         FontLoaders.F16.drawString(
             "Made by UnlegitMC",
             10f,
             this.height - 15f,
-            Color(255, 255, 255, 170).rgb
+            Color(1, 1, 1, 170).rgb
         )
         FontLoaders.F16.drawString(
-            "FDPClient",
+            LiquidBounce.CLIENT_NAME,
             10f,
             this.height - 25f,
-            Color(255, 255, 255, 170).rgb
+            Color(1, 1, 1, 170).rgb
         )
         var versionMsg =
-            "Version: " + LiquidBounce.CLIENT_VERSION + if (LiquidBounce.VERSIONTYPE.contains("Release")) " | Release" else " | " + LiquidBounce.VERSIONTYPE + " (May be isn't work)"
+            "Version: " + LiquidBounce.CLIENT_VERSION + if (LiquidBounce.VERSIONTYPE.contains("Release")) " | Release" else " | " + LiquidBounce.VERSIONTYPE + " (Bleeding Edge)"
         FontLoaders.F16.drawString(
             versionMsg,
             this.width - FontLoaders.F16.getStringWidth(versionMsg) - 10F,
             this.height - 15f,
-            Color(255, 255, 255, 170).rgb
+            Color(1, 1, 1, 170).rgb
         )
 
         //
@@ -279,7 +281,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                     clicked
                 )
                 if (back == 1) {
-                    drawed = false;
+                    drawed = false
                     buttonList.removeAll(buttonList)
                 } else if (back == 2) {
                     displayed = true
@@ -288,20 +290,20 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 if (drawed && back != 1) {
                     //drawBtns()
                 }
-                clicked = false;
+                clicked = false
             } else {
                 if (!drawed) {
                     drawBtns()
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            //My HardDisk Exploded :(
         }
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
     override fun mouseClicked(p_mouseClicked_1_: Int, i2: Int, i3: Int) {
-        clicked = true;
+        clicked = true
         super.mouseClicked(p_mouseClicked_1_, i2, i3)
     }
 
