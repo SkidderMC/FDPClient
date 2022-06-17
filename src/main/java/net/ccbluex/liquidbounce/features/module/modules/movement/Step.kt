@@ -30,14 +30,12 @@ class Step : Module() {
      * OPTIONS
      */
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "Motion", "Matrix6.7.0",
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "Matrix6.7.0",
                                                       "NCP", "NCPNew", "MotionNCP", "OldNCP",
                                                       "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0",
                                                       "Spartan", "Rewinside", "Vulcan"), "NCP")
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
-    private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") || modeValue.equals("Motion") }
-    private val motionCutOff = FloatValue("MotionCutOff", 0.1F,0F,0.2F).displayable{ modeValue.equals("Motion") }
-    private val motionGround = FloatValue("DownMotion", -0.3F, -0.5F, 0F).displayable {modeValue.equals("Motion") }
+    private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") || modeValue.equals("TimerJump") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
     private val timerValue = FloatValue("Timer", 1F, 0.05F, 1F).displayable { !modeValue.equals("Matrix6.7.0") }
     private val timerDynValue = BoolValue("UseDynamicTimer", false).displayable { !modeValue.equals("Matrix6.7.0") }
@@ -54,12 +52,9 @@ class Step : Module() {
     private var ncpNextStep = 0
     private var spartanSwitch = false
     private var isAACStep = false
-    private var isMotionStep = false
     var wasTimer = false
     var lastOnGround = false
     var canStep = false
-    
-    private var isMotionStep = false
 
     private val timer = MSTimer()
 
@@ -100,17 +95,6 @@ class Step : Module() {
 
         // Motion steps
         when {
-            mode.equals("motion", true) -> {
-                if (mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround&& !mc.gameSettings.keyBindJump.isKeyDown) {
-                    fakeJump()
-                    isMotionStep = true
-                    mc.thePlayer.motionY = jumpHeightValue.get().toDouble()
-                }
-                if (isMotionStep && mc.thePlayer.motionY < motionCutOff.get()) {
-                    mc.thePlayer.motionY = motionGround.get()
-                }
-            }
-                    
             mode.equals("jump", true) && mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround
                     && !mc.gameSettings.keyBindJump.isKeyDown -> {
                 fakeJump()
@@ -203,7 +187,6 @@ class Step : Module() {
 
         // Motion steps
         when {
-            mode.equals("motion", true) && mc.thePlayer.isCollidedHorizontally
             mode.equals("motionncp", true) && mc.thePlayer.isCollidedHorizontally && !mc.gameSettings.keyBindJump.isKeyDown -> {
                 when {
                     mc.thePlayer.onGround && couldStep() -> {
