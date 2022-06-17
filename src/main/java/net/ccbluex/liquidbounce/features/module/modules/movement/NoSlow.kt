@@ -28,7 +28,7 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC5", "Matrix", "Vulcan","Medusa"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5", "Matrix", "Vulcan","Medusa"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -115,7 +115,6 @@ class NoSlow : Module() {
             return
         }
 
-//        val heldItem = mc.thePlayer.heldItem
         if (modeValue.get().lowercase() == "aac5") {
             if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockingStatus)) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
@@ -137,6 +136,10 @@ class NoSlow : Module() {
                     } else if (mc.thePlayer.ticksExisted % 3 == 1) {
                         sendPacket(event, false, true, false, 0, false)
                     }
+                }
+                
+                "aac4" -> {
+                    sendPacket(event, c07Value.get(), c08Value.get(), true, 80, groundValue.get(), watchdogValue.get())
                 }
 
                 "custom" -> {
