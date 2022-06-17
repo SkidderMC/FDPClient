@@ -208,7 +208,7 @@ object LiquidBounce {
         if (CLIENT_VERSION != "unknown") {
             thread(block = this::checkUpdate)
         }
-        ClientUtils.setTitle("Loading script subscripts...");
+        ClientUtils.setTitle("Loading Script Subscripts...");
         for (subscript in fileManager.subscriptsConfig.subscripts) {
             //println(subscript.url+":"+subscript.name)
             Subscriptions.addSubscribes(ScriptSubscribe(subscript.url, subscript.name))
@@ -235,13 +235,6 @@ object LiquidBounce {
 
             if (latest != gitInfo["git.commit.id.abbrev"]) {
                 ClientUtils.logInfo("New version available: $latest")
-
-                //val buttons = arrayOf(LanguageManager.get("ui.update.download"), LanguageManager.get("ui.update.dismiss"))
-                //val selection = JOptionPane.showOptionDialog(null, LanguageManager.getAndFormat("ui.update.released", latest), "Alert",
-                //JOptionPane.WARNING_MESSAGE, 0, null, buttons, buttons[0])
-                //if (selection == 0) {
-                //    MiscUtils.showURL("https://$CLIENT_WEBSITE")
-                //}
             } else {
                 ClientUtils.logInfo("No new version available")
             }
