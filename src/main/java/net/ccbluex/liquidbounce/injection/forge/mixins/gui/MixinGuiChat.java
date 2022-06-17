@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.launch.options.FancyUiLaunchOption;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -96,11 +95,6 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
      */
     @Inject(method = "keyTyped", at = @At("HEAD"), cancellable = true)
     private void keyTyped(char typedChar, int keyCode, CallbackInfo callbackInfo) {
-        if (FancyUiLaunchOption.INSTANCE.getHasChatFocus() && keyCode != 1) {
-            FancyUiLaunchOption.INSTANCE.keyTyped(typedChar, keyCode);
-            callbackInfo.cancel();
-            return;
-        }
         String text = inputField.getText();
         if(text.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
             this.inputField.setMaxStringLength(114514);
@@ -186,7 +180,6 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
         RenderUtils.drawRoundedCornerRect(2, this.height - (int) fade - 1, this.width - 3, this.height - 2 ,3f, new Color(0,0,0,200).getRGB());
 
         this.inputField.drawTextBox();
-        FancyUiLaunchOption.INSTANCE.render(true, mouseX, mouseY);
 
         if (LiquidBounce.commandManager.getLatestAutoComplete().length > 0 && !inputField.getText().isEmpty() && inputField.getText().startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
             String[] latestAutoComplete = LiquidBounce.commandManager.getLatestAutoComplete();
