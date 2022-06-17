@@ -16,10 +16,13 @@ class MatrixDamage : FlyMode("MatrixDamage") {
     private val speedBoost = FloatValue("${valuePrefix}BoostSpeed", 1.15f, 0f, 3f)
     private val timer = FloatValue("${valuePrefix}Timer", 0.9f, 0f, 2f)
     private val boostTicks = IntegerValue("${valuePrefix}BoostTicks", 27,10,40)
+    private val randomize = BoolValue("${valuePrefix}Randomize", true)
+    private val randomAmount = IntegerValue("${valuePrefix}RandomAmount", 5, 0, 30).displayable {randomize.get()}
 
     private var velocitypacket = false
     private var packetymotion = 0.0
     private var tick = 0
+    private var randomNum = 0.2
 
     override fun onEnable() {
         if (warn.get()) ClientUtils.displayChatMessage("§8[§c§lMatrix-Dmg-Fly§8] §aU need make some damage to boost : bow , snowball , eggs...")
@@ -30,10 +33,15 @@ class MatrixDamage : FlyMode("MatrixDamage") {
 
     override fun onUpdate(event: UpdateEvent) {
         if(velocitypacket) {
+            if (randomize.get()) {
+                randomNum = Math.random() * randomAmount.get() * 0.01
+            } else {
+                randomNum = 0
+            }
             mc.timer.timerSpeed = timer.get()
             val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
-            mc.thePlayer.motionX += (-sin(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + Math.random() * 0.03))
-            mc.thePlayer.motionZ += (cos(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + Math.random() * 0.03))
+            mc.thePlayer.motionX += (-sin(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
+            mc.thePlayer.motionZ += (cos(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
             mc.thePlayer.motionY = packetymotion
             tick++
             if(tick>=boostTicks.get()) {
