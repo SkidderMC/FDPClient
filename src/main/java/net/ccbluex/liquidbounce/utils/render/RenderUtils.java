@@ -111,6 +111,25 @@ public final class RenderUtils extends MinecraftInstance {
         glPopMatrix();
     }
 
+    protected static float zLevel = 0F;
+
+    /**
+     * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height.
+     */
+    public static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height, float zLevel)
+    {
+        float f = 0.00390625F;
+        float f1 = 0.00390625F;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldrenderer.pos((double) (x + 0), (double) (y + height), (double) zLevel).tex((double) ((float)(textureX + 0) * f), (double) ((float)(textureY + height) * f1)).endVertex();
+        worldrenderer.pos((double) (x + width), (double) (y + height), (double) zLevel).tex((double) ((float)(textureX + width) * f), (double) ((float)(textureY + height) * f1)).endVertex();
+        worldrenderer.pos((double) (x + width), (double) (y + 0), (double) zLevel).tex((double) ((float)(textureX + width) * f), (double) ((float)(textureY + 0) * f1)).endVertex();
+        worldrenderer.pos((double) (x + 0), (double) (y + 0), (double) zLevel).tex((double) ((float)(textureX + 0) * f), (double) ((float)(textureY + 0) * f1)).endVertex();
+        tessellator.draw();
+    }
+
     public static void drawCircle(float x, float y, float radius, int color) {
         glColor(color);
         glEnable(GL_BLEND);
@@ -176,19 +195,6 @@ public final class RenderUtils extends MinecraftInstance {
         }
     }
 
-    public static void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height, float zLevel)
-    {
-        float f = 0.00390625F;
-        float f1 = 0.00390625F;
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos((double)(x + 0), (double)(y + height), (double)zLevel).tex((double)((float)(textureX + 0) * f), (double)((float)(textureY + height) * f1)).endVertex();
-        worldrenderer.pos((double)(x + width), (double)(y + height), (double)zLevel).tex((double)((float)(textureX + width) * f), (double)((float)(textureY + height) * f1)).endVertex();
-        worldrenderer.pos((double)(x + width), (double)(y + 0), (double)zLevel).tex((double)((float)(textureX + width) * f), (double)((float)(textureY + 0) * f1)).endVertex();
-        worldrenderer.pos((double)(x + 0), (double)(y + 0), (double)zLevel).tex((double)((float)(textureX + 0) * f), (double)((float)(textureY + 0) * f1)).endVertex();
-        tessellator.draw();
-    }
 
     public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius, int color) {
         glEnable(GL_BLEND);
