@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
+import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -37,6 +38,8 @@ class Speed : Module() {
     }
 
     private val noWater = BoolValue("NoWater", true)
+
+    val targetStrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java) as TargetStrafe
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -67,6 +70,7 @@ class Speed : Module() {
         }
 
         mode.onMove(event)
+        targetStrafe.onMove(event)
     }
 
     @EventTarget
