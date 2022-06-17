@@ -244,6 +244,19 @@ object ColorUtils {
     
     }
 
+
+    fun Astolfo(var2: Int, st: Float, bright: Float): Int {
+        var currentColor = Math.ceil((System.currentTimeMillis() + (var2 * 130).toLong()).toDouble()) / 6
+        return Color.getHSBColor(if ((360.0.also { currentColor %= it } / 360.0).toFloat()
+                .toDouble() < 0.5) -(currentColor / 360.0).toFloat() else (currentColor / 360.0).toFloat(), st, bright).rgb
+    }
+
+    fun otherAstolfo(delay: Int, offset: Int, index: Int): Int {
+        var rainbowDelay = Math.ceil((System.currentTimeMillis() + (delay * index).toLong()).toDouble()) / offset
+        return Color.getHSBColor(if ((360.0.also { rainbowDelay %= it } / 360.0).toFloat()
+                .toDouble() < 0.5) -(rainbowDelay / 360.0).toFloat() else (rainbowDelay / 360.0).toFloat(), 0.5f, 1.0f).rgb
+    }
+
     fun fade(color: Color, index: Int, count: Int): Color {
         val hsb = FloatArray(3)
         Color.RGBtoHSB(color.red, color.green, color.blue, hsb)

@@ -19,10 +19,13 @@ import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.ping
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.*
+import net.minecraft.potion.Potion
+import net.minecraft.potion.PotionEffect
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.roundToInt
@@ -34,6 +37,7 @@ class NameTags : Module() {
     private val pingValue = BoolValue("Ping", true)
     private val distanceValue = BoolValue("Distance", false)
     private val armorValue = BoolValue("Armor", true)
+    private val potionValue = BoolValue("Potions", true)
     private val clearNamesValue = BoolValue("ClearNames", true)
     private val fontValue = FontValue("Font", Fonts.font40)
     private val borderValue = BoolValue("Border", true)
@@ -45,7 +49,9 @@ class NameTags : Module() {
     private val translateY = FloatValue("TanslateY", 0.55F,-2F,2F)
 
     private var targetTicks = 0
-    private var entityKeep = "yes"
+    private var entityKeep = "yes zywl"
+
+    private val inventoryBackground = ResourceLocation("textures/gui/container/inventory.png")
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -175,6 +181,38 @@ class NameTags : Module() {
 
                 fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, true)
 
+                var foundPotion = false
+                if (potionValue.get() && entity is EntityPlayer) {
+                    val potions = (entity.getActivePotionEffects() as Collection<PotionEffect>).map { Potion.potionTypes[it.getPotionID()] }.filter { it.hasStatusIcon() }
+                    if (!potions.isEmpty()) {
+                        foundPotion = true
+
+                        color(1.0F, 1.0F, 1.0F, 1.0F)
+                        disableLighting()
+                        enableTexture2D()
+
+                        val minX = (potions.size * -20) / 2
+
+                        var index = 0
+
+                        glPushMatrix()
+                        enableRescaleNormal()
+                        for (potion in potions) {
+                            color(1.0F, 1.0F, 1.0F, 1.0F)
+                            mc.getTextureManager().bindTexture(inventoryBackground)
+                            val i1 = potion.getStatusIconIndex()
+                            drawTexturedModalRect(minX + index * 20, -22, 0 + i1 % 8 * 18, 198 + i1 / 8 * 18, 18, 18, 0F)
+                            index++
+                        }
+                        disableRescaleNormal()
+                        glPopMatrix()
+
+                        enableAlpha()
+                        disableBlend()
+                        enableTexture2D()
+                    }
+                }
+
                 if (armorValue.get() && entity is EntityPlayer) {
                     for (index in 0..4) {
                         if (entity.getEquipmentInSlot(index) == null) {
@@ -182,7 +220,7 @@ class NameTags : Module() {
                         }
 
                         mc.renderItem.zLevel = -147F
-                        mc.renderItem.renderItemAndEffectIntoGUI(entity.getEquipmentInSlot(index), -50 + index * 20, -22)
+                        mc.renderItem.renderItemAndEffectIntoGUI(entity.getEquipmentInSlot(index), -50 + index * 20, if (potionValue.get() && foundPotion) -42 else -22)
                     }
 
                     enableAlpha()
