@@ -33,7 +33,7 @@ class SuperKnockback : Module() {
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
-            if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) ||
+            if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong())  ||
                 (!MovementUtils.isMoving() && onlyMoveValue.get()) || (!mc.thePlayer.onGround && onlyGroundValue.get())) {
                 return
             }
@@ -64,7 +64,7 @@ class SuperKnockback : Module() {
     fun onUpdate() {
         val entity = LiquidBounce.combatManager.target
         if (entity != null) {
-            if (entity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) || (!mc.thePlayer.onGround && onlyGroundValue.get())) {
+            if (entity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) && !modeValue.equals("WTap") || (!mc.thePlayer.onGround && onlyGroundValue.get())) {
                 return
             }
             
