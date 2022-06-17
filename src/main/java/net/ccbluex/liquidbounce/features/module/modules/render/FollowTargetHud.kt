@@ -163,7 +163,7 @@ class FollowTargetHud : Module() {
                 fontRenderer.drawString(healthString, -25 - fontRenderer.getStringWidth(healthString).toInt() + xChange.toInt(), 22, Color.WHITE.rgb)
                 
                 val distanceString = "⤢" + ( ( ( mc.thePlayer.getDistanceToEntity(entity) * 10f ).toInt() ).toFloat() * 0.1f ).toString() 
-                fontRenderer.drawString(tag, -25 - fontRenderer.getStringWidth(distanceString).toInt() + xChange.toInt(), 10, Color.WHITE.rgb)
+                fontRenderer.drawString(distanceString, -25 - fontRenderer.getStringWidth(distanceString).toInt() + xChange.toInt(), 10, Color.WHITE.rgb)
                 
                 // draw health bars
                 drawRoundedCornerRect(-104f + xChange, 22f, -50f + xChange, 30f, 1f, Color(64, 64, 64, 255).rgb) 
@@ -186,10 +186,10 @@ class FollowTargetHud : Module() {
             
             "arris" -> {
                 
+                glScalef(-scale * 2, -scale * 2, scale * 2)
                 val hp = healthPercent
                 val additionalWidth = font.getStringWidth("${entity.name}  $hp hp").coerceAtLeast(75)
                 drawRoundedCornerRect(xChange, 0f, 45f + additionalWidth + xChange, 40f, 7f, Color(0, 0, 0, 110).rgb)
-                drawHead(entity.skin, 5 + xChange.toInt(), 5, 30 + xChange.toInt(), 30)
 
                 // info text
                 font.drawString(entity.name, 40 + xChange.toInt(), 5, Color.WHITE.rgb)
@@ -210,7 +210,6 @@ class FollowTargetHud : Module() {
                 drawRoundedCornerRect(-70f, 0f, 70f, 40f, 5f, Color(0, 0, 0, 95).rgb)
                 
                 // draw head
-                drawHead(entity.skin, -65 + xChange.toInt(), 5, -35 + xChange.toInt(), 35)
                 
                 // text
                 fontRenderer.drawString(name, -30 + xChange.toInt(), 5, Color.WHITE.rgb)
