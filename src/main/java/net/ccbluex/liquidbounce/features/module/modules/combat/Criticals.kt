@@ -34,6 +34,7 @@ class Criticals : Module() {
             "Packet",
             "NCPPacket",
             "MiPacket",
+            "Blocksmc",
             "Hypixel",
             "Hypixel2",
             "VulcanSemi",
@@ -152,6 +153,12 @@ class Criticals : Module() {
                 "mipacket" -> {
                     sendCriticalPacket(yOffset = 0.0625, ground = false)
                     sendCriticalPacket(ground = false)
+                }
+                
+                 "blocksmc" -> {
+                    sendCriticalPacket(yOffset = 0.0825080378093, ground = false)
+                    sendCriticalPacket(yOffset = 0.0215634532004, ground = false)
+                    sendCriticalPacket(yOffset = 0.1040220332227, ground = false)
                 }
 
                 "aac5.0.4" -> { //aac5.0.4 moment but with bad cfg(cuz it will flag for timer)
@@ -473,7 +480,7 @@ class Criticals : Module() {
         }
         if (packet is S0BPacketAnimation && debugValue.get()) {
             if (packet.animationType == 4 && packet.entityID == target) {
-                alert("CRIT")
+                alert("Crit S0B !")
             }
         }
     }
