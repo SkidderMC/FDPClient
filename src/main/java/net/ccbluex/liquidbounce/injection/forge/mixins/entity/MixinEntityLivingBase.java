@@ -37,11 +37,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Shadow
-    protected boolean isJumping;
-    @Shadow
-    private int jumpTicks;
-
-    @Shadow
     protected abstract float getJumpUpwardsMotion();
 
     @Shadow
@@ -49,6 +44,12 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Shadow
     public abstract boolean isPotionActive(Potion potionIn);
+
+    @Shadow
+    private int jumpTicks;
+
+    @Shadow
+    protected boolean isJumping;
 
     @Shadow
     public void onLivingUpdate() {
@@ -82,8 +83,11 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
         this.motionY = jumpEvent.getMotion();
 
-        if (this.isSprinting()) {
+        if(this.isSprinting()) {
             final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
+            float f = ((sprint.getState() && sprint.getJumpDirectionsValue().get()) ? MovementUtils.INSTANCE.getMovingYaw() : this.rotationYaw) * 0.017453292F;
+            this.motionX -= MathHelper.sin(f) * 0.2F;
+            this.motionZ += MathHelper.cos(f) * 0.2F;
             float fixedYaw = this.rotationYaw * 1.0F;
             final KillAura killaura = LiquidBounce.moduleManager.getModule(KillAura.class);
             if(killaura.getStrictStrafe() && RotationUtils.serverRotation != null) {
@@ -92,9 +96,9 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             if(sprint.getState() && sprint.getJumpDirectionsValue().get()) {
                 fixedYaw += MovementUtils.INSTANCE.getMovingYaw();
             }
-            float f = fixedYaw * 0.017453292F;
-            this.motionX -= MathHelper.sin(f) * 0.2F;
-            this.motionZ += MathHelper.cos(f) * 0.2F;
+            float F = fixedYaw * 0.017453292F;
+            this.motionX -= MathHelper.sin(F) * 0.2F;
+            this.motionZ += MathHelper.cos(F) * 0.2F;
         }
 
         this.isAirBorne = true;
