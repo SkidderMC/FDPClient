@@ -37,6 +37,10 @@ class NoSlow : Module() {
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
+    //AACv4
+    private val c07Value = BooValue("AAC4-C07", true)
+    private val c08Value = BooValue("AAC4-C08", true)
+    private val groundValue = BooValue("AAC4-OnGround", true)
     // Soulsand
     val soulsandValue = BoolValue("Soulsand", false)
     // Slowdown on teleport
@@ -139,7 +143,7 @@ class NoSlow : Module() {
                 }
                 
                 "aac4" -> {
-                    sendPacket(event, c07Value.get(), c08Value.get(), true, 80, groundValue.get(), watchdogValue.get())
+                    sendPacket(event, c07Value.get(), c08Value.get(), true, 80, groundValue.get())
                 }
 
                 "custom" -> {
