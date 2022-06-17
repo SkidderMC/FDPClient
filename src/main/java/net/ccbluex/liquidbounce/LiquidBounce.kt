@@ -48,7 +48,7 @@ object LiquidBounce {
     var CLIENTTEXT = "Waiting..."
     var Darkmode = true
     const val COLORED_NAME = "§7[§b!§7] §b§lFDPCLIENT §c» "
-    const val CLIENT_CREATOR = "CCBlueX & UnlegitMC TEAMS"
+    const val CLIENT_CREATOR = "CCBlueX & UnlegitMC TEAM"
     const val CLIENT_WEBSITE = "FDPClient.Club"
     const val MINECRAFT_VERSION = "1.8.9"
     const val VERSIONTYPE = "Preview"
@@ -124,7 +124,7 @@ object LiquidBounce {
      */
     fun initClient() {
         ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
-        ClientUtils.setTitle("Initializing...");
+        ClientUtils.logInfo("Initialzing...");
         val startTime = System.currentTimeMillis()
         // Create file manager
         fileManager = FileManager()
@@ -208,9 +208,8 @@ object LiquidBounce {
         if (CLIENT_VERSION != "unknown") {
             thread(block = this::checkUpdate)
         }
-        ClientUtils.setTitle("Loading Script Subscripts...");
+        ClientUtils.logInfo("Loading Script Subscripts...")
         for (subscript in fileManager.subscriptsConfig.subscripts) {
-            //println(subscript.url+":"+subscript.name)
             Subscriptions.addSubscribes(ScriptSubscribe(subscript.url, subscript.name))
             scriptManager.disableScripts()
             scriptManager.unloadScripts()
