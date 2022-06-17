@@ -41,7 +41,6 @@ object HUD : Module() {
     val chatRectValue = BoolValue("ChatRect", true)
     val chatCombineValue = BoolValue("ChatCombine", true)
     val chatAnimValue = BoolValue("ChatAnimation", true)
-    val genshinImpactAnim = BoolValue("Genshin Impact", false)
     val rainbowStartValue = FloatValue("RainbowStart", 0.41f, 0f, 1f)
     val rainbowStopValue = FloatValue("RainbowStop", 0.58f, 0f, 1f)
     val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.7f, 0f, 1f)
