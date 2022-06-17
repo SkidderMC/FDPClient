@@ -40,8 +40,6 @@ class Speed : Module() {
 
     private val noWater = BoolValue("NoWater", true)
 
-    val targetStrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java) as TargetStrafe
-
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) return
@@ -72,7 +70,7 @@ class Speed : Module() {
 
         mode.onMove(event)
         if(event != null) {
-            targetStrafe.doMove(event)
+            LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doMove(event)
         }
     }
 
