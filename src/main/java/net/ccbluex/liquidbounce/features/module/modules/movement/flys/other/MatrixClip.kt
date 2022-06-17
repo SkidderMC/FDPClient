@@ -49,7 +49,7 @@ class MatrixClip : FlyMode("MatrixClip") {
         mc.thePlayer.motionY = 0.0
         mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionZ = 0.0
-        if(timer.hasTimePassed(blinkTime)) {
+        if(timer.hasTimePassed(blinkTime.toLong())) {
             timer.reset()
             try {
                 disableLogger = true
@@ -61,7 +61,7 @@ class MatrixClip : FlyMode("MatrixClip") {
                 disableLogger = false
             }
         }
-        if(timer2.hasTimePassed((clipTime))) {
+        if(timer2.hasTimePassed((clipTime.toLong()))) {
             timer2.reset()
             mc.thePlayer.setPosition(mc.thePlayer.posX , mc.thePlayer.posY + yclip.get(), mc.thePlayer.posZ)
         }
