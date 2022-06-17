@@ -36,7 +36,7 @@ class MatrixDamage : FlyMode("MatrixDamage") {
             if (randomize.get()) {
                 randomNum = Math.random() * randomAmount.get() * 0.01
             } else {
-                randomNum = 0
+                randomNum = 0.0
             }
             mc.timer.timerSpeed = timer.get()
             val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
