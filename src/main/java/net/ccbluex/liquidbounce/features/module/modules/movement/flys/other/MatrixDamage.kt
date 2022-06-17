@@ -23,7 +23,6 @@ class MatrixDamage : FlyMode("MatrixDamage") {
 
     override fun onEnable() {
         if (warn.get()) ClientUtils.displayChatMessage("§8[§c§lMatrix-Dmg-Fly§8] §aU need make some damage to boost : bow , snowball , eggs...")
-        velocitydetect = false
         velocitypacket = false
         packetymotion = 0.0
         tick = 0
