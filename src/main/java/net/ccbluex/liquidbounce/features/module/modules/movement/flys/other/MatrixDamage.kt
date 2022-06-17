@@ -39,7 +39,6 @@ class MatrixDamage : FlyMode("MatrixDamage") {
             tick++
             if(tick>=boostTicks.get()) {
                 mc.timer.timerSpeed = 1.0f
-                velocitydetect = false
                 velocitypacket = false
                 packetymotion = 0.0
                 tick = 0
