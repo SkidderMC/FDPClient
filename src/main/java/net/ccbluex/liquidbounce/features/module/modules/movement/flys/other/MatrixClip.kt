@@ -28,6 +28,9 @@ class MatrixClip : FlyMode("MatrixClip") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        mc.thePlayer.motionY = 0.0
+        mc.thePlayer.motionX = 0.0
+        mc.thePlayer.motionZ = 0.0
         if(timer.hasTimePassed(736)) {
             timer.reset()
             try {
