@@ -165,7 +165,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     /* For modification, please keep "Designed by XiGua" */
     override fun initGui() {
         val defaultHeight = (this.height / 3.5).toInt()
-        //我急了，写破防了，写了7个小时没写好
         Thread {
             if (LiquidBounce.CLIENTTEXT.contains("Waiting") || LiquidBounce.CLIENTTEXT.contains("Oops")) {
                 try {
@@ -181,19 +180,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         }.start()
 
         drawBtns()
-        //this.buttonList.add(TestBtn(102, this.width - 95, 10, 25, 25, LanguageManager.get("ui.background"), ResourceLocation("fdpclient/imgs/icon/wallpaper.png"), 2,
-        //    Color(20, 20, 20, 130)))
-
-
-        /*
-        this.buttonList.add(GuiButton(1, this.width / 2 - 50, defaultHeight, 100, 20, I18n.format("menu.singleplayer")))
-        this.buttonList.add(GuiButton(2, this.width / 2 - 50, defaultHeight + 24, 100, 20, I18n.format("menu.multiplayer")))
-        this.buttonList.add(GuiButton(100, this.width / 2 - 50, defaultHeight + 24 * 2, 100, 20, "%ui.altmanager%"))
-        this.buttonList.add(GuiButton(103, this.width / 2 - 50, defaultHeight + 24 * 3, 100, 20, "%ui.mods%"))
-        this.buttonList.add(GuiButton(102, this.width / 2 - 50, defaultHeight + 24 * 4, 100, 20, "%ui.background%"))
-        this.buttonList.add(GuiButton(0, this.width / 2 - 50, defaultHeight + 24 * 5, 100, 20, I18n.format("menu.options")))
-        this.buttonList.add(GuiButton(4, this.width / 2 - 50, defaultHeight + 24 * 6, 100, 20, I18n.format("menu.quit")))
-        */
         super.initGui()
     }
 
@@ -201,7 +187,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         drawBackground(0)
         val defaultHeight = (this.height).toFloat()
         val defaultWidth = (this.width).toFloat()
-        //RenderUtils.drawCircle(defaultWidth/2,defaultHeight/2 + 60F, 150F,Color(0,0,0,100).rgb);
         val i = 0
         val defaultHeight1 = (this.height).toDouble()
         val defaultWidth1 = (this.width).toDouble()
@@ -237,27 +222,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             this.height - 15f,
             Color(1, 1, 1, 170).rgb
         )
-
-        //
-        /*val bHeight = (this.height / 3.5).toInt()
-
-        Gui.drawRect(width / 2 - 60, bHeight - 30, width / 2 + 60, bHeight + 174, Integer.MIN_VALUE)
-
-        mc.fontRendererObj.drawCenteredString(LiquidBounce.CLIENT_NAME, (width / 2).toFloat(), (bHeight - 20).toFloat(), Color.WHITE.rgb, false)
-        mc.fontRendererObj.drawString(LiquidBounce.CLIENT_VERSION, 3F, (height - mc.fontRendererObj.FONT_HEIGHT - 2).toFloat(), 0xffffff, false)
-        "§cWebsite: §fhttps://${LiquidBounce.CLIENT_WEBSITE}/".also { str ->
-            mc.fontRendererObj.drawString(str, (this.width - mc.fontRendererObj.getStringWidth(str) - 3).toFloat(), (height - mc.fontRendererObj.FONT_HEIGHT - 2).toFloat(), 0xffffff, false)
-        }
-
-        if(LiquidBounce.latest != LiquidBounce.CLIENT_VERSION && LiquidBounce.latest.isNotEmpty()) {
-            val str = LanguageManager.getAndFormat("ui.update.released", LiquidBounce.latest)
-            val start = width / 2f - (mc.fontRendererObj.getStringWidth(str) / 2f)
-            RenderUtils.drawRect(start, 15f, start + mc.fontRendererObj.getStringWidth(str), 15f + mc.fontRendererObj.FONT_HEIGHT, Color.BLACK.rgb)
-            mc.fontRendererObj.drawString(str, start, 15f, Color.WHITE.rgb, false)
-        }*/
-
-
-        //displayed = false
         try {
             if (!displayed) {
                 var back = Layer.draw(
