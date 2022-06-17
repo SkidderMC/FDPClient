@@ -62,6 +62,8 @@ class TargetStrafe : Module() {
             isEnabled = true
         }else {
             isEnabled = false
+            if (!thirdPersonViewValue.get()) return
+            mc.gameSettings.thirdPersonView = if (canStrafe) 3 else 0
         }
     }
 
