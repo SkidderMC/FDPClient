@@ -26,6 +26,8 @@ public class ParticleGenerator {
     }
 
     public void draw(final int mouseX, final int mouseY) {
+        if(Minecraft.getMinecraft() == null)
+        	return;
         if(particles.isEmpty() || prevWidth != Minecraft.getMinecraft().displayWidth || prevHeight != Minecraft.getMinecraft().displayHeight) {
             particles.clear();
             create();

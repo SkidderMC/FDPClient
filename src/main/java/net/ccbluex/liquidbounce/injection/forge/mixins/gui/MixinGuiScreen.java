@@ -77,9 +77,6 @@ public abstract class MixinGuiScreen {
                 int defaultHeight1 = (this.height);
                 int defaultWidth1 = (this.width);
                 GL11.glPushMatrix();
-                if(HUD.INSTANCE.getGenshinImpactAnim().get()) RenderUtils.drawImage(LiquidBounce.INSTANCE.getLumine(), 10, defaultHeight1 - (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1));
-                GL11.glPopMatrix();
-                GL11.glPushMatrix();
                 FontLoaders.F30.DisplayFont2(FontLoaders.F30,LiquidBounce.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14,LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30,LiquidBounce.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
                 FontLoaders.F30.DisplayFont2(FontLoaders.F14,LiquidBounce.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14,LiquidBounce.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);
                 GL11.glPopMatrix();
@@ -94,9 +91,6 @@ public abstract class MixinGuiScreen {
             if(mc.thePlayer != null) {
                 int defaultHeight1 = (this.height);
                 int defaultWidth1 = (this.width);
-                GL11.glPushMatrix();
-                if(HUD.INSTANCE.getGenshinImpactAnim().get()) RenderUtils.drawImage(LiquidBounce.INSTANCE.getLumine(), 10, defaultHeight1 - (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1), (int) (0.2 * defaultWidth1));
-                GL11.glPopMatrix();
                 GL11.glPushMatrix();
                 FontLoaders.F30.DisplayFont2(FontLoaders.F30,LiquidBounce.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14,LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30,LiquidBounce.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
                 FontLoaders.F30.DisplayFont2(FontLoaders.F14,LiquidBounce.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14,LiquidBounce.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);

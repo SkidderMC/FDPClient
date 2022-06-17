@@ -91,7 +91,11 @@ class Particle {
     void fall() {
         try {
             final Minecraft mc = Minecraft.getMinecraft();
+            if(mc == null)
+            		return;
             final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
+            if(scaledResolution == null)
+            		return;
             y = (y + ySpeed);
             x = (x + xSpeed);
 
