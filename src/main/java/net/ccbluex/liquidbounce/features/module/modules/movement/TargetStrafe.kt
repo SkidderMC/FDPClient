@@ -65,6 +65,17 @@ class TargetStrafe : Module() {
         }
     }
 
+    fun doMove(event: MoveEvent) {
+        if(doStrafe && (!ongroundValue.get() || mc.thePlayer.onGround)) {
+            val _entity : EntityLivingBase = targetEntity?:return
+            MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event)
+            callBackYaw = RotationUtils.getRotationsEntity(_entity).yaw.toDouble()
+            isEnabled = true
+        }else {
+            isEnabled = false
+        }
+    }
+
     private fun checkVoid(): Boolean {
         for (x in -2..2) for (z in -2..2) if (isVoid(x, z)) return true
         return false

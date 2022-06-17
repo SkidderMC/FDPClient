@@ -71,7 +71,9 @@ class Speed : Module() {
         }
 
         mode.onMove(event)
-        targetStrafe.onMove(event)
+        if(event != null) {
+            targetStrafe.doMove(event)
+        }
     }
 
     @EventTarget
