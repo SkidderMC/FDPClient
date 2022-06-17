@@ -86,7 +86,7 @@ class Notification(
     val animeTime: Int = 500
 ) {
     var width = 100
-    val height = 26
+    val height = 27
 
     var fadeState = FadeState.IN
     var nowY = -height
