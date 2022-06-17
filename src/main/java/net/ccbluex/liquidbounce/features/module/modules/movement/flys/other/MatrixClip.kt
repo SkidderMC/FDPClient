@@ -16,10 +16,14 @@ import kotlin.math.cos
 
 
 class MatrixClip : FlyMode("MatrixClip") {
+    private val clipMode = ListValue("BypassMode", arrayOf("Clip1","Clip2","Clip3"), "Clip2")
     private val yclip = FloatValue("${valuePrefix}YClip", 10f, 5f, 20f)
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
     private val timer = MSTimer()
     private val timer2 = MSTimer()
+    
+    private var blinkTime = 0
+    private var clipTime = 0
     private var disableLogger = false
 
     override fun onEnable() {
@@ -28,10 +32,24 @@ class MatrixClip : FlyMode("MatrixClip") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        when (clipMode.get().lowercase()) {
+            "clip1" -> {
+                blinkTime = 736
+                clipTime = 909
+            }
+            "clip2" -> {
+                blinkTime = 1000
+                clipTime = 909
+            }
+            "clip3" -> {
+                blinkTime = 909
+                clipTime = 1000
+            }
+        }
         mc.thePlayer.motionY = 0.0
         mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionZ = 0.0
-        if(timer.hasTimePassed(736)) {
+        if(timer.hasTimePassed(blinkTime)) {
             timer.reset()
             try {
                 disableLogger = true
@@ -43,7 +61,7 @@ class MatrixClip : FlyMode("MatrixClip") {
                 disableLogger = false
             }
         }
-        if(timer2.hasTimePassed((909))) {
+        if(timer2.hasTimePassed((clipTime))) {
             timer2.reset()
             mc.thePlayer.setPosition(mc.thePlayer.posX , mc.thePlayer.posY + yclip.get(), mc.thePlayer.posZ)
         }
