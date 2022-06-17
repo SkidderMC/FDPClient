@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.StrafeEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -37,6 +38,18 @@ class TargetStrafe : Module() {
         }else {
             MovementUtils.strafe()
             return true
+        }
+    }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        if (mc.thePlayer.isCollidedHorizontally) {
+            direction = -direction
+            if (direction >= 0) {
+                direction = 1.0
+            }else {
+                direction = -1.0
+            }
         }
     }
 
