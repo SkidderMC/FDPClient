@@ -34,7 +34,7 @@ class SuperKnockback : Module() {
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
-            if (hitTimer.hasTimePassed(490.toLong())) {
+            if (hitTimer.hasTimePassed(490)) {
                 hitTimer.reset()
                 tapped = false   
             }
