@@ -20,9 +20,9 @@ class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val modeValue = ListValue("Mode", arrayOf("WTap", "Resprint", "Packet"), "Packet")
     private val packetAmount = IntegerValue("PacketAmount", 1,1,5).displayable { modeValue.equals("Packet") }
-    private val wtapMode = ListValue("WTapMode", arrayOf("Spam","WTap","STap","ShiftTap"), "WTap")
-    private val wtapDistance = FloatValue("WTapDistance", 3.2f, 2.9f, 3.5f).displayable { !modeValue.equals("Spam") }
-    private val wtapShift = BoolValue("WTapShift", false).displayable { !modeValue.equals("Spam")}
+    private val wtapMode = ListValue("WTapMode", arrayOf("Spam","WTap","STap","ShiftTap"), "WTap").displayable { modeValue.equals("WTap") }
+    private val wtapDistance = FloatValue("WTapDistance", 3.2f, 2.9f, 3.5f).displayable { modeValue.equals("WTap") }
+    private val wtapShift = BoolValue("WTapShift", false).displayable { !modeValue.equals("Spam") && modeValue.equals("WTap")}
     private val onlyMoveValue = BoolValue("OnlyMove", false)
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
