@@ -20,19 +20,24 @@ class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val modeValue = ListValue("Mode", arrayOf("WTap", "Resprint", "Packet"), "Packet")
     private val packetAmount = IntegerValue("PacketAmount", 1,1,5).displayable { modeValue.equals("Packet") }
-    private val wtapMode = ListValue("WTapMode", arrayOf("Spam","WTap","STap","ShiftTap"), "WTap")
-    private val wtapDistance = FloatValue("WTapDistance", 3.2f, 2.9f, 3.5f).displayable { !modeValue.equals("Spam") }
-    private val wtapShift = BoolValue("WTapShift", false).displayable { !modeValue.equals("Spam")}
+    private val wtapMode = ListValue("WTapMode", arrayOf("Spam","WTap","STap","ShiftTap"), "WTap").displayable { modeValue.equals("WTap") }
+    private val wtapDistance = FloatValue("WTapDistance", 3.2f, 2.9f, 3.5f).displayable { modeValue.equals("WTap") }
+    private val wtapShift = BoolValue("WTapShift", false).displayable { !modeValue.equals("Spam") && modeValue.equals("WTap")}
     private val onlyMoveValue = BoolValue("OnlyMove", false)
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
 
     val timer = MSTimer()
+    private val hitTimer = MSTimer()
     private var tapped = false
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
+            if (hitTimer.hasTimePassed(490)) {
+                hitTimer.reset()
+                tapped = false   
+            }
             if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong())  ||
                 (!MovementUtils.isMoving() && onlyMoveValue.get()) || (!mc.thePlayer.onGround && onlyGroundValue.get())) {
                 return
@@ -66,10 +71,6 @@ class SuperKnockback : Module() {
         if (entity != null) {
             if (entity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) && !modeValue.equals("WTap") || (!mc.thePlayer.onGround && onlyGroundValue.get())) {
                 return
-            }
-            
-            if (entity.hurtTime <= 2) {
-                tapped = false
             }
             
             when (modeValue.get().lowercase()) {
