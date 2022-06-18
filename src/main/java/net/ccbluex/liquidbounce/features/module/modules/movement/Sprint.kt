@@ -104,7 +104,7 @@ class Sprint : Module() {
         }
     }
 
-    override val tag: String
+    override val tag: String?
         get() = allDirectionsBypassValue.get()
 
 }
