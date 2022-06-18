@@ -169,4 +169,8 @@ class InventoryMove : Module() {
         lastInvOpen = false
         invOpen = false
     }
+
+    override val tag: String
+        get() = bypassValue.get()
+
 }
