@@ -13,11 +13,11 @@ import kotlin.math.cos
 class MatrixDamage : FlyMode("MatrixDamage") {
 
     private val warn = BoolValue("${valuePrefix}DamageWarn",true)
-    private val speedBoost = FloatValue("${valuePrefix}BoostSpeed", 0.85f, 0f, 3f)
-    private val timer = FloatValue("${valuePrefix}Timer", 0.9f, 0f, 2f)
+    private val speedBoost = FloatValue("${valuePrefix}BoostSpeed", 0.5f, 0f, 3f)
+    private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f)
     private val boostTicks = IntegerValue("${valuePrefix}BoostTicks", 27,10,40)
     private val randomize = BoolValue("${valuePrefix}Randomize", true)
-    private val randomAmount = IntegerValue("${valuePrefix}RandomAmount", 5, 0, 30).displayable {randomize.get()}
+    private val randomAmount = IntegerValue("${valuePrefix}RandomAmount", 1, 0, 30).displayable {randomize.get()}
 
     private var velocitypacket = false
     private var packetymotion = 0.0
