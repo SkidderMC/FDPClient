@@ -31,7 +31,7 @@ class MinemoraGlide : GlideMode("Minemora") {
                 }
             }
 
-            "glide3" -> {
+            "Glide3" -> {
                 glide3tick++
                 mc.thePlayer.motionY = -0.1
                 if(glide3tick>=glide3TickValue.get()) {
