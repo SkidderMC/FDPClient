@@ -47,7 +47,7 @@ object LiquidBounce {
 
     var CLIENTTEXT = "Waiting..."
     var Darkmode = true
-    const val COLORED_NAME = "§7§l[§b§l!§7§l] §b§lFDPCLIENT §c§l» "
+    const val COLORED_NAME = "§7[§b!§7] §bFDPCLIENT §c» "
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC TEAM"
     const val CLIENT_WEBSITE = "FDPClient.Club"
     const val MINECRAFT_VERSION = "1.8.9"
@@ -59,7 +59,7 @@ object LiquidBounce {
         if (inputStream != null) {
             it.load(inputStream)
         } else {
-            it["git.branch"] = "unofficial" // fill with default values or we'll get null pointer exceptions
+            it["git.branch"] = "Main" // fill with default values or we'll get null pointer exceptions
         }
     }
 

@@ -49,18 +49,19 @@ class Text(
     }
 
     val displayString = TextValue("DisplayText", "")
+    val textStyle = ListValue("Text-Style", arrayOf("Default", "Jello"), "Default")
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
     val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val shadow = BoolValue("Shadow", false)
+    val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "None", "FDP"), "None")
+    val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
-    val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
-    val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "None","Logo"), "None")
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 10, 1, 10)
     private val rainbowIndex = IntegerValue("RainbowIndex", 1, 1, 20)
@@ -95,6 +96,7 @@ class Text(
                 "velocity" -> return DECIMAL_FORMAT.format(sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ))
                 "ping" -> return "${mc.thePlayer.ping}"
                 "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
+                "bps" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
                 "attackDist" -> return if (LiquidBounce.combatManager.target != null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
             }
         }
@@ -184,35 +186,45 @@ class Text(
 
             }
         }
-        if(!rectValue.get().contains("Logo")) {
-            fontRenderer.drawString(
-                displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
-                    "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
-                    "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-                    "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
-                    else -> color.rgb
-                }, shadow.get()
-            )
-        }else{
-            FontLoaders.F40.drawString(
+        if(textStyle.get().contains("Default")) {
+            if (!rectValue.get().contains("FDP")) {
+                fontRenderer.drawString(
+                    displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
+                        "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
+                        "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+                        "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
+                        else -> color.rgb
+                    }, shadow.get())
+            }
+        }
 
-                getClientName(0,3), 5F, 0F,Color(255,255,255,180).rgb
+        if(textStyle.get().contains("Jello")) {
+            if (!rectValue.get().contains("FDP")) {
+                FontLoaders.F40.drawString(
+                    displayText, 5F, 0F,Color(255,255,255,140).rgb
+                )
+                FontLoaders.F24.drawString(
+                    "zywl", 5F, 23F,Color(255,255,255,140).rgb
+                )
+            }
+        }
+
+        if(rectValue.get().contains("FDP")) {
+            FontLoaders.F40.drawString(
+                getClientName(0,4), 5F, 0F,Color(255,255,255,180).rgb
             )
             FontLoaders.C16.drawString(
-                getClientName(3,9), 5F + FontLoaders.F40.getStringWidth("FDP"), 13F,Color(255,255,255,180).rgb
+                getClientName(4,9), 5F + FontLoaders.F40.getStringWidth("Amog"), 13F,Color(255,255,255,180).rgb
             )
             RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,120).rgb)
             FontLoaders.C14.drawString(
                 LiquidBounce.CLIENT_VERSION + " | "+LiquidBounce.VERSIONTYPE, 5F, 27F,Color(255,255,255,180).rgb
             )
-            FontLoaders.C14.drawString(
-                "REBORN 2022", 5F, 37F,Color(255,255,255,180).rgb
-            )
         }
 
         if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) {
             fontRenderer.drawString("_", fontRenderer.getStringWidth(displayText) + 2F,
-                    0F, Color.WHITE.rgb, shadow.get())
+                0F, Color.WHITE.rgb, shadow.get())
         }
 
         if (editMode && mc.currentScreen !is GuiHudDesigner) {
@@ -221,10 +233,10 @@ class Text(
         }
 
         return Border(
-                -2F,
-                -2F,
-                fontRenderer.getStringWidth(displayText) + 2F,
-                fontRenderer.FONT_HEIGHT.toFloat()
+            -2F,
+            -2F,
+            fontRenderer.getStringWidth(displayText) + 2F,
+            fontRenderer.FONT_HEIGHT.toFloat()
         )
     }
 

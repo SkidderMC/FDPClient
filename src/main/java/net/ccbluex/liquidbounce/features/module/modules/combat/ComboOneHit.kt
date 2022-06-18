@@ -10,10 +10,8 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation
 
@@ -23,6 +21,7 @@ class ComboOneHit : Module() {
     private val amountValue = IntegerValue("Packets", 200, 0, 500)
     private val swingItemValue = BoolValue("SwingPacket", false)
     private val onlyAuraValue = BoolValue("OnlyAura", false)
+    private val gameBreaking = BoolValue("GameBreaking", false)
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
@@ -33,6 +32,13 @@ class ComboOneHit : Module() {
             mc.netHandler.addToSendQueue(C0APacketAnimation())
             mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
         }
+        if (gameBreaking.get()) {
+            repeat (amountValue.get()) {
+                mc.netHandler.addToSendQueue(C0APacketAnimation())
+                mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
+                mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
+                mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
+            }
+        }
     }
-
 }
