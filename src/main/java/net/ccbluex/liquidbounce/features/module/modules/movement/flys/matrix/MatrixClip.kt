@@ -16,7 +16,7 @@ import kotlin.math.cos
 
 
 class MatrixClip : FlyMode("MatrixClip") {
-    private val clipMode = ListValue("BypassMode", arrayOf("Clip1","Clip2","Clip3"), "Clip2")
+    private val clipMode = ListValue("${valuePrefix}BypassMode", arrayOf("Clip1","Clip2","Clip3"), "Clip2")
     private val yclip = FloatValue("${valuePrefix}YClip", 10f, 5f, 20f)
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
     private val timer = MSTimer()
