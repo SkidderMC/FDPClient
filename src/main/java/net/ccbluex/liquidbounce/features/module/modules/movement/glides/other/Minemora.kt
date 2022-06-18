@@ -9,9 +9,9 @@ import kotlin.math.*
 
 class MinemoraGlide : GlideMode("Minemora") {
     private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Glide1", "Glide2", "Glide3"), "Glide1")
-    private val glide2TickValue = IntegerValue("Glide2-Tick", 4 , 2,8).displayable { modeValue.equals("Glide2") }
-    private val glide3TickValue = IntegerValue("Glide3-Tick", 4 , 2,8).displayable { modeValue.equals("Glide3") }
-    private val glide3BoostSpeed = FloatValue("Glide3-BoostSpeed", 0.1f, 0.0f,0.5f).displayable { modeValue.equals("Glide3") }
+    private val glide2TickValue = IntegerValue("${valuePrefix}Glide2-Tick", 4 , 2,8).displayable { modeValue.equals("Glide2") }
+    private val glide3TickValue = IntegerValue("${valuePrefix}Glide3-Tick", 4 , 2,8).displayable { modeValue.equals("Glide3") }
+    private val glide3BoostSpeed = FloatValue("${valuePrefix}Glide3-BoostSpeed", 0.1f, 0.0f,0.5f).displayable { modeValue.equals("Glide3") }
     private var glide2tick = 0
     private var glide3tick = 0
     override fun onEnable() {
