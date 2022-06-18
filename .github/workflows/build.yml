@@ -1,7 +1,9 @@
 name: build
 
 on:
-  - push
+  push:
+    branches:
+     - main
 
 jobs:
   build:
