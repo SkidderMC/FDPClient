@@ -147,7 +147,7 @@ class Text(
         return result.toString()
     }
     fun getClientName(i: Int,i2: Int): String{
-        return "FDPClient".substring(i,i2);
+        return "FDPclient".substring(i,i2);
     }
     /**
      * Draw element
@@ -214,7 +214,7 @@ class Text(
                 getClientName(0,4), 5F, 0F,Color(255,255,255,180).rgb
             )
             FontLoaders.C16.drawString(
-                getClientName(4,9), 5F + FontLoaders.F40.getStringWidth("Amog"), 13F,Color(255,255,255,180).rgb
+                getClientName(4,9), 5F + FontLoaders.F40.getStringWidth("FDP"), 13F,Color(255,255,255,180).rgb
             )
             RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,120).rgb)
             FontLoaders.C14.drawString(
