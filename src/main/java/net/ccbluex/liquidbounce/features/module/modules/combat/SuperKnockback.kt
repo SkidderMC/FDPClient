@@ -28,11 +28,16 @@ class SuperKnockback : Module() {
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
 
     val timer = MSTimer()
+    private val hitTimer = MSTimer()
     private var tapped = false
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
+            if (hitTimer.hasTimePassed(490.toLong())) {
+                hitTimer.reset()
+                tapped = false   
+            }
             if (event.targetEntity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong())  ||
                 (!MovementUtils.isMoving() && onlyMoveValue.get()) || (!mc.thePlayer.onGround && onlyGroundValue.get())) {
                 return
@@ -66,10 +71,6 @@ class SuperKnockback : Module() {
         if (entity != null) {
             if (entity.hurtTime > hurtTimeValue.get() || !timer.hasTimePassed(delayValue.get().toLong()) && !modeValue.equals("WTap") || (!mc.thePlayer.onGround && onlyGroundValue.get())) {
                 return
-            }
-            
-            if (entity.hurtTime <= 2) {
-                tapped = false
             }
             
             when (modeValue.get().lowercase()) {
