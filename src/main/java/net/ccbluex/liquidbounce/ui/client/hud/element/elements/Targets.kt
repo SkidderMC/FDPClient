@@ -24,7 +24,8 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "RiseNew", "Zamorozka", "Arris", "Tenacity"), "Rise")
+    private val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
+    private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
     private val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
@@ -132,8 +133,14 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "astolfo" -> drawAstolfo(prevTarget!!)
             "liquid" -> drawLiquid(prevTarget!!)
             "flux" -> drawFlux(prevTarget!!)
-            "risenew" -> drawRiseNew(prevTarget!!)
-            "rise" -> drawRise(prevTarget!!)
+            "rise" -> {
+                when (modeRise.get().lowercase()) {
+                    "original" -> drawRise(prevTarget!!)
+                    "new1" -> drawRiseNew(prevTarget!!)
+                    "new2" -> drawRiseNewNew(prevTarget!!)
+                }
+            }
+            
             "zamorozka" -> drawZamorozka(prevTarget!!)
             "arris" -> drawArris(prevTarget!!)
             "tenacity" -> drawTenacity(prevTarget!!)
@@ -367,6 +374,87 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glDisable(2848)
         GL11.glShadeModel(7424)
         GL11.glColor4f(1f, 1f, 1f, 1f)
+
+        if(target.hurtTime >= 9) {
+            for(i in 0 until riseCountValue.get()) {
+                riseParticleList.add(RiseParticle())
+            }
+        }
+
+        val curTime = System.currentTimeMillis()
+        riseParticleList.map { it }.forEach { rp ->
+            if ((curTime - rp.time) > ((riseMoveTimeValue.get() + riseFadeTimeValue.get()) * 50)) {
+                riseParticleList.remove(rp)
+            }
+            val movePercent = if((curTime - rp.time) < riseMoveTimeValue.get() * 50) {
+                (curTime - rp.time) / (riseMoveTimeValue.get() * 50f)
+            } else {
+                1f
+            }
+            val x = (movePercent * rp.x * 0.5f * riseDistanceValue.get()) + 20
+            val y = (movePercent * rp.y * 0.5f * riseDistanceValue.get()) + 20
+            val alpha = if((curTime - rp.time) > riseMoveTimeValue.get() * 50) {
+                1f - ((curTime - rp.time - riseMoveTimeValue.get() * 50) / (riseFadeTimeValue.get() * 50f)).coerceAtMost(1f)
+            } else {
+                1f
+            } * riseAlphaValue.get()
+            RenderUtils.drawCircle(x, y, riseSizeValue.get() * 2, Color(rp.color.red, rp.color.green, rp.color.blue, (alpha * 255).toInt()).rgb)
+        }
+    }
+    
+    private fun drawRiseNewNew(target: EntityLivingBase) {
+        val font = fontValue.get()
+        
+        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(60)*1.65f
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 45f, 7f, Color(0, 0, 0, riseAlpha.get()).rgb)
+
+        // circle player avatar
+        val hurtPercent = target.hurtPercent
+        val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
+            1 - (0.2f * hurtPercent * 2)
+        } else {
+            0.8f + (0.2f * (hurtPercent - 0.5f) * 2)
+        }
+        val size = 30
+        
+        //draw head
+        GL11.glPushMatrix()
+        GL11.glTranslatef(5f, 5f, 0f)
+        // 受伤的缩放效果
+        GL11.glScalef(scale, scale, scale)
+        GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
+        // 受伤的红色效果
+        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+        // 绘制头部图片
+        mc.textureManager.bindTexture(target.skin)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
+        GL11.glPopMatrix()
+        
+        // draw health
+        GL11.glPushMatrix()
+        GL11.glScalef(1.5f, 1.5f, 1.5f)
+        font.drawString("${target.name}", 32, 8, Color.WHITE.rgb)
+        GL11.glPopMatrix()
+        
+        // draw health
+        GL11.glEnable(3042)
+        GL11.glDisable(3553)
+        GL11.glBlendFunc(770, 771)
+        GL11.glEnable(2848)
+        GL11.glShadeModel(7425)
+        val stopPos = (40 + ((additionalWidth - font.getStringWidth(decimalFormat.format(target.maxHealth))) * (easingHP / target.maxHealth))).toInt()
+        for (i in 40..stopPos step 5) {
+            val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
+            RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), 30.0, x1, 38.0,
+                ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
+        }
+        GL11.glEnable(3553)
+        GL11.glDisable(3042)
+        GL11.glDisable(2848)
+        GL11.glShadeModel(7424)
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+
 
         if(target.hurtTime >= 9) {
             for(i in 0 until riseCountValue.get()) {
