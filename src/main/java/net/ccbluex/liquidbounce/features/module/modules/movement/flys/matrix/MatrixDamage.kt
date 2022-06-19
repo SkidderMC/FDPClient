@@ -12,6 +12,8 @@ import kotlin.math.cos
 
 class MatrixDamage : FlyMode("MatrixDamage") {
 
+
+    private val mode = ListValue("${valuePrefix}Mode", arrayOf("Stable","Stable2","Custom"), "Stable")
     private val warn = BoolValue("${valuePrefix}DamageWarn",true)
     private val speedBoost = FloatValue("${valuePrefix}BoostSpeed", 0.5f, 0f, 3f)
     private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f)
@@ -33,22 +35,51 @@ class MatrixDamage : FlyMode("MatrixDamage") {
 
     override fun onUpdate(event: UpdateEvent) {
         if(velocitypacket) {
-            if (randomize.get()) {
-                randomNum = Math.random() * randomAmount.get() * 0.01
-            } else {
-                randomNum = 0.0
-            }
-            mc.timer.timerSpeed = timer.get()
             val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
-            mc.thePlayer.motionX += (-sin(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
-            mc.thePlayer.motionZ += (cos(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
-            mc.thePlayer.motionY = packetymotion
-            tick++
-            if(tick>=boostTicks.get()) {
-                mc.timer.timerSpeed = 1.0f
-                velocitypacket = false
-                packetymotion = 0.0
-                tick = 0
+            when(mode.get().lowercase()) {
+                "Stable" -> {
+                    mc.timer.timerSpeed = 1.0F
+                    mc.thePlayer.motionX += (-sin(yaw) * 0.416)
+                    mc.thePlayer.motionZ += (cos(yaw) * 0.416)
+                    mc.thePlayer.motionY = packetymotion
+                    tick++
+                    if(tick>=27) {
+                        mc.timer.timerSpeed = 1.0f
+                        velocitypacket = false
+                        packetymotion = 0.0
+                        tick = 0
+                    }
+                }
+                "Stable2" -> {
+                    mc.timer.timerSpeed = 1.0F
+                    mc.thePlayer.motionX += (-sin(yaw) * 0.416)
+                    mc.thePlayer.motionZ += (cos(yaw) * 0.416)
+                    tick++
+                    if(tick>=30) {
+                        mc.timer.timerSpeed = 1.0f
+                        velocitypacket = false
+                        packetymotion = 0.0
+                        tick = 0
+                    }
+                }
+                "Custom" -> {
+                    if (randomize.get()) {
+                        randomNum = Math.random() * randomAmount.get() * 0.01
+                    } else {
+                        randomNum = 0.0
+                    }
+                    mc.timer.timerSpeed = timer.get()
+                    mc.thePlayer.motionX += (-sin(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
+                    mc.thePlayer.motionZ += (cos(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
+                    mc.thePlayer.motionY = packetymotion
+                    tick++
+                    if(tick>=boostTicks.get()) {
+                        mc.timer.timerSpeed = 1.0f
+                        velocitypacket = false
+                        packetymotion = 0.0
+                        tick = 0
+                    }
+                }
             }
 
         }
