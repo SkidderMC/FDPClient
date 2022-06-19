@@ -194,10 +194,10 @@ class Criticals : Module() {
                 "matrixsemi" -> {
                     attacks++
                     if (attacks > 3) {
-                        sendCriticalPacket(yOffset = 0.110314, ground = false)
-                        sendCriticalPacket(yOffset = 0.0200081, ground = false)
-                        sendCriticalPacket(yOffset = 0.00000001300009, ground = false)
-                        sendCriticalPacket(yOffset = 0.000000000022, ground = false)
+                        sendCriticalPacket(yOffset = 0.1100013579, ground = false)
+                        sendCriticalPacket(yOffset = 0.0232425, ground = false)
+                        sendCriticalPacket(yOffset = 0.0215692004, ground = false)
+                        sendCriticalPacket(yOffset = 0.0000011, ground = false)
                         sendCriticalPacket(ground = true)
                         attacks = 0
                     } else {
