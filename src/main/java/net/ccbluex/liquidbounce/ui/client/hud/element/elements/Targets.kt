@@ -26,6 +26,7 @@ import kotlin.math.roundToInt
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
     private val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
+    
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
     private val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
@@ -34,6 +35,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
     private val arrisRoundedValue = BoolValue("ArrisRounded", true)
+    private val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
     private val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
     private val riseSizeValue = FloatValue("Rise-Size", 1f, 0.5f, 3f)
     private val riseAlphaValue = FloatValue("Rise-Alpha", 0.7f, 0.1f, 1f)
@@ -260,7 +262,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private fun drawRise(target: EntityLivingBase) {
         val font = fontValue.get()
 
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 150f, 50f, 5f, Color(0, 0, 0, 130).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 150f, 50f, 5f, Color(0, 0, 0, riseAlpha.get()).rgb)
 
         val hurtPercent = target.hurtPercent
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
@@ -334,7 +336,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private fun drawRiseNew(target: EntityLivingBase) {
         val font = fontValue.get()
 
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 150f, 50f, 5f, Color(0, 0, 0, 100).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 150f, 50f, 5f, Color(0, 0, 0, riseAlpha.get()).rgb)
 
         val hurtPercent = target.hurtPercent
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
