@@ -147,7 +147,7 @@ class Text(
         return result.toString()
     }
     fun getClientName(i: Int,i2: Int): String{
-        return "FDPclient".substring(i,i2);
+        return "FDPClient".substring(i,i2);
     }
     /**
      * Draw element
