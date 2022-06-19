@@ -62,6 +62,7 @@ class NoSlow : Module() {
     private var packetBuf = LinkedList<Packet<INetHandlerPlayServer>>()
     private var nextTemp = false
     private var waitC03 = false
+    private var sendPacket = false
     private var lastBlockingStat = false
 
     override fun onDisable() {
@@ -233,8 +234,12 @@ class NoSlow : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if (modeValue.equals("Medusa")) {
-            if (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking) {
+            if ((mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking) && sendPacket) {
                 PacketUtils.sendPacketNoEvent(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))
+                sendPacket = false
+            }
+            if (!mc.thePlayer.isUsingItem || !mc.thePlayer.isBlocking) {
+                sendPacket = true
             }
         }
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && nextTemp) {
