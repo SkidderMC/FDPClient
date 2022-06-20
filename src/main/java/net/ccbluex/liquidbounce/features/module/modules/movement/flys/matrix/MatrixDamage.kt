@@ -36,7 +36,7 @@ class MatrixDamage : FlyMode("MatrixDamage") {
     override fun onUpdate(event: UpdateEvent) {
         if(velocitypacket) {
             val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
-            when(mode.get().lowercase()) {
+            when(mode.get()) {
                 "Stable" -> {
                     mc.timer.timerSpeed = 1.0F
                     mc.thePlayer.motionX += (-sin(yaw) * 0.416)
