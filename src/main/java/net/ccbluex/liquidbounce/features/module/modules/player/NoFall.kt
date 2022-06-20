@@ -172,6 +172,12 @@ class NoFall : Module() {
         }
 
         when (modeValue.get().lowercase()) {
+            "medusa" -> {
+                if (mc.thePlayer.fallDistance > 2.5) {
+                    needSpoof = true
+                    mc.thePlayer.fallDistance = 0f
+                }
+            }
             "packet" -> {
                 if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3f){
                     mc.netHandler.addToSendQueue(C03PacketPlayer(true))
@@ -604,10 +610,9 @@ class NoFall : Module() {
                     mc.timer.timerSpeed = 0.18f
                 }
             } else if(mode.equals("Medusa", true)) {
-                if(mc.thePlayer.fallDistance > 2.3f) {
-                    event.cancelEvent()
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
-                    mc.thePlayer.fallDistance = 0.0f
+                if (needSpoof) {
+                    packet.onGround = true
+                    needSpoof = false
                 }
             }
         }
