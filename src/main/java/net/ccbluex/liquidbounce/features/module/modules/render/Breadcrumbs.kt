@@ -37,9 +37,9 @@ class Breadcrumbs : Module() {
     private val drawThePlayerValue = BoolValue("DrawThePlayer", true)
     private val drawTargetsValue = BoolValue("DrawTargets", true)
     private val fadeTimeValue = IntegerValue("FadeTime", 5, 1, 20)
-    private val precisionValue = IntegerValue("Precision", 1, 1, 20)
+    private val precisionValue = IntegerValue("Precision", 4, 1, 20)
     private val lineWidthValue = IntegerValue("LineWidth", 1, 1, 10).displayable { typeValue.equals("Line") }
-    private val sphereScaleValue = FloatValue("SphereScale", 1f, 0.1f, 2f).displayable { typeValue.equals("Sphere") || typeValue.equals("Rise")}
+    private val sphereScaleValue = FloatValue("SphereScale", 0.6f, 0.1f, 2f).displayable { typeValue.equals("Sphere") || typeValue.equals("Rise")}
 
     private val points = mutableMapOf<Int, MutableList<BreadcrumbPoint>>()
 
@@ -122,29 +122,26 @@ class Breadcrumbs : Module() {
                         GL11.glPopMatrix()
                     }
                     "rise" -> {
+                        
                         val circleScale = sphereScaleValue.get()
-                        
-                        RenderUtils.glColor(point.color, 25)
+                        RenderUtils.glColor(point.color, 20)
                         GL11.glPushMatrix()
                         GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                        GL11.glScalef(circleScale * 1.3f, circleScale* 1.3f, circleScale* 1.3f)
+                        GL11.glScalef(circleScale, circleScale, circleScale)
                         GL11.glCallList(sphereList)
                         GL11.glPopMatrix()
-                        
-                        RenderUtils.glColor(point.color, 30)
+
+                        RenderUtils.glColor(point.color, 35)
                         GL11.glPushMatrix()
                         GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                        GL11.glScalef(circleScale* 0.9f, circleScale * 0.9f, circleScale* 0.9f)
+                        GL11.glScalef(circleScale * 0.7f, circleScale * 0.7f, circleScale * 0.7f)
                         GL11.glCallList(sphereList)
                         GL11.glPopMatrix()
-                        
+
                         RenderUtils.glColor(point.color, alpha)
                         GL11.glPushMatrix()
                         GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-
-                        GL11.glScalef(circleScale * 0.5f, circleScale * 0.5f, circleScale * 0.5f)
-                        GL11.glCallList(sphereList)
-                        GL11.glPopMatrix()
+                        GL11.glScalef(circleScale * 0.4f, circleScale * 0.4f, circleScale * 0.4f)
                     }
                 }
             }
