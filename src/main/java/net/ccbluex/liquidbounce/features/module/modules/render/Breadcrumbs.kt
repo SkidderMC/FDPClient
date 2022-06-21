@@ -139,7 +139,7 @@ class Breadcrumbs : Module() {
                         RenderUtils.glColor(point.color, riseAlpha)
                         GL11.glPushMatrix()
                         GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                        GL11.glScalef(circleScale, circleScale, circleScale)
+                        GL11.glScalef(circleScale* 0.9f, circleScale * 0.9f, circleScale* 0.9f)
                         GL11.glCallList(sphereList)
                         GL11.glPopMatrix()
                         
@@ -147,7 +147,7 @@ class Breadcrumbs : Module() {
                         GL11.glPushMatrix()
                         GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
 
-                        GL11.glScalef(circleScale * 0.7f, circleScale * 0.7f, circleScale * 0.7f)
+                        GL11.glScalef(circleScale * 0.6f, circleScale * 0.6f, circleScale * 0.6f)
                         GL11.glCallList(sphereList)
                         GL11.glPopMatrix()
                     }
