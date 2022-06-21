@@ -125,11 +125,11 @@ class Breadcrumbs : Module() {
                         val circleScale = sphereScaleValue.get()
                         var riseAlpha = alpha
                         
-                        if (riseAlpha >= 40) {
-                            riseAlpha = 40f
+                        if (riseAlpha >= 30) {
+                            riseAlpha = 30f
                         }
                         
-                        RenderUtils.glColor(point.color, 30)
+                        RenderUtils.glColor(point.color, 25)
                         GL11.glPushMatrix()
                         GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
                         GL11.glScalef(circleScale * 1.3f, circleScale* 1.3f, circleScale* 1.3f)
@@ -139,7 +139,7 @@ class Breadcrumbs : Module() {
                         RenderUtils.glColor(point.color, riseAlpha)
                         GL11.glPushMatrix()
                         GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                        GL11.glScalef(circleScale* 0.9f, circleScale * 0.9f, circleScale* 0.9f)
+                        GL11.glScalef(circleScale* 0.95f, circleScale * 0.95f, circleScale* 0.95f)
                         GL11.glCallList(sphereList)
                         GL11.glPopMatrix()
                         
