@@ -212,6 +212,7 @@ class Jesus : Module() {
                         }
                 }
                 "Medusa" -> {
+                    nextTick = !nextTick
                     event.packet.y = mc.thePlayer.posY + if (nextTick) 0.1 else -0.1
                     if (msTimer.hasTimePassed(1000)) {
                         event.packet.onGround = true
