@@ -146,6 +146,12 @@ class ScreenEvent(val guiScreen: GuiScreen?) : Event()
  */
 class StepEvent(var stepHeight: Float, val eventState: EventState) : Event()
 
+
+/**
+ * Called when a text is going to be rendered
+ */
+class TextEvent(var text: String?) : Event()
+
 /**
  * tick... tack... tick... tack
  */
