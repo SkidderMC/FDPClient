@@ -247,7 +247,7 @@ class Jesus : Module() {
         }
 
         val block = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.01, mc.thePlayer.posZ))
-        if ((noJumpValue.get() || modeValue.get().equals("Vulcan"))&& block instanceof BlockLiquid) {
+        if ((noJumpValue.get() || modeValue.get().equals("Vulcan"))&& block is BlockLiquid) {
             event.cancelEvent()
         }
     }
