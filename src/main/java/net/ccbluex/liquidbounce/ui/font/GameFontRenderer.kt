@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.font
 
 import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
+import net.ccbluex.liquidbounce.event.TextEvent
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -42,7 +43,11 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     override fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
 
     override fun drawString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
-        val currentText = LanguageManager.replace(text)
+        var currentText = text
+
+        val event = TextEvent(currentText)
+        LiquidBounce.eventManager.callEvent(event)
+        currentText = event.text ?: return 0
 
         val currY = y - 3F
         if (shadow) {
@@ -175,7 +180,11 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
             ColorUtils.hexColors[getColorIndex(charCode)]
 
     override fun getStringWidth(text: String): Int {
-        val currentText = LanguageManager.replace(text)
+        var currentText = text
+
+        val event = TextEvent(currentText)
+        LiquidBounce.eventManager.callEvent(event)
+        currentText = event.text ?: return 0
 
         return if (currentText.contains("§")) {
             val parts = currentText.split("§")
