@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.font
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
 import net.ccbluex.liquidbounce.event.TextEvent
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
