@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
+ * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.client;
 
@@ -18,11 +18,12 @@ import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.TextValue;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
-@ModuleInfo(name = "NameProtect", category = ModuleCategory.MISC)
+@ModuleInfo(name = "NameProtect", category = ModuleCategory.CLIENT)
 public class NameProtect extends Module {
 
     private final TextValue fakeNameValue = new TextValue("FakeName", "&cProtected User");
     public final BoolValue allPlayersValue = new BoolValue("AllPlayers", false);
+    private final TextValue allplayerNameValue = new TextValue("AllPlayers-FakeName", "&e&lDinoHalal");
     public final BoolValue skinProtectValue = new BoolValue("SkinProtect", true);
 
     @EventTarget
@@ -37,7 +38,7 @@ public class NameProtect extends Module {
 
         if (allPlayersValue.get())
             for (final NetworkPlayerInfo playerInfo : mc.getNetHandler().getPlayerInfoMap())
-                event.setText(StringUtils.replace(event.getText(), playerInfo.getGameProfile().getName(), "Big Loser"));
+                event.setText(StringUtils.replace(event.getText(), playerInfo.getGameProfile().getName(), allplayerNameValue.get().replace("&","§") + "§f"));
     }
 
 }
