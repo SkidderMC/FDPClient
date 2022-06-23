@@ -110,6 +110,8 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        if(mc.thePlayer == null || mc.theWorld == null)
+            return
         if (alertTimer.hasTimePassed(10000) && alert1Value.get() && (modeValue.equals("Matrix") || modeValue.equals("Vulcan"))) {
             alertTimer.reset()
             ClientUtils.displayChatMessage("§8[§c§lNoSlow§8]§aPlease notice that Vulcan/Matrix NoSlow §cDO NOT §asupport FakeLag Disabler!")
@@ -176,6 +178,8 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
+        if(mc.thePlayer == null || mc.theWorld == null)
+            return
         val heldItem = mc.thePlayer.heldItem?.item
 
         event.forward = getMultiplier(heldItem, true)
@@ -197,6 +201,8 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if(mc.thePlayer == null || mc.theWorld == null)
+            return
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
                 nextTemp = false
@@ -232,6 +238,8 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
+        if(mc.thePlayer == null || mc.theWorld == null)
+            return
         val packet = event.packet
         if (modeValue.equals("Medusa")) {
             if ((mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking) && sendPacket) {
