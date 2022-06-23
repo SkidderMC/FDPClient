@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ModuleEle
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.Style;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -39,30 +40,30 @@ public class NullStyle extends Style {
         if(panel.getFade() > 0)
             RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() + 19, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), 1, Integer.MIN_VALUE, Integer.MIN_VALUE);
         GlStateManager.resetColor();
-        float textWidth = Fonts.minecraftFont.getStringWidth("§f" + StringUtils.stripControlCodes(panel.getName()));
-        Fonts.minecraftFont.drawString("§f" + panel.getName(), (int) (panel.getX() - (textWidth - 93.0F) / 2F), panel.getY() + 7, Integer.MAX_VALUE);
+        float textWidth = Fonts.minecraftFont.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
+        Fonts.minecraftFont.drawString("§f" + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 93.0F) / 2F), panel.getY() + 7, Integer.MAX_VALUE);
     }
 
     @Override
     public void drawDescription(int mouseX, int mouseY, String text) {
-        int textWidth = Fonts.minecraftFont.getStringWidth(text);
+        int textWidth = Fonts.minecraftFont.getStringWidth(LanguageManager.INSTANCE.get(text.replaceAll("%","")));
 
         RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.minecraftFont.FONT_HEIGHT + 3, ClickGUIModule.generateColor().getRGB());
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(text, mouseX + 12, mouseY + (Fonts.minecraftFont.FONT_HEIGHT / 2), Integer.MAX_VALUE);
+        Fonts.minecraftFont.drawString(LanguageManager.INSTANCE.get(text.replaceAll("%","")), mouseX + 12, mouseY + (Fonts.minecraftFont.FONT_HEIGHT / 2), Integer.MAX_VALUE);
     }
 
     @Override
     public void drawButtonElement(int mouseX, int mouseY, ButtonElement buttonElement) {
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(buttonElement.getDisplayName(), (int) (buttonElement.getX() - (Fonts.minecraftFont.getStringWidth(buttonElement.getDisplayName()) - 100.0f) / 2.0f), buttonElement.getY() + 6, buttonElement.getColor());
+        Fonts.minecraftFont.drawString(LanguageManager.INSTANCE.get(buttonElement.getDisplayName().replaceAll("%","")), (int) (buttonElement.getX() - (Fonts.minecraftFont.getStringWidth(LanguageManager.INSTANCE.get(buttonElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), buttonElement.getY() + 6, buttonElement.getColor());
     }
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
         final int guiColor = ClickGUIModule.generateColor().getRGB();
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(moduleElement.getDisplayName(), (int) (moduleElement.getX()+3), moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
+        Fonts.minecraftFont.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX()+3), moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
