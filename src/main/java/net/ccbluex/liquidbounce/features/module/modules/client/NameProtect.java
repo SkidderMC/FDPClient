@@ -23,7 +23,7 @@ public class NameProtect extends Module {
 
     private final TextValue fakeNameValue = new TextValue("FakeName", "&cProtected User");
     public final BoolValue allPlayersValue = new BoolValue("AllPlayers", false);
-    private final TextValue allplayerNameValue = new TextValue("AllPlayers-FakeName", "&e&lDinoHalal");
+    private final TextValue allplayerNameValue = new TextValue("AllPlayers-FakeName", "&e&lFDP_USER");
     public final BoolValue skinProtectValue = new BoolValue("SkinProtect", true);
 
     @EventTarget
