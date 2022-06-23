@@ -445,8 +445,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glBlendFunc(770, 771)
         GL11.glEnable(2848)
         GL11.glShadeModel(7425)
-        val stopPos = (40 + ((additionalWidth - font.getStringWidth(decimalFormat.format(target.maxHealth))) * (easingHP / target.maxHealth))).toInt()
-        for (i in 40..stopPos step 5) {
+        val stopPos = (48 + ((additionalWidth - 5 - font.getStringWidth(decimalFormat.format(target.maxHealth))) * (easingHP / target.maxHealth))).toInt()
+        for (i in 48..stopPos step 5) {
             val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
             RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), 30.0, x1, 38.0,
                 ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
@@ -456,6 +456,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glDisable(2848)
         GL11.glShadeModel(7424)
         GL11.glColor4f(1f, 1f, 1f, 1f)
+        font.drawString(decimalFormat.format(easingHP), stopPos + 5, 38 - font.FONT_HEIGHT / 2, Color.WHITE.rgb)
 
 
         if(target.hurtTime >= 9) {
