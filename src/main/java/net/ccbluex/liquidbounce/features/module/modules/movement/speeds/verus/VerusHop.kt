@@ -5,7 +5,9 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 
 class VerusHop : SpeedMode("VerusHop") {
-    
+
+    private val upTimer = BoolValue("${valuePrefix}-upTimer", true)
+
     private var wasTimer = false
 
     override fun onUpdate() {
@@ -13,15 +15,20 @@ class VerusHop : SpeedMode("VerusHop") {
             mc.timer.timerSpeed = 1.00f
             wasTimer = false
         }
-        if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
-            mc.thePlayer.jump()
-            if (!mc.thePlayer.isAirBorne) {
-                return //Prevent flag with Fly
+        if (MovementUtils.isMoving()) {
+            if (mc.thePlayer.onGround) {
+                mc.thePlayer.jump()
+
+                if (!mc.thePlayer.isAirBorne) {
+                    return //Prevent flag with Fly
+                }
+                if (upTimer.get()) {
+                    mc.timer.timerSpeed = 1.27f
+                }
+                wasTimer = true
+                MovementUtils.strafe(0.4848f)
             }
-            mc.timer.timerSpeed = 1.27f
-            wasTimer = true
-            MovementUtils.strafe(0.4821f)
-            mc.thePlayer.motionY = 0.42
+            MovementUtils.strafe()
         }
     }
 }
