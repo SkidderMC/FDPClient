@@ -211,10 +211,10 @@ class Text(
 
         if(rectValue.get().contains("FDP")) {
             FontLoaders.F40.drawString(
-                getClientName(0,4), 5F, 0F,Color(255,255,255,180).rgb
+                getClientName(0,3), 5F, 0F,Color(255,255,255,180).rgb
             )
             FontLoaders.C16.drawString(
-                getClientName(4,9), 5F + FontLoaders.F40.getStringWidth("FDP"), 13F,Color(255,255,255,180).rgb
+                getClientName(3,9), 5F + FontLoaders.F40.getStringWidth("FDP"), 13F,Color(255,255,255,180).rgb
             )
             RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,120).rgb)
             FontLoaders.C14.drawString(
