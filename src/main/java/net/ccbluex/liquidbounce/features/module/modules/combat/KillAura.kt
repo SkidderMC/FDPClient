@@ -272,8 +272,6 @@ class KillAura : Module() {
 
     var strictStrafe = false
 
-    val targetStrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java) as TargetStrafe
-
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
 
@@ -293,7 +291,7 @@ class KillAura : Module() {
      */
     override fun onDisable() {
         strictStrafe = false
-        targetStrafe.doStrafe = false
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
         target = null
         currentTarget = null
         hitable = false
@@ -375,7 +373,7 @@ class KillAura : Module() {
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
         strictStrafe = false
-        if(targetStrafe.modifyStrafe(event)) {
+        if(LiquidBounce.moduleManager[TargetStrafe::class.java]!!.modifyStrafe(event)) {
             strictStrafe = true
         }
         if (rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
@@ -462,8 +460,8 @@ class KillAura : Module() {
             target = currentTarget
         }
 
-        targetStrafe.targetEntity = currentTarget?:return
-        targetStrafe.doStrafe = true
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = true
     }
 
     /**
@@ -885,14 +883,14 @@ class KillAura : Module() {
             if (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange) {
                 target = entity
                 canSwing = false
-                targetStrafe.targetEntity = target?:return
-                targetStrafe.doStrafe = true
+                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = target?:return
+                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = true
                 return
             }
         }
 
         target = null
-        targetStrafe.doStrafe = false
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
         canSwing = discoveredTargets.find { mc.thePlayer.getDistanceToEntityBox(it) < swingRangeValue.get() } != null
     }
 

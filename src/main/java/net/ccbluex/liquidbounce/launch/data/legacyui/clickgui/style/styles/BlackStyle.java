@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ModuleEle
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.Style;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.*;
@@ -41,17 +42,17 @@ public class BlackStyle extends Style {
             RenderUtils.drawBorderedRect((float) panel.getX(), panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade() + 5, 3, new Color(20,20,20).getRGB(), new Color(20,20,20).getRGB());
         }
         GlStateManager.resetColor();
-        float textWidth = FontLoaders.C18.DisplayFontWidths(FontLoaders.C18,"§f" + StringUtils.stripControlCodes(panel.getName()));
-        FontLoaders.C18.DisplayFont(FontLoaders.C18,panel.getName(), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7 - 3, Color.WHITE.getRGB());
+        float textWidth = FontLoaders.C18.DisplayFontWidths(FontLoaders.C18,"§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
+        FontLoaders.C18.DisplayFont(FontLoaders.C18,LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7 - 3, Color.WHITE.getRGB());
     }
 
     @Override
     public void drawDescription(int mouseX, int mouseY, String text) {
-        int textWidth = FontLoaders.C18.DisplayFontWidths(FontLoaders.C18,text);
+        int textWidth = FontLoaders.C18.DisplayFontWidths(FontLoaders.C18,LanguageManager.INSTANCE.get(text.replaceAll("%","")));
 
         RenderUtils.drawBorderedRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.font35.FONT_HEIGHT + 3, 3F, new Color(40,40,40).getRGB(), new Color(40,40,40).getRGB());
         GlStateManager.resetColor();
-        FontLoaders.C18.DisplayFont(FontLoaders.C18,text, mouseX + 12, mouseY + (Fonts.font35.FONT_HEIGHT / 2), Color.WHITE.getRGB());
+        FontLoaders.C18.DisplayFont(FontLoaders.C18,LanguageManager.INSTANCE.get(text.replaceAll("%","")), mouseX + 12, mouseY + (Fonts.font35.FONT_HEIGHT / 2), Color.WHITE.getRGB());
     }
 
     @Override
@@ -60,7 +61,7 @@ public class BlackStyle extends Style {
 
         GlStateManager.resetColor();
 
-        FontLoaders.C18.DisplayFont(FontLoaders.C18,buttonElement.getDisplayName(), buttonElement.getX() + 5, buttonElement.getY() + 5, Color.WHITE.getRGB());
+        FontLoaders.C18.DisplayFont(FontLoaders.C18,LanguageManager.INSTANCE.get(buttonElement.getDisplayName().replaceAll("%","")), buttonElement.getX() + 5, buttonElement.getY() + 5, Color.WHITE.getRGB());
     }
 
     @Override
@@ -68,7 +69,7 @@ public class BlackStyle extends Style {
         Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(40,40,40), moduleElement.hoverTime).getRGB());
         Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(20,20,20, moduleElement.slowlyFade), moduleElement.hoverTime).getRGB());
         GlStateManager.resetColor();
-        FontLoaders.C18.DisplayFont(FontLoaders.C18,moduleElement.getDisplayName(), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.WHITE.getRGB());
+        FontLoaders.C18.DisplayFont(FontLoaders.C18,LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.WHITE.getRGB());
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();

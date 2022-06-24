@@ -75,7 +75,7 @@ public class AstolfoStyle extends Style {
 
     @Override
     public void drawDescription(int mouseX, int mouseY, String text) {
-        int textWidth = Fonts.font35.getStringWidth(text);
+        int textWidth = Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(text.replaceAll("%","")));
 
         RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.font35.FONT_HEIGHT + 3, new Color(26, 26, 26).getRGB());
         GlStateManager.resetColor();
@@ -119,7 +119,7 @@ public class AstolfoStyle extends Style {
                 for (final Value value : moduleValues) {
                     if (value instanceof BoolValue) {
                         String text = value.getName();
-                        float textWidth = Fonts.font35.getStringWidth(text);
+                        float textWidth = Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(text.replaceAll("%","")));
 
                         if (moduleElement.getSettingsWidth() < textWidth + 8)
                             moduleElement.setSettingsWidth(textWidth + 8);

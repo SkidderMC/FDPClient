@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.Element;
