@@ -47,7 +47,7 @@ class DamageParticle : Module() {
                     healthData[entity.entityId] = entity.health
                     if(lastHealth == entity.health) continue
 
-                    val prefix = if (!colorRainbowValue.get()) (if(lastHealth>entity.health){"§c❤"}else{"§a§l❤"}) else (if(lastHealth>entity.health){"-"}else{"+"})
+                    val prefix = if (!colorRainbowValue.get()) (if(lastHealth>entity.health){"§c❤"}else{"§a❤"}) else (if(lastHealth>entity.health){"-"}else{"+"})
                     particles.add(SingleParticle(prefix + BigDecimal(abs(lastHealth - entity.health).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP).toDouble()
                         ,entity.posX - 0.5 + Random(System.currentTimeMillis()).nextInt(5).toDouble() * 0.1
                         ,entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0

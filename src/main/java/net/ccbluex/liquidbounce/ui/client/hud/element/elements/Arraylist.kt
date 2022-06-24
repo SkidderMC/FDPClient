@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.ColorManager
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
@@ -78,7 +77,7 @@ class Arraylist(
     private var y2 = 0F
 
     private var modules = emptyList<Module>()
-    
+
     val delay = intArrayOf(0)
 
     private fun shouldExpect(module: Module): Boolean {
