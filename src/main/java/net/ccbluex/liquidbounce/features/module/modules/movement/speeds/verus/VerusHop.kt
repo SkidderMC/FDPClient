@@ -5,10 +5,13 @@ import net.ccbluex.liquidbounce.event.StepEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 
 class VerusHop : SpeedMode("VerusHop") {
 
-    private val upTimerValue = BoolValue("${valuePrefix}-Up-Timer", true)
+    private val upTimerValue = BoolValue("${valuePrefix}Up-Timer", true)
+    private val upTimerSpeedValue = FloatValue("${valuePrefix}Up-Timer-Speed", 1.27f, 0.1f, 4.0f)
+        .displayable { upTimerValue.get() }
 
     private var wasTimer = false
     private var isStep = false
@@ -20,7 +23,6 @@ class VerusHop : SpeedMode("VerusHop") {
         }
         if (MovementUtils.isMoving()) {
             if (isStep) {
-                mc.thePlayer.jump()
                 isStep = false
                 return
             }
@@ -32,16 +34,18 @@ class VerusHop : SpeedMode("VerusHop") {
                     return //Prevent flag with Fly
                 }
                 if (upTimerValue.get()) {
-                    mc.timer.timerSpeed = 1.27f
+                    mc.timer.timerSpeed = upTimerSpeedValue.get()
                 }
                 wasTimer = true
                 MovementUtils.strafe(0.4848f)
             }
+
             MovementUtils.strafe()
         }
     }
 
-    override fun onDisable() {
+    override fun onEnable() {
+        mc.timer.timerSpeed = 1.0f
         isStep = false
         wasTimer = false
     }

@@ -97,6 +97,9 @@ class Text(
                 "ping" -> return "${mc.thePlayer.ping}"
                 "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
                 "bps" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
+                "health" -> return DECIMAL_FORMAT.format(mc.thePlayer.health)
+                "yaw" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationYaw)
+                "pitch" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationPitch)
                 "attackDist" -> return if (LiquidBounce.combatManager.target != null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
             }
         }
