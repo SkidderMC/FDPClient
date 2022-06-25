@@ -5,12 +5,15 @@
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager
 
+import com.thealtening.AltService
 import me.liuli.elixir.account.MinecraftAccount
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiAdd
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiDirectLogin
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiMicrosoftLoginPending
+import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiTheAltening
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.login.LoginUtils
 import net.minecraft.client.Minecraft
@@ -41,6 +44,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         buttonList.add(GuiButton(11, 5, j + 24 * 3, 90, 20, "%ui.alt.msLogin%"))
         buttonList.add(GuiButton(4, 5, j + 24 * 4, 90, 20, "%ui.disconnect.randomAlt%"))
         buttonList.add(GuiButton(89, 5, j + 24 * 5, 90, 20, "%ui.disconnect.randomOffline%"))
+        buttonList.add(GuiButton(9, 5, j + 24 * 7 + 5, 90, 20, "TheAltening"))
         randomAltField.xPosition = 5
         randomAltField.yPosition = j + 24 * 6
         randomAltField.width = 90
@@ -54,7 +58,14 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         mc.fontRendererObj.drawCenteredString(LanguageManager.getAndFormat("ui.alt.alts", LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size), (width / 2).toFloat(), 18f, 0xffffff)
         mc.fontRendererObj.drawCenteredString(status, (width / 2).toFloat(), 32f, 0xffffff)
         mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.username", mc.getSession().username), 6f, 6f, 0xffffff)
-        mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.type", if (mc.getSession().token.length >= 32) "%ui.alt.type.premium%" else "%ui.alt.type.cracked%"), 6f, 15f, 0xffffff)
+        mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.type",
+            if (mc.getSession().token.length >= 32 && altService.currentService == AltService.EnumAltService.MOJANG)
+                "%ui.alt.type.premium%"
+            else if (altService.currentService == AltService.EnumAltService.THEALTENING)
+                "§aTheAltening"
+            else "%ui.alt.type.cracked%"
+
+        ), 6f, 15f, 0xffffff)
         randomAltField.drawTextBox()
         if (randomAltField.text.isEmpty() && !randomAltField.isFocused) {
             drawCenteredString(mc.fontRendererObj, "§7%ui.alt.randomAltField%", width / 2 - 55, 66, 0xffffff)
@@ -100,6 +111,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             6 -> mc.displayGuiScreen(GuiDirectLogin(this))
             89 -> Thread { LoginUtils.randomCracked() }.start()
             11 -> mc.displayGuiScreen(GuiMicrosoftLoginPending(this))
+            9 -> mc.displayGuiScreen(GuiTheAltening(this))
         }
     }
 
@@ -193,6 +205,9 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     companion object {
+
+        val altService = AltService()
+
         var randomAltField = GuiTextField(2, Minecraft.getMinecraft().fontRendererObj, 0, 0, 0, 0)
 
         init {
@@ -201,6 +216,18 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         }
 
         fun login(account: MinecraftAccount): String {
+            if (altService.currentService != AltService.EnumAltService.MOJANG) {
+                try {
+                    altService.switchService(AltService.EnumAltService.MOJANG)
+                } catch (e: NoSuchFieldException) {
+                    error(e)
+                    ClientUtils.logError("Something went wrong while trying to switch alt service.", e)
+                } catch (e: IllegalAccessException) {
+                    error(e)
+                    ClientUtils.logError("Something went wrong while trying to switch alt service.", e)
+                }
+            }
+
             return try {
                 val mc = Minecraft.getMinecraft()
                 mc.session = account.session.let { Session(it.username, it.uuid, it.token, it.type) }
