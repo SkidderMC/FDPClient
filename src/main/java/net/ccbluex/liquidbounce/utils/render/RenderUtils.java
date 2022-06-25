@@ -32,6 +32,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.GLUtessellator;
 import org.lwjgl.util.glu.GLUtessellatorCallbackAdapter;
+import scala.Int;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
