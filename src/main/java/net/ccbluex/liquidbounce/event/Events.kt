@@ -15,6 +15,7 @@ import net.minecraft.network.Packet
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import java.lang.reflect.Type
 
 /**
  * Called when player attacks other entity
@@ -46,7 +47,12 @@ class BlockBBEvent(blockPos: BlockPos, val block: Block, var boundingBox: AxisAl
 /**
  * Called when player clicks a block
  */
-class ClickBlockEvent(val clickedBlock: BlockPos?, val enumFacing: EnumFacing?) : Event()
+class ClickBlockEvent(val type: Type, val clickedBlock: BlockPos?, val enumFacing: EnumFacing?) : Event() {
+    enum class Type {
+        LEFT, RIGHT
+    }
+}
+
 
 /**
  * Called when client is shutting down
