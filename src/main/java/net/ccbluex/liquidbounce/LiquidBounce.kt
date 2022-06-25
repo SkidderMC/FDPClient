@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
+import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof
 import net.ccbluex.liquidbounce.features.special.*
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.config.ConfigManager
@@ -47,7 +48,7 @@ object LiquidBounce {
 
     var CLIENTTEXT = "Waiting..."
     var Darkmode = true
-    const val COLORED_NAME = "§7[§b!§7] §bFDPCLIENT §c» "
+    const val COLORED_NAME = "§7[§b!§7] §b§lFDPCLIENT §c» "
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC TEAM"
     const val CLIENT_WEBSITE = "FDPClient.Club"
     const val MINECRAFT_VERSION = "1.8.9"
@@ -141,6 +142,7 @@ object LiquidBounce {
         eventManager.registerListener(RotationUtils())
         eventManager.registerListener(AntiForge)
         eventManager.registerListener(InventoryUtils)
+        eventManager.registerListener(BungeeCordSpoof())
         eventManager.registerListener(ServerSpoof)
 
         // Create command manager
