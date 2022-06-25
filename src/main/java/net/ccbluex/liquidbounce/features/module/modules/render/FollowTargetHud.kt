@@ -13,21 +13,16 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
-import net.ccbluex.liquidbounce.features.module.modules.player.HackerDetector
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.extensions.ping
-import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.*
-import net.minecraft.client.gui.ScaledResolution
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
-import kotlin.math.roundToInt
+import java.text.DecimalFormat
 
 @ModuleInfo(name = "FollowTargetHud", category = ModuleCategory.RENDER)
 class FollowTargetHud : Module() {
@@ -42,6 +37,10 @@ class FollowTargetHud : Module() {
 
     private var targetTicks = 0
     private var entityKeep = "yes"
+
+    companion object {
+        val HEALTH_FORMAT = DecimalFormat("#.#")
+    }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -159,7 +158,7 @@ class FollowTargetHud : Module() {
                 fontRenderer.drawString("Attacking", -105 + xChange.toInt(), -13, Color.WHITE.rgb)
                 fontRenderer.drawString(tag, -106 + xChange.toInt() , 10, Color.WHITE.rgb)
                 
-                val healthString = ( ( ( entity.health * 10f ).toInt() ).toFloat() * 0.1f ).toString() + " / 20" 
+                val healthString = ( ( ( entity.health * 10f ).toInt() ).toFloat() * 0.1f ).toString() + " / 20"
                 fontRenderer.drawString(healthString, -25 - fontRenderer.getStringWidth(healthString).toInt() + xChange.toInt(), 22, Color.WHITE.rgb)
                 
                 val distanceString = "⤢" + ( ( ( mc.thePlayer.getDistanceToEntity(entity) * 10f ).toInt() ).toFloat() * 0.1f ).toString() 
@@ -193,7 +192,7 @@ class FollowTargetHud : Module() {
 
                 // info text
                 font.drawString(entity.name, 40 + xChange.toInt(), 5, Color.WHITE.rgb)
-                "$hp hp".also {
+                "${HEALTH_FORMAT.format(entity.health)} hp".also {
                     font.drawString(it, 40 + additionalWidth - font.getStringWidth(it) + xChange.toInt(), 5, Color.LIGHT_GRAY.rgb)
                 }
 
