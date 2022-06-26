@@ -28,6 +28,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
+import net.minecraft.client.settings.KeyBinding
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -119,25 +120,25 @@ class KillAura : Module() {
     private val noBadPacketsValue = BoolValue("NoBadPackets", false)
 
     // AutoBlock
-    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Off")
+    val autoBlockValue = ListValue("AutoBlock", arrayOf("Matrix","Range", "Fake", "Off"), "Off")
 
     // vanilla will send block packet at pre
     private val blockTimingValue =
-        ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") }
+        ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") || autoBlockValue.equals("Matrix") }
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
         }
-    }.displayable { autoBlockValue.equals("Range") }
+    }.displayable { autoBlockValue.equals("Range") || autoBlockValue.equals("Matrix") }
     private val autoBlockPacketValue = ListValue(
         "AutoBlockPacket",
         arrayOf("AfterTick", "AfterAttack", "Vanilla"),
         "AfterTick"
-    ).displayable { autoBlockValue.equals("Range") }
+    ).displayable { autoBlockValue.equals("Range") || autoBlockValue.equals("Matrix") }
     private val interactAutoBlockValue =
-        BoolValue("InteractAutoBlock", true).displayable { autoBlockValue.equals("Range") }
-    private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
+        BoolValue("InteractAutoBlock", true).displayable { autoBlockValue.equals("Range") || autoBlockValue.equals("Matrix") }
+    private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") || autoBlockValue.equals("Matrix") }
 
     // Raycast
     private val raycastValue = BoolValue("RayCast", true)
@@ -335,7 +336,7 @@ class KillAura : Module() {
                 return
             }
             // AutoBlock
-            if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
+            if ((autoBlockValue.equals("Range") || autoBlockValue.equals("Matrix"))&& discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
                         || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock
             ) {
                 val target = this.target ?: discoveredTargets.first()
@@ -507,6 +508,13 @@ class KillAura : Module() {
         }
     }
 
+    fun onRender(event: Render3DEvent) {
+        if(autoBlockPacketValue.get().equals("Matrix")) {
+            if (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem) {
+                KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+            }
+        }
+    }
     /**
      * Render event
      */
@@ -952,7 +960,7 @@ class KillAura : Module() {
         }
 
         // Start blocking after attack
-        if (mc.thePlayer.isBlocking || (autoBlockValue.equals("Range") && canBlock)) {
+        if (mc.thePlayer.isBlocking || ((autoBlockValue.equals("Range") || autoBlockValue.equals("Matrix")) && canBlock)) {
             if (autoBlockPacketValue.equals("AfterTick")) {
                 return
             }
@@ -1119,7 +1127,7 @@ class KillAura : Module() {
      * Start blocking
      */
     private fun startBlocking(interactEntity: Entity, interact: Boolean) {
-        if (autoBlockValue.equals("Range") && mc.thePlayer.getDistanceToEntityBox(interactEntity) > autoBlockRangeValue.get()) {
+        if ((autoBlockValue.equals("Range") || autoBlockValue.equals("Matrix")) && mc.thePlayer.getDistanceToEntityBox(interactEntity) > autoBlockRangeValue.get()) {
             return
         }
 
