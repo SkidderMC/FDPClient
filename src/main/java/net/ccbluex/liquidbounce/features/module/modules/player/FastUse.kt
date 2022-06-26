@@ -46,7 +46,7 @@ class FastUse : Module() {
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
             when (modeValue.get().lowercase()) {
                 "medusa" -> {
-                    if (mc.thePlayer.itemInUseDuration > 5 || !msTimer.hasTimePassed(360))
+                    if (mc.thePlayer.itemInUseDuration > 5 || !msTimer.hasTimePassed(360L))
                         return
 
                     repeat(20) {
