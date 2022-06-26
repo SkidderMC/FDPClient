@@ -1217,20 +1217,13 @@ class KillAura : Module() {
      * HUD Tag
      */
     override val tag: String
-        get() = "${minCpsValue.get()}-${maxCpsValue.get()}, " +
+        get() = "${targetModeValue.get()}, ${priorityValue.get()}, " +
+                "${minCpsValue.get()}-${maxCpsValue.get()}, " +
                 "$maxRange${
                     if (!autoBlockValue.equals("Off")) {
                         "-${autoBlockRangeValue.get()}"
                     } else {
                         ""
                     }
-                }-${discoverRangeValue.get()}, " +
-                "${
-                    if (targetModeValue.equals("Switch")) {
-                        "SW"
-                    } else {
-                        targetModeValue.get().substring(0, 1).uppercase()
-                    }
-                }, " +
-                priorityValue.get().substring(0, 1).uppercase()
+                }-${discoverRangeValue.get()}"
 }
