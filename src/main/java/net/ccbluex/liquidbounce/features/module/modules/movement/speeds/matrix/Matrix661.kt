@@ -11,7 +11,7 @@ import net.minecraft.client.settings.GameSettings
 
 class Matrix661 : SpeedMode("Matrix6.6.1") {
     private val veloBoostValue = BoolValue("${valuePrefix}VelocBoost", true)
-    private val timerBoostValue = BoolValue("${valuePrefix}TimerBoost", true)
+    private val timerBoostValue = BoolValue("${valuePrefix}TimerBoost", false)
     private var recX = 0.0
     private var recZ = 0.0
 
