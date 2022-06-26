@@ -80,9 +80,12 @@ class Scaffold : Module() {
 
     // Rotations
     private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
+    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90).displayable { rotationsValue.equals("AAC") }
     private val customYawValue = IntegerValue("CustomYaw", -145, -180, 180).displayable { rotationsValue.equals("Custom") }
     private val customPitchValue = IntegerValue("CustomPitch", 79, -90, 90).displayable { rotationsValue.equals("Custom") }
+    private val customtowerYawValue = IntegerValue("CustomTowerYaw", -145, -180, 180).displayable { towerrotationsValue.equals("Custom") }
+    private val customtowerPitchValue = IntegerValue("CustomTowerPitch", 79, -90, 90).displayable { towerrotationsValue.equals("Custom") }
     // private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") }
@@ -215,7 +218,7 @@ class Scaffold : Module() {
     private var canSameY = false
     private var lastPlaceBlock: BlockPos? = null
     private var afterPlaceC08: C08PacketPlayerBlockPlacement? = null
-    
+
     //Other
     private var doSpoof = false
 
@@ -365,7 +368,7 @@ class Scaffold : Module() {
     fun onPacket(event: PacketEvent) {
         if (mc.thePlayer == null) return
         val packet = event.packet
-        
+
         //Verus
         if (packet is C03PacketPlayer) {
             if (doSpoof) {
@@ -879,14 +882,39 @@ class Scaffold : Module() {
             }
         }
         if (placeRotation == null) return false
-        if (!rotationsValue.equals("None")) {
+        if (!towerrotationsValue.equals("None") && towerStatus) {
+            lockRotation = when (towerrotationsValue.get().lowercase()) {
+                "aac" -> {
+                    placeRotation.rotation
+                }
+                "vanilla" -> {
+                    placeRotation.rotation
+                }
+                "test1" -> {
+                    val caluyaw = ((placeRotation.rotation.yaw / 45).roundToInt() * 45).toFloat()
+                    Rotation(caluyaw, placeRotation.rotation.pitch)
+                }
+                "test2" -> {
+                    Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
+                }
+                "custom" -> {
+                    Rotation(mc.thePlayer.rotationYaw + customtowerYawValue.get(), customtowerPitchValue.get().toFloat())
+                }
+                else -> return false // this should not happen
+            }
+            if (silentRotationValue.get()) {
+                val limitedRotation =
+                    RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
+                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+            } else {
+                mc.thePlayer.rotationYaw = lockRotation!!.yaw
+                mc.thePlayer.rotationPitch = lockRotation!!.pitch
+            }
+        }
+        if (!rotationsValue.equals("None") && !towerStatus) {
             lockRotation = when (rotationsValue.get().lowercase()) {
                 "aac" -> {
-                    if (!towerStatus) {
-                        Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
-                    } else {
-                        placeRotation.rotation
-                    }
+                    Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
                 }
                 "vanilla" -> {
                     placeRotation.rotation
