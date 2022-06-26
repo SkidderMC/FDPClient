@@ -22,7 +22,7 @@ class MatrixHop : SpeedMode("MatrixHop") {
             mc.thePlayer.motionZ = 0.0
         }
 
-        if (mc.thePlayer.motionY <0) {
+        if (mc.thePlayer.motionY<0) {
             mc.thePlayer.motionY += 0.01
         }
 

@@ -14,7 +14,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
 import net.minecraft.client.settings.GameSettings
 
-class Vulcan3Fly : FlyMode("VulcanLegit") {
+class VulcanLegitFly : FlyMode("VulcanLegit") {
 
     private val timerValue = FloatValue("${valuePrefix}Timer", 2f, 1f, 3f)
 
