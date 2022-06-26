@@ -47,11 +47,7 @@ class BlockBBEvent(blockPos: BlockPos, val block: Block, var boundingBox: AxisAl
 /**
  * Called when player clicks a block
  */
-class ClickBlockEvent(val type: Type, val clickedBlock: BlockPos?, val enumFacing: EnumFacing?) : Event() {
-    enum class Type {
-        LEFT, RIGHT
-    }
-}
+class ClickBlockEvent(val clickedBlock: BlockPos?, val enumFacing: EnumFacing?) : Event()
 
 
 /**

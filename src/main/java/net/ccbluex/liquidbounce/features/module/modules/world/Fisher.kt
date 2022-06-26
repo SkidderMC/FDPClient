@@ -32,7 +32,6 @@ object Fisher : Module() {
     private val jitterValue = FloatValue("Jitter", 0.0f, 0.0f, 5.0f)
 
     private var stage = Stage.NOTHING
-    private val debugValue = BoolValue("Debug", false)
     private val recastTimer = TheTimer()
 
     override fun onDisable() {

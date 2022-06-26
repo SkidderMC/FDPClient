@@ -85,7 +85,7 @@ object Miner : Module() {
                 val block = pos!!.getBlock() ?: return
 
                 if (currentDamage == 0F) {
-                    val event = ClickBlockEvent(ClickBlockEvent.Type.LEFT, pos, EnumFacing.DOWN)
+                    val event = ClickBlockEvent(pos, EnumFacing.DOWN)
                     LiquidBounce.eventManager.callEvent(event)
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, EnumFacing.DOWN))
 
