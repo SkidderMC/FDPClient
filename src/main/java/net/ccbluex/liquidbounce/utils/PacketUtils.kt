@@ -16,6 +16,16 @@ object PacketUtils : MinecraftInstance() {
         return false
     }
 
+    val S12PacketEntityVelocity.realMotionX: Float
+        get() = motionX / 8000f
+
+    val S12PacketEntityVelocity.realMotionY: Float
+        get() = motionY / 8000f
+
+    val S12PacketEntityVelocity.realMotionZ: Float
+        get() = motionZ / 8000f
+
+
     fun sendPacketNoEvent(packet: Packet<INetHandlerPlayServer>) {
         packets.add(packet)
         mc.netHandler.addToSendQueue(packet)
