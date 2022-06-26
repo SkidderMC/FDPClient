@@ -48,7 +48,7 @@ object Fisher : Module() {
             }
             return
         } else if (stage == Stage.RECASTING) {
-            if (recastTimer.hasTimePassed(recastDelayValue.get())) {
+            if (recastTimer.hasTimePassed(recastDelayValue.get().toLong())) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                 stage = Stage.NOTHING
             }
