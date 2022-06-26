@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MathUtils.inRange
 import net.ccbluex.liquidbounce.utils.jitterRotation
 import net.ccbluex.liquidbounce.utils.setServerRotation
-import net.ccbluex.liquidbounce.utils.timer.TheTimer
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -32,7 +32,7 @@ object Fisher : Module() {
     private val jitterValue = FloatValue("Jitter", 0.0f, 0.0f, 5.0f)
 
     private var stage = Stage.NOTHING
-    private val recastTimer = TheTimer()
+    private val recastTimer = MSTimer()
 
     override fun onDisable() {
         stage = Stage.NOTHING
