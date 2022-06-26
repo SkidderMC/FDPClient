@@ -46,7 +46,7 @@ class FastUse : Module() {
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
             when (modeValue.get().lowercase()) {
                 "medusa" -> {
-                    if (!msTimer.hasTimePassed(0))
+                    if (mc.thePlayer.itemInUseDuration > 5 || !msTimer.hasTimePassed(360L))
                         return
 
                     repeat(20) {
@@ -62,7 +62,7 @@ class FastUse : Module() {
 
                     mc.playerController.onStoppedUsingItem(mc.thePlayer)
                 }
-                
+
                 "ncp" -> if (mc.thePlayer.itemInUseDuration > 14) {
                     repeat(20) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
@@ -81,10 +81,10 @@ class FastUse : Module() {
                     mc.timer.timerSpeed = 0.49F
                     usedTimer = true
                     if (mc.thePlayer.itemInUseDuration > 14) {
-                    repeat(23) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                        repeat(23) {
+                            mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                        }
                     }
-                }
                 }
                 "newaac" -> {
                     mc.timer.timerSpeed = 0.49F

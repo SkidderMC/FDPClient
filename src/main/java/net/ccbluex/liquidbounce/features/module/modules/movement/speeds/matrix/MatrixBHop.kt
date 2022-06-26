@@ -8,8 +8,8 @@ import kotlin.math.sqrt
 import net.minecraft.client.settings.GameSettings
 
 class MatrixBHop : SpeedMode("MatrixBHop") {
-    private val speedMultiValue = FloatValue("MatrixBHopSpeed", 1f, 0.7f, 1.2f)
-    private val noTimerValue = BoolValue("NoTimer", false)
+    private val speedMultiValue = FloatValue("${valuePrefix}Speed", 1f, 0.7f, 1.2f)
+    private val noTimerValue = BoolValue("${valuePrefix}NoTimer", false)
     private var recX = 0.0
     private var recY = 0.0
     private var recZ = 0.0
