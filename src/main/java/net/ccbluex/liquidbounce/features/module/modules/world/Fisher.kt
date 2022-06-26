@@ -12,8 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MathUtils.inRange
-import net.ccbluex.liquidbounce.utils.jitterRotation
-import net.ccbluex.liquidbounce.utils.setServerRotation
+import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntValue
@@ -29,7 +28,6 @@ object Fisher : Module() {
     private val detectionValue = ListValue("Detection", arrayOf("Motion", "Sound"), "Sound")
     private val recastValue = BoolValue("Recast", true)
     private val recastDelayValue = IntValue("RecastDelay", 500, 0, 1000)
-    private val jitterValue = FloatValue("Jitter", 0.0f, 0.0f, 5.0f)
 
     private var stage = Stage.NOTHING
     private val recastTimer = MSTimer()
@@ -50,11 +48,6 @@ object Fisher : Module() {
             }
             return
         } else if (stage == Stage.RECASTING) {
-            if (jitterValue.get() != 0f) {
-                jitterRotation(jitterValue.get()).also {
-                    setServerRotation(it.first, it.second)
-                }
-            }
             if (recastTimer.hasTimePassed(recastDelayValue.get())) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                 stage = Stage.NOTHING
@@ -75,7 +68,6 @@ object Fisher : Module() {
     }
 
     private fun recoverFishRod() {
-        alert("Recovering fish rod")
         if (stage != Stage.NOTHING) {
             return
         }
