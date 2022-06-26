@@ -898,7 +898,7 @@ class Scaffold : Module() {
                     Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
                 }
                 "custom" -> {
-                    Rotation(mc.thePlayer.rotationYaw + customtowerYawValue.get(), customtowerYawValue.get().toFloat())
+                    Rotation(mc.thePlayer.rotationYaw + customtowerYawValue.get(), customtowerPitchValue.get().toFloat())
                 }
                 else -> return false // this should not happen
             }
@@ -915,7 +915,6 @@ class Scaffold : Module() {
             lockRotation = when (rotationsValue.get().lowercase()) {
                 "aac" -> {
                     Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
-
                 }
                 "vanilla" -> {
                     placeRotation.rotation
