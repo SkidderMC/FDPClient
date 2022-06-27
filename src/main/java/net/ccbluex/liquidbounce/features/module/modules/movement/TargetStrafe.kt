@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PlayerUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.render.ColorManager
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -21,7 +22,9 @@ import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 
 @ModuleInfo(name = "TargetStrafe",  category = ModuleCategory.MOVEMENT)
@@ -41,31 +44,6 @@ class TargetStrafe : Module() {
 
     var callBackYaw = 0.0
 
-    fun modifyStrafe(event: StrafeEvent):Boolean {
-        if(!isEnabled || event.isCancelled) {
-            return false
-        }else {
-            MovementUtils.strafe()
-            return true
-        }
-    }
-
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer.isCollidedHorizontally) {
-            direction = -direction
-            if (direction >= 0) {
-                direction = 1.0
-            }else {
-                direction = -1.0
-            }
-        }
-    }
-
-    /**
-     *
-     * @param event Render3DEvent
-     */
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         val target = LiquidBounce.combatManager.target
@@ -218,26 +196,101 @@ class TargetStrafe : Module() {
             }
         }
 
+        @EventTarget
+        fun onMove(event: MoveEvent) {
+            val target = LiquidBounce.combatManager.target
+            if(!canStrafe(target)) return
+            var aroundVoid = false
+            for (x in -1..0) for (z in -1..0) if (isVoid(x, z)) aroundVoid = true
+
+            var yaw = RotationUtils.getRotationFromEyeHasPrev(LiquidBounce.combatManager.target).yaw
+
+            if (mc.thePlayer.isCollidedHorizontally || aroundVoid) direction *= -1
+
+            var targetStrafe = (if (mc.thePlayer.moveStrafing != 0F) mc.thePlayer.moveStrafing * direction else direction.toFloat())
+            if (!PlayerUtils.isBlockUnder()) targetStrafe = 0f
+
+            val rotAssist = 45 / mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target)
+            val moveAssist = (45f / getStrafeDistance(LiquidBounce.combatManager.target!!)).toDouble()
+
+            var mathStrafe = 0f
+
+            if (targetStrafe > 0 as Nothing) {
+                if ((LiquidBounce.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||LiquidBounce.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
+                        LiquidBounce.combatManager.target!!
+                    ) < radiusValue.get()
+                ) yaw += -rotAssist
+                mathStrafe += -moveAssist.toFloat()
+            } else if (targetStrafe < (0 as Nothing)) {
+                if ((LiquidBounce.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||LiquidBounce.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
+                        LiquidBounce.combatManager.target!!
+                    ) < radiusValue.get()
+                ) yaw += rotAssist
+                mathStrafe += moveAssist.toFloat()
+            }
+
+            val doSomeMath = doubleArrayOf(
+                cos(Math.toRadians((yaw + 90f + mathStrafe).toDouble())),
+                sin(Math.toRadians((yaw + 90f + mathStrafe).toDouble()))
+            )
+            val moveSpeed = sqrt(event.x.pow(2.0) + event.z.pow(2.0))
+
+            val asLast = doubleArrayOf(
+                moveSpeed * doSomeMath[0],
+                moveSpeed * doSomeMath[1]
+            )
+
+            event.x = asLast[0]
+            event.z = asLast[1]
+
+            if(doStrafe && (!ongroundValue.get() || mc.thePlayer.onGround)) {
+                val _entity : EntityLivingBase = targetEntity?:return
+                MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event)
+                callBackYaw = RotationUtils.getRotationsEntity(_entity).yaw.toDouble()
+                isEnabled = true
+            }else {
+                isEnabled = false
+                if (!thirdPersonViewValue.get()) return
+                mc.gameSettings.thirdPersonView = 3
+            }
+        }
+
         if (!thirdPersonViewValue.get()) return
         mc.gameSettings.thirdPersonView = if (canStrafe(target)) 3 else 0
     }
 
-    private fun canStrafe(target: EntityLivingBase?): Boolean {
-        return target != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && ((!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state) || (onlyflyValue.get() && LiquidBounce.moduleManager[Fly::class.java]!!.state))
+        private fun canStrafe(target: EntityLivingBase?): Boolean {
+            return target != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && ((!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state) || (onlyflyValue.get() && LiquidBounce.moduleManager[Fly::class.java]!!.state))
+        }
+
+    fun modifyStrafe(event: StrafeEvent):Boolean {
+        if(!isEnabled || event.isCancelled) {
+            return false
+        }else {
+            MovementUtils.strafe()
+            return true
+        }
     }
 
     @EventTarget
-    fun onMove(event: MoveEvent) {
-        if(doStrafe && (!ongroundValue.get() || mc.thePlayer.onGround)) {
-            val _entity : EntityLivingBase = targetEntity?:return
-            MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event)
-            callBackYaw = RotationUtils.getRotationsEntity(_entity).yaw.toDouble()
-            isEnabled = true
-        }else {
-            isEnabled = false
-            if (!thirdPersonViewValue.get()) return
-            mc.gameSettings.thirdPersonView = 3
+    fun onUpdate(event: UpdateEvent) {
+        if (mc.thePlayer.isCollidedHorizontally) {
+            direction = -direction
+            if (direction >= 0) {
+                direction = 1.0
+            }else {
+                direction = -1.0
+            }
         }
+    }
+
+
+    private fun getStrafeDistance(target: EntityLivingBase): Float {
+        return (mc.thePlayer.getDistanceToEntity(target) - radiusValue.get()).coerceAtLeast(
+            mc.thePlayer.getDistanceToEntity(
+                target
+            ) - (mc.thePlayer.getDistanceToEntity(target) - radiusValue.get() / (radiusValue.get() * 2))
+        )
     }
 
     fun doMove(event: MoveEvent):Boolean {
