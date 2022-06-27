@@ -5,6 +5,7 @@ import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.other.PopUI
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
@@ -15,7 +16,7 @@ import java.awt.Color
  * @author liulihaocai
  * FDPClient
  */
-class KeySelectUI(val info: KeyInfo) : PopUI("%ui.keybind.select%") {
+class KeySelectUI(val info: KeyInfo) : PopUI(LanguageManager.get("ui.keybind.select")) {
     private var str = ""
     private var modules = LiquidBounce.moduleManager.modules.toList()
     private val singleHeight = 4F + Fonts.font35.height
@@ -27,7 +28,7 @@ class KeySelectUI(val info: KeyInfo) : PopUI("%ui.keybind.select%") {
         // modules
         var yOffset = height - stroll + 5F
         if (str.startsWith(".")) {
-            Fonts.font35.drawString("%ui.keybind.addMacro%", 8F, singleHeight + yOffset, Color.BLACK.rgb, false)
+            Fonts.font35.drawString(LanguageManager.get("ui.keybind.addMacro"), 8F, singleHeight + yOffset, Color.BLACK.rgb, false)
         } else {
             for (module in modules) {
                 if (yOffset> (height - singleHeight) && (yOffset - singleHeight) <190) {
@@ -48,7 +49,7 @@ class KeySelectUI(val info: KeyInfo) : PopUI("%ui.keybind.select%") {
         RenderUtils.drawRect(0F, baseHeight - singleHeight, baseWidth.toFloat(), baseHeight.toFloat(), Color.WHITE.rgb)
 
         // search bar
-        Fonts.font35.drawString(str.ifEmpty { "%ui.keybind.search%" }, 8F, 8F + Fonts.font40.height + 4F, Color.LIGHT_GRAY.rgb, false)
+        Fonts.font35.drawString(str.ifEmpty { LanguageManager.get("ui.keybind.search") }, 8F, 8F + Fonts.font40.height + 4F, Color.LIGHT_GRAY.rgb, false)
         RenderUtils.drawRect(8F, height + 2F, baseWidth - 8F, height + 3F, Color.LIGHT_GRAY.rgb)
     }
 
