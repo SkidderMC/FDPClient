@@ -40,7 +40,8 @@ class MatrixDamage : FlyMode("MatrixDamage") {
                     mc.timer.timerSpeed = 1.0F
                     mc.thePlayer.motionX += (-sin(yaw) * 0.416)
                     mc.thePlayer.motionZ += (cos(yaw) * 0.416)
-                    mc.thePlayer.motionY = packetymotion
+                    if (mode.equals("stable")) 
+                        mc.thePlayer.motionY = packetymotion
                     if (tick++ >= if (mode.equals("stable")) 27 else 30) {
                         mc.timer.timerSpeed = 1.0f
                         velocitypacket = false
