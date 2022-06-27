@@ -49,7 +49,6 @@ class GuiTheAltening(private val prevGui: GuiAltManager): GuiScreen() {
 
 
         // Back buttons
-//        buttonList.add(GuiButton(3, width / 2 - 100, height - 54, 98, 20, "Buy"))
         buttonList.add(GuiButton(0, width / 2 - 100, height - 58, "Back"))
 
         // Token text field
