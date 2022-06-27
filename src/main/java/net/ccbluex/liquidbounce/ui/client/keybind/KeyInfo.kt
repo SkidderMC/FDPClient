@@ -71,7 +71,7 @@ class KeyInfo(
                 GL11.glPushMatrix()
                 GL11.glTranslatef(0F, yOffset, 0F)
 
-                Fonts.font40.drawString(module.localizedName, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
+                Fonts.font40.drawString(LanguageManager.get(module.localizedName.replace("%", "")), 12F, fontHeight, Color.DARK_GRAY.rgb, false)
                 Fonts.font40.drawString(
                     "-", baseTabWidth - 12F - Fonts.font40.getStringWidth("-"), fontHeight, Color.RED.rgb, false
                 )
