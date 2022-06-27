@@ -17,6 +17,7 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
 import net.minecraft.util.Session
 import org.lwjgl.input.Keyboard
+import java.awt.Color
 import java.net.Proxy.NO_PROXY
 
 class GuiTheAltening(private val prevGui: GuiAltManager): GuiScreen() {
@@ -46,9 +47,9 @@ class GuiTheAltening(private val prevGui: GuiAltManager): GuiScreen() {
         generateButton = GuiButton(1, width / 2 - 100, 140, "Generate")
         buttonList.add(generateButton)
 
+
         // Back buttons
-//        buttonList.add(GuiButton(3, width / 2 - 100, height - 54, 98, 20, "Buy"))
-        buttonList.add(GuiButton(0, width / 2 - 100, height - 54, "Back"))
+        buttonList.add(GuiButton(0, width / 2 - 100, height - 58, "Back"))
 
         // Token text field
         tokenField = GuiTextField(666, Fonts.font40, width / 2 - 100, 50, 200, 20)
@@ -65,10 +66,10 @@ class GuiTheAltening(private val prevGui: GuiAltManager): GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        RenderUtils.drawRect(30.0f, 30.0f, width - 30.0f, height - 30.0f, Integer.MIN_VALUE)
+        RenderUtils.drawRoundedCornerRect(30.0f, 30.0f, width - 30.0f, height - 30.0f, 4f, Color(0,0,0, 70).rgb)
 
         // Draw title and status
-        Fonts.font35.drawCenteredString("TheAltening", width / 2.0f, 6.0f, 0xffffff)
+        Fonts.font35.drawCenteredString("TheAltening", width / 2.0f, 10.0f, 0xffffff)
         Fonts.font35.drawCenteredString(status, width / 2.0f, 18.0f, 0xffffff)
 
         // Draw fields
