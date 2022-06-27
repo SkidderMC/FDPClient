@@ -15,7 +15,6 @@ import net.minecraft.network.Packet
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-import java.lang.reflect.Type
 
 /**
  * Called when player attacks other entity
@@ -74,7 +73,11 @@ class KeyEvent(val key: Int) : Event()
  *
  * @param eventState PRE or POST
  */
-class MotionEvent(val eventState: EventState) : Event()
+class MotionEvent(val eventState: EventState) : Event() {
+    fun isPre() : Boolean {
+    return eventState == EventState.PRE
+    }
+}
 
 /**
  * Called in "onLivingUpdate" when the player is using a use item.
