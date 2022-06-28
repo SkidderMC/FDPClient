@@ -3,10 +3,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.glides.vulcan
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMode
 
-class VulcanGlide : GlideMode("Vulcan2.6.3") {
-
+class Vulcan263 : GlideMode("Vulcan2.6.3") {
     private var ticks = 0
-
     override fun onUpdate(event: UpdateEvent) {
         if(mc.thePlayer.motionY<= -0.10) {
             ticks++
