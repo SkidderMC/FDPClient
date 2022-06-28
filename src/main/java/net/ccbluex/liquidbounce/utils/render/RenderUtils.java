@@ -760,6 +760,50 @@ public final class RenderUtils extends MinecraftInstance {
         tessellator.draw();
     }
 
+    public static void drawBlockBox(final BlockPos blockPos, final Color color, final boolean outline) {
+        final RenderManager renderManager = mc.getRenderManager();
+        final Timer timer = mc.timer;
+
+        final double x = blockPos.getX() - renderManager.renderPosX;
+        final double y = blockPos.getY() - renderManager.renderPosY;
+        final double z = blockPos.getZ() - renderManager.renderPosZ;
+
+        AxisAlignedBB axisAlignedBB = new AxisAlignedBB(x, y, z, x + 1.0, y + 1, z + 1.0);
+        final Block block = BlockUtils.getBlock(blockPos);
+
+        if (block != null) {
+            final EntityPlayer player = mc.thePlayer;
+
+            final double posX = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double) timer.renderPartialTicks;
+            final double posY = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double) timer.renderPartialTicks;
+            final double posZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double) timer.renderPartialTicks;
+            axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos)
+                    .expand(0.0020000000949949026D, 0.0020000000949949026D, 0.0020000000949949026D)
+                    .offset(-posX, -posY, -posZ);
+        }
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        enableGlCap(GL_BLEND);
+        disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST);
+        glDepthMask(false);
+
+        glColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() != 255 ? color.getAlpha() : outline ? 26 : 35);
+        drawFilledBox(axisAlignedBB);
+
+        if (outline) {
+            glLineWidth(1F);
+            enableGlCap(GL_LINE_SMOOTH);
+            glColor(color);
+
+            drawSelectionBoundingBox(axisAlignedBB);
+        }
+
+        GlStateManager.resetColor();
+        glDepthMask(true);
+        resetCaps();
+    }
+
+
     // Astolfo
     public static int Astolfo(int var2, float st, float bright) {
         double currentColor = Math.ceil(System.currentTimeMillis() + (long) (var2 * 130)) / 6;
