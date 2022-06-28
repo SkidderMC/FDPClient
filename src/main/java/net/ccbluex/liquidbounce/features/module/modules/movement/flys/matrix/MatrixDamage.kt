@@ -9,15 +9,14 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.sin
 import kotlin.math.cos
 
-
 class MatrixDamage : FlyMode("MatrixDamage") {
     private val mode = ListValue("${valuePrefix}Mode", arrayOf("Stable", "Stable2", "Custom"), "Stable")
     private val warn = BoolValue("${valuePrefix}DamageWarn", true)
-    private val speedBoost = FloatValue("${valuePrefix}BoostSpeed", 0.5f, 0f, 3f).displayable { mode.equals("custom") }
-    private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f).displayable { mode.equals("custom") }
-    private val boostTicks = IntegerValue("${valuePrefix}BoostTicks", 27, 10, 40).displayable { mode.equals("custom") }
-    private val randomize = BoolValue("${valuePrefix}Randomize", true).displayable { mode.equals("custom") }
-    private val randomAmount = IntegerValue("${valuePrefix}RandomAmount", 1, 0, 30).displayable { mode.equals("custom") && randomize.get() }
+    private val speedBoost = FloatValue("${valuePrefix}BoostSpeed", 0.5f, 0f, 3f)
+    private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f)
+    private val boostTicks = IntegerValue("${valuePrefix}BoostTicks", 27, 10, 40)
+    private val randomize = BoolValue("${valuePrefix}Randomize", true)
+    private val randomAmount = IntegerValue("${valuePrefix}RandomAmount", 1, 0, 30).displayable { randomize.get() }
 
     private var velocitypacket = false
     private var packetymotion = 0.0
