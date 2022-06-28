@@ -45,6 +45,11 @@ public class ColorManager {
         return Color.getHSBColor(rainbow, 0.5f, 1.0f).getRGB();
     }
 
+    public static int astolfoRainbow(int delay, int offset, int index) {
+        double rainbowDelay = Math.ceil(System.currentTimeMillis() + (long)(delay * index)) / offset;
+        return Color.getHSBColor((double)((float)((rainbowDelay %= 360.0) / 360.0)) < 0.5 ? -((float)(rainbowDelay / 360.0)) : (float)(rainbowDelay / 360.0), 0.5F, 1.0F).getRGB();
+    }
+
     public static Color rainbow(long time, float count, float fade) {
         float hue = ((float)time + (1.0f + count) * 2.0E8f) / 1.0E10f % 1.0f;
         long color = Long.parseLong(Integer.toHexString(Color.HSBtoRGB(hue, 1.0f, 1.0f)), 16);
