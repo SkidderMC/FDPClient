@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.features.special.AutoReconnect;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
+import net.ccbluex.liquidbounce.utils.SessionUtils;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.login.LoginUtils;
 import net.minecraft.client.gui.GuiButton;
@@ -47,6 +48,8 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
         reconnectTimer = 0;
+        SessionUtils.handleConnection();
+
         final ServerData server=ServerUtils.serverData;
         infoStr="§fPlaying on: "+mc.session.getUsername()+" | "+server.serverIP;
         buttonList.add(reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "%ui.reconnect%"));
