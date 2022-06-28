@@ -45,7 +45,6 @@ open class HUD : MinecraftInstance() {
                 .addElement(Notifications())
                 .addElement(Inventory())
                 .addElement(Targets())
-                .addElement(Statistics())
         }
     }
 

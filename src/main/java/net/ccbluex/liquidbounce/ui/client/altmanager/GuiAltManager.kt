@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.ui.client.altmanager
 import com.thealtening.AltService
 import me.liuli.elixir.account.MinecraftAccount
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.SessionEvent
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiAdd
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiDirectLogin
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiMicrosoftLoginPending
@@ -232,7 +231,6 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             return try {
                 val mc = Minecraft.getMinecraft()
                 mc.session = account.session.let { Session(it.username, it.uuid, it.token, it.type) }
-                LiquidBounce.eventManager.callEvent(SessionEvent())
                 LanguageManager.getAndFormat("ui.alt.nameChanged", mc.session.username)
             } catch (e: Exception) {
                 e.printStackTrace()

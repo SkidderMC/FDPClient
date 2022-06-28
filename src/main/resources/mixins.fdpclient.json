@@ -35,7 +35,6 @@
     "gui.MixinGuiScreen",
     "gui.MixinGuiSpectator",
     "gui.MixinGuiTextField",
-    "gui.MixinGuiGameOver",
     "network.MixinC00Handshake",
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
