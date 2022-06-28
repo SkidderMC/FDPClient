@@ -7,6 +7,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.thealtening.AltService
 import com.thealtening.api.TheAltening
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.event.SessionEvent
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.elements.GuiPasswordField
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -119,6 +120,8 @@ class GuiTheAltening(private val prevGui: GuiAltManager): GuiScreen() {
                                 .selectedProfile.id.toString(),
                                 yggdrasilUserAuthentication.authenticatedToken, "mojang")
 
+                            LiquidBounce.eventManager.callEvent(SessionEvent())
+
                             prevGui.status = "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
                             mc.displayGuiScreen(prevGui)
                             ""
@@ -169,6 +172,8 @@ class GuiTheAltening(private val prevGui: GuiAltManager): GuiScreen() {
                                     .selectedProfile.id.toString(),
                                 yggdrasilUserAuthentication.authenticatedToken, "mojang"
                             )
+
+                            LiquidBounce.eventManager.callEvent(SessionEvent())
 
                             prevGui.status =
                                 "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
