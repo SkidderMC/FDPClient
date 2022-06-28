@@ -147,11 +147,6 @@ class Render3DEvent(val partialTicks: Float) : Event()
 class ScreenEvent(val guiScreen: GuiScreen?) : Event()
 
 /**
- * Called when the session changes
- */
-class SessionEvent : Event()
-
-/**
  * Called when player is going to step
  */
 class StepEvent(var stepHeight: Float, val eventState: EventState) : Event()

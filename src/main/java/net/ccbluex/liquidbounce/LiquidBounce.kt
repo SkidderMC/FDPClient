@@ -29,7 +29,10 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.FontsGC
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
-import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.ClassUtils
+import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.InventoryUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -141,8 +144,6 @@ object LiquidBounce {
         eventManager.registerListener(InventoryUtils)
         eventManager.registerListener(BungeeCordSpoof())
         eventManager.registerListener(ServerSpoof)
-        eventManager.registerListener(SessionUtils())
-        eventManager.registerListener(StatisticsUtils())
 
         // Create command manager
         commandManager = CommandManager()
