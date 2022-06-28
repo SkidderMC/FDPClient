@@ -519,7 +519,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         GL11.glPopMatrix()
 
         font.drawString("Name ${target.name}", 45, 5, Color.WHITE.rgb)
-        font.drawString("Health ${getHealth(target)}", 45, 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
+        font.drawString("Health ${decimalFormat.format(getHealth(target))}", 45, 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
         RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 45f + (easingHP / target.maxHealth) * 100f, 42f, 3f, ColorUtils.rainbow().rgb)
         
     }
