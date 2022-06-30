@@ -9,7 +9,7 @@ import com.google.gson.JsonElement
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
-abstract class Value<T>(val name: String, protected var value: T) {
+abstract class Value<T>(val name: String, var value: T) {
     val default = value
 
     private var displayableFunc: () -> Boolean = { true }
