@@ -61,14 +61,17 @@ object EaseUtils {
         return x * x * x * x * x
     }
 
+    @JvmStatic
     fun easeOutQuint(x: Double): Double {
         return 1 - (1 - x).pow(5)
     }
 
+    @JvmStatic
     fun easeInOutQuint(x: Double): Double {
         return if (x < 0.5) { 16 * x * x * x * x * x } else { 1 - (-2 * x + 2).pow(5) / 2 }
     }
 
+    @JvmStatic
     fun easeInExpo(x: Double): Double {
         return if (x == 0.0) { 0.0 } else { 2.0.pow(10 * x - 10) }
     }
@@ -77,6 +80,7 @@ object EaseUtils {
         return if (x == 1.0) { 1.0 } else { 1 - 2.0.pow(-10 * x) }
     }
 
+    @JvmStatic
     fun easeInOutExpo(x: Double): Double {
         return if (x == 0.0) { 0.0 } else { if (x == 1.0) { 1.0 } else { if (x < 0.5) { 2.0.pow(20 * x - 10) / 2 } else { (2 - 2.0.pow(-20 * x + 10)) / 2 } } }
     }
