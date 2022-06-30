@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.MoveEvent
-import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.potion.Potion
@@ -262,6 +261,10 @@ object MovementUtils : MinecraftInstance() {
             ground -= blockHeight
         }
         return 0.0
+    }
+
+    fun isOnGround(height: Double): Boolean {
+        return !mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -height, 0.0)).isEmpty()
     }
 
     fun handleVanillaKickBypass() {

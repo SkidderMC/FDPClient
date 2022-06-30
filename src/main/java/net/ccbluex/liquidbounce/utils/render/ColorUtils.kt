@@ -247,7 +247,7 @@ object ColorUtils {
             )
         )
     }
-
+    @JvmStatic
     fun interpolateColorsBackAndForth(speed: Int, index: Int, start: Color?, end: Color?, trueColor: Boolean): Color? {
         var angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
         angle = (if (angle >= 180) 360 - angle else angle) * 2
