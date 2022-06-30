@@ -33,9 +33,11 @@ class LongJump : Module() {
     val autoJumpValue = BoolValue("AutoJump", true)
     val autoDisableValue = BoolValue("AutoDisable", true)
     var jumped = false
+    var hasJumped = false
 
     override fun onEnable() {
         jumped = false
+        hasJumped = false
         mode.onEnable()
     }
 
@@ -52,15 +54,14 @@ class LongJump : Module() {
     fun onUpdate(event: UpdateEvent) {
         if(!state) return
         mode.onUpdate(event)
-        if(autoJumpValue.get() && MovementUtils.isMoving() && mc.thePlayer.onGround && !jumped) {
-            mc.thePlayer.jump()
-        }
-        if(mc.thePlayer.onGround && jumped) {
-            if(autoDisableValue.get()) {
+        if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving()) {
+            jumped = true
+            if (hasJumped && autoDisableValue.get()) {
                 state = false
-            } else {
-                jumped = false
+                return
             }
+            mc.thePlayer.jump()
+            hasJumped = true
         }
     }
 
