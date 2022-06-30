@@ -48,10 +48,11 @@ object EaseUtils {
         return x * x * x * x
     }
 
+    @JvmStatic
     fun easeOutQuart(x: Double): Double {
         return 1 - (1 - x).pow(4)
     }
-
+    @JvmStatic
     fun easeInOutQuart(x: Double): Double {
         return if (x < 0.5) { 8 * x * x * x * x } else { 1 - (-2 * x + 2).pow(4) / 2 }
     }
@@ -99,6 +100,7 @@ object EaseUtils {
         return c3 * x * x * x - c1 * x * x
     }
 
+    @JvmStatic
     fun easeOutBack(x: Double): Double {
         val c1 = 1.70158
         val c3 = c1 + 1
