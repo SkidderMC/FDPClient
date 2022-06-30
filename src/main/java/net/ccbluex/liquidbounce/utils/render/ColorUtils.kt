@@ -203,6 +203,68 @@ object ColorUtils {
         return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
     }
 
+    fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double? {
+        return oldValue + (newValue - oldValue) * interpolationValue
+    }
+
+    fun interpolateFloat(oldValue: Float, newValue: Float, interpolationValue: Double): Float {
+        return net.ccbluex.liquidbounce.utils.render.ColorUtils.interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble())!!.toFloat()
+    }
+    fun interpolateColorHue(color1: Color, color2: Color, amount: Float): Color? {
+        var amount = amount
+        amount = Math.min(1f, Math.max(0f, amount))
+        val color1HSB = Color.RGBtoHSB(color1.red, color1.green, color1.blue, null)
+        val color2HSB = Color.RGBtoHSB(color2.red, color2.green, color2.blue, null)
+        val resultColor = Color.getHSBColor(interpolateFloat(color1HSB[0], color2HSB[0], amount.toDouble()), interpolateFloat(color1HSB[1], color2HSB[1], amount.toDouble()), interpolateFloat(color1HSB[2], color2HSB[2], amount.toDouble()))
+
+        return Color(resultColor.red, resultColor.green, resultColor.blue, interpolateInt(color1.alpha, color2.alpha, amount.toDouble()))
+
+    }
+
+    fun getAnalogousColor(color: Color): Array<Color?>? {
+        val colors = arrayOfNulls<Color>(2)
+        val hsb = Color.RGBtoHSB(color.red, color.green, color.blue, null)
+        val degree = 30 / 360f
+        val newHueAdded = hsb[0] + degree
+        colors[0] = Color(Color.HSBtoRGB(newHueAdded, hsb[1], hsb[2]))
+        val newHueSubtracted = hsb[0] - degree
+        colors[1] = Color(Color.HSBtoRGB(newHueSubtracted, hsb[1], hsb[2]))
+        return colors
+    }
+
+    fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Double): Int {
+        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble())!!.toInt()
+    }
+
+    fun interpolateColorC(color1: Color, color2: Color, amount: Float): Color? {
+        var amount = amount
+        amount = Math.min(1f, Math.max(0f, amount))
+        return Color(
+            interpolateInt(color1.red, color2.red, amount.toDouble()),
+            interpolateInt(color1.green, color2.green, amount.toDouble()),
+            interpolateInt(color1.blue, color2.blue, amount.toDouble()),
+            interpolateInt(color1.alpha, color2.alpha, amount.toDouble()
+            )
+        )
+    }
+
+    fun interpolateColorsBackAndForth(speed: Int, index: Int, start: Color?, end: Color?, trueColor: Boolean): Color? {
+        var angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
+        angle = (if (angle >= 180) 360 - angle else angle) * 2
+        return if (trueColor) start?.let {
+            end?.let { it1 ->
+                interpolateColorHue(it, it1, angle / 360f)
+            }
+        } else start?.let { end?.let { it1 -> interpolateColorC(it, it1, angle / 360f) } }
+    }
+
+    fun rainbowc(speed: Int, index: Int, saturation: Float, brightness: Float, opacity: Float): Color? {
+        val angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
+        val hue = angle / 360f
+        val color = Color(Color.HSBtoRGB(hue, saturation, brightness))
+        return Color(color.red, color.green, color.blue, Math.max(0, Math.min(255, (opacity * 255).toInt())))
+    }
+
     fun rainbow(): Color {
         return hslRainbow(1)
     }
@@ -219,10 +281,12 @@ object ColorUtils {
 
     fun rainbow(index: Int, alpha: Float) = reAlpha(hslRainbow(index), alpha)
 
+    @JvmStatic
     fun reAlpha(color: Color, alpha: Int): Color {
         return Color(color.red, color.green, color.blue, alpha)
     }
 
+    @JvmStatic
     fun reAlpha(color: Color, alpha: Float): Color {
         return Color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha)
     }
@@ -289,4 +353,5 @@ object ColorUtils {
     fun toRGB(f: Float, f2: Float, f3: Float, f4: Float): Int {
         return toRGB((f * 255.0f).toInt(), (f2 * 255.0f).toInt(), (f3 * 255.0f).toInt(), (f4 * 255.0f).toInt())
     }
+
 }
