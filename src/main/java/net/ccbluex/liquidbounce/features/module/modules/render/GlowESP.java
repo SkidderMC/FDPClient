@@ -6,8 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-
-import net.ccbluex.liquidbounce.event.AttackEvent;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
@@ -24,7 +22,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.ShaderUtil;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
-import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -32,9 +29,7 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -47,7 +42,8 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL20.glUniform1;
 @ModuleInfo(name = "GlowESP", category = ModuleCategory.RENDER)
-public class GlowESP extends Module {
+class GlowESP extends Module {
+
     public final FloatValue radius = new FloatValue("Radius", 2, 1F, 30F);
     public final FloatValue exposure = new FloatValue("Exposure", 2.2F, 1F, 3.5F);
     public final BoolValue seperate = new BoolValue("Seperate Texture", false);
@@ -211,6 +207,5 @@ public class GlowESP extends Module {
             }
         }
     }
-
 
 }
