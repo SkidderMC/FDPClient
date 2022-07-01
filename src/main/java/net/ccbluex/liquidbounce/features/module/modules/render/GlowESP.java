@@ -42,7 +42,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL20.glUniform1;
 @ModuleInfo(name = "GlowESP", category = ModuleCategory.RENDER)
-class GlowESP extends Module {
+public class GlowESP extends Module {
 
     public final FloatValue radius = new FloatValue("Radius", 2, 1F, 30F);
     public final FloatValue exposure = new FloatValue("Exposure", 2.2F, 1F, 3.5F);
