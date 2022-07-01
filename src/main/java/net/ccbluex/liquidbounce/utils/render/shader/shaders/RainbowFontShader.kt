@@ -1,3 +1,4 @@
+
 package net.ccbluex.liquidbounce.utils.render.shader.shaders
 
 import net.ccbluex.liquidbounce.utils.render.shader.Shader
