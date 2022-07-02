@@ -1,12 +1,10 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.redesky
 
-import net.ccbluex.liquidbounce.event.JumpEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.*
 
 class RedeSky3 : LongJumpMode("RedeSky3") {
     private val jumpTimeValue = IntegerValue("${valuePrefix}JumpTime", 500, 300, 1500)

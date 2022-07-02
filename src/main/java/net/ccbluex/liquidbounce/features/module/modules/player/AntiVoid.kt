@@ -49,14 +49,14 @@ class AntiVoid : Module() {
         canSpoof = false
         lastRecY = mc.thePlayer.posY
         tried = false
-	flagged = false
+        flagged = false
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.onGround) {
             tried = false
-	    flagged = false
+            flagged = false
         }
 
         when (modeValue.get().lowercase()) {
@@ -185,15 +185,15 @@ class AntiVoid : Module() {
             }
         }
     }
-    
+
     private fun checkVoid(): Boolean {
         var i = (-(mc.thePlayer.posY-1.4857625)).toInt()
         var dangerous = true
-	    while (i <= 0) {
-		dangerous = mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX * 0.5, i.toDouble(), mc.thePlayer.motionZ * 0.5)).isEmpty()
-		i++
-		if (!dangerous) break
-	    }
+        while (i <= 0) {
+            dangerous = mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX * 0.5, i.toDouble(), mc.thePlayer.motionZ * 0.5)).isEmpty()
+            i++
+            if (!dangerous) break
+        }
         return dangerous
     }
 
@@ -220,7 +220,7 @@ class AntiVoid : Module() {
                     packet.onGround = true
                 }
                 if (canSpoof && (packet is S08PacketPlayerPosLook)) {
-	            flagged = true
+                    flagged = true
                 }
             }
 
@@ -229,13 +229,13 @@ class AntiVoid : Module() {
                     if (packet.y < 1145.141919810) event.cancelEvent()
                 }
                 if (canSpoof && (packet is S08PacketPlayerPosLook)) {
-		    flagged = true
+                    flagged = true
                 }
             }
 
             "oldhypixel" -> {
                 if (packet is S08PacketPlayerPosLook && mc.thePlayer.fallDistance> 3.125) mc.thePlayer.fallDistance = 3.125f
-                
+
                 if (packet is C03PacketPlayer) {
                     if (voidOnlyValue.get() && mc.thePlayer.fallDistance >= maxFallDistValue.get() && mc.thePlayer.motionY <= 0 && checkVoid()) {
                         packet.y += 11.0
