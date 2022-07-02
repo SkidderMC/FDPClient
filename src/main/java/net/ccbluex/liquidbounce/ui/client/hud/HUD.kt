@@ -42,6 +42,7 @@ open class HUD : MinecraftInstance() {
                 .addElement(ScoreboardElement())
                 .addElement(Armor())
                 .addElement(Effects())
+                .addElement(Effect())
                 .addElement(Notifications())
                 .addElement(Inventory())
                 .addElement(Targets())

@@ -36,7 +36,7 @@ public class ClickGUIModule extends Module {
 
     public final FloatValue scaleValue = new FloatValue("Scale", 1F, 0.7F, 2F);
     public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
-
+    public final ListValue backgroundValue = new ListValue("Background", new String[] {"Default", "Gradient", "None"}, "None");
     public static final BoolValue colorRainbow = new BoolValue("Rainbow", false);
     public static final IntegerValue colorRedValue = (IntegerValue) new IntegerValue("R", 0, 0, 255).displayable(() -> !colorRainbow.get());
     public static final IntegerValue colorGreenValue = (IntegerValue) new IntegerValue("G", 160, 0, 255).displayable(() -> !colorRainbow.get());

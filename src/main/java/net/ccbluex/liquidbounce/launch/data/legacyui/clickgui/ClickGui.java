@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.elements.ModuleEle
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.Style;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.SlowlyStyle;
 import net.ccbluex.liquidbounce.launch.options.LegacyUiLaunchOption;
+import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -25,6 +26,7 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ClickGui extends GuiScreen {
 
@@ -63,6 +65,17 @@ public class ClickGui extends GuiScreen {
 
         this.mouseX = mouseX;
         this.mouseY = mouseY;
+
+        switch (((ClickGUIModule) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class))).backgroundValue.get()) {
+            case "Default":
+                drawDefaultBackground();
+                break;
+            case "Gradient":
+                drawGradientRect(0, 0, width, height, ColorUtils.reAlpha(ClickGUIModule.generateColor(), 40).getRGB(), ClickGUIModule.generateColor().getRGB());
+                break;
+            default:
+                break;
+        }
 
         drawDefaultBackground();
         int defaultHeight1 = (this.height);

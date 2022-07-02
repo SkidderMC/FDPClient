@@ -36,6 +36,7 @@ import net.minecraft.item.ItemAxe
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
+import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
@@ -106,7 +107,7 @@ class KillAura : Module() {
     // Modes
     private val priorityValue = ListValue(
         "Priority",
-        arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor", "HurtResistantTime"),
+        arrayOf("Health", "Distance", "Direction", "LivingTime", "Armor", "HurtResistance", "HurtTime", "HealthAbsorption", "RegenAmplifier"),
         "Distance"
     )
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Single")
@@ -860,6 +861,9 @@ class KillAura : Module() {
             "livingtime" -> discoveredTargets.sortBy { -it.ticksExisted } // Sort by existence
             "armor" -> discoveredTargets.sortBy { it.totalArmorValue } // Sort by armor
             "hurtresistanttime" -> discoveredTargets.sortBy { it.hurtResistantTime } // Sort by armor
+            "hurttime" -> discoveredTargets.sortBy { it.hurtTime } // Sort by hurt time
+            "healthabsorption" -> discoveredTargets.sortBy { it.health + it.absorptionAmount } // Sort by full health with absorption effect
+            "regenamplifier" -> discoveredTargets.sortBy { if (it.isPotionActive(Potion.regeneration)) it.getActivePotionEffect(Potion.regeneration).amplifier else -1 }
         }
 
         inRangeDiscoveredTargets.clear()
