@@ -1,17 +1,12 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.ncp
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.JumpEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.minecraft.network.play.client.C03PacketPlayer
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
+import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.value.*
+import net.minecraft.network.play.client.*
 
 class NCPDamage : LongJumpMode("NCPDamage") {
     private val ncpBoostValue = FloatValue("${valuePrefix}Boost", 4.25f, 1f, 10f)

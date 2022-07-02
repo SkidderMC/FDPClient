@@ -2,16 +2,11 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import org.lwjgl.input.Keyboard
 import java.awt.Color
