@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ElementInfo(name = "Effect")
-public abstract class Effect extends Element {
+public class Effect extends Element {
 
     private final Map<Potion, PotionData> potionMap = new HashMap<>();
     protected Border draw() {
@@ -108,8 +108,8 @@ public abstract class Effect extends Element {
         return stringBuilder.toString();
     }
 
-    public Border drawElement()  {
+    @Override
+    public Border drawElement(float partialTicks) {
         return draw();
     }
-
 }

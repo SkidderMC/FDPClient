@@ -26,8 +26,8 @@ import java.awt.Color
  * Shows a horizontal display of current armor
  */
 @ElementInfo(name = "Armor")
-abstract class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
-                     side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
+class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
+            side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
     private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Astolfo"), "Custom")
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
     private val redValue = IntegerValue("Text-R", 255, 0, 255)
@@ -39,7 +39,7 @@ abstract class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    fun drawElement(): Border? {
+    override fun drawElement(partialTicks: Float): Border? {
         var x2 = 0
         if (mc.playerController.isNotCreative) {
             GL11.glPushMatrix()
