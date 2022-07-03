@@ -47,7 +47,7 @@ object LiquidBounce {
     var Darkmode = true
     const val COLORED_NAME = "§7[§b!§7] §b§lFDPCLIENT §c» "
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC TEAM"
-    const val CLIENT_WEBSITE = "FDPClient.Club"
+    const val CLIENT_WEBSITE = "fdpinfo.github.io"
     const val MINECRAFT_VERSION = "1.8.9"
     const val VERSIONTYPE = "Preview"
 
@@ -67,7 +67,7 @@ object LiquidBounce {
 
     @JvmField
     val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "unknown").let {
-        if (it == "main") "Main Reborn" else it
+        if (it == "main") "Main" else it
     }
 
     var isStarting = true
