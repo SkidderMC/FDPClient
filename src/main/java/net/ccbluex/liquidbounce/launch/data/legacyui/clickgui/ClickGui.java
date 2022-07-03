@@ -100,10 +100,16 @@ public class ClickGui extends GuiScreen {
 
         if (Mouse.hasWheel()) {
             int wheel = Mouse.getDWheel();
-
+            boolean handledScroll = false;
+            
             for (int i = panels.size() - 1; i >= 0; i--)
-                if (panels.get(i).handleScroll(mouseX, mouseY, wheel))
-                    break;
+                if (panels.get(i).handleScroll(mouseX, mouseY, wheel)) {
+			        handledScroll = true;
+			        break;
+		        }
+            
+            if (!handledScroll)
+		        handleScroll(wheel);
         }
 
         GlStateManager.disableLighting();
@@ -111,6 +117,14 @@ public class ClickGui extends GuiScreen {
         GlStateManager.scale(1, 1, 1);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+    
+    private void handleScroll(final int wheel) {
+        if (wheel == 0)
+            return;
+		
+        for(final Panel panel : panels)
+	        panel.setY(panel.getY() + wheel);
     }
 
     @Override
