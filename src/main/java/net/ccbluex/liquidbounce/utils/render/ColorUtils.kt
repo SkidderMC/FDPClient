@@ -34,7 +34,7 @@ object ColorUtils {
             hexColors[i] = red and 255 shl 16 or (green and 255 shl 8) or (blue and 255)
         }
     }
-
+    @JvmStatic
     fun stripColor(input: String): String {
         return COLOR_PATTERN.matcher(input).replaceAll("")
     }
