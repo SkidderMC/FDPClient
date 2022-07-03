@@ -162,16 +162,16 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         drawed = true
     }
 
-    /* For modification, please keep "Designed by XiGua" */
+    /* For modification, please keep "Designed by UnlegitMc" */
     override fun initGui() {
         val defaultHeight = (this.height / 3.5).toInt()
         Thread {
             if (LiquidBounce.CLIENTTEXT.contains("Waiting") || LiquidBounce.CLIENTTEXT.contains("Oops")) {
                 try {
-                    LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
+                    LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpinfo.github.io/changelogs")
                 } catch (e: Exception) {
                     try {
-                        LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpclient.club/changelogs")
+                        LiquidBounce.CLIENTTEXT = HttpUtils.get("http://fdpinfo.github.io/changelogs")
                     } catch (e: Exception) {
                         LiquidBounce.CLIENTTEXT = "Oops.. :(\$Can't get information!#Try reopen the main menu\$140\$80"
                     }
