@@ -18,7 +18,6 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import java.awt.Color
-
 @ModuleInfo(name = "HurtCam", category = ModuleCategory.CLIENT, canEnable = false)
 class HurtCam : Module() {
     val modeValue = ListValue("Mode", arrayOf("Vanilla", "Cancel", "FPS"), "Vanilla")

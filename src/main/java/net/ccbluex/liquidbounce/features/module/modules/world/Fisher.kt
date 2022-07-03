@@ -12,11 +12,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MathUtils.inRange
-import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S12PacketEntityVelocity
@@ -27,7 +25,7 @@ object Fisher : Module() {
 
     private val detectionValue = ListValue("Detection", arrayOf("Motion", "Sound"), "Sound")
     private val recastValue = BoolValue("Recast", true)
-    private val recastDelayValue = IntegerValue("RecastDelay", 500, 0, 1000)
+    private val recastDelayValue = IntegerValue("RecastDelay", 1, 0, 1000)
 
     private var stage = Stage.NOTHING
     private val recastTimer = MSTimer()

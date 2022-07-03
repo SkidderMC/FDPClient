@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
-
 import net.minecraft.entity.EntityLivingBase;
 
 import java.awt.*;
