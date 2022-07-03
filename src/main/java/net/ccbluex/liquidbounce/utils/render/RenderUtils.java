@@ -278,17 +278,6 @@ public final class RenderUtils extends MinecraftInstance {
         if (!disableAlpha) glEnable(GL_ALPHA_TEST);
         glPopMatrix();
     }
-    public static void drawTexturedRect(float x, float y, float width, float height, String image, ScaledResolution sr) {
-        GL11.glPushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.disableAlpha();
-        mc.getTextureManager().bindTexture(new ResourceLocation("fdpclient/shadow/" + image + ".png"));
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-        Gui.drawModalRectWithCustomSizedTexture((int)x, (int)y, 0.0f, 0.0f, (int)width, (int)height, (int)width, (int)height);
-        GlStateManager.disableBlend();
-        GlStateManager.enableAlpha();
-        GL11.glPopMatrix();
-    }
 
     public static void drawModalRectWithCustomSizedTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight)
     {
@@ -586,7 +575,6 @@ public final class RenderUtils extends MinecraftInstance {
 
         glEnd();
     }
-
     public static void drawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
         float f = (float) (col1 >> 24 & 255) / 255.0f;
         float f1 = (float) (col1 >> 16 & 255) / 255.0f;
@@ -616,21 +604,7 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glDisable((int) 2848);
         GL11.glShadeModel((int) 7424);
         Gui.drawRect(0, 0, 0, 0, 0);
-
-        glEnable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-        glShadeModel(GL_SMOOTH);
-
-        quickDrawGradientSidewaysV(left, top, right, bottom, col1, col2);
-
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-        glShadeModel(GL_FLAT);
     }
-
     public static void quickDrawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
         glBegin(GL_QUADS);
 
@@ -643,8 +617,6 @@ public final class RenderUtils extends MinecraftInstance {
 
         glEnd();
     }
-
-
     public static void drawBlockBox(final BlockPos blockPos, final Color color, final boolean outline, final boolean box, final float outlineWidth) {
         final RenderManager renderManager = mc.getRenderManager();
         final Timer timer = mc.timer;
@@ -689,7 +661,6 @@ public final class RenderUtils extends MinecraftInstance {
         glDepthMask(true);
         resetCaps();
     }
-
     public static void drawSelectionBoundingBox(AxisAlignedBB boundingBox) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
@@ -951,21 +922,7 @@ public final class RenderUtils extends MinecraftInstance {
         quickDrawRect(x, y, x2, y2, color.getRGB());
     }
 
-    public static void drawRect(final float x, final float y, final float x2, final float y2, final int color) {
-        glEnable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-
-        glColor(color);
-        quickDrawRect(x, y, x2, y2);
-
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-    }
-
-    public static void brawRect(float left, float top, float right, float bottom, int color) {
+    public static void drawRect(float left, float top, float right, float bottom, int color) {
         if (left < right) {
             float i = left;
             left = right;
@@ -997,7 +954,25 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }
+    public static void drawRect(final double x, final double y, final double x2, final double y2, final int color) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
 
+        glColor(color);
+        glBegin(GL_QUADS);
+
+        glVertex2d(x2, y);
+        glVertex2d(x, y);
+        glVertex2d(x, y2);
+        glVertex2d(x2, y2);
+        glEnd();
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+    }
     public static void drawRect(final float x, final float y, final float x2, final float y2, final Color color) {
         drawRect(x, y, x2, y2, color.getRGB());
     }
@@ -1380,25 +1355,6 @@ public final class RenderUtils extends MinecraftInstance {
             glEnable(cap);
         else
             glDisable(cap);
-    }
-    public static void drawRect(final double x, final double y, final double x2, final double y2, final int color) {
-        glEnable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-
-        glColor(color);
-        glBegin(GL_QUADS);
-
-        glVertex2d(x2, y);
-        glVertex2d(x, y);
-        glVertex2d(x, y2);
-        glVertex2d(x2, y2);
-        glEnd();
-
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
     }
 
     public static double[] convertTo2D(final double x, final double y, final double z) {
