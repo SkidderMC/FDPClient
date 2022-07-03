@@ -156,7 +156,7 @@ class AutoPot : Module() {
             }
         } else if (utilityValue.get()) {
             for (potionEffect in itemPotion.getEffects(stack)) {
-                if (InventoryUtils.isPositivePotionEffect(potionEffect.potionID) && !mc.thePlayer.isPotionActive(potionEffect.potionID)) {
+                if (potionEffect.potionID != Potion.heal.id && InventoryUtils.isPositivePotionEffect(potionEffect.potionID) && !mc.thePlayer.isPotionActive(potionEffect.potionID)) {
                     return true
                 }
             }
