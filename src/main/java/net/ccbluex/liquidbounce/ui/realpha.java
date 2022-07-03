@@ -2,12 +2,7 @@ package net.ccbluex.liquidbounce.ui;
 
 import java.awt.Color;
 
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ChatComponentText;
-
 public class realpha {
-
 
     public static int rainbow(final int n) {
         return Color.getHSBColor((float)(Math.ceil((System.currentTimeMillis() + n) / 10.0) % 360.0 / 360.0), 0.5f, 1.0f).getRGB();
