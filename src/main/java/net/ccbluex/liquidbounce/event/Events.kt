@@ -80,6 +80,11 @@ class MotionEvent(val eventState: EventState) : Event() {
 }
 
 /**
+ * Called when an entity receives damage
+ */
+class EntityDamageEvent(val damagedEntity: Entity): Event()
+
+/**
  * Called in "onLivingUpdate" when the player is using a use item.
  *
  * @param strafe the applied strafe slow down

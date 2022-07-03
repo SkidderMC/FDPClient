@@ -88,7 +88,7 @@ public abstract class MixinRenderEntityItem extends Render<EntityItem> {
                         GL11.glRotatef(itemIn.rotationPitch + 90.0f, 1.0f, 0.0f, 0.0f);
                     } else {
                         for (int a = 0; a < 10; ++a) {
-                            GL11.glRotatef(f3, itemPhysics.itemWeight.get(), itemPhysics.itemWeight.get(), 0.0f);
+                            GL11.glRotatef(f3, itemPhysics.getItemWeight().get(), itemPhysics.getItemWeight().get(), 0.0f);
                         }
                     }
                 } else {
