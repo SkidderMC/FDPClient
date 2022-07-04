@@ -27,8 +27,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@ElementInfo(name = "Effect")
-public class Effect extends Element {
+@ElementInfo(name = "Effects")
+public class Effects extends Element {
 
     private final Map<Potion, PotionData> potionMap = new HashMap<>();
     protected Border draw() {

@@ -15,22 +15,17 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.util.*
 import kotlin.math.abs
 
 @ModuleInfo(name = "SuperheroFX", category = ModuleCategory.RENDER)
 class SuperheroFX : Module() {
-
-    private val debugValue = BoolValue("Debug", false)
 
     private val textParticles = mutableListOf<FXParticle>()
     private val generateTimer = MSTimer()
@@ -41,14 +36,16 @@ class SuperheroFX : Module() {
     @EventTarget
     fun onEntityDamage(event: EntityDamageEvent) {
         val entity = event.damagedEntity
-        if (mc.theWorld.loadedEntityList.contains(entity) && generateTimer.hasTimePassed(200L)) {
+        if (mc.theWorld.loadedEntityList.contains(entity) && generateTimer.hasTimePassed(500L)) {
+            val dirX = RandomUtils.nextDouble(-0.5, 0.5)
+            val dirZ = RandomUtils.nextDouble(-0.5, 0.5)
             generateTimer.reset()
-            ClientUtils.displayChatMessage("added particle")
             textParticles.add(
                 FXParticle(
-                    entity.posX - 0.5 + Random(System.currentTimeMillis()).nextInt(5).toDouble() * 0.1,
+                    entity.posX + dirX,
                     entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0,
-                    entity.posZ - 0.5 + Random(System.currentTimeMillis() + 1L).nextInt(5).toDouble() * 0.1
+                    entity.posZ + dirZ,
+                    dirX, dirZ
                 )
             )
         }
@@ -59,20 +56,18 @@ class SuperheroFX : Module() {
         val removeList = mutableListOf<FXParticle>()
         for (particle in textParticles) {
             if (particle.canRemove) {
-                ClientUtils.displayChatMessage("removed")
                 removeList.add(particle)
                 continue
             }
-            ClientUtils.displayChatMessage("drawn")
             particle.draw()
         }
         textParticles.removeAll(removeList)
     }
 
 }
-class FXParticle(val posX: Double, val posY: Double, val posZ: Double): MinecraftInstance() {
+class FXParticle(val posX: Double, val posY: Double, val posZ: Double, val animHDir: Double, val animVDir: Double): MinecraftInstance() {
     private val messageString: String = listOf("kaboom", "bam", "zap", "smash", "fatality", "kapow", "wham").random()
-    private val color: Color = Color(RandomUtils.nextInt(0, 255), RandomUtils.nextInt(0, 255), RandomUtils.nextInt(0, 255))
+    private val color: Color = listOf(Color.BLUE, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW).random()
 
     private val fadeTimer = MSTimer()
     private val stringLength = Fonts.font40.getStringWidth(messageString).toDouble()
@@ -90,6 +85,8 @@ class FXParticle(val posX: Double, val posY: Double, val posZ: Double): Minecraf
         val alpha = (if (fadeTimer.hasTimePassed(250L)) fadeTimer.hasTimeLeft(500L) else 250L - fadeTimer.hasTimeLeft(250L)).toFloat().coerceIn(0F, 250F) / 250F
         val progress = (if (fadeTimer.hasTimePassed(250L)) abs(fadeTimer.hasTimeLeft(250L) - 250L) else 250L - fadeTimer.hasTimeLeft(250L)).toFloat().coerceIn(0F, 500F) / 250F
         val textY = if (mc.gameSettings.thirdPersonView != 2) -1.0f else 1.0f
+        val offsetX = stringLength / 2.0 * 0.02 * progress.toDouble()
+        val offsetY = fontHeight / 2.0 * 0.02 * progress.toDouble()
         if (progress >= 2F) {
             canRemove = true
             return
@@ -97,11 +94,12 @@ class FXParticle(val posX: Double, val posY: Double, val posZ: Double): Minecraf
         GlStateManager.pushMatrix()
         GlStateManager.enablePolygonOffset()
         GlStateManager.doPolygonOffset(1.0f, -1500000.0f)
-        GL11.glTranslated(posX - renderManager.renderPosX, posY - renderManager.renderPosY, posZ - renderManager.renderPosZ)
+        GL11.glTranslated(posX + animHDir * progress - offsetX - renderManager.renderPosX, posY + animVDir * progress - offsetY - renderManager.renderPosY, posZ - renderManager.renderPosZ)
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
-        GL11.glScalef(progress * -0.03F, progress * -0.03F, progress * 0.03F)
+        GL11.glScalef(progress * -0.02F, progress * -0.02F, progress * 0.02F)
         GlStateManager.rotate(textY * renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
         GL11.glDepthMask(false)
+        Fonts.font40.drawString(messageString, 0.25F, 0.25F, Color(0F, 0F, 0F, alpha * 0.75F).rgb)
         Fonts.font40.drawString(messageString, 0F, 0F, ColorUtils.reAlpha(color, alpha).rgb)
         GL11.glColor4f(187.0f, 255.0f, 255.0f, 1.0f)
         GL11.glDepthMask(true)
