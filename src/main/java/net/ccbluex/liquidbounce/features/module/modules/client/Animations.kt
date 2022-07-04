@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 
+
 @ModuleInfo(name = "Animations", category = ModuleCategory.CLIENT, canEnable = false)
 object Animations : Module() {
     val blockingModeValue = ListValue(
@@ -41,6 +42,9 @@ object Animations : Module() {
     val swingAnimValue = BoolValue("SwingAnim", false)
     val swingSpeedValue = FloatValue("SwingSpeed", 1f, 0.5f, 5.0f)
     val anythingBlockValue = BoolValue("AnythingBlock", false)
+    @JvmStatic
+    val noBlockParticles = BoolValue("NoBlockParticles", false)
+
 
     var flagRenderTabOverlay = false
         get() = field && tabShowPlayerSkinValue.get()
