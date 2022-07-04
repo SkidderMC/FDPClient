@@ -107,8 +107,8 @@ class KillAura : Module() {
     // Modes
     private val priorityValue = ListValue(
         "Priority",
-        arrayOf("Health", "Distance", "Direction", "LivingTime", "Armor", "HurtResistance", "HurtTime", "HealthAbsorption", "RegenAmplifier"),
-        "Distance"
+        arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor", "HurtResistance", "HurtTime", "HealthAbsorption", "RegenAmplifier"),
+        "Armor"
     )
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Single")
 

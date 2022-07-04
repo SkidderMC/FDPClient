@@ -24,7 +24,7 @@ import net.minecraft.network.play.server.S1DPacketEntityEffect
 @ModuleInfo(name = "AntiStaff", category = ModuleCategory.MISC)
 class AntiStaff : Module() {
 
-    val server  = ListValue("Server", arrayOf("BlocksMC","Jartex","Pika","Minebox","Minemora","Zonecraft","Hycraft","Librecraft"),"BlocksMC")
+    val server  = ListValue("Server", arrayOf("BlocksMC", "Jartex", "Pika", "Minebox", "Minemora", "Zonecraft", "Hycraft", "Librecraft"),"BlocksMC")
     val notify  = BoolValue("Notification",true)
     val chat    = BoolValue("SendChatMessage",false)
     val message = TextValue("Message", "%staff% was detected as a staff member!").displayable { chat.get() }

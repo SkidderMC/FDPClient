@@ -32,7 +32,7 @@ import kotlin.math.roundToInt
 
 @ModuleInfo(name = "NameTags", category = ModuleCategory.RENDER)
 class NameTags : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello"), "Simple")
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello"), "Liquid")
     private val healthValue = BoolValue("Health", true)
     private val pingValue = BoolValue("Ping", true)
     private val healthBarValue = BoolValue("Bar", true)
@@ -47,7 +47,7 @@ class NameTags : Module() {
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.equals("Jello") }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
-    private val onlyTarget = BoolValue("OnlyTarget",true)
+    private val onlyTarget = BoolValue("OnlyTarget",false)
     private val translateY = FloatValue("TanslateY", 0.55F, -2F, 2F)
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
