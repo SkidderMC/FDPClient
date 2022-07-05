@@ -38,6 +38,11 @@ object ItemUtils {
         return c
     }
 
+    @JvmStatic
+    fun getItemDurability(stack: ItemStack?): Int {
+        return if (stack == null) 0 else stack.maxDamage - stack.itemDamage
+    }
+
     fun getWeaponEnchantFactor(
         stack: ItemStack,
         nbtedPriority: Float = 0f,

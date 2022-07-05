@@ -28,7 +28,7 @@ class FileManager : MinecraftInstance() {
     val legacySettingsDir = File(dir, "legacy-settings")
     val capesDir = File(dir, "capes")
     val accountsConfig = AccountsConfig(File(dir, "accounts.json"))
-    val friendsConfig = FriendsConfig(File(dir, "friends.json"))
+    var friendsConfig = FriendsConfig(File(dir, "friends.json"))
     val xrayConfig = XRayConfig(File(dir, "xray-blocks.json"))
     val hudConfig = HudConfig(File(dir, "hud.json"))
     val subscriptsConfig = ScriptConfig(File(dir, "subscripts.json"))
