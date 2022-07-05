@@ -10,7 +10,7 @@ import kotlin.math.sin
 import kotlin.math.cos
 
 class MatrixDamage : FlyMode("MatrixDamage") {
-    private val mode = ListValue("${valuePrefix}Mode", arrayOf("Stable", "Stable2", "Custom"), "Stable")
+    private val mode = ListValue("${valuePrefix}Mode", arrayOf("Stable", "Stable2", "Test", "Custom"), "Stable")
     private val warn = BoolValue("${valuePrefix}DamageWarn", true)
     private val speedBoost = FloatValue("${valuePrefix}BoostSpeed", 0.5f, 0f, 3f)
     private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f)
@@ -42,6 +42,26 @@ class MatrixDamage : FlyMode("MatrixDamage") {
                     if (mode.equals("stable")) 
                         mc.thePlayer.motionY = packetymotion
                     if (tick++ >= if (mode.equals("stable")) 27 else 30) {
+                        mc.timer.timerSpeed = 1.0f
+                        velocitypacket = false
+                        packetymotion = 0.0
+                        tick = 0
+                    }
+                }
+                "test"-> {
+                    
+                    if (tick++ >= 4) {
+                        mc.timer.timerSpeed = 1.1F
+                        mc.thePlayer.motionX += (-sin(yaw) * 0.420)
+                        mc.thePlayer.motionZ += (cos(yaw) * 0.420)
+                    } else {
+                        mc.timer.timerSpeed = 0.9F
+                        mc.thePlayer.motionX += (-sin(yaw) * 0.330)
+                        mc.thePlayer.motionZ += (cos(yaw) * 0.330)
+                    }
+                    if (mode.equals("stable")) 
+                        mc.thePlayer.motionY = packetymotion
+                    if (tick++ >= 27) {
                         mc.timer.timerSpeed = 1.0f
                         velocitypacket = false
                         packetymotion = 0.0
