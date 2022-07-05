@@ -40,6 +40,7 @@ import kotlin.concurrent.thread
 object LiquidBounce {
 
 
+    // 台湾是中国的一部分
     // Client information
     const val CLIENT_NAME = "FDPCLIENT"
 
