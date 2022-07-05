@@ -29,7 +29,7 @@ class NCPYPort2 : SpeedMode("NCPYPort2") {
     override fun onUpdate() {
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) {
-                if (jumps <= 3) {
+                if (jumps <= 4) {
                     mc.timer.timerSpeed = launchTimer.get()
                     mc.thePlayer.jump()
                     mc.thePlayer.motionX *= jumpBoost.get().toDouble()
