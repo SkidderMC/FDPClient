@@ -21,6 +21,7 @@ object ColorUtils {
     private val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
     private val startTime = System.currentTimeMillis()
 
+    @JvmField
     val hexColors = IntArray(16)
 
     init {
@@ -191,6 +192,7 @@ object ColorUtils {
         return Color.HSBtoRGB(hue - hueoffset / 54, saturation, brightness)
     }
 
+    @JvmStatic
     fun hslRainbow(
         index: Int,
         lowest: Float = HUD.rainbowStartValue.get(),
@@ -258,27 +260,33 @@ object ColorUtils {
         } else start?.let { end?.let { it1 -> interpolateColorC(it, it1, angle / 360f) } }
     }
 
+    @JvmStatic
     fun rainbowc(speed: Int, index: Int, saturation: Float, brightness: Float, opacity: Float): Color? {
         val angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
         val hue = angle / 360f
         val color = Color(Color.HSBtoRGB(hue, saturation, brightness))
         return Color(color.red, color.green, color.blue, Math.max(0, Math.min(255, (opacity * 255).toInt())))
     }
-
+    @JvmStatic
     fun rainbow(): Color {
         return hslRainbow(1)
     }
 
+    @JvmStatic
     fun rainbow(index: Int): Color {
         return hslRainbow(index)
     }
 
+    @JvmStatic
     fun rainbow(alpha: Float) = reAlpha(hslRainbow(1), alpha)
 
+    @JvmStatic
     fun rainbowWithAlpha(alpha: Int) = reAlpha(hslRainbow(1), alpha)
 
+    @JvmStatic
     fun rainbow(index: Int, alpha: Int) = reAlpha(hslRainbow(index), alpha)
 
+    @JvmStatic
     fun rainbow(index: Int, alpha: Float) = reAlpha(hslRainbow(index), alpha)
 
     @JvmStatic
@@ -291,36 +299,40 @@ object ColorUtils {
         return Color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha)
     }
 
+    @JvmStatic
     fun slowlyRainbow(time: Long, count: Int, qd: Float, sq: Float): Color {
         val color = Color(Color.HSBtoRGB((time.toFloat() + count * -3000000f) / 2 / 1.0E9f, qd, sq))
         return Color(color.red / 255.0f * 1, color.green / 255.0f * 1, color.blue / 255.0f * 1, color.alpha / 255.0f)
     }
 
+    @JvmStatic
     fun skyRainbow(var2: Int, bright: Float, st: Float, speed: Double): Color {
         var v1 = ceil(System.currentTimeMillis() / speed + var2 * 109L) / 5
         return Color.getHSBColor(if ((360.0.also { v1 %= it } / 360.0) <0.5) { -(v1 / 360.0).toFloat() } else { (v1 / 360.0).toFloat() }, st, bright)
     }
 
-    
+    @JvmStatic
     fun TwoRainbow(offset: Long, alpha: Float): Color {
         val color = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
         return Color(color.red / 255.0F * 1.0F, color.green / 255.0F * 1.0F, color.blue / 255.0f * 1, color.alpha / 255.0f)
     
     }
 
-
+    @JvmStatic
     fun Astolfo(var2: Int, st: Float, bright: Float): Int {
         var currentColor = Math.ceil((System.currentTimeMillis() + (var2 * 130).toLong()).toDouble()) / 6
         return Color.getHSBColor(if ((360.0.also { currentColor %= it } / 360.0).toFloat()
                 .toDouble() < 0.5) -(currentColor / 360.0).toFloat() else (currentColor / 360.0).toFloat(), st, bright).rgb
     }
 
+    @JvmStatic
     fun otherAstolfo(delay: Int, offset: Int, index: Int): Int {
         var rainbowDelay = Math.ceil((System.currentTimeMillis() + (delay * index).toLong()).toDouble()) / offset
         return Color.getHSBColor(if ((360.0.also { rainbowDelay %= it } / 360.0).toFloat()
                 .toDouble() < 0.5) -(rainbowDelay / 360.0).toFloat() else (rainbowDelay / 360.0).toFloat(), 0.5f, 1.0f).rgb
     }
 
+    @JvmStatic
     fun fade(color: Color, index: Int, count: Int): Color {
         val hsb = FloatArray(3)
         Color.RGBtoHSB(color.red, color.green, color.blue, hsb)
