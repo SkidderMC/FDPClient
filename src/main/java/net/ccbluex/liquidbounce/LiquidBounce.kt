@@ -47,7 +47,7 @@ object LiquidBounce {
     var Darkmode = true
     const val COLORED_NAME = "§7[§b!§7] §b§lFDPCLIENT §c» "
     const val CLIENT_CREATOR = "CCBlueX & UnlegitMC TEAM"
-    const val CLIENT_WEBSITE = "fdpinfo.github.io"
+    const val CLIENT_WEBSITE = "FDPClient.Club"
     const val MINECRAFT_VERSION = "1.8.9"
     const val VERSIONTYPE = "Preview"
 
