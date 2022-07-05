@@ -31,7 +31,7 @@ class Criticals : Module() {
     val modeValue = ListValue(
         "Mode",
         arrayOf(
-            "Packet", "NCPPacket", "MiPacket",
+            "Packet", "NCPPacket", "NCPMotion", "MiPacket",
             "Blocksmc",
             "Hypixel", "Hypixel2",
             "VulcanSemi", "MatrixSemi",
@@ -146,6 +146,12 @@ class Criticals : Module() {
                     sendCriticalPacket(yOffset = 0.11, ground = false)
                     sendCriticalPacket(yOffset = 0.1100013579, ground = false)
                     sendCriticalPacket(yOffset = 0.0000013579, ground = false)
+                }
+                
+                "ncpmotion" -> {
+                    sendCriticalPacket(yOffset = 0.42, ground = false)
+                    sendCriticalPacket(yOffset = 0.222, ground = false)
+                    sendCriticalPacket(yOffset = 0.0, ground = true)
                 }
 
                 "mipacket" -> {
