@@ -29,7 +29,7 @@ import kotlin.math.sqrt
 @ModuleInfo(name = "TargetStrafe",  category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
     private val thirdPersonViewValue = BoolValue("ThirdPersonView", false)
-    private val renderModeValue = ListValue("RenderMode", arrayOf("Circle", "None"), "Pentagon")
+    private val renderModeValue = ListValue("RenderMode", arrayOf("Circle", "Pentagon", "None"), "Pentagon")
     private val ongroundValue = BoolValue("OnGround",true)
     private val holdSpaceValue = BoolValue("HoldSpace", false)
     private val onlySpeedValue = BoolValue("OnlySpeed", false)
