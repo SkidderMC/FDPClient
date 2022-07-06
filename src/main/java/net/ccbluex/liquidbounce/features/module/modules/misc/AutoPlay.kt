@@ -30,7 +30,7 @@ import kotlin.concurrent.schedule
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
 class AutoPlay : Module() {
 
-    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "Pika", "HyCraft", "MineFC/HeroMC_Bedwars"), "RedeSky")
+    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "Pika", "HyCraft", "MineFC/HeroMC_Bedwars", "Supercraft"), "RedeSky")
 
     private val bwModeValue = ListValue("Mode", arrayOf("SOLO", "4v4v4v4"), "4v4v4v4").displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
     private val autoStartValue = BoolValue("AutoStartAtLobby", true).displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
@@ -117,6 +117,21 @@ class AutoPlay : Module() {
             val text = packet.chatComponent.unformattedText
             val component = packet.chatComponent
             when (modeValue.get().lowercase()) {
+                "supercraft" -> {
+                    if (text.contains("Ganador: " + mc.session.username, true) || text.contains(mc.session.username + " fue asesinado", true)) {
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/sw leave")
+                            mc.thePlayer.sendChatMessage("/sw randomjoin solo")
+                        }
+                    }
+                    if (text.contains("El juego ya fue iniciado.", true)) {
+                        LiquidBounce.hud.addNotification(Notification(this.name, "Failed to join, retrying...", NotifyType.ERROR, 1755))
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/sw leave")
+                            mc.thePlayer.sendChatMessage("/sw randomjoin solo")
+                        }
+                    }
+                }
                 "minemora" -> {
                     if (text.contains("Has click en alguna de las siguientes opciones", true)) {
                         queueAutoPlay {
