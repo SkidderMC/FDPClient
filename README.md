@@ -13,7 +13,7 @@ Discord: https://discord.gg/55x7TaHWXG
 ## What happened to old repository?
 UnlegitMC Account was hacked by some china gang and take down FDPClient, so yeah this is the new repository of FDPClient.
 ### 关于Veibae和anehod
-Veibae和anehod当然爱国、爱党、爱人民，而且台湾是中国的一个叛乱省，还有，不要叫我们小粉红
+Veibae和anehod当然爱国、爱党、爱人民，而且台湾只是中国的一个叛乱省，还有，不要叫我们小粉红
 
 ## Installing FDPClient (an iq is required)
 - **Step 1:** install java [download (click here)](https://www.java.com/en/download/) (if u have java skip this step)
