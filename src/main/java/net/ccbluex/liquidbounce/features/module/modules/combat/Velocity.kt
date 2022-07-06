@@ -38,7 +38,7 @@ class Velocity : Module() {
     private val horizontalValue = FloatValue("Horizontal", 0F, -2F, 2F)
     private val verticalValue = FloatValue("Vertical", 0F, -2F, 2F)
     private val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "Tick", "Vanilla", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "Tick", "Cancel", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
                                                       "Redesky1", "Redesky2",
                                                       "AAC5.2.0", "AAC5.2.0Combat",
                                                       "MatrixReduce", "MatrixSimple", "MatrixReverse",
@@ -346,7 +346,7 @@ class Velocity : Module() {
                     packet.motionY = (packet.getMotionY() * vertical).toInt()
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
-                "vanilla" -> {
+                "cancel" -> {
                     event.cancelEvent()
                 }
                 "matrixsimple" -> {
