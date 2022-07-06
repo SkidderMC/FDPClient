@@ -1,21 +1,24 @@
 # FDPClient 
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/UnlegitMC/FDPClient)
-![GitHub lines of code](https://tokei.rs/b1/github/UnlegitMC/FDPClient)
-[![Maintainability](https://api.codeclimate.com/v1/badges/a41ae7bde63c143e426a/maintainability)](https://codeclimate.com/github/UnlegitMC/FDPClient/maintainability)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/SkidderMC/FDPClient)
+![GitHub lines of code](https://tokei.rs/b1/github/SkidderMC/FDPClient)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a41ae7bde63c143e426a/maintainability)](https://codeclimate.com/github/SkidderMC/FDPClient/maintainability)
 ![Minecraft](https://img.shields.io/badge/game-Minecraft-brightgreen)  
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.
 
 Website: future
-Latest: [github-actions](https://github.com/UnlegitMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)    
+Latest: [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)    
 Discord: https://discord.gg/55x7TaHWXG  
 
-## Installing FDP (an iq is required)
+## What happened to old repository?
+UnlegitMC Account was hacked by some china gang and take down FDPClient, so yeah this is the new repository of FDPClient.
+
+## Installing FDPClient (an iq is required)
 - **Step 1:** install java [download (click here)](https://www.java.com/en/download/) (if u have java skip this step)
 - **Step 2:** install forge 1.8.9 [download (click here)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (if u have forge skip this step)
 - **step 3:** start forge
 - **step 4:** put fdp in your mods folder (if you are using the offical launcher click the installations tab then click the folder icon next to forge.
-- **step 5:** enjoy fdp
+- **step 5:** enjoy playing with fdp client.
 
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/UnlegitMC/FDPClient/issues).
@@ -39,7 +42,7 @@ Do the above and share your source code with everyone; just like we do.
 
 ## Setting up a Workspace
 FDPClient uses gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
-1. Clone the repository using `git clone --recurse-submodules https://github.com/UnlegitMC/FDPClient.git`. 
+1. Clone the repository using `git clone --recurse-submodules https://github.com/SkidderMC/FDPClient.git`. 
 2. CD into the local repository folder.
 3. Depending on which IDE you are using execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
@@ -79,5 +82,5 @@ Timer().schedule(object : TimerTask(){
 Please use original code if you can, and no direct code steals, but we welcome skid using packet logger or anything else like that to skid from a close source and make the cheating community more open!
 
 ### Useless features
-Useless features means feature only you think its usable ,or feature can be have with config change.  
+Useless features means feature only you think its usable, or feature can be have with config change.  
 Like the "TimerSpeed" option to InfiniteAura, this feature can be added with bind Timer to the key with InfiniteAura, or use macro system in FDP Client.
