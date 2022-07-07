@@ -56,7 +56,7 @@ class Text(
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
     val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val shadow = BoolValue("Shadow", false)
-    val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "None", "FDP"), "None")
+    val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "Rounded", "None", "FDP"), "None")
     val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
@@ -171,6 +171,11 @@ class Text(
             "normal" -> {
                 RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, rectColor)
             }
+            
+            "rounded" -> {
+                RenderUtils.drawRoundedCornerRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, 2 + (expand / 2), rectColor)
+            }
+            
             "rnormal" -> {
                 RenderUtils.drawRect(-expand, -expand - 1, fontRenderer.getStringWidth(displayText) + expand, -expand, ColorUtils.rainbow())
                 RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, rectColor)
@@ -207,7 +212,7 @@ class Text(
                     displayText, 5F, 0F,Color(255,255,255,140).rgb
                 )
                 FontLoaders.F24.drawString(
-                    "zywl", 5F, 23F,Color(255,255,255,140).rgb
+                    LiquidBounce.CLIENT_VERSION.toString() , 5F, 23F,Color(255,255,255,140).rgb
                 )
             }
         }
