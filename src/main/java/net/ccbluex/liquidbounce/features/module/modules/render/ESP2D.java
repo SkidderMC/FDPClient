@@ -10,15 +10,12 @@ package net.ccbluex.liquidbounce.features.module.modules.render;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.MobsUtils;
 import net.ccbluex.liquidbounce.utils.item.ItemUtils;
 import net.ccbluex.liquidbounce.value.*;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.utils.render.Stencil;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -35,6 +32,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
@@ -49,14 +47,14 @@ import java.util.List;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
 
-@ModuleInfo(name = "ESP2D", category = ModuleCategory.RENDER)
 public final class ESP2D extends Module {
-
     public final BoolValue outline = new BoolValue("Outline", true);
     public final ListValue boxMode = new ListValue("Mode", new String[]{"Box", "Corners"}, "Box");
     public final BoolValue healthBar = new BoolValue("Health-bar", true);
     public final ListValue hpBarMode = new ListValue("HBar-Mode", new String[]{"Dot", "Line"}, "Dot");
+    public final BoolValue absorption = new BoolValue("Render-Absorption", true);
     public final BoolValue armorBar = new BoolValue("Armor-bar", true);
+    public final ListValue armorBarMode = new ListValue("ABar-Mode", new String[] {"Total", "Items"}, "Total");
     public final BoolValue healthNumber = new BoolValue("HealthNumber", true);
     public final ListValue hpMode = new ListValue("HP-Mode", new String[]{"Health", "Percent"}, "Health");
     public final BoolValue armorNumber = new BoolValue("ItemArmorNumber", true);
@@ -67,15 +65,15 @@ public final class ESP2D extends Module {
     public final BoolValue tagsBGValue = new BoolValue("Tags-Background", true);
     public final BoolValue itemTagsValue = new BoolValue("Item-Tags", true);
     public final BoolValue clearNameValue = new BoolValue("Use-Clear-Name", false);
-    public final BoolValue absorption = new BoolValue("Render-Absorption", true);
     public final BoolValue localPlayer = new BoolValue("Local-Player", true);
     public final BoolValue droppedItems = new BoolValue("Dropped-Items", false);
-    private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Slowly", "AnotherRainbow"}, "Custom");
+    private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
     private final IntegerValue colorRedValue = new IntegerValue("Red", 255, 0, 255);
     private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
     private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
-    private final FloatValue saturationValue = new FloatValue("Random-Saturation", 0.9f, 0f, 1f);
+    private final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
     private final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
+    private final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
     private final FloatValue fontScaleValue = new FloatValue("Font-Scale", 0.5F, 0F, 1F);
     private final BoolValue colorTeam = new BoolValue("Team", false);
     public static List collectedEntities = new ArrayList();
@@ -257,33 +255,48 @@ public final class ESP2D extends Module {
                             if (healthNumber.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution)))
                                 drawScaledString(hpMode.get().equalsIgnoreCase("health") ? healthDisplay : healthPercent, posX - 4.0 - mc.fontRendererObj.getStringWidth(hpMode.get().equalsIgnoreCase("health") ? healthDisplay : healthPercent) * fontScaleValue.get(), (endPosY - textWidth) - mc.fontRendererObj.FONT_HEIGHT / 2F * fontScaleValue.get(), fontScaleValue.get(), -1);
                             RenderUtils.newDrawRect(posX - 3.5D, posY - 0.5D, posX - 1.5D, endPosY + 0.5D, background);
-                            if (hpBarMode.get().equalsIgnoreCase("dot")) {
-                                Stencil.write(false);
-                                double idk = (endPosY - posY + 0.5) / 10.0;
-                                for (double kl = 0; kl < 10; kl++)
-                                    RenderUtils.drawRectBasedBorder(posX - 3.25F, posY - 0.25F + (idk * kl), posX - 1.75F, posY - 0.25F + (idk * (kl + 1.0)), 0.5F, -1);
-                                Stencil.erase(false);
-                            }
                             if (armorValue > 0.0F) {
                                 int healthColor = BlendUtils.getHealthColor(armorValue, itemDurability).getRGB();
-                                RenderUtils.newDrawRect(posX - 3.0D, endPosY, posX - 2.0D, endPosY - textWidth, healthColor);
-                                tagY = entityLivingBase.getAbsorptionAmount();
-                                if (absorption.get() && tagY > 0.0F)
-                                    RenderUtils.newDrawRect(posX - 3.0D, endPosY, posX - 2.0D, endPosY - (endPosY - posY) / 6.0D * (double)tagY / 2.0D, (new Color(Potion.absorption.getLiquidColor())).getRGB());
+                                double deltaY = endPosY - posY;
+                                if (hpBarMode.get().equalsIgnoreCase("dot") && deltaY >= 60) { // revert back to normal bar if the height is too low
+                                    for (double k = 0; k < 10; k++) {
+                                        double reratio = MathHelper.clamp_double(armorValue - k * (itemDurability / 10D), 0D, itemDurability / 10D) / (itemDurability / 10D);
+                                        double hei = (deltaY / 10D - 0.5) * reratio;
+                                        RenderUtils.newDrawRect(posX - 3.0D, endPosY - (deltaY + 0.5) / 10D * k, posX - 2.0D, endPosY - (deltaY + 0.5) / 10D * k - hei, healthColor);
+                                    }
+                                } else {
+                                    RenderUtils.newDrawRect(posX - 3.0D, endPosY, posX - 2.0D, endPosY - textWidth, healthColor);
+                                    tagY = entityLivingBase.getAbsorptionAmount();
+                                    if (absorption.get() && tagY > 0.0F)
+                                        RenderUtils.newDrawRect(posX - 3.0D, endPosY, posX - 2.0D, endPosY - (endPosY - posY) / 6.0D * (double)tagY / 2.0D, (new Color(Potion.absorption.getLiquidColor())).getRGB());
+                                }
                             }
-                            if (hpBarMode.get().equalsIgnoreCase("dot"))
-                                Stencil.dispose();
                         }
                     }
 
                     if (armor) {
                         if (living) {
                             entityLivingBase = (EntityLivingBase)entity;
-                            armorValue = (float)entityLivingBase.getTotalArmorValue();
-                            double armorWidth = (endPosY - posY) * (double)armorValue / 20.0D;
-                            RenderUtils.newDrawRect(endPosX + 1.5D, posY - 0.5D, endPosX + 3.5D, endPosY + 0.5D, background);
-                            if (armorValue > 0.0F)
-                                RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - armorWidth, new Color(70, 70, 250).getRGB());
+                            if (armorBarMode.get().equalsIgnoreCase("items")) {
+                                final double constHeight = (endPosY - posY) / 4.0;
+                                for (int m = 4; m > 0; m--) {
+                                    ItemStack armorStack = entityLivingBase.getEquipmentInSlot(m);
+                                    double theHeight = constHeight + 0.25D;
+                                    if (armorStack != null && armorStack.getItem() != null && armorStack.isItemStackDamageable()) {
+                                        RenderUtils.newDrawRect(endPosX + 1.5D, endPosY + 0.5D - theHeight * m, endPosX + 3.5D, endPosY + 0.5D - theHeight * (m - 1), background);
+                                        RenderUtils.newDrawRect(endPosX + 2.0D,
+                                                endPosY + 0.5D - theHeight * (m - 1) - 0.25D,
+                                                endPosX + 3.0D,
+                                                endPosY + 0.5D - theHeight * (m - 1) - 0.25D - (constHeight - 0.25D) * MathHelper.clamp_double((double)ItemUtils.getItemDurability(armorStack) / (double) armorStack.getMaxDamage(), 0D, 1D), new Color(70, 70, 200).getRGB());
+                                    }
+                                }
+                            } else {
+                                armorValue = (float)entityLivingBase.getTotalArmorValue();
+                                double armorWidth = (endPosY - posY) * (double)armorValue / 20.0D;
+                                RenderUtils.newDrawRect(endPosX + 1.5D, posY - 0.5D, endPosX + 3.5D, endPosY + 0.5D, background);
+                                if (armorValue > 0.0F)
+                                    RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - armorWidth, new Color(70, 70, 200).getRGB());
+                            }
                         } else if (entity instanceof EntityItem) {
                             ItemStack itemStack = ((EntityItem)entity).getEntityItem();
                             if (itemStack.isItemStackDamageable()) {
@@ -293,18 +306,16 @@ public final class ESP2D extends Module {
                                 if (armorNumber.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution)))
                                     drawScaledString(((int) itemDurability) + "", endPosX + 4.0, (endPosY - durabilityWidth) - mc.fontRendererObj.FONT_HEIGHT / 2F * fontScaleValue.get(), fontScaleValue.get(), -1);
                                 RenderUtils.newDrawRect(endPosX + 1.5D, posY - 0.5D, endPosX + 3.5D, endPosY + 0.5D, background);
-                                RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - durabilityWidth, new Color(70, 70, 250).getRGB());
+                                RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - durabilityWidth, new Color(70, 70, 200).getRGB());
                             }
                         }
                     }
 
-
-                    if (isPlayer && armorItems.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution))) {
+                    if (living && armorItems.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution))) {
                         entityLivingBase = (EntityLivingBase) entity;
-                        EntityPlayer player = (EntityPlayer) entityLivingBase;
                         double yDist = (double)(endPosY - posY) / 4.0D;
                         for (int j = 4; j > 0; j--) {
-                            ItemStack armorStack = player.getEquipmentInSlot(j);
+                            ItemStack armorStack = entityLivingBase.getEquipmentInSlot(j);
                             if (armorStack != null && armorStack.getItem() != null) {
                                 renderItemStack(armorStack, endPosX + (armor ? 4.0D : 2.0D), posY + (yDist * (4 - j)) + (yDist / 2.0D) - 5.0D);
                                 if (armorDur.get())
