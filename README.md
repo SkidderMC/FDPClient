@@ -1,4 +1,4 @@
-# FDPClient Pojav
+# FDPClient
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/SkidderMC/FDPClient)
 ![GitHub lines of code](https://tokei.rs/b1/github/SkidderMC/FDPClient)
@@ -12,17 +12,6 @@ Discord: https://discord.gg/55x7TaHWXG
 
 ## What happened to old repository?
 UnlegitMC Account was hacked by some china gang and take down FDPClient, so yeah this is the new repository of FDPClient.
-
-## Installing FDPClient (an iq is required)
-- **Step 1:** install java [download (click here)](https://www.java.com/en/download/)
-- **Step 2:** install forge 1.8.9 [download (click here)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html)
-- **Step 3:** start forge 1.8.9
-- **Step 4:** put fdpclient in your mods folder
-- **Step 5:** enjoy playing with fdp client.
-
-**Note:** 
-- if you have java 8 already installed in your system, you can skip step 1.
-- if you use official minecraft launcher, click installation tab then click the folder icon (for step 4, only official launcher).
 
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues).
