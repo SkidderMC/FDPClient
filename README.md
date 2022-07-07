@@ -84,3 +84,4 @@ Please use original code if you can, and no direct code steals, but we welcome s
 ### Useless features
 Useless features means feature only you think its usable, or feature can be have with config change.  
 Like the "TimerSpeed" option to InfiniteAura, this feature can be added with bind Timer to the key with InfiniteAura, or use macro system in FDP Client.
+ 
