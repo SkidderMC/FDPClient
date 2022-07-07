@@ -13,8 +13,6 @@ Discord: https://discord.gg/55x7TaHWXG
 ## What happened to old repository?
 UnlegitMC Account was hacked by some china gang and take down FDPClient, so yeah this is the new repository of FDPClient.
 
-ANTI CHINA CHING CHONG GANG!!
-
 ## Installing FDPClient (an iq is required)
 - **Step 1:** install java [download (click here)](https://www.java.com/en/download/) (if u have java skip this step)
 - **Step 2:** install forge 1.8.9 [download (click here)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (if u have forge skip this step)
