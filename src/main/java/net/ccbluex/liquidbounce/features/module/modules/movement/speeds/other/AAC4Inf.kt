@@ -5,17 +5,16 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class AAC4Inf : SpeedMode("AAC4Inf") {
     override fun onUpdate() {
+        mc.timer.timerSpeed = 1.00f
         if (!MovementUtils.isMoving()) {
             return
         }
         if (mc.thePlayer.onGround) {
             mc.thePlayer.jump()
-            mc.thePlayer.speedInAir = 0.02F
-            mc.timer.timerSpeed = 1.00F
+            mc.timer.timerSpeed = 1.00f
         }
         if (mc.thePlayer.fallDistance > 0.7 && mc.thePlayer.fallDistance < 1.3) {
-            mc.thePlayer.speedInAir = 0.02F
-            mc.timer.timerSpeed = 1.08F
+            mc.timer.timerSpeed = 1.08f
         }
     }
 
