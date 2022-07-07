@@ -25,7 +25,7 @@ import net.minecraft.potion.Potion
 
 @ModuleInfo(name = "AutoPot", category = ModuleCategory.COMBAT)
 class AutoPot : Module() {
-    private val throwMode = ListValue("ThrowMode", arrayOf("Up", "Forward", "Down", "Custom"), "Up")
+    private val throwMode = ListValue("ThrowMode", arrayOf("Up", "Hypixel", "Forward", "Down", "Custom"), "Up")
     private val healthValue = FloatValue("Health", 15F, 1F, 20F)
     private val delayValue = IntegerValue("Delay", 500, 500, 1000)
     private val throwTickValue = IntegerValue("ThrowTick", 3, 1, 10)
@@ -47,6 +47,7 @@ class AutoPot : Module() {
     fun onUpdate(event: UpdateEvent) {
         when (throwMode.get().lowercase()) {
             "up" -> throwAngle = 90f
+            "hypixel" -> throwAngle = 87.5f
             "forward" -> throwAngle = 0f
             "down" -> throwAngle = -90f
             "custom" -> throwAngle = throwAngleOption.get().toFloat()
