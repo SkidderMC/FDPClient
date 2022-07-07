@@ -14,7 +14,6 @@ import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.sin
 import kotlin.math.cos
 
-
 class MatrixClip : FlyMode("MatrixClip") {
     private val clipMode = ListValue("${valuePrefix}BypassMode", arrayOf("Clip1","Clip2","Clip3","CustomClip"), "Clip2")
     private val customClip = IntegerValue("${valuePrefix}Custom-ClipDelay",736,500,1500)
