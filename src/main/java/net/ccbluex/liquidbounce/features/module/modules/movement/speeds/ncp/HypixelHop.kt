@@ -17,7 +17,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Safe", "Test"), "Safe")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0.15f, 0.01f, 0.5f)
   
-    private var watchdogMultiplier = 1.0f 
+    private var watchdogMultiplier = 1.0
   
     override fun onEnable() {
         super.onEnable()
