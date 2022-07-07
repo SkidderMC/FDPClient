@@ -3,7 +3,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 
-class VerusHop : SpeedMode("VerusHop") {
+class VerusHop2 : SpeedMode("VerusHop2") {
 
     private val timerBoost = BoolValue("TimerBoost",true)
 
