@@ -47,6 +47,7 @@ import java.util.List;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
 
+@ModuleInfo(name = "ESP2D", category = ModuleCategory.RENDER)
 public final class ESP2D extends Module {
     public final BoolValue outline = new BoolValue("Outline", true);
     public final ListValue boxMode = new ListValue("Mode", new String[]{"Box", "Corners"}, "Box");
