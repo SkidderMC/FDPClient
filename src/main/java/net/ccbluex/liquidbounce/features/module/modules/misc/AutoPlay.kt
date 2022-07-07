@@ -205,24 +205,29 @@ class AutoPlay : Module() {
                     process(packet.chatComponent)
                 }
 
-        "minefc/heromc_bedwars" -> {
-        if (text.contains("Bạn đã bị loại!", false)
-            || text.contains("đã thắng trò chơi", false)) {
-            mc.thePlayer.sendChatMessage("/bw leave")
-            waitForLobby = true
-        }
-            if (((waitForLobby || autoStartValue.get()) && text.contains("¡Hiển thị", false))
-                || (replayWhenKickedValue.get() && text.contains("[Anticheat] You have been kicked from the server!", false))) {
-            queueAutoPlay {
-                mc.thePlayer.sendChatMessage("/bw join ${bwModeValue.get()}")
-            }
-                waitForLobby = false
-            }
-            if (showGuiWhenFailedValue.get() && text.contains("giây", false) && text.contains("thất bại", false)) {
-            LiquidBounce.hud.addNotification(Notification(this.name, "Failed to join, showing GUI...", NotifyType.ERROR, 1000))
-            mc.thePlayer.sendChatMessage("/bw gui ${bwModeValue.get()}")
-        }
-    }
+                "minefc/heromc_bedwars" -> {
+                    if (text.contains("Bạn đã bị loại!", false) || text.contains("đã thắng trò chơi", false)) {
+                        mc.thePlayer.sendChatMessage("/bw leave")
+                        waitForLobby = true
+                    }
+                    
+                    if (
+                            ( (    waitForLobby || autoStartValue.get()) && text.contains("¡Hiển thị", false) ) || 
+                            ( replayWhenKickedValue.get()                && text.contains("[Anticheat] You have been kicked from the server!", false))
+                       ) {
+                        
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/bw join ${bwModeValue.get()}")
+                        }
+                        waitForLobby = false
+                    }
+                    
+                    if (showGuiWhenFailedValue.get() && text.contains("giây", false) && text.contains("thất bại", false)) {
+                        LiquidBounce.hud.addNotification(Notification(this.name, "Failed to join, showing GUI...", NotifyType.ERROR, 1000))
+                        mc.thePlayer.sendChatMessage("/bw gui ${bwModeValue.get()}")
+                    }
+                }
+                
              }
         }
     }
