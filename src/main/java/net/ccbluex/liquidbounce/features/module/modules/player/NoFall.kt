@@ -617,7 +617,7 @@ class NoFall : Module() {
             } else if(mode.equals("Hypixel2", true)) {
                 if (mc.thePlayer.fallDistance >= 3) {
                     packet.onGround = true
-                    mc.thePlayer.fallDistance = 0
+                    mc.thePlayer.fallDistance = 0.0f
                 }
             }
         }
