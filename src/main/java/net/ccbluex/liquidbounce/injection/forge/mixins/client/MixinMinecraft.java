@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMC/FDPClient/
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
@@ -261,7 +261,7 @@ public abstract class MixinMinecraft {
             }
             FileWriter fileWritter = new FileWriter(file.getName(), true);
             fileWritter.write("######################### FDP CRASH REPORT #########################\r\n\r\n" +
-                    "If this problem persists, please send this file to the FDPClient developers! Website (where you can join the discord server): http://FDPClient.Club/\r\nThis file will be saved in \".minecraft/FDPCrashLogs.txt\"" +
+                    "If this problem persists, please send this file to the FDPClient developers! Website (where you can join the discord server): http://fdpinfo.github.io/\r\nThis file will be saved in \".minecraft/FDPCrashLogs.txt\"" +
                     "\r\n\r\n" +
                     " | 在没有错误日志的情况下诊断任何问题无异于闭眼开车!  --Apache官方文档\r\n" +
                     " | Troubleshooting any problem without the error log is like driving with your eyes closed.\r\n" +

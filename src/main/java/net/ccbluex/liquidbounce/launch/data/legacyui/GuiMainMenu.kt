@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMC/FDPClient/
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui
 
@@ -162,7 +162,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         drawed = true
     }
 
-    /* For modification, please keep "Designed by UnlegitMc" */
+    /* For modification, please keep "Designed by SkidderMC" */
     override fun initGui() {
         val defaultHeight = (this.height / 3.5).toInt()
         Thread {
