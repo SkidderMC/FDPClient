@@ -8,9 +8,12 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.ListValue
+
 
 class HypixelHop : SpeedMode("HypixelHop") {
   
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Safe", "Test"), "Safe")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0.15f, 0.01f, 0.5f)
   
     private var watchdogMultiplier = 1.0f 
@@ -25,18 +28,37 @@ class HypixelHop : SpeedMode("HypixelHop") {
 
     override fun onUpdate() {
         if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
-            watchdogMultiplier = 1.45
-            mc.thePlayer.motionY = 0.41999998688697815
+            when (bypassMode.get().lowercase()) {
+                "safe" -> {
+                    watchdogMultiplier = 1.45
+                    mc.thePlayer.motionY = 0.41999998688697815
+                }
+                
+                "test" -> {
+                    watchdogMultiplier = 1.2f
+                    mc.thePlayer.jump(0.39999998688697815)
+                }
+            }
         }
 
         if (watchdogMultiplier > 1) {
-            watchdogMultiplier -= 0.2
+            when (bypassMode.get().lowercase()) {
+                "safe" -> watchdogMultiplier -= 0.2
+                "test" -> watchdogMultiplier -= 0.05
+            }
         } else {
             watchdogMultiplier = 1
+        }
         
     }
     
     override fun onMove(event: MoveEvent) {
-         MovementUtils.strafe( 0.02 * ( 1.081237F - watchdogSlowDown.get() ).toDouble() * watchdogMultiplier)
+      when (bypassMode.get().lowercase()) {
+         "safe" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.081237F    - watchdogSlowDown.get()).toDouble())
+         "test" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.0f         - watchdogSlowDown.get()).toDouble())
+      }
     }
 }
+    
+
+
