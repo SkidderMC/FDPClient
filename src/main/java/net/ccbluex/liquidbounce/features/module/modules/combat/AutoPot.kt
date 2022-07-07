@@ -49,7 +49,7 @@ class AutoPot : Module() {
             "up" -> throwAngle = 90f
             "forward" -> throwAngle = 0f
             "down" -> throwAngle = -90f
-            "custom" -> throwAngle = throwAngleOption.toFloat()
+            "custom" -> throwAngle = throwAngleOption.get().toFloat()
         }
         
         if (notCombatValue.get() && LiquidBounce.combatManager.inCombat) return
