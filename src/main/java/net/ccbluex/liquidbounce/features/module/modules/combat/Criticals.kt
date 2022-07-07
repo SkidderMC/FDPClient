@@ -33,7 +33,7 @@ class Criticals : Module() {
         arrayOf(
             "Packet", "NCPPacket", "NCPMotion", "MiPacket",
             "Blocksmc",
-            "Hypixel", "Hypixel2",
+            "Hypixel", "Hypixel2", "Hypixel3",
             "VulcanSemi", "MatrixSemi",
             "AACPacket", "AAC4.3.11OldHYT", "AAC5.0.4",
             "NoGround", "TPHop", "FakeCollide",
@@ -223,6 +223,11 @@ class Criticals : Module() {
                 "hypixel2" -> {
                     sendCriticalPacket(yOffset = 0.05250000001304, ground = false)
                     sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
+                }
+                
+                "hypixel3" -> {
+                    sendCriticalPacket(yOffset = 0.01, ground = false)
+                    sendCriticalPacket(yOffset = 0.007, ground = false)
                 }
 
                 "mineplex" -> {
