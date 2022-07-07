@@ -50,15 +50,15 @@ class Criticals : Module() {
             "Jump", "LowJump", 
             "MinemoraTest"
         ),
-        "Jump")
+        "Jump").displayable { modeValue.equals("Motion") }
     private val hoverValue = ListValue(
         "HoverMode",
         arrayOf("AAC4", "AAC4Other",
                 "OldRedesky",
                 "Normal1", "Normal2", "Minis", "Minis2", "TPCollide",
                 "2b2t"),
-        "AAC4"
-    )
+        "AAC4").displayable { modeValue.equals("Hover") }
+    
     private val hoverNoFall = BoolValue("Hover-NoFall", true).displayable { modeValue.equals("Hover") }
     private val hoverCombat = BoolValue("Hover-OnlyCombat", true).displayable { modeValue.equals("Hover") }
     private val sNoGround = BoolValue("NoGround-SmartNoGround", false) .displayable { modeValue.equals("NoGround") }
