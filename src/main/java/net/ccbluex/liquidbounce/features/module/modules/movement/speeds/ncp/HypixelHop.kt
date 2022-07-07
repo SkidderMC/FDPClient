@@ -36,8 +36,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 }
                 
                 "test" -> {
-                    watchdogMultiplier = 1.2f
-                    mc.thePlayer.jump(0.39999998688697815)
+                    watchdogMultiplier = 1.2
+                    mc.thePlayer.motionY = 0.39999998688697815
                 }
             }
         }
@@ -48,15 +48,15 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 "test" -> watchdogMultiplier -= 0.05
             }
         } else {
-            watchdogMultiplier = 1
+            watchdogMultiplier = 1.0
         }
         
     }
     
     override fun onMove(event: MoveEvent) {
       when (bypassMode.get().lowercase()) {
-         "safe" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.081237F    - slowdownValue.get()).toDouble())
-         "test" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.0f         - slowdownValue.get()).toDouble())
+         "safe" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.081237    - slowdownValue.get()))
+         "test" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.0         - slowdownValue.get()))
       }
     }
 }
