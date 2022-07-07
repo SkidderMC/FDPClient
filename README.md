@@ -6,19 +6,23 @@
 ![Minecraft](https://img.shields.io/badge/game-Minecraft-brightgreen)  
 A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.
 
-Website: [fdpinfo.github.io](https://fdpinfo.github.io)/
-Latest: [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)/    
+Website: [fdpinfo.github.io](https://fdpinfo.github.io)
+Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)    
 Discord: https://discord.gg/55x7TaHWXG  
 
 ## What happened to old repository?
 UnlegitMC Account was hacked by some china gang and take down FDPClient, so yeah this is the new repository of FDPClient.
 
 ## Installing FDPClient (an iq is required)
-- **Step 1:** install java [download (click here)](https://www.java.com/en/download/) (if u have java skip this step)
-- **Step 2:** install forge 1.8.9 [download (click here)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (if u have forge skip this step)
-- **step 3:** start forge
-- **step 4:** put fdp in your mods folder (if you are using the offical launcher click the installations tab then click the folder icon next to forge.
-- **step 5:** enjoy playing with fdp client.
+- **Step 1:** install java [download (click here)](https://www.java.com/en/download/)
+- **Step 2:** install forge 1.8.9 [download (click here)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html)
+- **Step 3:** start forge 1.8.9
+- **Step 4:** put fdpclient in your mods folder
+- **Step 5:** enjoy playing with fdp client.
+
+**Note:** 
+- if you have java 8 already installed in your system, you can skip step 1.
+- if you use official minecraft launcher, click installation tab then click the folder icon (for step 4, only official launcher).
 
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues).
@@ -42,7 +46,7 @@ Do the above and share your source code with everyone; just like we do.
 
 ## Setting up a Workspace
 FDPClient uses gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
-1. Clone the repository using `git clone --recurse-submodules https://github.com/SkidderMC/FDPClient.git`. 
+1. Clone the repository using `git clone --recurse-submodules https://github.com/SkidderMC/FDPClient.git` (make sure you have git installed on your system). 
 2. CD into the local repository folder.
 3. Depending on which IDE you are using execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
