@@ -20,9 +20,9 @@ class KauriLowHop : SpeedMode("KauriLowHop") {
             mc.thePlayer.jump()
             mc.thePlayer.motionY = 0.3001145141919810
             if (MovementUtils.getSpeed() < 0.22) {
-                MovementUtils.strafe(0.22)
+                MovementUtils.strafe(0.22f)
             }else {
-                MovementUtils.strafe(0.48)
+                MovementUtils.strafe(0.48f)
             }
         }
         if (!MovementUtils.isMoving()) {
