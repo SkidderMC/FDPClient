@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 
@@ -54,8 +55,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
     
     override fun onMove(event: MoveEvent) {
       when (bypassMode.get().lowercase()) {
-         "safe" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.081237F    - watchdogSlowDown.get()).toDouble())
-         "test" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.0f         - watchdogSlowDown.get()).toDouble())
+         "safe" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.081237F    - slowdownValue.get()).toDouble())
+         "test" -> MovementUtils.strafe( 0.02 * watchdogMultiplier * ( 1.0f         - slowdownValue.get()).toDouble())
       }
     }
 }
