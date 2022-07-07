@@ -47,7 +47,7 @@ class NoFall : Module() {
         "Packet", "Packet1", "Packet2",
         "MLG",
         "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "LoyisaAAC4.4.2", "AAC5.0.4", "AAC5.0.14",
-        "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Medusa",
+        "Spartan", "CubeCraft", "Hypixel", "Hypixel2", "HypSpoof", "Phase", "Verus", "Medusa",
         "Damage", "MotionFlag",
         "OldMatrix", "Matrix6.2.X", "Matrix6.2.X-Packet", "Matrix6.6.3",
         "Vulcan"
@@ -613,6 +613,11 @@ class NoFall : Module() {
                 if (needSpoof) {
                     packet.onGround = true
                     needSpoof = false
+                }
+            } else if(mode.equals("Hypixel2", true)) {
+                if (mc.thePlayer.fallDistance >= 3) {
+                    packet.onGround = true
+                    mc.thePlayer.fallDistance = 0
                 }
             }
         }
