@@ -38,14 +38,16 @@ class Velocity : Module() {
     private val horizontalValue = FloatValue("Horizontal", 0F, -2F, 2F)
     private val verticalValue = FloatValue("Vertical", 0F, -2F, 2F)
     private val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "Tick", "Cancel", "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
-                                                      "Redesky1", "Redesky2",
-                                                      "AAC5.2.0", "AAC5.2.0Combat",
-                                                      "MatrixReduce", "MatrixSimple", "MatrixReverse",
-                                                      "Reverse", "SmoothReverse",
-                                                      "Jump",
-                                                      "Phase", "PacketPhase", "Glitch", "Spoof",
-                                                      "Legit"), "Simple")
+    private val modeValue = ListValue("Mode", arrayOf(
+        "Cancel", "Simple", "Tick",
+        "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
+        "Redesky1", "Redesky2",
+        "AAC5.2.0", "AAC5.2.0Combat",
+        "MatrixReduce", "MatrixSimple", "MatrixReverse",
+        "Reverse", "SmoothReverse",
+        "Jump",
+        "Phase", "PacketPhase", "Glitch", "Spoof",
+        "Legit"), "Simple")
 
     // Reverse
     private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F).displayable { modeValue.equals("Reverse") }
@@ -116,7 +118,7 @@ class Velocity : Module() {
         if(velocityInput) {
             velocityTick++
         }else velocityTick = 0
-        
+
         if (redeCount <24) redeCount++
         if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb) {
             return
@@ -125,7 +127,7 @@ class Velocity : Module() {
         if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat)) {
             return
         }
-            // if(onlyHitVelocityValue.get() && mc.thePlayer.motionY<0.05) return；
+        // if(onlyHitVelocityValue.get() && mc.thePlayer.motionY<0.05) return；
         if (noFireValue.get() && mc.thePlayer.isBurning) return
 
         when (modeValue.get().lowercase()) {
@@ -141,7 +143,7 @@ class Velocity : Module() {
                     velocityInput = false
                 }
             }
-            
+
             "jump" -> if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
                 mc.thePlayer.motionY = 0.42
             }
@@ -229,7 +231,7 @@ class Velocity : Module() {
 
                     // Reduce Y
                     if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get() &&
-                            !LiquidBounce.moduleManager[Speed::class.java]!!.state) {
+                        !LiquidBounce.moduleManager[Speed::class.java]!!.state) {
                         mc.thePlayer.motionY -= 0.014999993
                     }
                 }
@@ -242,7 +244,7 @@ class Velocity : Module() {
                     mc.thePlayer.motionZ /= reduce
                 }
             }
-           "matrixreduce" -> {
+            "matrixreduce" -> {
                 if (mc.thePlayer.hurtTime > 0) {
                     if (mc.thePlayer.onGround) {
                         if (mc.thePlayer.hurtTime <= 6) {
@@ -258,12 +260,12 @@ class Velocity : Module() {
                         mc.thePlayer.motionZ *= 0.60
                     }
                 }
-           }
+            }
 
-           "matrixground" -> {
-               isMatrixOnGround = mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown
-               if (isMatrixOnGround) mc.thePlayer.onGround = false
-           }
+            "matrixground" -> {
+                isMatrixOnGround = mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown
+                if (isMatrixOnGround) mc.thePlayer.onGround = false
+            }
 
             "glitch" -> {
                 mc.thePlayer.noClip = velocityInput
@@ -367,7 +369,7 @@ class Velocity : Module() {
                         packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
                     }
                 }
-                
+
                 "matrixreverse" -> {
                     packet.motionX = (packet.getMotionX() * -0.3).toInt()
                     packet.motionZ = (packet.getMotionZ() * -0.3).toInt()
