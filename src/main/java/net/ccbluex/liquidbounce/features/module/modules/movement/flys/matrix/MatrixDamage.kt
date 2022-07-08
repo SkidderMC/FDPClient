@@ -34,6 +34,14 @@ class MatrixDamage : FlyMode("MatrixDamage") {
         tick = 0
     }
 
+    private fun resetmotion() {
+        if(motionreduceonend.get()) {
+            mc.thePlayer.motionX = mc.thePlayer.motionX / 10
+            mc.thePlayer.motionY = mc.thePlayer.motionY / 10
+            mc.thePlayer.motionZ = mc.thePlayer.motionZ / 10
+        }
+    }
+
     override fun onUpdate(event: UpdateEvent) {
         if(motionreduceonend.get()) {
             fly.needReset = false
@@ -48,6 +56,7 @@ class MatrixDamage : FlyMode("MatrixDamage") {
                     mc.thePlayer.motionY = packetymotion
 
                     if(tick++ >=27) {
+                        resetmotion()
                         mc.timer.timerSpeed = 1.0f
                         velocitypacket = false
                         packetymotion = 0.0
@@ -66,6 +75,7 @@ class MatrixDamage : FlyMode("MatrixDamage") {
                     }
                     mc.thePlayer.motionY = packetymotion
                     if (tick++ >= 27) {
+                        resetmotion()
                         mc.timer.timerSpeed = 1.0f
                         velocitypacket = false
                         packetymotion = 0.0
@@ -81,6 +91,7 @@ class MatrixDamage : FlyMode("MatrixDamage") {
                     mc.thePlayer.motionZ += (cos(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
                     mc.thePlayer.motionY = packetymotion
                     if(tick++ >=boostTicks.get()) {
+                        resetmotion()
                         mc.timer.timerSpeed = 1.0f
                         velocitypacket = false
                         packetymotion = 0.0
@@ -94,11 +105,7 @@ class MatrixDamage : FlyMode("MatrixDamage") {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1f
-        if(motionreduceonend.get()) {
-            mc.thePlayer.motionX = mc.thePlayer.motionX / 10
-            mc.thePlayer.motionY = mc.thePlayer.motionY / 10
-            mc.thePlayer.motionZ = mc.thePlayer.motionZ / 10
-        }
+        resetmotion()
     }
 
     override fun onPacket(event: PacketEvent) {
