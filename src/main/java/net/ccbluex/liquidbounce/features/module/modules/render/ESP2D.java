@@ -10,6 +10,8 @@ package net.ccbluex.liquidbounce.features.module.modules.render;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
+import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.MobsUtils;
 import net.ccbluex.liquidbounce.utils.item.ItemUtils;
 import net.ccbluex.liquidbounce.value.*;
@@ -47,7 +49,9 @@ import java.util.List;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
 
+@ModuleInfo(name = "ESP2D", category = ModuleCategory.RENDER)
 public final class ESP2D extends Module {
+    
     public final BoolValue outline = new BoolValue("Outline", true);
     public final ListValue boxMode = new ListValue("Mode", new String[]{"Box", "Corners"}, "Box");
     public final BoolValue healthBar = new BoolValue("Health-bar", true);

@@ -23,7 +23,7 @@ class KeyPearl : Module() {
         if (mc.currentScreen != null || mc.playerController.currentGameType == WorldSettings.GameType.SPECTATOR 
 		|| mc.playerController.currentGameType == WorldSettings.GameType.CREATIVE) return
 
-	val pearlInHotbar = InventoryUtils.findItem(36, 45, Items.ender_pearl)
+    	val pearlInHotbar = InventoryUtils.findItem(36, 45, Items.ender_pearl)
 
         if (pearlInHotbar != -1) {
         	mc.netHandler.addToSendQueue(C09PacketHeldItemChange(pearlInHotbar - 36))
