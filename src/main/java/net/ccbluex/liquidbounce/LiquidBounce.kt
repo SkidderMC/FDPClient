@@ -197,15 +197,6 @@ object LiquidBounce {
 
         fileManager.loadConfigs(fileManager.hudConfig, fileManager.xrayConfig)
 
-        // start discord rpc
-        thread {
-            try {
-                DiscordRPC.run()
-            } catch (e: Throwable) {
-                ClientUtils.logError("Failed to load DiscordRPC.", e)
-            }
-        }
-
         // run update checker
         if (CLIENT_VERSION != "unknown") {
             thread(block = this::checkUpdate)
