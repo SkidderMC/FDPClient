@@ -42,11 +42,12 @@ object DiscordRPC {
 
     private fun update() {
         val builder = RichPresence.Builder()
+        val discordrpc = LiquidBounce.moduleManager[DiscordRPCPack::class.java]!!
         builder.setStartTimestamp(timestamp)
         builder.setLargeImage("cfb8fe2fe9169dc68f7f8c1236b885")
         builder.setDetails(fdpwebsite + LiquidBounce.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
-            if(LiquidBounce.moduleManager[DiscordRPCPack::class.java]!!.showserver.get()) {
+            if(discordrpc.showserver.get()) {
                 builder.setState(if(it.equals("idling", true)) "Idling" else "Server: $it ")
             } else {
                 builder.setState(if(it.equals("idling", true)) "Idling" else "Playing in a server.")
