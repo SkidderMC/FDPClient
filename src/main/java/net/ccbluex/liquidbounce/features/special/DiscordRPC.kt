@@ -5,6 +5,8 @@ import com.jagrosh.discordipc.IPCListener
 import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCPack
+import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import org.json.JSONObject
 import java.time.OffsetDateTime
@@ -44,7 +46,11 @@ object DiscordRPC {
         builder.setLargeImage("cfb8fe2fe9169dc68f7f8c1236b885")
         builder.setDetails(fdpwebsite + LiquidBounce.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
-            builder.setState(if(it.equals("idling", true)) "Idling" else "Server: $it ")
+            if(LiquidBounce.moduleManager[DiscordRPCPack::class.java]!!.showserver.get()) {
+                builder.setState(if(it.equals("idling", true)) "Idling" else "Server: $it ")
+            } else {
+                builder.setState(if(it.equals("idling", true)) "Idling" else "Playing in a server.")
+            }
         }
 
         // Check ipc client is connected and send rpc
