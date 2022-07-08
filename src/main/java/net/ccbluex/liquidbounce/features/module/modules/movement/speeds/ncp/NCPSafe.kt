@@ -48,7 +48,7 @@ class NCPSafe : SpeedMode("NCPSafe") {
                   speed -= speed / 159
                 }
             }
-            MovementUtils.strafe()
+            MovementUtils.strafe(speed)
         } else {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
