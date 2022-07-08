@@ -96,7 +96,8 @@ abstract class AbstractAwtFontRender(val font: Font) {
             return if (LiquidBounce.fileManager.specialConfig.useGlyphFontRenderer) {
                 GlyphFontRenderer(font)
             } else {
-                VectorFontRenderer(font)
+                //VectorFontRenderer(font)
+                GlyphFontRenderer(font)
             }
         }
     }
