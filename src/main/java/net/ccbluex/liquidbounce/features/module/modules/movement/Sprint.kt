@@ -77,22 +77,22 @@ class Sprint : Module() {
                         var MovingStraight = movingForward || movingBackward
                         var direction = mc.thePlayer.rotationYaw
 
-                        if(movingForward && !isMovingSideways) {
+                        if(movingForward && !MovingSideways) {
 
-                        } else if(movingBackward && !isMovingSideways) {
-                            direction += 180.0
+                        } else if(movingBackward && !MovingSideways) {
+                            direction += 180.0f
                         } else if(movingForward && movingLeft) {
-                            direction += 45.0
+                            direction += 45.0f
                         } else if(movingForward) {
-                            direction -= 45.0
-                        } else if(!isMovingStraight && movingLeft) {
-                            direction += 90.0
-                        } else if(!isMovingStraight && movingRight) {
-                            direction -= 90.0
+                            direction -= 45.0f
+                        } else if(!MovingStraight && movingLeft) {
+                            direction += 90.0f
+                        } else if(!MovingStraight && movingRight) {
+                            direction -= 90.0f
                         } else if(movingBackward && movingRight) {
-                            direction -= 135.0
+                            direction -= 135.0f
                         } else if(movingBackward) {
-                            direction += 135.0
+                            direction += 135.0f
                         }
 
                         RotationUtils.setTargetRotation(Rotation(direction, mc.thePlayer.rotationPitch), 10)
