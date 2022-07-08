@@ -20,7 +20,7 @@ import java.text.DecimalFormat
 
 @ModuleInfo(name = "LightningDetect", category = ModuleCategory.WORLD, array = false, defaultOn = true)
 class LightningDetect : Module() {
-    private val chatlog = BoolValue("ChatLog", false)
+    private val chatlog = BoolValue("debug", false)
 
     private val decimalFormat = DecimalFormat("0.0")
 
