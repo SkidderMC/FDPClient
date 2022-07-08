@@ -11,7 +11,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import org.lwjgl.opengl.GL11
 
 @ModuleInfo(name = "Chams", category = ModuleCategory.RENDER)
@@ -20,11 +22,17 @@ class Chams : Module() {
     val chestsValue = BoolValue("Chests", true)
     val itemsValue = BoolValue("Items", true)
 
-    private val colorRainbowValue = BoolValue("Rainbow", false)
-    private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorGreenValue = IntegerValue("Green", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorAlphaValue = IntegerValue("Alpha", 200, 0, 255)
+    val legacyMode = BoolValue("Legacy-Mode", false)
+    val texturedValue = BoolValue("Textured", true)
+    val colorModeValue = ListValue("Color", arrayOf("Custom", "Sky", "Slowly", "AnotherRainbow"), "Custom")
+    val behindColorModeValue = ListValue("Behind-Color", arrayOf("Same", "Opposite", "Red"), "Same")
+    val colorRainbowValue = BoolValue("Rainbow", false)
+    val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    val colorGreenValue = IntegerValue("Green", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { !colorRainbowValue.get() }
+    val colorAlphaValue = IntegerValue("Alpha", 200, 0, 255)
+    val saturationValue = FloatValue("Saturation", 1F, 0F, 1F)
+    val brightnessValue = FloatValue("Brightness", 1F, 0F, 1F)
 
     fun setColor() {
         if (colorRainbowValue.get()) {

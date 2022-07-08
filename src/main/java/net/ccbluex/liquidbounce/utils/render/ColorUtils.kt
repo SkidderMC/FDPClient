@@ -67,6 +67,9 @@ object ColorUtils {
         return stringBuilder.toString()
     }
 
+    @JvmStatic
+    fun getOppositeColor(color: Color): Color = Color(255 - color.red, 255 - color.green, 255 - color.blue, color.alpha)
+
     fun colorCode(code: String, alpha: Int = 255): Color {
         when (code.lowercase()) {
             "0" -> {
