@@ -28,6 +28,8 @@ import java.text.DecimalFormat
 class FollowTargetHud : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Juul", "Jello", "Material", "Arris", "FDP"), "Juul")
     private val fontValue = FontValue("Font", Fonts.font40)
+    private val smoothMove = BoolValue("SmoothHudMove", true)
+    private val smoothValue = IntegerValue("SmoothHudMoveValue", 3, 1, 8).displayable { smoothMove.get() }
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.equals("Jello") }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
@@ -37,6 +39,10 @@ class FollowTargetHud : Module() {
 
     private var targetTicks = 0
     private var entityKeep = "yes"
+    
+    private var lastX = 0.0
+    private var lastY = 0.0
+    private var lastZ = 0.0
 
     companion object {
         val HEALTH_FORMAT = DecimalFormat("#.#")
@@ -109,12 +115,20 @@ class FollowTargetHud : Module() {
         // Translate to player position
         val renderManager = mc.renderManager
         val timer = mc.timer
-
-        glTranslated( // Translate to player position with render pos and interpolate it
-            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX,
-            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + translateY.get().toDouble(),
-            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
-        )
+        
+        if (smoothMove.get()) {
+            lastX += ((entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX).toDouble() - lastX) / smoothValue.get().toDouble()          
+            lastY += ((entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + translateY.get().toDouble()).toDouble() - lastY) / smoothValue.get().toDouble()
+            lastZ += ((entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ).toDouble() - lastZ) / smoothValue.get().toDouble()
+            
+            glTranslated( lastX, lastY, lastZ )
+        } else {
+            glTranslated( // Translate to player position with render pos and interpolate it
+                entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX,
+                entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + translateY.get().toDouble(),
+                entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
+            )
+        }
 
         // Rotate view to player
         glRotatef(-mc.renderManager.playerViewY, 0F, 1F, 0F)
