@@ -148,11 +148,13 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
                 GL11.glDisable(depth);
                 GL11.glDepthMask(false);
+                GL11.glPopMatrix();
             }
 
             this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
 
             if (chamsFlag) {
+                GL11.glPushMatrix();
                 GL11.glEnable(depth);
                 GL11.glDepthMask(true);
 
