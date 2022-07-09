@@ -17,8 +17,6 @@ import org.lwjgl.input.Keyboard
 
 @ModuleInfo(name = "KeyPearl", category = ModuleCategory.PLAYER, keyBind = Keyboard.KEY_GRAVE, canEnable = false)
 class KeyPearl : Module() {
-    private var wasDown = false
-
     override fun onEnable() {
         if (mc.currentScreen != null || mc.playerController.currentGameType == WorldSettings.GameType.SPECTATOR 
 		|| mc.playerController.currentGameType == WorldSettings.GameType.CREATIVE) return
