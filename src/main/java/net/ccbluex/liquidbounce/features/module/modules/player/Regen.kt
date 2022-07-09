@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -22,12 +23,18 @@ class Regen : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan", "AAC4NoFire"), "Vanilla")
     private val healthValue = IntegerValue("Health", 18, 0, 20)
+    private val delayValue = IntegerValue("Delay", 0, 0, 1000)
     private val foodValue = IntegerValue("Food", 18, 0, 20)
     private val speedValue = IntegerValue("Speed", 100, 1, 100)
     private val noAirValue = BoolValue("NoAir", false)
     private val potionEffectValue = BoolValue("PotionEffect", false)
 
+    private val timer = MSTimer()
     private var resetTimer = false
+
+    override fun onEnable() {
+        timer.reset()
+    }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -42,6 +49,7 @@ class Regen : Module() {
                 return
             }
 
+            if(!(timer.hasTimePassed(delayValue.get().toLong()))) return
             when (modeValue.get().lowercase()) {
                 "vanilla" -> {
                     repeat(speedValue.get()) {
@@ -82,6 +90,8 @@ class Regen : Module() {
                     resetTimer = true
                 }
             }
+            
+            timer.reset()
         }
     }
     override val tag: String
