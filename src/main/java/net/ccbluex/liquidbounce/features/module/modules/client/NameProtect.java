@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.TextValue;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
-
 @ModuleInfo(name = "NameProtect", category = ModuleCategory.CLIENT)
 public class NameProtect extends Module {
 
