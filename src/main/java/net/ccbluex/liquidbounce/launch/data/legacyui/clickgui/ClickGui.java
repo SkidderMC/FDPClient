@@ -65,7 +65,7 @@ public class ClickGui extends GuiScreen {
         if (progress < 1) progress += 0.1 * (1 - partialTicks);
         else progress = 1;
 
-        switch (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).animationValue.get().toLowerCase()) {
+        switch (((ClickGUIModule) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class))).animationValue.get().toLowerCase()) {
             case "liquidbounce":
             case "ziul":
                 slide = EaseUtils.easeOutBack(progress);
@@ -109,7 +109,7 @@ public class ClickGui extends GuiScreen {
         int defaultWidth1 = (this.width);
         GlStateManager.scale(scale, scale, scale);
 
-        switch (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).animationValue.get().toLowerCase()) {
+        switch (((ClickGUIModule) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class))).animationValue.get().toLowerCase()) {
             case "bread":
                 GlStateManager.translate(0, (1.0 - slide) * height * 2.0, 0);
                 GlStateManager.scale(scale, scale + (1.0 - slide) * 2.0, scale);
@@ -166,7 +166,7 @@ public class ClickGui extends GuiScreen {
         GlStateManager.disableLighting();
         RenderHelper.disableStandardItemLighting();
 
-        switch (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).animationValue.get().toLowerCase()) {
+        switch (((ClickGUIModule) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class))).animationValue.get().toLowerCase()) {
             case "bread":
                 GlStateManager.translate(0, (1.0 - slide) * height * -2.0, 0);
                 break;
