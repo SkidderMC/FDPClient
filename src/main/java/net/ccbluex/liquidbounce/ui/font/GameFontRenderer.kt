@@ -134,7 +134,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                     val words = part.substring(1)
                     val type = part[0]
 
-                    when (val colorIndex = getColorIndex2(type)) {
+                    when (val colorIndex = getColorIndex(type)) {
                         in 0..15 -> {
                             if (!ignoreColor) {
                                 currentColor = ColorUtils.hexColors[colorIndex] or (alpha shl 24)
@@ -206,6 +206,14 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         return (x + getStringWidth(text)).toInt()
     }
 
+    fun drawCenteredString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
+        return Minecraft.getMinecraft().fontRendererObj.drawCenteredString(text,x,y,color,shadow);
+    }
+
+    fun drawCenteredString(text: String, x: Float, y: Float, color: Int): Int {
+        return Minecraft.getMinecraft().fontRendererObj.drawCenteredString(text,x,y,color,true);
+    }
+
     private fun drawText(text: String?, x: Float, y: Float, colorHex: Int, ignoreColor: Boolean): Int {
         if (text.isNullOrEmpty()) {
             return 0
@@ -248,7 +256,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                     val words = part.substring(1)
                     val type = part[0]
 
-                    when (val colorIndex = getColorIndex2(type)) {
+                    when (val colorIndex = getColorIndex(type)) {
                         in 0..15 -> {
                             if (!ignoreColor) {
                                 hexColor = ColorUtils.hexColors[colorIndex] or (alpha shl 24)
@@ -319,7 +327,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     }
 
     override fun getColorCode(charCode: Char) =
-            ColorUtils.hexColors[getColorIndex2(charCode)]
+            ColorUtils.hexColors[getColorIndex(charCode)]
 
     override fun getStringWidth(text: String): Int {
         var currentText = text
@@ -346,7 +354,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                 } else {
                     val words = part.substring(1)
                     val type = part[0]
-                    val colorIndex = getColorIndex2(type)
+                    val colorIndex = getColorIndex(type)
                     when {
                         colorIndex < 16 -> {
                             bold = false
