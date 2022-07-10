@@ -107,7 +107,6 @@ public class ClickGui extends GuiScreen {
         drawDefaultBackground();
         int defaultHeight1 = (this.height);
         int defaultWidth1 = (this.width);
-        GlStateManager.scale(scale, scale, scale);
 
         switch (((ClickGUIModule) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class))).animationValue.get().toLowerCase()) {
             case "bread":
