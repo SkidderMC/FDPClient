@@ -115,6 +115,8 @@ public class AstolfoStyle extends Style {
                 int yPos = moduleElement.getY() + 4;
 
                 for (final Value value : moduleValues) {
+                    if (!value.getDisplayable())
+                        continue;
                     if (value instanceof BoolValue) {
                         String text = value.getName();
                         float textWidth = Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(text.replaceAll("%","")));
