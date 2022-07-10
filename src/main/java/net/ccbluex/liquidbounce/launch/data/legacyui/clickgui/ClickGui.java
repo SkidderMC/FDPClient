@@ -62,6 +62,7 @@ public class ClickGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+	final double scale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
         if (progress < 1) progress += 0.1 * (1 - partialTicks);
         else progress = 1;
 
@@ -85,7 +86,6 @@ public class ClickGui extends GuiScreen {
 
         // Enable DisplayList optimization
         AWTFontRenderer.Companion.setAssumeNonVolatile(true);
-        final double scale = Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).scaleValue.get();
 
         mouseX /= scale;
         mouseY /= scale;
@@ -198,7 +198,7 @@ public class ClickGui extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        final double scale = Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).scaleValue.get();
+        final double scale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
 
         mouseX /= scale;
         mouseY /= scale;
@@ -226,7 +226,7 @@ public class ClickGui extends GuiScreen {
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-        final double scale = Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).scaleValue.get();
+        final double scale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
 
         mouseX /= scale;
         mouseY /= scale;
