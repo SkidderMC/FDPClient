@@ -14,10 +14,8 @@ import net.ccbluex.liquidbounce.features.module.modules.client.button.AbstractBu
 import net.ccbluex.liquidbounce.features.module.modules.client.button.FLineButtonRenderer
 import net.ccbluex.liquidbounce.features.module.modules.client.button.RiseButtonRenderer
 import net.ccbluex.liquidbounce.features.module.modules.client.button.RoundedButtonRenderer
-import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule.*
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.Animation
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -26,21 +24,17 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.util.ResourceLocation
-import java.awt.Color
-import java.util.*
 
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HUD : Module() {
-    val shadowValue = ListValue("ShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Outline")
-    val clolormode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")
-    val hueInterpolation = BoolValue("hueInterpolation", false)
-    val movingcolors = BoolValue("MovingColors", false)
     val betterHotbarValue = BoolValue("BetterHotbar", true)
     val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255).displayable { betterHotbarValue.get() }
-    val hotbarEaseValue = BoolValue("HotbarEase", false)
+    val hotbarEaseValue = BoolValue("HotbarEase", true)
     private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
-    private val hotbarAnimTypeValue = EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
-    private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
+    private val hotbarAnimTypeValue =
+        EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
+    private val hotbarAnimOrderValue =
+        EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
     val inventoryParticle = BoolValue("InventoryParticle", false)
     private val blurValue = BoolValue("Blur", false)
     val fontChatValue = BoolValue("FontChat", false)
@@ -122,36 +116,6 @@ object HUD : Module() {
     @EventTarget
     fun onKey(event: KeyEvent) {
         LiquidBounce.hud.handleKey('a', event.key)
-    }
-    fun getClientColors(): Array<Color>? {
-        val firstColor: Color
-        val secondColor: Color
-        when (clolormode.get()
-            .lowercase(Locale.getDefault())) {
-            "light rainbow" -> {
-                firstColor = ColorUtils.rainbowc(15, 1, .6f, 1F, 1F)!!
-                secondColor = ColorUtils.rainbowc(15, 40, .6f, 1F, 1F)!!
-            }
-            "rainbow" -> {
-                firstColor = ColorUtils.rainbowc(15, 1, 1F, 1F, 1F)!!
-                secondColor = ColorUtils.rainbowc(15, 40, 1F, 1F, 1F)!!
-            }
-            "double color" -> {
-                firstColor =
-                    ColorUtils.interpolateColorsBackAndForth(15, 0, Color.PINK, Color.BLUE, hueInterpolation.get())!!
-                secondColor =
-                    ColorUtils.interpolateColorsBackAndForth(15, 90, Color.PINK, Color.BLUE, hueInterpolation.get())!!
-            }
-            "static" -> {
-                firstColor = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
-                secondColor = firstColor
-            }
-            else -> {
-                firstColor = Color(-1)
-                secondColor = Color(-1)
-            }
-        }
-        return arrayOf(firstColor, secondColor)
     }
 
     fun getHotbarEasePos(x: Int): Int {
