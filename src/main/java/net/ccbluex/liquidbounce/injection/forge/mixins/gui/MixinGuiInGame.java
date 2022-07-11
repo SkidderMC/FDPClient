@@ -124,6 +124,13 @@ public abstract class MixinGuiInGame extends MixinGui {
             callbackInfo.cancel();
     }
 
+    @Inject(method = "renderBossHealth", at = @At("HEAD"), cancellable = true)
+    private void renderBossHealth(CallbackInfo callbackInfo) {
+        final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
+        if (antiBlind.getState() && antiBlind.getBossHealth().get())
+            callbackInfo.cancel();
+    }
+
     @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
     private void injectCrosshair(CallbackInfoReturnable<Boolean> cir) {
         final Crosshair crossHair = LiquidBounce.moduleManager.getModule(Crosshair.class);

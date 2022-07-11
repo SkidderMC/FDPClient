@@ -26,6 +26,7 @@ object PacketUtils : MinecraftInstance() {
         get() = motionZ / 8000f
 
 
+    @JvmStatic
     fun sendPacketNoEvent(packet: Packet<INetHandlerPlayServer>) {
         packets.add(packet)
         mc.netHandler.addToSendQueue(packet)

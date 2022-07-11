@@ -24,6 +24,7 @@ class AntiBlind : Module() {
     val pumpkinEffectValue = BoolValue("Pumpkin", true)
     val fireEffectValue = FloatValue("FireAlpha", 0.3f, 0f, 1f)
     private val brightValue = ListValue("Bright", arrayOf("None", "Gamma", "NightVision"), "Gamma")
+    val bossHealth = BoolValue("Boss-Health", true)
 
     private var prevGamma = -1f
 

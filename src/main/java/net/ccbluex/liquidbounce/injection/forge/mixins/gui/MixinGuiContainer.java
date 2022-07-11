@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -43,6 +44,12 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     private long guiOpenTime = -1;
 
     private boolean translated = false;
+
+    @Shadow
+    protected abstract boolean checkHotbarKeys(int keyCode);
+
+    @Shadow private int dragSplittingButton;
+    @Shadow private int dragSplittingRemnant;
 
     private GuiButton stealButton, chestStealerButton, invManagerButton, killAuraButton;
 
@@ -95,7 +102,6 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         lastMS = System.currentTimeMillis();
         progress = 0F;
     }
-
     @Override
     protected void injectedActionPerformed(GuiButton button) {
         ChestStealer chestStealer = (ChestStealer) LiquidBounce.moduleManager.getModule(ChestStealer.class);
@@ -113,16 +119,27 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         }
     }
 
-    @Inject(method = "initGui", at = @At("RETURN"))
-    private void initGuiReturn(CallbackInfo callbackInfo) {
-        guiOpenTime = System.currentTimeMillis();
-    }
-
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
-    private void drawScreenHead(CallbackInfo callbackInfo) {
-        ChestStealer chestStealer = LiquidBounce.moduleManager.getModule(ChestStealer.class);
-        Minecraft mc = Minecraft.getMinecraft();
+    private void drawScreenHead(CallbackInfo callbackInfo){
+        final Animations animMod = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
+        ChestStealer chestStealer = (ChestStealer) LiquidBounce.moduleManager.getModule(ChestStealer.class);
+        final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+        final Minecraft mc = Minecraft.getMinecraft();
         GuiScreen guiScreen = mc.currentScreen;
+
+        if (progress >= 1F) progress = 1F;
+        else progress = (float)(System.currentTimeMillis() - lastMS) / 750F;
+
+
+        if (hud.getContainerBackground().get()
+                && (!(mc.currentScreen instanceof GuiChest)
+                || !chestStealer.getState()
+                || !chestStealer.getSilentValue().get()
+                || !chestStealer.getStillDisplayValue().get()))
+            RenderUtils.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
+
+        boolean checkFullSilence = chestStealer.getState() && chestStealer.getSilentValue().get() && !chestStealer.getStillDisplayValue().get();
+
         if (chestStealer.getState() && chestStealer.getSilentValue().get() && guiScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) guiScreen;
             if (!(chestStealer.getChestTitleValue().get() && (chest.lowerChestInventory == null || !chest.lowerChestInventory.getName().contains(new ItemStack(Item.itemRegistry.getObject(new ResourceLocation("minecraft:chest"))).getDisplayName())))) {
@@ -163,6 +180,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                 translated = true;
             }
         }
+
         try {
 
             if (stealButton != null) stealButton.enabled = !chestStealer.getState();
@@ -203,14 +221,38 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         }
     }
 
-
     @Inject(method = "drawScreen", at = @At("RETURN"))
-    private void drawScreenReturn(CallbackInfo callbackInfo) {
-        if (translated) {
+    public void drawScreenReturn(CallbackInfo callbackInfo) {
+        final Animations animMod = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
+        ChestStealer chestStealer = (ChestStealer) LiquidBounce.moduleManager.getModule(ChestStealer.class);
+        final Minecraft mc = Minecraft.getMinecraft();
+        boolean checkFullSilence = chestStealer.getState() && chestStealer.getSilentValue().get() && !chestStealer.getStillDisplayValue().get();
+
+        if (animMod != null && animMod.getState() && !(mc.currentScreen instanceof GuiChest && checkFullSilence))
             GL11.glPopMatrix();
-            translated = false;
+    }
+
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    private void checkCloseClick(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
+        if (mouseButton - 100 == mc.gameSettings.keyBindInventory.getKeyCode()) {
+            mc.thePlayer.closeScreen();
+            ci.cancel();
         }
     }
+
+    @Inject(method = "mouseClicked", at = @At("TAIL"))
+    private void checkHotbarClicks(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
+        checkHotbarKeys(mouseButton - 100);
+    }
+
+    @Inject(method = "updateDragSplitting", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;copy()Lnet/minecraft/item/ItemStack;"), cancellable = true)
+    private void fixRemnants(CallbackInfo ci) {
+        if (this.dragSplittingButton == 2) {
+            this.dragSplittingRemnant = mc.thePlayer.inventory.getItemStack().getMaxStackSize();
+            ci.cancel();
+        }
+    }
+
 
     @Inject(method = "keyTyped", at = @At("HEAD"))
     private void keyTyped(char typedChar, int keyCode, CallbackInfo ci) {

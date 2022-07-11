@@ -12,6 +12,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
+import net.ccbluex.liquidbounce.features.module.modules.player.Blink
+import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
+import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
@@ -103,6 +106,8 @@ class KillAura : Module() {
         }
     }
     private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 15f)
+
+    private val blinkCheck = BoolValue("BlinkCheck", true)
 
     // Modes
     private val priorityValue = ListValue(
@@ -228,6 +233,9 @@ class KillAura : Module() {
         IntegerValue("SwitchDelay", 300, 1, 2000).displayable { targetModeValue.equals("Switch") }
     private val limitedMultiTargetsValue =
         IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
+
+    // idk
+    private val noScaffValue = BoolValue("NoScaffold", true)
 
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "None"), "FDP")
@@ -1195,6 +1203,8 @@ class KillAura : Module() {
      */
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
+                || (blinkCheck.get() && LiquidBounce.moduleManager[Blink::class.java]!!.state) || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
+                (noScaffValue.get() && LiquidBounce.moduleManager[Scaffold::class.java]!!.state)
 
     /**
      * Check if [entity] is alive

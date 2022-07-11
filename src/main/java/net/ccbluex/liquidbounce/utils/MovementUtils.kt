@@ -44,6 +44,7 @@ object MovementUtils : MinecraftInstance() {
         return mc.thePlayer.motionX != 0.0 && mc.thePlayer.motionZ != 0.0 && mc.thePlayer.motionY != 0.0
     }
 
+    @JvmStatic
     fun strafe(speed: Float) {
         if (!isMoving()) return
         val yaw = direction

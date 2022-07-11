@@ -57,7 +57,7 @@ class Arraylist(
     private val shadow = BoolValue("ShadowText", true)
     private val split = BoolValue("SplitName", false)
     private val slideInAnimation = BoolValue("SlideInAnimation", true)
-    private val noRenderModules = BoolValue("NoRenderModules", true)
+    private val noRenderModules = BoolValue("NoRenderModules", false)
     private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow", "Astolfo"), "Custom")
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
