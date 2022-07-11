@@ -1,3 +1,9 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+
 package net.ccbluex.liquidbounce.features.special
 
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -12,11 +18,8 @@ class BungeeCordSpoof : MinecraftInstance(), Listenable {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet is C00Handshake && enabled && packet.requestedState == EnumConnectionState.LOGIN) {
-            packet.ip = packet.ip + "\u0000" + String.format(
-                "{0}.{1}.{2}.{3}", getRandomIpPart(), getRandomIpPart(), getRandomIpPart(), getRandomIpPart()
-            ) + "\u0000" + mc.session.playerID.replace("-", "")
-        }
+        if (packet is C00Handshake && enabled && packet.requestedState == EnumConnectionState.LOGIN)
+            packet.ip = "${packet.ip}\u0000${getRandomIpPart()}.${getRandomIpPart()}.${getRandomIpPart()}.${getRandomIpPart()}\u0000${UUIDSpoofer.getUUID()}"
     }
 
     private fun getRandomIpPart(): String = RANDOM.nextInt(256).toString()
