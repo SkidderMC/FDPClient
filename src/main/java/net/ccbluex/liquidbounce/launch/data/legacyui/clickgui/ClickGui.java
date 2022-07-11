@@ -131,7 +131,6 @@ public class ClickGui extends GuiScreen {
                 break;
         }
 
-
         for (final Panel panel : panels) {
             panel.updateFade(RenderUtils.deltaTime);
             panel.drawScreen(mouseX, mouseY, partialTicks);
@@ -167,8 +166,6 @@ public class ClickGui extends GuiScreen {
 
         switch (((ClickGUIModule) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class))).animationValue.get().toLowerCase()) {
             case "bread":
-                GlStateManager.translate(0, (1.0 - slide) * height * -2.0, 0);
-                break;
             case "slide":
             case "liquidbounce":
                 GlStateManager.translate(0, (1.0 - slide) * height * -2.0, 0);
