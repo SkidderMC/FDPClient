@@ -8,19 +8,15 @@ package net.ccbluex.liquidbounce.ui.font
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
 import net.ccbluex.liquidbounce.event.TextEvent
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL20
 import java.awt.Color
 import java.awt.Font
 
@@ -48,7 +44,11 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     override fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
 
     override fun drawString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
-        val currentText = LanguageManager.replace(text)
+        var currentText = text
+
+        val event = TextEvent(currentText)
+        LiquidBounce.eventManager.callEvent(event)
+        currentText = event.text ?: return 0
 
         val currY = y - 3F
         if (shadow) {
@@ -56,6 +56,11 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         }
         return drawText(currentText, x, currY, color, false)
     }
+
+    fun drawCenteredString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
+        return Minecraft.getMinecraft().fontRendererObj.drawCenteredString(text,x,y,color,shadow);
+    }
+
     fun drawCenteredString(text: String, x: Float, y: Float, color: Int): Int {
         return Minecraft.getMinecraft().fontRendererObj.drawCenteredString(text,x,y,color,true);
     }
@@ -255,6 +260,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     }
 
     companion object {
+        @JvmStatic
         fun getColorIndex(type: Char): Int {
             return when (type) {
                 in '0'..'9' -> type - '0'
