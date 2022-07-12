@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -60,6 +61,10 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     @Inject(method = "initGui", at = @At("HEAD"), cancellable = true)
     public void injectInitGui(CallbackInfo callbackInfo){
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
+        if (guiScreen instanceof GuiChest) {
+        buttonList.add(new GuiButton(114514, this.width / 2 - 100, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable","%module.KillAura.name%")));
+        buttonList.add(new GuiButton(1919810, this.width / 2 + 1, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable","%module.ChestStealer.name%")));       
+    }
         final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
 
         int firstY = 0;
@@ -106,8 +111,11 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     protected void injectedActionPerformed(GuiButton button) {
         ChestStealer chestStealer = (ChestStealer) LiquidBounce.moduleManager.getModule(ChestStealer.class);
 
-        if (button.id == 1024576)
+        
+        if (button.id == 114514)
             LiquidBounce.moduleManager.getModule(KillAura.class).setState(false);
+        if (button.id == 1919810)
+            LiquidBounce.moduleManager.getModule(ChestStealer.class).setState(false);
         if (button.id == 321123)
             LiquidBounce.moduleManager.getModule(InventoryCleaner.class).setState(false);
         if (button.id == 727)
@@ -122,10 +130,13 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo){
         final Animations animMod = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
-        ChestStealer chestStealer = (ChestStealer) LiquidBounce.moduleManager.getModule(ChestStealer.class);
+        ChestStealer chestStealer=LiquidBounce.moduleManager.getModule(ChestStealer.class);
         final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
         final Minecraft mc = Minecraft.getMinecraft();
         GuiScreen guiScreen = mc.currentScreen;
+        if(chestStealer.getState()&&chestStealer.getSilentTitleValue().get()&&guiScreen instanceof GuiChest){
+            GuiChest chest=(GuiChest)guiScreen;
+            if(!(chestStealer.getChestTitleValue().get()&&(chest.lowerChestInventory == null||!chest.lowerChestInventory.getName().contains(new ItemStack(Item.itemRegistry.getObject(new ResourceLocation("minecraft:chest"))).getDisplayName())))){
 
         if (progress >= 1F) progress = 1F;
         else progress = (float)(System.currentTimeMillis() - lastMS) / 750F;
@@ -148,7 +159,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                 mc.currentScreen = guiScreen;
                 // hide GUI
                 if (chestStealer.getSilentTitleValue().get()) {
-                    RendererExtensionKt.drawCenteredString(mc.fontRendererObj, "Stealing", width / 2, (height / 2) + 30, 0xffffffff, false);
+                    RendererExtensionKt.drawCenteredString(mc.fontRendererObj, "STEALING CHEST", width / 2, (height / 2) + 30, 0xffffffff, false);
                 }
                 callbackInfo.cancel();
             }
