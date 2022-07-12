@@ -65,6 +65,14 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
             buttonList.add(new GuiButton(114514, this.width / 2 - 100, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable","%module.KillAura.name%")));
             buttonList.add(new GuiButton(1919810, this.width / 2 + 1, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable","%module.ChestStealer.name%")));
         }
+        
+    @Override
+    protected void actionPerformed(GuiButton button) {
+        if (button.id == 114514)
+            LiquidBounce.moduleManager.getModule(KillAura.class).setState(false);
+        if (button.id == 1919810)
+            LiquidBounce.moduleManager.getModule(ChestStealer.class).setState(false);
+    }
 
         final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
 
@@ -82,7 +90,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                         firstY += 20;
                     }
                     if (LiquidBounce.moduleManager.getModule(ChestStealer.class).getState()) {
-                        buttonList.add(chestStealerButton = new GuiButton(727, 5, 5 + firstY, 140, 20, "Disable Stealer"));
+                        buttonList.add(chestStealerButton = new GuiButton(1919810, 5, 5 + firstY, 140, 20, "Disable Stealer"));
                         firstY += 20;
                     }
                     buttonList.add(stealButton = new GuiButton(1234123, 5, 5 + firstY, 140, 20, "Steal this chest"));
@@ -108,26 +116,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         lastMS = System.currentTimeMillis();
         progress = 0F;
     }
-    @Override
-    protected void injectedActionPerformed(GuiButton button) {
-        ChestStealer chestStealer = (ChestStealer) LiquidBounce.moduleManager.getModule(ChestStealer.class);
-
-        
-        if (button.id == 114514)
-            LiquidBounce.moduleManager.getModule(KillAura.class).setState(false);
-        if (button.id == 1919810)
-            LiquidBounce.moduleManager.getModule(ChestStealer.class).setState(false);
-        if (button.id == 321123)
-            LiquidBounce.moduleManager.getModule(InventoryCleaner.class).setState(false);
-        if (button.id == 727)
-            chestStealer.setState(false);
-        if (button.id == 1234123 && !chestStealer.getState()) {
-            chestStealer.setContentReceived(mc.thePlayer.openContainer.windowId);
-            chestStealer.setOnce(true);
-            chestStealer.setState(true);
-        }
-    }
-
+    
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo){
         final Animations animMod = (Animations) LiquidBounce.moduleManager.getModule(Animations.class);
