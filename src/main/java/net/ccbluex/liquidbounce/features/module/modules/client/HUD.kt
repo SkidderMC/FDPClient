@@ -59,8 +59,6 @@ object HUD : Module() {
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder")
     val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
-    val containerBackground = BoolValue("Container-Background", false)
-    val containerButton = ListValue("Container-Button", arrayOf("TopLeft", "TopRight", "Off"), "TopLeft")
     private val buttonValue = ListValue("Button", arrayOf("Better", "FLine", "Rise", "Vanilla"), "Better")
 
     private var lastFontEpsilon = 0f
