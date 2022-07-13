@@ -19,10 +19,9 @@ import net.minecraft.util.BlockPos
 class AirLadder : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-
         val currBlock = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ))
         val block = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ))
-        if ((block is BlockLadder && thePlayer.isCollidedHorizontally) || (block is BlockVine || currBlock is BlockVine)) {
+        if ((block is BlockLadder && mc.thePlayer.isCollidedHorizontally) || (block is BlockVine || currBlock is BlockVine)) {
             mc.thePlayer.motionY = 0.15
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
