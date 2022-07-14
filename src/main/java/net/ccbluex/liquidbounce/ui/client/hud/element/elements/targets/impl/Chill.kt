@@ -22,8 +22,8 @@ import java.awt.Color
 
 class Chill(inst: Targets): TargetStyle("Chill", inst, true) {
 
-    val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { targetInstance.modeValue.get().equals("chill", true) }
-    val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { targetInstance.modeValue.get().equals("chill", true) }
+    val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { targetInstance.plusValue.get().equals("chill", true) }
+    val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { targetInstance.plusValue.get().equals("chill", true) }
 
     private val numberRenderer = CharRenderer(false)
 

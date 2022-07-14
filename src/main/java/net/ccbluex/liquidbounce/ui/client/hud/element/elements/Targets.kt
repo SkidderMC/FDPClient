@@ -88,7 +88,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             Chill(this),
             Exhibition(this),
             Remix(this),
-            Slowly(this)
+            Slowly(this),
+            FDP(this),
         ).toTypedArray(), "LiquidBounce")
     }
 
