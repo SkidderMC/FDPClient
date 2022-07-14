@@ -1096,6 +1096,9 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.disableBlend();
     }
 
+    public static void drawRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color) {
+        drawRoundedRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true);
+    }
     public static void drawRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color, boolean popPush) {
         float alpha = (color >> 24 & 0xFF) / 255.0F;
         float red = (color >> 16 & 0xFF) / 255.0F;
@@ -1319,6 +1322,80 @@ public final class RenderUtils extends MinecraftInstance {
         final float blue = (hex & 0xFF) / 255F;
 
         GlStateManager.color(red, green, blue, alpha);
+    }
+
+    public static void drawTriAngle(float cx, float cy, float r, float n, Color color, boolean polygon) {
+        cx *= 2.0;
+        cy *= 2.0;
+        double b = 6.2831852 / n;
+        double p = Math.cos(b);
+        double s = Math.sin(b);
+        r *= 2.0;
+        double x = r;
+        double y = 0.0;
+
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        glLineWidth(1F);
+        enableGlCap(GL_LINE_SMOOTH);
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.resetColor();
+        glColor(color);
+        GlStateManager.scale(0.5f, 0.5f, 0.5f);
+        worldrenderer.begin(polygon ? GL_POLYGON : 2, DefaultVertexFormats.POSITION);
+        int ii = 0;
+        while (ii < n) {
+            worldrenderer.pos((double)x + cx, (double)y + cy, 0.0D).endVertex();
+            double t = x;
+            x = p * x - s * y;
+            y = s * t + p * y;
+            ii++;
+        }
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.scale(2f, 2f, 2f);
+        GlStateManager.color(1, 1, 1, 1);
+    }
+
+    public static void drawCircle(float x, float y, float radius, float lineWidth, int start, int end, Color color) {
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        glColor(color);
+
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(lineWidth);
+        glBegin(GL_LINE_STRIP);
+        for (float i = end; i >= start; i -= (360 / 90.0f)) {
+            glVertex2f((float) (x + (cos(i * PI / 180) * (radius * 1.001F))), (float) (y + (sin(i * PI / 180) * (radius * 1.001F))));
+        }
+        glEnd();
+        glDisable(GL_LINE_SMOOTH);
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
+    public static void drawCircle(float x, float y, float radius, float lineWidth, int start, int end) {
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        glColor(Color.WHITE);
+
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(lineWidth);
+        glBegin(GL_LINE_STRIP);
+        for (float i = end; i >= start; i -= (360 / 90.0f)) {
+            glVertex2f((float) (x + (cos(i * PI / 180) * (radius * 1.001F))), (float) (y + (sin(i * PI / 180) * (radius * 1.001F))));
+        }
+        glEnd();
+        glDisable(GL_LINE_SMOOTH);
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 
     public static void draw2D(final EntityLivingBase entity, final double posX, final double posY, final double posZ, final int color, final int backgroundColor) {
@@ -1815,6 +1892,23 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glDisable(2848);
         GL11.glDisable(3042);
         GL11.glEnable(2929);
+    }
+
+    public static void drawExhiRect(float x, float y, float x2, float y2) {
+        drawRect(x - 3.5F, y - 3.5F, x2 + 3.5F, y2 + 3.5F, Color.black.getRGB());
+        drawRect(x - 3F, y - 3F, x2 + 3F, y2 + 3F, new Color(50, 50, 50).getRGB());
+        //drawBorder(x - 1.5F, y - 1.5F, x2 + 1.5F, y2 + 1.5F, 2.5F, new Color(26, 26, 26).getRGB());
+        drawRect(x - 2.5F, y - 2.5F, x2 + 2.5F, y2 + 2.5F, new Color(26, 26, 26).getRGB());
+        drawRect(x - 0.5F, y - 0.5F, x2 + 0.5F, y2 + 0.5F, new Color(50, 50, 50).getRGB());
+        drawRect(x, y, x2, y2, new Color(18, 18, 18).getRGB());
+    }
+
+    public static void drawExhiRect(float x, float y, float x2, float y2, float alpha) {
+        drawRect(x - 3.5F, y - 3.5F, x2 + 3.5F, y2 + 3.5F, new Color(0, 0, 0, alpha).getRGB());
+        drawRect(x - 3F, y - 3F, x2 + 3F, y2 + 3F, new Color(50F / 255F, 50F / 255F, 50F / 255F, alpha).getRGB());
+        drawRect(x - 2.5F, y - 2.5F, x2 + 2.5F, y2 + 2.5F, new Color(26F / 255F, 26F / 255F, 26F / 255F, alpha).getRGB());
+        drawRect(x - 0.5F, y - 0.5F, x2 + 0.5F, y2 + 0.5F, new Color(50F / 255F, 50F / 255F, 50F / 255F, alpha).getRGB());
+        drawRect(x, y, x2, y2, new Color(18F / 255F, 18 / 255F, 18F / 255F, alpha).getRGB());
     }
 
     public static void drawEntityOnScreen(final int posX, final int posY, final int scale, final EntityLivingBase entity) {

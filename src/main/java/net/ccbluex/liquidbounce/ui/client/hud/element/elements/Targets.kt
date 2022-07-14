@@ -1,21 +1,30 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.combat.InfiniteAura
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl.*
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.render.Animation
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.EaseUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -24,16 +33,36 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
+    val modeList = mutableListOf<TargetStyle>()
+
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Chill", "LiquidBounce", "Exhibition", "Remix", "Slowly", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
-    
+
+    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Health"), "Custom")
+    val redValue = IntegerValue("Red", 252, 0, 255)
+    val greenValue = IntegerValue("Green", 96, 0, 255)
+    val blueValue = IntegerValue("Blue", 66, 0, 255)
+    val saturationValue = FloatValue("Saturation", 1F, 0F, 1F)
+    val brightnessValue = FloatValue("Brightness", 1F, 0F, 1F)
+    val bgRedValue = IntegerValue("Background-Red", 0, 0, 255)
+    val bgGreenValue = IntegerValue("Background-Green", 0, 0, 255)
+    val bgBlueValue = IntegerValue("Background-Blue", 0, 0, 255)
+    val bgAlphaValue = IntegerValue("Background-Alpha", 160, 0, 255)
+    private val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
+    val fadeValue = BoolValue("FadeAnim", false)
+    val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F)
+    val shadowValue = BoolValue("Shadow", false)
+    val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 40F)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
     private val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
+    val noAnimValue = BoolValue("No-Animation", false)
+    val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 9F).displayable { noAnimValue.equals("No-Animation") }
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide", "Zoom", "None"), "Slide")
     private val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
     private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
+    val showWithChatOpen = BoolValue("Show-ChatOpen", true)
     private val arrisRoundedValue = BoolValue("ArrisRounded", true)
     private val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
     private val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
@@ -43,6 +72,19 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val riseMoveTimeValue = IntegerValue("Rise-MoveTime", 20, 5, 40)
     private val riseFadeTimeValue = IntegerValue("Rise-FadeTime", 20, 5, 40)
     private val fontValue = FontValue("Font", Fonts.font40)
+
+    override val values: List<Value<*>>
+        get() {
+            val valueList = mutableListOf<Value<*>>()
+            modeList.forEach { valueList.addAll(it.values) }
+            return super.values.toMutableList() + valueList
+        }
+
+    var mainTarget: EntityPlayer? = null
+    var animProgress = 0F
+
+    var barColor = Color(-1)
+    var bgColor = Color(-1)
 
     private var prevTarget: EntityLivingBase? = null
     private var displayPercent = 0f
@@ -72,6 +114,100 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     }
 
     override fun drawElement(partialTicks: Float): Border? {
+
+        val mainStyle = getCurrentStyle(modeValue.get()) ?: return null
+
+        val kaTarget = (LiquidBounce.moduleManager[KillAura::class.java] as KillAura).target
+        val taTarget = (LiquidBounce.moduleManager[InfiniteAura::class.java] as InfiniteAura).lastTarget
+
+        val actualTarget = if (kaTarget != null && kaTarget is EntityPlayer) kaTarget
+        else if (taTarget != null &&  taTarget is EntityPlayer) taTarget
+        else if ((mc.currentScreen is GuiChat && showWithChatOpen.get()) || mc.currentScreen is GuiHudDesigner) mc.thePlayer
+        else null
+
+        val preBarColor = when (colorModeValue.get()) {
+            "Rainbow" -> Color(ColorUtils.hslRainbow(100 * rainbowSpeed.get()).rgb)
+            "Custom" -> Color(redValue.get(), greenValue.get(), blueValue.get())
+            "Sky" -> ColorUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
+            "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), 0, 100)
+            "Health" -> if (actualTarget != null) BlendUtils.getHealthColor(actualTarget.health, actualTarget.maxHealth) else Color.green
+            else -> ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())!!
+        }
+
+        val preBgColor = Color(bgRedValue.get(), bgGreenValue.get(), bgBlueValue.get(), bgAlphaValue.get())
+
+        if (fadeValue.get())
+            animProgress += (0.0075F * fadeSpeed.get() * RenderUtils.deltaTime * if (actualTarget != null) -1F else 1F)
+        else animProgress = 0F
+
+        animProgress = animProgress.coerceIn(0F, 1F)
+
+        barColor = ColorUtils.reAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
+        bgColor = ColorUtils.reAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
+
+        if (actualTarget != null || !fadeValue.get())
+            mainTarget = actualTarget
+        else if (animProgress >= 1F)
+            mainTarget = null
+
+        val returnBorder = mainStyle.getBorder(mainTarget) ?: return null
+        val borderWidth = returnBorder.x2 - returnBorder.x
+        val borderHeight = returnBorder.y2 - returnBorder.y
+
+        val convertTarget = mainTarget!! as EntityPlayer
+
+        val calcScaleX = animProgress * (4F / (borderWidth / 2F))
+        val calcScaleY = animProgress * (4F / (borderHeight / 2F))
+        val calcTranslateX = borderWidth / 2F * calcScaleX
+        val calcTranslateY = borderHeight / 2F * calcScaleY
+
+        if (shadowValue.get() && mainStyle.shaderSupport) {
+            val floatX = renderX.toFloat()
+            val floatY = renderY.toFloat()
+
+            GL11.glTranslated(-renderX, -renderY, 0.0)
+            GL11.glPushMatrix()
+
+            ShadowUtils.shadow(shadowStrength.get(), {
+                GL11.glPushMatrix()
+                GL11.glTranslated(renderX, renderY, 0.0)
+                if (fadeValue.get()) {
+                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
+                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+                }
+                mainStyle.handleShadow(convertTarget)
+                GL11.glPopMatrix()
+            }, {
+                GL11.glPushMatrix()
+                GL11.glTranslated(renderX, renderY, 0.0)
+                if (fadeValue.get()) {
+                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
+                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+                }
+                mainStyle.handleShadowCut(convertTarget)
+                GL11.glPopMatrix()
+            })
+
+            GL11.glPopMatrix()
+            GL11.glTranslated(renderX, renderY, 0.0)
+        }
+
+        if (fadeValue.get()) {
+            GL11.glPushMatrix()
+            GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
+            GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+        }
+
+        if (mainStyle is Chill)
+            mainStyle.updateData(renderX.toFloat() + calcTranslateX, renderY.toFloat() + calcTranslateY, calcScaleX, calcScaleY)
+        mainStyle.drawTarget(convertTarget)
+
+        if (fadeValue.get())
+            GL11.glPopMatrix()
+
+        GlStateManager.resetColor()
+        return returnBorder
+
         var target = LiquidBounce.combatManager.target
         val time = System.currentTimeMillis()
         val pct = (time - lastUpdate) / (switchAnimSpeedValue.get() * 50f)
@@ -620,4 +756,24 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             else -> null
         }
     }
+
+    fun handleDamage(ent: EntityPlayer) {
+        if (mainTarget != null && ent == mainTarget)
+            getCurrentStyle(modeValue.get())?.handleDamage(ent)
+    }
+
+    fun getFadeProgress() = animProgress
+
+    @SafeVarargs
+    fun addStyles(vararg styles: TargetStyle): List<String> {
+        val nameList = mutableListOf<String>()
+        styles.forEach {
+            modeList.add(it)
+            nameList.add(it.name)
+        }
+        return nameList
+    }
+
+    fun getCurrentStyle(styleName: String): TargetStyle? = modeList.find { it.name.equals(styleName, true) }
+
 }

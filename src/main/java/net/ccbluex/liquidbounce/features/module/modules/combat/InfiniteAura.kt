@@ -51,6 +51,8 @@ class InfiniteAura : Module() {
     private val colorAlphaValue = IntegerValue("ColorAlpha", 150, 0, 255).displayable { pathRenderValue.get() }
     private val colorRainbowValue = BoolValue("Rainbow", false).displayable { pathRenderValue.get() }
 
+    var lastTarget: EntityLivingBase? = null
+
     private val timer = MSTimer()
     private var points = mutableListOf<Vec3>()
     private var thread: Thread? = null
