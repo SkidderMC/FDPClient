@@ -3,12 +3,14 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.matrix
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import kotlin.math.*
 
 
 class MatrixBoost : FlyMode("MatrixBoost") {
+    private val speed = FloatValue("${valuePrefix}Speed", 2.0f, 1.0f, 3.0f)
     private var boostMotion = 0
 
     override fun onEnable() {
@@ -35,16 +37,16 @@ class MatrixBoost : FlyMode("MatrixBoost") {
                 )
             )
             boostMotion = 1
-            mc.timer.timerSpeed = 0.1f
+            mc.timer.timerSpeed = 0.1F
         } else if (boostMotion == 2) {
-            MovementUtils.strafe(1.5f)
+            MovementUtils.strafe(speed.get())
             mc.thePlayer.motionY = 0.8
             boostMotion = 3
         } else if (boostMotion < 5) {
             boostMotion++
         } else if (boostMotion >= 5) {
             mc.timer.timerSpeed = 1f
-            if (mc.thePlayer.posY < fly.launchY) {
+            if (mc.thePlayer.posY < fly.launchY - 1.0) {
                 boostMotion = 0
             }
         }

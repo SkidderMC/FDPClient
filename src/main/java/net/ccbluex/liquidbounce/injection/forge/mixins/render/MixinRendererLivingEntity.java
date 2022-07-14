@@ -42,7 +42,9 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
 
         if (noRender.getState() && noRender.shouldStopRender(entity)) {
-            callbackInfo.cancel();
+            if(callbackInfo.isCancellable()) {
+                callbackInfo.cancel();
+            }
             return;
         }
 
