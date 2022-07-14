@@ -7,10 +7,13 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
+import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.render.ShadowUtils.shaderGroup
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.shader.Framebuffer
 import net.minecraft.client.shader.ShaderGroup
 import net.minecraft.util.ResourceLocation
 import org.apache.logging.log4j.LogManager
@@ -18,14 +21,18 @@ import org.apache.logging.log4j.LogManager
 
 object BlurUtils : MinecraftInstance() {
 
-    private val shaderGroup = ShaderGroup(mc.textureManager, mc.resourceManager, mc.getFramebuffer(), ResourceLocation("shaders/post/blurArea.json"))
-    private val framebuffer = shaderGroup.mainFramebuffer
-    private val frbuffer = shaderGroup.getFramebufferRaw("result")
+    private val blurShader: ShaderGroup = ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, ResourceLocation("shaders/post/blurArea.json"))
+    private val framebuffer = shaderGroup!!.mainFramebuffer
+    private lateinit var buffer: Framebuffer
+    private val frbuffer = shaderGroup?.getFramebufferRaw("result")
 
     private var lastFactor = 0
     private var lastWidth = 0
     private var lastHeight = 0
     private var lastWeight = 0
+    private var lastScale = 0
+    private var lastScaleWidth = 0
+    private var lastScaleHeight = 0
 
     private var lastX = 0F
     private var lastY = 0F
@@ -34,9 +41,15 @@ object BlurUtils : MinecraftInstance() {
 
     private var lastStrength = 5F
 
+    private fun reinitShader() {
+        blurShader.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
+        buffer = Framebuffer(mc.displayWidth, mc.displayHeight, true)
+        buffer.setFramebufferColor(0.0f, 0.0f, 0.0f, 0.0f)
+        }
+
     private fun setupFramebuffers() {
         try {
-            shaderGroup.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
+            shaderGroup!!.createBindFramebuffers(mc.displayWidth, mc.displayHeight)
         } catch (e : Exception) {
             LogManager.getLogger().error("Exception caught while setting up shader group", e)
         }
@@ -51,9 +64,9 @@ object BlurUtils : MinecraftInstance() {
         lastH = h
 
         for (i in 0..1) {
-            shaderGroup.listShaders[i].shaderManager.getShaderUniform("Radius").set(strength)
-            shaderGroup.listShaders[i].shaderManager.getShaderUniform("BlurXY")[x] = height - y - h
-            shaderGroup.listShaders[i].shaderManager.getShaderUniform("BlurCoord")[w] = h
+            shaderGroup!!.listShaders[i].shaderManager.getShaderUniform("Radius").set(strength)
+            shaderGroup!!.listShaders[i].shaderManager.getShaderUniform("BlurXY")[x] = height - y - h
+            shaderGroup!!.listShaders[i].shaderManager.getShaderUniform("BlurCoord")[w] = h
         }
     }
 
@@ -93,7 +106,7 @@ object BlurUtils : MinecraftInstance() {
         setValues(blurStrength, x, y, x2 - x, y2 - y, width.toFloat(), height.toFloat())
 
         framebuffer.bindFramebuffer(true)
-        shaderGroup.loadShaderGroup(mc.timer.renderPartialTicks)
+        shaderGroup!!.loadShaderGroup(mc.timer.renderPartialTicks)
         mc.getFramebuffer().bindFramebuffer(true)
 
         Stencil.write(displayClipMask)
@@ -109,7 +122,7 @@ object BlurUtils : MinecraftInstance() {
         GlStateManager.enableTexture2D()
         GlStateManager.disableLighting()
         GlStateManager.disableAlpha()
-        frbuffer.bindFramebufferTexture()
+        frbuffer!!.bindFramebufferTexture()
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F)
         val f2 = frbuffer.framebufferWidth.toDouble() / frbuffer.framebufferTextureWidth.toDouble()
         val f3 = frbuffer.framebufferHeight.toDouble() / frbuffer.framebufferTextureHeight.toDouble()
@@ -131,6 +144,16 @@ object BlurUtils : MinecraftInstance() {
         Stencil.dispose()
         GlStateManager.enableAlpha()
     }
+
+    fun draw(x: Float, y: Float, width: Float, height: Float, radius: Float) {
+        val scale = StaticStorage.scaledResolution
+        val factor = scale.scaleFactor
+        val factor2 = scale.scaledWidth
+        val factor3 = scale.scaledHeight
+        if (lastScale != factor || lastScaleWidth != factor2 || lastScaleHeight != factor3) {
+            reinitShader()
+            }
+        }
 
     @JvmStatic
     fun blurArea(x: Float, y: Float, x2: Float, y2: Float, blurStrength: Float) = blur(x, y, x2, y2, blurStrength, false) {
