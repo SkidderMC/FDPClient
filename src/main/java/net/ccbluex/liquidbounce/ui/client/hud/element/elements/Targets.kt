@@ -35,6 +35,8 @@ import kotlin.math.roundToInt
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
     val modeList = mutableListOf<TargetStyle>()
 
+    val plusValue: ListValue
+
     val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Chill", "LiquidBounce", "Exhibition", "Remix", "Slowly", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
@@ -80,6 +82,16 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             return super.values.toMutableList() + valueList
         }
 
+    init {
+        plusValue = ListValue("Style", addStyles(
+            LiquidBounce(this),
+            Chill(this),
+            Exhibition(this),
+            Remix(this),
+            Slowly(this)
+        ).toTypedArray(), "LiquidBounce")
+    }
+
     var mainTarget: EntityPlayer? = null
     var animProgress = 0F
 
@@ -115,7 +127,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
     override fun drawElement(partialTicks: Float): Border? {
 
-        val mainStyle = getCurrentStyle(modeValue.get()) ?: return null
+        val mainStyle = getCurrentStyle(plusValue.get()) ?: return null
 
         val kaTarget = (LiquidBounce.moduleManager[KillAura::class.java] as KillAura).target
         val taTarget = (LiquidBounce.moduleManager[InfiniteAura::class.java] as InfiniteAura).lastTarget
@@ -757,10 +769,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         }
     }
 
-    fun handleDamage(ent: EntityPlayer) {
-        if (mainTarget != null && ent == mainTarget)
-            getCurrentStyle(modeValue.get())?.handleDamage(ent)
-    }
 
     fun getFadeProgress() = animProgress
 
