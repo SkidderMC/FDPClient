@@ -27,12 +27,12 @@ object ShadowUtils : MinecraftInstance() {
     private var frameBuffer: Framebuffer? = null
     var resultBuffer: Framebuffer? = null
 
-    private var shaderGroup: ShaderGroup? = null
+    var shaderGroup: ShaderGroup? = null
     private var lastWidth = 0
     private var lastHeight = 0
     private var lastStrength = 0F
 
-    private val blurDirectory = ResourceLocation("liquidbounce+/shadow.json")
+    private val blurDirectory = ResourceLocation("fdpclient/shadow.json")
 
     @Throws(IOException::class)
     fun initShaderIfRequired(sc: ScaledResolution, strength: Float) {
