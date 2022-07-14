@@ -20,6 +20,7 @@ object
 ClientUtils : MinecraftInstance() {
     private val logger = LogManager.getLogger("FDPClient")
 
+
     /**
      * the hardware id used to identify in bstats
      */
