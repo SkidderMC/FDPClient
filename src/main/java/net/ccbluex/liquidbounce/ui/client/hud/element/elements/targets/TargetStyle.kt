@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.value.Value
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 
@@ -34,9 +35,13 @@ abstract class TargetStyle(val name: String, val targetInstance: Targets, val sh
     val decimalFormat2 = DecimalFormat("##0.0", DecimalFormatSymbols(Locale.ENGLISH))
     val decimalFormat3 = DecimalFormat("0.#", DecimalFormatSymbols(Locale.ENGLISH))
 
+    abstract fun drawTarget(entity: EntityLivingBase)
+    abstract fun getBorder(entity: EntityLivingBase?): Border?
+
     abstract fun drawTarget(entity: EntityPlayer)
     abstract fun getBorder(entity: EntityPlayer?): Border?
-    
+
+
     open fun updateAnim(targetHealth: Float) {
         if (targetInstance.noAnimValue.get())
             easingHealth = targetHealth
@@ -94,6 +99,10 @@ abstract class TargetStyle(val name: String, val targetInstance: Targets, val sh
         glEnable(GL_DEPTH_TEST)
         glPopMatrix()
         glColor4f(1f, 1f, 1f, 1f)
+    }
+
+    fun getHealth(entity: EntityLivingBase?): Float {
+        return entity?.health ?: 0f
     }
 
     fun drawArmorIcon(x: Int, y: Int, width: Int, height: Int) {

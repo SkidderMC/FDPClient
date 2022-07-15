@@ -303,6 +303,12 @@ object ColorUtils {
     }
 
     @JvmStatic
+    fun getRainbowOpaque(seconds: Int, saturation: Float, brightness: Float, index: Int):
+            Int { val hue = (System.currentTimeMillis() + index) % (seconds * 1000) / (seconds * 1000).toFloat()
+        return Color.HSBtoRGB(hue, saturation, brightness)
+    }
+
+    @JvmStatic
     fun slowlyRainbow(time: Long, count: Int, qd: Float, sq: Float): Color {
         val color = Color(Color.HSBtoRGB((time.toFloat() + count * -3000000f) / 2 / 1.0E9f, qd, sq))
         return Color(color.red / 255.0f * 1, color.green / 255.0f * 1, color.blue / 255.0f * 1, color.alpha / 255.0f)

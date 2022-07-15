@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -22,6 +23,7 @@ import java.awt.Color
 class Exhibition(inst: Targets): TargetStyle("Exhibition", inst, false) {
 
     override fun drawTarget(entity: EntityPlayer) {
+
         val font = Fonts.fontTahoma
         val minWidth = 126F.coerceAtLeast(40F + font.getStringWidth(entity.name))
 
@@ -84,6 +86,15 @@ class Exhibition(inst: Targets): TargetStyle("Exhibition", inst, false) {
         GL11.glPopMatrix()
     }
 
+    override fun drawTarget(entity: EntityLivingBase) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getBorder(entity: EntityLivingBase?): Border? {
+        TODO("Not yet implemented")
+    }
+
+
     override fun getBorder(entity: EntityPlayer?): Border? {
         entity ?: return Border(0F, 0F, 126F, 45F)
 
@@ -92,5 +103,6 @@ class Exhibition(inst: Targets): TargetStyle("Exhibition", inst, false) {
 
         return Border(0F, 0F, minWidth, 45F)
     }
+
 
 }

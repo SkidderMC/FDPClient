@@ -37,6 +37,32 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
     val plusValue: ListValue
 
+    override val values: List<Value<*>>
+        get() {
+            val valueList = mutableListOf<Value<*>>()
+            modeList.forEach { valueList.addAll(it.values) }
+            return super.values.toMutableList() + valueList
+        }
+
+    init {
+        plusValue = ListValue("Style", addStyles(
+            FDP(this),
+            Slowly(this),
+            LiquidBounce(this),
+            Liquid(this),
+            Chill(this),
+            Exhibition(this),
+            Remix(this),
+            Astolfo(this),
+            Tenacity(this),
+            Novoline(this),
+            Novoline2(this),
+            Arris(this),
+            Zamorozka(this),
+            Rice(this),
+            ).toTypedArray(), "Chill")
+    }
+
     val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Chill", "LiquidBounce", "Exhibition", "Remix", "Slowly", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
@@ -50,48 +76,32 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     val bgGreenValue = IntegerValue("Background-Green", 0, 0, 255)
     val bgBlueValue = IntegerValue("Background-Blue", 0, 0, 255)
     val bgAlphaValue = IntegerValue("Background-Alpha", 160, 0, 255)
-    private val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
-    private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
+    val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
+    val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     val fadeValue = BoolValue("FadeAnim", false)
     val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F)
+    val waveSecondValue = IntegerValue("Seconds", 2, 1, 10)
     val shadowValue = BoolValue("Shadow", false)
     val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 40F)
-    private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
-    private val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
+    val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
+    val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
     val noAnimValue = BoolValue("No-Animation", false)
     val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 9F).displayable { noAnimValue.equals("No-Animation") }
-    private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide", "Zoom", "None"), "Slide")
-    private val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
-    private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
-    private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
+    val switchModeValue = ListValue("SwitchMode", arrayOf("Slide", "Zoom", "None"), "Slide")
+    val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
+    val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
+    val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
     val showWithChatOpen = BoolValue("Show-ChatOpen", true)
-    private val arrisRoundedValue = BoolValue("ArrisRounded", true)
-    private val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
-    private val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
-    private val riseSizeValue = FloatValue("Rise-Size", 1f, 0.5f, 3f)
-    private val riseAlphaValue = FloatValue("Rise-Alpha", 0.7f, 0.1f, 1f)
-    private val riseDistanceValue = FloatValue("Rise-Distance", 1f, 0.5f, 2f)
-    private val riseMoveTimeValue = IntegerValue("Rise-MoveTime", 20, 5, 40)
-    private val riseFadeTimeValue = IntegerValue("Rise-FadeTime", 20, 5, 40)
-    private val fontValue = FontValue("Font", Fonts.font40)
-
-    override val values: List<Value<*>>
-        get() {
-            val valueList = mutableListOf<Value<*>>()
-            modeList.forEach { valueList.addAll(it.values) }
-            return super.values.toMutableList() + valueList
-        }
-
-    init {
-        plusValue = ListValue("Style", addStyles(
-            LiquidBounce(this),
-            Chill(this),
-            Exhibition(this),
-            Remix(this),
-            Slowly(this),
-            FDP(this),
-        ).toTypedArray(), "LiquidBounce")
-    }
+    val resetBar = BoolValue("ResetBarWhenHiding", false)
+    val arrisRoundedValue = BoolValue("ArrisRounded", true)
+    val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
+    val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
+    val riseSizeValue = FloatValue("Rise-Size", 1f, 0.5f, 3f)
+    val riseAlphaValue = FloatValue("Rise-Alpha", 0.7f, 0.1f, 1f)
+    val riseDistanceValue = FloatValue("Rise-Distance", 1f, 0.5f, 2f)
+    val riseMoveTimeValue = IntegerValue("Rise-MoveTime", 20, 5, 40)
+    val riseFadeTimeValue = IntegerValue("Rise-FadeTime", 20, 5, 40)
+    val fontValue = FontValue("Font", Fonts.font40)
 
     var mainTarget: EntityPlayer? = null
     var animProgress = 0F
@@ -99,13 +109,13 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     var barColor = Color(-1)
     var bgColor = Color(-1)
 
-    private var prevTarget: EntityLivingBase? = null
-    private var displayPercent = 0f
-    private var lastUpdate = System.currentTimeMillis()
-    private val decimalFormat = DecimalFormat("0.0")
+    var prevTarget: EntityLivingBase? = null
+    var displayPercent = 0f
+    var lastUpdate = System.currentTimeMillis()
+    val decimalFormat = DecimalFormat("0.0")
 
     private var hpEaseAnimation: Animation? = null
-    private var easingHP = 0f
+    var easingHP = 0f
     private var ease = 0f
         get() {
             if (hpEaseAnimation != null) {
@@ -167,6 +177,13 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         val borderWidth = returnBorder.x2 - returnBorder.x
         val borderHeight = returnBorder.y2 - returnBorder.y
 
+        if (mainTarget == null) {
+            if (resetBar.get())
+                mainStyle.easingHealth = 0F
+            if (mainStyle is Rice)
+                mainStyle.particleList.clear()
+            return returnBorder
+        }
         val convertTarget = mainTarget!! as EntityPlayer
 
         val calcScaleX = animProgress * (4F / (borderWidth / 2F))
@@ -205,6 +222,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             GL11.glTranslated(renderX, renderY, 0.0)
         }
 
+
         if (fadeValue.get()) {
             GL11.glPushMatrix()
             GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
@@ -217,6 +235,17 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         if (fadeValue.get())
             GL11.glPopMatrix()
+
+        GlStateManager.resetColor()
+        return returnBorder
+
+
+    fun handleDamage(ent: EntityPlayer) {
+        if (mainTarget != null && ent == mainTarget)
+            getCurrentStyle(plusValue.get())?.handleDamage(ent)
+    }
+
+    fun getFadeProgress() = animProgress
 
         GlStateManager.resetColor()
         return returnBorder
