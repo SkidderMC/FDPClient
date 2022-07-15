@@ -7,10 +7,13 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets
 
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.Value
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -28,6 +31,8 @@ import java.util.Locale
 
 abstract class TargetStyle(val name: String, val targetInstance: Targets, val shaderSupport: Boolean): MinecraftInstance() {
 
+    val fontValue = FontValue("Font", Fonts.font40)
+
     var easingHealth = 0F
     val shieldIcon = ResourceLocation("fdpclient/shield.png")
 
@@ -35,8 +40,32 @@ abstract class TargetStyle(val name: String, val targetInstance: Targets, val sh
     val decimalFormat2 = DecimalFormat("##0.0", DecimalFormatSymbols(Locale.ENGLISH))
     val decimalFormat3 = DecimalFormat("0.#", DecimalFormatSymbols(Locale.ENGLISH))
 
-    abstract fun drawTarget(entity: EntityPlayer)
-    abstract fun getBorder(entity: EntityPlayer?): Border?
+
+    val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
+    val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
+
+    val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
+
+    private var hpEaseAnimation: Animation? = null
+    open var easingHP = 0f
+    private var ease = 0f
+        get() {
+            if (hpEaseAnimation != null) {
+                field = hpEaseAnimation!!.value.toFloat()
+                if (hpEaseAnimation!!.state == Animation.EnumAnimationState.STOPPED) {
+                    hpEaseAnimation = null
+                }
+            }
+            return field
+        }
+        set(value) {
+            if (hpEaseAnimation == null || (hpEaseAnimation != null && hpEaseAnimation!!.to != value.toDouble())) {
+                hpEaseAnimation = Animation(EaseUtils.EnumEasingType.valueOf(hpAnimTypeValue.get()), EaseUtils.EnumEasingOrder.valueOf(hpAnimOrderValue.get()), field.toDouble(), value.toDouble(), animSpeedValue.get() * 100L).start()
+            }
+        }
+
+    abstract fun drawTarget(entity: EntityLivingBase)
+    abstract fun getBorder(entity: EntityLivingBase?): Border?
 
 
     open fun updateAnim(targetHealth: Float) {

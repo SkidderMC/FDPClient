@@ -11,20 +11,16 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetSty
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FontValue
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.roundToInt
 
 class Astolfo(inst: Targets): TargetStyle("Astolfo", inst, true) {
 
-    private var easingHP = 0f
-    private val fontValue = FontValue("Font", Fonts.font40)
+    override var easingHP = 0f
 
-
-    override fun drawTarget(target: EntityPlayer) {
+    override fun drawTarget(target: EntityLivingBase) {
         val font = fontValue.get()
         val color = ColorUtils.skyRainbow(1, 1F, 0.9F, 5.0)
         val hpPct = easingHP / target.maxHealth
@@ -45,7 +41,7 @@ class Astolfo(inst: Targets): TargetStyle("Astolfo", inst, true) {
     }
 
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 120F, 48F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)

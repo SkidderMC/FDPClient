@@ -25,6 +25,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -35,7 +36,7 @@ import kotlin.math.roundToInt
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
     val modeList = mutableListOf<TargetStyle>()
 
-    val plusValue: ListValue
+    val modeValue: ListValue
 
     override val values: List<Value<*>>
         get() {
@@ -45,7 +46,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         }
 
     init {
-        plusValue = ListValue("Style", addStyles(
+        modeValue = ListValue("Style", addStyles(
             FDP(this),
             Slowly(this),
             LiquidBounce(this),
@@ -63,7 +64,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             ).toTypedArray(), "Chill")
     }
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Chill", "LiquidBounce", "Exhibition", "Remix", "Slowly", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
+    //val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Chill", "LiquidBounce", "Exhibition", "Remix", "Slowly", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
     val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Health"), "Custom")
@@ -138,7 +139,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
     override fun drawElement(partialTicks: Float): Border? {
 
-        val mainStyle = getCurrentStyle(plusValue.get()) ?: return null
+        val mainStyle = getCurrentStyle(modeValue.get()) ?: return null
 
         val kaTarget = (LiquidBounce.moduleManager[KillAura::class.java] as KillAura).target
         val taTarget = (LiquidBounce.moduleManager[InfiniteAura::class.java] as InfiniteAura).lastTarget
@@ -242,7 +243,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
     fun handleDamage(ent: EntityPlayer) {
         if (mainTarget != null && ent == mainTarget)
-            getCurrentStyle(plusValue.get())?.handleDamage(ent)
+            getCurrentStyle(modeValue.get())?.handleDamage(ent)
     }
 
     fun getFadeProgress() = animProgress

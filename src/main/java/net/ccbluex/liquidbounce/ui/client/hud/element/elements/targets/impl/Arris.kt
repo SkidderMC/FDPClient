@@ -13,18 +13,14 @@ import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
 class Arris(inst: Targets): TargetStyle("Arris", inst, true) {
 
-    val arrisRoundedValue = BoolValue("ArrisRounded", true).displayable { targetInstance.plusValue.get().equals("arris", true) }
+    val arrisRoundedValue = BoolValue("ArrisRounded", true).displayable { targetInstance.modeValue.get().equals("arris", true) }
 
-    private var easingHP = 0f
-    private val fontValue = FontValue("Font", Fonts.font40)
-
-    override fun drawTarget(target: EntityPlayer) {
+    override fun drawTarget(target: EntityLivingBase) {
         val font = fontValue.get()
 
         val hp = decimalFormat.format(easingHP)
@@ -50,8 +46,8 @@ class Arris(inst: Targets): TargetStyle("Arris", inst, true) {
         RenderUtils.drawRect(40f, yPos + 9, 40 + (target.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
-        entity ?: return Border(0F, 0F, 120F, 48F)
+    override fun getBorder(entity: EntityLivingBase?): Border? {
+        entity ?: return Border(0F, 0F, 120F, 40F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)
     }

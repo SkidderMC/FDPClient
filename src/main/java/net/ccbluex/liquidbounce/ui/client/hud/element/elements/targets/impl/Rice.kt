@@ -24,22 +24,22 @@ import java.awt.Color
 class Rice(inst: Targets): TargetStyle("Rice", inst, true) {
 
     // Bar gradient
-    val gradientLoopValue = IntegerValue("GradientLoop", 4, 1, 40).displayable { targetInstance.plusValue.get().equals("Rice", true) }
-    val gradientDistanceValue = IntegerValue("GradientDistance", 50, 1, 200).displayable { targetInstance.plusValue.get().equals("Rice", true) }
-    val gradientRoundedBarValue = BoolValue("GradientRoundedBar", true).displayable { targetInstance.plusValue.get().equals("Rice", true) }
+    val gradientLoopValue = IntegerValue("GradientLoop", 4, 1, 40).displayable { targetInstance.modeValue.get().equals("Rice", true) }
+    val gradientDistanceValue = IntegerValue("GradientDistance", 50, 1, 200).displayable { targetInstance.modeValue.get().equals("Rice", true) }
+    val gradientRoundedBarValue = BoolValue("GradientRoundedBar", true).displayable { targetInstance.modeValue.get().equals("Rice", true) }
 
-    val riceParticle = BoolValue("Rice-Particle", true).displayable { targetInstance.plusValue.get().equals("Rice", true) }
-    val riceParticleSpin = BoolValue("Rice-ParticleSpin", true).displayable { targetInstance.plusValue.get().equals("chill", true) && riceParticle.get() }
-    val generateAmountValue = IntegerValue("GenerateAmount", 10, 1, 40).displayable { targetInstance.plusValue.get().equals("Rice", true) && riceParticle.get() }
-    val riceParticleCircle = ListValue("Circle-Particles", arrayOf("Outline", "Solid", "None"), "Solid").displayable { targetInstance.plusValue.get().equals("Rice", true) && riceParticle.get() }
-    val riceParticleRect = ListValue("Rect-Particles", arrayOf("Outline", "Solid", "None"), "Outline").displayable { targetInstance.plusValue.get().equals("Rice", true) && riceParticle.get() }
-    val riceParticleTriangle = ListValue("Triangle-Particles", arrayOf("Outline", "Solid", "None"), "Outline").displayable { targetInstance.plusValue.get().equals("Rice", true) && riceParticle.get() }
+    val riceParticle = BoolValue("Rice-Particle", true).displayable { targetInstance.modeValue.get().equals("Rice", true) }
+    val riceParticleSpin = BoolValue("Rice-ParticleSpin", true).displayable { targetInstance.modeValue.get().equals("chill", true) && riceParticle.get() }
+    val generateAmountValue = IntegerValue("GenerateAmount", 10, 1, 40).displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
+    val riceParticleCircle = ListValue("Circle-Particles", arrayOf("Outline", "Solid", "None"), "Solid").displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
+    val riceParticleRect = ListValue("Rect-Particles", arrayOf("Outline", "Solid", "None"), "Outline").displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
+    val riceParticleTriangle = ListValue("Triangle-Particles", arrayOf("Outline", "Solid", "None"), "Outline").displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
 
-    val riceParticleSpeed = FloatValue("Rice-ParticleSpeed", 0.05F, 0.01F, 0.2F).displayable { targetInstance.plusValue.get().equals("Rice", true) && riceParticle.get() }
-    val riceParticleFade = BoolValue("Rice-ParticleFade", true).displayable { targetInstance.plusValue.get().equals("Rice", true) && riceParticle.get() }
-    val riceParticleFadingSpeed = FloatValue("ParticleFadingSpeed", 0.05F, 0.01F, 0.2F).displayable { targetInstance.plusValue.get().equals("Rice", true) && riceParticle.get() }
+    val riceParticleSpeed = FloatValue("Rice-ParticleSpeed", 0.05F, 0.01F, 0.2F).displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
+    val riceParticleFade = BoolValue("Rice-ParticleFade", true).displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
+    val riceParticleFadingSpeed = FloatValue("ParticleFadingSpeed", 0.05F, 0.01F, 0.2F).displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
 
-    val particleRange = FloatValue("Rice-ParticleRange", 50f, 0f, 50f).displayable { targetInstance.plusValue.get().equals("Rice", true) && riceParticle.get() }
+    val particleRange = FloatValue("Rice-ParticleRange", 50f, 0f, 50f).displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
     val minParticleSize: FloatValue = object : FloatValue("MinParticleSize", 0.5f, 0f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxParticleSize.get()
@@ -56,7 +56,7 @@ class Rice(inst: Targets): TargetStyle("Rice", inst, true) {
     val particleList = mutableListOf<Particle>()
     private var gotDamaged = false
 
-    override fun drawTarget(entity: EntityPlayer) {
+    override fun drawTarget(entity: EntityLivingBase) {
         updateAnim(entity.health)
 
         val font = Fonts.font40
@@ -192,7 +192,7 @@ class Rice(inst: Targets): TargetStyle("Rice", inst, true) {
     }
 
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 135F, 55F)
 
         val font = Fonts.font40

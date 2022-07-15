@@ -13,13 +13,13 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class Remix(inst: Targets): TargetStyle("Remix", inst, false) {
 
-    override fun drawTarget(entity: EntityPlayer) {
+    override fun drawTarget(entity: EntityLivingBase) {
         updateAnim(entity.health)
 
         // background
@@ -92,20 +92,6 @@ class Remix(inst: Targets): TargetStyle("Remix", inst, false) {
         GL11.glColor4f(1f, 1f, 1f, 1f - targetInstance.getFadeProgress())
         RenderHelper.enableGUIStandardItemLighting()
 
-        val renderItem = mc.renderItem
-
-        var x = 41
-        var y = 17
-
-        for (index in 3 downTo 0) {
-            val stack = entity.inventory.armorInventory[index] ?: continue
-
-            if (stack.getItem() == null)
-                continue
-
-            renderItem.renderItemAndEffectIntoGUI(stack, x, y)
-            x += 20
-        }
 
         RenderHelper.disableStandardItemLighting()
         GlStateManager.enableAlpha()
@@ -115,9 +101,8 @@ class Remix(inst: Targets): TargetStyle("Remix", inst, false) {
         GL11.glPopMatrix()
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityLivingBase?): Border? {
         return Border(0F, 0F, 146F, 49F)
     }
-
 
 }

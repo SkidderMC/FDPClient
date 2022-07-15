@@ -9,22 +9,19 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FontValue
-import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class Tenacity(inst: Targets): TargetStyle("Tenacity", inst, true) {
 
-    private var easingHP = 0f
-    private val fontValue = FontValue("Font", Fonts.font40)
+    override var easingHP = 0f
 
-    override fun drawTarget(target: EntityPlayer) {
+    override fun drawTarget(target: EntityLivingBase) {
         val font = fontValue.get()
 
         val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
@@ -32,7 +29,7 @@ class Tenacity(inst: Targets): TargetStyle("Tenacity", inst, true) {
 
         // circle player avatar
         GL11.glColor4f(1f, 1f, 1f, 1f)
-        MinecraftInstance.mc.textureManager.bindTexture(target.skin)
+        mc.textureManager.bindTexture(target.skin)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
 
@@ -48,8 +45,8 @@ class Tenacity(inst: Targets): TargetStyle("Tenacity", inst, true) {
     }
 
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
-        entity ?: return Border(0F, 0F, 120F, 48F)
+    override fun getBorder(entity: EntityLivingBase?): Border {
+        entity ?: return Border(0F, 0F, 120F, 40F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)
     }
