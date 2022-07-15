@@ -24,17 +24,17 @@ import kotlin.math.abs
 
 class LiquidBounce(inst: Targets): TargetStyle("LiquidBounce", inst, true) {
 
-    val hurtTimeAnim = BoolValue("HurtTimeAnim", true).displayable { targetInstance.plusValue.get().equals("liquidbounce", true) }
+    val hurtTimeAnim = BoolValue("HurtTimeAnim", true).displayable { targetInstance.modeValue.get().equals("liquidbounce", true) }
     val borderColorMode = ListValue("Border-Color", arrayOf("Custom", "MatchBar", "None"), "None").displayable { targetInstance.modeValue.get().equals("liquidbounce", true) }
-    val borderWidthValue = FloatValue("Border-Width", 3F, 0.5F, 5F).displayable { targetInstance.plusValue.get().equals("liquidbounce", true) }
-    val borderRedValue = IntegerValue("Border-Red", 0, 0, 255).displayable { targetInstance.plusValue.get().equals("liquidbounce", true) && borderColorMode.get().equals("custom", true) }
-    val borderGreenValue = IntegerValue("Border-Green", 0, 0, 255).displayable { targetInstance.plusValue.get().equals("liquidbounce", true) && borderColorMode.get().equals("custom", true) }
-    val borderBlueValue = IntegerValue("Border-Blue", 0, 0, 255).displayable { targetInstance.plusValue.get().equals("liquidbounce", true) && borderColorMode.get().equals("custom", true) }
-    val borderAlphaValue = IntegerValue("Border-Alpha", 0, 0, 255).displayable { targetInstance.plusValue.get().equals("liquidbounce", true) && borderColorMode.get().equals("custom", true) }
+    val borderWidthValue = FloatValue("Border-Width", 3F, 0.5F, 5F).displayable { targetInstance.modeValue.get().equals("liquidbounce", true) }
+    val borderRedValue = IntegerValue("Border-Red", 0, 0, 255).displayable { targetInstance.modeValue.get().equals("liquidbounce", true) && borderColorMode.get().equals("custom", true) }
+    val borderGreenValue = IntegerValue("Border-Green", 0, 0, 255).displayable { targetInstance.modeValue.get().equals("liquidbounce", true) && borderColorMode.get().equals("custom", true) }
+    val borderBlueValue = IntegerValue("Border-Blue", 0, 0, 255).displayable { targetInstance.modeValue.get().equals("liquidbounce", true) && borderColorMode.get().equals("custom", true) }
+    val borderAlphaValue = IntegerValue("Border-Alpha", 0, 0, 255).displayable { targetInstance.modeValue.get().equals("liquidbounce", true) && borderColorMode.get().equals("custom", true) }
 
     private var lastTarget: EntityPlayer? = null
 
-    override fun drawTarget(entity: EntityPlayer) {
+    override fun drawTarget(entity: EntityLivingBase) {
         if (entity != lastTarget || easingHealth < 0 || easingHealth > entity.maxHealth ||
             abs(easingHealth - entity.health) < 0.01) {
             easingHealth = entity.health
@@ -91,7 +91,6 @@ class LiquidBounce(inst: Targets): TargetStyle("LiquidBounce", inst, true) {
                 drawHead(skin = locationSkin, width = 30, height = 30, alpha = 1F - targetInstance.getFadeProgress())
         }
 
-        lastTarget = entity
     }
 
     override fun handleBlur(entity: EntityPlayer) {
@@ -117,7 +116,7 @@ class LiquidBounce(inst: Targets): TargetStyle("LiquidBounce", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, width, 36F, Color(0, 0, 0, 255).rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 118F, 36F)
         val width = (38 + Fonts.font40.getStringWidth(entity.name)).coerceAtLeast(118).toFloat()
         return Border(0F, 0F, width, 36F)

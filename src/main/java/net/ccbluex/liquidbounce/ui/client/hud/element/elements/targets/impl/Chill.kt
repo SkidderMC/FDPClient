@@ -23,8 +23,8 @@ import java.awt.Color
 
 class Chill(inst: Targets): TargetStyle("Chill", inst, true) {
 
-    val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { targetInstance.plusValue.get().equals("chill", true) }
-    val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { targetInstance.plusValue.get().equals("chill", true) }
+    val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { targetInstance.modeValue.get().equals("chill", true) }
+    val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { targetInstance.modeValue.get().equals("chill", true) }
 
     private val numberRenderer = CharRenderer(false)
 
@@ -40,7 +40,7 @@ class Chill(inst: Targets): TargetStyle("Chill", inst, true) {
         calcScaleY = _d
     }
 
-    override fun drawTarget(entity: EntityPlayer) {
+    override fun drawTarget(entity: EntityLivingBase) {
         updateAnim(entity.health)
 
         val name = entity.name
@@ -108,7 +108,7 @@ class Chill(inst: Targets): TargetStyle("Chill", inst, true) {
         RenderUtils.originalRoundedRect(0F, 0F, tWidth, 48F, 7F, Color(0, 0, 0, 255).rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 120F, 48F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)

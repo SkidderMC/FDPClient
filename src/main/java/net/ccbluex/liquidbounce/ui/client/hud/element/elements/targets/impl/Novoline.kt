@@ -11,18 +11,15 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetSty
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FontValue
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 import kotlin.math.roundToInt
 
 class Novoline(inst: Targets): TargetStyle("Novoline", inst, true) {
 
-    private val fontValue = FontValue("Font", Fonts.font40)
-    private var easingHP = 0f
+    override var easingHP = 0f
 
-    override fun drawTarget(target: EntityPlayer) {
+    override fun drawTarget(target: EntityLivingBase) {
         val font = fontValue.get()
         val color = ColorUtils.healthColor(getHealth(target), target.maxHealth)
         val darkColor = ColorUtils.darker(color, 0.6F)
@@ -38,8 +35,8 @@ class Novoline(inst: Targets): TargetStyle("Novoline", inst, true) {
     }
 
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
-        entity ?: return Border(0F, 0F, 120F, 48F)
+    override fun getBorder(entity:EntityLivingBase?): Border {
+        entity ?: return Border(0F, 0F, 140F, 40F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)
     }

@@ -13,11 +13,12 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import org.json.XMLTokener.entity
 import java.awt.Color
 
 class Slowly(inst: Targets): TargetStyle("Slowly", inst, true) {
 
-    override fun drawTarget(entity:EntityPlayer) {
+    override fun drawTarget(entity: EntityLivingBase) {
         val font = Fonts.minecraftFont
         val healthString = "${decimalFormat2.format(entity.health)} ❤"
         val length = 60.coerceAtLeast(font.getStringWidth(entity.name)).coerceAtLeast(font.getStringWidth(healthString)).toFloat() + 10F
@@ -59,7 +60,7 @@ class Slowly(inst: Targets): TargetStyle("Slowly", inst, true) {
     }
 
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 102F, 36F)
         val font = Fonts.minecraftFont
         val healthString = "${decimalFormat2.format(entity.health)} ❤"
