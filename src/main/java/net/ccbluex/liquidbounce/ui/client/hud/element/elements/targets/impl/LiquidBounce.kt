@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 
@@ -116,11 +117,17 @@ class LiquidBounce(inst: Targets): TargetStyle("LiquidBounce", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, width, 36F, Color(0, 0, 0, 255).rgb)
     }
 
+    override fun drawTarget(entity: EntityLivingBase) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getBorder(entity: EntityLivingBase?): Border? {
+        TODO("Not yet implemented")
+    }
+
     override fun getBorder(entity: EntityPlayer?): Border? {
         entity ?: return Border(0F, 0F, 118F, 36F)
-        val width = (38 + Fonts.font40.getStringWidth(entity.name))
-                        .coerceAtLeast(118)
-                        .toFloat()
+        val width = (38 + Fonts.font40.getStringWidth(entity.name)).coerceAtLeast(118).toFloat()
         return Border(0F, 0F, width, 36F)
     }
 

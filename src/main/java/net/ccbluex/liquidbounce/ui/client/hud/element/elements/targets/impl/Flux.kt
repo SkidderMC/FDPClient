@@ -9,50 +9,42 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.extensions.skin
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FontValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class FDP(inst: Targets): TargetStyle("FDP", inst, true) {
+class Flux(inst: Targets): TargetStyle("Flux", inst, true) {
 
-    private val fontValue = FontValue("Font", Fonts.font40)
     private var easingHP = 0f
 
     override fun drawTarget(target: EntityLivingBase) {
-        val font = fontValue.get()
 
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 150f, 47f, 4f, Color(0, 0, 0, 100).rgb)
+        val width = (38 + target.name.let(Fonts.font40::getStringWidth))
+            .coerceAtLeast(70)
+            .toFloat()
 
-        val hurtPercent = target.hurtPercent
-        val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
-            1 - (0.1f * hurtPercent * 2)
-        } else {
-            0.9f + (0.1f * (hurtPercent - 0.5f) * 2)
-        }
-        val size = 35
+        // draw background
+        RenderUtils.drawRect(0F, 0F, width, 34F, Color(40, 40, 40).rgb)
+        RenderUtils.drawRect(2F, 22F, width - 2F, 24F, Color.BLACK.rgb)
+        RenderUtils.drawRect(2F, 28F, width - 2F, 30F, Color.BLACK.rgb)
 
+        // draw bars
+        RenderUtils.drawRect(2F, 22F, 2 + (easingHP / target.maxHealth) * (width - 4), 24F, Color(231, 182, 0).rgb)
+        RenderUtils.drawRect(2F, 22F, 2 + (getHealth(target) / target.maxHealth) * (width - 4), 24F, Color(0, 224, 84).rgb)
+        RenderUtils.drawRect(2F, 28F, 2 + (target.totalArmorValue / 20F) * (width - 4), 30F, Color(77, 128, 255).rgb)
+
+        // draw text
+        Fonts.font40.drawString(target.name, 22, 3, Color.WHITE.rgb)
         GL11.glPushMatrix()
-        GL11.glTranslatef(5f, 5f, 0f)
-        // 受伤的缩放效果
-        GL11.glScalef(scale, scale, scale)
-        GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // 受伤的红色效果
-        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // 绘制头部图片
-        RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
+        GL11.glScaled(0.7, 0.7, 0.7)
+        Fonts.font35.drawString("Health: ${decimalFormat.format(getHealth(target))}", 22 / 0.7F, (4 + Fonts.font40.height) / 0.7F, Color.WHITE.rgb)
         GL11.glPopMatrix()
 
-        font.drawString("Name ${target.name}", 45, 5, Color.WHITE.rgb)
-        font.drawString("Health ${getHealth(target)}", 45, 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
-        RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 45f + (easingHP / target.maxHealth) * 100f, 42f, 3f, ColorUtils.rainbow().rgb)
-
+        // Draw head
+        RenderUtils.drawHead(target.skin, 2, 2, 16, 16)
     }
 
     override fun drawTarget(entity: EntityPlayer) {
@@ -69,6 +61,5 @@ class FDP(inst: Targets): TargetStyle("FDP", inst, true) {
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)
     }
-
 
 }
