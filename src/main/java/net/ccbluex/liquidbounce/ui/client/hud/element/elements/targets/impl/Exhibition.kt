@@ -86,14 +86,6 @@ class Exhibition(inst: Targets): TargetStyle("Exhibition", inst, false) {
         GL11.glPopMatrix()
     }
 
-    override fun drawTarget(entity: EntityLivingBase) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getBorder(entity: EntityLivingBase?): Border? {
-        TODO("Not yet implemented")
-    }
-
 
     override fun getBorder(entity: EntityPlayer?): Border? {
         entity ?: return Border(0F, 0F, 126F, 45F)
