@@ -20,7 +20,7 @@ class Flux(inst: Targets): TargetStyle("Flux", inst, true) {
 
     private var easingHP = 0f
 
-    override fun drawTarget(target: EntityLivingBase) {
+    override fun drawTarget(target: EntityPlayer) {
 
         val width = (38 + target.name.let(Fonts.font40::getStringWidth))
             .coerceAtLeast(70)
@@ -47,19 +47,12 @@ class Flux(inst: Targets): TargetStyle("Flux", inst, true) {
         RenderUtils.drawHead(target.skin, 2, 2, 16, 16)
     }
 
-    override fun drawTarget(entity: EntityPlayer) {
-        TODO("Not yet implemented")
-    }
 
     override fun getBorder(entity: EntityPlayer?): Border? {
-        TODO("Not yet implemented")
-    }
-
-
-    override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 120F, 48F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)
     }
+
 
 }

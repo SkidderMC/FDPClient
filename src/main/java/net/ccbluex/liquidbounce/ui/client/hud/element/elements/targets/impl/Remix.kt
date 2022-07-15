@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -116,14 +115,7 @@ class Remix(inst: Targets): TargetStyle("Remix", inst, false) {
         GL11.glPopMatrix()
     }
 
-    override fun drawTarget(entity: EntityLivingBase) {
-        TODO("Not yet implemented")
-    }
-
     override fun getBorder(entity: EntityPlayer?): Border? {
-        TODO("Not yet implemented")
-    }
-    override fun getBorder(entity: EntityLivingBase?): Border? {
         return Border(0F, 0F, 146F, 49F)
     }
 

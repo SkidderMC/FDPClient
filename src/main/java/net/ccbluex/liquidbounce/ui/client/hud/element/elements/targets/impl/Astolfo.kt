@@ -24,7 +24,7 @@ class Astolfo(inst: Targets): TargetStyle("Astolfo", inst, true) {
     private val fontValue = FontValue("Font", Fonts.font40)
 
 
-    override fun drawTarget(target: EntityLivingBase) {
+    override fun drawTarget(target: EntityPlayer) {
         val font = fontValue.get()
         val color = ColorUtils.skyRainbow(1, 1F, 0.9F, 5.0)
         val hpPct = easingHP / target.maxHealth
@@ -44,15 +44,8 @@ class Astolfo(inst: Targets): TargetStyle("Astolfo", inst, true) {
         GL11.glPopMatrix()
     }
 
-    override fun drawTarget(entity: EntityPlayer) {
-        TODO("Not yet implemented")
-    }
 
     override fun getBorder(entity: EntityPlayer?): Border? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 120F, 48F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)

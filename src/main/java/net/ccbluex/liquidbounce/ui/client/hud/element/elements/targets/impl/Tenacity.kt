@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.FontValue
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -25,7 +24,7 @@ class Tenacity(inst: Targets): TargetStyle("Tenacity", inst, true) {
     private var easingHP = 0f
     private val fontValue = FontValue("Font", Fonts.font40)
 
-    override fun drawTarget(target: EntityLivingBase) {
+    override fun drawTarget(target: EntityPlayer) {
         val font = fontValue.get()
 
         val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
@@ -48,15 +47,8 @@ class Tenacity(inst: Targets): TargetStyle("Tenacity", inst, true) {
         RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
     }
 
-    override fun drawTarget(entity: EntityPlayer) {
-        TODO("Not yet implemented")
-    }
 
     override fun getBorder(entity: EntityPlayer?): Border? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 120F, 48F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)

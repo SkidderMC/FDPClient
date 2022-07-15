@@ -191,13 +191,6 @@ class Rice(inst: Targets): TargetStyle("Rice", inst, true) {
         RenderUtils.originalRoundedRect(0F, 0F, 10F + length, 55F, 8F, Color(0, 0, 0, 255).rgb)
     }
 
-    override fun drawTarget(entity: EntityLivingBase) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getBorder(entity: EntityLivingBase?): Border? {
-        TODO("Not yet implemented")
-    }
 
     override fun getBorder(entity: EntityPlayer?): Border? {
         entity ?: return Border(0F, 0F, 135F, 55F)

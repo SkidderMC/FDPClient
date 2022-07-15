@@ -35,9 +35,6 @@ abstract class TargetStyle(val name: String, val targetInstance: Targets, val sh
     val decimalFormat2 = DecimalFormat("##0.0", DecimalFormatSymbols(Locale.ENGLISH))
     val decimalFormat3 = DecimalFormat("0.#", DecimalFormatSymbols(Locale.ENGLISH))
 
-    abstract fun drawTarget(entity: EntityLivingBase)
-    abstract fun getBorder(entity: EntityLivingBase?): Border?
-
     abstract fun drawTarget(entity: EntityPlayer)
     abstract fun getBorder(entity: EntityPlayer?): Border?
 

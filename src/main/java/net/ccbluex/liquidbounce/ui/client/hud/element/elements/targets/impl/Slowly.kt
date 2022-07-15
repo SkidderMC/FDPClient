@@ -17,7 +17,7 @@ import java.awt.Color
 
 class Slowly(inst: Targets): TargetStyle("Slowly", inst, true) {
 
-    override fun drawTarget(entity: EntityLivingBase) {
+    override fun drawTarget(entity:EntityPlayer) {
         val font = Fonts.minecraftFont
         val healthString = "${decimalFormat2.format(entity.health)} ❤"
         val length = 60.coerceAtLeast(font.getStringWidth(entity.name)).coerceAtLeast(font.getStringWidth(healthString)).toFloat() + 10F
@@ -58,15 +58,8 @@ class Slowly(inst: Targets): TargetStyle("Slowly", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, 32F + length, 36F, Color(0, 0, 0, 255).rgb)
     }
 
-    override fun drawTarget(entity: EntityPlayer) {
-        TODO("Not yet implemented")
-    }
 
     override fun getBorder(entity: EntityPlayer?): Border? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 102F, 36F)
         val font = Fonts.minecraftFont
         val healthString = "${decimalFormat2.format(entity.health)} ❤"
