@@ -29,7 +29,7 @@ class Rice(inst: Targets): TargetStyle("Rice", inst, true) {
     val gradientRoundedBarValue = BoolValue("GradientRoundedBar", true).displayable { targetInstance.modeValue.get().equals("Rice", true) }
 
     val riceParticle = BoolValue("Rice-Particle", true).displayable { targetInstance.modeValue.get().equals("Rice", true) }
-    val riceParticleSpin = BoolValue("Rice-ParticleSpin", true).displayable { targetInstance.modeValue.get().equals("chill", true) && riceParticle.get() }
+    val riceParticleSpin = BoolValue("Rice-ParticleSpin", true).displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
     val generateAmountValue = IntegerValue("GenerateAmount", 10, 1, 40).displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
     val riceParticleCircle = ListValue("Circle-Particles", arrayOf("Outline", "Solid", "None"), "Solid").displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }
     val riceParticleRect = ListValue("Rect-Particles", arrayOf("Outline", "Solid", "None"), "Outline").displayable { targetInstance.modeValue.get().equals("Rice", true) && riceParticle.get() }

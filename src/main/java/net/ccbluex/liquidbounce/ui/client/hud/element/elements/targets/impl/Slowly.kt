@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import org.json.XMLTokener.entity
 import java.awt.Color
 
 class Slowly(inst: Targets): TargetStyle("Slowly", inst, true) {
