@@ -46,7 +46,8 @@ abstract class TargetStyle(val name: String, val targetInstance: Targets, val sh
 
     val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
 
-    private var hpEaseAnimation: Animation? = null
+
+    open var hpEaseAnimation: Animation? = null
     open var easingHP = 0f
     private var ease = 0f
         get() {
@@ -127,7 +128,7 @@ abstract class TargetStyle(val name: String, val targetInstance: Targets, val sh
         glColor4f(1f, 1f, 1f, 1f)
     }
 
-    fun getHealth(entity: EntityLivingBase?): Float {
+    open fun getHealth(entity: EntityLivingBase?): Float {
         return entity?.health ?: 0f
     }
 

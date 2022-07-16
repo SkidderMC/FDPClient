@@ -64,8 +64,24 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             ).toTypedArray(), "Chill")
     }
 
-    //val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Chill", "LiquidBounce", "Exhibition", "Remix", "Slowly", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
+
+    val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
+    val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
+    val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
+
+    val switchModeValue = ListValue("SwitchMode", arrayOf("Slide", "Zoom", "None"), "Slide")
+    val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
+    val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
+    val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
+
+    val showWithChatOpen = BoolValue("Show-ChatOpen", true)
+    val resetBar = BoolValue("ResetBarWhenHiding", false)
+
+    val noAnimValue = BoolValue("No-Animation", false)
+    val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 9F).displayable { noAnimValue.equals("No-Animation") }
+
+    val arrisRoundedValue = BoolValue("ArrisRounded", true)
 
     val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Health"), "Custom")
     val redValue = IntegerValue("Red", 252, 0, 255)
@@ -78,23 +94,12 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     val bgBlueValue = IntegerValue("Background-Blue", 0, 0, 255)
     val bgAlphaValue = IntegerValue("Background-Alpha", 160, 0, 255)
     val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
-    val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     val fadeValue = BoolValue("FadeAnim", false)
     val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F)
     val waveSecondValue = IntegerValue("Seconds", 2, 1, 10)
     val shadowValue = BoolValue("Shadow", false)
     val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 40F)
-    val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
-    val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
-    val noAnimValue = BoolValue("No-Animation", false)
-    val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 9F).displayable { noAnimValue.equals("No-Animation") }
-    val switchModeValue = ListValue("SwitchMode", arrayOf("Slide", "Zoom", "None"), "Slide")
-    val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
-    val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
-    val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
-    val showWithChatOpen = BoolValue("Show-ChatOpen", true)
-    val resetBar = BoolValue("ResetBarWhenHiding", false)
-    val arrisRoundedValue = BoolValue("ArrisRounded", true)
+
     val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
     val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
     val riseSizeValue = FloatValue("Rise-Size", 1f, 0.5f, 3f)
@@ -102,6 +107,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     val riseDistanceValue = FloatValue("Rise-Distance", 1f, 0.5f, 2f)
     val riseMoveTimeValue = IntegerValue("Rise-MoveTime", 20, 5, 40)
     val riseFadeTimeValue = IntegerValue("Rise-FadeTime", 20, 5, 40)
+
     val fontValue = FontValue("Font", Fonts.font40)
 
     var mainTarget: EntityPlayer? = null
@@ -113,6 +119,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     var prevTarget: EntityLivingBase? = null
     var displayPercent = 0f
     var lastUpdate = System.currentTimeMillis()
+
     val decimalFormat = DecimalFormat("0.0")
 
     private var hpEaseAnimation: Animation? = null

@@ -54,6 +54,9 @@ class Liquid(inst: Targets): TargetStyle("Liquid", inst, true) {
         }
     }
 
+    override fun getHealth(entity: EntityLivingBase?): Float {
+        return entity?.health ?: 0f
+    }
 
     override fun getBorder(entity: EntityLivingBase?): Border? {
         entity ?: return Border(0F, 0F, 120F, 48F)
