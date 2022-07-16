@@ -55,8 +55,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
     
     override fun onMove(event: MoveEvent) {
       when (bypassMode.get().lowercase()) {
-         "safe" -> MovementUtils.strafe(( 0.02 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
-         "test" -> MovementUtils.strafe(( 0.02 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
+         "safe" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
+         "test" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
       }
     }
 }
