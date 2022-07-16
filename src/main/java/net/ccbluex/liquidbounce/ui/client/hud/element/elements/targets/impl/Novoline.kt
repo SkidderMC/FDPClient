@@ -58,9 +58,7 @@ class Novoline(inst: Targets): TargetStyle("Novoline", inst, true) {
 
 
     override fun getBorder(entity:EntityLivingBase?): Border {
-        entity ?: return Border(0F, 0F, 140F, 40F)
-        val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
-        return Border(0F, 0F, tWidth, 40F)
+        return Border(0F, 0F, 140F, 40F)
     }
 
 }

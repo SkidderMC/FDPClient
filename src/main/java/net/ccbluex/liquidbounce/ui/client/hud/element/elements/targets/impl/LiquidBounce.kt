@@ -93,8 +93,8 @@ class LiquidBounce(inst: Targets): TargetStyle("LiquidBounce", inst, true) {
 
     }
 
-    override fun handleBlur(entity: EntityPlayer) {
-        val width = (38 + Fonts.font40.getStringWidth(entity.name))
+    override fun handleBlur(player: EntityPlayer) {
+        val width = (38 + Fonts.font40.getStringWidth(player.name))
                         .coerceAtLeast(118)
                         .toFloat()
 
@@ -106,17 +106,17 @@ class LiquidBounce(inst: Targets): TargetStyle("LiquidBounce", inst, true) {
         GlStateManager.disableBlend()
     }
 
-    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+    override fun handleShadowCut(player: EntityPlayer) = handleBlur(player)
     
-    override fun handleShadow(entity: EntityPlayer) {
-        val width = (38 + Fonts.font40.getStringWidth(entity.name))
+    override fun handleShadow(player: EntityPlayer) {
+        val width = (38 + Fonts.font40.getStringWidth(player.name))
                         .coerceAtLeast(118)
                         .toFloat()
 
         RenderUtils.newDrawRect(0F, 0F, width, 36F, Color(0, 0, 0, 255).rgb)
     }
 
-    override fun getBorder(entity: EntityLivingBase?): Border? {
+    override fun getBorder(entity: EntityLivingBase?): Border {
         entity ?: return Border(0F, 0F, 118F, 36F)
         val width = (38 + Fonts.font40.getStringWidth(entity.name)).coerceAtLeast(118).toFloat()
         return Border(0F, 0F, width, 36F)

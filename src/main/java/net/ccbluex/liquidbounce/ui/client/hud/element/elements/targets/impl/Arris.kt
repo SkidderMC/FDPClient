@@ -20,6 +20,8 @@ import java.awt.Color
 
 class Arris(inst: Targets): TargetStyle("Arris", inst, true) {
 
+    val arrisRoundedValue = BoolValue("ArrisRounded", true).displayable { targetInstance.modeValue.get().equals("Arris", true) }
+
     override var hpEaseAnimation: Animation? = null
     override var easingHP = 0f
     private var ease = 0f
@@ -38,10 +40,9 @@ class Arris(inst: Targets): TargetStyle("Arris", inst, true) {
             }
         }
 
-    val arrisRoundedValue = BoolValue("ArrisRounded", true).displayable { targetInstance.modeValue.get().equals("Arris", true) }
 
     override fun drawTarget(target: EntityLivingBase) {
-        val font = fontValue.get()
+        val font = this.fontValue.get()
 
         val hp = decimalFormat.format(easingHP)
         val additionalWidth = font.getStringWidth("${target.name}  $hp hp").coerceAtLeast(75)

@@ -46,6 +46,10 @@ abstract class TargetStyle(val name: String, val targetInstance: Targets, val sh
 
     val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
 
+    val switchModeValue = ListValue("SwitchMode", arrayOf("Slide", "Zoom", "None"), "Slide")
+    val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
+    val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
+    val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
 
     open var hpEaseAnimation: Animation? = null
     open var easingHP = 0f
