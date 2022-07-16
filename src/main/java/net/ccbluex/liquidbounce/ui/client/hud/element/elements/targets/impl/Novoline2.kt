@@ -38,7 +38,7 @@ class Novoline2(inst: Targets): TargetStyle("Novoline2", inst, true) {
         }
 
     override fun drawTarget(target: EntityLivingBase) {
-        val font = fontValue.get()
+        val font = this.fontValue.get()
         val color = ColorUtils.healthColor(getHealth(target), target.maxHealth)
         val darkColor = ColorUtils.darker(color, 0.6F)
 

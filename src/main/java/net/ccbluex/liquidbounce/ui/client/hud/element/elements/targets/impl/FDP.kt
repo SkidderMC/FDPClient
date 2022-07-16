@@ -20,12 +20,12 @@ import java.awt.Color
 
 class FDP(inst: Targets): TargetStyle("FDP", inst, true) {
 
-    override fun drawTarget(target: EntityLivingBase) {
-        val font = fontValue.get()
+    override fun drawTarget(entity: EntityLivingBase) {
+        val font = this.fontValue.get()
 
         RenderUtils.drawRoundedCornerRect(0f, 0f, 150f, 47f, 4f, Color(0, 0, 0, 100).rgb)
 
-        val hurtPercent = target.hurtPercent
+        val hurtPercent = entity.hurtPercent
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
             1 - (0.1f * hurtPercent * 2)
         } else {
@@ -41,12 +41,12 @@ class FDP(inst: Targets): TargetStyle("FDP", inst, true) {
         // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
         // 绘制头部图片
-        RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
+        RenderUtils.quickDrawHead(entity.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
-        font.drawString("Name ${target.name}", 45, 5, Color.WHITE.rgb)
-        font.drawString("Health ${getHealth(target)}", 45, 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
-        RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 45f + (easingHP / target.maxHealth) * 100f, 42f, 3f, ColorUtils.rainbow().rgb)
+        font.drawString("Name ${entity.name}", 45, 5, Color.WHITE.rgb)
+        font.drawString("Health ${getHealth(entity)}", 45, 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
+        RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 45f + (easingHP / entity.maxHealth) * 100f, 42f, 3f, ColorUtils.rainbow().rgb)
 
     }
 
@@ -55,9 +55,7 @@ class FDP(inst: Targets): TargetStyle("FDP", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border? {
-        entity ?: return Border(0F, 0F, 150F, 47F)
-        val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
-        return Border(0F, 0F, tWidth, 47F)
+        return Border(0F, 0F, 150F, 47F)
     }
 
 

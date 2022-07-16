@@ -20,10 +20,10 @@ class Astolfo(inst: Targets): TargetStyle("Astolfo", inst, true) {
 
     override var easingHP = 0f
 
-    override fun drawTarget(target: EntityLivingBase) {
-        val font = fontValue.get()
+    override fun drawTarget(entity: EntityLivingBase) {
+        val font = this.fontValue.get()
         val color = ColorUtils.skyRainbow(1, 1F, 0.9F, 5.0)
-        val hpPct = easingHP / target.maxHealth
+        val hpPct = easingHP / entity.maxHealth
 
         RenderUtils.drawRect(0F, 0F, 140F, 60F, Color(0, 0, 0, 110).rgb)
 
@@ -31,20 +31,19 @@ class Astolfo(inst: Targets): TargetStyle("Astolfo", inst, true) {
         RenderUtils.drawRect(3F, 55F, 137F, 58F, ColorUtils.reAlpha(color, 100).rgb)
         RenderUtils.drawRect(3F, 55F, 3 + (hpPct * 134F), 58F, color.rgb)
         GL11.glColor4f(1f, 1f, 1f, 1f)
-        RenderUtils.drawEntityOnScreen(18, 46, 20, target)
+        RenderUtils.drawEntityOnScreen(18, 46, 20, entity)
 
-        font.drawStringWithShadow(target.name, 37F, 6F, -1)
+        font.drawStringWithShadow(entity.name, 37F, 6F, -1)
         GL11.glPushMatrix()
         GL11.glScalef(2F, 2F, 2F)
-        font.drawString("${getHealth(target).roundToInt()} ❤", 19, 9, color.rgb)
+        font.drawString("${getHealth(entity).roundToInt()} ❤", 19, 9, color.rgb)
         GL11.glPopMatrix()
     }
 
 
-    override fun getBorder(entity: EntityLivingBase?): Border? {
-        entity ?: return Border(0F, 0F, 120F, 48F)
-        val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
-        return Border(0F, 0F, tWidth, 60F)
+    override fun getBorder(entity: EntityLivingBase?): Border {
+        return Border(0F, 0F, 120F, 48F)
+
     }
 
 }
