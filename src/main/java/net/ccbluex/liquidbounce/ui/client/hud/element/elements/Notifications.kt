@@ -25,6 +25,8 @@ import kotlin.math.max
 /**
  * CustomHUD Notification element
  */
+
+    
 @ElementInfo(name = "Notifications", blur = true)
 class Notifications(
     x: Double = 0.0,
@@ -32,12 +34,15 @@ class Notifications(
     scale: Float = 1F,
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
+    
+    private val newStyle = BoolValue("NewStyle", true)
 
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 235, 0, 255)
 
-    private val TitleShadow = BoolValue("Title Shadow", false)
-    private val MotionBlur = BoolValue("Motion blur", false)
-    private val ContentShadow = BoolValue("Content Shadow", true)
+    private val TitleShadow = BoolValue("TitleShadow", false)
+    private val ContentShadow = BoolValue("ContentShadow", true)
+    private val MotionBlur = BoolValue("MotionBlur", false)
+    
  
 
     /**
@@ -53,7 +58,7 @@ class Notifications(
         LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
-            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get())) {
+            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get(),newStyle.get())) {
                 LiquidBounce.hud.notifications.remove(notify)
             }
 
@@ -96,141 +101,158 @@ class Notification(
     /**
      * Draw notification
      */
-    fun drawNotification(index: Int, font: CFontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float,ContentShadow: Boolean,TitleShadow: Boolean,MotionBlur: Boolean): Boolean {
+
+    fun drawNotification(index: Int, font: CFontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float,ContentShadow: Boolean,TitleShadow: Boolean,MotionBlur: Boolean,newStyle: Boolean): Boolean {
+        
         this.width = 100.coerceAtLeast(font.getStringWidth(content)
             .coerceAtLeast(font.getStringWidth(title)) + 15)
         val realY = -(index+1) * height
         val nowTime = System.currentTimeMillis()
         var transY = nowY.toDouble()
+        
+        if (newStyle) {
 
-        // Y-Axis Animation
-        if (nowY != realY) {
-            var pct = (nowTime - animeYTime) / animeTime.toDouble()
-            if (pct> 1) {
-                nowY = realY
-                pct = 1.0
+            // Y-Axis Animation
+            if (nowY != realY) {
+                var pct = (nowTime - animeYTime) / animeTime.toDouble()
+                if (pct> 1) {
+                    nowY = realY
+                    pct = 1.0
+                } else {
+                    pct = EaseUtils.easeOutExpo(pct)
+                }
+                transY += (realY - nowY) * pct
             } else {
-                pct = EaseUtils.easeOutExpo(pct)
-            }
-            transY += (realY - nowY) * pct
-        } else {
-            animeYTime = nowTime
-        }
-
-        // X-Axis Animation
-        var pct = (nowTime - animeXTime) / animeTime.toDouble()
-        when (fadeState) {
-            FadeState.IN -> {
-                if (pct> 1) {
-                    fadeState = FadeState.STAY
-                    animeXTime = nowTime
-                    pct = 1.0
-                }
-                pct = EaseUtils.easeOutExpo(pct)
+                animeYTime = nowTime
             }
 
-            FadeState.STAY -> {
-                pct = 1.0
-                if ((nowTime - animeXTime)> time) {
-                    fadeState = FadeState.OUT
-                    animeXTime = nowTime
-                }
-            }
-
-            FadeState.OUT -> {
-                if (pct> 1) {
-                    fadeState = FadeState.END
-                    animeXTime = nowTime
-                    pct = 1.0
-                }
-                pct = 1 - EaseUtils.easeInExpo(pct)
-            }
-
-            FadeState.END -> {
-                return true
-            }
-        }
-        val transX = width - (width * pct) - width
-        GL11.glTranslated(transX, transY, 0.0)
-        if (blurRadius != 0f) {
-            BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale) , (height.toFloat()-5f) * scale, blurRadius)
-        }
-
-        // draw notify
-        var colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3);
-        if(MotionBlur) {
+            // X-Axis Animation
+            var pct = (nowTime - animeXTime) / animeTime.toDouble()
             when (fadeState) {
                 FadeState.IN -> {
-                    RenderUtils.drawRoundedCornerRect(
-                        3f,
-                        0F,
-                        width.toFloat() + 5f,
-                        height.toFloat() - 5f,
-                        2f,
-                        colors.rgb
-                    )
-                    RenderUtils.drawRoundedCornerRect(
-                        3F,
-                        0F,
-                        width.toFloat() + 5f,
-                        height.toFloat() - 5f,
-                        2f,
-                        colors.rgb
-                    )
+                    if (pct> 1) {
+                        fadeState = FadeState.STAY
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = EaseUtils.easeOutExpo(pct)
                 }
 
                 FadeState.STAY -> {
-                    RenderUtils.drawRoundedCornerRect(
-                        3f,
-                        0F,
-                        width.toFloat() + 5f,
-                        height.toFloat() - 5f,
-                        2f,
-                        colors.rgb
-                    )
-                    RenderUtils.drawRoundedCornerRect(
-                        3F,
-                        0F,
-                        width.toFloat() + 5f,
-                        height.toFloat() - 5f,
-                        2f,
-                        colors.rgb
-                    )
+                    pct = 1.0
+                    if ((nowTime - animeXTime)> time) {
+                        fadeState = FadeState.OUT
+                        animeXTime = nowTime
+                    }
                 }
 
                 FadeState.OUT -> {
-                    RenderUtils.drawRoundedCornerRect(
-                        4F,
-                        0F,
-                        width.toFloat() + 5f,
-                        height.toFloat() - 5f,
-                        2f,
-                        colors.rgb
-                    )
-                    RenderUtils.drawRoundedCornerRect(
-                        5F,
-                        0F,
-                        width.toFloat() + 5f,
-                        height.toFloat() - 5f,
-                        2f,
-                        colors.rgb
-                    )
+                    if (pct> 1) {
+                        fadeState = FadeState.END
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = 1 - EaseUtils.easeInExpo(pct)
+                }
+
+                FadeState.END -> {
+                    return true
                 }
             }
-        }else{
+            val transX = width - (width * pct) - width
+            GL11.glTranslated(transX, transY, 0.0)
+            if (blurRadius != 0f) {
+                BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale) , (height.toFloat()-5f) * scale, blurRadius)
+            }
+
+            // draw notify
+            var colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3);
+            if(MotionBlur) {
+                when (fadeState) {
+                    FadeState.IN -> {
+                        RenderUtils.drawRoundedCornerRect(
+                            3f,
+                            0F,
+                            width.toFloat() + 5f,
+                            height.toFloat() - 5f,
+                            2f,
+                            colors.rgb
+                        )
+                        RenderUtils.drawRoundedCornerRect(
+                            3F,
+                            0F,
+                            width.toFloat() + 5f,
+                            height.toFloat() - 5f,
+                            2f,
+                            colors.rgb
+                        )
+                    }
+
+                    FadeState.STAY -> {
+                        RenderUtils.drawRoundedCornerRect(
+                            3f,
+                            0F,
+                            width.toFloat() + 5f,
+                            height.toFloat() - 5f,
+                            2f,
+                            colors.rgb
+                        )
+                        RenderUtils.drawRoundedCornerRect(
+                            3F,
+                            0F,
+                            width.toFloat() + 5f,
+                            height.toFloat() - 5f,
+                            2f,
+                            colors.rgb
+                        )
+                    }
+
+                    FadeState.OUT -> {
+                        RenderUtils.drawRoundedCornerRect(
+                            4F,
+                            0F,
+                            width.toFloat() + 5f,
+                            height.toFloat() - 5f,
+                            2f,
+                            colors.rgb
+                        )
+                        RenderUtils.drawRoundedCornerRect(
+                            5F,
+                            0F,
+                            width.toFloat() + 5f,
+                            height.toFloat() - 5f,
+                            2f,
+                            colors.rgb
+                        )
+                    }
+                }
+            }else{
+                RenderUtils.drawRoundedCornerRect(0F+3f, 0F, width.toFloat()+5f, height.toFloat()-5f,2f ,colors.rgb)
+                RenderUtils.drawRoundedCornerRect(0F+3f, 0F, width.toFloat()+5f, height.toFloat()-5f,2f ,colors.rgb)
+            }
             RenderUtils.drawRoundedCornerRect(0F+3f, 0F, width.toFloat()+5f, height.toFloat()-5f,2f ,colors.rgb)
-            RenderUtils.drawRoundedCornerRect(0F+3f, 0F, width.toFloat()+5f, height.toFloat()-5f,2f ,colors.rgb)
+            RenderUtils.drawRoundedCornerRect(0F+3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), height.toFloat()-5f,2f ,Color(0,0,0,26).rgb)
+            FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, Color(31,41,55).rgb,TitleShadow)
+            font.DisplayFont2(font,content, 4F, 10F, Color(31,41,55).rgb,ContentShadow)
+        } else {
+            GL11.glTranslated(transX, transY, 0.0)
+
+            if (blurRadius != 0f) {
+                BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, height * scale, blurRadius)
+            }
+
+            RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, alpha))
+            RenderUtils.drawRect(0F, height - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), height.toFloat(), type.renderColor)
+            font.drawString(title, 4F, 4F, Color.WHITE.rgb, false)
+            font.drawString(content, 4F, 17F, Color.WHITE.rgb, false)
         }
-        RenderUtils.drawRoundedCornerRect(0F+3f, 0F, width.toFloat()+5f, height.toFloat()-5f,2f ,colors.rgb)
-        RenderUtils.drawRoundedCornerRect(0F+3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), height.toFloat()-5f,2f ,Color(0,0,0,26).rgb)
-        FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, Color(31,41,55).rgb,TitleShadow)
-        font.DisplayFont2(font,content, 4F, 10F, Color(31,41,55).rgb,ContentShadow)
         return false
     }
 }
 
 //NotifyType Color
 enum class NotifyType(var renderColor: Color) {
+    
     SUCCESS(Color(0x36D399)),
     ERROR(Color(0xF87272)),
     WARNING(Color(0xFBBD23)),
