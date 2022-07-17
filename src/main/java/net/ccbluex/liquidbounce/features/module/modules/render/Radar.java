@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.render.Colors;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.render.StringConversions;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
@@ -28,31 +27,28 @@ public class Radar extends Module
 {
     private boolean dragging;
     float hue;
-    public final FloatValue scale = new FloatValue("scale",2.0f, 1.0f, 3.0f);
-    public final FloatValue x = new FloatValue("x",10.0f, 0.0f, 2000.0f);
-    public final FloatValue y = new FloatValue("y",10.0f, 0.0f, 2000.0f);
-    public final FloatValue size = new FloatValue("size",10.0f, 0.0f, 2000.0f);
+    public final FloatValue scale = new FloatValue("scale", 2.0f, 1.0f, 3.0f);
+    public final FloatValue x = new FloatValue("x", 10.0f, 0.0f, 2000.0f);
+    public final FloatValue y = new FloatValue("y", 10.0f, 0.0f, 2000.0f);
+    public final FloatValue size = new FloatValue("size", 10.0f, 0.0f, 2000.0f);
 
 
     @EventTarget
     public void onRender2D(Render2DEvent e) {
         ScaledResolution sr = new ScaledResolution(mc);
-        int size1 = (this.size.getValue()).intValue();
-        float xOffset = (this.x.getValue()).floatValue();
-        float yOffset = (this.y.getValue()).floatValue();
+        int size1 = this.size.getValue().intValue();
+        float xOffset = this.x.getValue().floatValue();
+        float yOffset = this.y.getValue().floatValue();
         float playerOffsetX = (float)mc.thePlayer.posX;
         float playerOffSetZ = (float)mc.thePlayer.posZ;
         int var141 = sr.getScaledWidth();
         int var151 = sr.getScaledHeight();
         int mouseX = Mouse.getX() * var141 / mc.displayWidth;
         int mouseY = var151 - Mouse.getY() * var151 / mc.displayHeight - 1;
-        if ((float)mouseX >= xOffset && (float)mouseX <= xOffset + (float)size1 && (float)mouseY >= yOffset - 3.0f && (float)mouseY <= yOffset + 10.0f && Mouse.getEventButton() == 0) {
-            boolean bl = this.dragging = !this.dragging;
+        if (mouseX >= xOffset && mouseX <= xOffset + size1 && mouseY >= yOffset - 3f && mouseY <= yOffset + 10.0f && Mouse.getEventButton() == 0) {
+            this.dragging = !this.dragging;
         }
-        if (this.dragging && mc.currentScreen instanceof GuiChat) {
-            Object newValue = StringConversions.castNumber((String)Double.toString((double)(mouseX - size1 / 2)), (Object)5);
-            Object newValueY = StringConversions.castNumber((String)Double.toString((double)(mouseY - 2)), (Object)5);
-        } else {
+        if (!this.dragging || !(mc.currentScreen instanceof GuiChat)) {
             this.dragging = false;
         }
         if (this.hue > 255.0f) {
@@ -70,26 +66,26 @@ public class Radar extends Module
         if (h3 > 255.0f) {
             h3 -= 255.0f;
         }
-        Color color33 = Color.getHSBColor((float)(h / 255.0f), (float)0.9f, (float)1.0f);
-        Color color332 = Color.getHSBColor((float)(h2 / 255.0f), (float)0.9f, (float)1.0f);
-        Color color333 = Color.getHSBColor((float)(h3 / 255.0f), (float)0.9f, (float)1.0f);
+        Color color33 = Color.getHSBColor(h / 255.0f, 0.9f, 1.0f);
+        Color color332 = Color.getHSBColor(h2 / 255.0f, 0.9f, 1.0f);
+        Color color333 = Color.getHSBColor(h3 / 255.0f, 0.9f, 1.0f);
         int color1 = color33.getRGB();
         int color2 = color332.getRGB();
         int color3 = color333.getRGB();
-        this.hue = (float)((double)this.hue + 0.1);
+        this.hue += 0.1f;
 
 
-        RenderUtils.rectangleBordered((double)(xOffset + 3.0f), (double)(yOffset + 3.0f), (double)(xOffset + (float)size1 - 3.0f), (double)(yOffset + (float)size1 - 3.0f), (double)0.5, new Color(0,0,0,150).getRGB(), new Color(0,0,0,150).getRGB());
-        RenderUtils.drawGradientSideways((double)(xOffset + 3.0f), (double)(yOffset + 2.6f), (double)(xOffset + (float)(size1 / 2)), (double)((double)yOffset + 3.0), (int)color1, (int)color2);
-        RenderUtils.drawGradientSideways((double)(xOffset + (float)(size1 / 2)), (double)(yOffset + 2.6f), (double)(xOffset + (float)size1 - 3.0f), (double)((double)yOffset + 3.0), (int)color2, (int)color3);
-        RenderUtils.rectangle((double)((double)xOffset + ((double)(size1 / 2) - 0.5)), (double)((double)yOffset + 3.5), (double)((double)xOffset + ((double)(size1 / 2) + 0.5)), (double)((double)(yOffset + (float)size1) - 3.5), (int) Colors.getColor((int)255, (int)80));
-        RenderUtils.rectangle((double)((double)xOffset + 3.5), (double)((double)yOffset + ((double)(size1 / 2) - 0.5)), (double)((double)(xOffset + (float)size1) - 3.5), (double)((double)yOffset + ((double)(size1 / 2) + 0.5)), (int)Colors.getColor((int)255, (int)80));
+        RenderUtils.rectangleBordered(xOffset + 3.0, yOffset + 3.0, xOffset + size1 - 3.0, yOffset + size1 - 3.0, 0.5, new Color(0,0,0,150).getRGB(), new Color(0,0,0,150).getRGB());
+        RenderUtils.drawGradientSideways(xOffset + 3.0, yOffset + 2.6, xOffset + size1 / 2.0, yOffset + 3.0, color1, color2);
+        RenderUtils.drawGradientSideways(xOffset + size1 / 2.0, yOffset + 2.6, xOffset + size1 - 3.0, yOffset + 3.0, color2, color3);
+        RenderUtils.rectangle(xOffset + size1 / 2.0 - 0.5, yOffset + 3.5, xOffset + size1 / 2.0 + 0.5, yOffset + size1 - 3.5, Colors.getColor(255, 80));
+        RenderUtils.rectangle(xOffset + 3.5, yOffset + size1 / 2.0 - 0.5, xOffset + size1 - 3.5, yOffset + size1 / 2.0 + 0.5, Colors.getColor(255, 80));
         for (Object o : mc.theWorld.getLoadedEntityList()) {
             EntityPlayer ent;
             if (!(o instanceof EntityPlayer) || !(ent = (EntityPlayer)o).isEntityAlive() || ent == mc.thePlayer || ent.isInvisible() || ent.isInvisibleToPlayer((EntityPlayer)mc.thePlayer)) continue;
             float pTicks = mc.timer.renderPartialTicks;
-            float posX = (float)((ent.posX + (ent.posX - ent.lastTickPosX) * (double)pTicks - (double)playerOffsetX) * this.scale.getValue());
-            float posZ = (float)((ent.posZ + (ent.posZ - ent.lastTickPosZ) * (double)pTicks - (double)playerOffSetZ) * this.scale.getValue());
+            float posX = (float)((ent.posX + (ent.posX - ent.lastTickPosX) * pTicks - playerOffsetX) * this.scale.getValue());
+            float posZ = (float)((ent.posZ + (ent.posZ - ent.lastTickPosZ) * pTicks - playerOffSetZ) * this.scale.getValue());
             String formattedText = ent.getDisplayName().getFormattedText();
             int color = mc.thePlayer.canEntityBeSeen((Entity)ent) ? new Color(255,255,255).getRGB() : new Color(120,120,120).getRGB();
             int i = 0;
@@ -111,21 +107,21 @@ public class Radar extends Module
             if(ent.hurtTime > 0) {
                 color = new Color(255,0,0).getRGB();
             }
-            float cos = -(float)Math.cos((double)((double)mc.thePlayer.rotationYaw * 0.017453292519943295));
-            float sin = (float)Math.sin((double)((double)mc.thePlayer.rotationYaw * 0.017453292519943295));
+            float cos = -(float)Math.cos(mc.thePlayer.rotationYaw * 0.017453292519943295);
+            float sin = (float)Math.sin(mc.thePlayer.rotationYaw * 0.017453292519943295);
             float rotY = -((- posZ) * cos - posX * sin);
             float rotX = -((- posX) * cos + posZ * sin);
-            if (rotY > (float)(size1 / 2 - 9)) {
-                rotY = (float)(size1 / 2) - 9.0f;
-            } else if (rotY < (float)((- size1) / 2) + 2) {
-                rotY = (- size1) / 2 + 2;
+            if (rotY > size1 / 2f - 9) {
+                rotY = size1 / 2f - 9;
+            } else if (rotY < size1 / -2f + 2) {
+                rotY = size1 / -2f + 2;
             }
-            if (rotX > (float)(size1 / 2) - 9.0f) {
-                rotX = size1 / 2 - 9;
-            } else if (rotX < (float)((- size1) / 2) + 2) {
-                rotX = - (float)(size1 / 2) + 2;
+            if (rotX > size1 / 2f - 9) {
+                rotX = size1 / 2f - 9;
+            } else if (rotX < size1 / -2f + 2) {
+                rotX = size1 / -2f + 2;
             }
-            RenderUtils.rectangleBordered((double)((double)(xOffset + 4 + (float)(size1 / 2) + rotX) - 1.5), (double)((double)(yOffset + 4 + (float)(size1 / 2) + rotY) - 1.5), (double)((double)(xOffset + 4 + (float)(size1 / 2) + rotX) + 1.5), (double)((double)(yOffset + 4 + (float)(size1 / 2) + rotY) + 1.5), (double)0.5, (int)color, (int)Colors.getColor((int)46));
+            RenderUtils.rectangleBordered(xOffset + 4 + size1 / 2.0 + rotX - 1.5, yOffset + 4 + size1 / 2.0 + rotY - 1.5, xOffset + 4 + size1 / 2.0 + rotX + 1.5, yOffset + 4 + size1 / 2.0 + rotY + 1.5, 0.5, color, Colors.getColor(46));
         }
     }
 
@@ -134,6 +130,6 @@ public class Radar extends Module
     }
 
     private float findAngle(float x, float x2, float y, float y2) {
-        return (float)(Math.atan2((double)(y2 - y), (double)(x2 - x)) * 180.0 / 3.141592653589793);
+        return (float)(Math.atan2(y2 - y, x2 - x) * 180.0 / 3.141592653589793);
     }
 }
