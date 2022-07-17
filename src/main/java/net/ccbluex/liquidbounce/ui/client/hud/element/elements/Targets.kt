@@ -46,9 +46,9 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
-abstract class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
+class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
     private val fontValue = FontValue("Font", Fonts.font40)
@@ -185,8 +185,6 @@ abstract class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, 
         return entity?.health ?: 0f
     }
 
-    abstract fun getBorder(entity: EntityLivingBase?): Border?
-
     override fun drawElement(partialTicks: Float): Border? {
 
         val kaTarget = (LiquidBounce.moduleManager[KillAura::class.java] as KillAura).target
@@ -222,22 +220,18 @@ abstract class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, 
         else if (animProgress >= 1F)
             mainTarget = null
 
-        val returnBorder = getBorder(mainTarget) ?: return null
-        val borderWidth = returnBorder.x2 - returnBorder.x
-        val borderHeight = returnBorder.y2 - returnBorder.y
 
         if (mainTarget == null) {
             if (resetBar.get())
                 easingHealth = 0F
                 particleList.clear()
-            return returnBorder
         }
         val convertTarget = mainTarget!! as EntityPlayer
 
-        val calcScaleX = animProgress * (4F / (borderWidth / 2F))
-        val calcScaleY = animProgress * (4F / (borderHeight / 2F))
-        val calcTranslateX = borderWidth / 2F * calcScaleX
-        val calcTranslateY = borderHeight / 2F * calcScaleY
+        val calcScaleX = animProgress * (4F / 2F)
+        val calcScaleY = animProgress * (4F / 2F)
+        val calcTranslateX =  2F * calcScaleX
+        val calcTranslateY = 2F * calcScaleY
 
         if (shadowValue.get()) {
             val floatX = renderX.toFloat()
@@ -281,7 +275,7 @@ abstract class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, 
             GL11.glPopMatrix()
 
         GlStateManager.resetColor()
-        return returnBorder
+
 
 
         fun handleDamage(ent: EntityPlayer) {
@@ -292,7 +286,6 @@ abstract class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, 
         fun getFadeProgress() = animProgress
 
         GlStateManager.resetColor()
-        return returnBorder
 
         var target = LiquidBounce.combatManager.target
         val time = System.currentTimeMillis()
