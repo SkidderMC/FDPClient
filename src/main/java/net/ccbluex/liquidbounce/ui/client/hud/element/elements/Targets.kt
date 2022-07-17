@@ -6,14 +6,11 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.combat.InfiniteAura
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl.*
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.CharRenderer
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Particle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.ShapeType
@@ -27,7 +24,6 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -48,7 +44,7 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rise")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
     private val fontValue = FontValue("Font", Fonts.font40)
@@ -62,7 +58,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
 
-    val showWithChatOpen = BoolValue("Show-ChatOpen", true)
     val resetBar = BoolValue("ResetBarWhenHiding", false)
 
     val noAnimValue = BoolValue("No-Animation", false)
@@ -187,27 +182,18 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
     override fun drawElement(partialTicks: Float): Border? {
 
-        val kaTarget = (LiquidBounce.moduleManager[KillAura::class.java] as KillAura).target
-        val taTarget = (LiquidBounce.moduleManager[InfiniteAura::class.java] as InfiniteAura).lastTarget
-
-        val actualTarget = if (kaTarget != null && kaTarget is EntityPlayer) kaTarget
-        else if (taTarget != null &&  taTarget is EntityPlayer) taTarget
-        else if ((mc.currentScreen is GuiChat && showWithChatOpen.get()) || mc.currentScreen is GuiHudDesigner) mc.thePlayer
-        else null
-
         val preBarColor = when (colorModeValue.get()) {
             "Rainbow" -> Color(ColorUtils.hslRainbow(100 * rainbowSpeed.get()).rgb)
             "Custom" -> Color(redValue.get(), greenValue.get(), blueValue.get())
             "Sky" -> ColorUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
             "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), 0, 100)
-            "Health" -> if (actualTarget != null) BlendUtils.getHealthColor(actualTarget.health, actualTarget.maxHealth) else Color.green
             else -> ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())!!
         }
 
         val preBgColor = Color(bgRedValue.get(), bgGreenValue.get(), bgBlueValue.get(), bgAlphaValue.get())
 
         if (fadeValue.get())
-            animProgress += (0.0075F * fadeSpeed.get() * RenderUtils.deltaTime * if (actualTarget != null) -1F else 1F)
+            animProgress += (0.0075F * fadeSpeed.get() * RenderUtils.deltaTime)
         else animProgress = 0F
 
         animProgress = animProgress.coerceIn(0F, 1F)
@@ -215,8 +201,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         barColor = ColorUtils.reAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
         bgColor = ColorUtils.reAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
 
-        if (actualTarget != null || !fadeValue.get())
-            mainTarget = actualTarget
+        if (!fadeValue.get())
+            mainTarget
         else if (animProgress >= 1F)
             mainTarget = null
 
@@ -1048,27 +1034,11 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         gotDamaged = true
     }
 
-     fun handleBlur(entity: EntityPlayer) {
-        val font = Fonts.font40
-        val name = "Name: ${entity.name}"
-        val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
-        val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
+    fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
 
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        RenderUtils.fastRoundedRect(0F, 0F, 10F + length, 55F, 8F)
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-    }
-
-     fun handleShadow(entity: EntityPlayer) {
-        val font = Fonts.font40
-        val name = "Name: ${entity.name}"
-        val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
-        val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
-
-        RenderUtils.originalRoundedRect(0F, 0F, 10F + length, 55F, 8F, Color(0, 0, 0, 255).rgb)
+    fun handleShadow(entity: EntityPlayer) {
+        val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
+        RenderUtils.originalRoundedRect(0F, 0F, tWidth, 48F, 7F, Color(0, 0, 0, 255).rgb)
     }
 
     fun drawHead(skin: ResourceLocation, x: Int = 2, y: Int = 2, width: Int, height: Int, alpha: Float = 1F) {
@@ -1138,7 +1108,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         }
     }
 
-    private fun handleBlur(entity: EntityLivingBase) {
+      fun handleBlur(entity: EntityLivingBase) {
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
@@ -1151,7 +1121,12 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private fun getColorAtIndex(i: Int): Int {
         return (when (colorModeValue.get()) {
             "Rainbow" -> ColorUtils.getRainbowOpaque(waveSecondValue.get(), saturationValue.get(), brightnessValue.get(), i * gradientDistanceValue.get())
-            "Slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), i * gradientDistanceValue.get(), saturationValue.get(), brightnessValue.get())!!.rgb
+            "Slowly" -> ColorUtils.slowlyRainbow(
+                System.nanoTime(),
+                i * gradientDistanceValue.get(),
+                saturationValue.get(),
+                brightnessValue.get()
+            ).rgb
             "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), i * gradientDistanceValue.get(), 100).rgb
             else -> -1
         })
