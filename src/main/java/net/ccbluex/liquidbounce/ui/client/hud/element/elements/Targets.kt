@@ -42,7 +42,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
-class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
+open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
     val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
@@ -58,6 +58,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
 
+    val showWithChatOpen = BoolValue("Show-ChatOpen", true)
     val resetBar = BoolValue("ResetBarWhenHiding", false)
 
     val noAnimValue = BoolValue("No-Animation", false)
@@ -84,9 +85,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val fadeValue = BoolValue("FadeAnim", false)
     private val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F)
     val waveSecondValue = IntegerValue("Seconds", 2, 1, 10)
-
-    val shadowValue = BoolValue("Shadow", false)
-    val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 40F)
 
     val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
     val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
@@ -181,97 +179,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     }
 
     override fun drawElement(partialTicks: Float): Border? {
-
-        val preBarColor = when (colorModeValue.get()) {
-            "Rainbow" -> Color(ColorUtils.hslRainbow(100 * rainbowSpeed.get()).rgb)
-            "Custom" -> Color(redValue.get(), greenValue.get(), blueValue.get())
-            "Sky" -> ColorUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
-            "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), 0, 100)
-            else -> ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())!!
-        }
-
-        val preBgColor = Color(bgRedValue.get(), bgGreenValue.get(), bgBlueValue.get(), bgAlphaValue.get())
-
-        if (fadeValue.get())
-            animProgress += (0.0075F * fadeSpeed.get() * RenderUtils.deltaTime)
-        else animProgress = 0F
-
-        animProgress = animProgress.coerceIn(0F, 1F)
-
-        barColor = ColorUtils.reAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
-        bgColor = ColorUtils.reAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
-
-        if (!fadeValue.get())
-            mainTarget
-        else if (animProgress >= 1F)
-            mainTarget = null
-
-
-        if (mainTarget == null) {
-            if (resetBar.get())
-                easingHealth = 0F
-                particleList.clear()
-        }
-        val convertTarget = mainTarget!! as EntityPlayer
-
-        val calcScaleX = animProgress * (4F / 2F)
-        val calcScaleY = animProgress * (4F / 2F)
-        val calcTranslateX =  2F * calcScaleX
-        val calcTranslateY = 2F * calcScaleY
-
-        if (shadowValue.get()) {
-            val floatX = renderX.toFloat()
-            val floatY = renderY.toFloat()
-
-            GL11.glTranslated(-renderX, -renderY, 0.0)
-            GL11.glPushMatrix()
-
-            ShadowUtils.shadow(shadowStrength.get(), {
-                GL11.glPushMatrix()
-                GL11.glTranslated(renderX, renderY, 0.0)
-                if (fadeValue.get()) {
-                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-                }
-                handleShadow(convertTarget)
-                GL11.glPopMatrix()
-            }, {
-                GL11.glPushMatrix()
-                GL11.glTranslated(renderX, renderY, 0.0)
-                if (fadeValue.get()) {
-                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-                }
-                (convertTarget)
-                GL11.glPopMatrix()
-            })
-
-            GL11.glPopMatrix()
-            GL11.glTranslated(renderX, renderY, 0.0)
-        }
-
-
-        if (fadeValue.get()) {
-            GL11.glPushMatrix()
-            GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-            GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-        }
-
-        if (fadeValue.get())
-            GL11.glPopMatrix()
-
-        GlStateManager.resetColor()
-
-
-
-        fun handleDamage(ent: EntityPlayer) {
-            if (mainTarget != null && ent == mainTarget)
-                (modeValue.get())
-        }
-
-        fun getFadeProgress() = animProgress
-
-        GlStateManager.resetColor()
 
         var target = LiquidBounce.combatManager.target
         val time = System.currentTimeMillis()
@@ -872,7 +779,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         // armor bar
         RenderUtils.newDrawRect(40F, 36F, 141.5F, 38F, getColor(Color.blue.darker()).rgb)
-        RenderUtils.newDrawRect(40F, 36F, 40F + (entity.getTotalArmorValue().toFloat() / 20F).coerceIn(0F, 1F) * 101.5F, 38F, getColor(Color.blue).rgb)
+        RenderUtils.newDrawRect(40F, 36F, 40F + (entity.totalArmorValue.toFloat() / 20F).coerceIn(0F, 1F) * 101.5F, 38F, getColor(Color.blue).rgb)
 
         // armor item background
         RenderUtils.newDrawRect(40F, 16F, 58F, 34F, getColor(Color(25, 25, 25)).rgb)
@@ -923,6 +830,12 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             GL11.glPopMatrix()
         }
 
+        // armor items
+        GL11.glPushMatrix()
+        GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
+        RenderHelper.enableGUIStandardItemLighting()
+
+
         RenderHelper.disableStandardItemLighting()
         GlStateManager.enableAlpha()
         GlStateManager.disableBlend()
@@ -950,14 +863,14 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             // adding system
             if (gotDamaged) {
                 for (j in 0..(generateAmountValue.get())) {
-                    var parSize = RandomUtils.nextFloat(minParticleSize.get(), maxParticleSize.get())
-                    var parDistX = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
-                    var parDistY = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
-                    var firstChar = RandomUtils.random(1, "${if (riceParticleCircle.get().equals("none", true)) "" else "c"}${if (riceParticleRect.get().equals("none", true)) "" else "r"}${if (riceParticleTriangle.get().equals("none", true)) "" else "t"}")
-                    var drawType = ShapeType.getTypeFromName(when (firstChar) {
-                        "c" -> "c_${riceParticleCircle.get().toLowerCase()}"
-                        "r" -> "r_${riceParticleRect.get().toLowerCase()}"
-                        else -> "t_${riceParticleTriangle.get().toLowerCase()}"
+                    val parSize = RandomUtils.nextFloat(minParticleSize.get(), maxParticleSize.get())
+                    val parDistX = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
+                    val parDistY = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
+                    val firstChar = RandomUtils.random(1, "${if (riceParticleCircle.get().equals("none", true)) "" else "c"}${if (riceParticleRect.get().equals("none", true)) "" else "r"}${if (riceParticleTriangle.get().equals("none", true)) "" else "t"}")
+                    val drawType = ShapeType.getTypeFromName(when (firstChar) {
+                        "c" -> "c_${riceParticleCircle.get().lowercase(Locale.getDefault())}"
+                        "r" -> "r_${riceParticleRect.get().lowercase(Locale.getDefault())}"
+                        else -> "t_${riceParticleTriangle.get().lowercase(Locale.getDefault())}"
                     }) ?: break
 
                     particleList.add(
@@ -1002,7 +915,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         font.drawString(info, 39F, 23F, getColor(-1).rgb)
 
         // gradient health bar
-        val barWidth = (length - 5F - maxHealthLength) * (easingHealth / entity.maxHealth.toFloat()).coerceIn(0F, 1F)
+        val barWidth = (length - 5F - maxHealthLength) * (easingHealth / entity.maxHealth).coerceIn(0F, 1F)
         Stencil.write(false)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glEnable(GL11.GL_BLEND)
@@ -1016,7 +929,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         GL11.glDisable(GL11.GL_BLEND)
         Stencil.erase(true)
-        when (colorModeValue.get().toLowerCase()) {
+        when (colorModeValue.get().lowercase(Locale.getDefault())) {
             "custom", "health" -> RenderUtils.drawRect(5F, 42F, length - maxHealthLength, 48F, barColor.rgb)
             else -> for (i in 0..(gradientLoopValue.get() - 1)) {
                 val barStart = i.toDouble() / gradientLoopValue.get().toDouble() * (length - 5F - maxHealthLength).toDouble()

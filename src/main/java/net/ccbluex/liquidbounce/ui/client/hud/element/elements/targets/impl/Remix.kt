@@ -36,7 +36,7 @@ class Remix(inst: Targets): TargetStyle("Remix", inst, false) {
 
         // armor bar
         RenderUtils.newDrawRect(40F, 36F, 141.5F, 38F, getColor(Color.blue.darker()).rgb)
-        RenderUtils.newDrawRect(40F, 36F, 40F + (entity.getTotalArmorValue().toFloat() / 20F).coerceIn(0F, 1F) * 101.5F, 38F, getColor(Color.blue).rgb)
+        RenderUtils.newDrawRect(40F, 36F, 40F + (entity.totalArmorValue.toFloat() / 20F).coerceIn(0F, 1F) * 101.5F, 38F, getColor(Color.blue).rgb)
 
         // armor item background
         RenderUtils.newDrawRect(40F, 16F, 58F, 34F, getColor(Color(25, 25, 25)).rgb)
