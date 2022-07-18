@@ -131,7 +131,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     val shieldIcon = ResourceLocation("fdpclient/shield.png")
 
-    var mainTarget: EntityPlayer? = null
     var animProgress = 0F
 
     var easingHealth = 0F
@@ -276,10 +275,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         barColor = ColorUtils.reAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
         bgColor = ColorUtils.reAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
 
-        if (target != null || !fadeValue.get())
-            mainTarget = target as EntityPlayer?
-        else if (animProgress >= 1F)
-            mainTarget = null
 
         val calcScaleX = animProgress * (4F / 2F)
         val calcScaleY = animProgress * (4F / 2F)
@@ -328,11 +323,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GlStateManager.resetColor()
 
         fun handleDamage(ent: EntityPlayer) {
-            if (mainTarget != null && ent == mainTarget)
+            if (target != null && ent == target)
                 (modeValue.get())
         }
 
         fun getFadeProgress() = animProgress
+
 
         when (modeValue.get().lowercase()) {
             "fdp" -> drawFDP(prevTarget!!)
@@ -1176,6 +1172,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
       fun handleBlur(entity: EntityLivingBase) {
+          val font = Fonts.font40
+          val name = "Name: ${entity.name}"
+          val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
+          val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
           val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
           GlStateManager.enableBlend()
           GlStateManager.disableTexture2D()
@@ -1188,6 +1188,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
 
     private fun handleShadow(entity: EntityPlayer) {
+        val font = Fonts.font40
+        val name = "Name: ${entity.name}"
+        val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
+        val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         RenderUtils.originalRoundedRect(0F, 0F, tWidth, 48F, 7F, Color(0, 0, 0, 255).rgb)
     }
