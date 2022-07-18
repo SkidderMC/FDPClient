@@ -14,10 +14,13 @@ import net.ccbluex.liquidbounce.value.ListValue
 
 class HypixelHop : SpeedMode("HypixelHop") {
   
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Safe", "Test"), "Safe")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "OldSafe", "OldTest"), "Stable")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0.15f, 0.01f, 0.5f)
   
     private var watchdogMultiplier = 1.0
+    private var oldMotionX = 0.0f
+    private var oldMotionZ = 0.0f
+    private var wasOnGround = false
   
     override fun onEnable() {
         super.onEnable()
@@ -28,6 +31,25 @@ class HypixelHop : SpeedMode("HypixelHop") {
     }
 
     override fun onUpdate() {
+        if (bypassMode.equals("Stable")) {
+            oldMotionX = mc.thePlayer.motionX
+            oldMotionZ = mc.thePlayer.motionZ
+
+            MovementUtils.strafe()
+
+            if (!mc.thePlayer.onGround) {
+                if (!wasOnGround) {
+                  mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX) / 4
+                  mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
+                  mc.thePlayer.motionX *= 0.99
+                  mc.thePlayer.motionZ *= 0.99
+                }
+                wasOnGround = false
+            } else {
+                wasOnGround = true
+            }
+        }
+
         if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
             when (bypassMode.get().lowercase()) {
                 "safe" -> {
