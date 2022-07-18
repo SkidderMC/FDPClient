@@ -49,8 +49,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
     private val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
-    private val chillFadingValue = BoolValue("Chill-FadingAnim", true).displayable { modeValue.get().equals("chill", true) }
-    private val chillHealthBarValue = BoolValue("Chill-Healthbar", true).displayable { modeValue.get().equals("chill", true) }
 
     private val fontValue = FontValue("Font", Fonts.font40)
 
@@ -139,8 +137,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     var easingHealth = 0F
     var barColor = Color(-1)
     var bgColor = Color(-1)
-
-    private var target: EntityPlayer? = null
 
     private var prevTarget: EntityLivingBase? = null
     private var displayPercent = 0f
@@ -821,40 +817,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val tWidth = (45F + Fonts.font40.getStringWidth(name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(health)))).coerceAtLeast(120F)
         val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
 
-        val floatX = renderX.toFloat()
-        val floatY = renderY.toFloat()
-
-        val calcScaleX = (progressChill * (4F / (tWidth / 2F)))
-        val calcScaleY = if (chillHealthBarValue.get()) (progressChill * (4F / 24F))
-        else (progressChill * (4F / 19F))
-        val calcTranslateX = floatX + tWidth / 2F * calcScaleX
-        val calcTranslateY = floatY + if (chillHealthBarValue.get()) (24F * (progressChill * (4F / 24F)))
-        else (19F * (progressChill * (4F / 19F)))
-
-
-        // translation/scaling
-        GL11.glScalef(1f, 1f, 1f)
-        GL11.glPopMatrix()
-
-        GL11.glPushMatrix()
-
-        if (chillFadingValue.get()) {
-            GL11.glTranslatef(
-                calcTranslateX, calcTranslateY, 0F)
-            GL11.glScalef(
-                1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-        } else {
-            GL11.glTranslated(renderX, renderY, 0.0)
-            GL11.glScalef(1F, 1F, 1F)
-        }
-
-        /*
-        some calculation
-        0.2 of 15 = 3 // 3/15 = 0.2
-        0.2 of 20 = 4 // 4/20 = 0.2
-        0.066 of 60 = 4 // 4/60 = 0.0(6)
-         */
-
         // background
         RenderUtils.drawRoundedRect(0F, 0F, tWidth, 48F, 7F, bgColor.rgb)
         GlStateManager.resetColor()
@@ -896,7 +858,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         else
             RenderUtils.drawRect(4F, 38F, 4F + (easingHealth / entity.maxHealth) * (tWidth - 8F), 44F, barColor.rgb)
         Stencil.dispose()
-
     }
 
     private fun drawRemix(entity: EntityLivingBase) {
@@ -1189,7 +1150,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     fun getFadeProgress() = animProgress
 
     fun handleDamage(ent: EntityPlayer) {
-        if (target != null && ent == target)
             gotDamaged = true
     }
 
@@ -1216,17 +1176,20 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
       fun handleBlur(entity: EntityLivingBase) {
-          val font = Fonts.font40
-          val name = "Name: ${entity.name}"
-          val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
-          val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
+          val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
+          GlStateManager.enableBlend()
+          GlStateManager.disableTexture2D()
+          GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+          RenderUtils.fastRoundedRect(0F, 0F, tWidth, 48F, 7F)
+          GlStateManager.enableTexture2D()
+          GlStateManager.disableBlend()
+    }
+
+    private fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    private fun handleShadow(entity: EntityPlayer) {
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        RenderUtils.fastRoundedRect(0F, 0F, tWidth, 48F, 7F)
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
+        RenderUtils.originalRoundedRect(0F, 0F, tWidth, 48F, 7F, Color(0, 0, 0, 255).rgb)
     }
 
     private fun getColorAtIndex(i: Int): Int {
