@@ -44,11 +44,13 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "FDP")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rice")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
     private val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
+    private val chillFadingValue = BoolValue("Chill-FadingAnim", true).displayable { modeValue.get().equals("chill", true) }
+    private val chillHealthBarValue = BoolValue("Chill-Healthbar", true).displayable { modeValue.get().equals("chill", true) }
 
     private val fontValue = FontValue("Font", Fonts.font40)
 
@@ -75,7 +77,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     private val arrisRoundedValue = BoolValue("ArrisRounded", true)
 
-    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Health"), "Custom")
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Health"), "Health")
     private val redValue = IntegerValue("Red", 252, 0, 255)
     private val greenValue = IntegerValue("Green", 96, 0, 255)
     private val blueValue = IntegerValue("Blue", 66, 0, 255)
@@ -813,6 +815,39 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val tWidth = (45F + Fonts.font40.getStringWidth(name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(health)))).coerceAtLeast(120F)
         val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
 
+        val floatX = renderX.toFloat()
+        val floatY = renderY.toFloat()
+
+        val calcScaleX = (progressChill * (4F / (tWidth / 2F)))
+        val calcScaleY = if (chillHealthBarValue.get()) (progressChill * (4F / 24F))
+        else (progressChill * (4F / 19F))
+        val calcTranslateX = floatX + tWidth / 2F * calcScaleX
+        val calcTranslateY = floatY + if (chillHealthBarValue.get()) (24F * (progressChill * (4F / 24F)))
+        else (19F * (progressChill * (4F / 19F)))
+
+        // translation/scaling
+        GL11.glScalef(1f, 1f, 1f)
+        GL11.glPopMatrix()
+
+        GL11.glPushMatrix()
+
+        if (chillFadingValue.get()) {
+            GL11.glTranslatef(
+                calcTranslateX, calcTranslateY, 0F)
+            GL11.glScalef(
+                1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+        } else {
+            GL11.glTranslated(renderX, renderY, 0.0)
+            GL11.glScalef(1F, 1F, 1F)
+        }
+
+        /*
+        some calculation
+        0.2 of 15 = 3 // 3/15 = 0.2
+        0.2 of 20 = 4 // 4/20 = 0.2
+        0.066 of 60 = 4 // 4/60 = 0.0(6)
+         */
+
         // background
         RenderUtils.drawRoundedRect(0F, 0F, tWidth, 48F, 7F, bgColor.rgb)
         GlStateManager.resetColor()
@@ -855,6 +890,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             RenderUtils.drawRect(4F, 38F, 4F + (easingHealth / entity.maxHealth) * (tWidth - 8F), 44F, barColor.rgb)
         Stencil.dispose()
     }
+
 
     private fun drawRemix(entity: EntityLivingBase) {
         updateAnim(entity.health)
