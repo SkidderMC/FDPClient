@@ -24,8 +24,8 @@ class Particle(var color: Color, var distX: Float, var distY: Float, var radius:
 
         if (alpha <= 0F) return
 
-        var reColored = Color(color.red / 255.0F, color.green / 255.0F, color.blue / 255.0F, alpha)
-        var easeOut = EaseUtils.easeOutQuart(progress).toFloat()
+        val reColored = Color(color.red / 255.0F, color.green / 255.0F, color.blue / 255.0F, alpha)
+        val easeOut = EaseUtils.easeOutQuart(progress).toFloat()
 
         if (canRotate && drawType != ShapeType.SOLID_CIRCLE && drawType != ShapeType.CIRCLE) {
             rotate += 10F * (1F - easeOut)

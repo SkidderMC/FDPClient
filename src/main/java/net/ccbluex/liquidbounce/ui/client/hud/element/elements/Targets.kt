@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.CharRenderer
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Particle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.ShapeType
 import net.ccbluex.liquidbounce.utils.render.Animation
@@ -19,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.AnimationUtils
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.*
@@ -47,10 +47,21 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
-    val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
-    val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
+    private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
+    private val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
+    private val chillFadingValue = BoolValue("Chill-FadingAnim", true).displayable { modeValue.get().equals("chill", true) }
+    private val chillHealthBarValue = BoolValue("Chill-Healthbar", true).displayable { modeValue.get().equals("chill", true) }
 
     private val fontValue = FontValue("Font", Fonts.font40)
+
+    val shadowValue = BoolValue("Shadow", false)
+    val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 40F).displayable { shadowValue.get() }
+    val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Custom", "Bar"), "Background").displayable { shadowValue.get() }
+
+    val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255).displayable { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
+    val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255).displayable { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
+    val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255).displayable { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
+
 
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
@@ -66,12 +77,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     private val arrisRoundedValue = BoolValue("ArrisRounded", true)
 
-    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Health"), "Custom")
-    val redValue = IntegerValue("Red", 252, 0, 255)
-    val greenValue = IntegerValue("Green", 96, 0, 255)
-    val blueValue = IntegerValue("Blue", 66, 0, 255)
-    val saturationValue = FloatValue("Saturation", 1F, 0F, 1F)
-    val brightnessValue = FloatValue("Brightness", 1F, 0F, 1F)
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Health"), "Custom")
+    private val redValue = IntegerValue("Red", 252, 0, 255)
+    private val greenValue = IntegerValue("Green", 96, 0, 255)
+    private val blueValue = IntegerValue("Blue", 66, 0, 255)
+    private val saturationValue = FloatValue("Saturation", 1F, 0F, 1F)
+    private val brightnessValue = FloatValue("Brightness", 1F, 0F, 1F)
 
     private val bgRedValue = IntegerValue("Background-Red", 0, 0, 255)
     private val bgGreenValue = IntegerValue("Background-Green", 0, 0, 255)
@@ -81,9 +92,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
     private val fadeValue = BoolValue("FadeAnim", false)
     private val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F)
-    val waveSecondValue = IntegerValue("Seconds", 2, 1, 10)
-
-    val resetBar = BoolValue("ResetBarWhenHiding", false)
+    private val waveSecondValue = IntegerValue("Seconds", 2, 1, 10)
 
     val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
     val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
@@ -122,6 +131,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
     }
 
+    val shieldIcon = ResourceLocation("fdpclient/shield.png")
+
     var mainTarget: EntityPlayer? = null
     var animProgress = 0F
 
@@ -129,17 +140,28 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     var barColor = Color(-1)
     var bgColor = Color(-1)
 
+    private var target: EntityPlayer? = null
+
     private var prevTarget: EntityLivingBase? = null
     private var displayPercent = 0f
     private var lastUpdate = System.currentTimeMillis()
 
-    val decimalFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
-    val decimalFormat2 = DecimalFormat("##0.0", DecimalFormatSymbols(Locale.ENGLISH))
+    private val decimalFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
+    private val decimalFormat2 = DecimalFormat("##0.0", DecimalFormatSymbols(Locale.ENGLISH))
+    private val decimalFormat3 = DecimalFormat("0.#", DecimalFormatSymbols(Locale.ENGLISH))
 
-    val shieldIcon = ResourceLocation("fdpclient/shield.png")
+    val shadowOpaque: Color
+        get() = ColorUtils.reAlpha(when (shadowColorMode.get().lowercase(Locale.getDefault())) {
+            "background" -> bgColor
+            "custom" -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get())
+            else -> barColor
+        }, 1F - animProgress)
 
     val particleList = mutableListOf<Particle>()
     private var gotDamaged = false
+
+    private var progress: Float = 0F
+    private var progressChill = 0F
 
     private var hpEaseAnimation: Animation? = null
     private var easingHP = 0f
@@ -235,6 +257,87 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             }
         }
 
+        val preBarColor = when (colorModeValue.get()) {
+            "Rainbow" -> Color(ColorUtils.hslRainbow(100 * rainbowSpeed.get()).rgb)
+            "Custom" -> Color(redValue.get(), greenValue.get(), blueValue.get())
+            "Sky" -> ColorUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
+            "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), 0, 100)
+            "Health" -> if (target != null) BlendUtils.getHealthColor(target.health, target.maxHealth) else Color.green
+            else -> ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())!!
+        }
+
+        progress += 0.0025F * RenderUtils.deltaTime * if (target != null) -1F else 1F
+        progressChill += 0.0075F * RenderUtils.deltaTime * if (target != null) -1F else 1F
+
+        val preBgColor = Color(bgRedValue.get(), bgGreenValue.get(), bgBlueValue.get(), bgAlphaValue.get())
+
+        if (fadeValue.get())
+            animProgress += (0.0075F * fadeSpeed.get() * RenderUtils.deltaTime)
+        else animProgress = 0F
+
+        animProgress = animProgress.coerceIn(0F, 1F)
+
+        barColor = ColorUtils.reAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
+        bgColor = ColorUtils.reAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
+
+        if (target != null || !fadeValue.get())
+            mainTarget = target as EntityPlayer?
+        else if (animProgress >= 1F)
+            mainTarget = null
+
+        val calcScaleX = animProgress * (4F / 2F)
+        val calcScaleY = animProgress * (4F / 2F)
+        val calcTranslateX =  2F * calcScaleX
+        val calcTranslateY = 2F * calcScaleY
+
+        if (shadowValue.get()) {
+            val floatX = renderX.toFloat()
+            val floatY = renderY.toFloat()
+
+            GL11.glTranslated(-renderX, -renderY, 0.0)
+            GL11.glPushMatrix()
+
+            ShadowUtils.shadow(shadowStrength.get(), {
+                GL11.glPushMatrix()
+                GL11.glTranslated(renderX, renderY, 0.0)
+                if (fadeValue.get()) {
+                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
+                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+                }
+                GL11.glPopMatrix()
+            }, {
+                GL11.glPushMatrix()
+                GL11.glTranslated(renderX, renderY, 0.0)
+                if (fadeValue.get()) {
+                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
+                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+                }
+                GL11.glPopMatrix()
+            })
+
+            GL11.glPopMatrix()
+            GL11.glTranslated(renderX, renderY, 0.0)
+        }
+
+
+        if (fadeValue.get()) {
+            GL11.glPushMatrix()
+            GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
+            GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+        }
+
+        if (fadeValue.get())
+            GL11.glPopMatrix()
+
+        GlStateManager.resetColor()
+
+        fun handleDamage(ent: EntityPlayer) {
+            if (mainTarget != null && ent == mainTarget)
+                (modeValue.get())
+        }
+
+        fun getFadeProgress() = animProgress
+
         when (modeValue.get().lowercase()) {
             "fdp" -> drawFDP(prevTarget!!)
             "novoline" -> drawNovo(prevTarget!!)
@@ -259,70 +362,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
 
         return getTBorder()
-
-        val preBarColor = when (colorModeValue.get()) {
-            "Rainbow" -> Color(ColorUtils.hslRainbow(100 * rainbowSpeed.get()).rgb)
-            "Custom" -> Color(redValue.get(), greenValue.get(), blueValue.get())
-            "Sky" -> ColorUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
-            "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), 0, 100)
-            else -> ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())!!
-        }
-
-        val preBgColor = Color(bgRedValue.get(), bgGreenValue.get(), bgBlueValue.get(), bgAlphaValue.get())
-
-        if (fadeValue.get())
-            animProgress += (0.0075F * fadeSpeed.get() * RenderUtils.deltaTime)
-        else animProgress = 0F
-
-        animProgress = animProgress.coerceIn(0F, 1F)
-
-        barColor = ColorUtils.reAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
-        bgColor = ColorUtils.reAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
-
-        if (fadeValue.get())
-            animProgress += (0.0075F * fadeSpeed.get() * RenderUtils.deltaTime)
-        else animProgress = 0F
-
-        animProgress = animProgress.coerceIn(0F, 1F)
-
-        barColor = ColorUtils.reAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
-        bgColor = ColorUtils.reAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
-
-        if (!fadeValue.get())
-            mainTarget
-        else if (animProgress >= 1F)
-            mainTarget = null
-
-        if (mainTarget == null) {
-            if (resetBar.get())
-                easingHealth = 0F
-            particleList.clear()
-        }
-
-        val calcScaleX = animProgress * (4F / 2F)
-        val calcScaleY = animProgress * (4F / 2F)
-        val calcTranslateX =  2F * calcScaleX
-        val calcTranslateY = 2F * calcScaleY
-
-        if (fadeValue.get()) {
-            GL11.glPushMatrix()
-            GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-            GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-        }
-
-        if (fadeValue.get())
-            GL11.glPopMatrix()
-
-        GlStateManager.resetColor()
-
-        fun handleDamage(ent: EntityPlayer) {
-            if (mainTarget != null && ent == mainTarget)
-                (modeValue.get())
-        }
-
-        fun getFadeProgress() = animProgress
-
-        GlStateManager.resetColor()
 
     }
 
@@ -782,6 +821,40 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val tWidth = (45F + Fonts.font40.getStringWidth(name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(health)))).coerceAtLeast(120F)
         val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
 
+        val floatX = renderX.toFloat()
+        val floatY = renderY.toFloat()
+
+        val calcScaleX = (progressChill * (4F / (tWidth / 2F)))
+        val calcScaleY = if (chillHealthBarValue.get()) (progressChill * (4F / 24F))
+        else (progressChill * (4F / 19F))
+        val calcTranslateX = floatX + tWidth / 2F * calcScaleX
+        val calcTranslateY = floatY + if (chillHealthBarValue.get()) (24F * (progressChill * (4F / 24F)))
+        else (19F * (progressChill * (4F / 19F)))
+
+
+        // translation/scaling
+        GL11.glScalef(1f, 1f, 1f)
+        GL11.glPopMatrix()
+
+        GL11.glPushMatrix()
+
+        if (chillFadingValue.get()) {
+            GL11.glTranslatef(
+                calcTranslateX, calcTranslateY, 0F)
+            GL11.glScalef(
+                1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+        } else {
+            GL11.glTranslated(renderX, renderY, 0.0)
+            GL11.glScalef(1F, 1F, 1F)
+        }
+
+        /*
+        some calculation
+        0.2 of 15 = 3 // 3/15 = 0.2
+        0.2 of 20 = 4 // 4/20 = 0.2
+        0.066 of 60 = 4 // 4/60 = 0.0(6)
+         */
+
         // background
         RenderUtils.drawRoundedRect(0F, 0F, tWidth, 48F, 7F, bgColor.rgb)
         GlStateManager.resetColor()
@@ -866,7 +939,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             // actual head
             drawHead(mc.netHandler.getPlayerInfo(entity.uniqueID).locationSkin, 5, 5, 32, 32, 1F - getFadeProgress())
 
-            val responseTime = mc.netHandler.getPlayerInfo(entity.uniqueID).responseTime.toInt()
+            val responseTime = mc.netHandler.getPlayerInfo(entity.uniqueID).responseTime
             val stringTime = "${responseTime.coerceAtLeast(0)}ms"
 
             var j = 0
@@ -995,7 +1068,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         Stencil.erase(true)
         when (colorModeValue.get().lowercase(Locale.getDefault())) {
             "custom", "health" -> RenderUtils.drawRect(5F, 42F, length - maxHealthLength, 48F, barColor.rgb)
-            else -> for (i in 0..(gradientLoopValue.get() - 1)) {
+            else -> for (i in 0 until gradientLoopValue.get()) {
                 val barStart = i.toDouble() / gradientLoopValue.get().toDouble() * (length - 5F - maxHealthLength).toDouble()
                 val barEnd = (i + 1).toDouble() / gradientLoopValue.get().toDouble() * (length - 5F - maxHealthLength).toDouble()
                 RenderUtils.drawGradientSideways(5.0 + barStart, 42.0, 5.0 + barEnd, 48.0, getColorAtIndex(i), getColorAtIndex(i + 1))
@@ -1007,19 +1080,67 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         font.drawString(healthName, 10F + barWidth, 41F, getColor(-1).rgb)
     }
 
-     fun handleDamage(entity: EntityPlayer) {
-        gotDamaged = true
-    }
+    private class CharRenderer(val small: Boolean) {
+        var moveY = FloatArray(20)
+        var moveX = FloatArray(20)
 
-    fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+        private val numberList = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".")
 
-    fun handleShadow(entity: EntityPlayer) {
-        val font = Fonts.font40
-        val name = "Name: ${entity.name}"
-        val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
-        val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
-        val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
-        RenderUtils.originalRoundedRect(0F, 0F, tWidth, 48F, 7F, Color(0, 0, 0, 255).rgb)
+        private val deFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
+
+        init {
+            for (i in 0..19) {
+                moveX[i] = 0F
+                moveY[i] = 0F
+            }
+        }
+
+        fun renderChar(number: Float, orgX: Float, orgY: Float, initX: Float, initY: Float, scaleX: Float, scaleY: Float, shadow: Boolean, fontSpeed: Float, color: Int): Float {
+            val reFormat = deFormat.format(number.toDouble()) // string
+            val fontRend = if (small) Fonts.font40 else Fonts.font40
+            val delta = RenderUtils.deltaTime
+            val scaledRes = ScaledResolution(mc)
+
+            var indexX = 0
+            var indexY = 0
+            var animX = 0F
+
+            val cutY = initY + fontRend.FONT_HEIGHT.toFloat() * (3F / 4F)
+
+            GL11.glEnable(3089)
+            RenderUtils.makeScissorBox(0F, orgY + initY - 4F * scaleY, scaledRes.scaledWidth.toFloat(), orgY + cutY - 4F * scaleY)
+            for (char in reFormat.toCharArray()) {
+                moveX[indexX] = AnimationUtils.animate(animX, moveX[indexX], fontSpeed * 0.025F * delta)
+                animX = moveX[indexX]
+
+                val pos = numberList.indexOf("$char")
+                val expectAnim = (fontRend.FONT_HEIGHT.toFloat() + 2F) * pos
+                val expectAnimMin = (fontRend.FONT_HEIGHT.toFloat() + 2F) * (pos - 2)
+                val expectAnimMax = (fontRend.FONT_HEIGHT.toFloat() + 2F) * (pos + 2)
+
+                if (pos >= 0) {
+                    moveY[indexY] = AnimationUtils.animate(expectAnim, moveY[indexY], fontSpeed * 0.02F * delta)
+
+                    GL11.glTranslatef(0F, initY - moveY[indexY], 0F)
+                    numberList.forEachIndexed { index, num ->
+                        if ((fontRend.FONT_HEIGHT.toFloat() + 2F) * index >= expectAnimMin && (fontRend.FONT_HEIGHT.toFloat() + 2F) * index <= expectAnimMax) {
+                            fontRend.drawString(num, initX + moveX[indexX], (fontRend.FONT_HEIGHT.toFloat() + 2F) * index, color, shadow)
+                        }
+                    }
+                    GL11.glTranslatef(0F, -initY + moveY[indexY], 0F)
+                } else {
+                    moveY[indexY] = 0F
+                    fontRend.drawString("$char", initX + moveX[indexX], initY, color, shadow)
+                }
+
+                animX += fontRend.getStringWidth("$char")
+                indexX++
+                indexY++
+            }
+            GL11.glDisable(3089)
+
+            return animX
+        }
     }
 
     fun drawHead(skin: ResourceLocation, x: Int = 2, y: Int = 2, width: Int, height: Int, alpha: Float = 1F) {
@@ -1066,6 +1187,11 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     fun getFadeProgress() = animProgress
+
+    fun handleDamage(ent: EntityPlayer) {
+        if (target != null && ent == target)
+            gotDamaged = true
+    }
 
     fun getTBorder(): Border? {
         return when (modeValue.get().lowercase()) {
