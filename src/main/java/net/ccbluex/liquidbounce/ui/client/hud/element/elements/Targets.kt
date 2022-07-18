@@ -47,6 +47,9 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
+    val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
+    val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
+
     private val fontValue = FontValue("Font", Fonts.font40)
 
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
@@ -58,16 +61,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
     private val switchAnimSpeedValue = IntegerValue("SwitchAnimSpeed", 20, 5, 40)
 
-    val showWithChatOpen = BoolValue("Show-ChatOpen", true)
-    val resetBar = BoolValue("ResetBarWhenHiding", false)
-
     val noAnimValue = BoolValue("No-Animation", false)
     val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 9F).displayable { noAnimValue.equals("No-Animation") }
 
     private val arrisRoundedValue = BoolValue("ArrisRounded", true)
-
-    val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
-    val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
 
     val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Health"), "Custom")
     val redValue = IntegerValue("Red", 252, 0, 255)
@@ -85,6 +82,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private val fadeValue = BoolValue("FadeAnim", false)
     private val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F)
     val waveSecondValue = IntegerValue("Seconds", 2, 1, 10)
+
+    val resetBar = BoolValue("ResetBarWhenHiding", false)
 
     val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
     val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
@@ -260,6 +259,71 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
 
         return getTBorder()
+
+        val preBarColor = when (colorModeValue.get()) {
+            "Rainbow" -> Color(ColorUtils.hslRainbow(100 * rainbowSpeed.get()).rgb)
+            "Custom" -> Color(redValue.get(), greenValue.get(), blueValue.get())
+            "Sky" -> ColorUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
+            "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), 0, 100)
+            else -> ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())!!
+        }
+
+        val preBgColor = Color(bgRedValue.get(), bgGreenValue.get(), bgBlueValue.get(), bgAlphaValue.get())
+
+        if (fadeValue.get())
+            animProgress += (0.0075F * fadeSpeed.get() * RenderUtils.deltaTime)
+        else animProgress = 0F
+
+        animProgress = animProgress.coerceIn(0F, 1F)
+
+        barColor = ColorUtils.reAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
+        bgColor = ColorUtils.reAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
+
+        if (fadeValue.get())
+            animProgress += (0.0075F * fadeSpeed.get() * RenderUtils.deltaTime)
+        else animProgress = 0F
+
+        animProgress = animProgress.coerceIn(0F, 1F)
+
+        barColor = ColorUtils.reAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
+        bgColor = ColorUtils.reAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
+
+        if (!fadeValue.get())
+            mainTarget
+        else if (animProgress >= 1F)
+            mainTarget = null
+
+        if (mainTarget == null) {
+            if (resetBar.get())
+                easingHealth = 0F
+            particleList.clear()
+        }
+
+        val calcScaleX = animProgress * (4F / 2F)
+        val calcScaleY = animProgress * (4F / 2F)
+        val calcTranslateX =  2F * calcScaleX
+        val calcTranslateY = 2F * calcScaleY
+
+        if (fadeValue.get()) {
+            GL11.glPushMatrix()
+            GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
+            GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+        }
+
+        if (fadeValue.get())
+            GL11.glPopMatrix()
+
+        GlStateManager.resetColor()
+
+        fun handleDamage(ent: EntityPlayer) {
+            if (mainTarget != null && ent == mainTarget)
+                (modeValue.get())
+        }
+
+        fun getFadeProgress() = animProgress
+
+        GlStateManager.resetColor()
+
     }
 
     private fun drawAstolfo(target: EntityLivingBase) {
@@ -943,13 +1007,17 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         font.drawString(healthName, 10F + barWidth, 41F, getColor(-1).rgb)
     }
 
-    fun handleDamage(entity: EntityPlayer) {
+     fun handleDamage(entity: EntityPlayer) {
         gotDamaged = true
     }
 
     fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
 
     fun handleShadow(entity: EntityPlayer) {
+        val font = Fonts.font40
+        val name = "Name: ${entity.name}"
+        val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
+        val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         RenderUtils.originalRoundedRect(0F, 0F, tWidth, 48F, 7F, Color(0, 0, 0, 255).rgb)
     }
@@ -1022,6 +1090,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
       fun handleBlur(entity: EntityLivingBase) {
+          val font = Fonts.font40
+          val name = "Name: ${entity.name}"
+          val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
+          val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
         val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
