@@ -18,8 +18,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0.15f, 0.01f, 0.5f)
   
     private var watchdogMultiplier = 1.0
-    private var oldMotionX = 0.0f
-    private var oldMotionZ = 0.0f
+    private var oldMotionX = 0.0
+    private var oldMotionZ = 0.0
     private var wasOnGround = false
   
     override fun onEnable() {
