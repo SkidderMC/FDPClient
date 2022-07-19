@@ -47,6 +47,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 wasOnGround = false
             } else {
                 wasOnGround = true
+                mc.thePlayer.jump()
+                mc.thePlayer.motionY = 0.41999998688697815
             }
         }
 
@@ -54,11 +56,13 @@ class HypixelHop : SpeedMode("HypixelHop") {
             when (bypassMode.get().lowercase()) {
                 "safe" -> {
                     watchdogMultiplier = 1.45
+                    mc.thePlayer.jump()
                     mc.thePlayer.motionY = 0.41999998688697815
                 }
                 
                 "test" -> {
                     watchdogMultiplier = 1.2
+                    mc.thePlayer.jump()
                     mc.thePlayer.motionY = 0.39999998688697815
                 }
             }
