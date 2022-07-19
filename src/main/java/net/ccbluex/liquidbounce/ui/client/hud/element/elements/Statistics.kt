@@ -50,7 +50,9 @@ class Statistics(
 
         // Play time
         FontLoaders.C16.drawString("Play Time", 5.0F, 10.0F, Color(255,255,255,textAlpha.get()).rgb)
-        FontLoaders.C16.drawString(SessionUtils.getFormatSessionTime(), 135F - FontLoaders.C16.getStringWidth(SessionUtils.getFormatSessionTime()), 10.0f, Color(255,255,255,180).rgb)
+        if (!mc.isSingleplayer) FontLoaders.C16.drawString(SessionUtils.getFormatSessionTime(), 135F - FontLoaders.C16.getStringWidth(SessionUtils.getFormatSessionTime()), 10.0f, Color(255,255,255,180).rgb)
+        else FontLoaders.C16.drawString("Singleplayer", 135F - FontLoaders.C16.getStringWidth(SessionUtils.getFormatSessionTime()), 10.0f, Color(255,255,255,180).rgb)
+
 
         // Kills
         FontLoaders.C16.drawString("Kills", 5.0F, 20.0F, Color(255,255,255,textAlpha.get()).rgb)
