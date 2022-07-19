@@ -14,7 +14,7 @@ class IntaveHop : SpeedMode("IntaveHop") {
   
     override fun onPreMotion() {
         if (mc.thePlayer.onGround) {
-            MovementUtils.strafe(0.588)
+            MovementUtils.strafe(0.588f)
             mc.thePlayer.jump()
             jumpTicks = 0
         } else if (jumpTicks == 4) {
