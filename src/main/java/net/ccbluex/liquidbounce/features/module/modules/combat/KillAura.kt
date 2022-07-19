@@ -336,7 +336,7 @@ class KillAura : Module() {
             runAttackLoop()
         }
         
-        if (autoBlockValue.equals("Range") && event.eventState = EventState.POST && autoBlockPacketValue.equals("Hypixel") {
+        if (autoBlockValue.equals("Range") && event.eventState = EventState.POST && autoBlockPacketValue.equals("Hypixel")) {
              if (mc.thePlayer.swingProgressInt == 1) {
                 mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             } else if (mc.thePlayer.swingProgressInt == 2) {
