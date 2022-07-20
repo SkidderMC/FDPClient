@@ -108,6 +108,7 @@ class KillAura : Module() {
     private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 15f)
 
     private val blinkCheck = BoolValue("BlinkCheck", true)
+    private val noScaffValue = BoolValue("NoScaffold", true)
 
     // Modes
     private val priorityValue = ListValue(
@@ -234,8 +235,6 @@ class KillAura : Module() {
     private val limitedMultiTargetsValue =
         IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
 
-    // idk
-    private val noScaffValue = BoolValue("NoScaffold", true)
 
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "None"), "FDP")
