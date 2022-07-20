@@ -18,8 +18,11 @@ class CustomSpeed : SpeedMode("Custom") {
     private val addYMotionValue = FloatValue("CustomAddYMotion", 0f, 0f, 2f)
     private val yValue = FloatValue("CustomY", 0f, 0f, 4f)
     private val upTimerValue = FloatValue("CustomUpTimer", 1f, 0.1f, 2f)
+    private val jumpTimerValue = FloatValue("CustomJumpTimer", 1.25f, 0.1f, 2f)
     private val downTimerValue = FloatValue("CustomDownTimer", 1f, 0.1f, 2f)
-    private val strafeValue = ListValue("CustomStrafe", arrayOf("Strafe", "Boost", "Plus", "PlusOnlyUp", "Non-Strafe"), "Boost")
+    private val strafeValue = ListValue("CustomStrafe", arrayOf("Strafe", "Boost", "Plus", "PlusOnlyUp", "PlusOnlyDown", "Non-Strafe"), "Boost")
+    private val plusMode = ListValue("PlusBoostMode", arrayOf("Add", "Multiply"), "Add").displayable { strafeValue.equals("Plus") || strafeValue.equals("PlusOnlyUp") || strafeValue.equals("PlusOnlyDown") }
+    private val plusMultiply = FloatValue("PlusMultiplyAmount", 1.1f, 1f, 2f).displayable { plusMode.equals("Multiply") && (strafeValue.equals("Plus") || strafeValue.equals("PlusOnlyUp") || strafeValue.equals("PlusOnlyDown")) }
     private val groundStay = IntegerValue("CustomGroundStay", 0, 0, 10)
     private val groundResetXZValue = BoolValue("CustomGroundResetXZ", false)
     private val resetXZValue = BoolValue("CustomResetXZ", false)
@@ -35,6 +38,7 @@ class CustomSpeed : SpeedMode("Custom") {
             when {
                 mc.thePlayer.onGround -> {
                     if (groundTick >= groundStay.get()) {
+                        mc.timer.timerSpeed = jumpTimerValue.get()
                         if (doLaunchSpeedValue.get()) {
                             MovementUtils.strafe(launchSpeedValue.get())
                         }
@@ -51,12 +55,42 @@ class CustomSpeed : SpeedMode("Custom") {
                     groundTick = 0
                     when (strafeValue.get().lowercase()) {
                         "strafe" -> MovementUtils.strafe(speedValue.get())
+                        "non-strafe" -> MovementUtils.strafe()
                         "boost" -> MovementUtils.strafe()
-                        "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
-                        "plusonlyup" -> if (mc.thePlayer.motionY> 0) {
-                            MovementUtils.move(speedValue.get() * 0.1f)
-                        } else {
-                            MovementUtils.strafe()
+                        "plus" -> {
+                            when (plusMode.get().lowercase()) {
+                                "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
+                                "multiply" -> { 
+                                    mc.thePlayer.motionX *= plusMultiply.get()
+                                    mc.thePlayer.motionZ *= plusMultiply.get()
+                                }
+                            }
+                        }
+                        "plusonlyup" -> { 
+                            if (mc.thePlayer.motionY > 0) {
+                                when (plusMode.get().lowercase()) {
+                                    "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
+                                    "multiply" -> { 
+                                        mc.thePlayer.motionX *= plusMultiply.get()
+                                        mc.thePlayer.motionZ *= plusMultiply.get()
+                                    }
+                                }
+                            } else {
+                                MovementUtils.strafe()
+                            }
+                        }
+                        "plusonlydown" -> {
+                            if (mc.thePlayer.motionY < 0) {
+                                when (plusMode.get().lowercase()) {
+                                    "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
+                                    "multiply" -> { 
+                                        mc.thePlayer.motionX *= plusMultiply.get()
+                                        mc.thePlayer.motionZ *= plusMultiply.get()
+                                    }
+                                }
+                            } else {
+                                MovementUtils.strafe()
+                            }
                         }
                     }
                     mc.thePlayer.motionY += addYMotionValue.get() * 0.03
