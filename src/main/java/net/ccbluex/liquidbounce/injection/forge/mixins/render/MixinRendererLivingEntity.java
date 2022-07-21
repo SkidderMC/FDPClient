@@ -7,6 +7,10 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.*;
+import net.ccbluex.liquidbounce.features.module.modules.render.ESP;
+import net.ccbluex.liquidbounce.features.module.modules.render.NameTags;
+import net.ccbluex.liquidbounce.features.module.modules.render.NoRender;
+import net.ccbluex.liquidbounce.features.module.modules.render.TrueSight;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.MobsUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -41,11 +45,13 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
         final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
 
+        assert noRender != null;
         if (noRender.getState() && noRender.shouldStopRender(entity)) {
             callbackInfo.cancel();
             return;
         }
 
+        assert chams != null;
         if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || MobsUtils.isSelected(entity, false))) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
             GL11.glPolygonOffset(1.0F, -1000000F);
@@ -57,6 +63,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
         final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
 
+        assert chams != null;
         if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || MobsUtils.isSelected(entity, false))
                 && !(noRender.getState() && noRender.shouldStopRender(entity))) {
             GL11.glPolygonOffset(1.0F, 1000000F);
@@ -64,7 +71,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         }
     }
 
-    @Inject(method = "canRenderName", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "canRenderName*", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void canRenderName(T entity, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         if ((LiquidBounce.moduleManager.getModule(NameTags.class).getState() && EntityUtils.INSTANCE.isSelected(entity, false)))
             callbackInfoReturnable.setReturnValue(false);

@@ -65,7 +65,7 @@ abstract class Value<T>(val name: String, var value: T) {
         return value?.equals(other) ?: false
     }
 
-    open fun contains(text: String/*, ignoreCase: Boolean*/): Boolean {
+    fun contains(text: String/*, ignoreCase: Boolean*/): Boolean {
         return if (value is String) {
             (value as String).contains(text, true)
         } else {
