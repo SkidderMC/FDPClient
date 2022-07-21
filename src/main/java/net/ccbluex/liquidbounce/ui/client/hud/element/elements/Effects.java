@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element;
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.realpha;
-import net.ccbluex.liquidbounce.utils.RenderU;
 import net.ccbluex.liquidbounce.utils.render.Colors;
 import net.ccbluex.liquidbounce.utils.render.PotionData;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -64,7 +63,7 @@ public class Effects extends Element {
             final int position = Math.round(potionData.translate.getY() + 5);
             state = Math.max(state, 2.0F);
             potionData.translate.interpolate(0, y, 0.1);
-            potionData.animationX = (float) RenderU.getAnimationState(potionData.getAnimationX(), 1.2F * state, Math.max(10.0F, Math.abs(potionData.animationX - 1.2F * state) * 15.0F) * 0.3F);
+            potionData.animationX = (float) getAnimationState(potionData.getAnimationX(), 1.2F * state, Math.max(10.0F, Math.abs(potionData.animationX - 1.2F * state) * 15.0F) * 0.3F);
 
 //            System.out.println(potionData.translate.getY());
             RenderUtils.drawRect(0, potionData.translate.getY(), 120, potionData.translate.getY() + 30F, realpha.reAlpha(Colors.GREY.c, 0.1F));
@@ -106,6 +105,22 @@ public class Effects extends Element {
             }
 
         return stringBuilder.toString();
+    }
+    
+    private double getAnimationState(double animation, double finalState, double speed) {
+        float add = (float) (0.01 * speed);
+        if (animation < finalState) {
+            if (animation + add < finalState)
+                animation += add;
+            else
+                animation = finalState;
+        } else {
+            if (animation - add > finalState)
+                animation -= add;
+            else
+                animation = finalState;
+        }
+        return animation;
     }
 
     @Override

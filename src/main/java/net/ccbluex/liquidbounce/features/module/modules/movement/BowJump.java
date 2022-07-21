@@ -52,7 +52,9 @@ public class BowJump extends Module {
         lastPlayerTick = -1;
         lastSlot = mc.thePlayer.inventory.currentItem;
 
-        MovementUtils.strafe(0);
+        MovementUtils.INSTANCE.strafe(0.0f);
+        mc.thePlayer.onGround = false;
+        mc.thePlayer.jumpMovementFactor = 0.0f;
     }
 
     @EventTarget
@@ -112,7 +114,7 @@ public class BowJump extends Module {
                 bowState = 3;
             break;
         case 3:
-            MovementUtils.strafe(boostValue.get());
+            MovementUtils.INSTANCE.strafe(boostValue.get());
             mc.thePlayer.motionY = heightValue.get();
             bowState = 4;
             lastPlayerTick = mc.thePlayer.ticksExisted;

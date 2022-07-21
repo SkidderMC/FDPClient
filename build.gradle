@@ -14,6 +14,7 @@ repositories {
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
     maven { url = "https://repo.getfdp.today/" }
+    maven { url = "https://lss233.littleservice.cn/repositories/minecraft/" }
 }
 
 version = "4.3.0"

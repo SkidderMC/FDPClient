@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.files.animations.A
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.files.animations.impl.DecelerateAnimation;
 import net.ccbluex.liquidbounce.utils.math.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.utils.render.ESPUtil;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.ShaderUtil;
 import net.ccbluex.liquidbounce.value.BoolValue;
@@ -59,10 +58,16 @@ public class GlowESP extends Module {
     public Framebuffer outlineFrameBuffer;
     public Framebuffer glowFrameBuffer;
     private final Frustum frustum = new Frustum();
+    private final Frustum frustum2 = new Frustum();
 
     private final List<Entity> entities = new ArrayList<>();
 
     public static Animation fadeIn;
+    
+    private boolean isInView(Entity ent) {
+        frustum2.setPosition(mc.getRenderViewEntity().posX, mc.getRenderViewEntity().posY, mc.getRenderViewEntity().posZ);
+        return frustum2.isBoundingBoxInFrustum(ent.getEntityBoundingBox()) || ent.ignoreFrustumCheck;
+    }
 
     @Override
     public void onEnable() {
@@ -192,7 +197,7 @@ public class GlowESP extends Module {
     public void collectEntities() {
         entities.clear();
         for (Entity entity : mc.theWorld.getLoadedEntityList()) {
-            if (!ESPUtil.isInView(entity)) continue;
+            if (!isInView(entity)) continue;
             if (entity == mc.thePlayer && mc.gameSettings.thirdPersonView == 0) continue;
             if (entity instanceof EntityAnimal && Animals.get()) {
                 entities.add(entity);
