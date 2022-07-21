@@ -36,7 +36,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Shadow
     protected ModelBase mainModel;
 
-    @Inject(method = "doRender", at = @At("HEAD"))
+    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
         final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
@@ -46,17 +46,19 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             return;
         }
 
-        if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && EntityUtils.INSTANCE.isSelected(entity, false)) {
+        if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || MobsUtils.isSelected(entity, false))) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
             GL11.glPolygonOffset(1.0F, -1000000F);
         }
     }
 
-    @Inject(method = "doRender", at = @At("RETURN"))
+    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
+        final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
 
-        if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && EntityUtils.INSTANCE.isSelected(entity, false)) {
+        if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || MobsUtils.isSelected(entity, false))
+                && !(noRender.getState() && noRender.shouldStopRender(entity))) {
             GL11.glPolygonOffset(1.0F, 1000000F);
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
         }
@@ -70,6 +72,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
     /**
      * @author CCBlueX
+     * @reason
      */
     @Overwrite
     protected <T extends EntityLivingBase> void renderModel(T entitylivingbaseIn, float p_77036_2_, float p_77036_3_, float p_77036_4_, float p_77036_5_, float p_77036_6_, float scaleFactor) {

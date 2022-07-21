@@ -44,12 +44,11 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rice")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rice")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
     private val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
-    private val chillFadingValue = BoolValue("Chill-FadingAnim", true).displayable { modeValue.get().equals("chill", true) }
     private val chillHealthBarValue = BoolValue("Chill-Healthbar", true).displayable { modeValue.get().equals("chill", true) }
 
     private val fontValue = FontValue("Font", Fonts.font40)
@@ -353,6 +352,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "chill" -> drawChill(prevTarget!!)
             "remix" -> drawRemix(prevTarget!!)
             "rice" -> drawRice(prevTarget!!)
+            "slowly" -> drawSlowly(prevTarget!!)
         }
 
         return getTBorder()
@@ -831,16 +831,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
 
-        if (chillFadingValue.get()) {
-            GL11.glTranslatef(
-                calcTranslateX, calcTranslateY, 0F)
-            GL11.glScalef(
-                1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-        } else {
-            GL11.glTranslated(renderX, renderY, 0.0)
-            GL11.glScalef(1F, 1F, 1F)
-        }
-
         /*
         some calculation
         0.2 of 15 = 3 // 3/15 = 0.2
@@ -1073,6 +1063,25 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         font.drawString(healthName, 10F + barWidth, 41F, getColor(-1).rgb)
     }
 
+    private fun drawSlowly(entity: EntityLivingBase) {
+        val font = Fonts.minecraftFont
+        val healthString = "${decimalFormat2.format(entity.health)} ❤"
+        val length = 60.coerceAtLeast(font.getStringWidth(entity.name)).coerceAtLeast(font.getStringWidth(healthString)).toFloat() + 10F
+
+        updateAnim(entity.health)
+
+        RenderUtils.drawRect(0F, 0F, 32F + length, 36F, bgColor.rgb)
+
+        if (mc.netHandler.getPlayerInfo(entity.uniqueID) != null)
+            drawHead(mc.netHandler.getPlayerInfo(entity.uniqueID).locationSkin, 1, 1, 30, 30, 1F - getFadeProgress())
+
+        font.drawStringWithShadow(entity.name, 33F, 2F, getColor(-1).rgb)
+        font.drawStringWithShadow(healthString, length + 31F - font.getStringWidth(healthString).toFloat(), 22F, barColor.rgb)
+
+        RenderUtils.drawRect(0F, 32F, (easingHealth / entity.maxHealth.toFloat()).coerceIn(0F, entity.maxHealth.toFloat()) * (length + 32F), 36F, barColor.rgb)
+
+    }
+
     private class CharRenderer(val small: Boolean) {
         var moveY = FloatArray(20)
         var moveX = FloatArray(20)
@@ -1203,6 +1212,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "chill" -> Border(0F, 0F, 120F, 48F)
             "remix" -> Border(0F, 0F, 146F, 49F)
             "rice" -> Border(0F, 0F, 135F, 55F)
+            "slowly" -> Border(0F, 0F, 102F, 36F)
             else -> null
         }
     }

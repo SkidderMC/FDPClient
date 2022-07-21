@@ -39,6 +39,15 @@ public class Fonts {
     @FontDetails(fontName = "Tahoma Bold", fontSize = 35)
     public static GameFontRenderer fontTahoma;
 
+    @FontDetails(fontName = "Roboto Medium", fontSize = 24)
+    public static GameFontRenderer fontTiny;
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 52)
+    public static GameFontRenderer fontLarge;
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 30)
+    public static GameFontRenderer fontSmall;
+
     public static TTFFontRenderer fontVerdana;
 
     private static final List<GameFontRenderer> CUSTOM_FONT_RENDERERS = new ArrayList<>();

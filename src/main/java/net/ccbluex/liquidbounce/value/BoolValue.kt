@@ -6,7 +6,9 @@ import com.google.gson.JsonPrimitive
 /**
  * Bool value represents a value with a boolean
  */
-open class BoolValue(name: String, value: Boolean) : Value<Boolean>(name, value) {
+open class BoolValue(name: String, value: Boolean, displayable: () -> Boolean) : Value<Boolean>(name, value) {
+
+    constructor(name: String, value: Boolean): this(name, value, { true } )
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
