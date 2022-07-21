@@ -11,8 +11,8 @@ import kotlin.math.*
 
 class MatrixBoost : FlyMode("MatrixBoost") {
     private val speed = FloatValue("${valuePrefix}Speed", 2.0f, 1.0f, 3.0f)
-    private val jumpTimer = FloatValue("${valuePrefix}JumpTimer, 0.1f, 0.1f, 2f)
-    private val boostTimer = FloatValue("${valuePrefix}BoostTimer, 1f, 0.5f, 3f)
+    private val jumpTimer = FloatValue("${valuePrefix}JumpTimer", 0.1f, 0.1f, 2f)
+    private val boostTimer = FloatValue("${valuePrefix}BoostTimer", 1f, 0.5f, 3f)
     private var boostMotion = 0
 
     override fun onEnable() {
