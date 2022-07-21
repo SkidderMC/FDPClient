@@ -504,6 +504,54 @@ public final class RenderUtils extends MinecraftInstance {
         resetCaps();
     }
 
+    public static void drawFilledCircle(double x, double y, double r, int c, int id) {
+        float f = (float) (c >> 24 & 0xff) / 255F;
+        float f1 = (float) (c >> 16 & 0xff) / 255F;
+        float f2 = (float) (c >> 8 & 0xff) / 255F;
+        float f3 = (float) (c & 0xff) / 255F;
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glBegin(GL11.GL_POLYGON);
+        if (id == 1) {
+            GL11.glVertex2d(x, y);
+            for (int i = 0; i <= 90; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2d(x - x2, y - y2);
+            }
+        } else if (id == 2) {
+            GL11.glVertex2d(x, y);
+            for (int i = 90; i <= 180; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2d(x - x2, y - y2);
+            }
+        } else if (id == 3) {
+            GL11.glVertex2d(x, y);
+            for (int i = 270; i <= 360; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2d(x - x2, y - y2);
+            }
+        } else if (id == 4) {
+            GL11.glVertex2d(x, y);
+            for (int i = 180; i <= 270; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2d(x - x2, y - y2);
+            }
+        } else {
+            for (int i = 0; i <= 360; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2f((float) (x - x2), (float) (y - y2));
+            }
+        }
+        GL11.glEnd();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
+    }
     public static void renderParticles(final List<Particle> particles) {
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -1213,6 +1261,48 @@ public final class RenderUtils extends MinecraftInstance {
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
     }
+    public static void drawImage(ResourceLocation image, int x, int y, int width, int height, float alpha) {
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glDepthMask(false);
+        OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        glColor4f(1.0F, 1.0F, 1.0F, alpha);
+        mc.getTextureManager().bindTexture(image);
+        Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+    }
+
+    public static void drawImage2(ResourceLocation image, float x, float y, int width, int height) {
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glDepthMask(false);
+        OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        glTranslatef(x, y, x);
+        mc.getTextureManager().bindTexture(image);
+        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, width, height, width, height);
+        glTranslatef(-x, -y, -x);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+    }
+
+    public static void drawImage3(ResourceLocation image, float x, float y, int width, int height, float r, float g, float b, float al) {
+        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glDepthMask(false);
+        OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        glColor4f(r, g, b, al);
+        glTranslatef(x, y, x);
+        mc.getTextureManager().bindTexture(image);
+        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, width, height, width, height);
+        glTranslatef(-x, -y, -x);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
+    }
 
     public static void drawRectBasedBorder(float x, float y, float x2, float y2, float width, int color1) {
         drawRect(x - width / 2F, y - width / 2F, x2 + width / 2F, y + width / 2F, color1);
@@ -1864,6 +1954,16 @@ public final class RenderUtils extends MinecraftInstance {
         glEnd();
 
         glPopAttrib();
+    }
+
+    public static void drawLine(final float x, final float y, final float x1, final float y1, final float width) {
+        glDisable(GL_TEXTURE_2D);
+        glLineWidth(width);
+        glBegin(GL_LINES);
+        glVertex2f(x, y);
+        glVertex2f(x1, y1);
+        glEnd();
+        glEnable(GL_TEXTURE_2D);
     }
 
     public static void drawLine(final double x, final double y, final double x1, final double y1, final float width) {

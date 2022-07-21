@@ -22,9 +22,10 @@ class Chams : Module() {
     val chestsValue = BoolValue("Chests", true)
     val itemsValue = BoolValue("Items", true)
 
-    val legacyMode = BoolValue("Legacy-Mode", false)
+    val legacyMode = BoolValue("Legacy-Mode", true)
     val texturedValue = BoolValue("Textured", true)
     val colorModeValue = ListValue("Color", arrayOf("Custom", "Slowly", "AnotherRainbow"), "Custom")
+    val localPlayerValue = BoolValue("LocalPlayer", true)
     val behindColorModeValue = ListValue("Behind-Color", arrayOf("Same", "Opposite", "Red"), "Same")
     val colorRainbowValue = BoolValue("Rainbow", false)
     val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { !colorRainbowValue.get() }

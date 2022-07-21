@@ -42,6 +42,7 @@ class NameTags : Module() {
     private val clearNamesValue = BoolValue("ClearNames", true)
     private val fontValue = FontValue("Font", Fonts.font40)
     private val borderValue = BoolValue("Border", true)
+    val localValue = BoolValue("LocalPlayer", true)
     private val fontShadowValue = BoolValue("Shadow", true)
     private val hackerValue = BoolValue("Hacker", true)
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }

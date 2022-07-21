@@ -8,7 +8,10 @@ import net.minecraft.client.gui.FontRenderer
 /**
  * Font value represents a value with a font
  */
-class FontValue(valueName: String, value: FontRenderer) : Value<FontRenderer>(valueName, value) {
+class FontValue(valueName: String, value: FontRenderer) : Value<FontRenderer>(
+    valueName,
+    value
+) {
     override fun toJson(): JsonElement {
         val fontDetails = Fonts.getFontDetails(value)
         val valueObject = JsonObject()

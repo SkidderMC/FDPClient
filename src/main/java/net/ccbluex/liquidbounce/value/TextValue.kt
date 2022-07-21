@@ -6,7 +6,7 @@ import com.google.gson.JsonPrimitive
 /**
  * Text value represents a value with a string
  */
-open class TextValue(name: String, value: String) : Value<String>(name, value) {
+open class TextValue(name: String, value: String, canDisplay: () -> Boolean) : Value<String>(name, value) {
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
