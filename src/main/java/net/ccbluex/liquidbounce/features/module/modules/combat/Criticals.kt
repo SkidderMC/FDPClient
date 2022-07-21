@@ -25,7 +25,7 @@ class Criticals : Module() {
     private val mode: CriticalMode
         get() = modes.find { modeValue.equals(it.modeName) } ?: throw NullPointerException() // this should not happen
 
-    val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "NCP") {
+    val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "Packet") {
         override fun onChange(oldValue: String, newValue: String) {
             if (state) onDisable()
         }

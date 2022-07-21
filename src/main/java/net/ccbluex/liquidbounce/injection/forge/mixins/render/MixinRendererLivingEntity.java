@@ -43,13 +43,6 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
-        final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
-
-        assert noRender != null;
-        if (noRender.getState() && noRender.shouldStopRender(entity)) {
-            callbackInfo.cancel();
-            return;
-        }
 
         assert chams != null;
         if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || MobsUtils.isSelected(entity, false))) {
@@ -194,67 +187,37 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             }
         }
 
-            final ESP esp = LiquidBounce.moduleManager.getModule(ESP.class);
-            if(esp.getState() && EntityUtils.INSTANCE.isSelected(entitylivingbaseIn, false)) {
-                Minecraft mc = Minecraft.getMinecraft();
-                boolean fancyGraphics = mc.gameSettings.fancyGraphics;
-                mc.gameSettings.fancyGraphics = false;
+        final ESP esp = LiquidBounce.moduleManager.getModule(ESP.class);
+        if(esp.getState() && EntityUtils.INSTANCE.isSelected(entitylivingbaseIn, false)) {
+            Minecraft mc = Minecraft.getMinecraft();
+            boolean fancyGraphics = mc.gameSettings.fancyGraphics;
+            mc.gameSettings.fancyGraphics = false;
 
-                float gamma = mc.gameSettings.gammaSetting;
-                mc.gameSettings.gammaSetting = 100000F;
+            float gamma = mc.gameSettings.gammaSetting;
+            mc.gameSettings.gammaSetting = 100000F;
 
-                if (esp.getModeValue().equals("wireframe")) {
-                    GL11.glPushMatrix();
-                    GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-                    GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
-                    GL11.glDisable(GL11.GL_LIGHTING);
-                    GL11.glDisable(GL11.GL_DEPTH_TEST);
-                    GL11.glEnable(GL11.GL_LINE_SMOOTH);
-                    GL11.glEnable(GL11.GL_BLEND);
-                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                    RenderUtils.glColor(esp.getColor(entitylivingbaseIn));
-                    GL11.glLineWidth(esp.getWireframeWidthValue().get());
-                    this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
-                    GL11.glPopAttrib();
-                    GL11.glPopMatrix();
-                }
-
-                mc.gameSettings.fancyGraphics = fancyGraphics;
-                mc.gameSettings.gammaSetting = gamma;
-            }
-
-            this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
-
-            if (chams.getState() && chams.getTargetsValue().get() && EntityUtils.INSTANCE.isSelected(entitylivingbaseIn, false)) {
+            if (esp.getModeValue().equals("wireframe")) {
                 GL11.glPushMatrix();
-                GL11.glPushAttrib(1048575);
-                GL11.glDisable(2929);
-                GL11.glDisable(3553);
-                GL11.glEnable(3042);
-                GL11.glBlendFunc(770, 771);
-                GL11.glDisable(2896);
-                GL11.glPolygonMode(1032, 6914);
-                chams.setColor();
-
+                GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+                GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+                GL11.glDisable(GL11.GL_TEXTURE_2D);
+                GL11.glDisable(GL11.GL_LIGHTING);
+                GL11.glDisable(GL11.GL_DEPTH_TEST);
+                GL11.glEnable(GL11.GL_LINE_SMOOTH);
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                RenderUtils.glColor(esp.getColor(entitylivingbaseIn));
+                GL11.glLineWidth(esp.getWireframeWidthValue().get());
                 this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
-
-                GL11.glEnable(2896);
-                GL11.glDisable(3042);
-                GL11.glEnable(3553);
-                GL11.glEnable(2929);
-                GL11.glColor3d(1.0, 1.0, 1.0);
                 GL11.glPopAttrib();
                 GL11.glPopMatrix();
             }
 
-            if(semiVisible) {
-                GlStateManager.disableBlend();
-                GlStateManager.alphaFunc(516, 0.1F);
-                GlStateManager.popMatrix();
-                GlStateManager.depthMask(true);
-            }
+            mc.gameSettings.fancyGraphics = fancyGraphics;
+            mc.gameSettings.gammaSetting = gamma;
         }
+        this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+    }
 
     @Redirect(method={"renderName(Lnet/minecraft/entity/EntityLivingBase;DDD)V"}, at=@At(value="FIELD", target="Lnet/minecraft/client/renderer/entity/RenderManager;playerViewX:F"))
     private float renderName(RenderManager renderManager) {
