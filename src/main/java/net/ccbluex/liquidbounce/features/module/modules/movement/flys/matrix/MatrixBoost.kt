@@ -11,6 +11,8 @@ import kotlin.math.*
 
 class MatrixBoost : FlyMode("MatrixBoost") {
     private val speed = FloatValue("${valuePrefix}Speed", 2.0f, 1.0f, 3.0f)
+    private val jumpTimer = FloatValue("${valuePrefix}JumpTimer, 0.1f, 0.1f, 2f)
+    private val boostTimer = FloatValue("${valuePrefix}BoostTimer, 1f, 0.5f, 3f)
     private var boostMotion = 0
 
     override fun onEnable() {
@@ -37,7 +39,7 @@ class MatrixBoost : FlyMode("MatrixBoost") {
                 )
             )
             boostMotion = 1
-            mc.timer.timerSpeed = 0.1F
+            mc.timer.timerSpeed = jumpTimer.get()
         } else if (boostMotion == 2) {
             MovementUtils.strafe(speed.get())
             mc.thePlayer.motionY = 0.8
@@ -45,7 +47,7 @@ class MatrixBoost : FlyMode("MatrixBoost") {
         } else if (boostMotion < 5) {
             boostMotion++
         } else if (boostMotion >= 5) {
-            mc.timer.timerSpeed = 1f
+            mc.timer.timerSpeed = boostTimer.get()
             if (mc.thePlayer.posY < fly.launchY - 1.0) {
                 boostMotion = 0
             }
