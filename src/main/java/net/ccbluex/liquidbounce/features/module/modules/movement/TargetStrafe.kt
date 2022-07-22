@@ -30,10 +30,11 @@ import kotlin.math.sqrt
 class TargetStrafe : Module() {
     private val thirdPersonViewValue = BoolValue("ThirdPersonView", false)
     private val renderModeValue = ListValue("RenderMode", arrayOf("Circle", "Pentagon", "None"), "Pentagon")
-    private val ongroundValue = BoolValue("OnGround",true)
+    private val radiusModeValue = ListValue("RadiusMode", arrayOf("Normal", "Strict"/*, "Dynamic"*/), "Normal")
+    private val radiusValue = FloatValue("Radius", 0.1f, 0.5f, 5.0f)
+    private val ongroundValue = BoolValue("OnlyOnGround",false)
     private val holdSpaceValue = BoolValue("HoldSpace", false)
     private val onlySpeedValue = BoolValue("OnlySpeed", false)
-    private val radiusValue = FloatValue("Radius", 0.1f, 0.5f, 5.0f)
     private var direction = -1.0
 
     var targetEntity : EntityLivingBase?=null
@@ -206,10 +207,13 @@ class TargetStrafe : Module() {
                 for (x in -1..0) for (z in -1..0) 
                     if (isVoid(x, z)) 
                         aroundVoid = true
-                var yaw = RotationUtils.getRotationFromEyeHasPrev(_entity).yaw
                 if (aroundVoid) 
                     direction *= -1
-                MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event)
+                var _1IlIll1 = 0
+                if (radiusModeValue.get().equals("Strict", ignoreCase = true)) {
+                    _1IlIll1 = 1
+                }
+                MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event, _1IlIll1.toInt())
                 callBackYaw = RotationUtils.getRotationsEntity(_entity).yaw.toDouble()
                 isEnabled = true
                 if (!thirdPersonViewValue.get()) 

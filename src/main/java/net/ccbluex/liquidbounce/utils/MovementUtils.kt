@@ -51,7 +51,7 @@ object MovementUtils : MinecraftInstance() {
         mc.thePlayer.motionZ = cos(yaw) * speed
     }
 
-    fun doTargetStrafe(curTarget: EntityLivingBase, direction_: Float, radius: Float, moveEvent: MoveEvent) {
+    fun doTargetStrafe(curTarget: EntityLivingBase, direction_: Float, radius: Float, moveEvent: MoveEvent, mathRadius: Int = 0) {
         if(!isMoving())
             return
         var forward_ = 0.0
@@ -67,7 +67,12 @@ object MovementUtils : MinecraftInstance() {
         }else if(direction_ < -0.001) {
             _direction = -1.0
         }
-        val curDistance = mc.thePlayer.getDistanceToEntity(curTarget)
+        var curDistance = 0.0
+        if (mathRadius == 1) {
+            curDistance = mc.thePlayer.getDistanceToEntity(curTarget)
+        }else if (mathRadius == 0) {
+            curDistance = sqrt((mc.thePlayer.posX - curTarget.posX) * (mc.thePlayer.posX - curTarget.posX) + (mc.thePlayer.posZ - curTarget.posZ) * (mc.thePlayer.posZ - curTarget.posZ))
+        }
         if(curDistance < radius - speed_) {
             forward_ = -1.0
         }else if(curDistance > radius + speed_) {
