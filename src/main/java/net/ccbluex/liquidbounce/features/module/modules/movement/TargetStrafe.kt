@@ -198,7 +198,10 @@ class TargetStrafe : Module() {
         @EventTarget
         fun onMove(event: MoveEvent) {
             val target = LiquidBounce.combatManager.target
-            if(!canStrafe(target)) return
+            if(!canStrafe(target)) {
+                isEnabled = false
+                return
+            }
             var aroundVoid = false
             for (x in -1..0) for (z in -1..0) if (isVoid(x, z)) aroundVoid = true
 

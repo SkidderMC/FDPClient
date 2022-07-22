@@ -12,8 +12,10 @@ class NCP : LongJumpMode("NCP") {
         canBoost = true
     }
     override fun onUpdate(event: UpdateEvent) {
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionZ = 0.0
+        if (mc.thePlayer.onGround) {
+            mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionZ = 0.0
+        }
         MovementUtils.strafe(MovementUtils.getSpeed() * if (canBoost) ncpBoostValue.get() else 1f)
         if(canBoost) canBoost = false
     }
