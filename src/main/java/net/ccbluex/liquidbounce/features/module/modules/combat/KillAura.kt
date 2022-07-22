@@ -389,7 +389,7 @@ class KillAura : Module() {
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
         strictStrafe = false
-        if(LiquidBounce.moduleManager[TargetStrafe::class.java]!!.modifyStrafe(event)) {
+        if(!LiquidBounce.moduleManager[TargetStrafe::class.java]!!.modifyStrafe(event)) {
             strictStrafe = true
         }
         if (rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
@@ -410,8 +410,8 @@ class KillAura : Module() {
         if (discoveredTargets.isNotEmpty() && RotationUtils.targetRotation != null) {
             when (rotationStrafeValue.get().lowercase()) {
                 "strict" -> {
-                    if(!strictStrafe) {
-                        strictStrafe = true
+                    if(strictStrafe) {
+                        strictStrafe = false
                         val (yaw) = RotationUtils.targetRotation ?: return
                         var strafe = event.strafe
                         var forward = event.forward
@@ -440,7 +440,7 @@ class KillAura : Module() {
                     }
                 }
                 "silent" -> {
-                    if(!strictStrafe) {
+                    if(strictStrafe) {
                         strictStrafe = false
                         RotationUtils.targetRotation.applyStrafeToPlayer(event)
                         event.cancelEvent()
@@ -485,7 +485,7 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onUpdate() {
-        if ((!strafeOnlyGroundValue.get() || mc.thePlayer.onGround) && rotationStrafeValue.equals("Strict") && !mc.thePlayer.isRiding) {
+        if ((!strafeOnlyGroundValue.get() || mc.thePlayer.onGround) && !rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
             strictStrafe = true
         }else {
             strictStrafe = false
