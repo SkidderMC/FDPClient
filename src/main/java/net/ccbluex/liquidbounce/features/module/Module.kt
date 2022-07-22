@@ -18,11 +18,13 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
+import net.ccbluex.liquidbounce.utils.AnimationHelper
 import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
+    val animation: AnimationHelper
     var name: String
     var localizedName = ""
         get() = field.ifEmpty { name }
@@ -72,6 +74,7 @@ open class Module : MinecraftInstance(), Listenable {
 
     init {
         name = moduleInfo.name
+        animation = AnimationHelper(this)
         description = "%module.$name.description%"
         category = moduleInfo.category
         keyBind = moduleInfo.keyBind

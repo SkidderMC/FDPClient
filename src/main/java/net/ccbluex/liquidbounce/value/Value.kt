@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.value
 import com.google.gson.JsonElement
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import com.google.gson.JsonPrimitive
 
 abstract class Value<T>(val name: String, var value: T) {
     val default = value
@@ -56,6 +57,19 @@ abstract class Value<T>(val name: String, var value: T) {
     protected open fun onChanged(oldValue: T, newValue: T) {}
 
     // this is better api for ListValue and TextValue
+
+    open class ColorValue(name: String, value: Int, canDisplay: () -> Boolean) : Value<Int>(name, value) {
+        val minimum: Int = -10000000
+        val maximum: Int = 1000000
+        fun set(newValue: Number) {
+            set(newValue.toInt())
+        }
+        override fun toJson() = JsonPrimitive(value)
+        override fun fromJson(element: JsonElement) {
+            if (element.isJsonPrimitive)
+                value = element.asInt
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         other ?: return false

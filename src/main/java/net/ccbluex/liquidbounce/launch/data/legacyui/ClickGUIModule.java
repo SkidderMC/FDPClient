@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
@@ -12,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.*;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.light.LightClickGUI;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.launch.options.LegacyUiLaunchOption;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -33,6 +35,8 @@ public class ClickGUIModule extends Module {
             updateStyle();
         }
     };
+
+    private final ListValue modeValue = new ListValue("Mode", new String[]{"Astolfo", "Light"}, "Astolfo");
 
     public final FloatValue scaleValue = new FloatValue("Scale", 1F, 0.7F, 2F);
     public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
@@ -57,6 +61,11 @@ public class ClickGUIModule extends Module {
             updateStyle();
             mc.displayGuiScreen(LegacyUiLaunchOption.clickGui);
         }
+        if (modeValue.get().contains("Light")) {
+            mc.displayGuiScreen(new LightClickGUI());
+            this.setState(false);
+        }
+
     }
 
     private void updateStyle() {
