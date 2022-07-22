@@ -33,7 +33,6 @@ class TargetStrafe : Module() {
     private val ongroundValue = BoolValue("OnGround",true)
     private val holdSpaceValue = BoolValue("HoldSpace", false)
     private val onlySpeedValue = BoolValue("OnlySpeed", false)
-    private val onlyflyValue = BoolValue("keyFly", false)
     private val radiusValue = FloatValue("Radius", 0.1f, 0.5f, 5.0f)
     private var direction = -1.0
 
@@ -45,11 +44,11 @@ class TargetStrafe : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val target = LiquidBounce.combatManager.target
+        val target = targetEntity
         if (renderModeValue.get() != "None" && canStrafe(target)) {
-            if (LiquidBounce.combatManager.target == null) return
+            if (target == null || !doStrafe) return
             val counter = intArrayOf(0)
-            val target = LiquidBounce.combatManager.target
+            val target_ = target
             if (renderModeValue.get().equals("Circle", ignoreCase = true)) {
                 GL11.glPushMatrix()
                 GL11.glDisable(3553)
@@ -66,11 +65,11 @@ class TargetStrafe : Module() {
                 GL11.glLineWidth(1.0f)
                 GL11.glBegin(3)
                 val x =
-                    target!!.lastTickPosX + (LiquidBounce.combatManager.target!!.posX - LiquidBounce.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                    target_!!.lastTickPosX + (target_!!.posX - target_!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                 val y =
-                    LiquidBounce.combatManager.target!!.lastTickPosY + (LiquidBounce.combatManager.target!!.posY - LiquidBounce.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
+                    target_!!.lastTickPosY + (target_!!.posY - target_!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
                 val z =
-                    LiquidBounce.combatManager.target!!.lastTickPosZ + (LiquidBounce.combatManager.target!!.posZ - LiquidBounce.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    target_!!.lastTickPosZ + (target_!!.posZ - target_!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
                 for (i in 0..359) {
                     val rainbow = Color(
                         Color.HSBtoRGB(
@@ -96,7 +95,7 @@ class TargetStrafe : Module() {
                 GL11.glPopMatrix()
             } else {
                 val rad = radiusValue.get()
-                if (target == null) {
+                if (target_ == null) {
                     return
                 }
                 GL11.glPushMatrix()
@@ -107,11 +106,11 @@ class TargetStrafe : Module() {
                 GL11.glLineWidth(1.0f)
                 GL11.glBegin(3)
                 val x =
-                    LiquidBounce.combatManager.target!!.lastTickPosX + (LiquidBounce.combatManager.target!!.posX - LiquidBounce.combatManager.target!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                    target_!!.lastTickPosX + (target_!!.posX - target_!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                 val y =
-                    LiquidBounce.combatManager.target!!.lastTickPosY + (LiquidBounce.combatManager.target!!.posY - LiquidBounce.combatManager.target!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
+                    target_!!.lastTickPosY + (target_!!.posY - target_!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
                 val z =
-                    LiquidBounce.combatManager.target!!.lastTickPosZ + (LiquidBounce.combatManager.target!!.posZ - LiquidBounce.combatManager.target!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    target_!!.lastTickPosZ + (target_!!.posZ - target_!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
                 for (i in 0..10) {
                     counter[0] = counter[0] + 1
                     val rainbow = Color(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
@@ -197,72 +196,35 @@ class TargetStrafe : Module() {
 
         @EventTarget
         fun onMove(event: MoveEvent) {
-            val target = LiquidBounce.combatManager.target
-            if(!canStrafe(target)) {
-                isEnabled = false
-                return
-            }
-            var aroundVoid = false
-            for (x in -1..0) for (z in -1..0) if (isVoid(x, z)) aroundVoid = true
-
-            var yaw = RotationUtils.getRotationFromEyeHasPrev(LiquidBounce.combatManager.target).yaw
-
-            if (mc.thePlayer.isCollidedHorizontally || aroundVoid) direction *= -1
-
-            var targetStrafe = (if (mc.thePlayer.moveStrafing != 0F) mc.thePlayer.moveStrafing * direction else direction.toFloat())
-            if (!PlayerUtils.isBlockUnder()) targetStrafe = 0f
-
-            val rotAssist = 45 / mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target)
-            val moveAssist = (45f / getStrafeDistance(LiquidBounce.combatManager.target!!)).toDouble()
-
-            var mathStrafe = 0f
-
-            if (targetStrafe > 0 as Nothing) {
-                if ((LiquidBounce.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||LiquidBounce.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
-                        LiquidBounce.combatManager.target!!
-                    ) < radiusValue.get()
-                ) yaw += -rotAssist
-                mathStrafe += -moveAssist.toFloat()
-            } else if (targetStrafe < (0 as Nothing)) {
-                if ((LiquidBounce.combatManager.target!!.entityBoundingBox.minY > mc.thePlayer.entityBoundingBox.maxY ||LiquidBounce.combatManager.target!!.entityBoundingBox.maxY < mc.thePlayer.entityBoundingBox.minY) && mc.thePlayer.getDistanceToEntity(
-                        LiquidBounce.combatManager.target!!
-                    ) < radiusValue.get()
-                ) yaw += rotAssist
-                mathStrafe += moveAssist.toFloat()
-            }
-
-            val doSomeMath = doubleArrayOf(
-                cos(Math.toRadians((yaw + 90f + mathStrafe).toDouble())),
-                sin(Math.toRadians((yaw + 90f + mathStrafe).toDouble()))
-            )
-            val moveSpeed = sqrt(event.x.pow(2.0) + event.z.pow(2.0))
-
-            val asLast = doubleArrayOf(
-                moveSpeed * doSomeMath[0],
-                moveSpeed * doSomeMath[1]
-            )
-
-            event.x = asLast[0]
-            event.z = asLast[1]
-
             if(doStrafe && (!ongroundValue.get() || mc.thePlayer.onGround)) {
                 val _entity : EntityLivingBase = targetEntity?:return
+                if(!canStrafe(_entity)) {
+                    isEnabled = false
+                    return
+                }
+                var aroundVoid = false
+                for (x in -1..0) for (z in -1..0) 
+                    if (isVoid(x, z)) 
+                        aroundVoid = true
+                var yaw = RotationUtils.getRotationFromEyeHasPrev(_entity).yaw
+                if (aroundVoid) 
+                    direction *= -1
                 MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event)
                 callBackYaw = RotationUtils.getRotationsEntity(_entity).yaw.toDouble()
                 isEnabled = true
+                if (!thirdPersonViewValue.get()) 
+                    return
+                mc.gameSettings.thirdPersonView = if (canStrafe(target)) 3 else 0
             }else {
                 isEnabled = false
                 if (!thirdPersonViewValue.get()) return
                 mc.gameSettings.thirdPersonView = 3
             }
         }
-
-        if (!thirdPersonViewValue.get()) return
-        mc.gameSettings.thirdPersonView = if (canStrafe(target)) 3 else 0
     }
 
         private fun canStrafe(target: EntityLivingBase?): Boolean {
-            return target != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && ((!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state) || (onlyflyValue.get() && LiquidBounce.moduleManager[Fly::class.java]!!.state))
+            return target != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && (!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state)
         }
 
     fun modifyStrafe(event: StrafeEvent):Boolean {
@@ -284,15 +246,6 @@ class TargetStrafe : Module() {
                 direction = -1.0
             }
         }
-    }
-
-
-    private fun getStrafeDistance(target: EntityLivingBase): Float {
-        return (mc.thePlayer.getDistanceToEntity(target) - radiusValue.get()).coerceAtLeast(
-            mc.thePlayer.getDistanceToEntity(
-                target
-            ) - (mc.thePlayer.getDistanceToEntity(target) - radiusValue.get() / (radiusValue.get() * 2))
-        )
     }
 
     fun doMove(event: MoveEvent):Boolean {
