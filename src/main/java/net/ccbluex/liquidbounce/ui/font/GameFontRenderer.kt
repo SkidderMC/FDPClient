@@ -62,7 +62,8 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     fun drawCenteredString(s: String, x: Float, y: Float, color: Int) = drawStringWithShadow(s, x - getStringWidth(s) / 2F, y, color)
 
     override fun drawString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
-        var currentText = LanguageManager.replace(text)
+         val TranslatedCurrentText = LanguageManager.replace(text)
+         var currentText = TranslatedCurrentText
 
         val event = TextEvent(currentText)
         LiquidBounce.eventManager.callEvent(event)
