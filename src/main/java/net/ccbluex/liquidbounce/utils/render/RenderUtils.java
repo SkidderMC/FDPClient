@@ -24,10 +24,16 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityEgg;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.util.*;
 import net.minecraft.util.Timer;
 import org.lwjgl.BufferUtils;
@@ -311,6 +317,105 @@ public final class RenderUtils extends MinecraftInstance {
         worldrenderer.pos((x + width), y, 0.0D).tex(((u + width) * f), (v * f1)).endVertex();
         worldrenderer.pos(x, y, 0.0D).tex((u * f), (v * f1)).endVertex();
         tessellator.draw();
+    }
+
+    public static void drawExhiEnchants(ItemStack stack, float x, float y) {
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableDepth();
+        GlStateManager.disableBlend();
+        GlStateManager.resetColor();
+        final int darkBorder = 0xFF000000;
+        if (stack.getItem() instanceof ItemArmor) {
+            int prot = EnchantmentHelper.getEnchantmentLevel(Enchantment.protection.effectId, stack);
+            int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
+            int thorn = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack);
+            if (prot > 0) {
+                drawExhiOutlined(prot + "", drawExhiOutlined("P", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(prot), getMainColor(prot), true);
+                y += 4;
+            }
+            if (unb > 0) {
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(unb),getMainColor(unb), true);
+                y += 4;
+            }
+            if (thorn > 0) {
+                drawExhiOutlined(thorn + "", drawExhiOutlined("T", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(thorn), getMainColor(thorn), true);
+                y += 4;
+            }
+        }
+        if (stack.getItem() instanceof ItemBow) {
+            int power = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, stack);
+            int punch = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, stack);
+            int flame = EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, stack);
+            int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
+            if (power > 0) {
+                drawExhiOutlined(power + "", drawExhiOutlined("Pow", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(power), getMainColor(power), true);
+                y += 4;
+            }
+            if (punch > 0) {
+                drawExhiOutlined(punch + "", drawExhiOutlined("Pun", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(punch), getMainColor(punch), true);
+                y += 4;
+            }
+            if (flame > 0) {
+                drawExhiOutlined(flame + "", drawExhiOutlined("F", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(flame), getMainColor(flame), true);
+                y += 4;
+            }
+            if (unb > 0) {
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(unb), getMainColor(unb), true);
+                y += 4;
+            }
+        }
+        if (stack.getItem() instanceof ItemSword) {
+            int sharp = EnchantmentHelper.getEnchantmentLevel(Enchantment.sharpness.effectId, stack);
+            int kb = EnchantmentHelper.getEnchantmentLevel(Enchantment.knockback.effectId, stack);
+            int fire = EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId, stack);
+            int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
+            if (sharp > 0) {
+                drawExhiOutlined(sharp + "", drawExhiOutlined("S", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(sharp), getMainColor(sharp), true);
+                y += 4;
+            }
+            if (kb > 0) {
+                drawExhiOutlined(kb + "", drawExhiOutlined("K", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(kb), getMainColor(kb), true);
+                y += 4;
+            }
+            if (fire > 0) {
+                drawExhiOutlined(fire + "", drawExhiOutlined("F", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(fire), getMainColor(fire), true);
+                y += 4;
+            }
+            if (unb > 0) {
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(unb), getMainColor(unb), true);
+                y += 4;
+            }
+        }
+        GlStateManager.enableDepth();
+        RenderHelper.enableGUIStandardItemLighting();
+    }
+
+    private static float drawExhiOutlined(String text, float x, float y, float borderWidth, int borderColor, int mainColor, boolean drawText) {
+        Fonts.fontVerdana.drawString(text, x, y - borderWidth, borderColor);
+        Fonts.fontVerdana.drawString(text, x, y + borderWidth, borderColor);
+        Fonts.fontVerdana.drawString(text, x - borderWidth, y, borderColor);
+        Fonts.fontVerdana.drawString(text, x + borderWidth, y, borderColor);
+        if (drawText)
+            Fonts.fontVerdana.drawString(text, x, y, mainColor);
+        return x + Fonts.fontVerdana.getWidth(text) - 2.5F;
+    }
+
+    private static int getMainColor(int level) {
+        if (level == 4)
+            return 0xFFAA0000;
+        return -1;
+    }
+
+    private static int getBorderColor(int level) {
+        if (level == 2)
+            return 0xFF55FF55;
+        if (level == 3)
+            return 0xFF00AAAA;
+        if (level == 4)
+            return 0xFFAA0000;
+        if (level >= 5)
+            return 0xFFFFAA00;
+        return -1;
     }
     public static void customRounded(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float rTL, float rTR, float rBR, float rBL, int color) {
         float alpha = (color >> 24 & 0xFF) / 255.0F;

@@ -42,6 +42,13 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
+        final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
+
+        assert noRender != null;
+        if (noRender.getState() && noRender.shouldStopRender(entity)) {
+            callbackInfo.cancel();
+            return;
+        }
 
         assert chams != null;
         if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || MobsUtils.isSelected(entity, false))) {
