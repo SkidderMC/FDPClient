@@ -397,7 +397,7 @@ public final class RenderUtils extends MinecraftInstance {
         //Fonts.fontVerdana.drawString(text, x + borderWidth, y, borderColor);
         //if (drawText)
             //Fonts.fontVerdana.drawString(text, x, y, mainColor);
-        return x + Fonts.fontVerdana.getWidth(text) - 2.5F;
+        return x /*+ Fonts.fontVerdana.getWidth(text)*/ - 2.5F;
     }
 
     private static int getMainColor(int level) {
