@@ -6,13 +6,9 @@
 package net.ccbluex.liquidbounce.features.module.modules.world
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.features.module.*
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
@@ -29,7 +25,7 @@ class LightningDetect : Module() {
         if (event.packet is S2CPacketSpawnGlobalEntity) {
             val packet = event.packet
             if (packet.func_149053_g() != 1) return
-            if(chatlog.get()) ClientUtils.displayChatMessage("Lightning at X:${decimalFormat.format(packet.func_149051_d() / 32.0)} Y:${decimalFormat.format(packet.func_149050_e() / 32.0)} Z:${decimalFormat.format(packet.func_149049_f() / 32.0)}")
+            if(chatlog.get()) ClientUtils.displayChatMessage("§7[§cLightningDetector§7] §bLightning at X:${decimalFormat.format(packet.func_149051_d() / 32.0)} Y:${decimalFormat.format(packet.func_149050_e() / 32.0)} Z:${decimalFormat.format(packet.func_149049_f() / 32.0)}")
             LiquidBounce.hud.addNotification(Notification(name, "Lightning at X:${decimalFormat.format(packet.func_149051_d() / 32.0)} Y:${decimalFormat.format(packet.func_149050_e() / 32.0)} Z:${decimalFormat.format(packet.func_149049_f() / 32.0)}", NotifyType.WARNING, time = 5000))
         }
     }
