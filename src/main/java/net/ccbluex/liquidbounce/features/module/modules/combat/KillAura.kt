@@ -477,7 +477,7 @@ class KillAura : Module() {
         }
 
         LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
-        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = true
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
     }
 
     /**
@@ -903,7 +903,7 @@ class KillAura : Module() {
                 target = entity
                 canSwing = false
                 LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = target?:return
-                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = true
+                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
                 return
             }
         }
