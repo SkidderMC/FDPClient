@@ -67,11 +67,11 @@ object MovementUtils : MinecraftInstance() {
         }else if(direction_ < -0.001) {
             _direction = -1.0
         }
-        var curDistance = (0.01).toDouble()
+        var curDistance = (0.01).toFloat()
         if (mathRadius == 1) {
-            curDistance = mc.thePlayer.getDistanceToEntity(curTarget)
+            curDistance = mc.thePlayer.getDistanceToEntity(curTarget).toFloat()
         }else if (mathRadius == 0) {
-            curDistance = sqrt((mc.thePlayer.posX - curTarget.posX) * (mc.thePlayer.posX - curTarget.posX) + (mc.thePlayer.posZ - curTarget.posZ) * (mc.thePlayer.posZ - curTarget.posZ))
+            curDistance = sqrt((mc.thePlayer.posX - curTarget.posX) * (mc.thePlayer.posX - curTarget.posX) + (mc.thePlayer.posZ - curTarget.posZ) * (mc.thePlayer.posZ - curTarget.posZ)).toFloat()
         }
         if(curDistance < radius - speed_) {
             forward_ = -1.0
