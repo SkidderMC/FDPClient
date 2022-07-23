@@ -39,6 +39,7 @@ class CustomSpeed : SpeedMode("Custom") {
                 mc.thePlayer.onGround -> {
                     if (groundTick >= groundStay.get()) {
                         mc.timer.timerSpeed = jumpTimerValue.get()
+                        mc.thePlayer.jump()
                         if (doLaunchSpeedValue.get()) {
                             MovementUtils.strafe(launchSpeedValue.get())
                         }
