@@ -18,7 +18,7 @@ import java.util.*
 
 object
 ClientUtils : MinecraftInstance() {
-    private val logger = LogManager.getLogger("FDPClient")
+    public val logger = LogManager.getLogger("FDPClient")
 
 
     /**
@@ -94,16 +94,16 @@ ClientUtils : MinecraftInstance() {
         Display.setTitle("${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION} (${LiquidBounce.CLIENT_BRANCH}) | ${LiquidBounce.CLIENT_WEBSITE}")
     }
     fun setTitle(stats:String) {
-        Display.setTitle("${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION} (${LiquidBounce.CLIENT_BRANCH}) | ${LiquidBounce.CLIENT_WEBSITE} - "+stats)
+        Display.setTitle("${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION} (${LiquidBounce.CLIENT_BRANCH}) | ${LiquidBounce.CLIENT_WEBSITE} - " + stats)
     }
 
     fun displayAlert(message: String) {
-        displayChatMessage("§8[" + LiquidBounce.COLORED_NAME + "§8] §f" + message)
+        displayChatMessage(LiquidBounce.COLORED_NAME + message)
     }
 
     fun displayChatMessage(message: String) {
         if (mc.thePlayer == null) {
-            logger.info("(MCChat)$message")
+            logger.info("(MCChat) $message")
             return
         }
         val jsonObject = JsonObject()
