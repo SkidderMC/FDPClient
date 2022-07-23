@@ -44,7 +44,7 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rice")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rice")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -145,6 +145,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private val decimalFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
     private val decimalFormat2 = DecimalFormat("##0.0", DecimalFormatSymbols(Locale.ENGLISH))
     private val decimalFormat3 = DecimalFormat("0.#", DecimalFormatSymbols(Locale.ENGLISH))
+    private val decimalFormat4 = DecimalFormat("0.0#", DecimalFormatSymbols(Locale.ENGLISH))
 
     val shadowOpaque: Color
         get() = ColorUtils.reAlpha(when (shadowColorMode.get().lowercase(Locale.getDefault())) {
@@ -353,6 +354,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "remix" -> drawRemix(prevTarget!!)
             "rice" -> drawRice(prevTarget!!)
             "slowly" -> drawSlowly(prevTarget!!)
+            "what" -> drawWhat(prevTarget!!)
         }
 
         return getTBorder()
@@ -730,6 +732,38 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         font.drawString("Health ${getHealth(target)}", 45, 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
         RenderUtils.drawRoundedCornerRect(45f, (5 + font.FONT_HEIGHT  + font.FONT_HEIGHT).toFloat(), 45f + (easingHP / target.maxHealth) * 100f, 42f, 3f, ColorUtils.rainbow().rgb)
 
+    }
+
+    private fun drawWhat(entity: EntityLivingBase) {
+        val font = Fonts.minecraftFont
+        val fontHeight = font.FONT_HEIGHT
+        val health = entity.health
+        val percent = entity.health.toFloat() / entity.maxHealth.toFloat() * 100F
+        val nameLength = (font.getStringWidth(entity.name)).coerceAtLeast(font.getStringWidth("${decimalFormat4.format(health)}")).toFloat() + 10F
+        val barWidth = (health / entity.maxHealth).coerceIn(0F, entity.maxHealth.toFloat()) * (nameLength - 2F)
+  
+        RenderUtils.whatRoundedRect(-1F, -1F, 2F + nameLength + 36F, 1F + 36F, Color(31, 31, 31, 165).rgb, 3F)
+        if (mc.netHandler.getPlayerInfo(entity.uniqueID) != null) {
+            if(entity.hurtTime > 1) {
+               GL11.glColor4f(1f, 0f, 0f, 0.5f)
+               RenderUtils.drawEntityOnScreen(20, 34, 15, entity)
+            } else {
+               GL11.glColor4f(1f, 1f, 1f, 1f)
+               RenderUtils.drawEntityOnScreen(20, 34, 15, entity)
+            }
+         }
+         font.drawStringWithShadow(entity.name, 2F + 36F + 1F, 2F, barColor.rgb)
+
+         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - fadeSpeed.get())) * RenderUtils.deltaTime
+
+         val animateThingy = (easingHealth.coerceIn(entity.health, entity.maxHealth) / entity.maxHealth) * (nameLength - 2F)
+
+         if (easingHealth > entity.health)
+             RenderUtils.whatRoundedRect(2F + 36F, 15F, 2F + 36F + animateThingy, 25F, Color(200, 0, 0).rgb, 3F)
+                    
+         RenderUtils.whatRoundedRect(2F + 36F, 15F, 2F + 36F + barWidth, 25F, barColor.rgb, 3F)
+                    
+         font.drawStringWithShadow("${decimalFormat4.format(health)}", 2F + 36F + (nameLength - 2F) / 2F - font.getStringWidth("${decimalFormat4.format(health)}").toFloat() / 2F, 16F, -1)
     }
 
     private fun drawFlux(target: EntityLivingBase) {
@@ -1213,6 +1247,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "remix" -> Border(0F, 0F, 146F, 49F)
             "rice" -> Border(0F, 0F, 135F, 55F)
             "slowly" -> Border(0F, 0F, 102F, 36F)
+            "what" -> Border(-1F, -2F, 110F, 38F)
             else -> null
         }
     }
