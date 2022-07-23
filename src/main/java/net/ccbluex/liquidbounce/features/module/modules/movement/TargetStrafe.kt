@@ -240,6 +240,10 @@ class TargetStrafe : Module() {
         }
     }
 
+    fun toggleStrafe(): Boolean {
+        return targetEntity != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && (!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state)
+    }
+
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.isCollidedHorizontally) {
