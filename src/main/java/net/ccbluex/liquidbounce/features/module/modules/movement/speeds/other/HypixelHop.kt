@@ -44,7 +44,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 }
             }
 
-            "safe"-> {
+            "oldsafe"-> {
                 if(MovementUtils.isMoving() && mc.thePlayer.onGround) {
                     watchdogMultiplier = 1.45
                     mc.thePlayer.jump()
@@ -52,7 +52,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 }
             }
 
-            "test"-> {
+            "oldtest"-> {
                 if(MovementUtils.isMoving() && mc.thePlayer.onGround) {
                     watchdogMultiplier = 1.2
                     mc.thePlayer.jump()
