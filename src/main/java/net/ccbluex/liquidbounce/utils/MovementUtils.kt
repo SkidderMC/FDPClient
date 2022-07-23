@@ -67,7 +67,7 @@ object MovementUtils : MinecraftInstance() {
         }else if(direction_ < -0.001) {
             _direction = -1.0
         }
-        var curDistance = (0.01).toFloat()
+        var curDistance = (0.01).toDouble()
         if (mathRadius == 1) {
             curDistance = mc.thePlayer.getDistanceToEntity(curTarget)
         }else if (mathRadius == 0) {
