@@ -475,6 +475,57 @@ public final class RenderUtils extends MinecraftInstance {
         glPopMatrix();
     }
 
+    public static void whatRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, final int color, float radius) {
+        float alpharect = (color >> 24 & 0xFF) / 255.0F;
+        float redrect = (color >> 16 & 0xFF) / 255.0F;
+        float greenrect = (color >> 8 & 0xFF) / 255.0F;
+        float bluerect = (color & 0xFF) / 255.0F;
+
+        float z = 0;
+        if (paramXStart > paramXEnd) {
+            z = paramXStart;
+            paramXStart = paramXEnd;
+            paramXEnd = z;
+        }
+
+        if (paramYStart > paramYEnd) {
+            z = paramYStart;
+            paramYStart = paramYEnd;
+            paramYEnd = z;
+        }
+
+    	double x1 = (double)(paramXStart + radius);
+    	double y1 = (double)(paramYStart + radius);
+    	double x2 = (double)(paramXEnd - radius);
+    	double y2 = (double)(paramYEnd - radius);
+
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+
+    	glColor(color);
+        glBegin(GL_POLYGON);
+    
+        double degree = Math.PI / 180;
+        for (double i = 0; i <= 90; i += 1)
+            glVertex2d(x2 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius);
+        for (double i = 90; i <= 180; i += 1)
+            glVertex2d(x2 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius);
+        for (double i = 180; i <= 270; i += 1)
+            glVertex2d(x1 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius);
+        for (double i = 270; i <= 360; i += 1)
+            glVertex2d(x1 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius);
+        glEnd();
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
+    }
+
     public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius) {
         glBegin(GL_POLYGON);
 
