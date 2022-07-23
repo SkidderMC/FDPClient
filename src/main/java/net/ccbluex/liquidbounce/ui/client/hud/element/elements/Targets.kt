@@ -93,7 +93,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F)
     private val waveSecondValue = IntegerValue("Seconds", 2, 1, 10)
 
-    val rainbowOnHit = BoolValue("Tenacity-RainbowOnHit", true)
     val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
     val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
     val riseSizeValue = FloatValue("Rise-Size", 1f, 0.5f, 3f)
@@ -138,8 +137,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     var easingHealth = 0F
     var barColor = Color(-1)
     var bgColor = Color(-1)
-    
-    private var currentRainbowValue = 0
 
     private var prevTarget: EntityLivingBase? = null
     private var displayPercent = 0f
@@ -618,7 +615,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private fun drawRiseNewNew(target: EntityLivingBase) {
         val font = fontValue.get()
 
-        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(60) * 1.55f + 7
+        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(60)*1.65f
         RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 45f, 7f, Color(0, 0, 0, riseAlpha.get()).rgb)
 
         // circle player avatar
@@ -807,96 +804,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         // hp bar
         RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + additionalWidth, 33f, 2.5f, Color(0, 0, 0, 70).rgb)
-        
-        if (rainbowOnHit.get()) {
-            currentRainbowValue += target.hurtPercent
-            RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.hslRainbow(currentRainbowValue, indexOffset = 10).rgb)
-        } else {
-            RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
-        }
-    }
-    
-    private fun drawTenacityNew(target: EntityLivingBase) {
-        val font = fontValue.get()
-
-        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
-        val hurtPercent = target.hurtPercent
-        
-        //background is halal
-        
-        //curved sides
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 12f, 40f, 3f, ColorUtils.hslRainbow(6, indexOffset = 10).rgb)
-        RenderUtils.drawRoundedCornerRect(28f, 0f, 40f, 40f, 3f, ColorUtils.hslRainbow(35, indexOffset = 10).rgb)
-        
-        //rain bowwww
-        
-        //random OpenGl stuff idk
-        GL11.glEnable(3042)
-        GL11.glDisable(3553)
-        GL11.glBlendFunc(770, 771)
-        GL11.glEnable(2848)
-        GL11.glShadeModel(7425)
-        
-        //stop pos mometno
-        val stopPos = 34 + additionalWidth.toInt()
-        
-        //draw
-        for (i in 6..stopPos step 5) {
-            val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
-            RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), 0.0, x1, 40.0,
-                ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
-        }
-       
-        
-        //random OpenGl stuff idfk
-        GL11.glEnable(3553)
-        GL11.glDisable(3042)
-        GL11.glDisable(2848)
-        GL11.glShadeModel(7424)
-        
-
-        
-        
-        //HEAD draw thingies
-        val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
-            1 - (0.1f * hurtPercent * 2)
-        } else {
-            0.9f + (0.1f * (hurtPercent - 0.5f) * 2)
-        }
-        val size = 35
-
-        
-        // circle player avatar + rise anims
-        GL11.glColor4f(1f, 1f, 1f, 1f)
-        GL11.glPushMatrix()
-        GL11.glTranslatef(5f, 5f, 0f)
-        //scale
-        GL11.glScalef(scale, scale, scale)
-        GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        //color
-        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        //draw
-        mc.textureManager.bindTexture(target.skin)
-        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
-        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
-        
-        GL11.glPopMatrix()
-        
-
-        
-        // info text
-        font.drawCenteredString(target.name, 40 + ((additionalWidth - font.getStringWidth(target.name)) / 2f), 5f, Color.WHITE.rgb, false)
-        ((decimalFormat.format((easingHP / target.maxHealth) * 100).roundToInt()).toString() + " - " + (decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target)).roundToInt()).toString() + "M").also {
-            font.drawString(it, (40f + ((additionalWidth - font.getStringWidth(it)) / 2f), 36f - font.FONT_HEIGHT, Color.WHITE.rgb, false)
-        }
-        
-        
-        
-        //hp bar
-        RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + additionalWidth, 33f, 2.5f, Color(40, 40, 40, 200).rgb)
-        RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, Color(220, 220, 220, 200).rgb)
-        
-        
+        RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
     }
 
     private fun drawChill(entity: EntityLivingBase) {
