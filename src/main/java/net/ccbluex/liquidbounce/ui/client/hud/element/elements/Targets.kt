@@ -809,7 +809,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + additionalWidth, 33f, 2.5f, Color(0, 0, 0, 70).rgb)
         
         if (rainbowOnHit.get()) {
-            currentRainbowValue += (target.hurtPercent * 5).toInt()
+            currentRainbowValue += target.hurtPercent
             RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.hslRainbow(currentRainbowValue, indexOffset = 10).rgb)
         } else {
             RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
@@ -886,9 +886,9 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         
         // info text
         font.drawCenteredString(target.name, 40 + ((additionalWidth - font.getStringWidth(target.name)) / 2f), 5f, Color.WHITE.rgb, false)
-        val infoStr = ((decimalFormat.format((easingHP / target.maxHealth) * 100).roundToInt()).toString() + " - " + (decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target)).roundToInt()).toString() + "M")
-        
-        font.drawString(infoStr, 40f + ((additionalWidth - font.getStringWidth(infoStr)) / 2f), 36f - font.FONT_HEIGHT, Color.WHITE.rgb, false)
+        ((decimalFormat.format((easingHP / target.maxHealth) * 100).roundToInt()).toString() + " - " + (decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target)).roundToInt()).toString() + "M").also {
+            font.drawString(it, (40f + ((additionalWidth - font.getStringWidth(it)) / 2f), 36f - font.FONT_HEIGHT, Color.WHITE.rgb, false)
+        }
         
         
         
