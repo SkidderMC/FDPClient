@@ -49,7 +49,7 @@ class NoFall : Module() {
         "OldAAC", "LAAC", "AAC3.3.11", "AAC3.3.15", "AACv4", "AAC4.4.X-Flag", "LoyisaAAC4.4.2", "AAC5.0.4", "AAC5.0.14",
         "Spartan", "CubeCraft", "Hypixel", "HypSpoof", "Phase", "Verus", "Medusa",
         "Damage", "MotionFlag",
-        "OldMatrix", "Matrix6.2.X", "Matrix6.2.X-Packet", "Matrix6.6.3",
+        "OldMatrix", "Matrix6.2.X", "Matrix6.2.X-Packet", "Matrix6.6.3", "MatrixTest",
         "Vulcan"
     ), "SpoofGround")
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5).displayable { modeValue.equals("Phase") }
@@ -75,6 +75,7 @@ class NoFall : Module() {
     private var matrixCanSpoof = false
     private var matrixFallTicks = 0
     private var matrixLastMotionY = 0.0
+    private var matrixTestYMotion = 0.0
     private var isDmgFalling = false
     private var matrixFlagWait = 0
     private val aac4FlagCooldown = MSTimer()
@@ -397,6 +398,20 @@ class NoFall : Module() {
                     mc.thePlayer.fallDistance = 0f
                     matrixFallTicks=0
                     matrixCanSpoof=false
+                }
+            }
+            "matrixtest" -> {
+                if (mc.thePlayer.motionY < -0.7) {
+                    matrixTestYMotion += -0.1
+                    mc.thePlayer.motionY = matrixTestYMotion
+                    if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3) {
+                    mc.thePlayer.fallDistance = 0.0f
+                    matrixSend = true
+                    mc.timer.timerSpeed = 0.5f
+                    wasTimer = true
+                }
+                } else {
+                    matrixTestYMotion = -0.7
                 }
             }
             "vulcan" -> {
