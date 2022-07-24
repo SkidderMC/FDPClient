@@ -413,6 +413,7 @@ class NoFall : Module() {
                 } else {
                     matrixTestYMotion = -0.7
                 }
+            }
             "vulcan" -> {
                 if(!vulCanNoFall && mc.thePlayer.fallDistance > 3.25) {
                     vulCanNoFall = true
