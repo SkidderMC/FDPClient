@@ -182,6 +182,9 @@ object LiquidBounce {
         // KeyBindManager
         keyBindManager = KeyBindManager()
 
+        // bstats.org user count display
+        ClientUtils.buildMetrics()
+
         combatManager = CombatManager()
         eventManager.registerListener(combatManager)
 
