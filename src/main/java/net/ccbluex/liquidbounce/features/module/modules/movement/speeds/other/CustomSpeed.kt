@@ -11,7 +11,9 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.settings.GameSettings
 
+@Suppress("UnclearPrecedenceOfBinaryExpression")
 class CustomSpeed : SpeedMode("Custom") {
     private val speedValue = FloatValue("CustomSpeed", 1.6f, 0f, 2f)
     private val launchSpeedValue = FloatValue("CustomLaunchSpeed", 1.6f, 0.2f, 2f)
@@ -64,10 +66,10 @@ class CustomSpeed : SpeedMode("Custom") {
                 }
                 else -> {
                     groundTick = 0
-                    if (AirSpaceKeyPressed.get()) {
+                    if (AirSpaceKepPressed.get()) {
                         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
                     }
-                    if (doMinimumSpeedValue.get() && MovementUtils.getSpeed() < minimumSpeedValue) {
+                    if (doMinimumSpeedValue.get() ) {
                         MovementUtils.strafe(minimumSpeedValue.get())
                     }
                     when (strafeValue.get().lowercase()) {
@@ -77,17 +79,17 @@ class CustomSpeed : SpeedMode("Custom") {
                         "plus" -> {
                             when (plusMode.get().lowercase()) {
                                 "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
-                                "multiply" -> { 
+                                "multiply" -> {
                                     mc.thePlayer.motionX *= plusMultiply.get()
                                     mc.thePlayer.motionZ *= plusMultiply.get()
                                 }
                             }
                         }
-                        "plusonlyup" -> { 
+                        "plusonlyup" -> {
                             if (mc.thePlayer.motionY > 0) {
                                 when (plusMode.get().lowercase()) {
                                     "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
-                                    "multiply" -> { 
+                                    "multiply" -> {
                                         mc.thePlayer.motionX *= plusMultiply.get()
                                         mc.thePlayer.motionZ *= plusMultiply.get()
                                     }
@@ -100,7 +102,7 @@ class CustomSpeed : SpeedMode("Custom") {
                             if (mc.thePlayer.motionY < 0) {
                                 when (plusMode.get().lowercase()) {
                                     "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
-                                    "multiply" -> { 
+                                    "multiply" -> {
                                         mc.thePlayer.motionX *= plusMultiply.get()
                                         mc.thePlayer.motionZ *= plusMultiply.get()
                                     }
