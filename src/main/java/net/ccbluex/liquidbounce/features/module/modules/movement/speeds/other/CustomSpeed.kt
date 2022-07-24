@@ -69,7 +69,7 @@ class CustomSpeed : SpeedMode("Custom") {
                     if (AirSpaceKepPressed.get()) {
                         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
                     }
-                    if (doMinimumSpeedValue.get() ) {
+                    if (doMinimumSpeedValue.get() && MovementUtils.getSpeed() < minimumSpeedValue.get()) {
                         MovementUtils.strafe(minimumSpeedValue.get())
                     }
                     when (strafeValue.get().lowercase()) {
