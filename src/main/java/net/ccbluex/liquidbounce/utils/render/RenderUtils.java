@@ -381,15 +381,15 @@ public final class RenderUtils extends MinecraftInstance {
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             int thorn = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack);
             if (prot > 0) {
-                drawExhiOutlined(prot + "", drawExhiOutlined("P", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(prot), getMainColor(prot), true);
+                drawExhiOutlined(prot + "", drawExhiOutlined("P", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(prot), getMainColor(prot), true);
                 y += 4;
             }
             if (unb > 0) {
-                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(unb),getMainColor(unb), true);
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(unb),getMainColor(unb), true);
                 y += 4;
             }
             if (thorn > 0) {
-                drawExhiOutlined(thorn + "", drawExhiOutlined("T", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(thorn), getMainColor(thorn), true);
+                drawExhiOutlined(thorn + "", drawExhiOutlined("T", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(thorn), getMainColor(thorn), true);
                 y += 4;
             }
         }
@@ -399,19 +399,19 @@ public final class RenderUtils extends MinecraftInstance {
             int flame = EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, stack);
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             if (power > 0) {
-                drawExhiOutlined(power + "", drawExhiOutlined("Pow", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(power), getMainColor(power), true);
+                drawExhiOutlined(power + "", drawExhiOutlined("Pow", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(power), getMainColor(power), true);
                 y += 4;
             }
             if (punch > 0) {
-                drawExhiOutlined(punch + "", drawExhiOutlined("Pun", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(punch), getMainColor(punch), true);
+                drawExhiOutlined(punch + "", drawExhiOutlined("Pun", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(punch), getMainColor(punch), true);
                 y += 4;
             }
             if (flame > 0) {
-                drawExhiOutlined(flame + "", drawExhiOutlined("F", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(flame), getMainColor(flame), true);
+                drawExhiOutlined(flame + "", drawExhiOutlined("F", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(flame), getMainColor(flame), true);
                 y += 4;
             }
             if (unb > 0) {
-                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(unb), getMainColor(unb), true);
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(unb), getMainColor(unb), true);
                 y += 4;
             }
         }
@@ -421,19 +421,20 @@ public final class RenderUtils extends MinecraftInstance {
             int fire = EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId, stack);
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             if (sharp > 0) {
-                drawExhiOutlined(sharp + "", drawExhiOutlined("S", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(sharp), getMainColor(sharp), true);
+                drawExhiOutlined(sharp + "", drawExhiOutlined("S", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(sharp), getMainColor(sharp), true);
                 y += 4;
             }
             if (kb > 0) {
-                drawExhiOutlined(kb + "", drawExhiOutlined("K", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(kb), getMainColor(kb), true);
+                drawExhiOutlined(kb + "", drawExhiOutlined("K", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(kb), getMainColor(kb), true);
                 y += 4;
             }
             if (fire > 0) {
-                drawExhiOutlined(fire + "", drawExhiOutlined("F", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(fire), getMainColor(fire), true);
+                drawExhiOutlined(fire + "", drawExhiOutlined("F", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(fire), getMainColor(fire), true);
                 y += 4;
             }
             if (unb > 0) {
-                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.1F, darkBorder, -1, true), y, 0.1F, getBorderColor(unb), getMainColor(unb), true);
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(unb), getMainColor(unb), true);
+                y += 4;
             }
         }
         GlStateManager.enableDepth();
@@ -441,13 +442,13 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     private static float drawExhiOutlined(String text, float x, float y, float borderWidth, int borderColor, int mainColor, boolean drawText) {
-        Fonts.fontVerdana.drawString(text, x, y - borderWidth, borderColor);
-        Fonts.fontVerdana.drawString(text, x, y + borderWidth, borderColor);
-        Fonts.fontVerdana.drawString(text, x - borderWidth, y, borderColor);
-        Fonts.fontVerdana.drawString(text, x + borderWidth, y, borderColor);
+        Fonts.fontTahomaSmall.drawString(text, x, y - borderWidth, borderColor);
+        Fonts.fontTahomaSmall.drawString(text, x, y + borderWidth, borderColor);
+        Fonts.fontTahomaSmall.drawString(text, x - borderWidth, y, borderColor);
+        Fonts.fontTahomaSmall.drawString(text, x + borderWidth, y, borderColor);
         if (drawText)
-            Fonts.fontVerdana.drawString(text, x, y, mainColor);
-        return x + Fonts.fontVerdana.getWidth(text) - 2.5F;
+            Fonts.fontTahomaSmall.drawString(text, x, y, mainColor);
+        return x + Fonts.fontTahomaSmall.getWidth(text) - 2F;
     }
 
     private static int getMainColor(int level) {
@@ -458,14 +459,14 @@ public final class RenderUtils extends MinecraftInstance {
 
     private static int getBorderColor(int level) {
         if (level == 2)
-            return 0xFF55FF55;
+            return 0x7055FF55;
         if (level == 3)
-            return 0xFF00AAAA;
+            return 0x7000AAAA;
         if (level == 4)
-            return 0xFFAA0000;
+            return 0x70AA0000;
         if (level >= 5)
-            return 0xFFFFAA00;
-        return -1;
+            return 0x70FFAA00;
+        return 0x70FFFFFF;
     }
     public static void customRounded(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float rTL, float rTR, float rBR, float rBL, int color) {
         float alpha = (color >> 24 & 0xFF) / 255.0F;
