@@ -44,12 +44,11 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity"), "Rice")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "Zamorozka", "Arris", "Tenacity"), "Rice")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
     private val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
-    private val chillHealthBarValue = BoolValue("Chill-Healthbar", true).displayable { modeValue.get().equals("chill", true) }
 
     private val fontValue = FontValue("Font", Fonts.font40)
 
@@ -350,11 +349,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "zamorozka" -> drawZamorozka(prevTarget!!)
             "arris" -> drawArris(prevTarget!!)
             "tenacity" -> drawTenacity(prevTarget!!)
-            "chill" -> drawChill(prevTarget!!)
-            "remix" -> drawRemix(prevTarget!!)
+            "chill" -> drawChill(prevTarget!! as EntityPlayer)
+            "remix" -> drawRemix(prevTarget!! as EntityPlayer)
             "rice" -> drawRice(prevTarget!!)
             "slowly" -> drawSlowly(prevTarget!!)
             "what" -> drawWhat(prevTarget!!)
+            "exhibition" -> drawExhibition(prevTarget!! as EntityPlayer)
         }
 
         return getTBorder()
@@ -766,6 +766,72 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
          font.drawStringWithShadow("${decimalFormat4.format(health)}", 2F + 36F + (nameLength - 2F) / 2F - font.getStringWidth("${decimalFormat4.format(health)}").toFloat() / 2F, 16F, -1)
     }
 
+    private fun drawExhibition(entity: EntityPlayer) {
+        val font = Fonts.fontTahoma
+        val minWidth = 126F.coerceAtLeast(47F + font.getStringWidth(entity.name))
+
+        RenderUtils.drawExhiRect(0F, 0F, minWidth, 45F, 1F - getFadeProgress())
+
+        RenderUtils.drawRect(2.5F, 2.5F, 42.5F, 42.5F, getColor(Color(59, 59, 59)).rgb)
+        RenderUtils.drawRect(3F, 3F, 42F, 42F, getColor(Color(19, 19, 19)).rgb)
+
+        GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
+        RenderUtils.drawEntityOnScreen(22, 40, 16, entity)
+
+        font.drawString(entity.name, 46, 5, getColor(-1).rgb)
+
+        val barLength = 70F * (entity.health / entity.maxHealth).coerceIn(0F, 1F)
+        RenderUtils.drawRect(45F, 14F, 45F + 70F, 18F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth).darker(0.3F)).rgb)
+        RenderUtils.drawRect(45F, 14F, 45F + barLength, 18F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth)).rgb)
+
+        for (i in 0..9)
+            RenderUtils.drawRectBasedBorder(45F + i * 7F, 14F, 45F + (i + 1) * 7F, 18F, 0.5F, getColor(Color.black).rgb)
+
+        Fonts.fontTahomaSmall.drawString("HP:${entity.health.toInt()} | Dist:${mc.thePlayer.getDistanceToEntityBox(entity).toInt()}", 45F, 21F, getColor(-1).rgb)
+
+        GlStateManager.resetColor()
+        GL11.glPushMatrix()
+        GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
+        GlStateManager.enableRescaleNormal()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderHelper.enableGUIStandardItemLighting()
+
+        val renderItem = mc.renderItem
+
+        var x = 45
+        var y = 28
+
+        for (index in 3 downTo 0) {
+            val stack = entity.inventory.armorInventory[index] ?: continue
+
+            if (stack.item == null)
+                continue
+
+            renderItem.renderItemIntoGUI(stack, x, y)
+            renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
+            RenderUtils.drawExhiEnchants(stack, x.toFloat(), y.toFloat())
+
+            x += 16
+        }
+
+        val mainStack = entity.heldItem
+        if (mainStack != null && mainStack.item != null) {
+            renderItem.renderItemIntoGUI(mainStack, x, y)
+            renderItem.renderItemOverlays(mc.fontRendererObj, mainStack, x, y)
+            RenderUtils.drawExhiEnchants(mainStack, x.toFloat(), y.toFloat())
+        }
+
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.disableRescaleNormal()
+        GlStateManager.enableAlpha()
+        GlStateManager.disableBlend()
+        GlStateManager.disableLighting()
+        GlStateManager.disableCull()
+        GL11.glPopMatrix()
+
+    }
+
     private fun drawFlux(target: EntityLivingBase) {
         val width = (38 + target.name.let(Fonts.font40::getStringWidth))
             .coerceAtLeast(70)
@@ -841,36 +907,13 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
     }
 
-    private fun drawChill(entity: EntityLivingBase) {
+    private fun drawChill(entity: EntityPlayer) {
         updateAnim(entity.health)
 
         val name = entity.name
         val health = entity.health
         val tWidth = (45F + Fonts.font40.getStringWidth(name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(health)))).coerceAtLeast(120F)
         val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
-
-        val floatX = renderX.toFloat()
-        val floatY = renderY.toFloat()
-
-        val calcScaleX = (progressChill * (4F / (tWidth / 2F)))
-        val calcScaleY = if (chillHealthBarValue.get()) (progressChill * (4F / 24F))
-        else (progressChill * (4F / 19F))
-        val calcTranslateX = floatX + tWidth / 2F * calcScaleX
-        val calcTranslateY = floatY + if (chillHealthBarValue.get()) (24F * (progressChill * (4F / 24F)))
-        else (19F * (progressChill * (4F / 19F)))
-
-        // translation/scaling
-        GL11.glScalef(1f, 1f, 1f)
-        GL11.glPopMatrix()
-
-        GL11.glPushMatrix()
-
-        /*
-        some calculation
-        0.2 of 15 = 3 // 3/15 = 0.2
-        0.2 of 20 = 4 // 4/20 = 0.2
-        0.066 of 60 = 4 // 4/60 = 0.0(6)
-         */
 
         // background
         RenderUtils.drawRoundedRect(0F, 0F, tWidth, 48F, 7F, bgColor.rgb)
@@ -916,7 +959,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
 
-    private fun drawRemix(entity: EntityLivingBase) {
+    private fun drawRemix(entity: EntityPlayer) {
         updateAnim(entity.health)
 
         // background
@@ -933,7 +976,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         // armor bar
         RenderUtils.newDrawRect(40F, 36F, 141.5F, 38F, getColor(Color.blue.darker()).rgb)
-        RenderUtils.newDrawRect(40F, 36F, 40F + (entity.totalArmorValue.toFloat() / 20F).coerceIn(0F, 1F) * 101.5F, 38F, getColor(Color.blue).rgb)
+        RenderUtils.newDrawRect(40F, 36F, 40F + (entity.getTotalArmorValue().toFloat() / 20F).coerceIn(0F, 1F) * 101.5F, 38F, getColor(Color.blue).rgb)
 
         // armor item background
         RenderUtils.newDrawRect(40F, 16F, 58F, 34F, getColor(Color(25, 25, 25)).rgb)
@@ -956,7 +999,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             // actual head
             drawHead(mc.netHandler.getPlayerInfo(entity.uniqueID).locationSkin, 5, 5, 32, 32, 1F - getFadeProgress())
 
-            val responseTime = mc.netHandler.getPlayerInfo(entity.uniqueID).responseTime
+            val responseTime = mc.netHandler.getPlayerInfo(entity.uniqueID).responseTime.toInt()
             val stringTime = "${responseTime.coerceAtLeast(0)}ms"
 
             var j = 0
@@ -989,6 +1032,20 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
         RenderHelper.enableGUIStandardItemLighting()
 
+        val renderItem = mc.renderItem
+
+        var x = 41
+        var y = 17
+
+        for (index in 3 downTo 0) {
+            val stack = entity.inventory.armorInventory[index] ?: continue
+
+            if (stack.getItem() == null)
+                continue
+
+            renderItem.renderItemAndEffectIntoGUI(stack, x, y)
+            x += 20
+        }
 
         RenderHelper.disableStandardItemLighting()
         GlStateManager.enableAlpha()
@@ -1248,6 +1305,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "rice" -> Border(0F, 0F, 135F, 55F)
             "slowly" -> Border(0F, 0F, 102F, 36F)
             "what" -> Border(-1F, -2F, 110F, 38F)
+            "exhibition" -> Border(0F, 0F, 126F, 45F)
             else -> null
         }
     }

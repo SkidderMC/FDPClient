@@ -307,4 +307,20 @@ object MovementUtils : MinecraftInstance() {
             )
         )
     }
+
+    fun isBlockUnder(): Boolean {
+        if (mc.thePlayer == null) return false
+        if (mc.thePlayer.posY < 0.0) {
+            return false
+        }
+        var off = 0
+        while (off < mc.thePlayer.posY.toInt() + 2) {
+            val bb = mc.thePlayer.entityBoundingBox.offset(0.0, (-off).toDouble(), 0.0)
+            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty()) {
+                return true
+            }
+            off += 2
+        }
+        return false
+    }
 }

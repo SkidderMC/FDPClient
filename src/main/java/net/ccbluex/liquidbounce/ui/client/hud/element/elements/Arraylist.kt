@@ -31,8 +31,8 @@ import java.awt.Color
  */
 @ElementInfo(name = "Arraylist", blur = true)
 class Arraylist(
-    x: Double = 5.0,
-    y: Double = 5.0,
+    x: Double = 1.0,
+    y: Double = 2.0,
     scale: Float = 1F,
     side: Side = Side(Horizontal.RIGHT, Vertical.UP)
 ) : Element(x, y, scale, side) {

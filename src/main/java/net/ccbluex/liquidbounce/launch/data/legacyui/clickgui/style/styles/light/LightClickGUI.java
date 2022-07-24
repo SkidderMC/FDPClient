@@ -101,7 +101,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     }
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        RenderUtils.drawImage(new ResourceLocation( "fdpclient/clickgui/hud"), 9, height - 41, 32, 32);
+        RenderUtils.drawImage(new ResourceLocation( "fdpclient/clickgui/Hud.png"), 9, height - 41, 32, 32);
         if(!firstSetAnimation) {
             for (Module i : LiquidBounce.moduleManager.getModules()) {
                 i.getAnimation().animationX = i.getState() ? 5 : -5;
