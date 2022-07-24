@@ -13,8 +13,9 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 
 class CustomSpeed : SpeedMode("Custom") {
-    private val speedValue = FloatValue("CustomSpeed", 1.6f, 0.2f, 2f)
+    private val speedValue = FloatValue("CustomSpeed", 1.6f, 0f, 2f)
     private val launchSpeedValue = FloatValue("CustomLaunchSpeed", 1.6f, 0.2f, 2f)
+    private val minimumSpeedValue = FloatValue("CustomMinimumSpeed", 0.25f, 0.1f, 2f)
     private val addYMotionValue = FloatValue("CustomAddYMotion", 0f, 0f, 2f)
     private val yValue = FloatValue("CustomY", 0f, 0f, 4f)
     private val upTimerValue = FloatValue("CustomUpTimer", 1f, 0.1f, 2f)
@@ -28,8 +29,14 @@ class CustomSpeed : SpeedMode("Custom") {
     private val resetXZValue = BoolValue("CustomResetXZ", false)
     private val resetYValue = BoolValue("CustomResetY", false)
     private val doLaunchSpeedValue = BoolValue("CustomDoLaunchSpeed", true)
+    private val doMinimumSpeedValue = BoolValue("CustomDoMinimumSpeed", true)
+    private val GroundSpaceKeyPressed = BoolValue("CustomPressSpaceKeyOnGround", true)
+    private val AirSpaceKepPressed = BoolValue("CustomPressSpaceKeyInAir", false)
+
+    
 
     private var groundTick = 0
+
 
     override fun onPreMotion() {
         if (MovementUtils.isMoving()) {
@@ -38,6 +45,9 @@ class CustomSpeed : SpeedMode("Custom") {
             when {
                 mc.thePlayer.onGround -> {
                     if (groundTick >= groundStay.get()) {
+                        if (GroundSpaceKeyPressed.get()) {
+                            mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                        }
                         mc.timer.timerSpeed = jumpTimerValue.get()
                         mc.thePlayer.jump()
                         if (doLaunchSpeedValue.get()) {
@@ -54,6 +64,12 @@ class CustomSpeed : SpeedMode("Custom") {
                 }
                 else -> {
                     groundTick = 0
+                    if (AirSpaceKeyPressed.get()) {
+                        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                    }
+                    if (doMinimumSpeedValue.get() && MovementUtils.getSpeed() < minimumSpeedValue) {
+                        MovementUtils.strafe(minimumSpeedValue.get())
+                    }
                     when (strafeValue.get().lowercase()) {
                         "strafe" -> MovementUtils.strafe(speedValue.get())
                         "non-strafe" -> MovementUtils.strafe()
@@ -102,6 +118,7 @@ class CustomSpeed : SpeedMode("Custom") {
             mc.thePlayer.motionZ = 0.0
         }
     }
+
 
     override fun onEnable() {
         if (resetXZValue.get()) {
