@@ -30,7 +30,7 @@ class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    override fun drawElement(partialTicks: Float): Border? {
+    override fun drawElement(partialTicks: Float): Border {
         if (mc.playerController.isNotCreative) {
             val renderItem = mc.renderItem
             val isInsideWater = mc.thePlayer.isInsideOfMaterial(Material.water)

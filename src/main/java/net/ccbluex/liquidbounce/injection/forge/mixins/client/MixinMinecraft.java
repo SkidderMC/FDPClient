@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
@@ -48,7 +49,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -98,7 +98,8 @@ public abstract class MixinMinecraft {
     private boolean fullscreen;
 
     /**
-     * @author XiGuaGeGe
+     * @author Zywl
+     * @reason
      */
     @Overwrite
     public int getLimitFramerate() {
@@ -224,13 +225,14 @@ public abstract class MixinMinecraft {
 
     /**
      * @author CCBlueX
+     * @reason
      */
     @Overwrite
     private void sendClickBlockToController(boolean leftClick) {
         if (!leftClick)
             this.leftClickCounter = 0;
 
-        if (this.leftClickCounter <= 0 && !this.thePlayer.isUsingItem()) {
+        if (this.leftClickCounter <= 0 && (!this.thePlayer.isUsingItem() || LiquidBounce.moduleManager.getModule(MultiActions.class).getState())) {
             if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 BlockPos blockPos = this.objectMouseOver.getBlockPos();
 

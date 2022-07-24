@@ -40,6 +40,7 @@ object ColorUtils {
         return COLOR_PATTERN.matcher(input).replaceAll("")
     }
 
+    @JvmStatic
     fun translateAlternateColorCodes(textToTranslate: String): String {
         val chars = textToTranslate.toCharArray()
 
