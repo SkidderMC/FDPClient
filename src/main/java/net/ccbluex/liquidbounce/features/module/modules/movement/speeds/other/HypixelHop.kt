@@ -22,6 +22,10 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private var wasOnGround = false
 
     override fun onUpdate() {
+        if (!MovementUtils.isMoving()) {
+            mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionZ = 0.0
+        }
         when (bypassMode.get().lowercase()) {
             "stable"-> {
                 oldMotionX = mc.thePlayer.motionX
@@ -37,7 +41,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionZ *= 0.99
                     }
                     wasOnGround = false
-                } else {
+                } else if (MovementUtils.isMoving()) {
                     wasOnGround = true
                     mc.thePlayer.jump()
                     mc.thePlayer.motionY = 0.41999998688697815
