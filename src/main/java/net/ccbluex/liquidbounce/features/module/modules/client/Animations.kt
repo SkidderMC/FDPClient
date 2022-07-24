@@ -24,7 +24,7 @@ object Animations : Module() {
     val invEaseModeValue = EaseUtils.getEnumEasingList("InvEase")
     val invEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("InvEaseOrder")
     val invTimeValue = IntegerValue("InvTime", 500, 0, 1000).displayable { !invModeValue.equals("None") }
-    private val tabShowPlayerSkinValue = BoolValue("TabShowPlayerSkin", false)
+    private val tabShowPlayerSkinValue = BoolValue("TabShowPlayerSkin", true)
     val tabModeValue = ListValue("TabMode", arrayOf("None", "UpSlide", "DownSlide", "Zoom"), "Zoom")
     val tabEaseModeValue = EaseUtils.getEnumEasingList("TabEase")
     val tabEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("TabEaseOrder")

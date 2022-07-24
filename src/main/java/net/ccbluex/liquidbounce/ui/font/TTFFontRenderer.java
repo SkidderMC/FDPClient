@@ -40,7 +40,7 @@ public class TTFFontRenderer {
     /**
      * All the character data information (bold).
      */
-    private CharacterData[] boldData;
+    private final CharacterData[] boldData;
 
     /**
      * All the character data information (italics).
@@ -381,7 +381,7 @@ public class TTFFontRenderer {
                     drawLine(new Vector2f(0, charData.height - 15), new Vector2f(charData.width, charData.height - 15), 3);
 
                 // Adds to the offset.
-                x += charData.width - (2 * MARGIN) - 0.5F;
+                x += charData.width - (2 * MARGIN);
             }
         }
 
@@ -445,7 +445,7 @@ public class TTFFontRenderer {
                 CharacterData charData = characterData[character];
 
                 // Adds to the offset.
-                width += (charData.width - (2 * MARGIN)) / 2 - 0.5;
+                width += (charData.width - (2 * MARGIN)) / 2;
             }
         }
 
