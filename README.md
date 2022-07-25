@@ -7,43 +7,43 @@ A free mixin-based injection hacked-client for Minecraft using Minecraft Forge b
 
 Website: [fdpinfo.github.io](https://fdpinfo.github.io)
 Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)    
-Discord: https://discord.gg/55x7TaHWXG  
+Discord: https://discord.gg/55x7TaHWXG
 
-## Installing FDP (an iq is required)
-- **Step 1:** install java [download (click here)](https://www.java.com/en/download/) (if u have java skip this step)
-- **Step 2:** install forge 1.8.9 [download (click here)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (if u have forge skip this step)
-- **step 3:** start forge
-- **step 4:** put fdp in your mods folder (if you are using the offical launcher click the installations tab then click the folder icon next to forge.
-- **step 5:** enjoy using fdp!
+## Installing FDP
+- **Step 1:** Install Java [download (click here)](https://www.java.com/en/download/) (Skip if you have Java)
+- **Step 2:** Install Forge 1.8.9 [download (click here)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
+- **step 3:** Start Forge and then close it
+- **step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\.minecraft\mods) (If you are using the offical launcher, click the installations tab then click the folder icon next to forge)
+- **step 5:** Enjoy hacking!
 
-## What happened to old repository?
-UnlegitMC Account was hacked by some china gang and take down FDPClient, so yeah this is the new repository of FDPClient.
+## What happened to the old repository?
+The UnlegitMC Account was hacked by some china gang and took down FDPClient, so this is the new repository of FDPClient.
 
 ## Issues
 If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues).
 
 ## License
 This project is subject to the [GNU General Public License v3.0](LICENSE). This does only apply for source code located directly in this clean repository. During the development and compilation process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL license.
- 
+
 For those who are unfamiliar with the license, here is a summary of its main points. This is by no means legal advise nor legally binding.
 
-You are allowed to
-- use
-- share
-- modify
+You are allowed to:
+- Use
+- Share
+- Modify
 
 this project entirely or partially for free and even commercially. However, please consider the following:
 
 - **You must disclose the source code of your modified work and the source code you took from this project. This means you are not allowed to use code from this project (even partially) in a closed-source (or even obfuscated) application.**
 - **Your modified application must also be licensed under the GPL** 
 
-Do the above and share your source code with everyone; just like we do.
+Do the above and share your source code with everyone; just like we do!
 
 ## Setting up a Workspace
 FDPClient uses gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
-1. Clone the repository using `git clone --recurse-submodules https://github.com/SkidderMC/FDPClient.git` (make sure you have git installed on your system). 
+1. Clone the repository using `git clone --recurse-submodules https://github.com/SkidderMC/FDPClient.git` (Make sure you have git or Github Desktop installed on your system).
 2. CD into the local repository folder.
-3. Depending on which IDE you are using execute either of the following commands:
+3. Depending on which IDE you are using, execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
     - For Eclipse: `gradlew --debug setupDevWorkspace eclipse build`
 4. Open the folder as a Gradle project in your IDE.
@@ -51,10 +51,10 @@ FDPClient uses gradle, so make sure that it is installed properly. Instructions 
 
 ## Additional libraries
 ### Mixins
-Mixins can be used to modify classes at runtime before they are loaded. FDPClient uses it to inject its code into the Minecraft client. This way, we do not have to ship Mojangs copyrighted code. If you want to learn more about it, check out its [Documentation](https://docs.spongepowered.org/5.1.0/en/plugin/internals/mixins.html).
+Mixins can be used to modify classes at runtime before they are loaded. FDPClient uses it to inject its code into the Minecraft client. This way, we do not have to ship Mojang's copyrighted code. If you want to learn more about it, check out its [Documentation](https://docs.spongepowered.org/5.1.0/en/plugin/internals/mixins.html).
 
 ## Contributing
-We are welcome for your contributing, but you have to follow these rules to make us merge your pull request.
+We are welcome for your contributions, but you have to follow these rules to make us merge your pull request.
 
 ### Language and Code Quality
 First of all, your code at least can be build, and make bugs as less as you can!   
@@ -63,23 +63,24 @@ And we want to use kotlin features to make coding easier and faster, please use 
 #### Kotlin features
 Usage of kotlin features and help enhance the code readability    
 kotlin feature examples
+Using Kotlin Features:
 ~~~kotlin
 Timer().schedule(2000L) { 
     // your code
 }
 ~~~
-not using kotlin feature
+Not using Kotlin Features:
 ~~~kotlin
-Timer().schedule(object : TimerTask(){
+Timer().schedule(object : TimerTask() {
     override fun run() {
         // your code
     }
-},2000L)
+}, 2000L)
 ~~~
 
-### Skid codes
-Please use original code if you can, and no direct code steals, but we welcome skid using packet logger or anything else like that to skid from a close source and make the cheating community more open!
+### Skidding
+Please use original code if you can, and no direct code steals, but we welcome skidding packet logger or anything else like that to skid from a close source and make the cheating community more open!
 
 ### Useless features
-Useless features means feature only you think its usable, or feature can be have with config change.  
+Useless features means features only you think it's usable, or features can be have with config change.  
 Like the "TimerSpeed" option to InfiniteAura, this feature can be added with bind Timer to the key with InfiniteAura, or use macro system in FDP Client.
