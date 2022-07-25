@@ -12,11 +12,28 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.BoolValue
+<<<<<<<< HEAD:src/main/java/net/ccbluex/liquidbounce/features/module/modules/player/AutoHeal.kt
+========
+import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.minecraft.util.MathHelper
+import net.ccbluex.liquidbounce.event.PacketEvent
+import net.minecraft.network.play.server.S02PacketChat
+import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.event.UpdateEvent
+>>>>>>>> ff5b0d11af91984a8c362ce19d87d40ddad81315:src/main/java/net/ccbluex/liquidbounce/features/module/modules/player/Gapple.kt
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+<<<<<<<< HEAD:src/main/java/net/ccbluex/liquidbounce/features/module/modules/player/AutoHeal.kt
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.InventoryUtils
+========
+import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.InventoryUtils
+import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.item.ItemStack
+>>>>>>>> ff5b0d11af91984a8c362ce19d87d40ddad81315:src/main/java/net/ccbluex/liquidbounce/features/module/modules/player/Gapple.kt
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C03PacketPlayer
@@ -73,51 +90,52 @@ class Heal : Module() {
     fun onUpdate(event: UpdateEvent) {
         if (tryHeal) {
             when (modeValue.get().lowercase()) {
-            "auto" -> {
-                val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
-                if (gappleInHotbar != -1) {
-                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
-                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
-                    repeat(35) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                    }
-                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                    alert("Gapple eaten")
-                    tryHeal = false
-                    timer.reset()
-                    delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
-                }else {
-                    tryHeal = false
-                }
-            }
-            "legitauto" -> {
-                if (eating == -1) {
+                "auto" -> {
                     val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
-                    if(gappleInHotbar == -1) {
+                    if (gappleInHotbar != -1) {
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                        repeat(35) {
+                            mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                        }
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                        alert("Gapple eaten")
                         tryHeal = false
-                        return
+                        timer.reset()
+                        delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
+                    }else {
+                        tryHeal = false
                     }
-                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
-                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
-                    eating = 0
-                } else if (eating > 35) {
-                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                    timer.reset()
-                    tryHeal = false
-                    delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
                 }
-            }
-            "head" -> {
-                val headInHotbar = InventoryUtils.findItem(36, 45, Items.skull)
-                if (headInHotbar != -1) {
-                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(headInHotbar - 36))
-                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
-                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                    timer.reset()
-                    tryHeal = false
-                    delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
-                }else {
-                    tryHeal = false
+                "legitauto" -> {
+                    if (eating == -1) {
+                        val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
+                        if(gappleInHotbar == -1) {
+                            tryHeal = false
+                            return
+                        }
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                        eating = 0
+                    } else if (eating > 35) {
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                        timer.reset()
+                        tryHeal = false
+                        delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
+                    }
+                }
+                "head" -> {
+                    val headInHotbar = InventoryUtils.findItem(36, 45, Items.skull)
+                    if (headInHotbar != -1) {
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(headInHotbar - 36))
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                        timer.reset()
+                        tryHeal = false
+                        delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
+                    } else {
+                        tryHeal = false
+                    }
                 }
             }
         }
@@ -136,6 +154,15 @@ class Heal : Module() {
         }
     }
 
+<<<<<<<< HEAD:src/main/java/net/ccbluex/liquidbounce/features/module/modules/player/AutoHeal.kt
     override val tag: String
         get() = modeValue.get()
 } 
+========
+    override val tag: String? 
+        get() = if (mc.thePlayer == null || mc.thePlayer.health == Float.NaN) modeValue.get() else modeValue.get()+" "+String.format(
+            "%.2f HP",
+            percent.get() / 100.0f * mc.thePlayer.maxHealth
+        )
+} 
+>>>>>>>> ff5b0d11af91984a8c362ce19d87d40ddad81315:src/main/java/net/ccbluex/liquidbounce/features/module/modules/player/Gapple.kt
