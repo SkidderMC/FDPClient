@@ -51,25 +51,25 @@ FDPClient uses gradle, so make sure that it is installed properly. Instructions 
 
 ## Additional libraries
 ### Mixins
-Mixins can be used to modify classes at runtime before they are loaded. FDPClient uses it to inject its code into the Minecraft client. This way, we do not have to ship Mojang's copyrighted code. If you want to learn more about it, check out its [Documentation](https://docs.spongepowered.org/5.1.0/en/plugin/internals/mixins.html).
+Mixins can be used to modify classes at runtime before they are loaded. FDPClient uses it to inject its code into the Minecraft client. This way, we do not have to ship Mojang's copyrighted code. If you want to learn more about it, check out their [documentation](https://docs.spongepowered.org/5.1.0/en/plugin/internals/mixins.html).
 
 ## Contributing
 We are welcome for your contributions, but you have to follow these rules to make us merge your pull request.
 
 ### Language and Code Quality
-First of all, your code at least can be build, and make bugs as less as you can!   
-And we want to use kotlin features to make coding easier and faster, please use kotlin and make the [Detekt](https://github.com/detekt/detekt) code quality check good and use kotlin features if you can **\***, we never merge shitcode.
+Your code needs to be able to build, and make the bugs of the code as less as you can!  
+You also need to use kotlin features to make coding easier and faster, so please use kotlin and make the [Detekt](https://github.com/detekt/detekt) code quality check good and use kotlin features if you can, because we would never merge terrible code.
 
 #### Kotlin features
-Usage of kotlin features and help enhance the code readability    
-kotlin feature examples
-Using Kotlin Features:
+Help enhance the code readability by using kotlin features.
+
+Using kotlin features:
 ~~~kotlin
 Timer().schedule(2000L) { 
     // your code
 }
 ~~~
-Not using Kotlin Features:
+Not using kotlin features:
 ~~~kotlin
 Timer().schedule(object : TimerTask() {
     override fun run() {
@@ -79,7 +79,7 @@ Timer().schedule(object : TimerTask() {
 ~~~
 
 ### Skidding
-Please use original code if you can, and no direct code steals, but we welcome skidding packet logger or anything else like that to skid from a close source and make the cheating community more open!
+Please use original code if you can, and no direct code steals, but we welcome skidding packet logger or anything like that to skid from a closed source client and make the cheating community more open!
 
 ### Useless features
 Useless features means features only you think it's usable, or features can be have with config change.  
