@@ -35,7 +35,7 @@ You are allowed to:
 this project entirely or partially for free and even commercially. However, please consider the following:
 
 - **You must disclose the source code of your modified work and the source code you took from this project. This means you are not allowed to use code from this project (even partially) in a closed-source (or even obfuscated) application.**
-- **Your modified application must also be licensed under the GPL** 
+- **Your modified application must also be licensed under the GPL.**
 
 Do the above and share your source code with everyone; just like we do!
 
