@@ -14,7 +14,7 @@ Discord: https://discord.gg/55x7TaHWXG
 - **Step 2:** Install Forge 1.8.9 [here](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it
 - **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\.minecraft\mods) (If you are using the offical launcher, click the installations tab then click the folder icon next to forge)
-- **step 5:** Enjoy hacking!
+- **Step 5:** Enjoy hacking!
 
 ## What happened to the old repository?
 The UnlegitMC Account was hacked by some china gang and they took down FDPClient, so this is the new repository of FDPClient.
