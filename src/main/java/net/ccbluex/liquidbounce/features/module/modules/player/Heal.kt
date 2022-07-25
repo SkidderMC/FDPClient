@@ -32,6 +32,7 @@ import java.util.*
 @ModuleInfo(name = "Heal", category = ModuleCategory.PLAYER)
 class Heal : Module() {
 
+    private val modeValue = ListValue("Mode", arrayOf("Auto", "LegitAuto", "Head"), "Auto")
     private val percent = FloatValue("HealthPercent", 75.0f, 1.0f, 100.0f)
     private val min = IntegerValue("MinDelay", 75, 1, 5000)
     private val max = IntegerValue("MaxDelay", 125, 1, 5000)
@@ -42,65 +43,93 @@ class Heal : Module() {
     private val invCheck = BoolValue("InvCheck", false)
     private val absorpCheck = BoolValue("AbsorpCheck", true)
     val timer = MSTimer()
+    private var eating = -1
     var delay = 0
     var isDisable = false
+    var tryHeal = false
     override fun onEnable() {
-        super.onEnable()
+        eating = -1
         timer.reset()
         isDisable = false
+        tryHeal = false
         delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
     }
 
     @EventTarget
-    fun onPacket(e: PacketEvent) {
-        if (e.packet is S02PacketChat && e.packet.chatComponent.formattedText.contains("§r§7 won the game! §r§e\u272a§r")) {
-            ClientUtils.displayChatMessage("§f[§cSLHeal§f] §6Temp Disable Heal")
-            isDisable = true
-        }
+    fun onWorld(event: WorldEvent) {
+        isDisable = true
+        tryHeal = false
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        if (mc.thePlayer.ticksExisted <= 5 && isDisable) {
+        if (tryHeal) {
+            when (modeValue.get().lowercase()) {
+            "auto" -> {
+                val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
+                if (gappleInHotbar != -1) {
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
+                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                    repeat(35) {
+                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    }
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    alert("Gapple eaten")
+                    tryHeal = false
+                    timer.reset()
+                    delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
+                }else {
+                    tryHeal = false
+                }
+            }
+            "legitauto" -> {
+                if (eating == -1) {
+                    val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
+                    if(gappleInHotbar == -1) {
+                        tryHeal = false
+                        return
+                    }
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
+                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                    eating = 0
+                } else if (eating > 35) {
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    timer.reset()
+                    tryHeal = false
+                    delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
+                }
+            }
+            "head" -> {
+                val headInHotbar = InventoryUtils.findItem(36, 45, Items.skull)
+                if (headInHotbar != -1) {
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(headInHotbar - 36))
+                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    timer.reset()
+                    tryHeal = false
+                    delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
+                }else {
+                    tryHeal = false
+                }
+            }
+        }
+        if (mc.thePlayer.ticksExisted <= 10 && isDisable) {
             isDisable = false
-            ClientUtils.displayChatMessage("§f[§cSLHeal§f] §6Enable Heal due to World Changed or Player Respawned")
         }
         val absorp = MathHelper.ceiling_double_int(mc.thePlayer.absorptionAmount.toDouble())
-        if (groundCheck.get() && !mc.thePlayer.onGround || voidCheck.get() && !MovementUtils.isBlockUnder() || invCheck.get() && mc.currentScreen is GuiContainer || absorp != 0 && absorpCheck.get())
+        if ((groundCheck.get() && !mc.thePlayer.onGround) || (voidCheck.get() && !MovementUtils.isBlockUnder()) || (invCheck.get() && mc.currentScreen is GuiContainer) || (absorp != 0 && absorpCheck.get()))
             return
         if (waitRegen.get() && mc.thePlayer.isPotionActive(Potion.regeneration) && mc.thePlayer.getActivePotionEffect(Potion.regeneration).duration > regenSec.get() * 20.0f)
             return
-        val pair = gAppleSlot
-        if (!isDisable && pair != null && (mc.thePlayer.health <= percent.get() / 100.0f * mc.thePlayer.maxHealth || !mc.thePlayer.isPotionActive(Potion.absorption) || absorp == 0 && mc.thePlayer.health == 20.0f && mc.thePlayer.isPotionActive(Potion.absorption)) && timer.hasTimePassed(delay.toLong())) {
-            ClientUtils.displayChatMessage("§f[§cSLHeal§f] §6Healed")
-            val lastSlot = mc.thePlayer.inventory.currentItem
-            val slot = pair.left as Int
-            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(slot))
-            val stack = pair.right as ItemStack
-            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(stack))
-            for (i in 0..31) {
-                mc.netHandler.addToSendQueue(C03PacketPlayer())
-            }
-            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(lastSlot))
-            mc.thePlayer.inventory.currentItem = lastSlot
-            mc.playerController.updateController()
-            delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
-            timer.reset()
+        if (!isDisable && (mc.thePlayer.health <= (percent.get() / 100.0f) * mc.thePlayer.maxHealth) && timer.hasTimePassed(delay.toLong())) {
+            if (tryHeal)
+                return
+            tryHeal = true
         }
     }
 
-    private val gAppleSlot: Pair<Int, ItemStack>?
-        private get() {
-            for (i in 0..8) {
-                val stack = mc.thePlayer.inventory.getStackInSlot(i)
-                if (stack != null && stack.item === Items.golden_apple) {
-                    return Pair.of(i, stack)
-                }
-            }
-            return null
-        }
     override val tag: String?
-        get() = if (mc.thePlayer == null || mc.thePlayer.health == Float.NaN) null else String.format(
+        get() = if (mc.thePlayer == null || mc.thePlayer.health == Float.NaN) modeValue.get() else modeValue.get()+" "+String.format(
             "%.2f HP",
             percent.get() / 100.0f * mc.thePlayer.maxHealth
         )
