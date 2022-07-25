@@ -13,7 +13,7 @@ Discord: https://discord.gg/55x7TaHWXG
 - **Step 1:** Install Java [here](https://www.java.com/en/download/) (Skip if you have Java)
 - **Step 2:** Install Forge 1.8.9 [here](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it
-- **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\.minecraft\mods) (If you are using the official launcher, click the installations tab then click the folder icon next to forge)
+- **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\\.minecraft\mods) (If you are using the official launcher, click the installations tab then click the folder icon next to forge)
 - **Step 5:** Enjoy hacking!
 
 ## What happened to the old repository?
@@ -37,11 +37,11 @@ this project entirely or partially for free and even commercially. However, plea
 - **You must disclose the source code of your modified work and the source code you took from this project. This means you are not allowed to use code from this project (even partially) in a closed-source (or even obfuscated) application.**
 - **Your modified application must also be licensed under the GPL.**
 
-Do the above and share your source code with everyone; just like we do!
+Do the above and also share your source code with everyone; just like we do!
 
 ## Setting up a Workspace
 FDPClient uses gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
-1. Clone the repository using `git clone --recurse-submodules https://github.com/SkidderMC/FDPClient.git` (Make sure you have git or Github Desktop installed on your system).
+1. Clone the repository using `git clone --recurse-submodules https://github.com/SkidderMC/FDPClient.git` (Make sure you have git) **or** via GitHub Desktop (Make sure you have GitHub Desktop).
 2. CD into the local repository folder.
 3. Depending on which IDE you are using, execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
