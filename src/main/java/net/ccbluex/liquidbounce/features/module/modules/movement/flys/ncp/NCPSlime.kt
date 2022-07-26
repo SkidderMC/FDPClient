@@ -14,14 +14,15 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.item.*
 import net.minecraft.network.play.client.*
 
-class FakeGroundFly : FlyMode("FakeGround") {
+class NCPSlimeFly : FlyMode("NCPSlime") {
 
     private var placed = false
     private var onSlime = false
     private var startY = 0.0
     private var shouldFly = false
   
-    override fun onEnable() {
+    @EventTarget
+    fun onEnable() {
         if (mc.thePlayer.onGround() && mc.thePlayer.posY % 1 == 0) {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + -0.5 , mc.thePlayer.posZ, false))
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + -0.5 , mc.thePlayer.posZ, false))
