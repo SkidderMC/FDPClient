@@ -56,7 +56,7 @@ class NCPSlimeFly : FlyMode("NCPSlime") {
             if (mc.thePlayer.posY - 1 > startY) {
                 mc.thePlayer.motionY = -0.2
                 mc.thePlayer.posY = startY + 0.1
-                RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, -90))
+                RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, -90f))
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                 placed = true
             }
