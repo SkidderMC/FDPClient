@@ -29,8 +29,8 @@ import net.minecraft.util.MathHelper
 import net.minecraft.potion.Potion
 import java.util.*
 
-@ModuleInfo(name = "AutoHeal", category = ModuleCategory.PLAYER)
-class Heal : Module() {
+@ModuleInfo(name = "Gapple", category = ModuleCategory.PLAYER)
+class Gapple : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Auto", "LegitAuto", "Head"), "Auto")
     private val percent = FloatValue("HealthPercent", 75.0f, 1.0f, 100.0f)
