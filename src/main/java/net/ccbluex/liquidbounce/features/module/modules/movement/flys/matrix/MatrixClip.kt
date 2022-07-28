@@ -4,8 +4,8 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-// import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-// import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
@@ -91,7 +91,7 @@ class MatrixClip : FlyMode("MatrixClip") {
         }
         if(timer2.hasTimePassed((clipTime.toLong()))) {
             timer2.reset()
-//            clipTimes ++
+            clipTimes ++
             mc.thePlayer.setPosition(mc.thePlayer.posX , mc.thePlayer.posY + yclip.get(), mc.thePlayer.posZ)
         }
     }
