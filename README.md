@@ -20,7 +20,7 @@ Discord: https://discord.gg/55x7TaHWXG
 The UnlegitMC Account was hacked by a Chinese gang and they took down FDPClient, so this is the new repository for FDPClient.
 
 ## Issues
-Found a bugs or missing feature? You can let us know by opening an issue! [here](https://github.com/SkidderMC/FDPClient/issues).
+Found a bug or a missing feature? You can let us know by opening an issue! [here](https://github.com/SkidderMC/FDPClient/issues).
 
 ## License
 This project is subject to the [GNU General Public License v3.0](LICENSE). This does only apply for source code located directly in this clean repository. During the development and compilation process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL license.
