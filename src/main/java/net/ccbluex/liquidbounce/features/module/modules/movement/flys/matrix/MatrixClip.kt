@@ -28,10 +28,12 @@ class MatrixClip : FlyMode("MatrixClip") {
     private var clipTimes = 0
     private var disableLogger = false
     private var shouldClip = true
+    private var hasWarned = false
 
     override fun onEnable() {
         timer.reset()
         timer2.reset()
+        hasWarned = false
         clipTimes = 0
         shouldClip = true
     }
@@ -48,13 +50,23 @@ class MatrixClip : FlyMode("MatrixClip") {
                 blinkTime = 1000
                 clipTime = 909
                if (clipTimes == 2) {
-                    if (!clipSmart.get()) {
+                    if (!clipSmart.get() && !hasWarned) {
                         LiquidBounce.hud.addNotification(Notification("Clip success", "To successfully clip disable fly now", NotifyType.SUCCESS, 2000))
+                        hasWarned = true
                     } else {
                         if (timer2.hasTimePassed(150)) {
                             shouldClip = false
                             LiquidBounce.hud.addNotification(Notification("Smart Clip", "Smart Clip stopped cliping, you can disable fly now.", NotifyType.WARNING, 5000))
                             LiquidBounce.hud.addNotification(Notification("Smart Clip", "If you have tped back, disable Smart Clip or try again.", NotifyType.WARNING, 5000))
+                            try {
+                                disableLogger = true
+                                while (!packets.isEmpty()) {
+                                    mc.netHandler.addToSendQueue(packets.take())
+                                }
+                                disableLogger = false
+                            } finally {
+                                disableLogger = false
+                            }
                         }
                     }
                 } else if (clipTimes > 2) {
