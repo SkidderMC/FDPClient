@@ -707,8 +707,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private fun drawFDP(target: EntityLivingBase) {
         val font = fontValue.get()
 
-        RenderUtils.drawRect(0f, 0f, 150f, 47f, Color(0, 0, 0, 90).rgb)
-        RenderUtils.drawRoundedCornerRect(0f, 0f, (easingHP / target.maxHealth) * 150f, 47f, 3f, Color(0, 0, 0, 60).rgb)
+        RenderUtils.drawRect(0f, 0f, 150f, 47f, Color(0, 0, 0, 110).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, (easingHP / target.maxHealth) * 150f, 47f, 3f, Color(0, 0, 0, 85).rgb)
         
         RenderUtils.drawShadow(0f, 0f, 150f, 47f)
 
@@ -735,7 +735,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glScalef(1.5f, 1.5f, 1.5f)
         font.drawString(target.name, 39, 8, Color.WHITE.rgb)
         GL11.glPopMatrix()
-        font.drawString("Health ${getHealth(target).roundToInt()}", 60, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
+        font.drawString("Health ${getHealth(target).roundToInt()}", 56, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
 
     }
 
