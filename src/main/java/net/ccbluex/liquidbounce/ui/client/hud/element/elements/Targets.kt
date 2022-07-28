@@ -708,9 +708,9 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val font = fontValue.get()
 
         RenderUtils.drawRect(0f, 0f, 150f, 47f, Color(0, 0, 0, 60).rgb)
-        RenderUtils.drawRoundedCornerRect(0, 0, (easingHP / target.maxHealth) * 150f, 47f, 3f, Color(0, 0, 0, 40).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, (easingHP / target.maxHealth) * 150f, 47f, 3f, Color(0, 0, 0, 40).rgb)
         
-        RenderUtils.drawShadow(0, 0, 150, 47)
+        RenderUtils.drawShadow(0f, 0f, 150f, 47f)
 
         val hurtPercent = target.hurtPercent
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
@@ -735,7 +735,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glScalef(1.5f, 1.5f, 1.5f)
         font.drawString(target.name, 39, 8, Color.WHITE.rgb)
         GL11.glPopMatrix()
-        font.drawString("Health ${getHealth(target)}", 39, 12 + font.FONT_HEIGHT * 1.5, Color.WHITE.rgb)
+        font.drawString("Health ${getHealth(target)}", 39, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
 
     }
 
