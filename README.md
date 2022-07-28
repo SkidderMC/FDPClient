@@ -14,13 +14,13 @@ Discord: https://discord.gg/55x7TaHWXG
 - **Step 2:** Install Forge 1.8.9 [here](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it
 - **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\.minecraft\mods) (If you are using the official launcher, click the installations tab then click the folder icon next to forge)
-- **Step 5:** Enjoy hacking!
+- **Step 5:** Enjoy our client!
 
 ## What happened to the old repository?
-The UnlegitMC Account was hacked by some china gang and they took down FDPClient, so this is the new repository of FDPClient.
+The UnlegitMC Account was hacked by a Chinese gang and they took down FDPClient, so this is the new repository for FDPClient.
 
 ## Issues
-If you notice any bugs or missing features, you can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues).
+Found a bugs or missing feature? You can let us know by opening an issue! [here](https://github.com/SkidderMC/FDPClient/issues).
 
 ## License
 This project is subject to the [GNU General Public License v3.0](LICENSE). This does only apply for source code located directly in this clean repository. During the development and compilation process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL license.
@@ -51,10 +51,10 @@ FDPClient uses gradle, so make sure that it is installed properly. Instructions 
 
 ## Additional libraries
 ### Mixins
-Mixins can be used to modify classes at runtime before they are loaded. FDPClient uses it to inject its code into the Minecraft client. This way, we do not have to ship Mojang's copyrighted code. If you want to learn more about it, check out their [documentation](https://docs.spongepowered.org/5.1.0/en/plugin/internals/mixins.html).
+Mixins can be used to modify classes at runtime before they are loaded. FDPClient uses them to inject its code into the Minecraft client. This way, we do not have to ship Mojang's copyrighted code. If you want to learn more about it, check out their [documentation](https://docs.spongepowered.org/5.1.0/en/plugin/internals/mixins.html).
 
 ## Contributing
-We are welcome for your contributions, but you have to follow these rules to make us merge your pull request.
+We welcome contributions, but you have to follow these rules to make us merge your pull request.
 
 ### Language and Code Quality
 Your code needs to be able to build, and make the bugs of the code as less as you can!  
@@ -79,8 +79,8 @@ Timer().schedule(object : TimerTask() {
 ~~~
 
 ### Skidding
-Please use original code if you can, and no direct code steals, but we welcome skidding packet logger or anything like that to skid from a closed source client and make the cheating community more open!
+Please use original code if you can and dont directly steal code, but we welcome skidding with a packet logger or anything like that in order to skid from a closed source client and make the cheating community more open!
 
 ### Useless features
-Useless features means features only you think it's usable, or features can be have with config change.  
-Like the "TimerSpeed" option to InfiniteAura, this feature can be added with bind Timer to the key with InfiniteAura, or use macro system in FDP Client.
+Useless features are features only you think are useful and or features can be added with a config change.  
+Like the "TimerSpeed" option to InfiniteAura, this feature can be added by binding Timer to the key with InfiniteAura, or use the macro system in FDP Client.
