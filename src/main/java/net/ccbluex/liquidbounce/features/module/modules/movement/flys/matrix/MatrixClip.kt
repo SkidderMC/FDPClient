@@ -14,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue
 
 class MatrixClip : FlyMode("MatrixClip") {
     private val clipMode = ListValue("${valuePrefix}BypassMode", arrayOf("Clip1","Clip2","Clip3","CustomClip"), "Clip2")
-//    private val clipSmart = BoolValue("${valuePrefix}Clip2-SmartClip", true).displayable { clipMode.equals("Clip2") }
+    private val clipSmart = BoolValue("${valuePrefix}Clip2-SmartClip", true).displayable { clipMode.equals("Clip2") }
     private val customClip = IntegerValue("${valuePrefix}Custom-ClipDelay",736,500,1500)
     private val customBlink = IntegerValue("${valuePrefix}Custom-BlinkDelay",909,500,1500)
     private val yclip = FloatValue("${valuePrefix}YClip", 10f, 5f, 20f)
@@ -24,19 +24,19 @@ class MatrixClip : FlyMode("MatrixClip") {
     
     private var blinkTime = 0
     private var clipTime = 0
-//    private var clipTimes = 0
+    private var clipTimes = 0
     private var disableLogger = false
-//    private var shouldClip = true
+    private var shouldClip = true
 
     override fun onEnable() {
         timer.reset()
         timer2.reset()
-//        clipTimes = 0
-//        shouldClip = true
+        clipTimes = 0
+        shouldClip = true
     }
 
     override fun onUpdate(event: UpdateEvent) {
-//        if (!shouldClip) return
+        if (!shouldClip) return
         
         when (clipMode.get().lowercase()) {
             "clip1" -> {
@@ -46,7 +46,7 @@ class MatrixClip : FlyMode("MatrixClip") {
             "clip2" -> {
                 blinkTime = 1000
                 clipTime = 909
-/*                if (clipTimes == 2) {
+               if (clipTimes == 2) {
                     if (!clipSmart.get()) {
                         LiquidBounce.hud.addNotification(Notification("Clip success", "To successfully clip disable fly now", NotifyType.SUCCESS, 2000))
                     } else {
@@ -54,12 +54,14 @@ class MatrixClip : FlyMode("MatrixClip") {
                             shouldClip = false
                             LiquidBounce.hud.addNotification(Notification("Smart Clip", "Smart Clip stopped cliping, you can disable fly now.", NotifyType.WARNING, 5000))
                             LiquidBounce.hud.addNotification(Notification("Smart Clip", "If you have tped back, disable Smart Clip or try again.", NotifyType.WARNING, 5000))
+                        }
+                    }
                 } else if (clipTimes > 2) {
                     if (!clipSmart.get()) {
                         LiquidBounce.hud.addNotification(Notification("Clip fail", "Clipped too many times, disable fly and try again", NotifyType.ERROR, 3000))
                     }
                 }
-*/                    
+                    
             }
             "clip3" -> {
                 blinkTime = 909
