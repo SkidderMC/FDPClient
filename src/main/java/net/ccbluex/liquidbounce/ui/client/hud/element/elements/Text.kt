@@ -13,6 +13,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.SessionUtils
+import net.ccbluex.liquidbounce.utils.StatisticsUtils
 import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils
@@ -63,6 +65,7 @@ class Text(
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
+    private val rectRoundValue = FloatValue("RectRoundingMultiplier", 1.5F, 0.1F, 4F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 10, 1, 10)
     private val rainbowIndex = IntegerValue("RainbowIndex", 1, 1, 20)
     private val fontValue = FontValue("Font", Fonts.font40)
@@ -105,6 +108,15 @@ class Text(
         }
 
         return when (str) {
+            "playtime" -> {
+                if (mc.isSingleplayer) {
+                    "Singleplayer"
+                } else {
+                    SessionUtils.getFormatSessionTime()
+                }
+            }
+            "kills" -> StatisticsUtils.getKills().toString()
+            "deaths" -> StatisticsUtils.getDeaths().toString()
             "username" -> mc.getSession().username
             "clientName" -> LiquidBounce.CLIENT_NAME
             "clientVersion" -> LiquidBounce.CLIENT_VERSION
@@ -173,7 +185,7 @@ class Text(
             }
             
             "rounded" -> {
-                RenderUtils.drawRoundedCornerRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, 2 + (expand / 2), rectColor)
+                RenderUtils.drawRoundedCornerRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, 2 + (expand / 4) * rectRoundValue.get().toDouble(), rectColor)
             }
             
             "rnormal" -> {
