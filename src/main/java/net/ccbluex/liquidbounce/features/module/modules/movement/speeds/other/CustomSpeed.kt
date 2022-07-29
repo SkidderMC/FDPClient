@@ -58,7 +58,7 @@ class CustomSpeed : SpeedMode("Custom") {
                         if (doLaunchSpeedValue.get()) {
                             MovementUtils.strafe(launchSpeedValue.get())
                         }
-                        if (doCustomYValue.get) {
+                        if (doCustomYValue.get()) {
                             if (yValue.get() != 0f) {
                                 mc.thePlayer.motionY = yValue.get().toDouble()
                             }
@@ -142,7 +142,7 @@ class CustomSpeed : SpeedMode("Custom") {
                         if (doLaunchSpeedValue.get()) {
                             MovementUtils.strafe(launchSpeedValue.get())
                         }
-                        if (doCustomYValue.get) {
+                        if (doCustomYValue.get()) {
                             if (yValue.get() != 0f) {
                                 mc.thePlayer.motionY = yValue.get().toDouble()
                             }
