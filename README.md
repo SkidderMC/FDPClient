@@ -82,7 +82,7 @@ Timer().schedule(object : TimerTask() {
 ~~~
 
 ### Skidding
-Please use original code if you can and please do not directly steal code, but we welcome skidding with a packet logger or anything like that in order to skid from a closed source client and make the cheating community more open!
+Please use original code if you can and do not directly steal code, but we welcome skidding with a packet logger or anything like that in order to skid from a closed source client and make the cheating community more open!
 
 ### Useless features
 Useless features are features only you think are useful and or features can be added with a config change.  
