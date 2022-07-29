@@ -16,10 +16,13 @@ import net.minecraft.client.settings.GameSettings
 @Suppress("UnclearPrecedenceOfBinaryExpression")
 class CustomSpeed : SpeedMode("Custom") {
     private val speedValue = FloatValue("CustomSpeed", 1.6f, 0f, 2f)
-    private val launchSpeedValue = FloatValue("CustomLaunchSpeed", 1.6f, 0.2f, 2f)
-    private val minimumSpeedValue = FloatValue("CustomMinimumSpeed", 0.25f, 0.1f, 2f)
+    private val doLaunchSpeedValue = BoolValue("CustomDoLaunchSpeed", true)
+    private val launchSpeedValue = FloatValue("CustomLaunchSpeed", 1.6f, 0.2f, 2f).displayable { doLaunchSpeedValue.get() }
+    private val doMinimumSpeedValue = BoolValue("CustomDoMinimumSpeed", true)
+    private val minimumSpeedValue = FloatValue("CustomMinimumSpeed", 0.25f, 0.1f, 2f).displayable { doMinimumSpeedValue.get() }
     private val addYMotionValue = FloatValue("CustomAddYMotion", 0f, 0f, 2f)
-    private val yValue = FloatValue("CustomY", 0f, 0f, 4f)
+    private val doCustomYValue = BoolValue("CustomDoModifyJumpY", true)
+    private val yValue = FloatValue("CustomY", 0.42f, 0f, 4f).displayable { doCustomYValue.get() }
     private val upTimerValue = FloatValue("CustomUpTimer", 1f, 0.1f, 2f)
     private val jumpTimerValue = FloatValue("CustomJumpTimer", 1.25f, 0.1f, 2f)
     private val downTimerValue = FloatValue("CustomDownTimer", 1f, 0.1f, 2f)
@@ -30,10 +33,9 @@ class CustomSpeed : SpeedMode("Custom") {
     private val groundResetXZValue = BoolValue("CustomGroundResetXZ", false)
     private val resetXZValue = BoolValue("CustomResetXZ", false)
     private val resetYValue = BoolValue("CustomResetY", false)
-    private val doLaunchSpeedValue = BoolValue("CustomDoLaunchSpeed", true)
-    private val doMinimumSpeedValue = BoolValue("CustomDoMinimumSpeed", true)
     private val GroundSpaceKeyPressed = BoolValue("CustomPressSpaceKeyOnGround", true)
     private val AirSpaceKepPressed = BoolValue("CustomPressSpaceKeyInAir", false)
+    private val usePreMotion = BoolValue("CustomUsePreMotion", true)
 
     
 
@@ -41,6 +43,7 @@ class CustomSpeed : SpeedMode("Custom") {
 
 
     override fun onPreMotion() {
+        if (!usePreMotion) return
         if (MovementUtils.isMoving()) {
             mc.timer.timerSpeed = if (mc.thePlayer.motionY> 0) { upTimerValue.get() } else { downTimerValue.get() }
 
@@ -55,8 +58,10 @@ class CustomSpeed : SpeedMode("Custom") {
                         if (doLaunchSpeedValue.get()) {
                             MovementUtils.strafe(launchSpeedValue.get())
                         }
-                        if (yValue.get() != 0f) {
-                            mc.thePlayer.motionY = yValue.get().toDouble()
+                        if (doCustomYValue.get) {
+                            if (yValue.get() != 0f) {
+                                mc.thePlayer.motionY = yValue.get().toDouble()
+                            }
                         }
                     } else if (groundResetXZValue.get()) {
                         mc.thePlayer.motionX = 0.0
@@ -120,6 +125,91 @@ class CustomSpeed : SpeedMode("Custom") {
             mc.thePlayer.motionZ = 0.0
         }
     }
+    
+    override fun onUpdate() {
+        if (usePreMotion) return
+        if (MovementUtils.isMoving()) {
+            mc.timer.timerSpeed = if (mc.thePlayer.motionY> 0) { upTimerValue.get() } else { downTimerValue.get() }
+
+            when {
+                mc.thePlayer.onGround -> {
+                    if (groundTick >= groundStay.get()) {
+                        if (GroundSpaceKeyPressed.get()) {
+                            mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                        }
+                        mc.timer.timerSpeed = jumpTimerValue.get()
+                        mc.thePlayer.jump()
+                        if (doLaunchSpeedValue.get()) {
+                            MovementUtils.strafe(launchSpeedValue.get())
+                        }
+                        if (doCustomYValue.get) {
+                            if (yValue.get() != 0f) {
+                                mc.thePlayer.motionY = yValue.get().toDouble()
+                            }
+                        }
+                    } else if (groundResetXZValue.get()) {
+                        mc.thePlayer.motionX = 0.0
+                        mc.thePlayer.motionZ = 0.0
+                    }
+                    groundTick++
+                }
+                else -> {
+                    groundTick = 0
+                    if (AirSpaceKepPressed.get()) {
+                        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                    }
+                    if (doMinimumSpeedValue.get() && MovementUtils.getSpeed() < minimumSpeedValue.get()) {
+                        MovementUtils.strafe(minimumSpeedValue.get())
+                    }
+                    when (strafeValue.get().lowercase()) {
+                        "strafe" -> MovementUtils.strafe(speedValue.get())
+                        "non-strafe" -> MovementUtils.strafe()
+                        "boost" -> MovementUtils.strafe()
+                        "plus" -> {
+                            when (plusMode.get().lowercase()) {
+                                "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
+                                "multiply" -> {
+                                    mc.thePlayer.motionX *= plusMultiply.get()
+                                    mc.thePlayer.motionZ *= plusMultiply.get()
+                                }
+                            }
+                        }
+                        "plusonlyup" -> {
+                            if (mc.thePlayer.motionY > 0) {
+                                when (plusMode.get().lowercase()) {
+                                    "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
+                                    "multiply" -> {
+                                        mc.thePlayer.motionX *= plusMultiply.get()
+                                        mc.thePlayer.motionZ *= plusMultiply.get()
+                                    }
+                                }
+                            } else {
+                                MovementUtils.strafe()
+                            }
+                        }
+                        "plusonlydown" -> {
+                            if (mc.thePlayer.motionY < 0) {
+                                when (plusMode.get().lowercase()) {
+                                    "plus" -> MovementUtils.move(speedValue.get() * 0.1f)
+                                    "multiply" -> {
+                                        mc.thePlayer.motionX *= plusMultiply.get()
+                                        mc.thePlayer.motionZ *= plusMultiply.get()
+                                    }
+                                }
+                            } else {
+                                MovementUtils.strafe()
+                            }
+                        }
+                    }
+                    mc.thePlayer.motionY += addYMotionValue.get() * 0.03
+                }
+            }
+        } else if (resetXZValue.get()) {
+            mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionZ = 0.0
+        }
+    }
+
 
 
     override fun onEnable() {
