@@ -50,11 +50,13 @@ class MatrixClip : FlyMode("MatrixClip") {
                 blinkTime = 1000
                 clipTime = 909
                if (clipTimes == 2) {
-                    if (!clipSmart.get() && !hasWarned) {
-                        LiquidBounce.hud.addNotification(Notification("Clip success", "To successfully clip disable fly now", NotifyType.SUCCESS, 2000))
-                        hasWarned = true
+                    if (!clipSmart.get()) {
+                        if (!hasWarned) {
+                            LiquidBounce.hud.addNotification(Notification("Clip success", "To successfully clip disable fly now", NotifyType.SUCCESS, 3000))
+                            hasWarned = true
+                        }
                     } else {
-                        if (timer2.hasTimePassed(150)) {
+                        if (timer2.hasTimePassed(350)) {
                             shouldClip = false
                             LiquidBounce.hud.addNotification(Notification("Smart Clip", "Smart Clip stopped cliping, you can disable fly now.", NotifyType.WARNING, 5000))
                             LiquidBounce.hud.addNotification(Notification("Smart Clip", "If you have tped back, disable Smart Clip or try again.", NotifyType.WARNING, 5000))
