@@ -10,7 +10,6 @@ Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows
 Discord: https://discord.gg/55x7TaHWXG  <br>
 ### security notice
 ⚠️ there is a fake url going around atm, "fdpLnfo" which isnt our website, our website is fdpinfo not fdpLnfo check that the "i" is not an L
-![FDPLINFO](IMG_20220729_191808.jpg)<br>
 
 ## Installing FDP
 - **Step 1:** Install Java [here](https://www.java.com/en/download/) (Skip if you have Java)
