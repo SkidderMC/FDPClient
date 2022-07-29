@@ -66,8 +66,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
         }
         if (watchdogMultiplier > 1) {
             when (bypassMode.get().lowercase()) {
-                "safe" -> watchdogMultiplier -= 0.2
-                "test" -> watchdogMultiplier -= 0.05
+                "oldsafe" -> watchdogMultiplier -= 0.2
+                "oldtest" -> watchdogMultiplier -= 0.05
             }
         } else {
             watchdogMultiplier = 1.0
@@ -76,8 +76,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
 
     override fun onMove(event: MoveEvent) {
         when (bypassMode.get().lowercase()) {
-            "safe" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
-            "test" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
+            "oldsafe" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
+            "oldtest" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
         }
     }
 }
