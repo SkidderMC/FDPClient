@@ -61,8 +61,8 @@ var _ItemAdaptar = function () {
 
 var _AdaptedValue = function (value) {
 
-    this.FloatValue = Java.type("net.ccbluex.liquidbounce.value.FloatValue");
-    this.IntegerValue = Java.type("net.ccbluex.liquidbounce.value.IntegerValue");
+    this.FloatValue = Java.type("net.skiddermc.fdpclient.value.FloatValue");
+    this.IntegerValue = Java.type("net.skiddermc.fdpclient.value.IntegerValue");
     this.Float = Java.type("java.lang.Float");
     this.Integer = Java.type("java.lang.Integer");
 
@@ -87,7 +87,7 @@ var _AdaptedModule = function (module) {
 
     this.module = module;
 
-    this.moduleManager = Java.type("net.ccbluex.liquidbounce.LiquidBounce").moduleManager;
+    this.moduleManager = Java.type("net.skiddermc.fdpclient.LiquidBounce").moduleManager;
 
     this.getName = function () {
         return this.module.getName();
@@ -154,8 +154,8 @@ Object.defineProperty(_AdaptedModule.prototype, "bind", {
 
 var _ModuleManager = function () {
 
-    this.moduleManager = Java.type("net.ccbluex.liquidbounce.LiquidBounce").moduleManager;
-    this.Module = Java.type("net.ccbluex.liquidbounce.features.module.Module");
+    this.moduleManager = Java.type("net.skiddermc.fdpclient.LiquidBounce").moduleManager;
+    this.Module = Java.type("net.skiddermc.fdpclient.features.module.Module");
     this.ArrayList = Java.type("java.util.ArrayList");
 
     this.registerModule = function (scriptModule) {
@@ -238,8 +238,8 @@ var _ModuleManager = function () {
 
 var _CommandManager = function () {
 
-    this.Command = Java.type("net.ccbluex.liquidbounce.features.command.Command");
-    this.commandManager = Java.type("net.ccbluex.liquidbounce.LiquidBounce").commandManager;
+    this.Command = Java.type("net.skiddermc.fdpclient.features.command.Command");
+    this.commandManager = Java.type("net.skiddermc.fdpclient.LiquidBounce").commandManager;
 
     this.registerCommand = function (scriptCommand) {
         script.registerCommand({
