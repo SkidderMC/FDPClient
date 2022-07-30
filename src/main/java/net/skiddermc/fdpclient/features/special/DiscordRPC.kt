@@ -6,7 +6,6 @@ import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import net.skiddermc.fdpclient.FDPClient
 import net.skiddermc.fdpclient.features.module.modules.client.DiscordRPCPack
-import net.skiddermc.fdpclient.features.module.modules.movement.Fly
 import net.skiddermc.fdpclient.utils.ServerUtils
 import org.json.JSONObject
 import java.time.OffsetDateTime

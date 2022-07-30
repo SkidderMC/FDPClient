@@ -1,7 +1,6 @@
 package net.skiddermc.fdpclient.ui.btn
 
 import net.skiddermc.fdpclient.FDPClient
-import net.skiddermc.fdpclient.font.CFontRenderer
 import net.skiddermc.fdpclient.font.FontLoaders
 import net.skiddermc.fdpclient.utils.render.EaseUtils
 import net.skiddermc.fdpclient.utils.render.RenderUtils

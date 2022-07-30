@@ -3,7 +3,6 @@ package net.skiddermc.fdpclient.ui.font.renderer
 import net.skiddermc.fdpclient.FDPClient
 import net.skiddermc.fdpclient.ui.font.FontsGC
 import net.skiddermc.fdpclient.ui.font.renderer.glyph.GlyphFontRenderer
-import net.skiddermc.fdpclient.ui.font.renderer.vector.VectorFontRenderer
 import net.skiddermc.fdpclient.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Canvas
