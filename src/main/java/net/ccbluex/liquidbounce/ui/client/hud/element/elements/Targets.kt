@@ -706,11 +706,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     private fun drawFDP(target: EntityLivingBase) {
         val font = fontValue.get()
+        val addedLen = (60 + font.getStringWidth(target.name) * 1.60f).toFloat()
 
-        RenderUtils.drawRect(0f, 0f, 150f, 47f, Color(0, 0, 0, 110).rgb)
-        RenderUtils.drawRoundedCornerRect(0f, 0f, (easingHP / target.maxHealth) * 150f, 47f, 3f, Color(0, 0, 0, 85).rgb)
+        RenderUtils.drawRect(0f, 0f, addedLen, 47f, Color(0, 0, 0, 120).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, (easingHP / target.maxHealth) * addedLen, 47f, 3f, Color(0, 0, 0, 90).rgb)
         
-        RenderUtils.drawShadow(0f, 0f, 150f, 47f)
+        RenderUtils.drawShadow(0f, 0f, addedLen, 47f)
 
         val hurtPercent = target.hurtPercent
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
