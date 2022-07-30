@@ -7,22 +7,23 @@ A free mixin-based injection hacked-client for Minecraft using Minecraft Forge b
 
 Website: [fdpinfo.github.io](https://fdpinfo.github.io)  
 Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)  
-Discord: https://discord.gg/55x7TaHWXG  <br>
-### security notice
-⚠️ there is a fake url going around atm, "fdpLnfo" which isnt our website, our website is fdpinfo not fdpLnfo check that the "i" is not an L
+Discord: https://discord.gg/55x7TaHWXG
+
+## ⚠️ Alert ⚠️
+There is a fake website called "fdp**l**nfo.github.io". Please check the difference between the "L" and "I". If you click the download button on it, you will get jumpscared.
 
 ## Installing FDP
 - **Step 1:** Install Java [here](https://www.java.com/en/download/) (Skip if you have Java)
 - **Step 2:** Install Forge 1.8.9 [here](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it
-- **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\.minecraft\mods) (If you are using the official launcher, click the installations tab then click the folder icon next to forge)
+- **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\\.minecraft\mods) (If you are using the official launcher, click the installations tab then click the folder icon next to forge)
 - **Step 5:** Enjoy our client!
 
 ## What happened to the old repository?
 The UnlegitMC Account was hacked by a Chinese gang and they took down FDPClient, so this is the new repository for FDPClient.
 
 ## Issues
-Found a bug or a missing feature? You can let us know by opening an issue! [here](https://github.com/SkidderMC/FDPClient/issues).
+Found a bug or a missing feature? You can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues)!
 
 ## License
 This project is subject to the [GNU General Public License v3.0](LICENSE). This does only apply for source code located directly in this clean repository. During the development and compilation process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL license.
@@ -81,7 +82,7 @@ Timer().schedule(object : TimerTask() {
 ~~~
 
 ### Skidding
-Please use original code if you can and dont directly steal code, but we welcome skidding with a packet logger or anything like that in order to skid from a closed source client and make the cheating community more open!
+Please use original code if you can and do not directly steal code, but we welcome skidding with a packet logger or anything like that in order to skid from a closed source client and make the cheating community more open!
 
 ### Useless features
 Useless features are features only you think are useful and or features can be added with a config change.  
