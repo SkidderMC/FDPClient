@@ -7,7 +7,6 @@ import net.skiddermc.fdpclient.font.FontLoaders
 import net.skiddermc.fdpclient.ui.font.Fonts
 import net.skiddermc.fdpclient.ui.i18n.LanguageManager
 import net.skiddermc.fdpclient.utils.MinecraftInstance
-import net.skiddermc.fdpclient.utils.extensions.drawCenteredString
 import net.skiddermc.fdpclient.utils.render.RenderUtils
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.util.ResourceLocation
