@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
+package net.ccbluex.liquidbounce.features.module.modules.movement.flys.matrix
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -13,7 +13,7 @@ import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import java.util.concurrent.LinkedBlockingQueue
 
-class MatrixClip : FlyMode("MatrixClip") {
+class MatrixClipFly : FlyMode("MatrixClip") {
     private val clipMode = ListValue("${valuePrefix}BypassMode", arrayOf("Clip1","Clip2","Clip3","CustomClip"), "Clip2")
     private val clipSmart = BoolValue("${valuePrefix}Clip2-SmartClip", true).displayable { clipMode.equals("Clip2") }
     private val customClip = IntegerValue("${valuePrefix}Custom-ClipDelay",736,500,1500)

@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
-class BugSpartanFly : FlyMode("BugSpartan") {
+class SpartanFastFly : FlyMode("SpartanFast") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
 
     override fun onEnable() {
