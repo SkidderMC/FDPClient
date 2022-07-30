@@ -11,7 +11,6 @@ import net.skiddermc.fdpclient.features.module.Module
 import net.skiddermc.fdpclient.features.module.ModuleCategory
 import net.skiddermc.fdpclient.features.module.ModuleInfo
 import net.skiddermc.fdpclient.utils.MovementUtils
-import net.skiddermc.fdpclient.utils.PlayerUtils
 import net.skiddermc.fdpclient.utils.RotationUtils
 import net.skiddermc.fdpclient.utils.render.ColorManager
 import net.skiddermc.fdpclient.utils.render.RenderUtils
@@ -22,9 +21,7 @@ import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.cos
-import kotlin.math.pow
 import kotlin.math.sin
-import kotlin.math.sqrt
 
 @ModuleInfo(name = "TargetStrafe",  category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
