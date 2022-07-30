@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.flys.verus
+package net.ccbluex.liquidbounce.features.module.modules.movement.flys.vulcan
 
 import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.MotionEvent

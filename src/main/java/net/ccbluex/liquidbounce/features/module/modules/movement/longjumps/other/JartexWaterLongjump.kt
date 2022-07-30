@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJ
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 
-class JartexWater : LongJumpMode("JartexWater") {
+class JartexWaterLongjump : LongJumpMode("JartexWater") {
     private val hValue = FloatValue("${valuePrefix}Horizon", 1.0f, 0.8f, 4.0f)
     private val yValue = FloatValue("${valuePrefix}MotionY", 0.42f, 0.0f, 2.0f)
     override fun onPreMotion(event: MotionEvent) {
