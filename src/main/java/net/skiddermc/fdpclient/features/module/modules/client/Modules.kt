@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation
 @ModuleInfo(name = "Modules", category = ModuleCategory.CLIENT, canEnable = false)
 object Modules : Module() {
     val toggleIgnoreScreenValue = BoolValue("ToggleIgnoreScreen", false)
-    private val toggleSoundValue = ListValue("ToggleSound", arrayOf("None", "Click", "Custom"), "Click")
+    private val toggleSoundValue = ListValue("ToggleSound", arrayOf("None", "Click", "Custom","Fun"), "Click")
 
     fun playSound(enable: Boolean) {
         when (toggleSoundValue.get().lowercase()) {
@@ -23,6 +23,14 @@ object Modules : Module() {
             "custom" -> {
                 if (enable) {
                     FDPClient.tipSoundManager.enableSound.asyncPlay()
+                } else {
+                    FDPClient.tipSoundManager.disableSound.asyncPlay()
+                }
+            }
+
+            "fun" -> {
+                if(enable) {
+                    FDPClient.tipSoundManager.littlesound.asyncPlay()
                 } else {
                     FDPClient.tipSoundManager.disableSound.asyncPlay()
                 }
