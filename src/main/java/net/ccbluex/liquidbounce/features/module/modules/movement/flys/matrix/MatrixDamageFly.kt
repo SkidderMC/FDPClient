@@ -8,7 +8,7 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.*
 
 
-class MatrixDamage : FlyMode("MatrixDamage") {
+class MatrixDamageFly : FlyMode("MatrixDamage") {
 
 
     private val mode = ListValue("${valuePrefix}Mode", arrayOf("Stable","Test","Custom"), "Stable")

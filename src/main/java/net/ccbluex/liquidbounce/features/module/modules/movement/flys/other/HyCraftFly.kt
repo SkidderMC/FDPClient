@@ -11,7 +11,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.*
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import kotlin.math.sqrt
 
-class HyCraft : FlyMode("HyCraft") {
+class HyCraftFly : FlyMode("HyCraft") {
     private val timer = MSTimer()
     private var flag = false
 
