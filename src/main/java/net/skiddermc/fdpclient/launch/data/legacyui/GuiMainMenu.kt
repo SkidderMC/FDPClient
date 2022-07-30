@@ -13,7 +13,6 @@ import net.skiddermc.fdpclient.ui.client.altmanager.GuiAltManager
 import net.skiddermc.fdpclient.ui.i18n.LanguageManager
 import net.skiddermc.fdpclient.utils.misc.HttpUtils
 import net.skiddermc.fdpclient.utils.misc.MiscUtils
-import net.skiddermc.fdpclient.utils.render.RenderUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.ResourceLocation
