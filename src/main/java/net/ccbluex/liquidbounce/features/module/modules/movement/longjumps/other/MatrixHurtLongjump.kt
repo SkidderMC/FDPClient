@@ -9,7 +9,7 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.cos
 import kotlin.math.sin
 
-class MatrixHurt : LongJumpMode("MatrixHurt") {
+class MatrixHurtLongjump : LongJumpMode("MatrixHurt") {
     private val boostSpeed = FloatValue("${valuePrefix}BoostSpeed", 0.416f, 0.1f, 1.0f)
     private val ticks = IntegerValue("${valuePrefix}Ticks", 10, 5, 20)
     private var detected = false
