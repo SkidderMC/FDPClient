@@ -1,0 +1,195 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.skiddermc.fdpclient.features.module.modules.combat
+
+import net.skiddermc.fdpclient.event.*
+import net.skiddermc.fdpclient.features.module.*
+import net.skiddermc.fdpclient.features.module.modules.combat.criticals.CriticalMode
+import net.skiddermc.fdpclient.utils.*
+import net.skiddermc.fdpclient.utils.timer.MSTimer
+import net.skiddermc.fdpclient.value.*
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S0BPacketAnimation
+
+@ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT, autoDisable = EnumAutoDisableType.FLAG)
+class Criticals : Module() {
+    private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.criticals", CriticalMode::class.java)
+        .map { it.newInstance() as CriticalMode }
+        .sortedBy { it.modeName }
+
+    private val mode: CriticalMode
+        get() = modes.find { modeValue.equals(it.modeName) } ?: throw NullPointerException() // this should not happen
+
+    val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "Packet") {
+        override fun onChange(oldValue: String, newValue: String) {
+            if (state) onDisable()
+        }
+
+        override fun onChanged(oldValue: String, newValue: String) {
+            if (state) onEnable()
+        }
+    }
+    private val delayValue = IntegerValue("Delay", 0, 0, 500)
+    val s08FlagValue = BoolValue("FlagPause", true)
+    private val s08DelayValue = IntegerValue("FlagPause-Time", 100, 100, 5000).displayable { s08FlagValue.get() }
+    private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
+    private val lookValue = BoolValue("UseC06Packet", false)
+    private val debugValue = BoolValue("DebugMessage", false)
+    private val msTimer = MSTimer()
+    private val flagTimer = MSTimer()
+    private val syncTimer = MSTimer()
+
+    var target = 0
+
+    var antiDesync = false
+
+    override fun onEnable() {
+        target = 0
+        msTimer.reset()
+        flagTimer.reset()
+        syncTimer.reset()
+        mode.onEnable()
+    }
+
+    override fun onDisable() {
+        mc.timer.timerSpeed = 1F
+        mode.onDisable()
+    }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        if(!state) return
+        mode.onUpdate(event)
+    }
+
+    @EventTarget
+    fun onMotion(event: MotionEvent) {
+        if(!state) return
+        mode.onMotion(event)
+        if(event.eventState != EventState.PRE) return
+        mode.onPreMotion(event)
+    }
+
+    @EventTarget
+    fun onAttack(event: AttackEvent) {
+        if(!state) return
+        if (event.targetEntity is EntityLivingBase) {
+            val entity = event.targetEntity
+            target = entity.entityId
+            if (!mc.thePlayer.onGround || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb || mc.thePlayer.isInWater ||
+                mc.thePlayer.isInLava || mc.thePlayer.ridingEntity != null || entity.hurtTime > hurtTimeValue.get() ||
+                !msTimer.hasTimePassed(delayValue.get().toLong())
+            ) {
+                return
+            }
+
+            if (s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
+                return
+
+            antiDesync = true
+
+            mode.onAttack(event)
+
+            msTimer.reset()
+        }
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        if(!state) return
+
+        val packet = event.packet
+
+        if (packet is S08PacketPlayerPosLook) {
+            flagTimer.reset()
+            antiDesync = false
+            /*
+            if (s08FlagValue.get()) {
+                jState = 0
+            }
+
+             */
+        }
+
+        if (packet is C03PacketPlayer && (MovementUtils.isMoving() || syncTimer.hasTimePassed(1000L) || msTimer.hasTimePassed(
+                ((delayValue.get() / 5) + 75).toLong()
+            ))
+        )
+            antiDesync = false
+
+        if (s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
+            return
+
+        mode.onPacket(event)
+
+        if (packet is S0BPacketAnimation && debugValue.get()) {
+            if (packet.animationType == 4 && packet.entityID == target) {
+                alert("CRIT")
+            }
+        }
+    }
+
+    @EventTarget
+    fun onMove(event: MoveEvent) {
+        if(!state) return
+        mode.onMove(event)
+    }
+
+    @EventTarget
+    fun onBlockBB(event: BlockBBEvent) {
+        if(!state) return
+        mode.onBlockBB(event)
+    }
+
+    @EventTarget
+    fun onJump(event: JumpEvent) {
+        if(!state) return
+        mode.onJump(event)
+    }
+
+    @EventTarget
+    fun onStep(event: StepEvent) {
+        if(!state) return
+        mode.onStep(event)
+    }
+
+    override val tag: String
+        get() = modeValue.get()
+
+    fun sendCriticalPacket(
+        xOffset: Double = 0.0,
+        yOffset: Double = 0.0,
+        zOffset: Double = 0.0,
+        ground: Boolean
+    ) {
+        val x = mc.thePlayer.posX + xOffset
+        val y = mc.thePlayer.posY + yOffset
+        val z = mc.thePlayer.posZ + zOffset
+        if (lookValue.get()) {
+            mc.netHandler.addToSendQueue(
+                C03PacketPlayer.C06PacketPlayerPosLook(
+                    x,
+                    y,
+                    z,
+                    mc.thePlayer.rotationYaw,
+                    mc.thePlayer.rotationPitch,
+                    ground
+                )
+            )
+        } else {
+            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(x, y, z, ground))
+        }
+    }
+
+
+        /**
+     * 读取mode中的value并和本体中的value合并
+     * 所有的value必须在这个之前初始化
+     */
+    override val values = super.values.toMutableList().also { modes.map { mode -> mode.values.forEach { value -> it.add(value.displayable { modeValue.equals(mode.modeName) }) } } }
+}

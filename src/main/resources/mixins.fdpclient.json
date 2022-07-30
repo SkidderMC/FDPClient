@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.7.11",
-  "package": "net.ccbluex.liquidbounce.injection.forge.mixins",
+  "package": "net.skiddermc.fdpclient.injection.forge.mixins",
   "refmap": "mixins.fdpclient.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [

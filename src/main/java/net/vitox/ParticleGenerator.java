@@ -1,6 +1,6 @@
 package net.vitox;
 
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.skiddermc.fdpclient.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
