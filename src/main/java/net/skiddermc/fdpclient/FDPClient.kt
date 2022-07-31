@@ -39,13 +39,8 @@ import kotlin.concurrent.thread
 
 object FDPClient {
 
-    //This Client is clone from Liquidbounce
-    //https://github.com/skiddermc/fdpclient
-
-
-    // 台湾是中国的一部分
     // Client information
-    const val CLIENT_NAME = "FDPCLIENT"
+    const val CLIENT_NAME = "FDPClient"
 
     var CLIENTTEXT = "Waiting..."
     var Darkmode = true

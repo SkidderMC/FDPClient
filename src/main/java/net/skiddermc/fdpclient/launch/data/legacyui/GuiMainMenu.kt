@@ -26,7 +26,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     fun drawBtns() {
         this.buttonList.add(
             TestBtn(
-                1,
+                100,
                 (this.width / 2) - (130 / 2),
                 this.height / 2 - 20,
                 130,
@@ -40,7 +40,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                2,
+                101,
                 (this.width / 2) - (130 / 2),
                 this.height / 2 + 10,
                 130,
@@ -54,7 +54,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                100,
+                200,
                 (this.width / 2) - (130 / 2),
                 this.height / 2 + 40,
                 130,
@@ -68,7 +68,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                103,
+                102,
                 (this.width / 2) - (130 / 2),
                 this.height / 2 + 70,
                 130,
@@ -83,7 +83,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                4,
+                104,
                 this.width - 35,
                 10,
                 25,
@@ -97,7 +97,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                0,
+                103,
                 this.width - 65,
                 10,
                 25,
@@ -111,7 +111,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                104,
+                201,
                 this.width - 95,
                 10,
                 25,
@@ -125,7 +125,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                102,
+                202,
                 this.width - 125,
                 10,
                 25,
@@ -139,21 +139,21 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                514, this.width - 155, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
+                203, this.width - 155, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
                 Color(20, 20, 20, 130)
             )
         )
 
         this.buttonList.add(
             TestBtn(
-                114, this.width - 185, 10, 25, 25, "Website", ResourceLocation("fdpclient/imgs/icon/website.png"), 2,
+                204, this.width - 185, 10, 25, 25, "Website", ResourceLocation("fdpclient/imgs/icon/website.png"), 2,
                 Color(20, 20, 20, 130)
             )
         )
 
         this.buttonList.add(
             TestBtn(
-                191, 20, 10, 25, 25, "Toggle theme", ResourceLocation("fdpclient/imgs/icon/moon-night.png"), 2,
+                205, 20, 10, 25, 25, "Toggle theme", ResourceLocation("fdpclient/imgs/icon/moon-night.png"), 2,
                 Color(20, 20, 20, 130)
             )
         )
@@ -202,7 +202,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
 
         FontLoaders.F16.drawString(
-            "Made by UnlegitMC",
+            "Made by SkidderMC",
             10f,
             this.height - 15f,
             Color(1, 1, 1, 170).rgb
@@ -264,17 +264,17 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
     override fun actionPerformed(button: GuiButton) {
         when (button.id) {
-            0 -> mc.displayGuiScreen(GuiOptions(this, mc.gameSettings))
-            1 -> mc.displayGuiScreen(GuiSelectWorld(this))
-            2 -> mc.displayGuiScreen(GuiMultiplayer(this))
-            4 -> mc.shutdown()
-            100 -> mc.displayGuiScreen(GuiAltManager(this))
-            102 -> displayed = false
-            103 -> mc.displayGuiScreen(GuiModList(this))
-            104 -> mc.displayGuiScreen(GuiBackground(this))
-            514 -> MiscUtils.showURL("https://${FDPClient.CLIENT_WEBSITE}/discord.html")
-            114 -> MiscUtils.showURL("https://${FDPClient.CLIENT_WEBSITE}")
-            191 -> FDPClient.Darkmode = !FDPClient.Darkmode
+            100 -> mc.displayGuiScreen(GuiSelectWorld(this))
+            101 -> mc.displayGuiScreen(GuiMultiplayer(this))
+            102 -> mc.displayGuiScreen(GuiModList(this))
+            103 -> mc.displayGuiScreen(GuiOptions(this, mc.gameSettings))
+            104 -> mc.shutdown()
+            200 -> mc.displayGuiScreen(GuiAltManager(this))
+            201 -> mc.displayGuiScreen(GuiBackground(this))
+            202 -> displayed = false
+            203 -> MiscUtils.showURL("https://${FDPClient.CLIENT_WEBSITE}/discord.html")
+            204 -> MiscUtils.showURL("https://${FDPClient.CLIENT_WEBSITE}")
+            205 -> FDPClient.Darkmode = !FDPClient.Darkmode
         }
     }
 

@@ -56,13 +56,12 @@ public class ClickGUIModule extends Module {
         if (styleValue.get().contains("Novoline")) {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
+        } else if (modeValue.get().contains("Light")) {
+            mc.displayGuiScreen(new LightClickGUI());
+            this.setState(false);
         } else {
             updateStyle();
             mc.displayGuiScreen(LegacyUiLaunchOption.clickGui);
-        }
-        if (modeValue.get().contains("Light")) {
-            mc.displayGuiScreen(new LightClickGUI());
-            this.setState(false);
         }
 
     }
