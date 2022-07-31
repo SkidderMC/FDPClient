@@ -15,7 +15,7 @@ import net.skiddermc.fdpclient.features.module.modules.client.button.FLineButton
 import net.skiddermc.fdpclient.features.module.modules.client.button.RiseButtonRenderer
 import net.skiddermc.fdpclient.features.module.modules.client.button.BetterButtonRenderer
 import net.skiddermc.fdpclient.features.module.modules.client.button.RoundedButtonRenderer
-import net.skiddermc.fdpclient.launch.data.legacyui.ClickGUIModule.*
+import net.skiddermc.fdpclient.launch.data.modernui.ClickGUIModule.*
 import net.skiddermc.fdpclient.ui.client.hud.designer.GuiHudDesigner
 import net.skiddermc.fdpclient.utils.render.Animation
 import net.skiddermc.fdpclient.utils.render.ColorUtils
