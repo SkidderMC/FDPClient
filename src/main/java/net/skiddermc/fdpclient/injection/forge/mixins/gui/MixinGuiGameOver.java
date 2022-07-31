@@ -1,6 +1,6 @@
 package net.skiddermc.fdpclient.injection.forge.mixins.gui;
 
-import net.skiddermc.fdpclient.launch.data.legacyui.GuiMainMenu;
+import net.skiddermc.fdpclient.launch.data.modernui.GuiMainMenu;
 import net.skiddermc.fdpclient.utils.StatisticsUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;

@@ -10,7 +10,7 @@ class GuiLaunchOptionSelectMenu : GuiScreen() {
     override fun initGui() {
 
         FDPClient.launchFilters.addAll(when (0) {
-            0 -> arrayListOf(EnumLaunchFilter.LEGACY_UI)
+            0 -> arrayListOf(EnumLaunchFilter.MODERN_UI)
             else -> emptyList()
         })
 

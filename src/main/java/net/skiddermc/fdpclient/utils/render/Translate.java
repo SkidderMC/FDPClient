@@ -5,7 +5,7 @@
  */
 package net.skiddermc.fdpclient.utils.render;
 
-import net.skiddermc.fdpclient.launch.data.legacyui.AnimationUtil;
+import net.skiddermc.fdpclient.launch.data.modernui.AnimationUtil;
 import net.skiddermc.fdpclient.utils.AnimationUtils;
 
 public final class Translate {
