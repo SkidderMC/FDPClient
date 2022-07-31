@@ -208,7 +208,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             Color(1, 1, 1, 170).rgb
         )
         FontLoaders.F16.drawString(
-            FDPClient.CLIENT_NAME + FDPClient.CLIENT_VERSION,
+            FDPClient.CLIENT_NAME,
             10f,
             this.height - 25f,
             Color(1, 1, 1, 170).rgb

@@ -11,8 +11,9 @@ import net.skiddermc.fdpclient.launch.data.legacyui.scriptOnline.Subscriptions
 import net.skiddermc.fdpclient.script.api.*
 import net.skiddermc.fdpclient.script.api.global.Chat
 import net.skiddermc.fdpclient.script.api.global.Setting
-import net.skiddermc.fdpclient.utils.ClientUtils
-import net.skiddermc.fdpclient.utils.MinecraftInstance
+import net.skiddermc.fdpclient.utils.*
+import net.skiddermc.fdpclient.utils.misc.HttpUtils
+import net.skiddermc.fdpclient.utils.misc.MiscUtils
 import java.io.File
 import java.util.function.Function
 
@@ -54,6 +55,11 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
         scriptEngine.put("moduleManager", FDPClient.moduleManager)
         scriptEngine.put("commandManager", FDPClient.commandManager)
         scriptEngine.put("scriptManager", FDPClient.scriptManager)
+
+        // Utils
+        scriptEngine.put("MovementUtils", MovementUtils)
+        scriptEngine.put("PacketUtils", PacketUtils)
+        scriptEngine.put("InventoryUtils", InventoryUtils)
 
         // Global functions
         scriptEngine.put("registerScript", RegisterScript())
