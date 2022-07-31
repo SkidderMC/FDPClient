@@ -8,7 +8,7 @@ package net.skiddermc.fdpclient.features.module.modules.client;
 import net.skiddermc.fdpclient.features.module.Module;
 import net.skiddermc.fdpclient.features.module.ModuleCategory;
 import net.skiddermc.fdpclient.features.module.ModuleInfo;
-import net.skiddermc.fdpclient.launch.data.legacyui.GuiScriptLoadMenu;
+import net.skiddermc.fdpclient.launch.data.modernui.GuiScriptLoadMenu;
 
 @ModuleInfo(name = "FDPScriptManager", category = ModuleCategory.CLIENT)
 public class FDPScriptManager extends Module {

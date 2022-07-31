@@ -7,7 +7,7 @@ import jdk.nashorn.api.scripting.ScriptUtils
 import net.skiddermc.fdpclient.FDPClient
 import net.skiddermc.fdpclient.features.command.Command
 import net.skiddermc.fdpclient.features.module.Module
-import net.skiddermc.fdpclient.launch.data.legacyui.scriptOnline.Subscriptions
+import net.skiddermc.fdpclient.launch.data.modernui.scriptOnline.Subscriptions
 import net.skiddermc.fdpclient.script.api.*
 import net.skiddermc.fdpclient.script.api.global.Chat
 import net.skiddermc.fdpclient.script.api.global.Notifications

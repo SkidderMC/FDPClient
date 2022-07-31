@@ -4,14 +4,14 @@ import net.skiddermc.fdpclient.FDPClient
 import net.skiddermc.fdpclient.launch.EnumLaunchFilter
 import net.skiddermc.fdpclient.launch.LaunchFilterInfo
 import net.skiddermc.fdpclient.launch.LaunchOption
-import net.skiddermc.fdpclient.launch.data.legacyui.ClickGUIModule
-import net.skiddermc.fdpclient.launch.data.legacyui.ClickGuiConfig
-import net.skiddermc.fdpclient.launch.data.legacyui.GuiMainMenu
-import net.skiddermc.fdpclient.launch.data.legacyui.clickgui.ClickGui
+import net.skiddermc.fdpclient.launch.data.modernui.ClickGUIModule
+import net.skiddermc.fdpclient.launch.data.modernui.ClickGuiConfig
+import net.skiddermc.fdpclient.launch.data.modernui.GuiMainMenu
+import net.skiddermc.fdpclient.launch.data.modernui.clickgui.ClickGui
 import java.io.File
 
 @LaunchFilterInfo([EnumLaunchFilter.LEGACY_UI])
-object LegacyUiLaunchOption : LaunchOption() {
+object modernuiLaunchOption : LaunchOption() {
 
     @JvmStatic
     lateinit var clickGui: ClickGui

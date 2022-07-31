@@ -6,7 +6,7 @@
 package net.skiddermc.fdpclient.features.command.commands
 
 import net.skiddermc.fdpclient.features.command.Command
-import net.skiddermc.fdpclient.launch.data.legacyui.GuiMainMenu
+import net.skiddermc.fdpclient.launch.data.modernui.GuiMainMenu
 import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.multiplayer.GuiConnecting
 import net.minecraft.client.multiplayer.ServerData

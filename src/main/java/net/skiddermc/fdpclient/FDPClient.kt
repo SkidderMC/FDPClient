@@ -19,8 +19,8 @@ import net.skiddermc.fdpclient.launch.EnumLaunchFilter
 import net.skiddermc.fdpclient.launch.LaunchFilterInfo
 import net.skiddermc.fdpclient.launch.LaunchOption
 import net.skiddermc.fdpclient.launch.data.GuiLaunchOptionSelectMenu
-import net.skiddermc.fdpclient.launch.data.legacyui.scriptOnline.ScriptSubscribe
-import net.skiddermc.fdpclient.launch.data.legacyui.scriptOnline.Subscriptions
+import net.skiddermc.fdpclient.launch.data.modernui.scriptOnline.ScriptSubscribe
+import net.skiddermc.fdpclient.launch.data.modernui.scriptOnline.Subscriptions
 import net.skiddermc.fdpclient.script.ScriptManager
 import net.skiddermc.fdpclient.ui.cape.GuiCapeManager
 import net.skiddermc.fdpclient.ui.client.hud.HUD
