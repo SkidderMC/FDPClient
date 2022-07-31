@@ -10,6 +10,7 @@ import net.skiddermc.fdpclient.features.module.Module
 import net.skiddermc.fdpclient.launch.data.legacyui.scriptOnline.Subscriptions
 import net.skiddermc.fdpclient.script.api.*
 import net.skiddermc.fdpclient.script.api.global.Chat
+import net.skiddermc.fdpclient.script.api.global.Notifications
 import net.skiddermc.fdpclient.script.api.global.Setting
 import net.skiddermc.fdpclient.utils.*
 import net.skiddermc.fdpclient.utils.misc.HttpUtils
@@ -47,8 +48,10 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
     }
 
     init {
+        //Main
         scriptEngine.put("Chat", StaticClass.forClass(Chat::class.java))
         scriptEngine.put("Setting", StaticClass.forClass(Setting::class.java))
+        scriptEngine.put("Notifications", StaticClass.forClass(Notifications::class.java))
 
         // Global instances
         scriptEngine.put("mc", mc)
@@ -178,13 +181,9 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
      * @param eventName Name of the event to be called.
      */
     public fun callEvent(eventName: String) {
-        //println("call $eventName")
-        if (eventName == "enable") {
-            isEnable = true;
-        } else {
-            if (eventName == "disable") {
-                isEnable = false;
-            }
+        when(eventName) {
+            "enable" -> isEnable = true
+            "disable" -> isEnable = false
         }
         try {
             events[eventName]?.call(null)
