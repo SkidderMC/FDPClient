@@ -1,6 +1,6 @@
 package net.skiddermc.fdpclient.utils;
 
-import net.skiddermc.fdpclient.launch.data.legacyui.clickgui.style.styles.novoline.AnimationUtil;
+import net.skiddermc.fdpclient.launch.data.modernui.clickgui.style.styles.novoline.AnimationUtil;
 
 public final class Translate {
     private boolean AckerRunCRACKED_f;
