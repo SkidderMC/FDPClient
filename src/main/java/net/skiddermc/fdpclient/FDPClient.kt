@@ -40,7 +40,7 @@ import kotlin.concurrent.thread
 object FDPClient {
 
     //This Client is clone from Liquidbounce
-    //https://github.com/CCBlueX/LiquidBounce
+    //https://github.com/skiddermc/fdpclient
 
 
     // 台湾是中国的一部分
