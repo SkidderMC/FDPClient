@@ -12,7 +12,7 @@ import net.skiddermc.fdpclient.features.special.DiscordRPC
 import net.skiddermc.fdpclient.value.BoolValue
 
 @ModuleInfo(name = "DiscordRPC", category = ModuleCategory.CLIENT)
-class DiscordRPCPack : Module() {
+class DiscordRPCModule : Module() {
     val showserver = BoolValue("ShowServer", false)
     override fun onEnable() {
         DiscordRPC.run()

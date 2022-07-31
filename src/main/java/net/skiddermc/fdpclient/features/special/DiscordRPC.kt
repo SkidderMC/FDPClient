@@ -5,7 +5,7 @@ import com.jagrosh.discordipc.IPCListener
 import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import net.skiddermc.fdpclient.FDPClient
-import net.skiddermc.fdpclient.features.module.modules.client.DiscordRPCPack
+import net.skiddermc.fdpclient.features.module.modules.client.DiscordRPCModule
 import net.skiddermc.fdpclient.utils.ServerUtils
 import org.json.JSONObject
 import java.time.OffsetDateTime
@@ -41,7 +41,7 @@ object DiscordRPC {
 
     private fun update() {
         val builder = RichPresence.Builder()
-        val discordrpc = FDPClient.moduleManager[DiscordRPCPack::class.java]!!
+        val discordrpc = FDPClient.moduleManager[DiscordRPCModule::class.java]!!
         builder.setStartTimestamp(timestamp)
         builder.setLargeImage("cfb8fe2fe9169dc68f7f8c1236b885")
         builder.setDetails(fdpwebsite + FDPClient.CLIENT_VERSION)
