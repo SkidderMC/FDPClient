@@ -48,7 +48,7 @@ public class OptimizeTransformer implements IClassTransformer {
                                 final String owner = min.owner.replaceAll("/", ".");
                                 if (transformMap.containsKey(owner)) {
                                     changed.set(true);
-                                    min.owner = "net/ccbluex/liquidbounce/injection/access/StaticStorage";
+                                    min.owner = "net/skiddermc/fdpclient/injection/access/StaticStorage";
                                     min.name = transformMap.get(owner);
                                 }
                             }

@@ -39,7 +39,7 @@ public class ForgeNetworkTransformer implements IClassTransformer {
                     final LabelNode labelNode = new LabelNode();
 
                     methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), ASMUtils.INSTANCE.toNodes(
-                            new MethodInsnNode(INVOKESTATIC, "net/ccbluex/liquidbounce/injection/transformers/ForgeNetworkTransformer", "returnMethod", "()Z", false),
+                            new MethodInsnNode(INVOKESTATIC, "net/skiddermc/fdpclient/injection/transformers/ForgeNetworkTransformer", "returnMethod", "()Z", false),
                             new JumpInsnNode(IFEQ, labelNode),
                             new InsnNode(ICONST_0),
                             new InsnNode(IRETURN),
@@ -62,7 +62,7 @@ public class ForgeNetworkTransformer implements IClassTransformer {
 
                     methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), ASMUtils.INSTANCE.toNodes(
                             new MethodInsnNode(INVOKESTATIC,
-                                    "net/ccbluex/liquidbounce/injection/transformers/ForgeNetworkTransformer",
+                                    "net/skiddermc/fdpclient/injection/transformers/ForgeNetworkTransformer",
                                     "returnMethod", "()Z", false
                             ),
                             new JumpInsnNode(IFEQ, labelNode),
