@@ -7,7 +7,7 @@ A free mixin-based injection hacked-client for Minecraft using Minecraft Forge b
 
 Website: [fdpinfo.github.io](https://fdpinfo.github.io)  
 Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)  
-Discord: https://discord.gg/55x7TaHWXG
+Discord: [discord](https://dsc.gg/fdpdiscord)
 
 ## ⚠️ Alert ⚠️
 There is a fake website called "fdp**l**nfo.github.io". Please check the difference between the "L" and "I". If you click the download button on it, you will get jumpscared.
