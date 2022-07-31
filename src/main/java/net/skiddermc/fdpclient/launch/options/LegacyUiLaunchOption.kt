@@ -10,7 +10,7 @@ import net.skiddermc.fdpclient.launch.data.modernui.GuiMainMenu
 import net.skiddermc.fdpclient.launch.data.modernui.clickgui.ClickGui
 import java.io.File
 
-@LaunchFilterInfo([EnumLaunchFilter.LEGACY_UI])
+@LaunchFilterInfo([EnumLaunchFilter.MODERN_UI])
 object modernuiLaunchOption : LaunchOption() {
 
     @JvmStatic
