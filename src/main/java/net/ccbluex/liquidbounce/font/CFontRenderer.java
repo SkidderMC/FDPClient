@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.lib.Opcodes;
 
-/* loaded from: LiquidBounce-b73.jar:net/skiddermc/fdpclient/CFontRenderer.class */
+/* loaded from: LiquidBounce-b73.jar:net/ccbluex/liquidbounce/CFontRenderer.class */
 public class CFontRenderer extends CFont {
     protected CFont.CharData[] boldChars = new CFont.CharData[256];
     protected CFont.CharData[] italicChars = new CFont.CharData[256];

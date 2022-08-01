@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
-/* loaded from: LiquidBounce-b73.jar:net/skiddermc/fdpclient/FontLoaders.class */
+/* loaded from: LiquidBounce-b73.jar:net/ccbluex/liquidbounce/FontLoaders.class */
 public abstract class FontLoaders {
     public static CFontRenderer F14 = new CFontRenderer(getFont(14), true, true);
     public static CFontRenderer F16 = new CFontRenderer(getFont(16), true, true);
