@@ -13,8 +13,6 @@ import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.script.api.global.Notifications
 import net.ccbluex.liquidbounce.script.api.global.Setting
 import net.ccbluex.liquidbounce.utils.*
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils
-import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import java.io.File
 import java.util.function.Function
 

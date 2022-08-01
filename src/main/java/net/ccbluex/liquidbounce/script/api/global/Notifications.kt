@@ -9,9 +9,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 
-/**
- * Object used by the script API to provide an easier way of calling chat-related methods.
- */
 object Notifications {
 
     @Suppress("unused")
