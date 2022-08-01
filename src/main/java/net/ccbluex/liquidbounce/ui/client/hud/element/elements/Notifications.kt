@@ -22,7 +22,6 @@ import kotlin.math.max
  */
 @ElementInfo(name = "Notifications", blur = true)
 class Notifications(
-var NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
     x: Double = 0.0,
     y: Double = 0.0,
     scale: Float = 1F,
@@ -32,6 +31,7 @@ var NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
     private val TitleShadow = BoolValue("Title Shadow", false)
     private val MotionBlur = BoolValue("Motion blur", false)
     private val ContentShadow = BoolValue("Content Shadow", true)
+    val NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
 
 
 
