@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -278,7 +278,7 @@ class KillAura : Module() {
      */
     override fun onDisable() {
         strictStrafe = false
-        FDPClient.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
         target = null
         currentTarget = null
         hitable = false
@@ -368,7 +368,7 @@ class KillAura : Module() {
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
         strictStrafe = false
-        if(!FDPClient.moduleManager[TargetStrafe::class.java]!!.modifyStrafe(event)) {
+        if(!LiquidBounce.moduleManager[TargetStrafe::class.java]!!.modifyStrafe(event)) {
             strictStrafe = true
         }
         if (rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
@@ -455,8 +455,8 @@ class KillAura : Module() {
             target = currentTarget
         }
 
-        FDPClient.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
-        FDPClient.moduleManager[TargetStrafe::class.java]!!.doStrafe = FDPClient.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
     }
 
     /**
@@ -924,14 +924,14 @@ class KillAura : Module() {
             if (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange) {
                 target = entity
                 canSwing = false
-                FDPClient.moduleManager[TargetStrafe::class.java]!!.targetEntity = target?:return
-                FDPClient.moduleManager[TargetStrafe::class.java]!!.doStrafe = FDPClient.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
+                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = target?:return
+                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
                 return
             }
         }
 
         target = null
-        FDPClient.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
         canSwing = discoveredTargets.find { mc.thePlayer.getDistanceToEntityBox(it) < swingRangeValue.get() } != null
     }
 
@@ -954,7 +954,7 @@ class KillAura : Module() {
         }
         // Call attack event
         val event = AttackEvent(entity)
-        FDPClient.eventManager.callEvent(event)
+        LiquidBounce.eventManager.callEvent(event)
         if (event.isCancelled) {
             return
         }
@@ -1232,8 +1232,8 @@ class KillAura : Module() {
      */
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
-                || (blinkCheck.get() && FDPClient.moduleManager[Blink::class.java]!!.state) || FDPClient.moduleManager[FreeCam::class.java]!!.state ||
-                (noScaffValue.get() && FDPClient.moduleManager[Scaffold::class.java]!!.state)
+                || (blinkCheck.get() && LiquidBounce.moduleManager[Blink::class.java]!!.state) || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
+                (noScaffValue.get() && LiquidBounce.moduleManager[Scaffold::class.java]!!.state)
 
     /**
      * Check if [entity] is alive

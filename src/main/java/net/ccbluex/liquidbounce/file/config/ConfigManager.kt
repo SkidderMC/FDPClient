@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.file.config
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.client.Target
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.ClassUtils
@@ -17,13 +17,13 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 
 class ConfigManager {
-    private val configSetFile = File(FDPClient.fileManager.dir, "config-settings.json")
+    private val configSetFile = File(LiquidBounce.fileManager.dir, "config-settings.json")
 
     private val sections = mutableListOf<ConfigSection>()
 
     var nowConfig = "default"
     private var nowConfigInFile = "default"
-    var configFile = File(FDPClient.fileManager.configsDir, "$nowConfig.json")
+    var configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
     var needSave = false
 
     init {
@@ -37,13 +37,13 @@ class ConfigManager {
     }
 
     fun load(name: String, save: Boolean = true) {
-        FDPClient.isLoadingConfig = true
+        LiquidBounce.isLoadingConfig = true
         if (save && nowConfig != name) {
             save(true, true) // 保存老配置
         }
 
         nowConfig = name
-        configFile = File(FDPClient.fileManager.configsDir, "$nowConfig.json")
+        configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
 
         val json = if (configFile.exists()) {
             JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject
@@ -64,11 +64,11 @@ class ConfigManager {
         }
 
         ClientUtils.logInfo("Config $nowConfig.json loaded.")
-        FDPClient.isLoadingConfig = false
+        LiquidBounce.isLoadingConfig = false
     }
 
     fun save(saveConfigSet: Boolean = nowConfigInFile != nowConfig, forceSave: Boolean = false) {
-        if (FDPClient.isLoadingConfig && !forceSave) {
+        if (LiquidBounce.isLoadingConfig && !forceSave) {
             return
         }
 
@@ -120,10 +120,10 @@ class ConfigManager {
     }
 
     fun loadLegacySupport() {
-        if (FDPClient.fileManager.loadLegacy()) {
-            if (File(FDPClient.fileManager.configsDir, "$nowConfig.json").exists()) {
+        if (LiquidBounce.fileManager.loadLegacy()) {
+            if (File(LiquidBounce.fileManager.configsDir, "$nowConfig.json").exists()) {
                 nowConfig = "legacy"
-                configFile = File(FDPClient.fileManager.configsDir, "$nowConfig.json")
+                configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
                 save(forceSave = true)
             } else {
                 save(forceSave = true)
@@ -178,7 +178,7 @@ class ConfigManager {
                         val moduleName = args[0]
                         val valueName = args[1]
                         val value = args[2]
-                        val module = FDPClient.moduleManager.getModule(moduleName) ?: return@forEachIndexed
+                        val module = LiquidBounce.moduleManager.getModule(moduleName) ?: return@forEachIndexed
 
                         if (valueName.equals("toggle", ignoreCase = true)) {
                             module.state = value.equals("true", ignoreCase = true)
@@ -208,7 +208,7 @@ class ConfigManager {
             }
         }
 
-        val oldSettingDir = File(FDPClient.fileManager.dir, "settings")
+        val oldSettingDir = File(LiquidBounce.fileManager.dir, "settings")
         if (oldSettingDir.exists()) {
             oldSettingDir.listFiles().forEach {
                 if (it.isFile) {
@@ -216,19 +216,19 @@ class ConfigManager {
                     ClientUtils.logWarn("Converting legacy setting \"${it.name}\"")
                     load("default", false)
                     nowConfig = it.name
-                    configFile = File(FDPClient.fileManager.configsDir, "$nowConfig.json")
+                    configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
                     executeScript(String(Files.readAllBytes(it.toPath())))
                     save(false, true)
                     // set data back
                     nowConfig = name
-                    configFile = File(FDPClient.fileManager.configsDir, "$nowConfig.json")
+                    configFile = File(LiquidBounce.fileManager.configsDir, "$nowConfig.json")
                     saveConfigSet()
                 }
-                if (!FDPClient.fileManager.legacySettingsDir.exists()) {
-                    FDPClient.fileManager.legacySettingsDir.mkdir()
+                if (!LiquidBounce.fileManager.legacySettingsDir.exists()) {
+                    LiquidBounce.fileManager.legacySettingsDir.mkdir()
                 }
 
-                it.renameTo(File(FDPClient.fileManager.legacySettingsDir, it.name))
+                it.renameTo(File(LiquidBounce.fileManager.legacySettingsDir, it.name))
             }
             oldSettingDir.delete()
         }

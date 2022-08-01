@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.misc;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.UpdateEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
@@ -65,7 +65,7 @@ public class MurderDetector extends Module {
                         if(killerData.get(player)==null){
                             if (murderDetector.isWeapon(player.inventory.getCurrentItem().getItem())) {
                                 ClientUtils.INSTANCE.displayChatMessage("§a[%module.MurderDetector.name%]§c "+player.getName()+" is Killer!!!");
-                                FDPClient.hud.addNotification(new Notification("§a[%module.MurderDetector.name%]§c",player.getName()+" is Killer!!!" , NotifyType.WARNING,4000,500));
+                                LiquidBounce.hud.addNotification(new Notification("§a[%module.MurderDetector.name%]§c",player.getName()+" is Killer!!!" , NotifyType.WARNING,4000,500));
                                 if(killerData.get(player) == null) killerData.put(player, new KillerData(player));
                             }
                         }else{

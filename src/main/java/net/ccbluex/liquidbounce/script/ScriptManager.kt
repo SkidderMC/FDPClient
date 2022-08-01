@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.script
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.io.File
@@ -13,7 +13,7 @@ import java.io.File
 class ScriptManager {
 
     val scripts = mutableListOf<Script>()
-    val scriptsFolder = File(FDPClient.fileManager.dir, "scripts")
+    val scriptsFolder = File(LiquidBounce.fileManager.dir, "scripts")
 
     /**
      * Loads all scripts inside the scripts folder.

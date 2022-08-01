@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.Glint;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -16,7 +16,7 @@ public abstract class MixinLayerArmorBase implements LayerRenderer<EntityLivingB
 
     @ModifyArgs(method="renderGlint", slice=@Slice(from=@At(value="INVOKE", target="Lnet/minecraft/client/renderer/GlStateManager;disableLighting()V", ordinal=0)), at=@At(value="INVOKE", target="Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V", ordinal=0), require=1, allow=1)
     private void renderGlint(Args args) {
-        Glint glint = FDPClient.moduleManager.getModule(Glint.class);
+        Glint glint = LiquidBounce.moduleManager.getModule(Glint.class);
         if (glint.getState()) {
             int n = glint.getColor().getRGB();
             args.set(0, (Object) ((float) (n >> 16 & 0xFF) / 255.0f));

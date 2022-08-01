@@ -4,10 +4,10 @@ import jdk.internal.dynalink.beans.StaticClass
 import jdk.nashorn.api.scripting.JSObject
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import jdk.nashorn.api.scripting.ScriptUtils
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.launch.data.legacyui.scriptOnline.Subscriptions
+import net.ccbluex.liquidbounce.launch.data.modernui.scriptOnline.Subscriptions
 import net.ccbluex.liquidbounce.script.api.*
 import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.script.api.global.Notifications
@@ -55,9 +55,9 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
 
         // Global instances
         scriptEngine.put("mc", mc)
-        scriptEngine.put("moduleManager", FDPClient.moduleManager)
-        scriptEngine.put("commandManager", FDPClient.commandManager)
-        scriptEngine.put("scriptManager", FDPClient.scriptManager)
+        scriptEngine.put("moduleManager", LiquidBounce.moduleManager)
+        scriptEngine.put("commandManager", LiquidBounce.commandManager)
+        scriptEngine.put("scriptManager", LiquidBounce.scriptManager)
 
         // Utils
         scriptEngine.put("MovementUtils", MovementUtils)
@@ -102,7 +102,7 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
     @Suppress("unused")
     fun registerModule(moduleObject: JSObject, callback: JSObject) {
         val module = ScriptModule(moduleObject)
-        FDPClient.moduleManager.registerModule(module)
+        LiquidBounce.moduleManager.registerModule(module)
         registeredModules += module
         callback.call(moduleObject, module)
     }
@@ -116,21 +116,21 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
     @Suppress("unused")
     fun registerCommand(commandObject: JSObject, callback: JSObject) {
         val command = ScriptCommand(commandObject)
-        FDPClient.commandManager.registerCommand(command)
+        LiquidBounce.commandManager.registerCommand(command)
         registeredCommands += command
         callback.call(commandObject, command)
     }
 
     fun regAnyThing() {
-        registeredModules.forEach { FDPClient.moduleManager.registerModule(it) }
-        registeredCommands.forEach { FDPClient.commandManager.registerCommand(it) }
+        registeredModules.forEach { LiquidBounce.moduleManager.registerModule(it) }
+        registeredCommands.forEach { LiquidBounce.commandManager.registerCommand(it) }
     }
 
     fun supportLegacyScripts() {
         if (!scriptText.lines().first().contains("api_version=2")) {
             ClientUtils.logWarn("[ScriptAPI] Running script '${scriptFile.name}' with legacy support.")
             val legacyScript =
-                FDPClient::class.java.getResource("/assets/minecraft/fdpclient/scriptapi/legacy.js").readText()
+                LiquidBounce::class.java.getResource("/assets/minecraft/fdpclient/scriptapi/legacy.js").readText()
             scriptEngine.eval(legacyScript)
         }
     }
@@ -161,8 +161,8 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
     fun onDisable() {
         if (!state) return
 
-        registeredModules.forEach { FDPClient.moduleManager.unregisterModule(it) }
-        registeredCommands.forEach { FDPClient.commandManager.unregisterCommand(it) }
+        registeredModules.forEach { LiquidBounce.moduleManager.unregisterModule(it) }
+        registeredCommands.forEach { LiquidBounce.commandManager.unregisterCommand(it) }
 
         callEvent("disable")
         state = false
@@ -173,7 +173,7 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
      * @param scriptFile Path to the file to be imported.
      */
     fun import(scriptFile: String) {
-        scriptEngine.eval(File(FDPClient.scriptManager.scriptsFolder, scriptFile).readText())
+        scriptEngine.eval(File(LiquidBounce.scriptManager.scriptsFolder, scriptFile).readText())
     }
 
     /**

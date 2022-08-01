@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.other.PopUI
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -119,7 +119,7 @@ class KeyBindManager : GuiScreen() {
 
     override fun onGuiClosed() {
         // save keybind data
-        FDPClient.configManager.smartSave()
+        LiquidBounce.configManager.smartSave()
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {

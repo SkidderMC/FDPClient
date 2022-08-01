@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.ui.cape
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
@@ -17,7 +17,7 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 object GuiCapeManager : GuiScreen() {
-    private val jsonFile = File(FDPClient.fileManager.capesDir, "cape.json")
+    private val jsonFile = File(LiquidBounce.fileManager.capesDir, "cape.json")
 
     private val embeddedCapes = mutableListOf<ICape>()
 
@@ -46,7 +46,7 @@ object GuiCapeManager : GuiScreen() {
         pushEmbeddedCape()
 
         // add capes from files
-        for (file in FDPClient.fileManager.capesDir.listFiles()) {
+        for (file in LiquidBounce.fileManager.capesDir.listFiles()) {
             if (file.isFile && !file.name.equals(jsonFile.name)) {
                 try {
                     val args = file.name.split(".").toTypedArray()

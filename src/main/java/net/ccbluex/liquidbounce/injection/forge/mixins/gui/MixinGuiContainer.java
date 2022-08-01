@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.KeyEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
@@ -59,14 +59,14 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button.id == 114514)
-            FDPClient.moduleManager.getModule(KillAura.class).setState(false);
+            LiquidBounce.moduleManager.getModule(KillAura.class).setState(false);
         if (button.id == 1919810)
-            FDPClient.moduleManager.getModule(ChestStealer.class).setState(false);
+            LiquidBounce.moduleManager.getModule(ChestStealer.class).setState(false);
     }
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo) {
-        ChestStealer chestStealer = FDPClient.moduleManager.getModule(ChestStealer.class);
+        ChestStealer chestStealer = LiquidBounce.moduleManager.getModule(ChestStealer.class);
         Minecraft mc = Minecraft.getMinecraft();
         GuiScreen guiScreen = mc.currentScreen;
         if (chestStealer.getState() && chestStealer.getSilentValue().get() && guiScreen instanceof GuiChest) {
@@ -142,10 +142,10 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
     @Inject(method = "keyTyped", at = @At("HEAD"))
     private void keyTyped(char typedChar, int keyCode, CallbackInfo ci) {
-        ChestStealer chestStealer = FDPClient.moduleManager.getModule(ChestStealer.class);
+        ChestStealer chestStealer = LiquidBounce.moduleManager.getModule(ChestStealer.class);
         try {
             if (chestStealer.getState() && chestStealer.getSilentTitleValue().get() && mc.currentScreen instanceof GuiChest)
-                FDPClient.eventManager.callEvent(new KeyEvent(keyCode == 0 ? typedChar + 256 : keyCode));
+                LiquidBounce.eventManager.callEvent(new KeyEvent(keyCode == 0 ? typedChar + 256 : keyCode));
         }catch (Exception e){
 
         }

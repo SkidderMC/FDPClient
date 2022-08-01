@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.button.FLineButto
 import net.ccbluex.liquidbounce.features.module.modules.client.button.RiseButtonRenderer
 import net.ccbluex.liquidbounce.features.module.modules.client.button.BetterButtonRenderer
 import net.ccbluex.liquidbounce.features.module.modules.client.button.RoundedButtonRenderer
-import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule.*
+import net.ccbluex.liquidbounce.launch.data.modernui.ClickGUIModule.*
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -90,12 +90,12 @@ object HUD : Module() {
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
-        FDPClient.hud.render(false, event.partialTicks)
+        LiquidBounce.hud.render(false, event.partialTicks)
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        FDPClient.hud.update()
+        LiquidBounce.hud.update()
         if (mc.currentScreen == null && lastFontEpsilon != fontEpsilonValue.get()) {
             lastFontEpsilon = fontEpsilonValue.get()
             alert("You need to reload FDPClient to apply changes!")
@@ -122,7 +122,7 @@ object HUD : Module() {
 
     @EventTarget
     fun onKey(event: KeyEvent) {
-        FDPClient.hud.handleKey('a', event.key)
+        LiquidBounce.hud.handleKey('a', event.key)
     }
     fun getClientColors(): Array<Color>? {
         val firstColor: Color

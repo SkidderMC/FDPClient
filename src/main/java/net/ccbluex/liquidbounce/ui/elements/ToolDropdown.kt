@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.elements
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -72,7 +72,7 @@ object ToolDropdown {
                 isMouseOver(mouseX, mouseY, bX, bY + 80F, bWidth, 20F) -> AntiForge.blockPayloadPackets = !AntiForge.blockPayloadPackets
                 isMouseOver(mouseX, mouseY, bX, bY + 100F, bWidth, 20F) -> BungeeCordSpoof.enabled = !BungeeCordSpoof.enabled
             }
-            FDPClient.fileManager.saveConfig(FDPClient.fileManager.specialConfig)
+            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig)
             return true
         }
         return false

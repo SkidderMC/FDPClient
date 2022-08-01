@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
@@ -18,7 +18,7 @@ class BindCommand : Command("bind", emptyArray()) {
     override fun execute(args: Array<String>) {
         if (args.size > 1) {
             // Get module by name
-            val module = FDPClient.moduleManager.getModule(args[1])
+            val module = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
                 alert("Module §a§l" + args[1] + "§3 not found.")
@@ -32,12 +32,12 @@ class BindCommand : Command("bind", emptyArray()) {
 
                 // Response to user
                 alert("Bound module §a§l${module.name}§3 to key §a§l${Keyboard.getKeyName(key)}§3.")
-                FDPClient.hud.addNotification(
+                LiquidBounce.hud.addNotification(
                     Notification("KeyBind", "Bound ${module.name} to ${Keyboard.getKeyName(key)}.", NotifyType.INFO)
                 )
                 playEdit()
             } else {
-                FDPClient.moduleManager.pendingBindModule = module
+                LiquidBounce.moduleManager.pendingBindModule = module
                 alert("Press any key to bind module ${module.name}")
             }
             return
@@ -52,7 +52,7 @@ class BindCommand : Command("bind", emptyArray()) {
         val moduleName = args[0]
 
         return when (args.size) {
-            1 -> FDPClient.moduleManager.modules
+            1 -> LiquidBounce.moduleManager.modules
                     .map { it.name }
                     .filter { it.startsWith(moduleName, true) }
                     .toList()

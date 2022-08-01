@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.criticals.normal
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.criticals.CriticalMode
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -33,7 +33,7 @@ class Hover : CriticalMode("Hover") {
             }
         }
         if(packet is C03PacketPlayer) {
-            if (hoverCombat.get() && !FDPClient.combatManager.inCombat) return
+            if (hoverCombat.get() && !LiquidBounce.combatManager.inCombat) return
             packet.isMoving = true
             when (hoverValue.get().lowercase()) {
                 "2b2t" -> {

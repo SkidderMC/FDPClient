@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.minecraft.client.gui.GuiSpectator;
@@ -20,6 +20,6 @@ public class MixinGuiSpectator {
 
     @Inject(method = "renderTooltip", at = @At("RETURN"))
     private void renderTooltipPost(ScaledResolution p_175264_1_, float p_175264_2_, CallbackInfo callbackInfo) {
-        FDPClient.eventManager.callEvent(new Render2DEvent(p_175264_2_, StaticStorage.scaledResolution));
+        LiquidBounce.eventManager.callEvent(new Render2DEvent(p_175264_2_, StaticStorage.scaledResolution));
     }
 }

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 
 class FocusCommand : Command("focus", emptyArray()) {
@@ -26,13 +26,13 @@ class FocusCommand : Command("focus", emptyArray()) {
 
             when (focused.lowercase()) {
                 "add" -> {
-                    FDPClient.combatManager.focusedPlayerList.add(entity)
+                    LiquidBounce.combatManager.focusedPlayerList.add(entity)
                     alert("Successfully added §a${target.lowercase()}§3 into the focus list.")
                     return
                 }
                 "remove" -> {
-                    if (FDPClient.combatManager.focusedPlayerList.contains(entity)) {
-                        FDPClient.combatManager.focusedPlayerList.remove(entity)
+                    if (LiquidBounce.combatManager.focusedPlayerList.contains(entity)) {
+                        LiquidBounce.combatManager.focusedPlayerList.remove(entity)
                         alert("Successfully removed §a${target.lowercase()}§3 from the focus list.")
                         return
                     } else {
@@ -42,7 +42,7 @@ class FocusCommand : Command("focus", emptyArray()) {
                 }
             }
         } else if (args.size == 2 && args[1].equals("clear", true)) {
-            FDPClient.combatManager.focusedPlayerList.clear()
+            LiquidBounce.combatManager.focusedPlayerList.clear()
             alert("Successfully cleared the focus list.")
             return
         }

@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.file.configs
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.render.XRay
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager
@@ -18,7 +18,7 @@ import java.io.File
 class XRayConfig(file: File) : FileConfig(file) {
 
     override fun loadConfig(config: String) {
-        val xRay = FDPClient.moduleManager[XRay::class.java]!!
+        val xRay = LiquidBounce.moduleManager[XRay::class.java]!!
         val jsonArray = JsonParser().parse(config).asJsonArray
         xRay.xrayBlocks.clear()
 
@@ -37,7 +37,7 @@ class XRayConfig(file: File) : FileConfig(file) {
     }
 
     override fun saveConfig(): String {
-        val xRay = FDPClient.moduleManager[XRay::class.java]!!
+        val xRay = LiquidBounce.moduleManager[XRay::class.java]!!
         val jsonArray = JsonArray()
 
         for (block in xRay.xrayBlocks)

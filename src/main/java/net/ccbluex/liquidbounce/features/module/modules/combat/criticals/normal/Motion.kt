@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.criticals.normal
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.criticals.CriticalMode
@@ -35,7 +35,7 @@ class Motion : CriticalMode("Motion") {
     override fun onPacket(event: PacketEvent) {
         if(event.packet is C03PacketPlayer) {
             when (motionValue.get().lowercase()) {
-                "minemoratest" -> if (!FDPClient.combatManager.inCombat) mc.timer.timerSpeed = 1.00f
+                "minemoratest" -> if (!LiquidBounce.combatManager.inCombat) mc.timer.timerSpeed = 1.00f
             }
         }
     }

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.TextEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
@@ -29,10 +29,10 @@ public class NameProtect extends Module {
 
     @EventTarget
     public void onText(final TextEvent event) {
-        if (mc.thePlayer == null || event.getText().contains("§8[§9§l" + FDPClient.CLIENT_NAME + "§8] §3") || event.getText().startsWith("/") || event.getText().startsWith(FDPClient.commandManager.getPrefix() + ""))
+        if (mc.thePlayer == null || event.getText().contains("§8[§9§l" + LiquidBounce.CLIENT_NAME + "§8] §3") || event.getText().startsWith("/") || event.getText().startsWith(LiquidBounce.commandManager.getPrefix() + ""))
             return;
 
-        for (final FriendsConfig.Friend friend : FDPClient.fileManager.getFriendsConfig().getFriends())
+        for (final FriendsConfig.Friend friend : LiquidBounce.fileManager.getFriendsConfig().getFriends())
             event.setText(StringUtils.replace(event.getText(), friend.getPlayerName(), ColorUtils.translateAlternateColorCodes(friend.getAlias()) + "§f"));
 
         event.setText(StringUtils.replace(

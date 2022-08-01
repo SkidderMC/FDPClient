@@ -1,7 +1,7 @@
 
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.button.AbstractButtonRenderer;
 import net.minecraft.client.Minecraft;
@@ -55,7 +55,7 @@ public abstract class MixinGuiButton extends Gui {
    @Shadow
    public String displayString;
 
-   protected final AbstractButtonRenderer buttonRenderer = FDPClient.moduleManager.getModule(HUD.class).getButtonRenderer((GuiButton)(Object)this);
+   protected final AbstractButtonRenderer buttonRenderer = LiquidBounce.moduleManager.getModule(HUD.class).getButtonRenderer((GuiButton)(Object)this);
 
    /**
     * @author liuli

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.special.GradientBackground;
 import net.ccbluex.liquidbounce.font.FontLoaders;
@@ -70,7 +70,7 @@ public abstract class MixinGuiScreen {
     @Inject(method = "drawWorldBackground", at = @At("HEAD"), cancellable = true)
     private void drawWorldBackground(final CallbackInfo callbackInfo) {
         try {
-            final HUD hud = FDPClient.moduleManager.getModule(HUD.class);
+            final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
             if (hud.getInventoryParticle().get() && mc.thePlayer != null) {
                 ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
             }
@@ -81,8 +81,8 @@ public abstract class MixinGuiScreen {
                 GL11.glPushMatrix();
                 GL11.glPopMatrix();
                 GL11.glPushMatrix();
-                FontLoaders.F30.DisplayFont2(FontLoaders.F30, FDPClient.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, FDPClient.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, FDPClient.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
-                FontLoaders.F30.DisplayFont2(FontLoaders.F14, FDPClient.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, FDPClient.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F30, LiquidBounce.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, LiquidBounce.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F14, LiquidBounce.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);
                 GL11.glPopMatrix();
             }
         }catch (Exception e){
@@ -98,8 +98,8 @@ public abstract class MixinGuiScreen {
                 GL11.glPushMatrix();
                 GL11.glPopMatrix();
                 GL11.glPushMatrix();
-                FontLoaders.F30.DisplayFont2(FontLoaders.F30, FDPClient.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, FDPClient.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, FDPClient.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
-                FontLoaders.F30.DisplayFont2(FontLoaders.F14, FDPClient.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, FDPClient.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F30, LiquidBounce.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, LiquidBounce.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F14, LiquidBounce.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);
                 GL11.glPopMatrix();
             }
         }catch (Exception e){
@@ -134,10 +134,10 @@ public abstract class MixinGuiScreen {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         if(GuiBackground.Companion.getEnabled()) {
-            if (FDPClient.INSTANCE.getBackground() == null) {
+            if (LiquidBounce.INSTANCE.getBackground() == null) {
                 GradientBackground.INSTANCE.draw(width, height);
             }else{
-                mc.getTextureManager().bindTexture(FDPClient.INSTANCE.getBackground());
+                mc.getTextureManager().bindTexture(LiquidBounce.INSTANCE.getBackground());
                 Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
             }
             if (GuiBackground.Companion.getBlur()) {

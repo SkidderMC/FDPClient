@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -56,7 +56,7 @@ class Crosshair : Module() {
         RenderUtils.drawBorderedRect(sr.scaledWidth / 2f + 1 + gap + if (isMoving) 2 else 0, sr.scaledHeight / 2f - width, sr.scaledWidth / 2f + size + gap + 1.0f + if (isMoving) 2 else 0, sr.scaledHeight / 2 + 1.0f + width, 0.5f, Color(0, 0, 0).rgb, crosshairColor.rgb)
         GL11.glPopMatrix()
         GlStateManager.resetColor()
-        val target = FDPClient.combatManager.target/* ?: RaycastUtils.raycastEntity(Reach.hitReach.toDouble()) {
+        val target = LiquidBounce.combatManager.target/* ?: RaycastUtils.raycastEntity(Reach.hitReach.toDouble()) {
             it is EntityLivingBase
         } as EntityLivingBase? */
         if (hitMarkerValue.get() && target != null && target.hurtTime > 0) {

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -52,7 +52,7 @@ class AutoPot : Module() {
             "custom" -> throwAngle = throwAngleOption.get().toFloat()
         }
         
-        if (notCombatValue.get() && FDPClient.combatManager.inCombat) return
+        if (notCombatValue.get() && LiquidBounce.combatManager.inCombat) return
         if (!mc.thePlayer.onGround) return
 
         if (throwing) {

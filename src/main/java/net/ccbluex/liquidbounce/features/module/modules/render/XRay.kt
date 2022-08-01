@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
@@ -38,7 +38,7 @@ class XRay : Module() {
     )
 
     init {
-        FDPClient.commandManager.registerCommand(object : Command("xray", emptyArray()) {
+        LiquidBounce.commandManager.registerCommand(object : Command("xray", emptyArray()) {
 
             override fun execute(args: Array<String>) {
                 if (args.size > 1) {
@@ -64,7 +64,7 @@ class XRay : Module() {
                                 }
 
                                 xrayBlocks.add(block)
-                                FDPClient.fileManager.saveConfig(FDPClient.fileManager.xrayConfig)
+                                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.xrayConfig)
                                 alert("§7Added block §8${block.localizedName}§7.")
                                 playEdit()
                             } catch (exception: NumberFormatException) {
@@ -100,7 +100,7 @@ class XRay : Module() {
                                 }
 
                                 xrayBlocks.remove(block)
-                                FDPClient.fileManager.saveConfig(FDPClient.fileManager.xrayConfig)
+                                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.xrayConfig)
                                 alert("§7Removed block §8${block.localizedName}§7.")
                                 playEdit()
                             } catch (exception: NumberFormatException) {

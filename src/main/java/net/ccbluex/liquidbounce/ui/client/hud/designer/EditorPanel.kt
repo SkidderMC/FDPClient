@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.designer
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.elements
@@ -133,7 +133,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
                     val newElement = element.newInstance()
 
                     if (newElement.createElement()) {
-                        FDPClient.hud.addElement(newElement)
+                        LiquidBounce.hud.addElement(newElement)
                     }
                 } catch (e: InstantiationException) {
                     e.printStackTrace()
@@ -172,7 +172,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         Fonts.font35.drawString("§lReset", x + 2, y + height, Color.WHITE.rgb)
         if (Mouse.isButtonDown(0) && !mouseDown && mouseX >= x && mouseX <= x + width && mouseY >= y + height &&
                 mouseY <= y + height + 10) {
-            FDPClient.hud = createDefault()
+            LiquidBounce.hud = createDefault()
         }
 
         height += 15
@@ -182,7 +182,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         height += 10
         realHeight += 10
 
-        for (element in FDPClient.hud.elements) {
+        for (element in LiquidBounce.hud.elements) {
             Fonts.font35.drawString(element.name, x + 2, y + height, Color.WHITE.rgb)
 
             val stringWidth = Fonts.font35.getStringWidth(element.name)
@@ -445,7 +445,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         Fonts.font32.drawString("§lDelete", deleteWidth, y + 4F, Color.WHITE.rgb)
         if (Mouse.isButtonDown(0) && !mouseDown && mouseX >= deleteWidth && mouseX <= x + width && mouseY >= y &&
             mouseY <= y + 10) {
-            FDPClient.hud.removeElement(element)
+            LiquidBounce.hud.removeElement(element)
         }
     }
 

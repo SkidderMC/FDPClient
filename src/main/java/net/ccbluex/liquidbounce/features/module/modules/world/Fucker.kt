@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -95,7 +95,7 @@ object Fucker : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (noHitValue.get()) {
-            val killAura = FDPClient.moduleManager[KillAura::class.java]!!
+            val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
 
             if (killAura.state && killAura.target != null) {
                 return
@@ -164,7 +164,7 @@ object Fucker : Module() {
             // Destory block
             actionValue.equals("destroy") || surroundings || !isRealBlock -> {
                 // Auto Tool
-                val autoTool = FDPClient.moduleManager[AutoTool::class.java]!!
+                val autoTool = LiquidBounce.moduleManager[AutoTool::class.java]!!
                 if (autoTool.state) {
                     autoTool.switchSlot(currentPos)
                 }
@@ -304,7 +304,7 @@ object Fucker : Module() {
     if (ignoreFirstBlockValue.get() && nearestBlock != null) {
         if (firstPos == null) {
             firstPos = nearestBlock
-            FDPClient.hud.addNotification(Notification(name,"Found first ${getBlockName(targetID)} block at ${nearestBlock!!.x.toInt()} ${nearestBlock!!.y.toInt()} ${nearestBlock!!.z.toInt()}",  NotifyType.SUCCESS))
+            LiquidBounce.hud.addNotification(Notification(name,"Found first ${getBlockName(targetID)} block at ${nearestBlock!!.x.toInt()} ${nearestBlock!!.y.toInt()} ${nearestBlock!!.z.toInt()}",  NotifyType.SUCCESS))
         }
         if (targetID == 26 && firstPos != null && firstPosBed == null) { // bed
             when (true) {
@@ -314,7 +314,7 @@ object Fucker : Module() {
                 getBlock(firstPos!!.north()) != null && Block.getIdFromBlock(getBlock(firstPos!!.north())!!) == 26 -> firstPosBed = firstPos!!.north()
             }
             if (firstPosBed != null)
-                FDPClient.hud.addNotification(Notification(name,"Found second Bed block at ${firstPosBed!!.x.toInt()} ${firstPosBed!!.y.toInt()} ${firstPosBed!!.z.toInt()}", NotifyType.SUCCESS))
+                LiquidBounce.hud.addNotification(Notification(name,"Found second Bed block at ${firstPosBed!!.x.toInt()} ${firstPosBed!!.y.toInt()} ${firstPosBed!!.z.toInt()}", NotifyType.SUCCESS))
         }
     }
     return if (ignoreFirstBlockValue.get() && (firstPos == nearestBlock || firstPosBed == nearestBlock)) null else nearestBlock

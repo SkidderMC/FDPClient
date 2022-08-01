@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.file.config.sections
 
 import com.google.gson.JsonObject
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.EnumTriggerType
 import net.ccbluex.liquidbounce.file.config.ConfigSection
@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.file.config.ConfigSection
 class ModulesSection : ConfigSection("modules") {
     override fun load(json: JsonObject) {
         // set them to default setting
-        FDPClient.moduleManager.modules.forEach {
+        LiquidBounce.moduleManager.modules.forEach {
             val moduleInfo = it.moduleInfo
             it.state = moduleInfo.defaultOn
             it.keyBind = moduleInfo.keyBind
@@ -21,7 +21,7 @@ class ModulesSection : ConfigSection("modules") {
         }
         // load config
         for (entrySet in json.entrySet()) {
-            val module = FDPClient.moduleManager.getModule(entrySet.key) ?: continue
+            val module = LiquidBounce.moduleManager.getModule(entrySet.key) ?: continue
             val data = entrySet.value.asJsonObject
 
             if (data.has("state")) {
@@ -56,7 +56,7 @@ class ModulesSection : ConfigSection("modules") {
     override fun save(): JsonObject {
         val json = JsonObject()
 
-        FDPClient.moduleManager.modules.forEach {
+        LiquidBounce.moduleManager.modules.forEach {
             val moduleJson = JsonObject()
 
             if (it.canEnable || it.triggerType != EnumTriggerType.PRESS) {

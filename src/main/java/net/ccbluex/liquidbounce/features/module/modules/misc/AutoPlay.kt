@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -125,7 +125,7 @@ class AutoPlay : Module() {
                         }
                     }
                     if (text.contains("El juego ya fue iniciado.", true)) {
-                        FDPClient.hud.addNotification(Notification(this.name, "Failed to join, retrying...", NotifyType.ERROR, 1755))
+                        LiquidBounce.hud.addNotification(Notification(this.name, "Failed to join, retrying...", NotifyType.ERROR, 1755))
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/sw leave")
                             mc.thePlayer.sendChatMessage("/sw randomjoin solo")
@@ -151,7 +151,7 @@ class AutoPlay : Module() {
                 }
                 "blocksmc" -> {
                     if (clickState == 1 && text.contains("Only VIP players can join full servers!", true)) {
-                        FDPClient.hud.addNotification(Notification(this.name, "Join failed! trying again...", NotifyType.WARNING, 3000))
+                        LiquidBounce.hud.addNotification(Notification(this.name, "Join failed! trying again...", NotifyType.WARNING, 3000))
                         // connect failed so try to join again
                         Timer().schedule(1500L) {
                             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
@@ -223,7 +223,7 @@ class AutoPlay : Module() {
                     }
                     
                     if (showGuiWhenFailedValue.get() && text.contains("giây", false) && text.contains("thất bại", false)) {
-                        FDPClient.hud.addNotification(Notification(this.name, "Failed to join, showing GUI...", NotifyType.ERROR, 1000))
+                        LiquidBounce.hud.addNotification(Notification(this.name, "Failed to join, showing GUI...", NotifyType.ERROR, 1000))
                         mc.thePlayer.sendChatMessage("/bw gui ${bwModeValue.get()}")
                     }
                 }
@@ -245,7 +245,7 @@ class AutoPlay : Module() {
                     runnable()
                 }
             }
-            FDPClient.hud.addNotification(Notification(this.name, "Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO, delayValue.get() * 1000))
+            LiquidBounce.hud.addNotification(Notification(this.name, "Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO, delayValue.get() * 1000))
         }
     }
 

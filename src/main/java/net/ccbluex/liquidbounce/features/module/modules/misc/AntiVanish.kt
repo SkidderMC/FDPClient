@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -37,7 +37,7 @@ class AntiVanish : Module() {
 
     private fun vanish(){
         if((System.currentTimeMillis()-lastNotify)>5000){
-            FDPClient.hud.addNotification(Notification("Found a vanished entity!", player.name + " is vanished", NotifyType.WARNING, 4000, 500))
+            LiquidBounce.hud.addNotification(Notification("Found a vanished entity!", player.name + " is vanished", NotifyType.WARNING, 4000, 500))
 
         }
         lastNotify=System.currentTimeMillis()

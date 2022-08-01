@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -122,7 +122,7 @@ class ChestStealer : Module() {
         }
 
         // inventory cleaner
-        val inventoryCleaner = FDPClient.moduleManager[InventoryCleaner::class.java]!!
+        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]!!
 
         // Is empty?
         if (!isEmpty(screen) && !(closeOnFullValue.get() && fullInventory)) {
@@ -184,7 +184,7 @@ class ChestStealer : Module() {
     }
 
     private fun isEmpty(chest: GuiChest): Boolean {
-        val inventoryCleaner = FDPClient.moduleManager[InventoryCleaner::class.java]!!
+        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]!!
 
         for (i in 0 until chest.inventoryRows * 9) {
             val slot = chest.inventorySlots.inventorySlots[i]

@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.font.renderer
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.font.FontsGC
 import net.ccbluex.liquidbounce.ui.font.renderer.glyph.GlyphFontRenderer
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -92,7 +92,7 @@ abstract class AbstractAwtFontRender(val font: Font) {
 
     companion object {
         fun build(font: Font): AbstractAwtFontRender {
-            return if (FDPClient.fileManager.specialConfig.useGlyphFontRenderer) {
+            return if (LiquidBounce.fileManager.specialConfig.useGlyphFontRenderer) {
                 GlyphFontRenderer(font)
             } else {
                 //VectorFontRenderer(font)

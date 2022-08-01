@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
@@ -26,7 +26,7 @@ class ModuleManager : Listenable {
     var pendingBindModule: Module? = null
 
     init {
-        FDPClient.eventManager.registerListener(this)
+        LiquidBounce.eventManager.registerListener(this)
     }
 
     /**
@@ -42,7 +42,7 @@ class ModuleManager : Listenable {
 
         modules.forEach { it.onLoad() }
 
-        FDPClient.eventManager.registerListener(AutoDisable)
+        LiquidBounce.eventManager.registerListener(AutoDisable)
 
         ClientUtils.logInfo("[ModuleManager] Loaded ${modules.size} modules.")
     }
@@ -57,7 +57,7 @@ class ModuleManager : Listenable {
 
         generateCommand(module)
 
-        FDPClient.eventManager.registerListener(module)
+        LiquidBounce.eventManager.registerListener(module)
     }
 
     /**
@@ -80,7 +80,7 @@ class ModuleManager : Listenable {
     fun unregisterModule(module: Module) {
         modules.remove(module)
         moduleClassMap.remove(module::class.java)
-        FDPClient.eventManager.unregisterListener(module)
+        LiquidBounce.eventManager.unregisterListener(module)
     }
 
     /**
@@ -97,7 +97,7 @@ class ModuleManager : Listenable {
             return
         }
 
-        FDPClient.commandManager.registerCommand(ModuleCommand(module, values))
+        LiquidBounce.commandManager.registerCommand(ModuleCommand(module, values))
     }
 
     fun getModulesByName(name: String): List<Module> {
@@ -134,7 +134,7 @@ class ModuleManager : Listenable {
         } else {
             pendingBindModule!!.keyBind = event.key
             ClientUtils.displayAlert("Bound module §a§l${pendingBindModule!!.name}§3 to key §a§l${Keyboard.getKeyName(event.key)}§3.")
-            FDPClient.hud.addNotification(Notification("KeyBind", "Bound ${pendingBindModule!!.name} to ${Keyboard.getKeyName(event.key)}.", NotifyType.INFO))
+            LiquidBounce.hud.addNotification(Notification("KeyBind", "Bound ${pendingBindModule!!.name} to ${Keyboard.getKeyName(event.key)}.", NotifyType.INFO))
             pendingBindModule = null
         }
     }

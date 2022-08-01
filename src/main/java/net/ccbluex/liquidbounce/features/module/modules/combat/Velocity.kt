@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -124,7 +124,7 @@ class Velocity : Module() {
             return
         }
 
-        if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !FDPClient.combatManager.inCombat)) {
+        if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat)) {
             return
         }
         // if(onlyHitVelocityValue.get() && mc.thePlayer.motionY<0.05) return；
@@ -231,7 +231,7 @@ class Velocity : Module() {
 
                     // Reduce Y
                     if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get() &&
-                        !FDPClient.moduleManager[Speed::class.java]!!.state) {
+                        !LiquidBounce.moduleManager[Speed::class.java]!!.state) {
                         mc.thePlayer.motionY -= 0.014999993
                     }
                 }
@@ -294,7 +294,7 @@ class Velocity : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !FDPClient.combatManager.inCombat)) {
+        if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat)) {
             return
         }
 
@@ -449,7 +449,7 @@ class Velocity : Module() {
                         return
                     }
 
-                    val target = FDPClient.combatManager.getNearByEntity(FDPClient.moduleManager[KillAura::class.java]!!.rangeValue.get() + 1) ?: return
+                    val target = LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager[KillAura::class.java]!!.rangeValue.get() + 1) ?: return
                     mc.thePlayer.motionX = 0.0
                     mc.thePlayer.motionZ = 0.0
                     packet.motionX = 0
@@ -473,7 +473,7 @@ class Velocity : Module() {
                         }
                     }
 
-                    val target = FDPClient.combatManager.getNearByEntity(FDPClient.moduleManager[KillAura::class.java]!!.rangeValue.get()) ?: return
+                    val target = LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager[KillAura::class.java]!!.rangeValue.get()) ?: return
                     if (rspAlwaysValue.get()) {
                         mc.thePlayer.motionX = 0.0
                         mc.thePlayer.motionZ = 0.0
@@ -518,7 +518,7 @@ class Velocity : Module() {
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !FDPClient.combatManager.inCombat)) {
+        if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat)) {
             return
         }
 
@@ -573,7 +573,7 @@ class Velocity : Module() {
             return
         }
 
-        if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !FDPClient.combatManager.inCombat)) {
+        if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat)) {
             return
         }
 

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -25,7 +25,7 @@ class AutoBow : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        val bowAimbot = FDPClient.moduleManager[BowAimbot::class.java]!!
+        val bowAimbot = LiquidBounce.moduleManager[BowAimbot::class.java]!!
 
         if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item == Items.bow &&
                 mc.thePlayer.itemInUseDuration > 20 && (!waitForBowAimbotValue.get() || !bowAimbot.state || bowAimbot.hasTarget())) {
