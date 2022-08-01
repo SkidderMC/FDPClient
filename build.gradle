@@ -35,7 +35,7 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
-    clientJvmArgs += ["-Dfml.coreMods.load=net.skiddermc.fdpclient.injection.forge.TransformerLoader", "-Xmx1024m -Xms1024m", "-Ddev-mode"]
+    clientJvmArgs += ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Xmx1024m -Xms1024m", "-Ddev-mode"]
 }
 
 configurations {
@@ -128,7 +128,7 @@ classes.dependsOn(moveResources)
 
 jar {
     manifest.attributes(
-            "FMLCorePlugin": "net.skiddermc.fdpclient.injection.forge.TransformerLoader",
+            "FMLCorePlugin": "net.ccbluex.liquidbounce.injection.forge.TransformerLoader",
             "FMLCorePluginContainsFMLMod": true,
             "ForceLoadAsMod": true,
             "MixinConfigs": "mixins.fdpclient.json",
