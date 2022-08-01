@@ -16,22 +16,24 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
 
+
 /**
  * CustomHUD Notification element
  */
 @ElementInfo(name = "Notifications", blur = true)
+var NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
 class Notifications(
     x: Double = 0.0,
     y: Double = 0.0,
     scale: Float = 1F,
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
-
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
-    val modeValue = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
     private val TitleShadow = BoolValue("Title Shadow", false)
     private val MotionBlur = BoolValue("Motion blur", false)
     private val ContentShadow = BoolValue("Content Shadow", true)
+
+
 
     /**
      * Example notification for CustomHUD designer
@@ -43,19 +45,19 @@ class Notifications(
      */
     override fun drawElement(partialTicks: Float): Border? {
         // bypass java.util.ConcurrentModificationException
-        FDPClient.hud.notifications.map { it }.forEachIndexed { index, notify ->
+        LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
             if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get())) {
-                FDPClient.hud.notifications.remove(notify)
+                LiquidBounce.hud.notifications.remove(notify)
             }
 
             GL11.glPopMatrix()
         }
 
         if (mc.currentScreen is GuiHudDesigner) {
-            if (!FDPClient.hud.notifications.contains(exampleNotification)) {
-                FDPClient.hud.addNotification(exampleNotification)
+            if (!LiquidBounce.hud.notifications.contains(exampleNotification)) {
+                LiquidBounce.hud.addNotification(exampleNotification)
             }
 
             exampleNotification.fadeState = FadeState.STAY
@@ -150,7 +152,7 @@ class Notification(
 
         // draw notify
 
-        if(modeValue.get().contains("Modern")) {
+        if(NotiMode.get().contains("Modern")) {
 
             if (blurRadius != 0f) { BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale) , (height.toFloat()-5f) * scale, blurRadius) }
 
@@ -252,7 +254,8 @@ class Notification(
                 font.DisplayFont2(font, content, 4F, 10F, Color(31, 41, 55).rgb, ContentShadow)
             return false
             }
-        if(modeValue.get().contains("Classic")) {
+        
+        if(NotiMode.get().contains("Classic")) {
 
             if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, height * scale, blurRadius) }
                 RenderUtils.drawRect(0F, 0F, width.toFloat(), classicHeight.toFloat(), Color(0, 0, 0, alpha))
