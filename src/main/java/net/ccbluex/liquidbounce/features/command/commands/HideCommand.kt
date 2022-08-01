@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -20,14 +20,14 @@ class HideCommand : Command("hide", emptyArray()) {
             when {
                 args[1].equals("list", true) -> {
                     alert("§c§lHidden")
-                    FDPClient.moduleManager.modules.filter { !it.array }.forEach {
+                    LiquidBounce.moduleManager.modules.filter { !it.array }.forEach {
                         ClientUtils.displayChatMessage("§6> §c${it.name}")
                     }
                     return
                 }
 
                 args[1].equals("clear", true) -> {
-                    for (module in FDPClient.moduleManager.modules)
+                    for (module in LiquidBounce.moduleManager.modules)
                         module.array = true
 
                     alert("Cleared hidden modules.")
@@ -35,7 +35,7 @@ class HideCommand : Command("hide", emptyArray()) {
                 }
 
                 args[1].equals("reset", true) -> {
-                    for (module in FDPClient.moduleManager.modules)
+                    for (module in LiquidBounce.moduleManager.modules)
                         module.array = module::class.java.getAnnotation(ModuleInfo::class.java).array
 
                     alert("Reset hidden modules.")
@@ -44,7 +44,7 @@ class HideCommand : Command("hide", emptyArray()) {
 
                 else -> {
                     // Get module by name
-                    val module = FDPClient.moduleManager.getModule(args[1])
+                    val module = LiquidBounce.moduleManager.getModule(args[1])
 
                     if (module == null) {
                         alert("Module §a§l${args[1]}§3 not found.")
@@ -71,7 +71,7 @@ class HideCommand : Command("hide", emptyArray()) {
         val moduleName = args[0]
 
         return when (args.size) {
-            1 -> FDPClient.moduleManager.modules
+            1 -> LiquidBounce.moduleManager.modules
                     .map { it.name }
                     .filter { it.startsWith(moduleName, true) }
                     .toList()

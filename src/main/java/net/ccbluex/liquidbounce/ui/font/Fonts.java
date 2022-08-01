@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.font;
 
 import com.google.gson.*;
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.ui.font.renderer.TTFFontRenderer;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.FileUtils;
@@ -79,7 +79,7 @@ public class Fonts {
         try {
             CUSTOM_FONT_RENDERERS.clear();
 
-            final File fontsFile = new File(FDPClient.fileManager.getFontsDir(), "fonts.json");
+            final File fontsFile = new File(LiquidBounce.fileManager.getFontsDir(), "fonts.json");
 
             if(fontsFile.exists()) {
                 final JsonElement jsonElement = new JsonParser().parse(new BufferedReader(new FileReader(fontsFile)));
@@ -120,7 +120,7 @@ public class Fonts {
     }
 
     private static void initSingleFont(String name, String resourcePath) throws IOException {
-        File file=new File(FDPClient.fileManager.getFontsDir(), name);
+        File file=new File(LiquidBounce.fileManager.getFontsDir(), name);
         if(!file.exists())
             FileUtils.INSTANCE.unpackFile(file, resourcePath);
     }
@@ -194,7 +194,7 @@ public class Fonts {
 
     private static Font getFont(final String fontName, final int size) {
         try {
-            final InputStream inputStream = new FileInputStream(new File(FDPClient.fileManager.getFontsDir(), fontName));
+            final InputStream inputStream = new FileInputStream(new File(LiquidBounce.fileManager.getFontsDir(), fontName));
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
             inputStream.close();

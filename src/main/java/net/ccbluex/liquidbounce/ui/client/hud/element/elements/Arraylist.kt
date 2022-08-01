@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
@@ -110,7 +110,7 @@ class Arraylist(
     override fun drawElement(partialTicks: Float): Border? {
         val fontRenderer = fontValue.get()
 
-        for (module in FDPClient.moduleManager.modules) {
+        for (module in LiquidBounce.moduleManager.modules) {
             if (!module.array || shouldExpect(module) || (!module.state && module.slide == 0F && (module.yPosAnimation == null || module.yPosAnimation!!.state == Animation.EnumAnimationState.STOPPED))) continue
 
             module.width = fontRenderer.getStringWidth(changeCase(getModuleName(module) + getModuleTag(module)))
@@ -348,7 +348,7 @@ class Arraylist(
     }
 
     override fun updateElement() {
-        modules = FDPClient.moduleManager.modules
+        modules = LiquidBounce.moduleManager.modules
             .filter { it.array && !shouldExpect(it) && (it.state || it.slide > 0 || !(it.yPosAnimation==null || it.yPosAnimation!!.state==Animation.EnumAnimationState.STOPPED)) }
             .sortedBy { -it.width }
     }

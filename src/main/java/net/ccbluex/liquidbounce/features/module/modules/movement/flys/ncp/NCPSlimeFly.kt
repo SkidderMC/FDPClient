@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.ncp
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.BlockBBEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -35,7 +35,7 @@ class NCPSlimeFly : FlyMode("NCPSlime") {
             shouldFly = true
         } else {
             shouldFly = false
-            FDPClient.hud.addNotification(Notification("Fly Failed", "To fly you need to be on a full block", NotifyType.WARNING, 8000))
+            LiquidBounce.hud.addNotification(Notification("Fly Failed", "To fly you need to be on a full block", NotifyType.WARNING, 8000))
             return
         }
             

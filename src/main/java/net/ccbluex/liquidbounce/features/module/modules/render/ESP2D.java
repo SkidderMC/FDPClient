@@ -7,7 +7,7 @@
 // This Made by: https://github.com/WYSI-Foundation/LiquidBouncePlus
 package net.ccbluex.liquidbounce.features.module.modules.render;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
@@ -140,7 +140,7 @@ public final class ESP2D extends Module {
     }
 
     public static boolean shouldCancelNameTag(EntityLivingBase entity) {
-        return FDPClient.moduleManager.getModule(ESP2D.class) != null && FDPClient.moduleManager.getModule(ESP2D.class).getState() && FDPClient.moduleManager.getModule(ESP2D.class).tagsValue.get() && collectedEntities.contains(entity);
+        return LiquidBounce.moduleManager.getModule(ESP2D.class) != null && LiquidBounce.moduleManager.getModule(ESP2D.class).getState() && LiquidBounce.moduleManager.getModule(ESP2D.class).tagsValue.get() && collectedEntities.contains(entity);
     }
 
     @Override

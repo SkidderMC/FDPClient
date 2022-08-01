@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.AttackEvent;
 import net.ccbluex.liquidbounce.event.ClickWindowEvent;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
@@ -27,7 +27,7 @@ public class MixinPlayerControllerMP {
             return;
 
         final AttackEvent event = new AttackEvent(targetEntity);
-        FDPClient.eventManager.callEvent(event);
+        LiquidBounce.eventManager.callEvent(event);
         if(event.isCancelled())
             callbackInfo.cancel();
     }
@@ -35,7 +35,7 @@ public class MixinPlayerControllerMP {
     @Inject(method = "windowClick", at = @At("HEAD"), cancellable = true)
     private void windowClick(int windowId, int slotId, int mouseButtonClicked, int mode, EntityPlayer playerIn, CallbackInfoReturnable<ItemStack> callbackInfo) {
         final ClickWindowEvent event = new ClickWindowEvent(windowId, slotId, mouseButtonClicked, mode);
-        FDPClient.eventManager.callEvent(event);
+        LiquidBounce.eventManager.callEvent(event);
 
         if (event.isCancelled())
             callbackInfo.cancel();

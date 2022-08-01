@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.Glint;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.model.IBakedModel;
@@ -17,7 +17,7 @@ public abstract class MixinRenderItem {
 
     @Redirect(method = "renderEffect", at = @At(value="INVOKE", target="Lnet/minecraft/client/renderer/entity/RenderItem;renderModel(Lnet/minecraft/client/resources/model/IBakedModel;I)V"))
     private void renderModel(RenderItem renderItem, IBakedModel model, int color) {
-        Glint glint = FDPClient.moduleManager.getModule(Glint.class);
+        Glint glint = LiquidBounce.moduleManager.getModule(Glint.class);
         this.renderModel(model, glint.getState() ? glint.getColor().getRGB() : -8372020);
     }
 }

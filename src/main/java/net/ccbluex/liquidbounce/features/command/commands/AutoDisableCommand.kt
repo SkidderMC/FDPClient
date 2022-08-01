@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
@@ -10,7 +10,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
 
     override fun execute(args: Array<String>) {
         if (args.size > 2) {
-            val module = FDPClient.moduleManager.getModule(args[1])
+            val module = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
                 alert("Module '${args[1]}' not found.")
@@ -36,7 +36,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
         if (args.isEmpty()) return emptyList()
 
         return when (args.size) {
-            1 -> FDPClient.moduleManager.modules
+            1 -> LiquidBounce.moduleManager.modules
                 .map { it.name }
                 .filter { it.startsWith(args[0], true) }
                 .toList()

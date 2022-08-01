@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -34,7 +34,7 @@ class HealthWarn : Module() {
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.health <= healthValue.get()) {
             if (canWarn) {
-                FDPClient.hud.addNotification(
+                LiquidBounce.hud.addNotification(
                     Notification("HP Warning", "YOU ARE AT LOW HP!", NotifyType.ERROR, 3000))
                 canWarn = false
             }

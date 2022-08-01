@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -41,7 +41,7 @@ class AntiBlind : Module() {
 
     @EventTarget(ignoreCondition = true)
     fun onUpdate(event: UpdateEvent) {
-        if (state || FDPClient.moduleManager[XRay::class.java]!!.state) {
+        if (state || LiquidBounce.moduleManager[XRay::class.java]!!.state) {
             when (brightValue.get().lowercase()) {
                 "gamma" -> if (mc.gameSettings.gammaSetting <= 100f) mc.gameSettings.gammaSetting++
                 "nightvision" -> mc.thePlayer.addPotionEffect(PotionEffect(Potion.nightVision.id, 1337, 1))

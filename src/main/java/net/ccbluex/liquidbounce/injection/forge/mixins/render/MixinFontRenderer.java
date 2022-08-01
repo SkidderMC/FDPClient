@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.BetterFont;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.event.TextEvent;
@@ -20,21 +20,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinFontRenderer {
     @ModifyVariable(method = "renderString", at = @At("HEAD"), ordinal = 0)
     private String renderString(String string) {
-        if (string == null || FDPClient.eventManager == null)
+        if (string == null || LiquidBounce.eventManager == null)
             return string;
 
         final TextEvent textEvent = new TextEvent(string);
-        FDPClient.eventManager.callEvent(textEvent);
+        LiquidBounce.eventManager.callEvent(textEvent);
         return textEvent.getText();
     }
 
     @ModifyVariable(method = "getStringWidth", at = @At("HEAD"), ordinal = 0)
     private String getStringWidth(String string) {
-        if (string == null || FDPClient.eventManager == null)
+        if (string == null || LiquidBounce.eventManager == null)
             return string;
 
         final TextEvent textEvent = new TextEvent(string);
-        FDPClient.eventManager.callEvent(textEvent);
+        LiquidBounce.eventManager.callEvent(textEvent);
         return textEvent.getText();
     }
 

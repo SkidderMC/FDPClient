@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.glides
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Glide
 import net.ccbluex.liquidbounce.utils.ClassUtils
@@ -11,7 +11,7 @@ abstract class GlideMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"
 
     protected val glide: Glide
-        get() = FDPClient.moduleManager[Glide::class.java]!!
+        get() = LiquidBounce.moduleManager[Glide::class.java]!!
 
     open val values: List<Value<*>>
         get() = ClassUtils.getValues(this.javaClass, this)

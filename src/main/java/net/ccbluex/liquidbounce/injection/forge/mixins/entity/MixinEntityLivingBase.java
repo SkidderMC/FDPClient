@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.JumpEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
@@ -76,16 +76,16 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         }
 
         final JumpEvent jumpEvent = new JumpEvent(MovementUtils.INSTANCE.getJumpMotion());
-        FDPClient.eventManager.callEvent(jumpEvent);
+        LiquidBounce.eventManager.callEvent(jumpEvent);
         if (jumpEvent.isCancelled())
             return;
 
         this.motionY = jumpEvent.getMotion();
 
         if (this.isSprinting()) {
-            final Sprint sprint = FDPClient.moduleManager.getModule(Sprint.class);
+            final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
             float fixedYaw = this.rotationYaw;
-            final KillAura killAura = FDPClient.moduleManager.getModule(KillAura.class);
+            final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
             if(killAura.getStrictStrafe() && RotationUtils.serverRotation != null && killAura.getState()) {
                 fixedYaw = RotationUtils.serverRotation.getYaw();
             }
@@ -101,13 +101,13 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {
-        if (FDPClient.moduleManager.getModule(NoJumpDelay.class).getState())
+        if (LiquidBounce.moduleManager.getModule(NoJumpDelay.class).getState())
             jumpTicks = 0;
     }
 
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
     private void onJumpSection(CallbackInfo callbackInfo) {
-        final Jesus jesus = FDPClient.moduleManager.getModule(Jesus.class);
+        final Jesus jesus = LiquidBounce.moduleManager.getModule(Jesus.class);
 
         if (jesus.getState() && !isJumping && !isSneaking() && isInWater() &&
                 jesus.getModeValue().equals("Legit")) {
@@ -123,7 +123,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "isPotionActive(Lnet/minecraft/potion/Potion;)Z", at = @At("HEAD"), cancellable = true)
     private void isPotionActive(Potion p_isPotionActive_1_, final CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        final AntiBlind antiBlind = FDPClient.moduleManager.getModule(AntiBlind.class);
+        final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
 
         if ((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && antiBlind.getState() && antiBlind.getConfusionEffectValue().get())
             callbackInfoReturnable.setReturnValue(false);

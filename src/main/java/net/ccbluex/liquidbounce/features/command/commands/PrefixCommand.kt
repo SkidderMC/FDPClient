@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 
 class PrefixCommand : Command("prefix", emptyArray()) {
@@ -25,8 +25,8 @@ class PrefixCommand : Command("prefix", emptyArray()) {
             return
         }
 
-        FDPClient.commandManager.prefix = prefix.single()
-        FDPClient.fileManager.saveConfig(FDPClient.fileManager.specialConfig)
+        LiquidBounce.commandManager.prefix = prefix.single()
+        LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig)
 
         alert("Successfully changed command prefix to '§8$prefix§3'")
     }

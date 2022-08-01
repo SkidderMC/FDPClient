@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.matrix
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
@@ -52,14 +52,14 @@ class MatrixClipFly : FlyMode("MatrixClip") {
                if (clipTimes == 2) {
                     if (!clipSmart.get()) {
                         if (!hasWarned) {
-                            FDPClient.hud.addNotification(Notification("Clip success", "To successfully clip disable fly now", NotifyType.SUCCESS, 3000))
+                            LiquidBounce.hud.addNotification(Notification("Clip success", "To successfully clip disable fly now", NotifyType.SUCCESS, 3000))
                             hasWarned = true
                         }
                     } else {
                         if (timer2.hasTimePassed(350)) {
                             shouldClip = false
-                            FDPClient.hud.addNotification(Notification("Smart Clip", "Smart Clip stopped cliping, you can disable fly now.", NotifyType.WARNING, 5000))
-                            FDPClient.hud.addNotification(Notification("Smart Clip", "If you have tped back, disable Smart Clip or try again.", NotifyType.WARNING, 5000))
+                            LiquidBounce.hud.addNotification(Notification("Smart Clip", "Smart Clip stopped cliping, you can disable fly now.", NotifyType.WARNING, 5000))
+                            LiquidBounce.hud.addNotification(Notification("Smart Clip", "If you have tped back, disable Smart Clip or try again.", NotifyType.WARNING, 5000))
                             try {
                                 disableLogger = true
                                 while (!packets.isEmpty()) {
@@ -73,7 +73,7 @@ class MatrixClipFly : FlyMode("MatrixClip") {
                     }
                 } else if (clipTimes > 2) {
                     if (!clipSmart.get()) {
-                        FDPClient.hud.addNotification(Notification("Clip fail", "Clipped too many times, disable fly and try again", NotifyType.ERROR, 3000))
+                        LiquidBounce.hud.addNotification(Notification("Clip fail", "Clipped too many times, disable fly and try again", NotifyType.ERROR, 3000))
                     }
                 }
                     

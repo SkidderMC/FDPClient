@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -103,7 +103,7 @@ class Text(
                 "health" -> return DECIMAL_FORMAT.format(mc.thePlayer.health)
                 "yaw" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationYaw)
                 "pitch" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationPitch)
-                "attackDist" -> return if (FDPClient.combatManager.target != null) mc.thePlayer.getDistanceToEntity(FDPClient.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
+                "attackDist" -> return if (LiquidBounce.combatManager.target != null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
             }
         }
 
@@ -118,9 +118,9 @@ class Text(
             "kills" -> StatisticsUtils.getKills().toString()
             "deaths" -> StatisticsUtils.getDeaths().toString()
             "username" -> mc.getSession().username
-            "clientName" -> FDPClient.CLIENT_NAME
-            "clientVersion" -> FDPClient.CLIENT_VERSION
-            "clientCreator" -> FDPClient.CLIENT_CREATOR
+            "clientName" -> LiquidBounce.CLIENT_NAME
+            "clientVersion" -> LiquidBounce.CLIENT_VERSION
+            "clientCreator" -> LiquidBounce.CLIENT_CREATOR
             "fps" -> Minecraft.getDebugFPS().toString()
             "date" -> DATE_FORMAT.format(System.currentTimeMillis())
             "time" -> HOUR_FORMAT.format(System.currentTimeMillis())
@@ -224,7 +224,7 @@ class Text(
                     displayText, 5F, 0F,Color(255,255,255,140).rgb
                 )
                 FontLoaders.F24.drawString(
-                    FDPClient.CLIENT_VERSION.toString() , 5F, 23F,Color(255,255,255,140).rgb
+                    LiquidBounce.CLIENT_VERSION.toString() , 5F, 23F,Color(255,255,255,140).rgb
                 )
             }
         }
@@ -238,7 +238,7 @@ class Text(
             )
             RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,120).rgb)
             FontLoaders.C14.drawString(
-                FDPClient.CLIENT_VERSION + " | "+FDPClient.VERSIONTYPE, 5F, 27F,Color(255,255,255,180).rgb
+                LiquidBounce.CLIENT_VERSION + " | "+LiquidBounce.VERSIONTYPE, 5F, 27F,Color(255,255,255,180).rgb
             )
         }
 

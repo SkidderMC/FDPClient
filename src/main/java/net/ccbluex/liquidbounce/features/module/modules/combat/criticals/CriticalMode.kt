@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.criticals
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals
 import net.ccbluex.liquidbounce.utils.ClassUtils
@@ -11,7 +11,7 @@ abstract class CriticalMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"
 
     protected val critical: Criticals
-        get() = FDPClient.moduleManager[Criticals::class.java]!!
+        get() = LiquidBounce.moduleManager[Criticals::class.java]!!
 
     open val values: List<Value<*>>
         get() = ClassUtils.getValues(this.javaClass, this)

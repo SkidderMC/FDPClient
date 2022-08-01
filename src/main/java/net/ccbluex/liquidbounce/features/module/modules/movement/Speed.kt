@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
@@ -69,7 +69,7 @@ class Speed : Module() {
 
         mode.onMove(event)
         if(event != null) {
-            FDPClient.moduleManager[TargetStrafe::class.java]!!.doMove(event)
+            LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doMove(event)
         }
     }
 

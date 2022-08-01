@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.BlockBBEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall;
@@ -56,7 +56,7 @@ public abstract class MixinBlock {
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
         AxisAlignedBB axisalignedbb = this.getCollisionBoundingBox(worldIn, pos, state);
         final BlockBBEvent blockBBEvent = new BlockBBEvent(pos, blockState.getBlock(), axisalignedbb);
-        FDPClient.eventManager.callEvent(blockBBEvent);
+        LiquidBounce.eventManager.callEvent(blockBBEvent);
         axisalignedbb = blockBBEvent.getBoundingBox();
         if(axisalignedbb != null && mask.intersectsWith(axisalignedbb))
             list.add(axisalignedbb);
@@ -64,7 +64,7 @@ public abstract class MixinBlock {
 
     @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
     private void shouldSideBeRendered(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        final XRay xray = FDPClient.moduleManager.getModule(XRay.class);
+        final XRay xray = LiquidBounce.moduleManager.getModule(XRay.class);
 
         if(xray.getState())
             callbackInfoReturnable.setReturnValue(xray.getXrayBlocks().contains(this));
@@ -72,7 +72,7 @@ public abstract class MixinBlock {
 
     @Inject(method = "getAmbientOcclusionLightValue", at = @At("HEAD"), cancellable = true)
     private void getAmbientOcclusionLightValue(final CallbackInfoReturnable<Float> floatCallbackInfoReturnable) {
-        if (FDPClient.moduleManager.getModule(XRay.class).getState())
+        if (LiquidBounce.moduleManager.getModule(XRay.class).getState())
             floatCallbackInfoReturnable.setReturnValue(1F);
     }
 
@@ -81,7 +81,7 @@ public abstract class MixinBlock {
         float f = callbackInfo.getReturnValue();
 
         // NoSlowBreak
-        final NoSlowBreak noSlowBreak = FDPClient.moduleManager.getModule(NoSlowBreak.class);
+        final NoSlowBreak noSlowBreak = LiquidBounce.moduleManager.getModule(NoSlowBreak.class);
         if (noSlowBreak.getState()) {
             if (noSlowBreak.getWaterValue().get() && playerIn.isInsideOfMaterial(Material.water) &&
                     !EnchantmentHelper.getAquaAffinityModifier(playerIn)) {
@@ -92,8 +92,8 @@ public abstract class MixinBlock {
                 f *= 5.0F;
             }
         } else if (playerIn.onGround) { // NoGround
-            final NoFall noFall = FDPClient.moduleManager.getModule(NoFall.class);
-            final Criticals criticals = FDPClient.moduleManager.getModule(Criticals.class);
+            final NoFall noFall = LiquidBounce.moduleManager.getModule(NoFall.class);
+            final Criticals criticals = LiquidBounce.moduleManager.getModule(Criticals.class);
 
             if (noFall.getState() && noFall.getModeValue().equals("NoGround") ||
                     criticals.getState() && criticals.getModeValue().equals("NoGround")) {

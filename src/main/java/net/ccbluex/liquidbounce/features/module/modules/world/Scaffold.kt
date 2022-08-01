@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -261,7 +261,7 @@ class Scaffold : Module() {
                     }
                 }
                 "whenspeed" -> {
-                    canSameY = FDPClient.moduleManager[Speed::class.java]!!.state
+                    canSameY = LiquidBounce.moduleManager[Speed::class.java]!!.state
                 }
                 else -> {
                     canSameY = false

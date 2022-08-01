@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
@@ -110,7 +110,7 @@ public abstract class MixinItemRenderer {
         GlStateManager.pushMatrix();
 
         if (this.itemToRender != null) {
-            final boolean displayBlocking = FDPClient.moduleManager.getModule(KillAura.class).getDisplayBlocking();
+            final boolean displayBlocking = LiquidBounce.moduleManager.getModule(KillAura.class).getDisplayBlocking();
 
             if (this.itemToRender.getItem() instanceof ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
@@ -398,7 +398,7 @@ public abstract class MixinItemRenderer {
      */
     @Redirect(method="renderFireInFirstPerson", at=@At(value="INVOKE", target="Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
     private void renderFireInFirstPerson(float p_color_0_, float p_color_1_, float p_color_2_, float p_color_3_) {
-        final AntiBlind antiBlind = FDPClient.moduleManager.getModule(AntiBlind.class);
+        final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
         if(p_color_3_ != 1.0f && antiBlind.getState()){
             GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, antiBlind.getFireEffectValue().get());
         }else{

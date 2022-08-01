@@ -10,7 +10,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.handler.timeout.ReadTimeoutHandler;
-import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
@@ -54,7 +54,7 @@ public abstract class MixinNetworkManager {
             return;
 
         final PacketEvent event = new PacketEvent(packet, PacketEvent.Type.RECEIVE);
-        FDPClient.eventManager.callEvent(event);
+        LiquidBounce.eventManager.callEvent(event);
 
         if(event.isCancelled())
             callback.cancel();
@@ -67,7 +67,7 @@ public abstract class MixinNetworkManager {
 
         if(!PacketUtils.INSTANCE.handleSendPacket(packet)){
             final PacketEvent event = new PacketEvent(packet, PacketEvent.Type.SEND);
-            FDPClient.eventManager.callEvent(event);
+            LiquidBounce.eventManager.callEvent(event);
 
             if(event.isCancelled())
                 callback.cancel();
@@ -108,7 +108,7 @@ public abstract class MixinNetworkManager {
 
     @Redirect(method = "checkDisconnected", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;)V"))
     public void checkDisconnectedLoggerWarn(Logger instance, String s) {
-        if(!FDPClient.moduleManager.getModule(SilentDisconnect.class).getState()) {
+        if(!LiquidBounce.moduleManager.getModule(SilentDisconnect.class).getState()) {
             instance.warn(s); // it will spam "handleDisconnection() called twice" in console if SilentDisconnect is enabled
         }
     }

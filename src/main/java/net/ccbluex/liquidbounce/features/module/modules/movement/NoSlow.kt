@@ -1,7 +1,7 @@
 
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -117,7 +117,7 @@ class NoSlow : Module() {
             ClientUtils.displayChatMessage("§8[§c§lNoSlow§8]§aPlease notice that Vulcan/Matrix NoSlow §cDO NOT §asupport FakeLag Disabler!")
             ClientUtils.displayChatMessage("§8[§c§lNoSlow§8]§aType .noslow updateAlert1 to disable this notice!")
         }
-        val killAura = FDPClient.moduleManager[KillAura::class.java]!!
+        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
         if (!MovementUtils.isMoving()) {
             return
         }
@@ -234,7 +234,7 @@ class NoSlow : Module() {
     }
 
     private val isBlocking: Boolean
-        get() = (mc.thePlayer.isUsingItem || FDPClient.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
+        get() = (mc.thePlayer.isUsingItem || LiquidBounce.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
 
     @EventTarget
     fun onPacket(event: PacketEvent) {

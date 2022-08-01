@@ -4,7 +4,7 @@ import com.jagrosh.discordipc.IPCClient
 import com.jagrosh.discordipc.IPCListener
 import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import org.json.JSONObject
@@ -41,10 +41,10 @@ object DiscordRPC {
 
     private fun update() {
         val builder = RichPresence.Builder()
-        val discordrpc = FDPClient.moduleManager[DiscordRPCModule::class.java]!!
+        val discordrpc = LiquidBounce.moduleManager[DiscordRPCModule::class.java]!!
         builder.setStartTimestamp(timestamp)
         builder.setLargeImage("cfb8fe2fe9169dc68f7f8c1236b885")
-        builder.setDetails(fdpwebsite + FDPClient.CLIENT_VERSION)
+        builder.setDetails(fdpwebsite + LiquidBounce.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
             if(discordrpc.showserver.get()) {
                 builder.setState(if(it.equals("idling", true)) "Idling" else "Server: $it ")

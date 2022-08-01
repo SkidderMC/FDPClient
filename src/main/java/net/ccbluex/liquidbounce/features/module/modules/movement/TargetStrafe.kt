@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -225,7 +225,7 @@ class TargetStrafe : Module() {
     }
 
         private fun canStrafe(target: EntityLivingBase?): Boolean {
-            return target != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && (!onlySpeedValue.get() || FDPClient.moduleManager[Speed::class.java]!!.state)
+            return target != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && (!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state)
         }
 
     fun modifyStrafe(event: StrafeEvent):Boolean {
@@ -238,7 +238,7 @@ class TargetStrafe : Module() {
     }
 
     fun toggleStrafe(): Boolean {
-        return targetEntity != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && (!onlySpeedValue.get() || FDPClient.moduleManager[Speed::class.java]!!.state)
+        return targetEntity != null && (!holdSpaceValue.get() || mc.thePlayer.movementInput.jump) && (!onlySpeedValue.get() || LiquidBounce.moduleManager[Speed::class.java]!!.state)
     }
 
     @EventTarget
