@@ -1,7 +1,7 @@
 package net.vitox;
 
-import net.skiddermc.fdpclient.injection.access.StaticStorage;
-import net.skiddermc.fdpclient.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.injection.access.StaticStorage;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 
