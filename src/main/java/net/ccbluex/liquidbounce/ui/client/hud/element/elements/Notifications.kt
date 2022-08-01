@@ -21,13 +21,13 @@ import kotlin.math.max
  * CustomHUD Notification element
  */
 @ElementInfo(name = "Notifications", blur = true)
-var NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
 class Notifications(
     x: Double = 0.0,
     y: Double = 0.0,
     scale: Float = 1F,
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
+    var NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
     private val TitleShadow = BoolValue("Title Shadow", false)
     private val MotionBlur = BoolValue("Motion blur", false)
