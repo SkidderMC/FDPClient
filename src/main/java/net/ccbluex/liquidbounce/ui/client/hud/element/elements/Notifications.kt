@@ -21,6 +21,7 @@ import kotlin.math.max
  * CustomHUD Notification element
  */
 @ElementInfo(name = "Notifications", blur = true)
+var NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
 class Notifications(
     x: Double = 0.0,
     y: Double = 0.0,
@@ -31,7 +32,6 @@ class Notifications(
     private val TitleShadow = BoolValue("Title Shadow", false)
     private val MotionBlur = BoolValue("Motion blur", false)
     private val ContentShadow = BoolValue("Content Shadow", true)
-    val NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
 
 
 
@@ -254,7 +254,7 @@ class Notification(
                 font.DisplayFont2(font, content, 4F, 10F, Color(31, 41, 55).rgb, ContentShadow)
             return false
             }
-        
+
         if(NotiMode.get().contains("Classic")) {
 
             if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, height * scale, blurRadius) }
