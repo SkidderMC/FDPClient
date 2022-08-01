@@ -22,12 +22,12 @@ public class ViaForgeSupportTransformer implements IClassTransformer {
                         final AbstractInsnNode abstractInsnNode = methodNode.instructions.get(i);
                         if(abstractInsnNode instanceof TypeInsnNode) {
                             TypeInsnNode tin = (TypeInsnNode) abstractInsnNode;
-                            if(tin.desc.equals("net/ccbluex/liquidbounce/injection/forge/mixins/network/MixinNetworkManager$1")) {
+                            if(tin.desc.equals("net/skiddermc/fdpclient/injection/forge/mixins/network/MixinNetworkManager$1")) {
                                 ((TypeInsnNode) abstractInsnNode).desc = "net/minecraft/network/NetworkManager$5";
                             }
                         } else if(abstractInsnNode instanceof MethodInsnNode) {
                             MethodInsnNode min = (MethodInsnNode) abstractInsnNode;
-                            if(min.owner.equals("net/ccbluex/liquidbounce/injection/forge/mixins/network/MixinNetworkManager$1") && min.name.equals("<init>")) {
+                            if(min.owner.equals("net/skiddermc/fdpclient/injection/forge/mixins/network/MixinNetworkManager$1") && min.name.equals("<init>")) {
                                 min.owner = "net/minecraft/network/NetworkManager$5";
                             }
                         }

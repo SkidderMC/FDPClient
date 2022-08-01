@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
 
-/* loaded from: LiquidBounce-b73.jar:net/ccbluex/liquidbounce/CFont.class */
+/* loaded from: LiquidBounce-b73.jar:net/skiddermc/fdpclient/CFont.class */
 public class CFont {
     protected Font font;
     protected boolean antiAlias;
@@ -154,7 +154,7 @@ public class CFont {
         this.tex = setupTexture(font, this.antiAlias, this.fractionalMetrics, this.charData);
     }
 
-    /* loaded from: LiquidBounce-b73.jar:net/ccbluex/liquidbounce/CFont$CharData.class */
+    /* loaded from: LiquidBounce-b73.jar:net/skiddermc/fdpclient/CFont$CharData.class */
     protected class CharData {
         public int width;
         public int height;
