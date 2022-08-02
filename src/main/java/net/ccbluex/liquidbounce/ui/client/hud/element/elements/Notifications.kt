@@ -152,7 +152,7 @@ class Notification(
 
         // draw notify
 
-fun DrawNotifications{
+
         if(NotiMode.equals("Modern")) {
 
             if (blurRadius != 0f) { BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale) , (height.toFloat()-5f) * scale, blurRadius) }
@@ -272,7 +272,7 @@ fun DrawNotifications{
             }
         return false
         }
-      }
+      
     }
 //NotifyType Color
 enum class NotifyType(var renderColor: Color) {
