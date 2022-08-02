@@ -13,11 +13,9 @@ import net.minecraft.util.BlockPos
 class BlocksMCFly : FlyMode("BlocksMC") {
     private var blocksBB = false
     private var ticks = 0
-    private var defaultrotation = 0.0f
     override fun onEnable() {
         blocksBB = false
         ticks = 0
-        defaultrotation = mc.thePlayer.rotationPitch
         mc.gameSettings.keyBindUseItem.pressed = false
         if(mc.thePlayer.onGround) {
             mc.thePlayer.motionY = 0.42
@@ -31,12 +29,7 @@ class BlocksMCFly : FlyMode("BlocksMC") {
     override fun onUpdate(event: UpdateEvent) {
         if(mc.thePlayer.posY >= fly.launchY + 0.8 && !blocksBB) {
             if(mc.thePlayer.onGround) {
-                mc.gameSettings.keyBindUseItem.pressed = false
-                mc.thePlayer.rotationPitch = defaultrotation
                 blocksBB = true
-            } else {
-                mc.thePlayer.rotationPitch = 90f
-                mc.gameSettings.keyBindUseItem.pressed = true
             }
         }
         if(blocksBB) {
