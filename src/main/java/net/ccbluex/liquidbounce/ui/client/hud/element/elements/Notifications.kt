@@ -27,7 +27,7 @@ class Notifications(
     scale: Float = 1F,
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
-    private val NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
+    private val NotiValue = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
     private val TitleShadow = BoolValue("Title Shadow", false)
     private val MotionBlur = BoolValue("Motion blur", false)
@@ -152,6 +152,7 @@ class Notification(
 
         // draw notify
 
+fun DrawNotifications{
         if(NotiMode.equals("Modern")) {
 
             if (blurRadius != 0f) { BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale) , (height.toFloat()-5f) * scale, blurRadius) }
@@ -271,6 +272,7 @@ class Notification(
             }
         return false
         }
+      }
     }
 //NotifyType Color
 enum class NotifyType(var renderColor: Color) {
