@@ -27,7 +27,7 @@ class Notifications(
     scale: Float = 1F,
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
-    val NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
+    private val NotiMode = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
     private val TitleShadow = BoolValue("Title Shadow", false)
     private val MotionBlur = BoolValue("Motion blur", false)
