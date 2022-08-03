@@ -21,19 +21,16 @@ import kotlin.math.max
  * CustomHUD Notification element
  */
 @ElementInfo(name = "Notifications", blur = true)
-class Notifications(
-    x: Double = 0.0,
-    y: Double = 0.0,
-    scale: Float = 1F,
-    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
-) : Element(x, y, scale, side) {
-    val styleValue = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
+class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
+
+
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
     private val TitleShadow = BoolValue("Title Shadow", false)
     private val MotionBlur = BoolValue("Motion blur", false)
     private val ContentShadow = BoolValue("Content Shadow", true)
-
-
+    companion object {
+        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
+    }
 
     /**
      * Example notification for CustomHUD designer
@@ -48,7 +45,7 @@ class Notifications(
         LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
-            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get(), Notifications)) {
+            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get(), Notifications.Companion)) {
                 LiquidBounce.hud.notifications.remove(notify)
             }
 
@@ -94,7 +91,12 @@ class Notification(
     /**
      * Draw notification
      */
-    fun drawNotification(index: Int, font: CFontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float,ContentShadow: Boolean,TitleShadow: Boolean,MotionBlur: Boolean, parent: Notifications): Boolean {
+    fun drawNotification(
+        index: Int, font: CFontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float,
+        ContentShadow: Boolean,
+        TitleShadow: Boolean,
+        MotionBlur: Boolean, parent: Notifications.Companion
+    ): Boolean {
         this.width = 100.coerceAtLeast(font.getStringWidth(content)
             .coerceAtLeast(font.getStringWidth(title)) + 15)
         val realY = -(index+1) * height
