@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.value
 
 import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import com.google.gson.JsonPrimitive
 
 abstract class Value<T>(val name: String, var value: T) {
     val default = value

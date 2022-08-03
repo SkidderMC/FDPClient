@@ -5,7 +5,6 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.network.play.client.C03PacketPlayer
-import javax.xml.crypto.dsig.dom.DOMSignContext
 
 class VulcanNofall : NoFallMode("Vulcan") {
     private var vulCanNoFall = false

@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.utils.AnimationHelper;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.*;
 import org.lwjgl.input.Mouse;
+
 import java.awt.*;
 
 public class Settings extends Setting {

@@ -1,12 +1,5 @@
 package net.ccbluex.liquidbounce.font;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -14,6 +7,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.lib.Opcodes;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /* loaded from: LiquidBounce-b73.jar:net/ccbluex/liquidbounce/CFontRenderer.class */
 public class CFontRenderer extends CFont {
