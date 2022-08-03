@@ -48,7 +48,7 @@ class Notifications(
         LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
-            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get())) {
+            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get(), Notifications)) {
                 LiquidBounce.hud.notifications.remove(notify)
             }
 
@@ -71,6 +71,7 @@ class Notifications(
 
     override fun drawBoarderBlur(blurRadius: Float) {}
 }
+
 
 class Notification(
     val title: String,
