@@ -5,11 +5,13 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.LightSettings;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiPageButtonList.GuiResponder;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -17,9 +19,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.MathHelper;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import java.awt.Color;
+import java.awt.*;
 
 public class InputBox extends Gui {
     private final int id;

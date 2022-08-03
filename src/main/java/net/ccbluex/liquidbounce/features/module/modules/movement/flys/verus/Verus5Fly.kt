@@ -6,8 +6,8 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.block.BlockAir
-import net.minecraft.util.AxisAlignedBB
 import net.minecraft.client.settings.GameSettings
+import net.minecraft.util.AxisAlignedBB
 
 class Verus5Fly : FlyMode("Verus5") {
     private var ticks = 0

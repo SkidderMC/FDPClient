@@ -6,8 +6,6 @@
 
 package net.ccbluex.liquidbounce.features.special
 
-import com.mojang.util.UUIDTypeAdapter
-import java.util.UUID
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 
 object UUIDSpoofer : MinecraftInstance() {

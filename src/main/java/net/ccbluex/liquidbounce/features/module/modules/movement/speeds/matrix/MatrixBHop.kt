@@ -1,11 +1,16 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import kotlin.math.sqrt
 import net.minecraft.client.settings.GameSettings
+import kotlin.math.sqrt
 
 class MatrixBHop : SpeedMode("MatrixBHop") {
     private val speedMultiValue = FloatValue("${valuePrefix}Speed", 1f, 0.7f, 1.2f)

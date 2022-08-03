@@ -1,10 +1,9 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofalls.matrix
 
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.minecraft.network.play.client.C03PacketPlayer
+
 /**
 Thx To Zerolysimin#6403
  */

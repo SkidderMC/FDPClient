@@ -1,9 +1,10 @@
 package net.ccbluex.liquidbounce.font;
 
-import java.awt.Font;
-import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 /* loaded from: LiquidBounce-b73.jar:net/ccbluex/liquidbounce/FontLoaders.class */
 public abstract class FontLoaders {

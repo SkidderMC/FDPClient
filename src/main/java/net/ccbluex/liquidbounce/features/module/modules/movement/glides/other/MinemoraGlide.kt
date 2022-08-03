@@ -5,7 +5,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMod
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 class MinemoraGlide : GlideMode("Minemora") {
     private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Glide1", "Glide2", "Glide3"), "Glide1")
