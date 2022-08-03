@@ -153,7 +153,7 @@ class Notification(
         // draw notify
 
 
-        if(NotiValue.equals("Modern")) {
+        if(parent.NotiValue.equals("Modern")) {
 
             if (blurRadius != 0f) { BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale) , (height.toFloat()-5f) * scale, blurRadius) }
 
@@ -256,7 +256,7 @@ class Notification(
             return false
             }
 
-        if(NotiMode.equals("Classic")) {
+        if(parent.NotiValue.equals("Classic")) {
 
             if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, height * scale, blurRadius) }
                 RenderUtils.drawRect(0F, 0F, width.toFloat(), classicHeight.toFloat(), Color(0, 0, 0, alpha))
