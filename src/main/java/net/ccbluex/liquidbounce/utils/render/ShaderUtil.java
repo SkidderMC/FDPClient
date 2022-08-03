@@ -16,7 +16,6 @@ import java.io.InputStream;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
 
 public class ShaderUtil extends MinecraftInstance {
     private final int programID;

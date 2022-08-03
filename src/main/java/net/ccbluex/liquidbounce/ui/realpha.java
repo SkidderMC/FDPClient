@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class realpha {
 

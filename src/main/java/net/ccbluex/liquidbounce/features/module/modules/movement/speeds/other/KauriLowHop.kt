@@ -1,9 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
-import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.client.settings.GameSettings
 
 class KauriLowHop : SpeedMode("KauriLowHop") {

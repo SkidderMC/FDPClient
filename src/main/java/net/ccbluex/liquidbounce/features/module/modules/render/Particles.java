@@ -5,9 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render;
 
-import net.ccbluex.liquidbounce.utils.particles.EvictingList;
-import net.ccbluex.liquidbounce.utils.particles.Particle;
-import net.ccbluex.liquidbounce.utils.particles.Vec3;
 import net.ccbluex.liquidbounce.event.AttackEvent;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.MotionEvent;
@@ -15,6 +12,9 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.utils.particles.EvictingList;
+import net.ccbluex.liquidbounce.utils.particles.Particle;
+import net.ccbluex.liquidbounce.utils.particles.Vec3;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.ParticleTimer;
 import net.ccbluex.liquidbounce.value.BoolValue;

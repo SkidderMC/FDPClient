@@ -1,12 +1,17 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix
 
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.sqrt
-import net.minecraft.client.settings.GameSettings
 
 
 class Matrix661 : SpeedMode("Matrix6.6.1") {

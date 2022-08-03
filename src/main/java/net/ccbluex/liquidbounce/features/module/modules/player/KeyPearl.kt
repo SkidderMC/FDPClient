@@ -9,10 +9,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.InventoryUtils
+import net.minecraft.init.Items
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.world.WorldSettings
-import net.minecraft.init.Items
 import org.lwjgl.input.Keyboard
 
 @ModuleInfo(name = "KeyPearl", category = ModuleCategory.PLAYER, keyBind = Keyboard.KEY_GRAVE, canEnable = false)

@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.criticals.hypixe
 
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.criticals.CriticalMode
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 
 class Hypixel4 : CriticalMode("Hypixel4") {
     private var critValue = true
