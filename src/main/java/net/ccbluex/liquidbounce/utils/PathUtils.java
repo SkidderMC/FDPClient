@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.utils;
 
 import me.liuli.path.Cell;
-import me.liuli.path.IWorldProvider;
 import me.liuli.path.Pathfinder;
 import net.ccbluex.liquidbounce.utils.block.MinecraftWorldProvider;
 import net.minecraft.util.Vec3;

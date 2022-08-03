@@ -2,8 +2,9 @@ package net.ccbluex.liquidbounce.utils.block;
 
 import me.liuli.path.Cell;
 import me.liuli.path.IWorldProvider;
-import net.minecraft.block.*;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockFence;
+import net.minecraft.block.BlockWall;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 

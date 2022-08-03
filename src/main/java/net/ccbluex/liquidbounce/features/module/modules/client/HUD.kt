@@ -10,11 +10,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.client.button.AbstractButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.FLineButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.RiseButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.BetterButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.RoundedButtonRenderer
+import net.ccbluex.liquidbounce.features.module.modules.client.button.*
 import net.ccbluex.liquidbounce.launch.data.modernui.ClickGUIModule.*
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.Animation

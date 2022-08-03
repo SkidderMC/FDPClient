@@ -80,7 +80,7 @@ object AntiBot : Module() {
     private var wasAdded = mc.thePlayer != null
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer == null || mc.theWorld == null) return
         if (removeFromWorld.get() && mc.thePlayer.ticksExisted > 0 && mc.thePlayer.ticksExisted % removeIntervalValue.get() == 0) {
             val ent: MutableList<EntityPlayer> = ArrayList()

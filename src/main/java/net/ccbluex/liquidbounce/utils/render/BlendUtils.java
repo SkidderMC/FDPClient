@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
-import java.awt.Color;
+import java.awt.*;
 
 public enum BlendUtils {
     GREEN("§A"),

@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.utils.render;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class ColorManager {
     public static int getRainbow(int speed, int offset) {

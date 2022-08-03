@@ -1,12 +1,14 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.matrix
 
-import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
-import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 class MatrixBoostFly : FlyMode("MatrixBoost") {

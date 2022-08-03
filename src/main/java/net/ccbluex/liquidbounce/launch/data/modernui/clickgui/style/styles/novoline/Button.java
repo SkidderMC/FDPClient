@@ -2,12 +2,9 @@ package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.novo
 
 
 import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.launch.data.modernui.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.client.other.Limitation;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
-import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.Value;
 import net.minecraft.client.Minecraft;

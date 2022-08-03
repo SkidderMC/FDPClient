@@ -5,24 +5,26 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light;
 
-import java.awt.*;
-import java.io.IOException;
-
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.Module;
+import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.LightSettings.InputBox;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.ModuleSettings.Setting.Settings;
-import net.ccbluex.liquidbounce.utils.AnimationHelper;
-import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.*;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.utils.AnimationHelper;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.*;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiYesNoCallback;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import java.awt.*;
+import java.io.IOException;
 
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
