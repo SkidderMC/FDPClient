@@ -27,7 +27,7 @@ class Notifications(
     scale: Float = 1F,
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
-    private val NotiValue = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
+    private val styleValue = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
     private val TitleShadow = BoolValue("Title Shadow", false)
     private val MotionBlur = BoolValue("Motion blur", false)
@@ -151,9 +151,10 @@ class Notification(
         GL11.glTranslated(transX, transY, 0.0)
 
         // draw notify
+       val style = parent.styleValue.get()
 
 
-        if(parent.NotiValue.equals("Modern")) {
+        if(style.equals("Modern")) {
 
             if (blurRadius != 0f) { BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale) , (height.toFloat()-5f) * scale, blurRadius) }
 
@@ -256,7 +257,7 @@ class Notification(
             return false
             }
 
-        if(parent.NotiValue.equals("Classic")) {
+        if(style.equals("Classic")) {
 
             if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, height * scale, blurRadius) }
                 RenderUtils.drawRect(0F, 0F, width.toFloat(), classicHeight.toFloat(), Color(0, 0, 0, alpha))
