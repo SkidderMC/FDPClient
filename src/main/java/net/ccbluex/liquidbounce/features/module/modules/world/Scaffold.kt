@@ -119,7 +119,7 @@ class Scaffold : Module() {
         "TowerMode", arrayOf(
             "Jump",
             "Motion",
-            "ConstantMotion",
+            "BlocksMC",
             "PlusMotion",
             "StableMotion",
             "MotionTP",
@@ -167,8 +167,8 @@ class Scaffold : Module() {
     private val plusMaxMotionValue = FloatValue("TowerPlusMaxMotion", 0.8f, 0.1f, 2f).displayable { towerModeValue.equals("PlusMotion") }
 
     // ConstantMotion
-    private val constantMotionValue = FloatValue("TowerConstantMotion", 0.42f, 0.1f, 1f).displayable { towerModeValue.equals("ConstantMotion") }
-    private val constantMotionJumpGroundValue = FloatValue("TowerConstantMotionJumpGround", 0.79f, 0.76f, 1f).displayable { towerModeValue.equals("ConstantMotion") }
+    private val constantMotionValue = FloatValue("BlocksMCMotion, 0.42f, 0.1f, 1f).displayable { towerModeValue.equals("BlocksMC") }
+    private val constantMotionJumpGroundValue = FloatValue("BlocksMCJumpGround", 0.79f, 0.76f, 1f).displayable { towerModeValue.equals("BlocksMC") }
 
     // Teleport
     private val teleportHeightValue = FloatValue("TowerTeleportHeight", 1.15f, 0.1f, 5f).displayable { towerModeValue.equals("Teleport") }
@@ -512,7 +512,7 @@ class Scaffold : Module() {
                     jumpGround = mc.thePlayer.posY
                     mc.thePlayer.motionY = constantMotionValue.get().toDouble()
                 }
-                if (mc.thePlayer.posY > jumpGround + constantMotionJumpGroundValue.get()) {
+                if (mc.thePlayer.posY > jumpGround + BlocksMCJumpMotionValue.get()) {
                     fakeJump()
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
                     mc.thePlayer.motionY = constantMotionValue.get().toDouble()
