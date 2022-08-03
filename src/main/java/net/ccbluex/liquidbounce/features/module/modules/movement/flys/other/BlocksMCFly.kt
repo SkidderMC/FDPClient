@@ -31,13 +31,13 @@ class BlocksMCFly : FlyMode("BlocksMC") {
         if(blocksBB) {
             ticks++
             when(ticks) {
-                in 1..10 -> mc.timer.timerSpeed = 2f
+                in 1..10 -> mc.timer.timerSpeed = 1.0f
 
-                in 10..15 -> mc.timer.timerSpeed = 0.5f
+                in 10..15 -> mc.timer.timerSpeed = 1.0f
             }
             if(ticks>=15) {
                 ticks = 0
-                mc.timer.timerSpeed = 0.6f
+                mc.timer.timerSpeed = 1.0f
             }
         }
     }
