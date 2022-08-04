@@ -16,7 +16,9 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 
-
+/**
+ * by @DinoFengz xd | skid = timeout
+ */
 class BlocksMCFly : FlyMode("BlocksMC") {
     private val timerBoostValue = BoolValue("${valuePrefix}Timer", true)
     private var blocksBB = false
@@ -24,14 +26,13 @@ class BlocksMCFly : FlyMode("BlocksMC") {
     override fun onEnable() {
         blocksBB = false
         ticks = 0
-        mc.gameSettings.keyBindUseItem.pressed = false
         if(mc.thePlayer.onGround) {
-            mc.thePlayer.motionY = 0.42
+            mc.thePlayer.motionY = 0.4
         }
     }
 
     override fun onDisable() {
-        mc.gameSettings.keyBindUseItem.pressed = false
+        mc.timer.timerSpeed = 1.0f
     }
 
     override fun onUpdate(event: UpdateEvent) {
