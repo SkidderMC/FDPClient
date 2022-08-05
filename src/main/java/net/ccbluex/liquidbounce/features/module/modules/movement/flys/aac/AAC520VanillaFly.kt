@@ -61,9 +61,7 @@ class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
         mc.thePlayer.noClip = !MovementUtils.isMoving()
         if (smoothValue.get()) {
             if (!timer.hasTimePassed(1000) || !flyStart) {
-                mc.thePlayer.motionY = 0.0
-                mc.thePlayer.motionX = 0.0
-                mc.thePlayer.motionZ = 0.0
+                MovementUtils.resetMotion(true)
                 mc.thePlayer.jumpMovementFactor = 0.00f
                 mc.timer.timerSpeed = 0.32F
                 return
@@ -78,9 +76,7 @@ class AAC520VanillaFly : FlyMode("AAC5.2.0-Vanilla") {
         }
 
         mc.thePlayer.capabilities.isFlying = false
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionY = 0.0
-        mc.thePlayer.motionZ = 0.0
+        MovementUtils.resetMotion(true)
         if (mc.gameSettings.keyBindJump.isKeyDown) {
             mc.thePlayer.motionY += speedValue.get() * 0.5
         }

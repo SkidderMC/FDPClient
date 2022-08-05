@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -20,17 +21,14 @@ class AAC520Fly : FlyMode("AAC5.2.0") {
             return
         }
 
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionY = 0.0
-        mc.thePlayer.motionZ = 0.0
+        MovementUtils.resetMotion(true)
 
         PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, 1.7976931348623157E+308, mc.thePlayer.posZ, true))
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionY = 0.003
-        mc.thePlayer.motionZ = 0.0
+        MovementUtils.resetMotion(false)
     }
 
     override fun onPacket(event: PacketEvent) {

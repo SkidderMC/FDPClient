@@ -56,10 +56,8 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
         when(stage) {
             FlyStage.FLYING -> {
                 isSuccess = false
-                
-                mc.thePlayer.motionX = 0.0
-                mc.thePlayer.motionY = 0.0
-                mc.thePlayer.motionZ = 0.0
+
+                MovementUtils.resetMotion(true)
                 
                 MovementUtils.strafe(timerValue.get())
                 doCancel = true
@@ -73,9 +71,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
                     if(underBlock2.isFullBlock) {
                         stage = FlyStage.WAIT_APPLY
-                        mc.thePlayer.motionX = 0.0
-                        mc.thePlayer.motionY = 0.0
-                        mc.thePlayer.motionZ = 0.0
+                        MovementUtils.resetMotion(true)
                         mc.thePlayer.jumpMovementFactor = 0.00f
                         doCancel = false
                         mc.thePlayer.onGround = false
@@ -107,9 +103,7 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
                     ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
                 mc.timer.timerSpeed = 1f
-                mc.thePlayer.motionX = 0.0
-                mc.thePlayer.motionY = 0.0
-                mc.thePlayer.motionZ = 0.0
+                MovementUtils.resetMotion(true)
                 mc.thePlayer.jumpMovementFactor = 0.00f
                 val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                 if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -10.0, 0.0)).isEmpty() && mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -12.0, 0.0)).isEmpty()) {

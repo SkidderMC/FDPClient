@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.altmanager.sub
 import me.liuli.elixir.manage.AccountSerializer
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.elements.GuiPasswordField
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
@@ -16,7 +17,7 @@ import org.lwjgl.input.Keyboard
 class GuiDirectLogin(private val prevGui: GuiAltManager) : GuiScreen() {
     private lateinit var username: GuiTextField
     private lateinit var password: GuiPasswordField
-    private var status = "§7%ui.alt.idle%"
+    private var status = "§7${LanguageManager.getAndFormat("ui.alt.idle")}"
 
     override fun initGui() {
         Keyboard.enableRepeatEvents(true)
@@ -32,15 +33,15 @@ class GuiDirectLogin(private val prevGui: GuiAltManager) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        drawCenteredString(mc.fontRendererObj, "%ui.alt.directLogin%", width / 2, 34, 0xffffff)
+        drawCenteredString(mc.fontRendererObj, LanguageManager.getAndFormat("ui.alt.directLogin"), width / 2, 34, 0xffffff)
         drawCenteredString(mc.fontRendererObj, status, width / 2, height / 4 + 60, 0xffffff)
         username.drawTextBox()
         password.drawTextBox()
         if (username.text.isEmpty() && !username.isFocused) {
-            drawCenteredString(mc.fontRendererObj, "§7%ui.alt.loginUsername%", width / 2 - 55, 66, 0xffffff)
+            drawCenteredString(mc.fontRendererObj, "§7${LanguageManager.getAndFormat("ui.alt.loginUsername")}", width / 2 - 55, 66, 0xffffff)
         }
         if (password.text.isEmpty() && !password.isFocused) {
-            drawCenteredString(mc.fontRendererObj, "§7%ui.alt.loginPassword%", width / 2 - 74, 91, 0xffffff)
+            drawCenteredString(mc.fontRendererObj, "§7${LanguageManager.getAndFormat("ui.alt.loginPassword")}", width / 2 - 74, 91, 0xffffff)
         }
         "Add ms@ before your real username can login microsoft account without browser!".also {
             mc.fontRendererObj.drawString(it, width - mc.fontRendererObj.getStringWidth(it), height - mc.fontRendererObj.FONT_HEIGHT, 0xffffff)
@@ -54,12 +55,12 @@ class GuiDirectLogin(private val prevGui: GuiAltManager) : GuiScreen() {
             0 -> mc.displayGuiScreen(prevGui)
             1 -> {
                 if (username.text.isEmpty()) {
-                    status = "§c%ui.alt.fillBoth%"
+                    status = "§c${LanguageManager.getAndFormat("ui.alt.fillBoth")}"
                     return
                 }
                 Thread {
                     val res = GuiAltManager.login(AccountSerializer.accountInstance(username.text, password.text))
-                    status = "§a%ui.alt.loggingIn%"
+                    status = "§a${LanguageManager.getAndFormat("ui.alt.loggingIn")}"
                     status = res
                 }.start()
             }

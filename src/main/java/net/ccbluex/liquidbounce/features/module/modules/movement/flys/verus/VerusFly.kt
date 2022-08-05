@@ -23,9 +23,7 @@ class VerusFly : FlyMode("Verus") {
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.35, mc.thePlayer.posZ, false))
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionY = 0.0
-        mc.thePlayer.motionZ = 0.0
+        MovementUtils.resetMotion(true)
         mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ)
         flyable = true
         timer.reset()
@@ -43,9 +41,7 @@ class VerusFly : FlyMode("Verus") {
         if (flyable && timer.hasTimePassed(100)) {
             MovementUtils.strafe(speedValue.get())
         } else if (!timer.hasTimePassed(100)) {
-            mc.thePlayer.motionX = 0.0
-            mc.thePlayer.motionY = 0.0
-            mc.thePlayer.motionZ = 0.0
+            MovementUtils.resetMotion(true)
         }
     }
 
