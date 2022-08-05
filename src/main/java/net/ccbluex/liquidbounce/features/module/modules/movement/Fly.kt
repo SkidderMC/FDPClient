@@ -128,6 +128,11 @@ class Fly : Module() {
     }
 
     @EventTarget
+    fun onWorld(event: WorldEvent) {
+        mode.onWorld(event)
+    }
+
+    @EventTarget
     fun onMove(event: MoveEvent) {
         mode.onMove(event)
     }

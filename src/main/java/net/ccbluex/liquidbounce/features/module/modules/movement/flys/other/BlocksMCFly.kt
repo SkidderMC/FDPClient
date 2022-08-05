@@ -1,104 +1,199 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.BlockBBEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.utils.PlayerUtils
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithCustomRotation
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockAir
+import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
-import net.minecraft.network.play.client.C0APacketAnimation
+import net.minecraft.item.ItemStack
+import net.minecraft.network.Packet
+import net.minecraft.network.play.INetHandlerPlayServer
+import net.minecraft.network.play.client.*
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
+import java.util.*
+
 
 /**
  * by @DinoFengz xd | skid = timeout
  */
+
 class BlocksMCFly : FlyMode("BlocksMC") {
-    private val timerBoostValue = BoolValue("${valuePrefix}Timer", true)
-    private var blocksBB = false
+    enum class Stage {
+        WAITING,
+        FLYING
+    }
+    private val timerBoostValue = BoolValue("${valuePrefix}DoTimer", true)
+    private val swingModeValue = ListValue("${valuePrefix}SwingMode", arrayOf("Normal","Packet"), "Normal")
+    private var stage = Stage.WAITING
     private var ticks = 0
+    private var packets = 0
+    private val timer = MSTimer()
+    private val packetBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
     override fun onEnable() {
-        blocksBB = false
+        stage = Stage.WAITING
+        packets = 0
         ticks = 0
+        packetBuffer.clear()
+        timer.reset()
         if(mc.thePlayer.onGround) {
-            mc.thePlayer.motionY = 0.4
+            mc.thePlayer.jump()
+        }
+    }
+
+    override fun onWorld(event: WorldEvent) {
+        packetBuffer.clear()
+        timer.reset()
+    }
+
+    override fun onPacket(event: PacketEvent) {
+        if(stage == Stage.WAITING) return
+
+        val packet = event.packet
+
+        if(packet is C03PacketPlayer) {
+            packet.onGround = true
+            packetBuffer.add(packet)
+            event.cancelEvent()
+        }
+        if(packet is S12PacketEntityVelocity) {
+            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) return
+
+            event.cancelEvent()
         }
     }
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1.0f
+        for (packet in packetBuffer) {
+            PacketUtils.sendPacketNoEvent(packet)
+        }
+        packetBuffer.clear()
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if(mc.thePlayer.posY >= fly.launchY + 0.8 && !blocksBB) {
-            if(mc.thePlayer.onGround) {
-                blocksBB = true
-            } else {
-                var slot = -1
-                for (j in 0..8) {
-                    if (mc.thePlayer.inventory.getStackInSlot(j) != null && mc.thePlayer.inventory
-                            .getStackInSlot(j).item is ItemBlock
-                    ) {
-                        slot = PlayerUtils.findSlimeBlock()!!
-                        break
+        if(timer.hasTimePassed((Math.random() * 1000).toLong())) {
+            timer.reset()
+            for (packet in packetBuffer) {
+                PacketUtils.sendPacketNoEvent(packet)
+            }
+            packetBuffer.clear()
+        }
+        when (stage) {
+            Stage.WAITING -> {
+                if(mc.thePlayer.posY >= fly.launchY + 0.8) {
+                    if(mc.thePlayer.onGround) {
+                        stage = Stage.FLYING
+                        RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, 90f))
+                        val movingObjectPosition: MovingObjectPosition = mc.thePlayer.rayTraceWithCustomRotation(4.5, mc.thePlayer.rotationYaw, 90.0f)
+                        if (movingObjectPosition.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return
+                        val blockPos = movingObjectPosition.blockPos
+                        val enumFacing = movingObjectPosition.sideHit
+                        if(mc.playerController.onPlayerDamageBlock(blockPos, enumFacing)) {
+                            ClientUtils.displayChatMessage("Destroyed")
+                        }
+                        mc.thePlayer.motionY = 0.0
+                    } else {
+                        RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, 90f))
+                        var slot = -1
+                        for (j in 0..8) {
+                            if (mc.thePlayer.inventory.getStackInSlot(j) != null && mc.thePlayer.inventory
+                                    .getStackInSlot(j).item is ItemBlock
+                            ) {
+                                slot = PlayerUtils.findSlimeBlock()!!
+                                break
+                            }
+                        }
+
+                        if(slot == -1) {
+                            fly.state = false
+                            LiquidBounce.hud.addNotification(Notification("BlocksMCFly", "U need a slime blocks to use this fly", NotifyType.ERROR, 1000))
+                            return
+                        }
+
+                        val oldSlot = mc.thePlayer.inventory.currentItem
+                        mc.thePlayer.inventory.currentItem = slot
+                        val movingObjectPosition: MovingObjectPosition = mc.thePlayer.rayTraceWithCustomRotation(4.5, mc.thePlayer.rotationYaw, 90.0f)
+                        if (movingObjectPosition.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return
+                        val blockPos = movingObjectPosition.blockPos
+                        val enumFacing = movingObjectPosition.sideHit
+                        val hitVec: Vec3 = movingObjectPosition.hitVec
+                        if (mc.playerController.onPlayerRightClick(
+                                mc.thePlayer,
+                                mc.theWorld,
+                                mc.thePlayer.heldItem,
+                                blockPos,
+                                enumFacing,
+                                hitVec
+                            )
+                        ) {
+                            when (swingModeValue.get().lowercase()) {
+                                "normal" -> mc.thePlayer.swingItem()
+
+                                "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
+                            }
+                        }
+                        mc.thePlayer.inventory.currentItem = oldSlot
+
+
                     }
                 }
-
-                if(slot == -1) {
-                    fly.state = false
-                    LiquidBounce.hud.addNotification(Notification("BlocksMCFly", "U need a slime blocks to use this fly", NotifyType.ERROR, 1000))
-                    return
-                }
-
-                val oldSlot = mc.thePlayer.inventory.currentItem
-                mc.thePlayer.inventory.currentItem = slot
-                val movingObjectPosition: MovingObjectPosition = mc.thePlayer.rayTraceWithCustomRotation(4.5, mc.thePlayer.rotationYaw, 90.0f)
-                if (movingObjectPosition.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return
-                val blockPos = movingObjectPosition.blockPos
-                val enumFacing = movingObjectPosition.sideHit
-                val hitVec: Vec3 = movingObjectPosition.hitVec
-                if (mc.playerController.onPlayerRightClick(
-                        mc.thePlayer,
-                        mc.theWorld,
-                        mc.thePlayer.heldItem,
-                        blockPos,
-                        enumFacing,
-                        hitVec
-                    )
-                ) mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
-                mc.thePlayer.inventory.currentItem = oldSlot
-
-
             }
-        }
-        if(blocksBB) {
-            if(timerBoostValue.get()) {
-                ticks++
-                when(ticks) {
-                    in 1..10 -> mc.timer.timerSpeed = 2f
+            Stage.FLYING -> {
+                if(timerBoostValue.get()) {
+                    ticks++
+                    when(ticks) {
+                        in 1..10 -> mc.timer.timerSpeed = 2f
 
-                    in 10..15 -> mc.timer.timerSpeed = 0.5f
+                        in 10..15 -> mc.timer.timerSpeed = 0.4f
+                    }
+                    if(ticks>=15) {
+                        ticks = 0
+                        mc.timer.timerSpeed = 0.6f
+                    }
+                } else {
+                    mc.timer.timerSpeed = 1.0f
                 }
-                if(ticks>=15) {
-                    ticks = 0
-                    mc.timer.timerSpeed = 0.6f
-                }
-            } else {
-                mc.timer.timerSpeed = 1.0f
             }
         }
     }
     override fun onBlockBB(event: BlockBBEvent) {
-        if(!blocksBB) return
+        when(stage) {
+            Stage.WAITING -> {
+                if (event.block is BlockAir && event.y <= fly.launchY + 100) {
+                    event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, fly.launchY, event.z + 1.0)
+                }
+            }
+            Stage.FLYING -> {
+                if (event.block is BlockAir && event.y <= fly.launchY + 1) {
+                    event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, fly.launchY, event.z + 1.0)
+                }
 
-        if (event.block is BlockAir && event.y <= fly.launchY + 1) {
-            event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, fly.launchY, event.z + 1.0)
+            }
         }
+
+    }
+
+    override fun onJump(event: JumpEvent) {
+        if(stage == Stage.WAITING) return
+
+        event.cancelEvent()
+    }
+
+    override fun onStep(event: StepEvent) {
+        if(stage == Stage.WAITING) return
+
+        event.stepHeight = 0.0f
     }
 }
