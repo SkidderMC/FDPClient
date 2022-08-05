@@ -29,7 +29,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val MotionBlur = BoolValue("Motion blur", false)
     private val ContentShadow = BoolValue("Content Shadow", true)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "skid", "Modern"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "Skid", "Modern"), "Modern")
     }
 
     /**
