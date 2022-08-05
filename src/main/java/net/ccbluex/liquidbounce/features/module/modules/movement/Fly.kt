@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClassUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -87,11 +88,7 @@ class Fly : Module() {
         mc.timer.timerSpeed = 1F
         mc.thePlayer.speedInAir = 0.02F
 
-        if (motionResetValue.get() && needReset) {
-            mc.thePlayer.motionX = 0.0
-            mc.thePlayer.motionY = 0.0
-            mc.thePlayer.motionZ = 0.0
-        }
+        if (motionResetValue.get() && needReset) MovementUtils.resetMotion(true)
 
         mode.onDisable()
     }

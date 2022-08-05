@@ -37,8 +37,7 @@ class HyCraftFly : FlyMode("HyCraft") {
             mc.thePlayer.motionY = 0.0
         }
         if(!MovementUtils.isMoving()) {
-            mc.thePlayer.motionX = 0.0
-            mc.thePlayer.motionZ = 0.0
+            MovementUtils.resetMotion(false)
         }
         if(timer.hasTimePassed((150 + Math.random() * 50).toLong()) && MovementUtils.isMoving()) {
             timer.reset()
@@ -47,9 +46,7 @@ class HyCraftFly : FlyMode("HyCraft") {
     }
 
     override fun onDisable() {
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionY = 0.0
-        mc.thePlayer.motionZ = 0.0
+        MovementUtils.resetMotion(true)
     }
 
     override fun onPacket(event: PacketEvent) {

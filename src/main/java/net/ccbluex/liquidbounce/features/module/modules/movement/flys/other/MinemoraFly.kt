@@ -68,8 +68,7 @@ class MinemoraFly : FlyMode("Minemora") {
             if (MovementUtils.isMoving()) {
                 MovementUtils.strafe(1.7f)
             } else {
-                mc.thePlayer.motionZ = 0.0
-                mc.thePlayer.motionX = 0.0
+                MovementUtils.resetMotion(false)
             }
             if (mc.gameSettings.keyBindJump.pressed) {
                 mc.thePlayer.motionY = 1.7

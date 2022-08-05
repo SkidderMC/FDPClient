@@ -23,9 +23,7 @@ class SpartanFastFly : FlyMode("SpartanFast") {
 
     override fun onUpdate(event: UpdateEvent) {
         fly.antiDesync = true
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionY = 0.0
-        mc.thePlayer.motionZ = 0.0
+        MovementUtils.resetMotion(true)
         if (mc.gameSettings.keyBindJump.isKeyDown) {
             mc.thePlayer.motionY += speedValue.get() * 0.5
         }

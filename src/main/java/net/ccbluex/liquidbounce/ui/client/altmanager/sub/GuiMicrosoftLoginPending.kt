@@ -3,11 +3,13 @@ package net.ccbluex.liquidbounce.ui.client.altmanager.sub
 import me.liuli.elixir.account.MicrosoftAccount
 import me.liuli.elixir.compat.OAuthServer
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
+import org.intellij.lang.annotations.Language
 
 class GuiMicrosoftLoginPending(private val prevGui: GuiScreen) : GuiScreen() {
     private var stage = "Initializing..."
@@ -27,7 +29,7 @@ class GuiMicrosoftLoginPending(private val prevGui: GuiScreen) : GuiScreen() {
 
             override fun authResult(account: MicrosoftAccount) {
                 if (LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.any { it.name == account.name }) {
-                    stage = "§c%ui.alt.alreadyAdded%"
+                    stage = "§c${LanguageManager.getAndFormat("ui.alt.alreadyAdded")}"
                     return
                 }
                 LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.add(account)

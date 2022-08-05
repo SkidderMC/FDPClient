@@ -82,9 +82,7 @@ class VulcanLegitFly : FlyMode("VulcanLegit") {
             }
             FlyStage.WAIT_APPLY -> {
                 mc.timer.timerSpeed = 1.0f
-                mc.thePlayer.motionY = 0.0
-                mc.thePlayer.motionX = 0.0
-                mc.thePlayer.motionZ = 0.0
+                MovementUtils.resetMotion(true)
                 mc.thePlayer.jumpMovementFactor = 0.0f
                 if (modifyTicks >= 10) {
                     var playerYaw = mc.thePlayer.rotationYaw * Math.PI / 180
