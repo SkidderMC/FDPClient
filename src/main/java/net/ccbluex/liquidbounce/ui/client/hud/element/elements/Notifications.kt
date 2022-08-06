@@ -10,8 +10,10 @@ import net.ccbluex.liquidbounce.font.CFontRenderer
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.*
+import net.ccbluex.liquidbounce.ui.realpha
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
@@ -188,18 +190,19 @@ class Notification(
             }
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F), height.toFloat() - 5f, 2f, Color(0, 0, 0, 26).rgb)
-            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, Color(31, 41, 55).rgb, TitleShadow)
-            font.DisplayFont2(font, content, 4F, 10F, Color(31, 41, 55).rgb, ContentShadow)
+            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, Color(255, 255, 255).rgb, TitleShadow)
+            font.DisplayFont2(font, content, 4F, 10F, Color(255, 255, 255).rgb, ContentShadow)
             return false
         }
         if(style.equals("Skid")){
             // hello xigua sorry that ur code got skidded :( what a shame, fuck off
             val colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3)
+            NewRenderUtils.drawShadowWithCustomAlpha(2f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 250f) // oops
             RenderUtils.drawRect(2.0, 0.0, 4.0, height.toFloat() - 5.0, colors.rgb,)
             RenderUtils.drawRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, Color(0,0,0,150))
             RenderUtils.drawGradientSidewaysH(3.0, 0.0, 20.0, height.toFloat() - 5.0, colors.rgb, Color(0,0,0,0).rgb)
             RenderUtils.drawRect(2f, height.toFloat()-6f, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), height.toFloat()-5f ,Color(52, 97, 237).rgb)
-
+            // Wlenk i love your alt named xigua! it is a very skilled coder! +100000 social credit
             FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, Color(245,245,245).rgb,TitleShadow)
             font.DisplayFont2(font,content, 4F, 10F, Color(255,255,255).rgb,ContentShadow)
             return false
@@ -219,16 +222,21 @@ class Notification(
 
 //NotifyType Color
 enum class NotifyType(var renderColor: Color) {
-    SUCCESS(Color(0x36D399)),
-    ERROR(Color(0xF87272)),
-    WARNING(Color(0xFBBD23)),
-    INFO(Color(0xF2F2F2));
+    SUCCESS(Color(0x60E092)),
+    ERROR(Color(0xFF2F2F)),
+    WARNING(Color(0xF5FD00)),
+    INFO(Color(0x6490A7));
 }
     //classic
    // SUCCESS(Color((0x60E092)),
    // ERROR(Color(0xFF2F2F)),
    // WARNING(Color(0xF5FD00)),
    // INFO(Color( 0x6490A7)));
+   //modern (shitty)
+   //    SUCCESS(Color(0x36D399)),
+   // ERROR(Color(0xF87272)),
+   // WARNING(Color(0xFBBD23)),
+   // INFO(Color(0xF2F2F2));
 
 
 enum class FadeState { IN, STAY, OUT, END }
