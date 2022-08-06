@@ -29,7 +29,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val MotionBlur = BoolValue("Motion blur", false)
     private val ContentShadow = BoolValue("Content Shadow", true)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "Skid", "Modern"), "Modern")
     }
 
     /**
@@ -45,7 +45,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
         LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
-            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get(), Notifications.Companion)) {
+            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get(), Companion)) {
                 LiquidBounce.hud.notifications.remove(notify)
             }
 
@@ -83,7 +83,7 @@ class Notification(
 
 
     var fadeState = FadeState.IN
-    var nowY = -height
+    private var nowY = -height
     var displayTime = System.currentTimeMillis()
     private var animeXTime = System.currentTimeMillis()
     private var animeYTime = System.currentTimeMillis()
@@ -97,16 +97,18 @@ class Notification(
         TitleShadow: Boolean,
         MotionBlur: Boolean, parent: Notifications.Companion
     ): Boolean {
-        this.width = 100.coerceAtLeast(font.getStringWidth(content)
-            .coerceAtLeast(font.getStringWidth(title)) + 15)
-        val realY = -(index+1) * height
+        this.width = 100.coerceAtLeast(
+            font.getStringWidth(content)
+                .coerceAtLeast(font.getStringWidth(title)) + 15
+        )
+        val realY = -(index + 1) * height
         val nowTime = System.currentTimeMillis()
         var transY = nowY.toDouble()
 
         // Y-Axis Animation
         if (nowY != realY) {
             var pct = (nowTime - animeYTime) / animeTime.toDouble()
-            if (pct> 1) {
+            if (pct > 1) {
                 nowY = realY
                 pct = 1.0
             } else {
@@ -121,7 +123,7 @@ class Notification(
         var pct = (nowTime - animeXTime) / animeTime.toDouble()
         when (fadeState) {
             FadeState.IN -> {
-                if (pct> 1) {
+                if (pct > 1) {
                     fadeState = FadeState.STAY
                     animeXTime = nowTime
                     pct = 1.0
@@ -131,14 +133,14 @@ class Notification(
 
             FadeState.STAY -> {
                 pct = 1.0
-                if ((nowTime - animeXTime)> time) {
+                if ((nowTime - animeXTime) > time) {
                     fadeState = FadeState.OUT
                     animeXTime = nowTime
                 }
             }
 
             FadeState.OUT -> {
-                if (pct> 1) {
+                if (pct > 1) {
                     fadeState = FadeState.END
                     animeXTime = nowTime
                     pct = 1.0
@@ -152,125 +154,61 @@ class Notification(
         }
         val transX = width - (width * pct) - width
         GL11.glTranslated(transX, transY, 0.0)
-
         // draw notify
-       val style = parent.styleValue.get()
+        val style = parent.styleValue.get()
 
 
-        if(style.equals("Modern")) {
+        if (style.equals("Modern")) {
 
-            if (blurRadius != 0f) { BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale) , (height.toFloat()-5f) * scale, blurRadius) }
-
-                val colors = Color(type.renderColor.red, type.renderColor.green, type.renderColor.blue, alpha / 3)
-                if (MotionBlur) {
-                    when (fadeState) {
-                        FadeState.IN -> {
-                            RenderUtils.drawRoundedCornerRect(
-                                3f,
-                                0F,
-                                width.toFloat() + 5f,
-                                height.toFloat() - 5f,
-                                2f,
-                                colors.rgb
-                            )
-                            RenderUtils.drawRoundedCornerRect(
-                                3F,
-                                0F,
-                                width.toFloat() + 5f,
-                                height.toFloat() - 5f,
-                                2f,
-                                colors.rgb
-                            )
-                        }
-
-                        FadeState.STAY -> {
-                            RenderUtils.drawRoundedCornerRect(
-                                3f,
-                                0F,
-                                width.toFloat() + 5f,
-                                height.toFloat() - 5f,
-                                2f,
-                                colors.rgb
-                            )
-                            RenderUtils.drawRoundedCornerRect(
-                                3F,
-                                0F,
-                                width.toFloat() + 5f,
-                                height.toFloat() - 5f,
-                                2f,
-                                colors.rgb
-                            )
-                        }
-
-                        FadeState.OUT -> {
-                            RenderUtils.drawRoundedCornerRect(
-                                4F,
-                                0F,
-                                width.toFloat() + 5f,
-                                height.toFloat() - 5f,
-                                2f,
-                                colors.rgb
-                            )
-                            RenderUtils.drawRoundedCornerRect(
-                                5F,
-                                0F,
-                                width.toFloat() + 5f,
-                                height.toFloat() - 5f,
-                                2f,
-                                colors.rgb
-                            )
-                        }
-                    }
-                } else {
-                    RenderUtils.drawRoundedCornerRect(
-                        0F + 3f,
-                        0F,
-                        width.toFloat() + 5f,
-                        height.toFloat() - 5f,
-                        2f,
-                        colors.rgb
-                    )
-                    RenderUtils.drawRoundedCornerRect(
-                        0F + 3f,
-                        0F,
-                        width.toFloat() + 5f,
-                        height.toFloat() - 5f,
-                        2f,
-                        colors.rgb
-                    )
-                }
-                RenderUtils.drawRoundedCornerRect(
-                    0F + 3f,
-                    0F,
-                    width.toFloat() + 5f,
-                    height.toFloat() - 5f,
-                    2f,
-                    colors.rgb
-                )
-                RenderUtils.drawRoundedCornerRect(
-                    0F + 3f,
-                    0F,
-                    max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F),
-                    height.toFloat() - 5f,
-                    2f,
-                    Color(0, 0, 0, 26).rgb
-                )
-                FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, Color(31, 41, 55).rgb, TitleShadow)
-                font.DisplayFont2(font, content, 4F, 10F, Color(31, 41, 55).rgb, ContentShadow)
-            return false
+            if (blurRadius != 0f) {
+                BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale), (height.toFloat() - 5f) * scale, blurRadius)
             }
 
-        if(style.equals("Classic")) {
+            val colors = Color(type.renderColor.red, type.renderColor.green, type.renderColor.blue, alpha / 3)
+            if (MotionBlur) {
+                when (fadeState) {
+                    FadeState.IN -> {
+                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                    }
 
-            if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, height * scale, blurRadius) }
+                    FadeState.STAY -> {
+                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                    }
+
+                    FadeState.OUT -> {
+                        RenderUtils.drawRoundedCornerRect(4F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(5F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                    }
+                }
+            } else {
+                RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+            }
+            RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+            RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F), height.toFloat() - 5f, 2f, Color(0, 0, 0, 26).rgb)
+            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, Color(31, 41, 55).rgb, TitleShadow)
+            font.DisplayFont2(font, content, 4F, 10F, Color(31, 41, 55).rgb, ContentShadow)
+            return false
+        }
+        if(style.equals("Skid")){
+            // hello xigua sorry that ur code got skidded :( what a shame, fuck off
+            val colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3)
+            RenderUtils.drawRect(2.0, 0.0, 4.0, height.toFloat() - 5.0, colors.rgb,)
+            RenderUtils.drawRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, Color(0,0,0,150))
+            RenderUtils.drawGradientSidewaysH(3.0, 0.0, 20.0, height.toFloat() - 5.0, colors.rgb, Color(0,0,0,0).rgb)
+            RenderUtils.drawRect(2f, height.toFloat()-6f, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), height.toFloat()-5f ,Color(52, 97, 237).rgb)
+
+            FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, Color(245,245,245).rgb,TitleShadow)
+            font.DisplayFont2(font,content, 4F, 10F, Color(255,255,255).rgb,ContentShadow)
+            return false
+    }
+
+        if(style.equals("Classic")) {
+            if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) }
                 RenderUtils.drawRect(0F, 0F, width.toFloat(), classicHeight.toFloat(), Color(0, 0, 0, alpha))
-                RenderUtils.drawRect(
-                    0F,
-                    classicHeight - 2F,
-                    max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F),
-                    classicHeight.toFloat(),
-                    type.renderColor
-                )
+            RenderUtils.drawRect(0F, classicHeight - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat(), type.renderColor)
                 font.drawString(title, 4F, 4F, Color.WHITE.rgb, false)
                 font.drawString(content, 4F, 17F, Color.WHITE.rgb, false)
             }
@@ -278,6 +216,7 @@ class Notification(
         }
       
     }
+
 //NotifyType Color
 enum class NotifyType(var renderColor: Color) {
     SUCCESS(Color(0x36D399)),
