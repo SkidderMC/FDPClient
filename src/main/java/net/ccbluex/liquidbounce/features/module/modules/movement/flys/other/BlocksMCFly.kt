@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithCustomRotation
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockAir
 import net.minecraft.init.Blocks
@@ -32,7 +33,8 @@ import java.util.*
 class BlocksMCFly : FlyMode("BlocksMC") {
     enum class Stage {
         WAITING,
-        FLYING
+        FLYING,
+        INFFLYING
     }
     private val timerBoostValue = BoolValue("${valuePrefix}DoTimer", true)
     private val swingModeValue = ListValue("${valuePrefix}SwingMode", arrayOf("Normal","Packet"), "Normal")
@@ -40,15 +42,25 @@ class BlocksMCFly : FlyMode("BlocksMC") {
     private var ticks = 0
     private var packets = 0
     private val timer = MSTimer()
+    private var firstlaunch = true
+    private var needreset = false
+    private var vanillabypass = 0
+    private var test = 1.0
     private val packetBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
     override fun onEnable() {
-        stage = Stage.WAITING
+        test = 1.0
+        needreset = false
+        firstlaunch = true
+        vanillabypass = 0
         packets = 0
         ticks = 0
         packetBuffer.clear()
         timer.reset()
         if(mc.thePlayer.onGround) {
+            stage = Stage.WAITING
             mc.thePlayer.jump()
+        } else {
+            stage = Stage.INFFLYING
         }
     }
 
@@ -94,14 +106,13 @@ class BlocksMCFly : FlyMode("BlocksMC") {
             Stage.WAITING -> {
                 if(mc.thePlayer.posY >= fly.launchY + 0.8) {
                     if(mc.thePlayer.onGround) {
-                        stage = Stage.FLYING
                         RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, 90f))
                         val movingObjectPosition: MovingObjectPosition = mc.thePlayer.rayTraceWithCustomRotation(4.5, mc.thePlayer.rotationYaw, 90.0f)
                         if (movingObjectPosition.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return
                         val blockPos = movingObjectPosition.blockPos
                         val enumFacing = movingObjectPosition.sideHit
                         if(mc.playerController.onPlayerDamageBlock(blockPos, enumFacing)) {
-                            ClientUtils.displayChatMessage("Destroyed")
+                            stage = Stage.FLYING
                         }
                         mc.thePlayer.motionY = 0.0
                     } else {
@@ -145,12 +156,10 @@ class BlocksMCFly : FlyMode("BlocksMC") {
                             }
                         }
                         mc.thePlayer.inventory.currentItem = oldSlot
-
-
                     }
                 }
             }
-            Stage.FLYING -> {
+            Stage.FLYING, Stage.INFFLYING -> {
                 if(timerBoostValue.get()) {
                     ticks++
                     when(ticks) {
@@ -179,10 +188,13 @@ class BlocksMCFly : FlyMode("BlocksMC") {
                 if (event.block is BlockAir && event.y <= fly.launchY + 1) {
                     event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, fly.launchY, event.z + 1.0)
                 }
-
+            }
+            Stage.INFFLYING -> {
+                if (event.block is BlockAir && event.y <= mc.thePlayer.posY) {
+                    event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(), event.x + 1.0, fly.launchY, event.z + 1.0)
+                }
             }
         }
-
     }
 
     override fun onJump(event: JumpEvent) {
