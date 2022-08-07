@@ -24,8 +24,8 @@ class TpCommand : Command("tp", emptyArray()) {
 
             // Attempt to teleport to player's position.
             if (targetPlayer != null) {
-                mc.thePlayer.setPositionAndUpdate(targetPlayer!!.posX, targetPlayer!!.posY, targetPlayer!!.posZ)
-                chat("Attempted to teleport you to §f${targetPlayer!!.name}§7.")
+                mc.thePlayer.setPositionAndUpdate(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ)
+                chat("Attempted to teleport you to §f${targetPlayer.name}§7.")
                 return
             } else {
                 chat("§7We couldn't find any player in the current world with that name.")
