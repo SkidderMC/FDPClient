@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 // "fuck xigua" -breadcat
-class BetterButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
+class shadowBetterButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
 
     private var animation = 0.0
     private var lastUpdate = System.currentTimeMillis()
