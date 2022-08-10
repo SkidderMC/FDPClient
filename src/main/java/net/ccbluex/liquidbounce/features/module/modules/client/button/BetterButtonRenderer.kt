@@ -144,7 +144,7 @@ class BetterButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
                 255
             )*/
             GL11.glPopMatrix()
-            if (buttonShadowValue.equals(True)){
+            if (HUD.buttonShadowValue.equals(true)){
             shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
             }
             

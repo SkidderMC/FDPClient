@@ -19,7 +19,7 @@ class RoundedButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) 
             button.xPosition + button.width.toFloat(), button.yPosition + button.height.toFloat(),
             sqrt((button.width * button.height).toDouble()).toFloat() * 0.1f,
             (if(button.hovered) { Color(60, 60, 60, 150) } else { Color(31, 31, 31, 150) }).rgb)
-            if (buttonShadowValue.equals(True)){
+            if (HUD.buttonShadowValue.equals(true)){
             shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
             }
     }
