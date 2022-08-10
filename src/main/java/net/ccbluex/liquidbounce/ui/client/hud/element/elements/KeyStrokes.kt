@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.FontValue
@@ -89,6 +90,8 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         if (blurRadius != 0f) {
             BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, blurRadius)
         }
+
+       // (broken code) shadowRenderUtils.drawShadowWithCustomAlpha((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, 240f)
 
         val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())
         val clickAlpha = 255 - (255 - bgColor.alpha) * highLightPct

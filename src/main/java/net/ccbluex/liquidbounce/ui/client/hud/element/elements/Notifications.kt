@@ -189,6 +189,7 @@ class Notification(
                 RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
             }
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+            shadowRenderUtils.drawShadowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 240f)
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F), height.toFloat() - 5f, 2f, Color(0, 0, 0, 26).rgb)
             FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, Color(255, 255, 255).rgb, TitleShadow)
             font.DisplayFont2(font, content, 4F, 10F, Color(255, 255, 255).rgb, ContentShadow)
@@ -211,6 +212,7 @@ class Notification(
         if(style.equals("Classic")) {
             if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) }
                 RenderUtils.drawRect(0F, 0F, width.toFloat(), classicHeight.toFloat(), Color(0, 0, 0, alpha))
+                shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), classicHeight.toFloat(), 240f)
             RenderUtils.drawRect(0F, classicHeight - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat(), type.renderColor)
                 font.drawString(title, 4F, 4F, Color.WHITE.rgb, false)
                 font.drawString(content, 4F, 17F, Color.WHITE.rgb, false)
