@@ -105,7 +105,7 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
         // RenderUtils.drawGradientSideways(1.0, (1 + tabY - 1).toDouble(), width.get().toDouble(), (tabY + tabHeight.get()).toDouble(), color.rgb,Color(color.red, color.green,color.blue,50).rgb)
         GlStateManager.resetColor()
 
-        shadowRenderUtils.drawShadowWithCustomAlpha(0f, 0f, width.get(), guiHeight, 240f)
+        shadowRenderUtils.drawShadowWithCustomAlpha(1f, 0f, width.get(), guiHeight, 240f)
 
 
         var y = 1F
