@@ -50,7 +50,7 @@ class Jesus : Module() {
 
         when (modeValue.get().lowercase()) {
             "matrixxd" -> {
-                setSpeed(3.5)
+                setSpeed(1.5)
 
                 if(BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000001, mc.thePlayer.posZ)) == Blocks.water) {
                     MovementUtils.resetMotion(false)
