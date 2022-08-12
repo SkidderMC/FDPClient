@@ -45,11 +45,10 @@ object shadowRenderUtils {
             drawTexturedRectWithCustomAlpha(x, y - 9, width, 9f, "glowpaneltop", alpha)
             drawTexturedRectWithCustomAlpha(x, y + height, width, 9f, "glowpanelbottom", alpha)
         } else if (HudShadows.UiShadowValue.equals("None")) {
-            return;
-            }
-        }
+            return; }
     }
-  
+
+    @JvmStatic
     fun drawTexturedRectWithCustomAlpha(x: Float, y: Float, width: Float, height: Float, image: String, alpha: Float) {
         glPushMatrix()
         val enableBlend = glIsEnabled(GL_BLEND)
@@ -73,7 +72,7 @@ object shadowRenderUtils {
         GlStateManager.resetColor()
         glPopMatrix()
     }
-
+    @JvmStatic
     fun drawTexturedRect(x: Float, y: Float, width: Float, height: Float, image: String) {
         glPushMatrix()
         val enableBlend = glIsEnabled(GL_BLEND)
@@ -96,8 +95,17 @@ object shadowRenderUtils {
         if (!disableAlpha) glEnable(GL_ALPHA_TEST)
         glPopMatrix()
     }
-
-    fun drawModalRectWithCustomSizedTexture(x: Float, y: Float, u: Float, v: Float, width: Float, height: Float, textureWidth: Float, textureHeight: Float) {
+    @JvmStatic
+    fun drawModalRectWithCustomSizedTexture(
+        x: Float,
+        y: Float,
+        u: Float,
+        v: Float,
+        width: Float,
+        height: Float,
+        textureWidth: Float,
+        textureHeight: Float
+    ) {
         val f = 1.0f / textureWidth
         val f1 = 1.0f / textureHeight
         val tessellator = Tessellator.getInstance()
@@ -118,5 +126,6 @@ object shadowRenderUtils {
         worldrenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
         tessellator.draw()
     }
-
 }
+
+
