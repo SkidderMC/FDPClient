@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.ui.realpha
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
+import net.ccbluex.liquidbounce.features.module.modules.client.HudShadows
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
