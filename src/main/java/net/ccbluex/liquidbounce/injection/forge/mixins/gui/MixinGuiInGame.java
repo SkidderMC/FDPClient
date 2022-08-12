@@ -91,6 +91,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             if(canBetterHotbar) {
                 GlStateManager.disableTexture2D();
                 RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HUD.INSTANCE.getHotbarAlphaValue().get()));
+                shadowRenderUtils.drawShadowWithCustomAlpha(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), 255f);
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HUD.INSTANCE.getHotbarAlphaValue().get()));
                 GlStateManager.enableTexture2D();

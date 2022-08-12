@@ -48,15 +48,6 @@ class FLineButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
 
         lastUpdate = time
 
-            when (HudShadows.buttonShadowValue.equals) {
-            "TextureShadows" -> {
             shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
-            }
-            "TextureGlow" -> {
-            shadowRenderUtils.drawGlowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
-            }
-            "None" -> {
-            // bad code
-            }
     }
 }
