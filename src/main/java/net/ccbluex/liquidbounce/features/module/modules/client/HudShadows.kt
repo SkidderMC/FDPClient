@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 
 
 @ModuleInfo(name = "HudShadows", category = ModuleCategory.CLIENT, canEnable = false)
-object Modules : Module() {
+object HudShadows : Module() {
 // idk, dont qestion it! (hello xigua)
     val buttonShadowValue = BoolValue("ButtonShadow", false)
     val UiShadowValue = ListValue("UiShadowMode", arrayOf("TextureShadows", "TextureGlow", "None"), "TextureGlow")

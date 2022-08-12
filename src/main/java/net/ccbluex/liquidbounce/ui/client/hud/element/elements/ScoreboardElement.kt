@@ -120,7 +120,16 @@ class ScoreboardElement(
         }
         Gui.drawRect(l1 - 7, -5, 9, maxHeight + fontRenderer.FONT_HEIGHT + 5, backColor)
         
-        shadowRenderUtils.drawShadowWithCustomAlpha(l1 - 7f, -5f, -l1+16f, maxHeight + fontRenderer.FONT_HEIGHT + 10f, 255f)
+
+        when (HudShadows.buttonShadowValue.equals) {
+            "TextureShadows" -> {
+            shadowRenderUtils.drawShadowWithCustomAlpha(l1 - 7f, -5f, -l1+16f, maxHeight + fontRenderer.FONT_HEIGHT + 10f, 255f)
+            }    
+            "TextureGlow" -> {
+            shadowRenderUtils.drawGlowWithCustomAlpha(l1 - 7f, -5f, -l1+16f, maxHeight + fontRenderer.FONT_HEIGHT + 10f, 255f)
+            }   
+             "None" -> {}   
+        }
         scoreCollection.forEachIndexed { index, score ->
             val team = scoreboard.getPlayersTeam(score.playerName)
 
