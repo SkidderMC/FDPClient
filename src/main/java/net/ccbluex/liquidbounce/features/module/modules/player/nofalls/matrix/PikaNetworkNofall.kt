@@ -1,4 +1,9 @@
-package net.ccbluex.liquidbounce.features.module.modules.player.nofalls.matrix
+
+
+// file was commented out because build failed
+
+
+/* package net.ccbluex.liquidbounce.features.module.modules.player.nofalls.matrix
 
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -30,3 +35,4 @@ class PikaNetworkNofall : NoFallMode("PikaNetwork") {
 
     }
 }
+*/
