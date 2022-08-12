@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.features.module.modules.client.HudShadows
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -120,8 +119,7 @@ class ScoreboardElement(
         }
         Gui.drawRect(l1 - 7, -5, 9, maxHeight + fontRenderer.FONT_HEIGHT + 5, backColor)
         
-            shadowRenderUtils.drawShadowWithCustomAlpha(l1 - 7f, -5f, -l1+16f, maxHeight + fontRenderer.FONT_HEIGHT + 10f, 255f)
-
+        shadowRenderUtils.drawShadowWithCustomAlpha(l1 - 7f, -5f, -l1+16f, maxHeight + fontRenderer.FONT_HEIGHT + 10f, 255f)
         scoreCollection.forEachIndexed { index, score ->
             val team = scoreboard.getPlayersTeam(score.playerName)
 

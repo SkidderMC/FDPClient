@@ -5,7 +5,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.features.module.modules.client.HudShadows
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -51,8 +50,7 @@ class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vert
 
         // draw rect
         RenderUtils.drawRect(0F, startY, 174F, 66F, backgroundColor)
-
-                shadowRenderUtils.drawShadowWithCustomAlpha(0F, startY, 174F, 66F-startY, 255f)
+        shadowRenderUtils.drawShadowWithCustomAlpha(0F, startY, 174F, 66F-startY, 255f)
 
         if(themeValue.equals("CS:GO")) {
             RenderUtils.drawRect(0F, startY, 174F, startY + 1f, borderColor)
