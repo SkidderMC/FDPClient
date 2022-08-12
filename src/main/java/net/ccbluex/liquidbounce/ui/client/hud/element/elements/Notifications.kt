@@ -190,7 +190,15 @@ class Notification(
                 RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
             }
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
-            shadowRenderUtils.drawShadowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 240f)
+            when (HudShadows.buttonShadowValue.equals) {
+            "TextureShadows" -> {
+                shadowRenderUtils.drawShadowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 240f)
+            }    
+            "TextureGlow" -> {
+                shadowRenderUtils.drawGlowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 240f)
+            }   
+             "None" -> {}   
+            }
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F), height.toFloat() - 5f, 2f, Color(0, 0, 0, 26).rgb)
             FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, Color(255, 255, 255).rgb, TitleShadow)
             font.DisplayFont2(font, content, 4F, 10F, Color(255, 255, 255).rgb, ContentShadow)

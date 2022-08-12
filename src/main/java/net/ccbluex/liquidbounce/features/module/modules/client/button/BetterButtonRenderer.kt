@@ -145,8 +145,16 @@ class BetterButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
                 255
             )*/
             GL11.glPopMatrix()
-            if (HudShadows.buttonShadowValue.equals(true)){
+            
+            when (HudShadows.buttonShadowValue.equals) {
+            "TextureShadows" -> {
             shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
+            }
+            "TextureGlow" -> {
+            shadowRenderUtils.drawGlowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
+            }
+            "None" -> {
+            // bad code
             }
             
         }

@@ -106,8 +106,15 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
         // RenderUtils.drawGradientSideways(1.0, (1 + tabY - 1).toDouble(), width.get().toDouble(), (tabY + tabHeight.get()).toDouble(), color.rgb,Color(color.red, color.green,color.blue,50).rgb)
         GlStateManager.resetColor()
 
-        shadowRenderUtils.drawShadowWithCustomAlpha(1f, 0f, width.get() - 1f, guiHeight, 240f)
-
+        when (HudShadows.buttonShadowValue.equals) {
+            "TextureShadows" -> {
+            shadowRenderUtils.drawShadowWithCustomAlpha(1f, 0f, width.get() - 1f, guiHeight, 240f)
+            }    
+            "TextureGlow" -> {
+            shadowRenderUtils.drawGlowWithCustomAlpha(1f, 0f, width.get() - 1f, guiHeight, 240f)
+            }   
+             "None" -> {}   
+        }
 
         var y = 1F
         tabs.forEachIndexed { index, tab ->
