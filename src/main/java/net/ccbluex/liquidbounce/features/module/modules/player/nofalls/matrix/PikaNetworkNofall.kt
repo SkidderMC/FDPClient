@@ -24,8 +24,8 @@ class PikaNetworkNofall : NoFallMode("PikaNetwork") {
         if (event.packet is C03PacketPlayer && matrixSend) {
             matrixSend = false
             event.cancelEvent()
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(event.packet.x, event.packet.y, event.packet.z, true))
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(event.packet.x, event.packet.y, event.packet.z, false))
+            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(event.packet.getX(), event.packet.getY(), event.packet.getZ(), true))
+            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(event.packet.getX(), event.packet.getY(), event.packet.getZ(), false))
         }
 
     }
