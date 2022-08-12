@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
 import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C03PacketPlayer
 
 class PikaNetworkNofall : NoFallMode("PikaNetwork") {
     private var matrixSend = false
@@ -24,8 +24,8 @@ class PikaNetworkNofall : NoFallMode("PikaNetwork") {
         if (event.packet is C03PacketPlayer && matrixSend) {
             matrixSend = false
             event.cancelEvent()
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(event.packet.getX(), event.packet.getY(), event.packet.getZ(), true))
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(event.packet.getX(), event.packet.getY(), event.packet.getZ(), false))
+            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(event.packet.posX, event.packet.posY, event.packet.posZ, true))
+            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(event.packet.posX, event.packet.posY, event.packet.posZ, false))
         }
 
     }
