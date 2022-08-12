@@ -29,7 +29,7 @@ import kotlin.math.*
 
 @ModuleInfo(name = "Jesus", category = ModuleCategory.MOVEMENT)
 class Jesus : Module() {
-    val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Spartan", "Twilight", "Matrix", "Medusa","Vulcan", "Dolphin", "Legit","MatrixXD"), "Vanilla")
+    val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Spartan", "Twilight", "Matrix", "Medusa","Vulcan", "Dolphin", "Legit"), "Vanilla")
     private val noJumpValue = BoolValue("NoJump", false)
     private val jumpMotionValue = FloatValue("JumpMotion", 0.5f, 0.1f, 1f)
         .displayable { modeValue.equals("Jump") || modeValue.equals("AACFly") }
@@ -49,17 +49,6 @@ class Jesus : Module() {
         val blockPos = mc.thePlayer.position.down()
 
         when (modeValue.get().lowercase()) {
-            "matrixxd" -> {
-                setSpeed(1.5)
-
-                if(BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 0.0000001, mc.thePlayer.posZ)) == Blocks.water) {
-                    MovementUtils.resetMotion(false)
-                    mc.thePlayer.fallDistance = 0.0f
-                    mc.thePlayer.motionY = 0.06
-                    mc.thePlayer.jumpMovementFactor = 0.01f
-                }
-            }
-
             "ncp","medusa","vulcan" -> {
                 if (isLiquidBlock() && mc.thePlayer.isInsideOfMaterial(Material.air)) {
                     mc.thePlayer.motionY = 0.08
