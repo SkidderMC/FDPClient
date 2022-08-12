@@ -49,7 +49,7 @@ object shadowRenderUtils {
             }
         }
     }
-    @JvmStatic
+  
     fun drawTexturedRectWithCustomAlpha(x: Float, y: Float, width: Float, height: Float, image: String, alpha: Float) {
         glPushMatrix()
         val enableBlend = glIsEnabled(GL_BLEND)
@@ -73,7 +73,7 @@ object shadowRenderUtils {
         GlStateManager.resetColor()
         glPopMatrix()
     }
-    @JvmStatic
+
     fun drawTexturedRect(x: Float, y: Float, width: Float, height: Float, image: String) {
         glPushMatrix()
         val enableBlend = glIsEnabled(GL_BLEND)
@@ -96,7 +96,7 @@ object shadowRenderUtils {
         if (!disableAlpha) glEnable(GL_ALPHA_TEST)
         glPopMatrix()
     }
-    @JvmStatic
+
     fun drawModalRectWithCustomSizedTexture(x: Float, y: Float, u: Float, v: Float, width: Float, height: Float, textureWidth: Float, textureHeight: Float) {
         val f = 1.0f / textureWidth
         val f1 = 1.0f / textureHeight
