@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -92,7 +91,6 @@ public abstract class MixinGuiInGame extends MixinGui {
             if(canBetterHotbar) {
                 GlStateManager.disableTexture2D();
                 RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HUD.INSTANCE.getHotbarAlphaValue().get()));
-                shadowRenderUtils.drawShadowWithCustomAlpha(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), 255f);
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HUD.INSTANCE.getHotbarAlphaValue().get()));
                 GlStateManager.enableTexture2D();
