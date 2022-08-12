@@ -36,16 +36,7 @@ class RiseButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
             GL11.glDisable(2848)
             GL11.glShadeModel(7424)
             GL11.glColor4f(1f, 1f, 1f, 1f)
-            when (HudShadows.buttonShadowValue.equals) {
-            "TextureShadows" -> {
             shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
-            }
-            "TextureGlow" -> {
-            shadowRenderUtils.drawGlowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
-            }
-            "None" -> {
-            // bad code
-            }
         }
     }
 }

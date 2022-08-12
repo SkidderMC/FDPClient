@@ -91,15 +91,8 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         if (blurRadius != 0f) {
             BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, blurRadius)
         }
-        when (HudShadows.buttonShadowValue.equals) {
-            "TextureShadows" -> {
+
                 shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), height.toFloat(), 240f)
-            }    
-            "TextureGlow" -> {
-            shadowRenderUtils.drawGlowWithCustomAlpha(0F, 0F, width.toFloat(), height.toFloat(), 240f)
-            }   
-             "None" -> {}   
-        }
 
         val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())
         val clickAlpha = 255 - (255 - bgColor.alpha) * highLightPct
