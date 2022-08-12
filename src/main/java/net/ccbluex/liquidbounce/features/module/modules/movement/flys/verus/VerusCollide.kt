@@ -8,11 +8,11 @@ import net.minecraft.network.play.client.C03PacketPlayer
 class VerusCollideFly : FlyMode("VerusCollide") {
     private var needSpoof = false
     private var packetModify = false
-    private var packet1Count = 0
+    private var packet1Count = 0.0
     override fun onEnable() {
         needSpoof = false
         packetModify = false
-        packet1Count = 0
+        packet1Count = 0.0
     }
 
     override fun onPacket(event: PacketEvent) {
