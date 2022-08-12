@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client.button
 
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
-import net.ccbluex.liquidbounce.features.module.modules.client.HudShadows
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import java.awt.Color
@@ -19,9 +19,8 @@ class RoundedButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) 
             button.xPosition + button.width.toFloat(), button.yPosition + button.height.toFloat(),
             sqrt((button.width * button.height).toDouble()).toFloat() * 0.1f,
             (if(button.hovered) { Color(60, 60, 60, 150) } else { Color(31, 31, 31, 150) }).rgb)
-
-            shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat() - 2f, button.height.toFloat() - 2f, 240f)
-        }
-
+            if (HUD.buttonShadowValue.equals(true)){
+            shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
+            }
     }
 }

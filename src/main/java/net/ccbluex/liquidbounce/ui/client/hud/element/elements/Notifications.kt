@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.ui.realpha
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
-import net.ccbluex.liquidbounce.features.module.modules.client.HudShadows
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
@@ -190,9 +189,7 @@ class Notification(
                 RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
             }
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
-
-                shadowRenderUtils.drawShadowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 240f)
-
+            shadowRenderUtils.drawShadowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 240f)
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F), height.toFloat() - 5f, 2f, Color(0, 0, 0, 26).rgb)
             FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, Color(255, 255, 255).rgb, TitleShadow)
             font.DisplayFont2(font, content, 4F, 10F, Color(255, 255, 255).rgb, ContentShadow)

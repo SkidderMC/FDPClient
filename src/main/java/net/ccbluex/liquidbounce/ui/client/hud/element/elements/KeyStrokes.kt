@@ -4,7 +4,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.features.module.modules.client.HudShadows
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -92,7 +91,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
             BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, blurRadius)
         }
 
-                shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), height.toFloat(), 240f)
+       shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), height.toFloat(), 240f)
 
         val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())
         val clickAlpha = 255 - (255 - bgColor.alpha) * highLightPct
