@@ -34,8 +34,7 @@ class VerusCollideFly : FlyMode("VerusCollide") {
             packet1Count = mc.thePlayer.fallDistance.toInt() / 0.5
             packetModify = true
         }
-        if (mc.thePlayer.onGround) {
-            packet1Count = 0
-        }
+        
+        if (mc.thePlayer.onGround) packet1Count = 0.0
     }
 }
