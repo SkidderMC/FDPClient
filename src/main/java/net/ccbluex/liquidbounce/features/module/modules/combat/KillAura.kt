@@ -674,13 +674,7 @@ class KillAura : Module() {
                         1
                     })
                     for (i in 5..360 step 5) {
-                        val color = Color.getHSBColor(
-                            if (i < 180) {
-                                HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (i / 180f)
-                            } else {
-                                HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (-(i - 360) / 180f)
-                            }, 0.7f, 1.0f
-                        )
+                        val color = Color.getHSBColor(255, 255, 255, 200)
                         val x1 = x - sin(i * Math.PI / 180F) * radius
                         val z1 = z + cos(i * Math.PI / 180F) * radius
                         val x2 = x - sin((i - 5) * Math.PI / 180F) * radius
