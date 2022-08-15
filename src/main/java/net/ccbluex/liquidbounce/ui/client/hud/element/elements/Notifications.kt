@@ -11,7 +11,9 @@ import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.*
 import net.ccbluex.liquidbounce.ui.realpha
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import org.lwjgl.opengl.GL11
@@ -199,11 +201,20 @@ class Notification(
             font.DisplayFont2(font, content, 4F, 10F, Color(255, 255, 255).rgb, ContentShadow)
             return false
         }
+
+        // this for u david
+        if(style.equals("LiquidBounce")) {
+            RenderUtils.drawRect(-x + 9 + textLength, 0F, -x, -20F, Color(0, 0, 0, alpha))
+            RenderUtils.drawRect(-x, 0F, -x - 5, -20F, Color(0, 160, 255).rgb)
+            font.drawString(title + ", " + content, -x + 4, -14F, Int.MAX_VALUE)
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        }
+
         if(style.equals("Skid")){
             // hello xigua sorry that ur code got skidded :( what a shame, fuck off
             val colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3)
             shadowRenderUtils.drawShadowWithCustomAlpha(2f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 250f) // oops
-            RenderUtils.drawRect(2.0, 0.0, 4.0, height.toFloat() - 5.0, colors.rgb,)
+            RenderUtils.drawRect(2.0, 0.0, 4.0, height.toFloat() - 5.0, colors.rgb)
             RenderUtils.drawRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, Color(0,0,0,150))
             RenderUtils.drawGradientSidewaysH(3.0, 0.0, 20.0, height.toFloat() - 5.0, colors.rgb, Color(0,0,0,0).rgb)
             RenderUtils.drawRect(2f, height.toFloat()-6f, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), height.toFloat()-5f ,Color(52, 97, 237).rgb)
@@ -211,7 +222,7 @@ class Notification(
             FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, Color(245,245,245).rgb,TitleShadow)
             font.DisplayFont2(font,content, 4F, 10F, Color(255,255,255).rgb,ContentShadow)
             return false
-    }
+            }
 
         if(style.equals("Classic")) {
             if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) }
@@ -222,14 +233,6 @@ class Notification(
                 font.drawString(content, 4F, 17F, Color.WHITE.rgb, false)
             }
         return false
-        }
-
-        // this for u david
-        if(style.equals("LiquidBounce")) {
-            RenderUtils.drawRect(-x + 9 + textLength, 0F, -x, -20F, Color(0, 0, 0, alpha))
-            RenderUtils.drawRect(-x, 0F, -x - 5, -20F, Color(0, 160, 255).rgb)
-            font.drawString(title + ": " + content, -x + 4, -14F, Int.MAX_VALUE)
-            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         }
       
     }
