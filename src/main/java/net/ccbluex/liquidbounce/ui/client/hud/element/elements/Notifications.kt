@@ -204,7 +204,7 @@ class Notification(
 
         // this for u david
         if(style.equals("LiquidBounce")) {
-            RenderUtils.drawRect(-x + 9 + textLength, 0F, -x, -20F, Color(0, 0, 0, alpha))
+            RenderUtils.drawRect(0f, 0F, textLength + 9, -20F, Color(0, 0, 0, alpha))
             RenderUtils.drawRect(-x, 0F, -x - 5, -20F, Color(0, 160, 255).rgb)
             font.drawString(title + ", " + content, -x + 4, -14F, Int.MAX_VALUE)
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
@@ -258,4 +258,16 @@ enum class NotifyType(var renderColor: Color) {
 
 enum class FadeState { IN, STAY, OUT, END }
 
+/*
+        // this for u david
+        if(style.equals("LiquidBounce")) {
+            RenderUtils.drawRect(-x + 9 + textLength, 0F, -x, -20F, Color(0, 0, 0, alpha))
+            RenderUtils.drawRect(-x, 0F, -x - 5, -20F, Color(0, 160, 255).rgb)
+            font.drawString(title + ", " + content, -x + 4, -14F, Int.MAX_VALUE)
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        }
+        return false
+        }
+
+ */
 
