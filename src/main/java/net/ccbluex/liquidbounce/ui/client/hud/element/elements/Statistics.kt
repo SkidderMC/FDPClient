@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.utils.SessionUtils
 import net.ccbluex.liquidbounce.utils.StatisticsUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluwx.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.BoolValue
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
