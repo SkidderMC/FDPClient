@@ -29,9 +29,10 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
 
 
     private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 170, 0, 255)
-    private val TitleShadow = BoolValue("Title Shadow", false)
-    private val MotionBlur = BoolValue("Motion blur", false)
-    private val ContentShadow = BoolValue("Content Shadow", true)
+    private val titleShadow = BoolValue("TitleShadow", false)
+    private val motionBlur = BoolValue("Motionblur", false)
+    private val contentShadow = BoolValue("ContentShadow", true)
+    private val whiteText = BoolValue("WhiteTextColor", false)
     companion object {
         val styleValue = ListValue("Mode", arrayOf("Classic", "LiquidBounce", "Modern", "Skid"), "Modern")
     }
@@ -49,7 +50,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
         LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
-            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,ContentShadow.get(),TitleShadow.get(),MotionBlur.get(), Companion)) {
+            if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,contentShadow.get(),titleShadow.get(),motionBlur.get(),whiteText.get(), Companion)) {
                 LiquidBounce.hud.notifications.remove(notify)
             }
 
@@ -101,9 +102,12 @@ class Notification(
      */
     fun drawNotification(
         index: Int, font: CFontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float,
-        ContentShadow: Boolean,
-        TitleShadow: Boolean,
-        MotionBlur: Boolean, parent: Notifications.Companion
+        contentShadow: Boolean,
+        titleShadow: Boolean,
+        motionBlur: Boolean, 
+        whiteText: Boolean,
+        parent: Notifications.Companion
+        
     ): Boolean {
         this.width = 100.coerceAtLeast(
             font.getStringWidth(content)
@@ -112,6 +116,14 @@ class Notification(
         val realY = -(index + 1) * height
         val nowTime = System.currentTimeMillis()
         var transY = nowY.toDouble()
+        
+        var textColor = Color(255, 255, 255).rgb
+        
+        if (whiteText) {
+            textColor = Color(255, 255, 255).rgb
+        } else {
+            textColor = Color(10, 10, 10).rgb
+        }
 
         // Y-Axis Animation
         if (nowY != realY) {
@@ -173,7 +185,7 @@ class Notification(
             }
 
             val colors = Color(type.renderColor.red, type.renderColor.green, type.renderColor.blue, alpha / 3)
-            if (MotionBlur) {
+            if (motionBlur) {
                 when (fadeState) {
                     FadeState.IN -> {
                         RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
@@ -197,8 +209,8 @@ class Notification(
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
             shadowRenderUtils.drawShadowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 240f)
             RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F), height.toFloat() - 5f, 2f, Color(0, 0, 0, 26).rgb)
-            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, Color(255, 255, 255).rgb, TitleShadow)
-            font.DisplayFont2(font, content, 4F, 10F, Color(255, 255, 255).rgb, ContentShadow)
+            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, textColor, titleShadow)
+            font.DisplayFont2(font, content, 4F, 10F, textColor, contentShadow)
             return false
         }
 
@@ -219,8 +231,8 @@ class Notification(
             RenderUtils.drawGradientSidewaysH(3.0, 0.0, 20.0, height.toFloat() - 5.0, colors.rgb, Color(0,0,0,0).rgb)
             RenderUtils.drawRect(2f, height.toFloat()-6f, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), height.toFloat()-5f ,Color(52, 97, 237).rgb)
             // Wlenk i love your alt named xigua! it is a very skilled coder! +100000 social credit
-            FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, Color(245,245,245).rgb,TitleShadow)
-            font.DisplayFont2(font,content, 4F, 10F, Color(255,255,255).rgb,ContentShadow)
+            FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, textColor,titleShadow)
+            font.DisplayFont2(font,content, 4F, 10F, textColor,contentShadow)
             return false
             }
 
@@ -229,8 +241,8 @@ class Notification(
                 RenderUtils.drawRect(0F, 0F, width.toFloat(), classicHeight.toFloat(), Color(0, 0, 0, alpha))
                 shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), classicHeight.toFloat(), 240f)
             RenderUtils.drawRect(0F, classicHeight - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat(), type.renderColor)
-                font.drawString(title, 4F, 4F, Color.WHITE.rgb, false)
-                font.drawString(content, 4F, 17F, Color.WHITE.rgb, false)
+                font.drawString(title, 4F, 4F, textColor, false)
+                font.drawString(content, 4F, 17F, textColor, false)
             }
         return false
         }
