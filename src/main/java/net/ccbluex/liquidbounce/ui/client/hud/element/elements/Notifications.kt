@@ -224,14 +224,12 @@ class Notification(
         return false
         }
 
-        // this for u david 
+        // this for u david
         if(style.equals("LiquidBounce")) {
-        RenderUtils.drawRect(-x + 9 + textLength, 0F, -x, -20F, Color(0, 0, 0, alpha))
-        RenderUtils.drawRect(-x, 0F, -x - 5, -20F, Color(0, 160, 255).rgb)
-        Fonts.font35.drawString(title + ", " + content, -x + 4, -14F, Int.MAX_VALUE)
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-            }
-        return false
+            RenderUtils.drawRect(-x + 9 + textLength, 0F, -x, -20F, Color(0, 0, 0, alpha))
+            RenderUtils.drawRect(-x, 0F, -x - 5, -20F, Color(0, 160, 255).rgb)
+            font.drawString(title + ": " + content, -x + 4, -14F, Int.MAX_VALUE)
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         }
       
     }
