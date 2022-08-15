@@ -184,9 +184,9 @@ class AutoPlay : Module() {
                             }
                         }
                     }
-                    if (text.contains(mc.getSession().username + " has been")) {
+                    if (text.contains(mc.getSession().username + " has been") || text.contains(mc.getSession().username + " died.")) {
                         queueAutoPlay {
-                            mc.thePlayer.sendChatMessage("/play skywars-normal-solo")
+                            mc.thePlayer.sendChatMessage("/skywars-normal-solo")
                         }
                     }
                 }
