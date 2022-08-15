@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.utils.SessionUtils
 import net.ccbluex.liquidbounce.utils.StatisticsUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluwx.liquidbounce.value.BoolValue
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -20,17 +21,28 @@ class Statistics(
     side: Side = Side.default()
 ) : Element(x, y, scale, side) {
     
-    private val rectAlpha = IntegerValue("RectAlpha", 150, 0, 255)
-    private val textAlpha = IntegerValue("TextAlpha", 200, 0, 255)
     private val rectR = IntegerValue("Rect-R", 0, 0, 255)
     private val rectG = IntegerValue("Rect-G", 0, 0, 255)
     private val rectB = IntegerValue("Rect-B", 0, 0, 255)
+    private val rectAlpha = IntegerValue("RectAlpha", 150, 0, 255)
+    private val rectShadow = BoolValue("RectShadow", false)
+    
+    private val textR = IntegerValue("Text-R", 0, 0, 255)
+    private val textG = IntegerValue("Text-G", 0, 0, 255)
+    private val textB = IntegerValue("Text-B", 0, 0, 255)
+    private val textAlpha = IntegerValue("TextAlpha", 200, 0, 255)
+    
     
     override fun drawElement(partialTicks: Float): Border {
         val height = FontLoaders.F22.getStringHeight("Statistics") + 14.0f +
                 41.0F
-
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 140f, height, 4f, Color(rectR.get(), rectG.get(), rectB.get(), rectAlpha.get()).rgb)
+        
+        if (rectShadow.get()) {
+            RenderUtils.drawShadow(0f, 0f, 140f, height)
+            RenderUtils.drawRect(0f, 0f, 140f, height, Color(rectR.get(), rectG.get(), rectB.get(), rectAlpha.get()).rgb)
+        } else {
+            RenderUtils.drawRoundedCornerRect(0f, 0f, 140f, height, 4f, Color(rectR.get(), rectG.get(), rectB.get(), rectAlpha.get()).rgb)
+        }
 
         FontLoaders.F22.drawCenteredString("Statistics", (140f / 2f).toDouble(), 5.0, Color(255,255,255,textAlpha.get()).rgb)
         RenderUtils.drawLine(
