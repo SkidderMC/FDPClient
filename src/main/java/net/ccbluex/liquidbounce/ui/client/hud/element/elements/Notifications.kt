@@ -86,11 +86,10 @@ class Notification(
     val height = 27
     private val classicHeight = 30
     var x = 0F
-    var textLength = 0
     init {
-        textLengthtitle = Fonts.font35.getStringWidth(title)
-        textLengthcontent = Fonts.font35.getStringWidth(content)
-        textLength = textLengthcontent + textLengthtitle
+        val textLengthtitle = Fonts.font35.getStringWidth(title)
+        val textLengthcontent = Fonts.font35.getStringWidth(content)
+        val textLength = textLengthcontent.toFloat() + textLengthtitle.toFloat()
     }
 
     var fadeState = FadeState.IN
@@ -218,7 +217,7 @@ class Notification(
 
         // this for u david
         if(style.equals("LiquidBounce")) {
-            RenderUtils.drawRect(-textLenght.toFloat() + -9F, 0F, textLength.toFloat() + 9F, -20F, Color(0, 0, 0, alpha))
+            RenderUtils.drawRect(-textLength.toFloat() + -9F, 0F, textLength.toFloat() + 9F, -20F, Color(0, 0, 0, alpha))
             RenderUtils.drawRect(0F, 0F, 0F - 5F, -20F, Color(0, 160, 255).rgb)
             font.drawString(title + ": " + content, 0F + 4F, -14F, Int.MAX_VALUE)
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
