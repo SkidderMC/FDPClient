@@ -323,7 +323,9 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
             ColorUtils.hexColors[getColorIndex2(charCode)]
 
     override fun getStringWidth(text: String): Int {
-        var currentText = text
+         val TranslatedCurrentText = LanguageManager.replace(text)
+         var currentText = TranslatedCurrentText
+
 
         val event = TextEvent(currentText)
         LiquidBounce.eventManager.callEvent(event)
