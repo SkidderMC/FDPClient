@@ -32,7 +32,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val titleShadow = BoolValue("TitleShadow", false)
     private val motionBlur = BoolValue("Motionblur", false)
     private val contentShadow = BoolValue("ContentShadow", true)
-    private val whiteText = BoolValue("WhiteTextColor", false)
+    private val whiteText = BoolValue("WhiteTextColor", true)
     companion object {
         val styleValue = ListValue("Mode", arrayOf("Classic", "LiquidBounce", "Modern", "Skid"), "Modern")
     }
@@ -88,7 +88,9 @@ class Notification(
     var x = 0F
     var textLength = 0
     init {
-        textLength = Fonts.font35.getStringWidth(title + content)
+        textLengthtitle = Fonts.font35.getStringWidth(title)
+        textLengthcontent = Fonts.font35.getStringWidth(content)
+        textLength = textLengthcontent + textLengthtitle
     }
 
     var fadeState = FadeState.IN
@@ -216,7 +218,7 @@ class Notification(
 
         // this for u david
         if(style.equals("LiquidBounce")) {
-            RenderUtils.drawRect(0F, 0F, textLength.toFloat() + 9F, -20F, Color(0, 0, 0, alpha))
+            RenderUtils.drawRect(-textLenght.toFloat() + -9F, 0F, textLength.toFloat() + 9F, -20F, Color(0, 0, 0, alpha))
             RenderUtils.drawRect(0F, 0F, 0F - 5F, -20F, Color(0, 160, 255).rgb)
             font.drawString(title + ": " + content, 0F + 4F, -14F, Int.MAX_VALUE)
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
