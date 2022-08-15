@@ -111,10 +111,12 @@ class Notification(
         val nowTime = System.currentTimeMillis()
         var transY = nowY.toDouble()
         
+        var textColor = Color(255, 255, 255).rgb
+        
         if (whiteText) {
-            val textColor = Color(255, 255, 255).rgb
+            textColor = Color(255, 255, 255).rgb
         } else {
-            val textColor = Color(10, 10, 10).rgb
+            textColor = Color(10, 10, 10).rgb
         }
 
         // Y-Axis Animation
