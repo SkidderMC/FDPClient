@@ -86,12 +86,12 @@ class Notification(
     val height = 27
     private val classicHeight = 30
     var x = 0F
-    var textLengthtitle = 0f
-    var textLengthcontent = 0f
-    var textLength = 0f
+    var textLengthtitle = 0
+    var textLengthcontent = 0
+    var textLength = 0
     init {
         textLengthtitle = Fonts.font35.getStringWidth(title)
-        extLengthcontent = Fonts.font35.getStringWidth(content)
+        textLengthcontent = Fonts.font35.getStringWidth(content)
         textLength = textLengthcontent.toFloat() + textLengthtitle.toFloat()
     }
 
@@ -274,16 +274,5 @@ enum class NotifyType(var renderColor: Color) {
 
 enum class FadeState { IN, STAY, OUT, END }
 
-/*
-        // this for u david
-        if(style.equals("LiquidBounce")) {
-            RenderUtils.drawRect(-x + 9 + textLength, 0F, -x, -20F, Color(0, 0, 0, alpha))
-            RenderUtils.drawRect(-x, 0F, -x - 5, -20F, Color(0, 160, 255).rgb)
-            font.drawString(title + ", " + content, -x + 4, -14F, Int.MAX_VALUE)
-            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        }
-        return false
-        }
 
- */
 
