@@ -86,10 +86,13 @@ class Notification(
     val height = 27
     private val classicHeight = 30
     var x = 0F
+    var textLengthtitle = 0f
+    var textLengthcontent = 0f
+    var textLength = 0f
     init {
-        val textLengthtitle = Fonts.font35.getStringWidth(title)
-        val textLengthcontent = Fonts.font35.getStringWidth(content)
-        val textLength = textLengthcontent.toFloat() + textLengthtitle.toFloat()
+        textLengthtitle = Fonts.font35.getStringWidth(title)
+        extLengthcontent = Fonts.font35.getStringWidth(content)
+        textLength = textLengthcontent.toFloat() + textLengthtitle.toFloat()
     }
 
     var fadeState = FadeState.IN
