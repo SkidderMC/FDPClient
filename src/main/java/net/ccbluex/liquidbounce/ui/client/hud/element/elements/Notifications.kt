@@ -208,14 +208,14 @@ class Notification(
             return false
         }
         if(style.equals("Skid")){
-            // hello xigua sorry that ur code got skidded :( what a shame, fuck off
+
             val colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3)
             shadowRenderUtils.drawShadowWithCustomAlpha(2f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 250f) // oops
             RenderUtils.drawRect(2.0, 0.0, 4.0, height.toFloat() - 5.0, colors.rgb,)
             RenderUtils.drawRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, Color(0,0,0,150))
             RenderUtils.drawGradientSidewaysH(3.0, 0.0, 20.0, height.toFloat() - 5.0, colors.rgb, Color(0,0,0,0).rgb)
             RenderUtils.drawRect(2f, height.toFloat()-6f, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), height.toFloat()-5f ,Color(52, 97, 237).rgb)
-            // Wlenk i love your alt named xigua! it is a very skilled coder! +100000 social credit
+
             FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, textColor,titleShadow)
             font.DisplayFont2(font,content, 4F, 10F, textColor,contentShadow)
             return false
