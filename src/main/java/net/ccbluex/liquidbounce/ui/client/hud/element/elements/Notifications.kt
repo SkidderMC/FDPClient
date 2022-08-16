@@ -88,7 +88,7 @@ class Notification(
     var x = 0F
     var textLengthtitle = 0
     var textLengthcontent = 0
-    var textLength = 0
+    var textLength = 0f
     init {
         textLengthtitle = Fonts.font35.getStringWidth(title)
         textLengthcontent = Fonts.font35.getStringWidth(content)
@@ -220,7 +220,7 @@ class Notification(
 
         // this for u david
         if(style.equals("LiquidBounce")) {
-            RenderUtils.drawRect(-textLength.toFloat() + -9F, 0F, textLength.toFloat() + 9F, -20F, Color(0, 0, 0, alpha))
+            RenderUtils.drawRect(-textLength + -9F, 0F, textLength + 9F, -20F, Color(0, 0, 0, alpha))
             RenderUtils.drawRect(0F, 0F, 0F - 5F, -20F, Color(0, 160, 255).rgb)
             font.drawString(title + ": " + content, 0F + 4F, -14F, Int.MAX_VALUE)
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
