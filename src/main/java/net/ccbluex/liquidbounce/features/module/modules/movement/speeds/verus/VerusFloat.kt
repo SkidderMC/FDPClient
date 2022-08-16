@@ -18,7 +18,7 @@ class VerusFloat : SpeedMode("VerusFloat") {
             if (mc.thePlayer.onGround) {
                 ticks = 0
                 MovementUtils.strafe(0.44f)
-                mc.thePlayer.motionY = 0.42F
+                mc.thePlayer.motionY = 0.42
                 mc.timer.timerSpeed = 2.1f
             } else {
                 if (ticks >= 10) {
@@ -36,7 +36,7 @@ class VerusFloat : SpeedMode("VerusFloat") {
                     }
                 }
 
-                mc.thePlayer.motionY = 0
+                mc.thePlayer.motionY = 0.0
                 mc.timer.timerSpeed = 0.9f
 
                 mc.thePlayer.onGround = true
