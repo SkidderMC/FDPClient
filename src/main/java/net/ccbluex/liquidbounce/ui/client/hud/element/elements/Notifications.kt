@@ -221,7 +221,7 @@ class Notification(
         // this for u david
         if(style.equals("LiquidBounce")) {
             RenderUtils.drawRect(-textLength + -9F, 0F, textLength + 9F, -20F, Color(0, 0, 0, alpha))
-            RenderUtils.drawRect(-textLength + -9F, 0F, -5F, -20F, Color(0, 160, 255).rgb)
+            RenderUtils.drawRect(-textLength + -9F, 0F, 5F, -20F, Color(0, 160, 255).rgb)
             font.drawString("$title: $content", -textLength + -9F + 4F, -14F, Int.MAX_VALUE)
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         }
