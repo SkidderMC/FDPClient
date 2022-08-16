@@ -36,7 +36,7 @@ class VerusHop3 : SpeedMode("VerusHop3") {
                     lastY = mc.thePlayer.posY
                 }
                 else -> {
-                    MovementUtils.strafe(0.349f) C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING
+                    MovementUtils.strafe(0.349f) 
                 }
             }
             
