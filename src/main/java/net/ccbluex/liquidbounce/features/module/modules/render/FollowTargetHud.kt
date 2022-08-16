@@ -29,7 +29,7 @@ class FollowTargetHud : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Juul", "Jello", "Material", "Arris", "FDP"), "Juul")
     private val fontValue = FontValue("Font", Fonts.font40)
     private val smoothMove = BoolValue("SmoothHudMove", true)
-    private val smoothValue = IntegerValue("SmoothHudMoveValue", 3, 1, 8).displayable { smoothMove.get() }
+    private val smoothValue = FloatValue("SmoothHudMoveValue", 3.2f, 1f, 8f).displayable { smoothMove.get() }
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.equals("Jello") }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)

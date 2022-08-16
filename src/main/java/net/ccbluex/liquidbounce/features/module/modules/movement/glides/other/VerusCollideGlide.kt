@@ -1,11 +1,12 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.flys.verus
+
+package net.ccbluex.liquidbounce.features.module.modules.movement.glides.other
 
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
+import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMode
 import net.minecraft.network.play.client.C03PacketPlayer
 
-class VerusCollideFly : FlyMode("VerusCollide") {
+class VerusCollideGlide : GlideMode("VerusCollide") {
     private var needSpoof = false
     private var packetModify = false
     private var packet1Count = 0.0
