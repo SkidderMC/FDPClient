@@ -37,6 +37,7 @@ class AntiVoid : Module() {
     private val packetCache = ArrayList<C03PacketPlayer>()
     private var blink = false
     private var canBlink = false
+    private var canCancel = false
     private var canSpoof = false
     private var tried = false
     private var flagged = false
@@ -153,7 +154,6 @@ class AntiVoid : Module() {
             }
             
             "packet" -> { 
-                
                 if (checkVoid()) { 
                     canCancel = true
                 }
@@ -166,6 +166,7 @@ class AntiVoid : Module() {
                     }
                     canCancel = false
                 }
+            }
 
             "blink" -> {
                 if (!blink) {
