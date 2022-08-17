@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 object HudShadows : Module() {
 
     val buttonShadowValue = BoolValue("ButtonShadow", true)
-    val UiShadowValue = ListValue("UiShadowMode", arrayOf("TextureShadows", "TextureGlow", "None"), "TextureGlow")
+    //  do not auto enable this module, it may cause issues with fps 
+    val UiShadowValue = ListValue("UiShadowMode", arrayOf("TextureShadows", "TextureGlow", "None"), "None")
 
 }
