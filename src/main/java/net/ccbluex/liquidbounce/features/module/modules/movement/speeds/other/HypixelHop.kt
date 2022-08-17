@@ -8,14 +8,15 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "OldSafe", "OldTest"), "Stable")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "Test", "OldSafe", "OldTest"), "Stable")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0.15f, 0.01f, 0.5f)
+    private val yPort = BoolValue("${valuePrefix}SlightYPort", true)
+    private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
 
     private var watchdogMultiplier = 1.0
     private var oldMotionX = 0.0
@@ -27,7 +28,35 @@ class HypixelHop : SpeedMode("HypixelHop") {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
         }
+        
+        if (yPort.get()) {
+            if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0.0) {
+                mc.thePlayer.motionY -= 0.05
+            }
+        }
+        
+        if (damageBoost.get()) {
+            if (mc.thePlayer.hurtTime > 0) {
+                mc.thePlayer.motionX *= 1.025
+                mc.thePlayer.motionZ *= 1.025
+            }
+        }
+        
         when (bypassMode.get().lowercase()) {
+            "test" -> {
+                oldMotionX = mc.thePlayer.motionX
+                oldMotionZ = mc.thePlayer.motionZ
+
+                MovementUtils.strafe()
+
+                if (!mc.thePlayer.onGround) {
+                    mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX) / 4
+                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
+                } else if (MovementUtils.isMoving()) {
+                    mc.thePlayer.jump()
+                }
+            }
+                
             "stable"-> {
                 oldMotionX = mc.thePlayer.motionX
                 oldMotionZ = mc.thePlayer.motionZ
