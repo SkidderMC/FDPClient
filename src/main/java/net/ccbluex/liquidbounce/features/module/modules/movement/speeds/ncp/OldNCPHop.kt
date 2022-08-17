@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.potion.Potion
 
-class NCPSafe : SpeedMode("NCPSafe") {
+class OldNCPHop : SpeedMode("OldNCPHop") {
 
     private var mspeed = 0.0
     private var justJumped = false
