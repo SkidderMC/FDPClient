@@ -16,7 +16,7 @@ class VulcanNofall2 : NoFallMode("Vulcan2") {
         if(mc.thePlayer.fallDistance > 2.0) {
             mc.timer.timerSpeed = 0.9f
         }
-        if(vulCanNoFall && mc.thePlayer.onGround) {
+        if(mc.thePlayer.onGround) {
             mc.timer.timerSpeed = 1f
         }
         
