@@ -26,7 +26,7 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft"), "Blink")
+    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft", "Packet"), "Blink")
     private val maxFallDistValue = FloatValue("MaxFallDistance", 10F, 5F, 20F)
     private val resetMotionValue = BoolValue("ResetMotion", false).displayable { modeValue.equals("Blink") }
     private val startFallDistValue = FloatValue("BlinkStartFallDistance", 2F, 0F, 5F).displayable { modeValue.equals("Blink") }
@@ -37,6 +37,7 @@ class AntiVoid : Module() {
     private val packetCache = ArrayList<C03PacketPlayer>()
     private var blink = false
     private var canBlink = false
+    private var canCancel = false
     private var canSpoof = false
     private var tried = false
     private var flagged = false
@@ -50,6 +51,7 @@ class AntiVoid : Module() {
     private var lastRecY = 0.0
 
     override fun onEnable() {
+        canCancel = false
         blink = false
         canBlink = false
         canSpoof = false
@@ -150,6 +152,21 @@ class AntiVoid : Module() {
                 }
                 lastRecY = mc.thePlayer.posY
             }
+            
+            "packet" -> { 
+                if (checkVoid()) { 
+                    canCancel = true
+                }
+                    
+                if (canCancel) {
+                    if (mc.thePlayer.onGround) {
+                        for (packet in packetCache) {
+                            mc.netHandler.addToSendQueue(packet)
+                        }
+                    }
+                    canCancel = false
+                }
+            }
 
             "blink" -> {
                 if (!blink) {
@@ -223,6 +240,18 @@ class AntiVoid : Module() {
                 if (blink && (packet is C03PacketPlayer)) {
                     packetCache.add(packet)
                     event.cancelEvent()
+                }
+            }
+            
+            "packet" -> {
+                if (canCancel && (packet is C03PacketPlayer)) {
+                    packetCache.add(packet)
+                    event.cancelEvent()
+                }
+                
+                if (packet is S08PacketPlayerPosLook) {
+                    packetCache.clear()
+                    canCancel = false
                 }
             }
 
