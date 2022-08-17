@@ -8,8 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 
 
 class HypixelHop : SpeedMode("HypixelHop") {
@@ -31,7 +30,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
         }
         
         if (yPort.get()) {
-            if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0) {
+            if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0.0) {
                 mc.thePlayer.motionY -= 0.05
             }
         }
