@@ -10,15 +10,10 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.Config
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.file.config.ConfigManager
-import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import java.io.File
 import java.io.IOException
-import org.apache.logging.log4j.LogManager
 
-import org.apache.commons.io.FileUtils
 
 class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
     /**

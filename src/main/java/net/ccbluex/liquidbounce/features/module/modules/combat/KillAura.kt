@@ -215,7 +215,7 @@ class KillAura : Module() {
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
 
     // Visuals
-    private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Circle", "Plat", "None"), "FDP")
+    private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Circle", "None"), "FDP")
     private val circleValue = BoolValue("Circle", true)
     private val circleRedValue = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
     private val circleGreenValue = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
@@ -721,10 +721,6 @@ class KillAura : Module() {
                         esp(target!!, event.partialTicks, circleRadiusValue.get())
                     }
                 }
-                "plat" -> RenderUtils.drawPlatform(
-                    target!!,
-                    if (hitable) Color(37, 126, 255, 70) else Color(255, 0, 0, 70)
-                )
                 "sims" -> {
                     val radius = 0.15f
                     val side = 4

@@ -9,9 +9,6 @@ Website: [fdpinfo.github.io](https://fdpinfo.github.io)
 Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush)  
 Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
-## ⚠️ Alert ⚠️
-![WARN!](https://user-images.githubusercontent.com/105464811/182926408-b9f24bbf-7ead-4ce3-bf38-bb0074adb93f.jpg)
-
 
 ## Installing FDP
 - **Step 1:** Install Java [here](https://www.java.com/en/download/) (Skip if you have Java)
@@ -19,9 +16,6 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 - **Step 3:** Start Forge and then close it
 - **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\\.minecraft\mods) (If you are using the official launcher, click the installations tab then click the folder icon next to forge)
 - **Step 5:** Enjoy our client!
-
-## What happened to the old repository?
-The UnlegitMC Account was hacked by a Chinese gang and they took down FDPClient, so this is the new repository for FDPClient.
 
 ## Issues
 Found a bug or a missing feature? You can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues)!

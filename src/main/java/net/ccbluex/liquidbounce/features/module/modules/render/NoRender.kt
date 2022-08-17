@@ -22,7 +22,6 @@ import net.minecraft.entity.player.EntityPlayer
 @ModuleInfo(name = "NoRender", category = ModuleCategory.RENDER)
 class NoRender : Module() {
 
-    val nameTagsValue = BoolValue("NameTags", true)
     private val itemsValue = BoolValue("Items", true)
     private val playersValue = BoolValue("Players", true)
     private val mobsValue = BoolValue("Mobs", true)
