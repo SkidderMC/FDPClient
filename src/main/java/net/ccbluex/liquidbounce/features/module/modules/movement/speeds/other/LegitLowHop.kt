@@ -12,7 +12,10 @@ class LegitLowHop : SpeedMode("LegitLowHop") {
     override fun onPreMotion() {
         if (mc.thePlayer.isInWater) return
         if (MovementUtils.isMoving()) {
-            if (mc.thePlayer.onGround) mc.thePlayer.motionY = 0.4
+            if (mc.thePlayer.onGround) {
+                mc.thePlayer.jump()
+                mc.thePlayer.motionY = 0.4
+            }
             mc.thePlayer.setSprinting(true);
         }
     }
