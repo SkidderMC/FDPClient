@@ -155,6 +155,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private var progressChill = 0F
 
     private var hpEaseAnimation: Animation? = null
+    private var pastHP = 0f
     private var easingHP = 0f
     private var ease = 0f
         get() {
@@ -231,8 +232,26 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                 return getTBorder()
             }
         }
+        
 
-        easingHP = getHealth(target)
+        set(value) {
+            if (hpEaseAnimation == null || (hpEaseAnimation != null && hpEaseAnimation!!.to != value.toDouble())) {
+                hpEaseAnimation = Animation(EaseUtils.EnumEasingType.valueOf(hpAnimTypeValue.get()), EaseUtils.EnumEasingOrder.valueOf(hpAnimOrderValue.get()), field.toDouble(), value.toDouble(), animSpeedValue.get() * 100L).start()
+            }
+        }
+        
+        if (hpEaseAnimation != null) {
+            easingHP = hpEaseAnimation!!.value.toFloat()
+            if (hpEaseAnimation!!.state == Animation.EnumAnimationState.STOPPED) {
+                hpEaseAnimation = null
+            }
+        }
+        
+        if (hpEaseAnimation == null || (hpEaseAnimation != null && hpEaseAnimation!!.to != value.toDouble())) {
+            hpEaseAnimation = Animation(EaseUtils.EnumEasingType.valueOf(hpAnimTypeValue.get()), EaseUtils.EnumEasingOrder.valueOf(hpAnimOrderValue.get()), pastHP.toDouble(), getHealth(target).toDouble(), animSpeedValue.get() * 100L).start()
+        }
+        
+        pastHP = getHealth(target) 
 
         val easedPersent = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf(switchAnimTypeValue.get()), EaseUtils.EnumEasingOrder.valueOf(switchAnimOrderValue.get()), displayPercent.toDouble()).toFloat()
         when (switchModeValue.get().lowercase()) {
@@ -380,7 +399,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val font = fontValue.get()
         val color = ColorUtils.healthColor(getHealth(target), target.maxHealth)
         val darkColor = ColorUtils.darker(color, 0.6F)
-        val hpPos = 33F + ((getHealth(target) / target.maxHealth * 10000).roundToInt() / 100)
+        val hpPos = 33F + ((easingHP / target.maxHealth * 10000).roundToInt() / 100)
 
         RenderUtils.drawRect(0F, 0F, 140F, 40F, Color(40, 40, 40).rgb)
         font.drawString(target.name, 33, 5, Color.WHITE.rgb)
