@@ -13,8 +13,8 @@ import net.ccbluex.liquidbounce.value.*
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "Test", "OldSafe", "OldTest"), "Stable")
-    private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0.15f, 0.01f, 0.5f)
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "Test", "TestLowHop", "OldSafe", "OldTest"), "Stable")
+    private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
 
@@ -77,6 +77,14 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     mc.thePlayer.motionY = 0.41999998688697815
                 }
             }
+            
+            "testlowhop"-> {
+                if(MovementUtils.isMoving() && mc.thePlayer.onGround) {
+                    watchdogMultiplier = 1.2
+                    mc.thePlayer.jump()
+                    mc.thePlayer.motionY = 0.31999998688697817
+                }
+            }
 
             "oldsafe"-> {
                 if(MovementUtils.isMoving() && mc.thePlayer.onGround) {
@@ -98,6 +106,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             when (bypassMode.get().lowercase()) {
                 "oldsafe" -> watchdogMultiplier -= 0.2
                 "oldtest" -> watchdogMultiplier -= 0.05
+                "testlowhop" -> watchdogMultiplier -= 0.05
             }
         } else {
             watchdogMultiplier = 1.0
@@ -106,6 +115,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
 
     override fun onMove(event: MoveEvent) {
         when (bypassMode.get().lowercase()) {
+            "testlowhop" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 0.90151f   - slowdownValue.get()).toDouble()).toFloat())
             "oldsafe" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
             "oldtest" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
         }
