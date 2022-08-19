@@ -23,6 +23,18 @@ object shadowRenderUtils {
 
     @JvmStatic
     private val DISPLAY_LISTS_2D = IntArray(4)
+    
+    @JvmStatic
+    fun drawGlowWithCustomAlpha (x: Float, y: Float, width: Float, height: Float, alpha: Float) {
+        drawTexturedRectWithCustomAlpha(x - 9, y - 9, 9f, 9f, "glowpaneltopleft", alpha)
+        drawTexturedRectWithCustomAlpha(x - 9, y + height, 9f, 9f, "glowpanelbottomleft", alpha)
+        drawTexturedRectWithCustomAlpha(x + width, y + height, 9f, 9f, "glowpanelbottomright", alpha)
+        drawTexturedRectWithCustomAlpha(x + width, y - 9, 9f, 9f, "glowpaneltopright", alpha)
+        drawTexturedRectWithCustomAlpha(x - 9, y, 9f, height, "glowpanelleft", alpha)
+        drawTexturedRectWithCustomAlpha(x + width, y, 9f, height, "glowpanelright", alpha)
+        drawTexturedRectWithCustomAlpha(x, y - 9, width, 9f, "glowpaneltop", alpha)
+        drawTexturedRectWithCustomAlpha(x, y + height, width, 9f, "glowpanelbottom", alpha)
+    }
 
     @JvmStatic
     fun drawShadowWithCustomAlpha(x: Float, y: Float, width: Float, height: Float, alpha: Float) {
