@@ -12,9 +12,12 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
-import net.ccbluex.liquidbounce.utils.*;
+import net.ccbluex.liquidbounce.utils.CPSCounter;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 import net.ccbluex.liquidbounce.utils.render.ImageUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -29,7 +32,6 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
@@ -48,7 +50,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -98,7 +99,8 @@ public abstract class MixinMinecraft {
     private boolean fullscreen;
 
     /**
-     * @author XiGuaGeGe
+     * @author Zywl
+     * @reason
      */
     @Overwrite
     public int getLimitFramerate() {
@@ -224,13 +226,14 @@ public abstract class MixinMinecraft {
 
     /**
      * @author CCBlueX
+     * @reason
      */
     @Overwrite
     private void sendClickBlockToController(boolean leftClick) {
         if (!leftClick)
             this.leftClickCounter = 0;
 
-        if (this.leftClickCounter <= 0 && !this.thePlayer.isUsingItem()) {
+        if (this.leftClickCounter <= 0 && (!this.thePlayer.isUsingItem() || LiquidBounce.moduleManager.getModule(MultiActions.class).getState())) {
             if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 BlockPos blockPos = this.objectMouseOver.getBlockPos();
 
@@ -248,70 +251,6 @@ public abstract class MixinMinecraft {
         }
     }
 
-    @Inject(method = "displayCrashReport", at = @At("HEAD"))
-    private void displayCrashReport(CrashReport crashReport, CallbackInfo ci) {
-        if (!WindowUtils.isWindows()) return;
-        try {
-            File file = new File("./", "FDPCrashLogs.txt");
-            if (!file.exists()) {
-                file.createNewFile();
-            } else {
-                file.delete();
-                file.createNewFile();
-            }
-            FileWriter fileWritter = new FileWriter(file.getName(), true);
-            fileWritter.write("######################### FDP CRASH REPORT #########################\r\n\r\n" +
-                    "If this problem persists, please send this file to the FDPClient developers! Website (where you can join the discord server): http://fdpinfo.github.io/\r\nThis file will be saved in \".minecraft/FDPCrashLogs.txt\"" +
-                    "\r\n\r\n" +
-                    " | 在没有错误日志的情况下诊断任何问题无异于闭眼开车!  --Apache官方文档\r\n" +
-                    " | Troubleshooting any problem without the error log is like driving with your eyes closed.\r\n" +
-                    " | From Apache official documentation Getting Started chapter\r\n" +
-                    "   - INFO:\r\n" +
-                    "   |   Version: " + LiquidBounce.CLIENT_VERSION + "\r\n" +
-                    "   |   Time: " + System.currentTimeMillis() + "\r\n" +
-                    "   |   OS: " + Util.getOSType() + "\r\n" +
-                    "\r\n######################### FDP CRASH REPORT #########################\r\n" + crashReport.getCompleteReport());
-            fileWritter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        File file1 = new File("./", "FDPCrashLogs.txt");
-        ;
-        String s = file1.getAbsolutePath();
-
-        if (Util.getOSType() == Util.EnumOS.OSX) {
-            try {
-                Runtime.getRuntime().exec(new String[]{"/usr/bin/open", s});
-                return;
-            } catch (IOException ioexception1) {
-                ioexception1.printStackTrace();
-            }
-        } else if (Util.getOSType() == Util.EnumOS.WINDOWS) {
-            String s1 = String.format("cmd.exe /C start \"Open file\" \"%s\"", new Object[]{s});
-
-            try {
-                Runtime.getRuntime().exec(s1);
-                return;
-            } catch (IOException ioexception) {
-                ioexception.printStackTrace();
-            }
-        }
-
-        boolean flag = false;
-
-        try {
-            Class<?> oclass = Class.forName("java.awt.Desktop");
-            Object object = oclass.getMethod("getDesktop", new Class[0]).invoke((Object) null, new Object[0]);
-            oclass.getMethod("browse", new Class[]{URI.class}).invoke(object, new Object[]{file1.toURI()});
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-            flag = true;
-        }
-
-        if (flag) {
-            Sys.openURL("file://" + s);
-        }
-    }
 
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setWindowIcon(CallbackInfo callbackInfo) throws IOException {

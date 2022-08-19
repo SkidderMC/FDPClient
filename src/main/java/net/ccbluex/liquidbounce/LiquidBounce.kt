@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
-import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof
 import net.ccbluex.liquidbounce.features.special.*
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.config.ConfigManager
@@ -19,8 +18,8 @@ import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.LaunchFilterInfo
 import net.ccbluex.liquidbounce.launch.LaunchOption
 import net.ccbluex.liquidbounce.launch.data.GuiLaunchOptionSelectMenu
-import net.ccbluex.liquidbounce.launch.data.legacyui.scriptOnline.ScriptSubscribe
-import net.ccbluex.liquidbounce.launch.data.legacyui.scriptOnline.Subscriptions
+import net.ccbluex.liquidbounce.launch.data.modernui.scriptOnline.ScriptSubscribe
+import net.ccbluex.liquidbounce.launch.data.modernui.scriptOnline.Subscriptions
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
@@ -39,10 +38,8 @@ import kotlin.concurrent.thread
 
 object LiquidBounce {
 
-
-    // 台湾是中国的一部分
     // Client information
-    const val CLIENT_NAME = "FDPCLIENT"
+    const val CLIENT_NAME = "FDPClient"
 
     var CLIENTTEXT = "Waiting..."
     var Darkmode = true
@@ -50,7 +47,7 @@ object LiquidBounce {
     const val CLIENT_CREATOR = "CCBlueX & SkidderMC TEAM"
     const val CLIENT_WEBSITE = "fdpinfo.github.io"
     const val MINECRAFT_VERSION = "1.8.9"
-    const val VERSIONTYPE = "Preview"
+    const val VERSIONTYPE = "Beta"
 
     @JvmField
     val gitInfo = Properties().also {
@@ -181,9 +178,6 @@ object LiquidBounce {
 
         // KeyBindManager
         keyBindManager = KeyBindManager()
-
-        // bstats.org user count display
-        ClientUtils.buildMetrics()
 
         combatManager = CombatManager()
         eventManager.registerListener(combatManager)

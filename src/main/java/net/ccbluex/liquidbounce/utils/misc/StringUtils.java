@@ -15,6 +15,7 @@ import java.util.Map;
 public final class StringUtils {
 
     private static final Map<String,String> pinyinMap=new HashMap<>();
+    private static HashMap<String,String> airCache = new HashMap<>();
 
     public static String toCompleteString(final String[] args) {
         return toCompleteString(args, 0);
@@ -87,4 +88,23 @@ public final class StringUtils {
         }
         return result.toString();
     }
+
+    public static String injectAirString(String str) {
+        if(airCache.containsKey(str)) return airCache.get(str);
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        boolean hasAdded = false;
+        for(char c : str.toCharArray()) {
+            stringBuilder.append(c);
+            if (!hasAdded) stringBuilder.append('\uF8FF');
+            hasAdded = true;
+        }
+
+        String result = stringBuilder.toString();
+        airCache.put(str, result);
+
+        return result;
+    }
+
 }

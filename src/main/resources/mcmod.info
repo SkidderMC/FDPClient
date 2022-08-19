@@ -2,7 +2,7 @@
   {
     "modid": "fdpclient",
     "name": "FDPClient",
-    "description": "",
+    "description": "Minecraft 1.8 Utility mod",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "https://fdpinfo.github.io",

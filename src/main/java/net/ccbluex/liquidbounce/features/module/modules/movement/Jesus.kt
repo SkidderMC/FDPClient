@@ -10,19 +10,22 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.Block
 import net.minecraft.block.BlockLiquid
 import net.minecraft.block.material.Material
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.MovementInput
+import kotlin.math.*
 
 @ModuleInfo(name = "Jesus", category = ModuleCategory.MOVEMENT)
 class Jesus : Module() {
@@ -254,4 +257,29 @@ class Jesus : Module() {
 
     override val tag: String
         get() = modeValue.get()
+
+    fun setSpeed(speed: Double) {
+        var forward = mc.thePlayer.movementInput.moveForward.toDouble()
+        var strafe = mc.thePlayer.movementInput.moveStrafe.toDouble()
+        var yaw = mc.thePlayer.rotationYaw
+        if (forward == 0.0 && strafe == 0.0) {
+            MovementUtils.resetMotion(false)
+        } else {
+            if (forward != 0.0) {
+                if (strafe > 0.0) {
+                    yaw += if(forward > 0.0) -45 else 45
+                } else if (strafe < 0.0) {
+                    yaw += if(forward > 0.0) 45 else -45
+                }
+                strafe = 0.0
+                if (forward > 0.0) {
+                    forward = 1.0
+                } else if (forward < 0.0) {
+                    forward = -1.0
+                }
+            }
+            mc.thePlayer.motionX = forward * speed * cos(Math.toRadians(yaw + 90.0)) + strafe * speed * sin(Math.toRadians(yaw + 90.0))
+            mc.thePlayer.motionZ = forward * speed * sin(Math.toRadians(yaw + 90.0)) - strafe * speed * cos(Math.toRadians(yaw + 90.0))
+        }
+    }
 }

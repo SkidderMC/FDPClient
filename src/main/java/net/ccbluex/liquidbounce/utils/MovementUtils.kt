@@ -10,11 +10,18 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
+import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
 object MovementUtils : MinecraftInstance() {
+
+    fun resetMotion(y: Boolean) {
+        mc.thePlayer.motionX = 0.0
+        mc.thePlayer.motionZ = 0.0
+        if(y) mc.thePlayer.motionY = 0.0
+    }
 
     fun getSpeed(): Float {
         return sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ).toFloat()
@@ -44,17 +51,15 @@ object MovementUtils : MinecraftInstance() {
         return mc.thePlayer.motionX != 0.0 && mc.thePlayer.motionZ != 0.0 && mc.thePlayer.motionY != 0.0
     }
 
-    @JvmStatic
     fun strafe(speed: Float) {
         if (!isMoving()) return
-        val yaw = direction
-        mc.thePlayer.motionX = -sin(yaw) * speed
-        mc.thePlayer.motionZ = cos(yaw) * speed
+        mc.thePlayer.motionX = -sin(direction) * speed
+        mc.thePlayer.motionZ = cos(direction) * speed
     }
 
-    fun doTargetStrafe(curTarget: EntityLivingBase, direction_: Float, radius: Float, moveEvent: MoveEvent) {
-        if(!isMoving())
-            return
+    fun doTargetStrafe(curTarget: EntityLivingBase, direction_: Float, radius: Float, moveEvent: MoveEvent, mathRadius: Int = 0) {
+        if(!isMoving()) return
+
         var forward_ = 0.0
         var strafe_ = 0.0
         val speed_ = sqrt(moveEvent.x * moveEvent.x + moveEvent.z * moveEvent.z)
@@ -68,7 +73,12 @@ object MovementUtils : MinecraftInstance() {
         }else if(direction_ < -0.001) {
             _direction = -1.0
         }
-        val curDistance = mc.thePlayer.getDistanceToEntity(curTarget)
+        var curDistance = (0.01).toFloat()
+        if (mathRadius == 1) {
+            curDistance = mc.thePlayer.getDistanceToEntity(curTarget)
+        }else if (mathRadius == 0) {
+            curDistance = sqrt((mc.thePlayer.posX - curTarget.posX) * (mc.thePlayer.posX - curTarget.posX) + (mc.thePlayer.posZ - curTarget.posZ) * (mc.thePlayer.posZ - curTarget.posZ)).toFloat()
+        }
         if(curDistance < radius - speed_) {
             forward_ = -1.0
         }else if(curDistance > radius + speed_) {
@@ -83,9 +93,9 @@ object MovementUtils : MinecraftInstance() {
         var strafeYaw = RotationUtils.getRotationsEntity(curTarget).yaw.toDouble()
         val covert_ = sqrt(forward_ * forward_ + strafe_ * strafe_)
 
-        forward_ = forward_ / covert_
-        strafe_ = strafe_ / covert_
-        var turnAngle = Math.toDegrees(Math.asin(strafe_.toDouble())).toDouble()
+        forward_ /= covert_
+        strafe_ /= covert_
+        var turnAngle = Math.toDegrees(asin(strafe_))
         if(turnAngle > 0) {
             if(forward_ < 0)
                 turnAngle = 180F - turnAngle
@@ -93,9 +103,9 @@ object MovementUtils : MinecraftInstance() {
             if(forward_ < 0)
                 turnAngle = -180F - turnAngle
         }
-        strafeYaw = Math.toRadians((strafeYaw + turnAngle).toDouble())
-        moveEvent.x = -sin(strafeYaw) * speed_.toDouble()
-        moveEvent.z = cos(strafeYaw) * speed_.toDouble()
+        strafeYaw = Math.toRadians((strafeYaw + turnAngle))
+        moveEvent.x = -sin(strafeYaw) * speed_
+        moveEvent.z = cos(strafeYaw) * speed_
         mc.thePlayer.motionX = moveEvent.x
         mc.thePlayer.motionZ = moveEvent.z
     }
@@ -241,7 +251,7 @@ object MovementUtils : MinecraftInstance() {
         }
     }
 
-    fun calculateGround(): Double {
+    private fun calculateGround(): Double {
         val playerBoundingBox = mc.thePlayer.entityBoundingBox
         var blockHeight = 1.0
         var ground = mc.thePlayer.posY
@@ -302,5 +312,21 @@ object MovementUtils : MinecraftInstance() {
                 true
             )
         )
+    }
+
+    fun isBlockUnder(): Boolean {
+        if (mc.thePlayer == null) return false
+        if (mc.thePlayer.posY < 0.0) {
+            return false
+        }
+        var off = 0
+        while (off < mc.thePlayer.posY.toInt() + 2) {
+            val bb = mc.thePlayer.entityBoundingBox.offset(0.0, (-off).toDouble(), 0.0)
+            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty()) {
+                return true
+            }
+            off += 2
+        }
+        return false
     }
 }

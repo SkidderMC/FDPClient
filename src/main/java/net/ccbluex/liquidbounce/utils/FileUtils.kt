@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.utils
 
-import com.sun.jna.platform.mac.MacFileUtils
 import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileInputStream

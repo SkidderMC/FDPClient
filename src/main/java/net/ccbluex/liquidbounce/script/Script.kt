@@ -7,15 +7,14 @@ import jdk.nashorn.api.scripting.ScriptUtils
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.launch.data.legacyui.scriptOnline.Subscriptions
+import net.ccbluex.liquidbounce.launch.data.modernui.scriptOnline.Subscriptions
 import net.ccbluex.liquidbounce.script.api.*
 import net.ccbluex.liquidbounce.script.api.global.Chat
+import net.ccbluex.liquidbounce.script.api.global.Notifications
 import net.ccbluex.liquidbounce.script.api.global.Setting
-import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.*
 import java.io.File
 import java.util.function.Function
-import javax.script.ScriptEngineManager
 
 class Script(private val scriptFile: File) : MinecraftInstance() {
 
@@ -47,14 +46,21 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
     }
 
     init {
+        //Main
         scriptEngine.put("Chat", StaticClass.forClass(Chat::class.java))
         scriptEngine.put("Setting", StaticClass.forClass(Setting::class.java))
+        scriptEngine.put("Notifications", StaticClass.forClass(Notifications::class.java))
 
         // Global instances
         scriptEngine.put("mc", mc)
         scriptEngine.put("moduleManager", LiquidBounce.moduleManager)
         scriptEngine.put("commandManager", LiquidBounce.commandManager)
         scriptEngine.put("scriptManager", LiquidBounce.scriptManager)
+
+        // Utils
+        scriptEngine.put("MovementUtils", MovementUtils)
+        scriptEngine.put("PacketUtils", PacketUtils)
+        scriptEngine.put("InventoryUtils", InventoryUtils)
 
         // Global functions
         scriptEngine.put("registerScript", RegisterScript())
@@ -173,13 +179,9 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
      * @param eventName Name of the event to be called.
      */
     public fun callEvent(eventName: String) {
-        //println("call $eventName")
-        if (eventName == "enable") {
-            isEnable = true;
-        } else {
-            if (eventName == "disable") {
-                isEnable = false;
-            }
+        when(eventName) {
+            "enable" -> isEnable = true
+            "disable" -> isEnable = false
         }
         try {
             events[eventName]?.call(null)

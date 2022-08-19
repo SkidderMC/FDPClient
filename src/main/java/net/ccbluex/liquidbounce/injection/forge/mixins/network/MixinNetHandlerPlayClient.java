@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 import io.netty.buffer.Unpooled;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
-import net.ccbluex.liquidbounce.features.module.modules.misc.AntiExploit;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.PackSpoofer;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
@@ -70,7 +70,7 @@ public abstract class MixinNetHandlerPlayClient {
         final String url = p_handleResourcePack_1_.getURL();
         final String hash = p_handleResourcePack_1_.getHash();
 
-        final AntiExploit antiExploit = (AntiExploit) LiquidBounce.moduleManager.getModule(AntiExploit.class);
+        final PackSpoofer ps = (PackSpoofer) LiquidBounce.moduleManager.getModule(PackSpoofer.class);
 
         try {
             final String scheme = new URI(url).getScheme();
@@ -91,7 +91,7 @@ public abstract class MixinNetHandlerPlayClient {
                     netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.FAILED_DOWNLOAD));
                 }
 
-                if (antiExploit.getState() && antiExploit.getNotifyValue().get()) {
+                if (ps.getState() && ps.getNotifyValue().get()) {
                     alert("§7[§b!§7] §b§lFDPCLIENT §c» §6Resourcepack exploit detected.");
                     alert("§7[§b!§7] §b§lFDPCLIENT §c» §7Exploit target directory: §r" + url);
 

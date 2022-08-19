@@ -19,8 +19,7 @@ class MineSecureFly : FlyMode("MineSecure") {
 
         if (!mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY = -0.01
 
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionZ = 0.0
+        MovementUtils.resetMotion(false)
         MovementUtils.strafe(speedValue.get())
 
         if (timer.hasTimePassed(150) && mc.gameSettings.keyBindJump.isKeyDown) {

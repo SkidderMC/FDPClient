@@ -10,11 +10,8 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.client.button.AbstractButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.FLineButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.RiseButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.RoundedButtonRenderer
-import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule.*
+import net.ccbluex.liquidbounce.features.module.modules.client.button.*
+import net.ccbluex.liquidbounce.launch.data.modernui.ClickGUIModule.*
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -31,7 +28,7 @@ import java.util.*
 
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HUD : Module() {
-    val shadowValue = ListValue("ShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Outline")
+    val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Outline")
     val clolormode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")
     val hueInterpolation = BoolValue("hueInterpolation", false)
     val movingcolors = BoolValue("MovingColors", false)
@@ -59,7 +56,7 @@ object HUD : Module() {
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder")
     val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
-    private val buttonValue = ListValue("Button", arrayOf("Better", "FLine", "Rise", "Vanilla"), "Better")
+    private val buttonValue = ListValue("Button", arrayOf("Better", "Rounded", "FLine", "Rise", "Vanilla"), "Rounded")
 
     private var lastFontEpsilon = 0f
 
@@ -162,7 +159,8 @@ object HUD : Module() {
 
     fun getButtonRenderer(button: GuiButton): AbstractButtonRenderer? {
         return when (buttonValue.get().lowercase()) {
-            "better" -> RoundedButtonRenderer(button)
+            "better" -> BetterButtonRenderer(button)
+            "rounded" -> RoundedButtonRenderer(button)
             "fline" -> FLineButtonRenderer(button)
             "rise" -> RiseButtonRenderer(button)
             else -> null // vanilla or unknown

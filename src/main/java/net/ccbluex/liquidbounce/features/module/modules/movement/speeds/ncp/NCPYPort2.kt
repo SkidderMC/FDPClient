@@ -1,20 +1,18 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp
-
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 
 class NCPYPort2 : SpeedMode("NCPYPort2") {
     var ticks = 0
     var jumps = 0
-    
+
     private val jumpBoost = FloatValue("JumpLaunchSpeed", 0.98f, 0f, 2f)
     private val speedMult = FloatValue("BoostSpeed", 1.02f, 0f, 2f)
     private val launchTimer = FloatValue("LaunchTimer", 0.97f,0f,2f)
     private val normTimer = FloatValue("Timer", 1.2f,0f,2f)
 
-  
+
     override fun onEnable() {
         super.onEnable()
         mc.thePlayer.speedInAir = 0.0213f
@@ -44,7 +42,7 @@ class NCPYPort2 : SpeedMode("NCPYPort2") {
                 mc.timer.timerSpeed = normTimer.get()
                 if (ticks <= 4) {
                     if(ticks % 2 == 0) {
-                      mc.thePlayer.motionY = -0.17
+                        mc.thePlayer.motionY = -0.17
                     } else {
                         mc.thePlayer.motionY = -0.1
                     }
@@ -55,7 +53,7 @@ class NCPYPort2 : SpeedMode("NCPYPort2") {
                 mc.thePlayer.motionZ = mc.thePlayer.motionZ * speedMult.get().toDouble()
                 MovementUtils.strafe()
             }
-                
+
         } else {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0

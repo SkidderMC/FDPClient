@@ -19,6 +19,8 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 
+// shader based shadows
+
 import java.io.IOException
 
 object ShadowUtils : MinecraftInstance() {

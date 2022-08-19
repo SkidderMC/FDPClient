@@ -11,7 +11,6 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
-import org.lwjgl.Sys
 import org.lwjgl.opengl.GL11
 import java.io.File
 import java.io.FileInputStream
@@ -29,7 +28,7 @@ object GuiCapeManager : GuiScreen() {
         arrayOf("classic", "classic2", "aurora", "forest", "rose", "lavender", "ocean", "modern1", "modern2", "lava", "citrus", "fire", "nightlife", "abstract", "blur").forEach {
             try {
                 embeddedCapes.add(loadCapeFromResource(it, "assets/minecraft/fdpclient/cape/$it.png"))
-            }catch (e: Throwable){
+            } catch (e: Throwable){
                 System.out.println("Failed to load Capes")
             }
         }

@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.flys.verus
+package net.ccbluex.liquidbounce.features.module.modules.movement.flys.vulcan
 
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -6,13 +6,11 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.util.BlockPos
-import net.minecraft.client.settings.GameSettings
 
 class VulcanLegitFly : FlyMode("VulcanLegit") {
 
@@ -84,9 +82,7 @@ class VulcanLegitFly : FlyMode("VulcanLegit") {
             }
             FlyStage.WAIT_APPLY -> {
                 mc.timer.timerSpeed = 1.0f
-                mc.thePlayer.motionY = 0.0
-                mc.thePlayer.motionX = 0.0
-                mc.thePlayer.motionZ = 0.0
+                MovementUtils.resetMotion(true)
                 mc.thePlayer.jumpMovementFactor = 0.0f
                 if (modifyTicks >= 10) {
                     var playerYaw = mc.thePlayer.rotationYaw * Math.PI / 180
