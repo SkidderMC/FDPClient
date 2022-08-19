@@ -1,14 +1,14 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce+ Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/WYSI-Foundation/LiquidBouncePlus/
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 
-class RemoteViewCommand : Command("remoteview", arrayOf("rv")) {
+class SpectateCommand : Command("spectate", arrayOf("spectateplayer", "remoteview",  "rv")) {
     /**
      * Execute commands with provided [args]
      */
@@ -18,17 +18,17 @@ class RemoteViewCommand : Command("remoteview", arrayOf("rv")) {
                 mc.renderViewEntity = mc.thePlayer
                 return
             }
-            chatSyntax("remoteview <username>")
+            chatSyntax("spectate <username>")
             return
         }
 
-        val targetName = args[1]
+        val targetName = args[1];
 
         for (entity in mc.theWorld.loadedEntityList) {
             if (targetName == entity.name) {
                 mc.renderViewEntity = entity
-                alert("Now viewing perspective of §8${entity.name}§3.")
-                alert("Execute §8${LiquidBounce.commandManager.prefix}remoteview §3again to go back to yours.")
+                chat("Now viewing perspective of §8${entity.name}§3.")
+                chat("Execute §8${LiquidBounce.commandManager.prefix}spectate §3again to go back to yours.")
                 break
             }
         }
