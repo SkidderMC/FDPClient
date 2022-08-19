@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.value.*
 import org.lwjgl.input.Keyboard
 import java.io.File
 import java.nio.file.Files
-import java.util.Timer
+import java.util.*
 import kotlin.concurrent.schedule
 
 class ConfigManager {

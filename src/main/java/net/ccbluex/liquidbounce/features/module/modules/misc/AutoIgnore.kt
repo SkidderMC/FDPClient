@@ -65,4 +65,4 @@ class AutoIgnore : Module() {
             }
         }
     }
-}
+} 

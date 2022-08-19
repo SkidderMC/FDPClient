@@ -100,6 +100,10 @@ class ModuleManager : Listenable {
         LiquidBounce.commandManager.registerCommand(ModuleCommand(module, values))
     }
 
+    fun getModulesByName(name: String): List<Module> {
+        return this.modules.filter { it.name.toLowerCase().contains(name.toLowerCase()) }
+    }
+
     /**
      * Get module by [moduleClass]
      */

@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.particles;
 
-import net.ccbluex.liquidbounce.utils.particles.PlayerParticles;
 import net.ccbluex.liquidbounce.utils.timer.ParticleTimer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;

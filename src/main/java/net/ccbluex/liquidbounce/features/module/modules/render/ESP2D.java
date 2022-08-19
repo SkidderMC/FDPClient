@@ -8,17 +8,21 @@
 package net.ccbluex.liquidbounce.features.module.modules.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.event.EventTarget;
+import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.MobsUtils;
 import net.ccbluex.liquidbounce.utils.item.ItemUtils;
-import net.ccbluex.liquidbounce.value.*;
-import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.value.BoolValue;
+import net.ccbluex.liquidbounce.value.FloatValue;
+import net.ccbluex.liquidbounce.value.IntegerValue;
+import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -38,7 +42,10 @@ import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
-import java.awt.Color;
+
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector4d;
+import java.awt.*;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.text.DecimalFormat;
@@ -46,8 +53,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector4d;
 
 @ModuleInfo(name = "ESP2D", category = ModuleCategory.RENDER)
 public final class ESP2D extends Module {
@@ -140,7 +145,7 @@ public final class ESP2D extends Module {
     }
 
     public static boolean shouldCancelNameTag(EntityLivingBase entity) {
-        return LiquidBounce.moduleManager.getModule(ESP2D.class) != null && LiquidBounce.moduleManager.getModule(ESP2D.class).getState() && ((ESP2D)LiquidBounce.moduleManager.getModule(ESP2D.class)).tagsValue.get() && collectedEntities.contains(entity);
+        return LiquidBounce.moduleManager.getModule(ESP2D.class) != null && LiquidBounce.moduleManager.getModule(ESP2D.class).getState() && LiquidBounce.moduleManager.getModule(ESP2D.class).tagsValue.get() && collectedEntities.contains(entity);
     }
 
     @Override
@@ -285,12 +290,12 @@ public final class ESP2D extends Module {
                                 for (int m = 4; m > 0; m--) {
                                     ItemStack armorStack = entityLivingBase.getEquipmentInSlot(m);
                                     double theHeight = constHeight + 0.25D;
-                                    if (armorStack != null && armorStack.getItem() != null && armorStack.isItemStackDamageable()) {
+                                    if (armorStack != null && armorStack.getItem() != null) {
                                         RenderUtils.newDrawRect(endPosX + 1.5D, endPosY + 0.5D - theHeight * m, endPosX + 3.5D, endPosY + 0.5D - theHeight * (m - 1), background);
                                         RenderUtils.newDrawRect(endPosX + 2.0D,
                                                 endPosY + 0.5D - theHeight * (m - 1) - 0.25D,
                                                 endPosX + 3.0D,
-                                                endPosY + 0.5D - theHeight * (m - 1) - 0.25D - (constHeight - 0.25D) * MathHelper.clamp_double((double)ItemUtils.getItemDurability(armorStack) / (double) armorStack.getMaxDamage(), 0D, 1D), new Color(70, 70, 200).getRGB());
+                                                endPosY + 0.5D - theHeight * (m - 1) - 0.25D - (constHeight - 0.25D) * MathHelper.clamp_double((double)ItemUtils.getItemDurability(armorStack) / (double) armorStack.getMaxDamage(), 0D, 1D), new Color(0, 255, 255).getRGB());
                                     }
                                 }
                             } else {
@@ -298,7 +303,7 @@ public final class ESP2D extends Module {
                                 double armorWidth = (endPosY - posY) * (double)armorValue / 20.0D;
                                 RenderUtils.newDrawRect(endPosX + 1.5D, posY - 0.5D, endPosX + 3.5D, endPosY + 0.5D, background);
                                 if (armorValue > 0.0F)
-                                    RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - armorWidth, new Color(70, 70, 200).getRGB());
+                                    RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - armorWidth, new Color(0, 255, 255).getRGB());
                             }
                         } else if (entity instanceof EntityItem) {
                             ItemStack itemStack = ((EntityItem)entity).getEntityItem();
@@ -309,7 +314,7 @@ public final class ESP2D extends Module {
                                 if (armorNumber.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution)))
                                     drawScaledString(((int) itemDurability) + "", endPosX + 4.0, (endPosY - durabilityWidth) - mc.fontRendererObj.FONT_HEIGHT / 2F * fontScaleValue.get(), fontScaleValue.get(), -1);
                                 RenderUtils.newDrawRect(endPosX + 1.5D, posY - 0.5D, endPosX + 3.5D, endPosY + 0.5D, background);
-                                RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - durabilityWidth, new Color(70, 70, 200).getRGB());
+                                RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - durabilityWidth, new Color(0, 255, 255).getRGB());
                             }
                         }
                     }
@@ -357,6 +362,7 @@ public final class ESP2D extends Module {
 
         GL11.glPopMatrix();
         GlStateManager.enableBlend();
+        GlStateManager.resetColor();
         entityRenderer.setupOverlayRendering();
     }
 

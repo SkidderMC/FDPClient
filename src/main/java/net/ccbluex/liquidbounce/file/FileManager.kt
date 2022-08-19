@@ -20,13 +20,15 @@ import java.io.*
 import javax.imageio.ImageIO
 
 class FileManager : MinecraftInstance() {
-    val dir = File(mc.mcDataDir, LiquidBounce.CLIENT_NAME + "-1.8")
+    val dir = File(mc.mcDataDir, "FDPCLIENT-1.8")
     val cacheDir = File(mc.mcDataDir, ".cache/" + LiquidBounce.CLIENT_NAME)
     val fontsDir = File(dir, "fonts")
     val configsDir = File(dir, "configs")
     val soundsDir = File(dir, "sounds")
     val legacySettingsDir = File(dir, "legacy-settings")
     val capesDir = File(dir, "capes")
+    val themesDir = File(dir, "themes")
+    val legalDir = File(dir, "legal")
     val accountsConfig = AccountsConfig(File(dir, "accounts.json"))
     var friendsConfig = FriendsConfig(File(dir, "friends.json"))
     val xrayConfig = XRayConfig(File(dir, "xray-blocks.json"))
@@ -65,8 +67,16 @@ class FileManager : MinecraftInstance() {
             soundsDir.mkdir()
         }
 
+        if (!legalDir.exists()) {
+            legalDir.mkdir()
+        }
+
         if (!capesDir.exists()) {
             capesDir.mkdir()
+        }
+
+        if (!themesDir.exists()) {
+            themesDir.mkdir();
         }
 
         if (!cacheDir.exists()) {

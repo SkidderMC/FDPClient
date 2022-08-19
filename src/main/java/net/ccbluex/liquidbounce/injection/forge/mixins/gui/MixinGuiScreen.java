@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.special.GradientBackground;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
-import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.particles.ParticleUtils;
+import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -81,8 +81,8 @@ public abstract class MixinGuiScreen {
                 GL11.glPushMatrix();
                 GL11.glPopMatrix();
                 GL11.glPushMatrix();
-                FontLoaders.F30.DisplayFont2(FontLoaders.F30,LiquidBounce.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14,LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30,LiquidBounce.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
-                FontLoaders.F30.DisplayFont2(FontLoaders.F14,LiquidBounce.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14,LiquidBounce.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F30, LiquidBounce.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, LiquidBounce.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F14, LiquidBounce.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);
                 GL11.glPopMatrix();
             }
         }catch (Exception e){
@@ -98,8 +98,8 @@ public abstract class MixinGuiScreen {
                 GL11.glPushMatrix();
                 GL11.glPopMatrix();
                 GL11.glPushMatrix();
-                FontLoaders.F30.DisplayFont2(FontLoaders.F30,LiquidBounce.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14,LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30,LiquidBounce.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
-                FontLoaders.F30.DisplayFont2(FontLoaders.F14,LiquidBounce.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14,LiquidBounce.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F30, LiquidBounce.CLIENT_NAME,defaultWidth1 - 12f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) - FontLoaders.F30.DisplayFontWidths(FontLoaders.F30, LiquidBounce.CLIENT_NAME) ,defaultHeight1 - 23.5f,new Color(255,255,255,140).getRGB(),true);
+                FontLoaders.F30.DisplayFont2(FontLoaders.F14, LiquidBounce.CLIENT_VERSION,defaultWidth1 - 10f - FontLoaders.F14.DisplayFontWidths(FontLoaders.F14, LiquidBounce.CLIENT_VERSION) ,defaultHeight1 - 15f,new Color(255,255,255,140).getRGB(),true);
                 GL11.glPopMatrix();
             }
         }catch (Exception e){

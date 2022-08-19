@@ -52,7 +52,9 @@ public class BowJump extends Module {
         lastPlayerTick = -1;
         lastSlot = mc.thePlayer.inventory.currentItem;
 
-        MovementUtils.strafe(0);
+        MovementUtils.INSTANCE.strafe(0.0f);
+        mc.thePlayer.onGround = false;
+        mc.thePlayer.jumpMovementFactor = 0.0f;
     }
 
     @EventTarget
@@ -90,8 +92,8 @@ public class BowJump extends Module {
             } else if (lastPlayerTick == -1) {
                 ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(slot + 36).getStack();
 
-                if (lastSlot != slot) PacketUtils.sendPacketNoEvent(new C09PacketHeldItemChange(slot));
-                PacketUtils.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 255, mc.thePlayer.inventoryContainer.getSlot(slot + 36).getStack(), 0, 0, 0));
+                if (lastSlot != slot) PacketUtils.INSTANCE.sendPacketNoEvent(new C09PacketHeldItemChange(slot));
+                PacketUtils.INSTANCE.sendPacketNoEvent(new C08PacketPlayerBlockPlacement(new BlockPos(-1, -1, -1), 255, mc.thePlayer.inventoryContainer.getSlot(slot + 36).getStack(), 0, 0, 0));
 
                 lastPlayerTick = mc.thePlayer.ticksExisted;
                 bowState = 1;
@@ -100,10 +102,10 @@ public class BowJump extends Module {
         case 1:
             int reSlot = getBowSlot();
             if (mc.thePlayer.ticksExisted - lastPlayerTick > delayBeforeLaunch.get()) {
-                PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C05PacketPlayerLook(mc.thePlayer.rotationYaw, -90, mc.thePlayer.onGround));
-                PacketUtils.sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+                PacketUtils.INSTANCE.sendPacketNoEvent(new C03PacketPlayer.C05PacketPlayerLook(mc.thePlayer.rotationYaw, -90, mc.thePlayer.onGround));
+                PacketUtils.INSTANCE.sendPacketNoEvent(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
 
-                if (lastSlot != reSlot) PacketUtils.sendPacketNoEvent(new C09PacketHeldItemChange(lastSlot));
+                if (lastSlot != reSlot) PacketUtils.INSTANCE.sendPacketNoEvent(new C09PacketHeldItemChange(lastSlot));
                 bowState = 2;
             }
             break;
@@ -112,7 +114,7 @@ public class BowJump extends Module {
                 bowState = 3;
             break;
         case 3:
-            MovementUtils.strafe(boostValue.get());
+            MovementUtils.INSTANCE.strafe(boostValue.get());
             mc.thePlayer.motionY = heightValue.get();
             bowState = 4;
             lastPlayerTick = mc.thePlayer.ticksExisted;

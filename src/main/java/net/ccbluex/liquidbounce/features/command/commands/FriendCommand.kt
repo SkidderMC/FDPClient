@@ -47,10 +47,10 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
                          val regex = args[2]
                          val coloredRegex = ColorUtils.translateAlternateColorCodes(regex)
 
-                         var added: Int = 0
+                         var added = 0
 
                          mc.theWorld.playerEntities
-                             .filter { !AntiBot.isBot(it) && it.displayName.getFormattedText().contains(coloredRegex, false) }
+                             .filter { !AntiBot.isBot(it) && it.displayName.formattedText.contains(coloredRegex, false) }
                              .forEach {
                                  if (friendsConfig.addFriend(it.name)) {
                                      added++
@@ -69,7 +69,7 @@ class FriendCommand : Command("friend", arrayOf("friends")) {
                      if (args.size == 3) {
                          val regex = args[2]
 
-                         var remove: Int = 0
+                         var remove = 0
 
                          friendsConfig.friends
                              .map { it.playerName }

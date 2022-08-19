@@ -6,8 +6,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.BlockAir
-import net.minecraft.util.AxisAlignedBB
 import net.minecraft.client.settings.GameSettings
+import net.minecraft.util.AxisAlignedBB
 
 class Verus3Fly : FlyMode("Verus3") {
 

@@ -7,11 +7,17 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.features.module.*
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClassUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import org.lwjgl.input.Keyboard
 import java.awt.Color
@@ -82,11 +88,7 @@ class Fly : Module() {
         mc.timer.timerSpeed = 1F
         mc.thePlayer.speedInAir = 0.02F
 
-        if (motionResetValue.get() && needReset) {
-            mc.thePlayer.motionX = 0.0
-            mc.thePlayer.motionY = 0.0
-            mc.thePlayer.motionZ = 0.0
-        }
+        if (motionResetValue.get() && needReset) MovementUtils.resetMotion(true)
 
         mode.onDisable()
     }
@@ -120,6 +122,11 @@ class Fly : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         mode.onPacket(event)
+    }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent) {
+        mode.onWorld(event)
     }
 
     @EventTarget

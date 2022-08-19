@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Modules
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
+import net.ccbluex.liquidbounce.utils.AnimationHelper
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
@@ -23,6 +24,7 @@ import org.lwjgl.input.Keyboard
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
+    val animation: AnimationHelper
     var name: String
     var localizedName = ""
         get() = field.ifEmpty { name }
@@ -72,6 +74,7 @@ open class Module : MinecraftInstance(), Listenable {
 
     init {
         name = moduleInfo.name
+        animation = AnimationHelper(this)
         description = "%module.$name.description%"
         category = moduleInfo.category
         keyBind = moduleInfo.keyBind

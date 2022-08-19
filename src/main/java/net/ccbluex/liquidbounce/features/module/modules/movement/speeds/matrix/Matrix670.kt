@@ -1,23 +1,28 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix
 
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.client.settings.GameSettings
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 
 class Matrix670 : SpeedMode("Matrix6.7.0") {
     private var noVelocityY = 0
 
     override fun onUpdate() {
         if (noVelocityY >= 0) {
-            noVelocityY = noVelocityY - 1
+            noVelocityY -= 1
         }
         if (!mc.thePlayer.onGround && noVelocityY <= 0) {
             if (mc.thePlayer.motionY > 0) {
                 mc.thePlayer.motionY -= 0.0005
             }
-            mc.thePlayer.motionY -= 0.0094001145141919810
+            mc.thePlayer.motionY -= 0.009400114514191982
         }
         if (!mc.thePlayer.onGround) {
             mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)

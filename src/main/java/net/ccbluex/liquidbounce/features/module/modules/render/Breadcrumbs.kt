@@ -40,6 +40,7 @@ class Breadcrumbs : Module() {
     private val precisionValue = IntegerValue("Precision", 4, 1, 20)
     private val lineWidthValue = IntegerValue("LineWidth", 1, 1, 10).displayable { typeValue.equals("Line") }
     private val sphereScaleValue = FloatValue("SphereScale", 0.6f, 0.1f, 2f).displayable { typeValue.equals("Sphere") || typeValue.equals("Rise")}
+    private val onlyThirdPerson = BoolValue("OnlyThirdPerson", true)
 
     private val points = mutableMapOf<Int, MutableList<BreadcrumbPoint>>()
 
@@ -60,6 +61,8 @@ class Breadcrumbs : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
+        if (onlyThirdPerson.get() && mc.gameSettings.thirdPersonView == 0) return
+
         val fTime = fadeTimeValue.get() * 1000
         val fadeSec = System.currentTimeMillis() - fTime
         val colorAlpha = colorAlphaValue.get() / 255.0f

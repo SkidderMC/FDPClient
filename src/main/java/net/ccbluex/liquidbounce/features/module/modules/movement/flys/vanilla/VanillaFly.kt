@@ -32,16 +32,10 @@ class VanillaFly : FlyMode("Vanilla") {
         }
 
         mc.thePlayer.capabilities.isFlying = false
+        MovementUtils.resetMotion(true)
+        if (mc.gameSettings.keyBindJump.isKeyDown) mc.thePlayer.motionY += vspeedValue.get()
 
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionY = 0.0
-        mc.thePlayer.motionZ = 0.0
-        if (mc.gameSettings.keyBindJump.isKeyDown) {
-            mc.thePlayer.motionY += vspeedValue.get()
-        }
-        if (mc.gameSettings.keyBindSneak.isKeyDown) {
-            mc.thePlayer.motionY -= vspeedValue.get()
-        }
+        if (mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY -= vspeedValue.get()
 
         MovementUtils.strafe(speedValue.get())
     }
@@ -50,13 +44,10 @@ class VanillaFly : FlyMode("Vanilla") {
         val packet = event.packet
 
         if (packet is C03PacketPlayer) {
-            if(spoofValue.get()) {
-                packet.onGround = true
-            }
-            packets++
-            if (packets == 40 && kickBypassValue.get()) {
-                MovementUtils.handleVanillaKickBypass()
+            if(spoofValue.get()) packet.onGround = true
+            if (packets++ >= 40 && kickBypassValue.get()) {
                 packets = 0
+                MovementUtils.handleVanillaKickBypass()
             }
         }
     }

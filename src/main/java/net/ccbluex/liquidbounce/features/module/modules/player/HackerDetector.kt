@@ -33,8 +33,6 @@ import kotlin.math.*
 
 @ModuleInfo(name = "HackerDetector", category = ModuleCategory.PLAYER)
 class HackerDetector : Module() {
-    private val GRAVITY_FRICTION = 0.9800000190734863
-
     private val combatCheckValue = BoolValue("Combat", true)
     private val movementCheckValue = BoolValue("Movement", true)
     private val debugModeValue = BoolValue("Debug", false)
@@ -47,7 +45,6 @@ class HackerDetector : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        // this takes a bit time so we do it async
         Thread { doGC() }.start()
     }
 
@@ -122,7 +119,6 @@ class HackerDetector : Module() {
             minAirTicks += player.getActivePotionEffect(Potion.jump).amplifier * 3
         }
         val maxMotionY = 0.47 // for strict check u can change this to 0.42
-        val maxOffset = 0.07
         val triggerBalance = 100
         val minimumClamp = 1000
         var passed = true

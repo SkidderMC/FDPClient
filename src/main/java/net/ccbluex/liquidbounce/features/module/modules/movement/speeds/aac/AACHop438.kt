@@ -24,7 +24,7 @@ class AACHop438 : SpeedMode("AACHop4.3.8") {
             if (thePlayer.fallDistance <= 0.1)
                 mc.timer.timerSpeed = 1.5f;
             else if (thePlayer.fallDistance < 1.3)
-                mc.timer.timerSpeed = 0.7f;
+                mc.timer.timerSpeed = 0.6f;
             else
                 mc.timer.timerSpeed = 1f;
         }
