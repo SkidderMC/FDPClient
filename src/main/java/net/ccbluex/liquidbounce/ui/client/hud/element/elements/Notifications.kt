@@ -11,7 +11,9 @@ import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.*
 import net.ccbluex.liquidbounce.ui.realpha
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import org.lwjgl.opengl.GL11
@@ -30,9 +32,9 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val titleShadow = BoolValue("TitleShadow", false)
     private val motionBlur = BoolValue("Motionblur", false)
     private val contentShadow = BoolValue("ContentShadow", true)
-    private val whiteText = BoolValue("WhiteTextColor", false)
+    private val whiteText = BoolValue("WhiteTextColor", true)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "Skid", "Modern"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "LiquidBounce", "Modern", "Skid"), "Modern")
     }
 
     /**
@@ -83,7 +85,15 @@ class Notification(
     var width = 100
     val height = 27
     private val classicHeight = 30
-
+    var x = 0F
+    var textLengthtitle = 0
+    var textLengthcontent = 0
+    var textLength = 0f
+    init {
+        textLengthtitle = Fonts.font35.getStringWidth(title)
+        textLengthcontent = Fonts.font35.getStringWidth(content)
+        textLength = textLengthcontent.toFloat() + textLengthtitle.toFloat()
+    }
 
     var fadeState = FadeState.IN
     private var nowY = -height
@@ -207,11 +217,21 @@ class Notification(
             font.DisplayFont2(font, content, 4F, 10F, textColor, contentShadow)
             return false
         }
+
+        // this for u david (thanks Dg636)
+        if(style.equals("LiquidBounce")) {
+            RenderUtils.drawRect(-textLength + -9F, 0F, textLength + 9F, -20F, Color(0, 0, 0, alpha))
+            font.drawString("$title: $content", -textLength + -9F + 4F, -14F, Int.MAX_VALUE)
+ //           RenderUtils.drawRect(-textLength + -9F, 0F, -textLength + -5F, -20F, Color(0, 160, 255).rgb) 
+// TODO: fix it xddifk
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        }
+
         if(style.equals("Skid")){
 
             val colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3)
             shadowRenderUtils.drawShadowWithCustomAlpha(2f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 250f) // oops
-            RenderUtils.drawRect(2.0, 0.0, 4.0, height.toFloat() - 5.0, colors.rgb,)
+            RenderUtils.drawRect(2.0, 0.0, 4.0, height.toFloat() - 5.0, colors.rgb)
             RenderUtils.drawRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, Color(0,0,0,150))
             RenderUtils.drawGradientSidewaysH(3.0, 0.0, 20.0, height.toFloat() - 5.0, colors.rgb, Color(0,0,0,0).rgb)
             RenderUtils.drawRect(2f, height.toFloat()-6f, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), height.toFloat()-5f ,Color(52, 97, 237).rgb)
@@ -219,7 +239,7 @@ class Notification(
             FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, textColor,titleShadow)
             font.DisplayFont2(font,content, 4F, 10F, textColor,contentShadow)
             return false
-    }
+            }
 
         if(style.equals("Classic")) {
             if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) }
@@ -254,5 +274,6 @@ enum class NotifyType(var renderColor: Color) {
 
 
 enum class FadeState { IN, STAY, OUT, END }
+
 
 
