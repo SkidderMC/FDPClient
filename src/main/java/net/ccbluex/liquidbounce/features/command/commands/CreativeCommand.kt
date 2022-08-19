@@ -2,7 +2,7 @@
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
- */
+ 
 
 package net.ccbluex.liquidbounce.features.command.commands
 
@@ -182,3 +182,5 @@ class CreativeCommand : Command("Creative", arrayOf("Items", "gmc")) {
         chatSyntax("creative <rename/holostand/enchant/give>")
     }
 }
+*/
+// TODO:  fix this xd
