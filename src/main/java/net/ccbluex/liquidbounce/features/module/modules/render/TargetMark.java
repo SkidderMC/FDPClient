@@ -1,7 +1,7 @@
 /*
- * LiquidBounce+ Hacked Client
+ * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/WYSI-Foundation/LiquidBouncePlus/
+ * https://github.com/SkidderMC/FDPClient/
  * 
  * This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
  */
@@ -29,7 +29,7 @@ import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 import java.awt.Color;
 
-@ModuleInfo(name = "TargetMark", spacedName = "Target Mark", description = "Displays your KillAura's target in 3D.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "TargetMark", category = ModuleCategory.RENDER)
 public class TargetMark extends Module {
 
     public final ListValue modeValue = new ListValue("Mode", new String[]{"Default", "Box", "Jello", "Tracers"}, "Default");
