@@ -1315,6 +1315,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     "original" -> Border(0F, 0F, 150F, 50F)
                     "new1" -> Border(0F, 0F, 150F, 50F)
                     "new2" -> Border(0F, 0F, 150F, 45F)
+                    else -> null
                 }
             }
             "zamorozka" -> Border(0F, 0F, 150F, 55F)
