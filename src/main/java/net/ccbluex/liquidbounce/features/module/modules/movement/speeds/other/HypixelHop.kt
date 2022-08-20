@@ -8,12 +8,13 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.value.*
 
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "Test", "TestLowHop", "OldSafe", "OldTest"), "Stable")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "Stable2", "Test2", "TestLowHop", "OldSafe", "OldTest"), "Stable")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
@@ -21,6 +22,9 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private var watchdogMultiplier = 1.0
     private var oldMotionX = 0.0
     private var oldMotionZ = 0.0
+    private var pastX = 0.0
+    private var pastZ = 0.0
+    private var moveDist = 0.0
     private var wasOnGround = false
 
     override fun onUpdate() {
@@ -42,8 +46,10 @@ class HypixelHop : SpeedMode("HypixelHop") {
             }
         }
         
+        moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ).toDouble()
+        
         when (bypassMode.get().lowercase()) {
-            "test" -> {
+            "stable2" -> {
                 oldMotionX = mc.thePlayer.motionX
                 oldMotionZ = mc.thePlayer.motionZ
 
@@ -76,6 +82,24 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     mc.thePlayer.jump()
                     mc.thePlayer.motionY = 0.41999998688697815
                 }
+            }
+            
+            "test2" -> {
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.motionY = 0.41999998688697815
+                    watchdogMultiplier = 0.560625
+                    wasOnGround = true
+                } else if (wasOnGround) {
+                    watchdogMultiplier = moveDist - 0.66 * (moveDist - 0.2875)
+                    wasOnGround = false
+                } else {
+                    moveDist = moveDist * 0.91
+                    if (mc.thePlayer.moveStrafing > 0) {
+                        watchdogMultiplier += (MovementUtils.getSpeed().toDouble() - moveDist) * 0.2875
+                        watchdogMultiplier -= 0.015
+                    }
+                }
+
             }
             
             "testlowhop"-> {
@@ -111,13 +135,18 @@ class HypixelHop : SpeedMode("HypixelHop") {
         } else {
             watchdogMultiplier = 1.0
         }
+        
+        pastX = mc.thePlayer.posX 
+        pastZ = mc.thePlayer.posZ
     }
 
     override fun onMove(event: MoveEvent) {
         when (bypassMode.get().lowercase()) {
             "testlowhop" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 0.90151f   - slowdownValue.get()).toDouble()).toFloat())
+            "test2" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
             "oldsafe" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
             "oldtest" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
+            
         }
     }
 }
