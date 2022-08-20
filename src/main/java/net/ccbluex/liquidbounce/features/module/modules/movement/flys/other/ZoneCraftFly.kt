@@ -3,8 +3,11 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 
 class ZoneCraftFly : FlyMode("ZoneCraft") {
+    private val timerBoost = BoolValue("${valuePrefix}TimerBoost", false)
+    
     override fun onMove(event: MoveEvent) {
         mc.timer.timerSpeed = 1f
         if(mc.thePlayer.onGround) {
@@ -13,10 +16,12 @@ class ZoneCraftFly : FlyMode("ZoneCraft") {
         }else {
             mc.thePlayer.motionY = 0.0;
             event.y = 0.0
-            if(mc.thePlayer.ticksExisted % 20 < 10) {
-                mc.timer.timerSpeed = 1.25f
-            } else {
-                mc.timer.timerSpeed = 0.8f
+            if (timerBoost.get()) {
+                if(mc.thePlayer.ticksExisted % 20 < 10) {
+                    mc.timer.timerSpeed = 1.25f
+                } else {
+                    mc.timer.timerSpeed = 0.8f
+                }
             }
             if(mc.thePlayer.ticksExisted % 20 == 9) {
                 MovementUtils.strafe(MovementUtils.getSpeed() * 1.125f)
