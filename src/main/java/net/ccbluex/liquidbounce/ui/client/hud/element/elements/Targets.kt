@@ -1313,8 +1313,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "rise" -> {
                 when (modeRise.get().lowercase()) {
                     "original" -> Border(0F, 0F, 150F, 50F)
-                    "risenew" -> Border(0F, 0F, 150F, 50F)
-                    "risenewnew" -> Border(0F, 0F, 150F, 45F)
+                    "new1" -> Border(0F, 0F, 150F, 50F)
+                    "new2" -> Border(0F, 0F, 150F, 45F)
                 }
             }
             "zamorozka" -> Border(0F, 0F, 150F, 55F)
