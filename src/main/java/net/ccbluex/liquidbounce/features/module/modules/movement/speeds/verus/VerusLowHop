@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 
-class VerusHop3 : SpeedMode("VerusHop3") {
+class VerusLowHop : SpeedMode("VerusLowHop") {
 
     private val upTimerValue = BoolValue("${valuePrefix}Up-Timer", true)
     private val upTimerSpeedValue = FloatValue("${valuePrefix}Up-Timer-Speed", 1.27f, 0.1f, 4.0f)
