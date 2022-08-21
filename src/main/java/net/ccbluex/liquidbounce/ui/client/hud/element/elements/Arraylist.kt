@@ -25,6 +25,7 @@ import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 
+import org.lwjgl.opengl.GL11
 /**
  * CustomHUD Arraylist element
  *
