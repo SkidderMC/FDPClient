@@ -77,13 +77,14 @@ class Arraylist(
     private val shadowShaderValue = BoolValue("Shadow", false)
     private val shadowNoCutValue = BoolValue("Shadow-NoCut", false)
     private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30, { shadowShaderValue.get() })
-    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Background", { shadowShaderValue.get() })
+    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Custom"), "Background").displayable { shadowShaderValue.get() }
     private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
     private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
     private val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
 
     private var x2 = 0
     private var y2 = 0F
+    val counter = intArrayOf(0)
 
     private var modules = emptyList<Module>()
 
@@ -158,36 +159,9 @@ class Arraylist(
                         GL11.glTranslated(renderX, renderY, 0.0)
                         modules.forEachIndexed { index, module ->
                             val xPos = -module.slide - 2
-                            RenderUtils.newDrawRect(
-                                    xPos - if (rectRightValue.get().equals("right", true)) 3 else 2,
-                                    module.arrayY,
-                                    if (rectRightValue.get().equals("right", true)) -1F else 0F,
-                                    module.arrayY + textHeight,
+                            RenderUtils.newDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, module.yPos, if (rectValue.get().equals("right", true)) -1F else 0F, module.yPos + textHeight,
                                     when (shadowColorMode.get().toLowerCase()) {
                                         "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
-                                        "text" -> {
-                                            val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
-
-                                            var Sky = RenderUtils.SkyRainbow(counter[0] * (skyDistanceValue.get() * 50), saturationValue.get(), brightnessValue.get())
-                                            var CRainbow = RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), counter[0] * (50 * cRainbowDistValue.get()))
-                                            var FadeColor = ColorUtils.fade(Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get()), index * fadeDistanceValue.get(), 100).rgb
-                                            counter[0] = counter[0] - 1 
-
-                                            val test = ColorUtils.LiquidSlowly(System.nanoTime(), index * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())?.rgb
-                                            var LiquidSlowly : Int = test!!
-
-                                            val mixerColor = ColorMixer.getMixedColor(-index * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
-
-                                            when {
-                                                colorMode.equals("Random", ignoreCase = true) -> moduleColor
-                                                colorMode.equals("Sky", ignoreCase = true) -> Sky
-                                                colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
-                                                colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
-                                                colorMode.equals("Fade", ignoreCase = true) -> FadeColor
-                                                colorMode.equals("Mixer", ignoreCase = true) -> mixerColor
-                                                else -> customColor
-                                            }
-                                        }
                                         else -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb
                                     }
                             )
@@ -200,12 +174,7 @@ class Arraylist(
                             GL11.glTranslated(renderX, renderY, 0.0)
                             modules.forEachIndexed { index, module ->
                                 val xPos = -module.slide - 2
-                                RenderUtils.quickDrawRect(
-                                        xPos - if (rectRightValue.get().equals("right", true)) 3 else 2,
-                                        module.arrayY,
-                                        if (rectRightValue.get().equals("right", true)) -1F else 0F,
-                                        module.arrayY + textHeight
-                                )
+                                RenderUtils.quickDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, y.toFloat(), if (rectValue.get().equals("right", true)) -1F else 0F, module.yPos + textHeight)
                             }
                             GL11.glPopMatrix()
                         }
@@ -323,40 +292,17 @@ class Arraylist(
                         GL11.glPushMatrix()
                         GL11.glTranslated(renderX, renderY, 0.0)
                         modules.forEachIndexed { index, module ->
-                            var displayString = getModName(module)
+                            var displayString = getModuleName(module)
                             val width = fontRenderer.getStringWidth(displayString)
-                            val xPos = -(width - module.slide) + if (rectLeftValue.get().equals("left", true)) 3 else 2
+                            val xPos = -(width - module.slide) + if (rectValue.get().equals("left", true)) 3 else 2
 
                             RenderUtils.newDrawRect(
                                     0F,
-                                    module.arrayY,
-                                    xPos + width + if (rectLeftValue.get().equals("right", true)) 3F else 2F,
-                                    module.arrayY + textHeight,
+                                module.yPos,
+                                    xPos + width + if (rectValue.get().equals("right", true)) 3F else 2F,
+                                module.yPos + textHeight,
                                     when (shadowColorMode.get().toLowerCase()) {
                                         "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
-                                        "text" -> {
-                                            val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
-
-                                            var Sky = RenderUtils.SkyRainbow(counter[0] * (skyDistanceValue.get() * 50), saturationValue.get(), brightnessValue.get())
-                                            var CRainbow = RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), counter[0] * (50 * cRainbowDistValue.get()))
-                                            var FadeColor = ColorUtils.fade(Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get()), index * fadeDistanceValue.get(), 100).rgb
-                                            counter[0] = counter[0] - 1 
-
-                                            val test = ColorUtils.LiquidSlowly(System.nanoTime(), index * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())?.rgb
-                                            var LiquidSlowly : Int = test!!
-
-                                            val mixerColor = ColorMixer.getMixedColor(-index * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
-
-                                            when {
-                                                colorMode.equals("Random", ignoreCase = true) -> moduleColor
-                                                colorMode.equals("Sky", ignoreCase = true) -> Sky
-                                                colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
-                                                colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
-                                                colorMode.equals("Fade", ignoreCase = true) -> FadeColor
-                                                colorMode.equals("Mixer", ignoreCase = true) -> mixerColor
-                                                else -> customColor
-                                            }
-                                        }
                                         else -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb
                                     }
                             )
@@ -367,15 +313,15 @@ class Arraylist(
                             GL11.glPushMatrix()
                             GL11.glTranslated(renderX, renderY, 0.0)
                             modules.forEachIndexed { index, module ->
-                                var displayString = getModName(module)
+                                var displayString = getModuleName(module)
                                 val width = fontRenderer.getStringWidth(displayString)
-                                val xPos = -(width - module.slide) + if (rectLeftValue.get().equals("left", true)) 3 else 2
+                                val xPos = -(width - module.slide) + if (rectValue.get().equals("left", true)) 3 else 2
 
                                 RenderUtils.quickDrawRect(
                                         0F,
-                                        module.arrayY,
-                                        xPos + width + if (rectLeftValue.get().equals("right", true)) 3 else 2,
-                                        module.arrayY + textHeight
+                                    module.yPos,
+                                        xPos + width + if (rectValue.get().equals("right", true)) 3 else 2,
+                                    module.yPos + textHeight
                                 )
                             }
                             GL11.glPopMatrix()
