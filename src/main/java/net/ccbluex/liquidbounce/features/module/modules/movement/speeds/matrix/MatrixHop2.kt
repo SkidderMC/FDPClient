@@ -16,14 +16,15 @@ class MatrixHop2 : SpeedMode("MatrixHop2") {
         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) {
-                mc.timer.timerSpeed = 1.0
+                mc.timer.timerSpeed = 1.0f
                 mc.thePlayer.jump()
             }
             
              if (mc.thePlayer.motionY > 0.003) {
                 mc.thePlayer.motionX *= 1.0012
                 mc.thePlayer.motionZ *= 1.0012
-                mc.timer.timerSpeed = 1.05
+                mc.timer.timerSpeed = 1.05f
+             }
         }
        
     }
