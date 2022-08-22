@@ -73,15 +73,6 @@ class Arraylist(
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
     private val fontValue = FontValue("Font", Fonts.font40)
-    // i beg the below 7 lines are nice to me
-    private val shadowShaderValue = BoolValue("Shadow", false)
-    private val shadowNoCutValue = BoolValue("Shadow-NoCut", false)
-    private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30, { shadowShaderValue.get() })
-    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Custom"), "Background").displayable { shadowShaderValue.get() }
-    private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
-    private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
-    private val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
-
     private var x2 = 0
     private var y2 = 0F
     val counter = intArrayOf(0)
@@ -151,39 +142,6 @@ class Arraylist(
 
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                if (shadowShaderValue.get()) {
-                    GL11.glTranslated(-renderX, -renderY, 0.0)
-                    GL11.glPushMatrix()
-                    ShadowUtils.shadow(shadowStrength.get().toFloat(), {
-                        GL11.glPushMatrix()
-                        GL11.glTranslated(renderX, renderY, 0.0)
-                        modules.forEachIndexed { index, module ->
-                            val xPos = -module.slide - 2
-                            RenderUtils.newDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, module.yPos, if (rectValue.get().equals("right", true)) -1F else 0F, module.yPos + textHeight,
-                                    when (shadowColorMode.get().toLowerCase()) {
-                                        "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
-                                        else -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb
-                                    }
-                            )
-                        }
-                        GL11.glPopMatrix()
-                        counter[0] = 0
-                    }, {
-                        if (!shadowNoCutValue.get()) {
-                            GL11.glPushMatrix()
-                            GL11.glTranslated(renderX, renderY, 0.0)
-                            modules.forEachIndexed { index, module ->
-                                val xPos = -module.slide - 2
-                                RenderUtils.quickDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, y.toFloat(), if (rectValue.get().equals("right", true)) -1F else 0F, module.yPos + textHeight)
-                            }
-                            GL11.glPopMatrix()
-                        }
-                    })
-                    GL11.glPopMatrix()
-                    GL11.glTranslated(renderX, renderY, 0.0)
-                }
-
-
                 modules.forEachIndexed { index, module ->
                     val xPos = -module.slide - 2
                     val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
@@ -285,53 +243,6 @@ class Arraylist(
             }
 
             Horizontal.LEFT -> {
-                if (shadowShaderValue.get()) {
-                    GL11.glTranslated(-renderX, -renderY, 0.0)
-                    GL11.glPushMatrix()
-                    ShadowUtils.shadow(shadowStrength.get().toFloat(), {
-                        GL11.glPushMatrix()
-                        GL11.glTranslated(renderX, renderY, 0.0)
-                        modules.forEachIndexed { index, module ->
-                            var displayString = getModuleName(module)
-                            val width = fontRenderer.getStringWidth(displayString)
-                            val xPos = -(width - module.slide) + if (rectValue.get().equals("left", true)) 3 else 2
-
-                            RenderUtils.newDrawRect(
-                                    0F,
-                                module.yPos,
-                                    xPos + width + if (rectValue.get().equals("right", true)) 3F else 2F,
-                                module.yPos + textHeight,
-                                    when (shadowColorMode.get().toLowerCase()) {
-                                        "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
-                                        else -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb
-                                    }
-                            )
-                        }
-                        GL11.glPopMatrix()
-                    }, {
-                        if (!shadowNoCutValue.get()) {
-                            GL11.glPushMatrix()
-                            GL11.glTranslated(renderX, renderY, 0.0)
-                            modules.forEachIndexed { index, module ->
-                                var displayString = getModuleName(module)
-                                val width = fontRenderer.getStringWidth(displayString)
-                                val xPos = -(width - module.slide) + if (rectValue.get().equals("left", true)) 3 else 2
-
-                                RenderUtils.quickDrawRect(
-                                        0F,
-                                    module.yPos,
-                                        xPos + width + if (rectValue.get().equals("right", true)) 3 else 2,
-                                    module.yPos + textHeight
-                                )
-                            }
-                            GL11.glPopMatrix()
-                        }
-                    })
-                    GL11.glPopMatrix()
-                    GL11.glTranslated(renderX, renderY, 0.0)
-                }
-
-
                 modules.forEachIndexed { index, module ->
                     val xPos = -(module.width - module.slide) + if (rectMode.equals("left", true)) 5 else 2
                     val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *

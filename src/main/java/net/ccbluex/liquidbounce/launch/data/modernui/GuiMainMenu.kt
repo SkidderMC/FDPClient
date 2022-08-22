@@ -125,20 +125,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                202,
-                this.width - 125,
-                10,
-                25,
-                25,
-                "Announcement",
-                ResourceLocation("fdpclient/imgs/icon/announcement.png"),
-                2,
-                Color(20, 20, 20, 130)
-            )
-        )
-
-        this.buttonList.add(
-            TestBtn(
                 203, this.width - 155, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
                 Color(20, 20, 20, 130)
             )
@@ -270,8 +256,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             103 -> mc.displayGuiScreen(GuiOptions(this, mc.gameSettings))
             104 -> mc.shutdown()
             200 -> mc.displayGuiScreen(GuiAltManager(this))
-            201 -> mc.displayGuiScreen(GuiBackground(this))
-            202 -> displayed = false
             203 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}/discord.html")
             204 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}")
             205 -> LiquidBounce.Darkmode = !LiquidBounce.Darkmode
