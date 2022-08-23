@@ -24,13 +24,14 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     var clicked = false
     var displayed = false
 
-        
+
     fun drawBtns() {
-        val modeColour = if (LiquidBounce.Darkmode) {
-            Color(20, 20, 20, 130).rgb
+        if (LiquidBounce.Darkmode) {
+            var modeColour = Color(20, 20, 20, 130).rgb
         } else {
-            Color(255, 255, 255, 170).rgb
+            var modeColour = Color(255, 255, 255, 170).rgb
         }
+
         this.buttonList.add(
             TestBtn(
                 100,
@@ -40,10 +41,10 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 23,
                 I18n.format("menu.singleplayer"),
                 null,
-                2, 
+                2,
                 modeColour
             )
-        )          
+        )
         this.buttonList.add(
             TestBtn(
                 101,
@@ -111,8 +112,8 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("menu.options").replace(".", ""),
                 ResourceLocation("fdpclient/imgs/icon/setting.png"),
                 2,
-                
-            )
+
+                )
         )
 
         this.buttonList.add(
