@@ -24,12 +24,12 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     var clicked = false
     var displayed = false
     var modeColour = Color(20, 20, 20, 130).rgb
-    init{ if (LiquidBounce.Darkmode)) {
+    fun drawBtns(modeColour: Color) {
+        if (LiquidBounce.Darkmode)) {
         var modeColour = Color(20, 20, 20, 130).rgb
     } else {
         var modeColour = Color(255, 255, 255, 170).rgb
-    } }
-    fun drawBtns(modeColour: Color) {
+    } 
         this.buttonList.add(
             TestBtn(
                 100,
