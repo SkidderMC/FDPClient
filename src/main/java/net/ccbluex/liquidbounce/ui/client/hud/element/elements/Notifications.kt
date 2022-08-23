@@ -83,7 +83,7 @@ class Notification(
     private val animeTime: Int = 500
 ) {
     var width = 100
-    val height = 27
+    val height = 30
     private val classicHeight = 30
     var x = 0F
     var textLengthtitle = 0
@@ -185,34 +185,34 @@ class Notification(
         if (style.equals("Modern")) {
 
             if (blurRadius != 0f) {
-                BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale), (height.toFloat() - 5f) * scale, blurRadius)
+                BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale), (30f - 5f) * scale, blurRadius)
             }
 
             val colors = Color(type.renderColor.red, type.renderColor.green, type.renderColor.blue, alpha / 3)
             if (motionBlur) {
                 when (fadeState) {
                     FadeState.IN -> {
-                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
-                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat() + 5f, 30f - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat() + 5f, 30f - 5f, 2f, colors.rgb)
                     }
 
                     FadeState.STAY -> {
-                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
-                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat() + 5f, 30f - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat() + 5f, 30f - 5f, 2f, colors.rgb)
                     }
 
                     FadeState.OUT -> {
-                        RenderUtils.drawRoundedCornerRect(4F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
-                        RenderUtils.drawRoundedCornerRect(5F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(4F, 0F, width.toFloat() + 5f, 30f - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(5F, 0F, width.toFloat() + 5f, 30f - 5f, 2f, colors.rgb)
                     }
                 }
             } else {
-                RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
-                RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
+                RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, 30f - 5f, 2f, colors.rgb)
+                RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, 30f - 5f, 2f, colors.rgb)
             }
-            RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 2f, colors.rgb)
-            shadowRenderUtils.drawShadowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 240f)
-            RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F), height.toFloat() - 5f, 2f, Color(0, 0, 0, 26).rgb)
+            RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, 30f - 5f, 2f, colors.rgb)
+            shadowRenderUtils.drawShadowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, 30f - 5f, 240f)
+            RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F), 30f - 5f, 2f, Color(0, 0, 0, 26).rgb)
             FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, textColor, titleShadow)
             font.DisplayFont2(font, content, 4F, 10F, textColor, contentShadow)
             return false
@@ -222,10 +222,10 @@ class Notification(
         if(style.equals("LiquidBounce")) {
             RenderUtils.drawRect(-textLength + -9F, 0F, textLength + 9F, -20F, Color(0, 0, 0, alpha))
             font.drawString("$title: $content", -textLength + 9F + 4F, -14F, Int.MAX_VALUE)
- //           RenderUtils.drawRect(-textLength + -9F, 0F, -textLength + -5F, -20F, Color(0, 160, 255).rgb) 
-// TODO: fix it xddifk
+    //           RenderUtils.drawRect(-textLength + -9F, 0F, -textLength + -5F, -20F, Color(0, 160, 255).rgb) 
+    // TODO: fix it xddifk
             
-
+        }
 
         if(style.equals("compact")) {
                 if (blurRadius != 0f) {
@@ -242,21 +242,14 @@ class Notification(
             }
 
 
-        }
-
-
-
-        
-        }
-
         if(style.equals("Skid")){
 
             val colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3)
-            shadowRenderUtils.drawShadowWithCustomAlpha(2f, 0F, width.toFloat() + 5f, height.toFloat() - 5f, 250f) // oops
-            RenderUtils.drawRect(2.0, 0.0, 4.0, height.toFloat() - 5.0, colors.rgb)
-            RenderUtils.drawRect(3F, 0F, width.toFloat() + 5f, height.toFloat() - 5f, Color(0,0,0,150))
-            RenderUtils.drawGradientSidewaysH(3.0, 0.0, 20.0, height.toFloat() - 5.0, colors.rgb, Color(0,0,0,0).rgb)
-            RenderUtils.drawRect(2f, height.toFloat()-6f, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), height.toFloat()-5f ,Color(52, 97, 237).rgb)
+            shadowRenderUtils.drawShadowWithCustomAlpha(2f, 0F, width.toFloat() + 5f, 30f - 5f, 250f) // oops
+            RenderUtils.drawRect(2.0, 0.0, 4.0, 30f - 5.0, colors.rgb)
+            RenderUtils.drawRect(3F, 0F, width.toFloat() + 5f, 30f - 5f, Color(0,0,0,150))
+            RenderUtils.drawGradientSidewaysH(3.0, 0.0, 20.0, 30f - 5.0, colors.rgb, Color(0,0,0,0).rgb)
+            RenderUtils.drawRect(2f, 30f-6f, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), 30f-5f ,Color(52, 97, 237).rgb)
 
             FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, textColor,titleShadow)
             font.DisplayFont2(font,content, 4F, 10F, textColor,contentShadow)
