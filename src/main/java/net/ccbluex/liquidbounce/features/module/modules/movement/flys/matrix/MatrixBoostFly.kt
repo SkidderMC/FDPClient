@@ -37,7 +37,7 @@ class MatrixBoostFly : FlyMode("MatrixBoost") {
                     true
                 )
             )
-            if (bypassMode.equals("Test") {
+            if (bypassMode.equals("Test")) {
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
                         mc.thePlayer.posX + -sin(yaw) * 1.44,
