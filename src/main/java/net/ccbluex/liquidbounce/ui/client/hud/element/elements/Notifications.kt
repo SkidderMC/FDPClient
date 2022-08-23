@@ -228,17 +228,9 @@ class Notification(
         }
 
         if(style.equals("compact")) {
-                if (blurRadius != 0f) {
-                    GL11.glTranslatef(-originalX, -originalY, 0F)
-                    GL11.glPushMatrix()
-                    BlurUtils.blurAreaRounded(originalX + -x - 5F, originalY + -18F - y, originalX + -x + 8F + textLength, originalY + -y, 3F, strength)
-                    GL11.glPopMatrix()
-                    GL11.glTranslatef(originalX, originalY, 0F)
-                } 
-
                 RenderUtils.customRounded(-x + 8F + textLength, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, backgroundColor.rgb)
                 RenderUtils.customRounded(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)  
-                Fonts.font40.drawString(message, -x + 3, -13F - y, -1)
+                Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
             }
 
 
