@@ -258,8 +258,8 @@ class Notification(
         }
 
         if(style.equals("compact")) {
-                RenderUtils.customRounded(-x + 8F + textLength, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, backgroundColor.rgb)
-                RenderUtils.customRounded(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)  
+                RenderUtils.customRoundedRect(-x + 8F + textLength, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0, 0, 0, alpha))
+                RenderUtils.customRoundedRect(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)  
                 Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
             }
 
