@@ -23,12 +23,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     var drawed = false
     var clicked = false
     var displayed = false
-    fun drawBtns(modeColour: Color) {
-        if (LiquidBounce.Darkmode.equals(true)) {
-            var modeColour = Color(20, 20, 20, 130).rgb
-        } else {
-            var modeColour = Color(255, 255, 255, 170).rgb
-        }
+    fun drawBtns() {
         this.buttonList.add(
             TestBtn(
                 100,
@@ -39,7 +34,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("menu.singleplayer"),
                 null,
                 2,
-                modeColour
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
             )
         )
         this.buttonList.add(
@@ -52,7 +47,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("menu.multiplayer"),
                 null,
                 2,
-                modeColour
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
             )
         )
 
@@ -66,7 +61,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 LanguageManager.get("ui.altmanager"),
                 null,
                 2,
-                modeColour
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
             )
         )
 
@@ -80,7 +75,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 LanguageManager.get("ui.mods"),
                 null,
                 2,
-                modeColour
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
             )
         )
 
@@ -95,7 +90,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("menu.quit"),
                 ResourceLocation("fdpclient/imgs/icon/quit.png"),
                 2,
-                modeColour
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
             )
         )
 
@@ -109,7 +104,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("menu.options").replace(".", ""),
                 ResourceLocation("fdpclient/imgs/icon/setting.png"),
                 2,
-
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
                 )
         )
 
@@ -123,28 +118,28 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("ui.background"),
                 ResourceLocation("fdpclient/imgs/icon/wallpaper.png"),
                 2,
-                modeColour
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
             )
         )
 
         this.buttonList.add(
             TestBtn(
                 203, this.width - 155, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
-                modeColour
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
             )
         )
 
         this.buttonList.add(
             TestBtn(
                 204, this.width - 185, 10, 25, 25, "Website", ResourceLocation("fdpclient/imgs/icon/website.png"), 2,
-                modeColour
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
             )
         )
 
         this.buttonList.add(
             TestBtn(
                 205, 20, 10, 25, 25, "Toggle theme", ResourceLocation("fdpclient/imgs/icon/moon-night.png"), 2,
-                modeColour
+                if (LiquidBounce.Darkmode.equals(true)) { var modeColour = Color(20, 20, 20, 130).rgb } else { var modeColour = Color(255, 255, 255, 170).rgb }
             )
         )
 
