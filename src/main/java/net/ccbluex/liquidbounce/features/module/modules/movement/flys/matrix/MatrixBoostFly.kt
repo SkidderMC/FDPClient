@@ -11,7 +11,6 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import kotlin.math.cos
 import kotlin.math.sin
 
-
 class MatrixBoostFly : FlyMode("MatrixBoost") {
     private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("New", "Stable", "Test", "Custom"), "New")
     private val speed = FloatValue("${valuePrefix}Speed", 2.0f, 1.0f, 3.0f)
