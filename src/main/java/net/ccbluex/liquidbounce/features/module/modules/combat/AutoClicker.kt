@@ -39,6 +39,7 @@ class AutoClicker : Module() {
             }
         }
     }
+    private val legitJitter = BoolValue("LegitJitterCPS", false)
 
     private val rightValue = BoolValue("Right", true)
     private val rightBlockOnlyValue = BoolValue("RightBlockOnly", false)
@@ -60,7 +61,23 @@ class AutoClicker : Module() {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
 
             leftLastSwing = System.currentTimeMillis()
-            leftDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+            if (legitJitter.get()) {
+               if (Random.nextInt(1, 14) <= 3) {
+                  if (Random.nextInt(1,3) == 2) {
+                      leftDelay = (Random.nextInt(98,102) / 1000).toLong()
+                  } else {
+                      leftDelay = (Random.nextInt(114,117) / 1000).toLong()
+                  }
+               } else {
+                   if (Random.nextInt(1,4) == 1) {
+                       leftDelay = (Random.nextInt(64,68) / 1000).toLong()
+                   } else {
+                       leftDelay = (Random.nextInt(84,85) / 1000).toLong()
+                   }
+               }
+            } else {
+                leftDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+            }
         }
 
         // Right click
@@ -70,7 +87,23 @@ class AutoClicker : Module() {
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode) // Minecraft Click Handling
 
             rightLastSwing = System.currentTimeMillis()
-            rightDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+            if (legitJitter.get()) {
+               if (Random.nextInt(1, 14) <= 3) {
+                  if (Random.nextInt(1,3) == 2) {
+                      rightDelay = (Random.nextInt(98,102) / 1000).toLong()
+                  } else {
+                      rightDelay = (Random.nextInt(114,117) / 1000).toLong()
+                  }
+               } else {
+                   if (Random.nextInt(1,4) == 1) {
+                       rightDelay = (Random.nextInt(64,68) / 1000).toLong()
+                   } else {
+                       rightDelay = (Random.nextInt(84,85) / 1000).toLong()
+                   }
+               }
+            } else {
+                rightDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+            }
         }
     }
 
