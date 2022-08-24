@@ -38,6 +38,7 @@ class Speed : Module() {
     }
 
     private val noWater = BoolValue("NoWater", true)
+    private val debug = BoolValue("Debug", false)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -48,6 +49,11 @@ class Speed : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        if (debug.get()) {
+            alert("Speed: " + MovementUtils.getSpeed().toString())
+            alert("YMotion: " + mc.thePlayer.motionY.toString())
+        }
+        
         if (MovementUtils.isMoving()) {
             mc.thePlayer.isSprinting = true
         }
