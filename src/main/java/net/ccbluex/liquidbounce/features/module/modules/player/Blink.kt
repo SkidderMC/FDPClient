@@ -24,6 +24,7 @@ import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import org.lwjgl.opengl.GL11
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
@@ -81,6 +82,7 @@ class Blink : Module() {
             event.cancelEvent()
             packets.add(packet as Packet<INetHandlerPlayServer>)
         }
+        if (packet is S08PacketPlayerPosLook && inboundValue.get()) event.cancelEvent()
     }
 
     @EventTarget
