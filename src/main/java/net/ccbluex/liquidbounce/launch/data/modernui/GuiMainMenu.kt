@@ -32,7 +32,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 130,
                 23,
                 I18n.format("menu.singleplayer"),
-                null,
+                ResourceLocation("fdpclient/imgs/icon/1x1.png"),
                 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
             )
@@ -45,7 +45,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 130,
                 23,
                 I18n.format("menu.multiplayer"),
-                null,
+                ResourceLocation("fdpclient/imgs/icon/1x1.png"),
                 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
             )
@@ -59,7 +59,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 130,
                 23,
                 LanguageManager.get("ui.altmanager"),
-                null,
+                ResourceLocation("fdpclient/imgs/icon/1x1.png"),
                 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
             )
@@ -73,7 +73,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 130,
                 23,
                 LanguageManager.get("ui.mods"),
-                null,
+                ResourceLocation("fdpclient/imgs/icon/1x1.png"),
                 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
             )
