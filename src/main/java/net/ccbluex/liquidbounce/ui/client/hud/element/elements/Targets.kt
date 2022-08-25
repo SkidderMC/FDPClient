@@ -40,7 +40,7 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "Zamorozka", "Arris", "Tenacity", "TenacityRainbow", "WaterMelon"), "FDP")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -83,11 +83,14 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private val bgBlueValue = IntegerValue("Background-Blue", 0, 0, 255)
     private val bgAlphaValue = IntegerValue("Background-Alpha", 160, 0, 255)
 
+    private val tenacityNewStatic = BoolValue("TenacityNewStaticRainbow", false)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
     private val fadeValue = BoolValue("FadeAnim", false)
     private val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F)
     private val waveSecondValue = IntegerValue("Seconds", 2, 1, 10)
-
+    
+    
+    val riseHurtTime = BoolValue("RiseHurt", true)
     val riseAlpha = IntegerValue("RiseAlpha", 130, 0, 255)
     val riseCountValue = IntegerValue("Rise-Count", 5, 1, 20)
     val riseSizeValue = FloatValue("Rise-Size", 1f, 0.5f, 3f)
@@ -359,7 +362,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "zamorozka" -> drawZamorozka(prevTarget!!)
             "arris" -> drawArris(prevTarget!!)
             "tenacity" -> drawTenacity(prevTarget!!)
-            "tenacityrainbow" -> drawTenacityRainbow(prevTarget!!)
+            "tenacitynew" -> drawTenacityNew(prevTarget!!)
             "chill" -> drawChill(prevTarget!! as EntityPlayer)
             "remix" -> drawRemix(prevTarget!! as EntityPlayer)
             "rice" -> drawRice(prevTarget!!)
@@ -506,7 +509,11 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glPopMatrix()
 
         font.drawString("Name ${target.name}", 40, 11, Color.WHITE.rgb)
-        font.drawString("Distance ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))} Hurt ${target.hurtTime}", 40, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
+        if (riseHurtTime.get()) {
+            font.drawString("Distance ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))} Hurt ${target.hurtTime}", 40, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
+        } else {
+            font.drawString("Distance ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 40, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
+        }
 
         // 渐变血量条
         GL11.glEnable(3042)
@@ -925,43 +932,48 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
     }
     
-    private fun drawTenacityRainbow(target: EntityLivingBase) {
+    private fun drawTenacityNew(target: EntityLivingBase) {
         val font = fontValue.get()
 
         val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
         val hurtPercent = target.hurtPercent
 
         //background is halal
+        
+        if (tenacityNewStatic.get()) {
+            RenderUtils.drawRoundedCornerRect(0f, 5f, 134f, 45f, 6f, ColorUtils.rainbow().rgb)
+        } else {
 
-        //curved sides
-        RenderUtils.drawRoundedCornerRect(0f, 5f, 12f, 45f, 6f, ColorUtils.hslRainbow(6, indexOffset = 10).rgb)
-        RenderUtils.drawRoundedCornerRect(120f, 5f, 134f, 45f, 6f, ColorUtils.hslRainbow(129, indexOffset = 10).rgb)
+            //curved sides
+            RenderUtils.drawRoundedCornerRect(0f, 5f, 12f, 45f, 6f, ColorUtils.hslRainbow(6, indexOffset = 10).rgb)
+            RenderUtils.drawRoundedCornerRect(120f, 5f, 134f, 45f, 6f, ColorUtils.hslRainbow(129, indexOffset = 10).rgb)
 
-        //rain bowwww
+            //rain bowwww
 
-        //random OpenGl stuff idk
-        GL11.glEnable(3042)
-        GL11.glDisable(3553)
-        GL11.glBlendFunc(770, 771)
-        GL11.glEnable(2848)
-        GL11.glShadeModel(7425)
+            //random OpenGl stuff idk
+            GL11.glEnable(3042)
+            GL11.glDisable(3553)
+            GL11.glBlendFunc(770, 771)
+            GL11.glEnable(2848)
+            GL11.glShadeModel(7425)
 
-        //stop pos mometno
-        val stopPos = 50 + additionalWidth.toInt()
+            //stop pos mometno
+            val stopPos = 50 + additionalWidth.toInt()
 
-        //draw
-        for (i in 6..stopPos step 5) {
-            val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
-            RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), 5.0, x1, 45.0,
-                ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
+            //draw
+            for (i in 6..stopPos step 5) {
+                val x1 = (i + 5).coerceAtMost(stopPos).toDouble()
+                RenderUtils.quickDrawGradientSidewaysH(i.toDouble(), 5.0, x1, 45.0,
+                    ColorUtils.hslRainbow(i, indexOffset = 10).rgb, ColorUtils.hslRainbow(x1.toInt(), indexOffset = 10).rgb)
+            }
+
+
+            //random OpenGl stuff idfk
+            GL11.glEnable(3553)
+            GL11.glDisable(3042)
+            GL11.glDisable(2848)
+            GL11.glShadeModel(7424)
         }
-
-
-        //random OpenGl stuff idfk
-        GL11.glEnable(3553)
-        GL11.glDisable(3042)
-        GL11.glDisable(2848)
-        GL11.glShadeModel(7424)
 
 
 
