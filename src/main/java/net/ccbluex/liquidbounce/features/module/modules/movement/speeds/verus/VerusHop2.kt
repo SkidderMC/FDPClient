@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 
 class VerusHop2 : SpeedMode("VerusHop2") {
 
-    private val timerBoost = BoolValue("TimerBoost",true)
+    private val timerBoost = BoolValue("${valuePrefix}TimerBoost",true)
 
     private var jumps = 0
     private var lastY = 0.0
