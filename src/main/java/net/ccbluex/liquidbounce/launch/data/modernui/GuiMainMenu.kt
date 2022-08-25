@@ -23,8 +23,11 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     var drawed = false
     var clicked = false
     var displayed = false
-    if (LiquidBounce.Darkmode.equals(true)) { RenderUtils.drawRect(0F, 0F, this.width, this.height, Color(0, 0, 0, 160)) } else { return }
+    
     fun drawBtns() {
+        // draw darkmode bg
+        if (LiquidBounce.Darkmode.equals(true)) { RenderUtils.drawRect(0F, 0F, this.width, this.height, Color(0, 0, 0, 160)) } else { return }
+
         this.buttonList.add(
             TestBtn(
                 100,
