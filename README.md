@@ -15,10 +15,10 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 - **Step 2:** Install Forge 1.8.9 [here](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it
 - **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\\.minecraft\mods) (If you are using the official launcher, click the installations tab then click the folder icon next to forge)
-- **Step 5:** Enjoy our client!
+- **Step 5:** Enjoy!
 
 ## Issues
-Found a bug or a missing feature? You can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues)!
+Found bugs or a missing features? You can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues)!
 
 ## License
 This project is subject to the [GNU General Public License v3.0](LICENSE). This does only apply for source code located directly in this clean repository. During the development and compilation process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL license.
@@ -52,11 +52,11 @@ FDPClient uses gradle, so make sure that it is installed properly. Instructions 
 Mixins can be used to modify classes at runtime before they are loaded. FDPClient uses them to inject its code into the Minecraft client. This way, we do not have to ship Mojang's copyrighted code. If you want to learn more about it, check out their [documentation](https://docs.spongepowered.org/5.1.0/en/plugin/internals/mixins.html).
 
 ## Contributing
-We welcome contributions, but you have to follow these rules to make us merge your pull request.
+We welcome contributions, but you have to follow the following rules in order for us to merge your pull request.
 
 ### Language and Code Quality
-Your code needs to be able to build, and make the bugs of the code as less as you can!  
-You also need to use kotlin features to make coding easier and faster, so please use kotlin and make the [Detekt](https://github.com/detekt/detekt) code quality check good and use kotlin features if you can, because we would never merge terrible code.
+Your code needs to be able to build, please ensure your code has little to no bugs!  
+You also need to use kotlin features to make coding easier and faster, so please use kotlin and pass the [Detekt](https://github.com/detekt/detekt) code quality check, use kotlin features if you can, because we will never merge terrible code.
 
 #### Kotlin features
 Help enhance the code readability by using kotlin features.
@@ -77,7 +77,7 @@ Timer().schedule(object : TimerTask() {
 ~~~
 
 ### Skidding
-Please use original code if you can and do not directly steal code, but we welcome skidding with a packet logger or anything like that in order to skid from a closed source client and make the cheating community more open!
+Please use original code if you can and do not directly steal code,however we welcome skidding with a packet logger or anything similar in order to skid from a closed source client and make the cheating community more open!
 
 ### Useless features
 Useless features are features only you think are useful and or features can be added with a config change.  

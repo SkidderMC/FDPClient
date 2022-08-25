@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.ui.btn.TestBtn
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.minecraft.client.gui.*
@@ -23,6 +24,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     var drawed = false
     var clicked = false
     var displayed = false
+    
     fun drawBtns() {
         this.buttonList.add(
             TestBtn(
@@ -34,10 +36,9 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("menu.singleplayer"),
                 null,
                 2,
-                Color(20, 20, 20, 130)
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 170) } else { Color(255, 255, 255, 170) }
             )
         )
-
         this.buttonList.add(
             TestBtn(
                 101,
@@ -48,7 +49,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("menu.multiplayer"),
                 null,
                 2,
-                Color(20, 20, 20, 130)
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
@@ -62,7 +63,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 LanguageManager.get("ui.altmanager"),
                 null,
                 2,
-                Color(20, 20, 20, 130)
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
@@ -76,7 +77,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 LanguageManager.get("ui.mods"),
                 null,
                 2,
-                Color(20, 20, 20, 130)
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
@@ -89,9 +90,9 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 25,
                 25,
                 I18n.format("menu.quit"),
-                ResourceLocation("fdpclient/imgs/icon/quit.png"),
+                if (LiquidBounce.Darkmode.equals(true)) { ResourceLocation("fdpclient/imgs/icon/quitDark.png") } else { ResourceLocation("fdpclient/imgs/icon/quit.png") },
                 2,
-                Color(20, 20, 20, 130)
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
@@ -103,10 +104,10 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 25,
                 25,
                 I18n.format("menu.options").replace(".", ""),
-                ResourceLocation("fdpclient/imgs/icon/setting.png"),
+                if (LiquidBounce.Darkmode.equals(true)) { ResourceLocation("fdpclient/imgs/icon/settingDark.png") } else { ResourceLocation("fdpclient/imgs/icon/setting.png") },
                 2,
-                Color(20, 20, 20, 130)
-            )
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
+                )
         )
 
         this.buttonList.add(
@@ -117,49 +118,45 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 25,
                 25,
                 I18n.format("ui.background"),
-                ResourceLocation("fdpclient/imgs/icon/wallpaper.png"),
+                if (LiquidBounce.Darkmode.equals(true)) { ResourceLocation("fdpclient/imgs/icon/wallpaperDark.png") } else { ResourceLocation("fdpclient/imgs/icon/wallpaper.png") },
                 2,
-                Color(20, 20, 20, 130)
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
-        this.buttonList.add(
+              this.buttonList.add(
             TestBtn(
-                202,
+                204,
                 this.width - 125,
                 10,
                 25,
                 25,
-                "Announcement",
-                ResourceLocation("fdpclient/imgs/icon/announcement.png"),
+                "Website",
+                if (LiquidBounce.Darkmode.equals(true)) { ResourceLocation("fdpclient/imgs/icon/websiteDark.png") } else { ResourceLocation("fdpclient/imgs/icon/website.png") },
                 2,
-                Color(20, 20, 20, 130)
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
-        this.buttonList.add(
-            TestBtn(
-                203, this.width - 155, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
-                Color(20, 20, 20, 130)
-            )
-        )
 
         this.buttonList.add(
             TestBtn(
-                204, this.width - 185, 10, 25, 25, "Website", ResourceLocation("fdpclient/imgs/icon/website.png"), 2,
-                Color(20, 20, 20, 130)
+                203, this.width - 155, 10, 25, 25, "Discord", if (LiquidBounce.Darkmode.equals(true)) { ResourceLocation("fdpclient/imgs/icon/discordDark.png") } else { ResourceLocation("fdpclient/imgs/icon/discord.png") }, 2,
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
+
         this.buttonList.add(
             TestBtn(
-                205, 20, 10, 25, 25, "Toggle theme", ResourceLocation("fdpclient/imgs/icon/moon-night.png"), 2,
-                Color(20, 20, 20, 130)
+                205, 20, 10, 25, 25, "Toggle theme", if (LiquidBounce.Darkmode.equals(true)) { ResourceLocation("fdpclient/imgs/icon/moon-nightDark.png") } else { ResourceLocation("fdpclient/imgs/icon/moon-night.png") }, 2,
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
         drawed = true
     }
+
 
     /* For modification, please keep "Designed by SkidderMC" */
     override fun initGui() {
@@ -186,35 +183,21 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         drawBackground(0)
         val defaultHeight = (this.height).toFloat()
         val defaultWidth = (this.width).toFloat()
+        if (LiquidBounce.Darkmode.equals(true)) { RenderUtils.drawRect(0F, 0F, defaultWidth, defaultHeight, Color(0, 0, 0, 0)) } else { RenderUtils.drawRect(0F, 0F, defaultWidth, defaultHeight, Color(0, 0, 0, 100)) }
         val i = 0
         val defaultHeight1 = (this.height).toDouble()
         val defaultWidth1 = (this.width).toDouble()
-        FontLoaders.F40.drawCenteredString(
-            LiquidBounce.CLIENT_NAME,
-            this.width.toDouble() / 2,
-            this.height.toDouble() / 2 - 60,
-            if (LiquidBounce.Darkmode) {
-                Color(255, 255, 255, 200).rgb
-            } else {
-                Color(1, 1, 1, 170).rgb
-            }
-        )
+        FontLoaders.F40.drawCenteredString( LiquidBounce.CLIENT_NAME, this.width.toDouble() / 2, this.height.toDouble() / 2 - 60, Color(255, 255, 255, 200).rgb)
 
 
         FontLoaders.F16.drawString(
-            "Made by SkidderMC",
+            LiquidBounce.CLIENT_NAME + " by SkidderMC",
             10f,
             this.height - 15f,
             Color(1, 1, 1, 170).rgb
         )
-        FontLoaders.F16.drawString(
-            LiquidBounce.CLIENT_NAME,
-            10f,
-            this.height - 25f,
-            Color(1, 1, 1, 170).rgb
-        )
         var versionMsg =
-            "Version: " + LiquidBounce.CLIENT_VERSION + if (LiquidBounce.VERSIONTYPE.contains("Release")) " | Release" else " | " + LiquidBounce.VERSIONTYPE + " (Bleeding Edge)"
+            "Version: " + LiquidBounce.CLIENT_VERSION
         FontLoaders.F16.drawString(
             versionMsg,
             this.width - FontLoaders.F16.getStringWidth(versionMsg) - 10F,
@@ -270,8 +253,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             103 -> mc.displayGuiScreen(GuiOptions(this, mc.gameSettings))
             104 -> mc.shutdown()
             200 -> mc.displayGuiScreen(GuiAltManager(this))
-            201 -> mc.displayGuiScreen(GuiBackground(this))
-            202 -> displayed = false
             203 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}/discord.html")
             204 -> MiscUtils.showURL("https://${LiquidBounce.CLIENT_WEBSITE}")
             205 -> LiquidBounce.Darkmode = !LiquidBounce.Darkmode

@@ -20,10 +20,12 @@ import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShadowUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 
+import org.lwjgl.opengl.GL11
 /**
  * CustomHUD Arraylist element
  *
@@ -71,9 +73,9 @@ class Arraylist(
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
     private val fontValue = FontValue("Font", Fonts.font40)
-
     private var x2 = 0
     private var y2 = 0F
+    val counter = intArrayOf(0)
 
     private var modules = emptyList<Module>()
 
