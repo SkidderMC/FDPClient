@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.PlayerUtils;
 import net.ccbluex.liquidbounce.utils.extensions.EntityExtensionKt;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import org.lwjgl.opengl.GL11;
@@ -58,19 +59,19 @@ public class WaterMelon {
         int size = 35;
         // so is pretending you are part of unlegitmc fun?
         GL11.glPushMatrix();
-        GL11.glTranslatef((float)5.0f, (float)5.0f, (float)0f);
-        GL11.glScalef((float)scale, (float)scale, (float)scale);
-        GL11.glTranslatef((float)((float)17.5f - scale) / scale), (17.5f - scale) / scale), (float)0f);
-;
+        GL11.glTranslatef(5.0f, 5.0f, 0f);
+        GL11.glScalef(scale, scale, scale);
+        GL11.glTranslatef((17.5f - scale) / scale, (17.5f - scale) / scale, 0f);
+
         //  ok that one was annoying
-        GL11.glColor4f((float)1.0, (float)((float)1.0 - hurtPercent), (float)((float)1.0 - hurtPercent), (float)1.0);
+        GL11.glColor4f((float)1.0, ((float)1.0 - hurtPercent), ((float)1.0 - hurtPercent), (float)1.0);
         // for xigua: gatodepan > you
         GL11.glColor4f((float)1.0, (float)1.0, (float)1.0, (float)1.0);
         Minecraft.getMinecraft().getTextureManager().bindTexture(EntityExtensionKt.getSkin((EntityLivingBase)target));
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f);
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f);
         GL11.glPopMatrix();
-        FontLoaders.F20.DisplayFonts(String.valueOf((Object)target.getName()), 45f), 12f, Color.WHITE.getRGB(), FontLoaders.F20);
+        FontLoaders.F20.DisplayFonts(String.valueOf((Object)target.getName()), 45f), 12f, Color.WHITE.getRGB(), FontLoaders.F20;
         DecimalFormat df = new DecimalFormat("0.00");
         FontLoaders.F14.DisplayFonts("Armor " + (df.format(PlayerUtils.INSTANCE.getAr(target) * 100)) + "%", 45f, 24f, new Color(200,200,200).getRGB(), FontLoaders.F14);
         RenderUtils.drawRoundedCornerRect(45f, 32f, 145f, 42f, 5f,new Color(0,0,0,100).getRGB());
