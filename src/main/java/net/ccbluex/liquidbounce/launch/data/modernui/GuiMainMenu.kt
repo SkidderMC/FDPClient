@@ -88,7 +88,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 25,
                 25,
                 I18n.format("menu.quit"),
-                ResourceLocation("fdpclient/imgs/icon/quit.png"),
+                if (LiquidBounce.Darkmode.equals(true)) { "fdpclient/imgs/icon/quitDark.png" } else { ResourceLocation("fdpclient/imgs/icon/quit.png") },
                 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
@@ -102,7 +102,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 25,
                 25,
                 I18n.format("menu.options").replace(".", ""),
-                ResourceLocation("fdpclient/imgs/icon/setting.png"),
+                if (LiquidBounce.Darkmode.equals(true)) { "fdpclient/imgs/icon/settingDark.png" } else { ResourceLocation("fdpclient/imgs/icon/setting.png") },
                 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
                 )
@@ -116,7 +116,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 25,
                 25,
                 I18n.format("ui.background"),
-                ResourceLocation("fdpclient/imgs/icon/wallpaper.png"),
+                if (LiquidBounce.Darkmode.equals(true)) { "fdpclient/imgs/icon/wallpaperDark.png" } else { ResourceLocation("fdpclient/imgs/icon/wallpaper.png") },
                 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
@@ -130,7 +130,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 25,
                 25,
                 "Website",
-                ResourceLocation("fdpclient/imgs/icon/website.png"),
+                if (LiquidBounce.Darkmode.equals(true)) { "fdpclient/imgs/icon/websiteDark.png" } else { ResourceLocation("fdpclient/imgs/icon/website.png") },
                 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
@@ -139,7 +139,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                203, this.width - 155, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
+                203, this.width - 155, 10, 25, 25, "Discord", if (LiquidBounce.Darkmode.equals(true)) { "fdpclient/imgs/icon/discordDark.png" } else { ResourceLocation("fdpclient/imgs/icon/discord.png") }, 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
@@ -147,7 +147,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
         this.buttonList.add(
             TestBtn(
-                205, 20, 10, 25, 25, "Toggle theme", ResourceLocation("fdpclient/imgs/icon/moon-night.png"), 2,
+                205, 20, 10, 25, 25, "Toggle theme", if (LiquidBounce.Darkmode.equals(true)) { "fdpclient/imgs/icon/moon-nightDark.png" } else { ResourceLocation("fdpclient/imgs/icon/moon-night.png") }, 2,
                 if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
