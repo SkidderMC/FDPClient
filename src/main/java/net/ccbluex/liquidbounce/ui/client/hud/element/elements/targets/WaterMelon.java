@@ -43,18 +43,8 @@ public class WaterMelon {
         RenderUtils.drawRoundedCornerRect(1.0f, 0.0f, 150.0f, 50.0f, 5.0f, new Color(0, 0, 0, 50).getRGB());
         // xigua loves the ccp!
         float hurtPercent = EntityExtensionKt.getHurtPercent((EntityLivingBase) target);
-        if (hurtPercent == 0.0) {
-            n = 1;
-        } else {
-            n = 0;
-        }
-        if (n != 0) {
-        f = 1.0f;
-        } else if (hurtPercent < 0.5f) {
-            f = 0.94f;
-        } else {
-            f = 1.1f;
-        } // xigua is obtuse
+        if (hurtPercent == 0.0) { n = 1; } else { n = 0; }
+        if (n != 0) { f = 1.0f; } else if (hurtPercent < 0.5f) { f = 0.94f; } else { f = 1.1f; } // xigua is obtuse
         float scale = f;
         int size = 35;
         // so is pretending you are part of unlegitmc fun?
@@ -88,3 +78,4 @@ public class WaterMelon {
          */
     }
 }
+// known bug, playerhead does not render in correct place

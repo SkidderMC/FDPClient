@@ -27,14 +27,14 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         this.buttonList.add(
             TestBtn(
                 100,
-                (this.width / 2) - (130 / 2),
+                (this.width / 2) - (180 / 2),
                 this.height / 2 - 20,
                 130,
                 23,
                 I18n.format("menu.singleplayer"),
-                ResourceLocation("fdpclient/imgs/icon/1x1.png"),
+                null,
                 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 170) } else { Color(255, 255, 255, 170) }
             )
         )
         this.buttonList.add(
@@ -45,9 +45,9 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 130,
                 23,
                 I18n.format("menu.multiplayer"),
-                ResourceLocation("fdpclient/imgs/icon/1x1.png"),
+                null,
                 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
@@ -59,9 +59,9 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 130,
                 23,
                 LanguageManager.get("ui.altmanager"),
-                ResourceLocation("fdpclient/imgs/icon/1x1.png"),
+                null,
                 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
@@ -73,9 +73,9 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 130,
                 23,
                 LanguageManager.get("ui.mods"),
-                ResourceLocation("fdpclient/imgs/icon/1x1.png"),
+                null,
                 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
@@ -90,7 +90,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("menu.quit"),
                 ResourceLocation("fdpclient/imgs/icon/quit.png"),
                 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
@@ -104,7 +104,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("menu.options").replace(".", ""),
                 ResourceLocation("fdpclient/imgs/icon/setting.png"),
                 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
                 )
         )
 
@@ -118,28 +118,37 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 I18n.format("ui.background"),
                 ResourceLocation("fdpclient/imgs/icon/wallpaper.png"),
                 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
+
+              this.buttonList.add(
+            TestBtn(
+                204,
+                this.width - 125,
+                10,
+                25,
+                25,
+                "Website",
+                ResourceLocation("fdpclient/imgs/icon/website.png"),
+                2,
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) 
+            )
+        )
+
 
         this.buttonList.add(
             TestBtn(
                 203, this.width - 155, 10, 25, 25, "Discord", ResourceLocation("fdpclient/imgs/icon/discord.png"), 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
-        this.buttonList.add(
-            TestBtn(
-                204, this.width - 185, 10, 25, 25, "Website", ResourceLocation("fdpclient/imgs/icon/website.png"), 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
-            )
-        )
 
         this.buttonList.add(
             TestBtn(
                 205, 20, 10, 25, 25, "Toggle theme", ResourceLocation("fdpclient/imgs/icon/moon-night.png"), 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 130) } else { Color(255, 255, 255, 170) }
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
@@ -179,19 +188,14 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
 
         FontLoaders.F16.drawString(
-            "Made by SkidderMC",
+            LiquidBounce.CLIENT_NAME + " by SkidderMC",
             10f,
             this.height - 15f,
             Color(1, 1, 1, 170).rgb
         )
-        FontLoaders.F16.drawString(
-            LiquidBounce.CLIENT_NAME,
-            10f,
-            this.height - 25f,
-            Color(1, 1, 1, 170).rgb
-        )
+        FontLoaders.F16.drawString(LiquidBounce.CLIENT_NAME,10f,this.height - 25f,Color(1, 1, 1, 170).rgb)
         var versionMsg =
-            "Version: " + LiquidBounce.CLIENT_VERSION + if (LiquidBounce.VERSIONTYPE.contains("Release")) " | Release" else " | " + LiquidBounce.VERSIONTYPE + " (Bleeding Edge)"
+            "Version: " + LiquidBounce.CLIENT_VERSION
         FontLoaders.F16.drawString(
             versionMsg,
             this.width - FontLoaders.F16.getStringWidth(versionMsg) - 10F,

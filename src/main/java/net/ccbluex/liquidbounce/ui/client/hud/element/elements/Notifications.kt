@@ -252,7 +252,7 @@ class Notification(
         // lbtl = liquidbounce text length
         if(style.equals("LiquidBounce")) {
             RenderUtils.drawRect(-1F, 0F, lbtl + 9F, -20F, Color(0, 0, 0, alpha))
-            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title + ": " + content, 4F, 3F, textColor, titleShadow)
+            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title + ": " + content, -4F, 3F, textColor, titleShadow)
             RenderUtils.drawRect(-1F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), 0F, 4F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), -20F, Color(0, 0, 0, alpha))
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         }
