@@ -27,7 +27,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         this.buttonList.add(
             TestBtn(
                 100,
-                (this.width / 2) - (180 / 2),
+                (this.width / 2) - (130 / 2),
                 this.height / 2 - 20,
                 130,
                 23,
@@ -193,7 +193,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             this.height - 15f,
             Color(1, 1, 1, 170).rgb
         )
-        FontLoaders.F16.drawString(LiquidBounce.CLIENT_NAME,10f,this.height - 25f,Color(1, 1, 1, 170).rgb)
         var versionMsg =
             "Version: " + LiquidBounce.CLIENT_VERSION
         FontLoaders.F16.drawString(
