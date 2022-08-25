@@ -7,6 +7,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.BlockAir
 import net.minecraft.stats.StatList
 import net.minecraft.util.AxisAlignedBB
@@ -16,7 +17,7 @@ class Verus6Fly : FlyMode("Verus6") {
     private val airSpeedValue = FloatValue("${valuePrefix}AirSpeed", 0.5f, 0f, 1f)
     private val groundSpeedValue = FloatValue("${valuePrefix}GroundSpeed", 0.42f, 0f, 1f)
     private val hopDelayValue = IntegerValue("${valuePrefix}HopDelay", 3, 0, 10)
-    private val onlyOnGround = BoolValue("${valuePrefix}OnlyEnableOnGround" true)
+    private val onlyOnGround = BoolValue("${valuePrefix}OnlyEnableOnGround", true)
 
     private var waitTicks = 0
 
