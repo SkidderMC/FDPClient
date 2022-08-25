@@ -16,10 +16,12 @@ class Verus6Fly : FlyMode("Verus6") {
     private val airSpeedValue = FloatValue("${valuePrefix}AirSpeed", 0.5f, 0f, 1f)
     private val groundSpeedValue = FloatValue("${valuePrefix}GroundSpeed", 0.42f, 0f, 1f)
     private val hopDelayValue = IntegerValue("${valuePrefix}HopDelay", 3, 0, 10)
+    private val onlyOnGround = BoolValue("${valuePrefix}OnlyEnableOnGround" true)
 
     private var waitTicks = 0
 
     override fun onEnable() {
+        if (!mc.thePlayer.onGround && onlyOnGround.get()) return
         waitTicks = 0
     }
 
