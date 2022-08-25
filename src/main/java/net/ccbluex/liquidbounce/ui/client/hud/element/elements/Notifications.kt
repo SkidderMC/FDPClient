@@ -252,10 +252,16 @@ class Notification(
         // lbtl = liquidbounce text length
         if(style.equals("LiquidBounce")) {
             RenderUtils.drawRect(-1F, 0F, lbtl + 9F, -20F, Color(0, 0, 0, alpha))
-            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title + ": " + content, 4F, 3F, textColor, titleShadow)
+            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title + ": " + content, -4F, 3F, textColor, titleShadow)
             RenderUtils.drawRect(-1F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), 0F, 4F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), -20F, Color(0, 0, 0, alpha))
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         }
+
+    //    if(style.equals("compact")) {
+    //            RenderUtils.drawRoundedCornerRec(-x + 8F + textLength, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0, 0, 0, alpha))
+    //            RenderUtils.drawRoundedCornerRec(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)
+    //            Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
+    //        }
 
         if(style.equals("Skid")){
 
@@ -304,6 +310,5 @@ enum class NotifyType(var renderColor: Color) {
 
 
 enum class FadeState { IN, STAY, OUT, END }
-
 
 
