@@ -71,7 +71,7 @@ public class WaterMelon {
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f);
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f);
         GL11.glPopMatrix();
-        FontLoaders.F20.DisplayFonts(String.valueOf((Object)target.getName()), 45f), 12f, Color.WHITE.getRGB(), FontLoaders.F20;
+        FontLoaders.F20.DisplayFonts(String.valueOf((Object)target.getName()), 45f, 12f, Color.WHITE.getRGB(), FontLoaders.F20);
         DecimalFormat df = new DecimalFormat("0.00");
         FontLoaders.F14.DisplayFonts("Armor " + (df.format(PlayerUtils.INSTANCE.getAr(target) * 100)) + "%", 45f, 24f, new Color(200,200,200).getRGB(), FontLoaders.F14);
         RenderUtils.drawRoundedCornerRect(45f, 32f, 145f, 42f, 5f,new Color(0,0,0,100).getRGB());
