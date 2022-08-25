@@ -132,7 +132,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 "Website",
                 ResourceLocation("fdpclient/imgs/icon/website.png"),
                 2,
-                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) 
+                if (LiquidBounce.Darkmode.equals(true)) { Color(20, 20, 20, 180) } else { Color(255, 255, 255, 170) }
             )
         )
 
