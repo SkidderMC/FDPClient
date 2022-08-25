@@ -1409,6 +1409,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "zamorozka" -> Border(0F, 0F, 150F, 55F)
             "arris" -> Border(0F, 0F, 120F, 40F)
             "tenacity" -> Border(0F, 0F, 120F, 40F)
+            "tenacitynew" -> Border(0F, 5F, 125F, 45F)
             "chill" -> Border(0F, 0F, 120F, 48F)
             "remix" -> Border(0F, 0F, 146F, 49F)
             "rice" -> Border(0F, 0F, 135F, 55F)
