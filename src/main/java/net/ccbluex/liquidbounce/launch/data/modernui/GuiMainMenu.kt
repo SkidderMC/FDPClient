@@ -183,7 +183,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         drawBackground(0)
         val defaultHeight = (this.height).toFloat()
         val defaultWidth = (this.width).toFloat()
-        if (LiquidBounce.Darkmode.equals(true)) { RenderUtils.drawRect(0F, 0F, defaultWidth, defaultHeight, Color(0, 0, 0, 160)) } else { RenderUtils.drawRect(0F, 0F, defaultWidth, defaultHeight, Color(0, 0, 0, 0)) }
+        if (LiquidBounce.Darkmode.equals(true)) { RenderUtils.drawRect(0F, 0F, defaultWidth, defaultHeight, Color(0, 0, 0, 0)) } else { RenderUtils.drawRect(0F, 0F, defaultWidth, defaultHeight, Color(0, 0, 0, 160)) }
         val i = 0
         val defaultHeight1 = (this.height).toDouble()
         val defaultWidth1 = (this.width).toDouble()
