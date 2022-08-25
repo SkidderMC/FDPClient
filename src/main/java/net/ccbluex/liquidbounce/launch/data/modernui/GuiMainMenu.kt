@@ -29,7 +29,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         // draw darkmode bg
         val width = this.width
         val height = this.height
-        if (LiquidBounce.Darkmode.equals(true)) { RenderUtils.drawRect(0F, 0F, width, height, Color(0, 0, 0, 160)) } else { return }
+        if (LiquidBounce.Darkmode.equals(true)) { RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 160)) } else { return }
 
         this.buttonList.add(
             TestBtn(
