@@ -22,33 +22,35 @@ import java.text.DecimalFormat;
 
 // the fun starts :)
 
-public class drawCode {
+public class WaterMelon {
     /*
         愤怒并不能解决你的问题，小西瓜，花点时间反省一下自己和现在的自己！
     */
     public static void drawMelon(EntityLivingBase target, DecimalFormat decimalFormat,float easingHP) {
-        RenderUtils.drawRoundedCornerRect(-1.5, 2.5, 152.5, 52.5, 5.0, Color(0, 0, 0, 26).getRGB());
+        float f;
+        float n;
+        RenderUtils.drawRoundedCornerRect(-1.5f, 2.5f, 152.5f, 52.5f, 5.0f, new Color(0, 0, 0, 26).getRGB());
         // that was fun wasn't it!
-        RenderUtils.drawRoundedCornerRect(-1.0, 2.0, 152.0, 52.0, 5.0, Color(0, 0, 0, 26).getRGB());
+        RenderUtils.drawRoundedCornerRect(-1.0f, 2.0f, 152.0f, 52.0f, 5.0f, new Color(0, 0, 0, 26).getRGB());
         // "shit cat" -xiguahanhan
-        RenderUtils.drawRoundedCornerRect(-0.5, 1.5, 151.5, 51.5, 5.0, Color(0, 0, 0, 40).getRGB());
+        RenderUtils.drawRoundedCornerRect(-0.5f, 1.5f, 151.5f, 51.5f, 5.0f, new Color(0, 0, 0, 40).getRGB());
         // "You can rest assured that FDPChina will not use it for you" -xiguahanhan (lmfao best english)
-        RenderUtils.drawRoundedCornerRect(-0.0, 1.0, 151.0, 51.0, 5.0, Color(0, 0, 0, 60).getRGB());
+        RenderUtils.drawRoundedCornerRect(-0.0f, 1.0f, 151.0f, 51.0f, 5.0f, new Color(0, 0, 0, 60).getRGB());
         // this code so good that xigua is about to pretend dimples hacked him (again)
-        RenderUtils.drawRoundedCornerRect(0.5, 0.5, 150.5, 50.5, 5.0, Color(0, 0, 0, 50).getRGB());
+        RenderUtils.drawRoundedCornerRect(0.5f, 0.5f, 150.5f, 50.5f, 5.0f, new Color(0, 0, 0, 50).getRGB());
         // #DontTrustBreadCat!
-        RenderUtils.drawRoundedCornerRect(1.0, 0.0, 150.0, 50.0, 5.0, Color(0, 0, 0, 50).getRGB());
+        RenderUtils.drawRoundedCornerRect(1.0f, 0.0f, 150.0f, 50.0f, 5.0f, new Color(0, 0, 0, 50).getRGB());
         // xigua loves the ccp!
         float hurtPercent = EntityExtensionKt.getHurtPercent((EntityLivingBase) target);
         if (hurtPercent == 0.0) {
-        float n = 1;
+            n = 1;
         } else {
-        float n = 0;
+            n = 0;
         }
         if (n != 0) {
-        float f = 1.0f;
+        f = 1.0f;
         } else if (hurtPercent < 0.5f) {
-           float f = 0.94f;
+            f = 0.94f;
         } else {
             f = 1.1f;
         } // xigua is obtuse
@@ -58,7 +60,8 @@ public class drawCode {
         GL11.glPushMatrix();
         GL11.glTranslatef((float)5.0f, (float)5.0f, (float)0f);
         GL11.glScalef((float)scale, (float)scale, (float)scale);
-        GL11.glTranslatef((float)((float)17.5 - scale) / scale), (float)((float)17.5 - scale) / scale), (float)0);
+        GL11.glTranslatef((float)((float)17.5f - scale) / scale), (17.5f - scale) / scale), (float)0f);
+;
         //  ok that one was annoying
         GL11.glColor4f((float)1.0, (float)((float)1.0 - hurtPercent), (float)((float)1.0 - hurtPercent), (float)1.0);
         // for xigua: gatodepan > you

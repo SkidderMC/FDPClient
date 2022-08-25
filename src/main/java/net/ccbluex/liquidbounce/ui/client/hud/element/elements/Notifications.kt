@@ -257,11 +257,11 @@ class Notification(
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         }
 
-        if(style.equals("compact")) {
-                RenderUtils.customRoundedRect(-x + 8F + textLength, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0, 0, 0, alpha))
-                RenderUtils.customRoundedRect(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)  
-                Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
-            }
+    //    if(style.equals("compact")) {
+    //            RenderUtils.drawRoundedCornerRec(-x + 8F + textLength, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0, 0, 0, alpha))
+    //            RenderUtils.drawRoundedCornerRec(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)
+    //            Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
+    //        }
 
         if(style.equals("Skid")){
 
