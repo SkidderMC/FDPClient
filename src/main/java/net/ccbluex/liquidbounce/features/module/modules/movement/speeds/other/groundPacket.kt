@@ -17,7 +17,7 @@ class GroundPacket : SpeedMode("GroundPacket") {
     
     private val moveSpeed = FloatValue("${valuePrefix}Speed", 0.6f, 0.27f, 5f)
   
-    fun onMotion() {
+    override fun onUpdate() {
         var s = moveSpeed.get().toDouble()
         var x = mc.thePlayer.posX
         var z = mc.thePlayer.posZ
