@@ -9,12 +9,12 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class MinemoraGlide : GlideMode("Minemora") {
-    private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Glide1", "Glide2", "Glide3"), "Glide1")
+    private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Glide1", "Glide2", "Weird", "Glide4"), "Glide1")
     private val glide2TickValue = IntegerValue("${valuePrefix}Glide2-Tick", 4 , 2,8).displayable { modeValue.equals("Glide2") }
-    private val glide3TickValue = IntegerValue("${valuePrefix}Glide3-Tick", 4 , 2,8).displayable { modeValue.equals("Glide3") }
-    private val glide3BoostSpeed = FloatValue("${valuePrefix}Glide3-BoostSpeed", 0.1f, 0.0f,0.5f).displayable { modeValue.equals("Glide3") }
+    private val glide4TickValue = IntegerValue("${valuePrefix}Glide3-Tick", 4 , 2,8).displayable { modeValue.equals("Glide3") }
+    private val glide4BoostSpeed = FloatValue("${valuePrefix}Glide3-BoostSpeed", 0.1f, 0.0f,0.5f).displayable { modeValue.equals("Glide3") }
     private var glide2tick = 0
-    private var glide3tick = 0
+    private var glide4tick = 0
     override fun onEnable() {
         glide2tick = 0
         glide3tick = 0
@@ -31,16 +31,27 @@ class MinemoraGlide : GlideMode("Minemora") {
                     mc.thePlayer.motionY = 0.04
                 }
             }
-
-            "Glide3" -> {
-                glide3tick++
+            
+            "Weird" -> {
+                val glide3motion = 0.06
+                if (mc.thePlayer.ticksExisted % 2 == 0) {
+                glide3motion = -glide3motion
+                
+                mc.thePlayer.motionY = glide3motion
+                mc.timer.timerSpeed = 1.25F
+                    
+                }
+            }
+            
+            "Glide4" -> {
+                glide4tick++
                 mc.thePlayer.motionY = -0.1
-                if(glide3tick>=glide3TickValue.get()) {
-                    glide3tick = 0
+                if(glide4tick>=glide4TickValue.get()) {
+                    glide4tick = 0
                     mc.thePlayer.motionY = 0.02
                     val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
-                    mc.thePlayer.motionX = (-sin(yaw) * glide3BoostSpeed.get())
-                    mc.thePlayer.motionZ = (cos(yaw) * glide3BoostSpeed.get())
+                    mc.thePlayer.motionX = (-sin(yaw) * glide4BoostSpeed.get())
+                    mc.thePlayer.motionZ = (cos(yaw) * glide4BoostSpeed.get())
                 }
             }
         }
