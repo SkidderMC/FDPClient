@@ -151,7 +151,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             "oldsafe" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
             "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
             "dortwarehop" -> {
-                if (mc.thePlayer.isMoving()) {
+                if (MovementUtils.isMoving()) {
                     minSpeed = 0.2873
                     if (mc.thePlayer.onGround) {
                         mc.thePlayer.jump()
@@ -166,7 +166,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         watchdogMultiplier = moveDist - moveDist / 159
                     }
 
-                    MovementUtils.strafe(Math.max(watchdogMultiplier, minSpeed))
+                    MovementUtils.strafe(Math.max(watchdogMultiplier, minSpeed).toFloat())
                 } else {
                     watchdogMultiplier = 0.0
                 }
