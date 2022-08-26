@@ -14,12 +14,14 @@ import net.ccbluex.liquidbounce.value.*
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "Stable2", "Test2", "TestLowHop", "OldSafe", "OldTest"), "Stable")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest"), "Stable")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
+    private val yMotion = FloatValue("$valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
 
     private var watchdogMultiplier = 1.0
+    private var minSpeed = 0.0
     private var oldMotionX = 0.0
     private var oldMotionZ = 0.0
     private var pastX = 0.0
@@ -49,6 +51,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
         moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ).toDouble()
         
         when (bypassMode.get().lowercase()) {
+            
             "stable2" -> {
                 oldMotionX = mc.thePlayer.motionX
                 oldMotionZ = mc.thePlayer.motionZ
@@ -80,13 +83,14 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 } else if (MovementUtils.isMoving()) {
                     wasOnGround = true
                     mc.thePlayer.jump()
-                    mc.thePlayer.motionY = 0.41999998688697815
+                    mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
             }
             
             "test2" -> {
                 if (mc.thePlayer.onGround) {
-                    mc.thePlayer.motionY = 0.41999998688697815
+                    mc.thePlayer.jump()
+                    mc.thePlayer.motionY = yMotion.get().toDouble()
                     watchdogMultiplier = 0.560625
                     wasOnGround = true
                 } else if (wasOnGround) {
@@ -114,7 +118,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 if(MovementUtils.isMoving() && mc.thePlayer.onGround) {
                     watchdogMultiplier = 1.45
                     mc.thePlayer.jump()
-                    mc.thePlayer.motionY = 0.41999998688697815
+                    mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
             }
 
@@ -122,7 +126,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 if(MovementUtils.isMoving() && mc.thePlayer.onGround) {
                     watchdogMultiplier = 1.2
                     mc.thePlayer.jump()
-                    mc.thePlayer.motionY = 0.39999998688697815
+                    mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
             }
         }
@@ -142,10 +146,31 @@ class HypixelHop : SpeedMode("HypixelHop") {
 
     override fun onMove(event: MoveEvent) {
         when (bypassMode.get().lowercase()) {
-            "testlowhop" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 0.90151f   - slowdownValue.get()).toDouble()).toFloat())
-            "test2" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
-            "oldsafe" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
-            "oldtest" -> MovementUtils.strafe(( 0.2875 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
+            "testlowhop" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 0.90151f   - slowdownValue.get()).toDouble()).toFloat())
+            "test2" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
+            "oldsafe" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
+            "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
+            "dortwarehop" -> {
+                if (mc.thePlayer.isMoving()) {
+                    minSpeed = 0.2873
+                    if (mc.thePlayer.onGround) {
+                        mc.thePlayer.jump()
+                        mc.thePlayer.motionY = yMotion.get().toDouble()
+                        minSpeed = Math.max(0.617695, watchdogMultiplier)
+                        watchdogMultiplier *= 1.6
+                        wasOnGround = true
+                    } else if (wasOnGround) {
+                        watchdogMultiplier -= 0.76 * (watchdogMultiplier - minSpeed)
+                        wasOnGround = false
+                    } else {
+                        watchdogMultiplier = moveDist - moveDist / 159
+                    }
+
+                    MovementUtils.strafe(Math.max(watchdogMultiplier, minSpeed))
+                } else {
+                    watchdogMultiplier = 0.0
+                }
+            }
             
         }
     }
