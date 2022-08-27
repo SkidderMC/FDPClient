@@ -33,12 +33,12 @@ class Step : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "Matrix6.7.0",
                                                       "NCP", "NCPNew", "MotionNCP", "OldNCP",
                                                       "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0",
-                                                      "Spartan", "Rewinside", "Vulcan"), "NCP")
+                                                      "Spartan", "Rewinside", "Vulcan", "Verus"), "NCP")
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
     private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") || modeValue.equals("TimerJump") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
-    private val timerValue = FloatValue("Timer", 1F, 0.05F, 1F).displayable { !modeValue.equals("Matrix6.7.0") }
-    private val timerDynValue = BoolValue("UseDynamicTimer", false).displayable { !modeValue.equals("Matrix6.7.0") }
+    private val timerValue = FloatValue("Timer", 1F, 0.05F, 1F).displayable { !modeValue.equals("Matrix6.7.0") && !modeValue.equals("Verus") }
+    private val timerDynValue = BoolValue("UseDynamicTimer", false).displayable { !modeValue.equals("Matrix6.7.0") && !modeValue.equals("Verus")}
 
     /**
      * VALUES
@@ -340,6 +340,16 @@ class Step : Module() {
                             }
                         }
                         timer.reset()
+                    }
+                    
+                    mode.equals("Verus", ignoreCase = true) -> {
+                        mc.timer.timerSpeed = 0.42f
+                        var stpHight = 0.0
+                        fakeJump()
+                        repeat ((Math.ceil(rstepHeight * 2.0) - 1.0).toInt()) {
+                            stpHight += 0.5
+                            mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX, stepY + stpHight, stepZ, true))
+                        }
                     }
                     
                     mode.equals("Vulcan", ignoreCase = true) -> {
