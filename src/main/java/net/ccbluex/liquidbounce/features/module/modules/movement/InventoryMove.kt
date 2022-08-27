@@ -125,11 +125,18 @@ class InventoryMove : Module() {
                 }
 
                 if (packet is C0EPacketClickWindow) {
-                    PacketUtils.sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
-                    PacketUtils.sendPacketNoEvent(event.packet)
-                    PacketUtils.sendPacketNoEvent(C0DPacketCloseWindow(mc.thePlayer.inventoryContainer.windowId))
+                    blinkPacketList.clear()
+                    blinkPacketList.add(packet)
                     
                     event.cancelEvent()
+                    
+                    PacketUtils.sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                    blinkPacketList.forEach {
+                        PacketUtils.sendPacketNoEvent(it)
+                    }
+                    blinkPacketList.clear()
+                    PacketUtils.sendPacketNoEvent(C0DPacketCloseWindow(mc.thePlayer.inventoryContainer.windowId))
+                    
                 }
             }
             "noopenpacket" -> {
