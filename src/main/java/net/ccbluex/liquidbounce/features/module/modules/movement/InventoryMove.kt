@@ -19,6 +19,7 @@ import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C0DPacketCloseWindow
+import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
@@ -28,7 +29,7 @@ import org.lwjgl.input.Keyboard
 class InventoryMove : Module() {
 
     private val noDetectableValue = BoolValue("NoDetectable", false)
-    private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "None"), "None")
+    private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "PacketInv", "None"), "None")
     private val rotateValue = BoolValue("Rotate", true)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
     val noSprintValue = ListValue("NoSprint", arrayOf("Real", "PacketSpoof", "None"), "None")
@@ -115,6 +116,22 @@ class InventoryMove : Module() {
         }
 
         when (bypassValue.get().lowercase()) {
+            "packetinv" -> {
+                if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
+                    event.cancelEvent()
+                }
+                if (p instanceof C0DPacketCloseWindow) {
+                    event.cancelEvent()
+                }
+
+                if (p instanceof C0EPacketClickWindow) {
+                    event.cancelEvent()
+
+                    PacketUtils.sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                    PacketUtils.sendPacketNoEvent(packet)
+                    PacketUtils.sendPacketNoEvent(C0DPacketCloseWindow(mc.thePlayer.inventoryContainer.windowId))
+                }
+            }
             "noopenpacket" -> {
                 if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
                     event.cancelEvent()
