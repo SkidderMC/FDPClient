@@ -24,19 +24,19 @@ class GroundPacket : SpeedMode("GroundPacket") {
         var x = mc.thePlayer.posX
         var z = mc.thePlayer.posZ
         var d = baseSpeed.get().toDouble()
-        var yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
+        var yaw = Math.toRadians(MovementUtils.movingYaw.toDouble())
         var mx = -sin(yaw) * d
         var mz = cos(yaw) * d
         while (d < s) {
             if (d > s) {
                 d = s
             }
-            yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
+            yaw = Math.toRadians(MovementUtils.movingYaw.toDouble())
             mx = -sin(yaw) * d
             mz = cos(yaw) * d
             PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.onGround))
             mc.thePlayer.setPosition(x + mx, mc.thePlayer.posY, z + mz)
-            d += d = baseSpeed.get().toDouble()
+            d += baseSpeed.get().toDouble()
         }
     }
 }
