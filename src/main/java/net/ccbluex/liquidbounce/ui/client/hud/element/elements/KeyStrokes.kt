@@ -84,7 +84,6 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         renderY: Float,
         scale: Float
     ) {
-        shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), height.toFloat(), 240f)
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
 
@@ -92,7 +91,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
             BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, blurRadius)
         }
 
-       
+       shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), height.toFloat(), 240f)
 
         val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())
         val clickAlpha = 255 - (255 - bgColor.alpha) * highLightPct
