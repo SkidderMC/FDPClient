@@ -17,10 +17,12 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.*
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
@@ -52,8 +54,8 @@ class FollowTargetHud : Module() {
     private var lastY = 0.0
     private var lastZ = 0.0
     
-    private var lastYaw = 0.0
-    private var lastPitch = 0.0
+    private var lastYaw = 0.0f
+    private var lastPitch = 0.0f
 
     companion object {
         val HEALTH_FORMAT = DecimalFormat("#.#")
@@ -143,8 +145,8 @@ class FollowTargetHud : Module() {
 
         // Rotate view to player
         if (smoothRot.get()) {
-            lastYaw += (-mc.renderManager.playerViewY - lastYaw) / rotSmoothValue.get().toDouble()
-            lastPitch += (mc.renderManager.playerViewX - lastPitch) / rotSmoothValue.get().toDouble()
+            lastYaw += (-mc.renderManager.playerViewY - lastYaw) / rotSmoothValue.get()
+            lastPitch += (mc.renderManager.playerViewX - lastPitch) / rotSmoothValue.get()
             
             glRotatef(lastYaw, 0F, 1F, 0F)
             glRotatef(lastPitch, 1F, 0F, 0F)
@@ -254,7 +256,7 @@ class FollowTargetHud : Module() {
                 
                 if (!fdpVertical.get()) {
                     var addedLen = (60 + font.getStringWidth(entity.name) * 1.60f).toFloat()
-                    if (!fdpText.get) addedLen = 80
+                    if (!fdpText.get()) addedLen = 80f
                     
                     if (fdpRed.get()) {
                         RenderUtils.drawRect(0f, 0f, addedLen, 47f, Color(212, 63, 63, 90).rgb)
@@ -282,6 +284,7 @@ class FollowTargetHud : Module() {
                         RenderUtils.drawRect(0f, 0f, 47f, 80f, Color(0, 0, 0, 120).rgb)
                         RenderUtils.drawRoundedCornerRect(0f, 0f, 47f, healthPercent * 80f, 3f, Color(0, 0, 0, 90).rgb)
                     }
+                }
                 
             }
 
