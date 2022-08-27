@@ -67,7 +67,7 @@ dependencies {
         exclude module: "jna-platform"
     }
     include("com.jagrosh:DiscordIPC:0.4")
-    include("com.github.Kawa1Ares:Elixir:1.2.6") {
+    include("com.github.SkidderMC:elixir-2:1.2.4") {
         exclude module: "kotlin-stdlib"
         exclude module: "authlib"
     }
