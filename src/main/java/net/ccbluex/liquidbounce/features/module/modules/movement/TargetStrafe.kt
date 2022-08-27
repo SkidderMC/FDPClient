@@ -26,12 +26,13 @@ import kotlin.math.sin
 @ModuleInfo(name = "TargetStrafe",  category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
     private val thirdPersonViewValue = BoolValue("ThirdPersonView", false)
-    private val renderModeValue = ListValue("RenderMode", arrayOf("Circle", "Pentagon", "None"), "Pentagon")
+    private val renderModeValue = ListValue("RenderMode", arrayOf("Circle", "Polygon", "None"), "Polygon")
+    private val lineWidthValue = FloatValue("LineWidth", 1f, 1f, 10f). displayable{!renderModeValue.equals("None")}
     private val radiusModeValue = ListValue("RadiusMode", arrayOf("Normal", "Strict"/*, "Dynamic"*/), "Normal")
-    private val radiusValue = FloatValue("Radius", 0.1f, 0.5f, 5.0f)
+    private val radiusValue = FloatValue("Radius", 0.5f, 0.1f, 5.0f)
     private val ongroundValue = BoolValue("OnlyOnGround",false)
     private val holdSpaceValue = BoolValue("HoldSpace", false)
-    private val onlySpeedValue = BoolValue("OnlySpeed", false)
+    private val onlySpeedValue = BoolValue("OnlySpeed", true)
     private var direction = -1.0
 
     var targetEntity : EntityLivingBase?=null
@@ -60,7 +61,7 @@ class TargetStrafe : Module() {
                 GL11.glHint(3153, 4354)
                 GL11.glDisable(2929)
                 GL11.glDepthMask(false)
-                GL11.glLineWidth(1.0f)
+                GL11.glLineWidth(lineWidthValue.get())
                 GL11.glBegin(3)
                 val x =
                     target_!!.lastTickPosX + (target_!!.posX - target_!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
@@ -101,7 +102,7 @@ class TargetStrafe : Module() {
                 RenderUtils.startDrawing()
                 GL11.glDisable(2929)
                 GL11.glDepthMask(false)
-                GL11.glLineWidth(1.0f)
+                GL11.glLineWidth(lineWidthValue.get())
                 GL11.glBegin(3)
                 val x =
                     target_!!.lastTickPosX + (target_!!.posX - target_!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
