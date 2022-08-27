@@ -35,6 +35,7 @@ class InventoryMove : Module() {
     val noSprintValue = ListValue("NoSprint", arrayOf("Real", "PacketSpoof", "None"), "None")
 
     private val blinkPacketList = mutableListOf<C03PacketPlayer>()
+    private val packetListYes = mutableListOf<C0EPacketClickWindow>()
     var lastInvOpen = false
         private set
     var invOpen = false
@@ -125,16 +126,16 @@ class InventoryMove : Module() {
                 }
 
                 if (packet is C0EPacketClickWindow) {
-                    blinkPacketList.clear()
-                    blinkPacketList.add(packet)
+                    packetListYes.clear()
+                    packetListYes.add(packet)
                     
                     event.cancelEvent()
                     
                     PacketUtils.sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
-                    blinkPacketList.forEach {
+                    packetListYes.forEach {
                         PacketUtils.sendPacketNoEvent(it)
                     }
-                    blinkPacketList.clear()
+                    packetListYes.clear()
                     PacketUtils.sendPacketNoEvent(C0DPacketCloseWindow(mc.thePlayer.inventoryContainer.windowId))
                     
                 }
