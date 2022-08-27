@@ -16,12 +16,14 @@ import kotlin.math.sin
 class GroundPacket : SpeedMode("GroundPacket") {
     
     private val moveSpeed = FloatValue("${valuePrefix}Speed", 0.6f, 0.27f, 5f)
+    private val baseSpeed = FloatValue("${valuePrefix}DistPerPacket", 0.15f, 0.12f, 0.2873f)
   
     override fun onUpdate() {
+        if (!mc.thePlayer.onGround) return
         var s = moveSpeed.get().toDouble()
         var x = mc.thePlayer.posX
         var z = mc.thePlayer.posZ
-        var d = 0.2873
+        var d = baseSpeed.get().toDouble()
         var yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
         var mx = -sin(yaw) * d
         var mz = cos(yaw) * d
@@ -32,9 +34,9 @@ class GroundPacket : SpeedMode("GroundPacket") {
             yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
             mx = -sin(yaw) * d
             mz = cos(yaw) * d
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.onGround))
             mc.thePlayer.setPosition(x + mx, mc.thePlayer.posY, z + mz)
-            d += 0.2873
+            d += d = baseSpeed.get().toDouble()
         }
     }
 }
