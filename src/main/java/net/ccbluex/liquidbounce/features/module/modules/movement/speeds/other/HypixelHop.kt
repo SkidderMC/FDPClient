@@ -89,7 +89,6 @@ class HypixelHop : SpeedMode("HypixelHop") {
             
             "test2" -> {
                 if (mc.thePlayer.onGround) {
-                    mc.thePlayer.jump()
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                     watchdogMultiplier = 0.560625
                     wasOnGround = true
@@ -129,27 +128,6 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
             }
-        }
-        if (watchdogMultiplier > 1) {
-            when (bypassMode.get().lowercase()) {
-                "oldsafe" -> watchdogMultiplier -= 0.2
-                "oldtest" -> watchdogMultiplier -= 0.05
-                "testlowhop" -> watchdogMultiplier -= 0.05
-            }
-        } else {
-            watchdogMultiplier = 1.0
-        }
-        
-        pastX = mc.thePlayer.posX 
-        pastZ = mc.thePlayer.posZ
-    }
-
-    override fun onMove(event: MoveEvent) {
-        when (bypassMode.get().lowercase()) {
-            "testlowhop" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 0.90151f   - slowdownValue.get()).toDouble()).toFloat())
-            "test2" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
-            "oldsafe" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
-            "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
             "dortwarehop" -> {
                 if (MovementUtils.isMoving()) {
                     minSpeed = 0.2873
@@ -171,6 +149,27 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     watchdogMultiplier = 0.0
                 }
             }
+        }
+        if (watchdogMultiplier > 1) {
+            when (bypassMode.get().lowercase()) {
+                "oldsafe" -> watchdogMultiplier -= 0.2
+                "oldtest" -> watchdogMultiplier -= 0.05
+                "testlowhop" -> watchdogMultiplier -= 0.05
+            }
+        } else {
+            watchdogMultiplier = 1.0
+        }
+        
+        pastX = mc.thePlayer.posX 
+        pastZ = mc.thePlayer.posZ
+    }
+
+    override fun onMove(event: MoveEvent) {
+        when (bypassMode.get().lowercase()) {
+            "testlowhop" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 0.90151f   - slowdownValue.get()).toDouble()).toFloat())
+            "test2" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
+            "oldsafe" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
+            "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
             
         }
     }
