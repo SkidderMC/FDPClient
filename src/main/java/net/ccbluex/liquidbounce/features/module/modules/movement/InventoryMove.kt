@@ -120,15 +120,15 @@ class InventoryMove : Module() {
                 if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
                     event.cancelEvent()
                 }
-                if (p instanceof C0DPacketCloseWindow) {
+                if (packet is C0DPacketCloseWindow) {
                     event.cancelEvent()
                 }
 
-                if (p instanceof C0EPacketClickWindow) {
+                if (packet is C0EPacketClickWindow) {
                     event.cancelEvent()
 
                     PacketUtils.sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
-                    PacketUtils.sendPacketNoEvent(packet)
+                    PacketUtils.sendPacketNoEvent(packet<INetHandlerPlayServer>)
                     PacketUtils.sendPacketNoEvent(C0DPacketCloseWindow(mc.thePlayer.inventoryContainer.windowId))
                 }
             }
