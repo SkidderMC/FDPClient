@@ -1,4 +1,12 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus
+
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.network.play.server.S12PacketEntityVelocity
@@ -64,7 +72,7 @@ class VerusHop : SpeedMode("VerusHop") {
                 else -> {
                     if (modeValue.equals("FastHop")) {
                         MovementUtils.strafe(0.3772f)
-                    } else if (modeValue.equals("Bhop") {
+                    } else if (modeValue.equals("Bhop")) {
                         if (mc.thePlayer.fallDistance >= 1.5) {
                             if (damagedTicks > 0) {
                                 MovementUtils.strafe(1.0f)
@@ -95,7 +103,7 @@ class VerusHop : SpeedMode("VerusHop") {
      override fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (packet is S12PacketEntityVelocity && veloBoostValue.get()) {
+        if (packet is S12PacketEntityVelocity) {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
                 return
             }
