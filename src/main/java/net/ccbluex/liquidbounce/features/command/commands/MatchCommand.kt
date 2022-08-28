@@ -55,6 +55,7 @@ class MatchCommand : Command("match", arrayOf("match")) {
                     .map { it.name }
                     .filter { it.startsWith(moduleName, true) }
                     .toList()
+            else -> emptyList()
         }
     }
 }
