@@ -21,7 +21,11 @@ class VerusHop : SpeedMode("VerusHop") {
     private var lastY = 0.0
     private var damagedTicks = 0
     
-    private var verusHopStage = 0 
+    private var verusHopStage = 1
+    
+    override run onEnable() {
+        verusHopStage = 1
+    }
 
                                         
     override fun onPreMotion() {
