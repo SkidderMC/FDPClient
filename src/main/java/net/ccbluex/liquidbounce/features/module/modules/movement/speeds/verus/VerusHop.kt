@@ -23,7 +23,7 @@ class VerusHop : SpeedMode("VerusHop") {
     
     private var verusHopStage = 1
     
-    override run onEnable() {
+    override fun onEnable() {
         verusHopStage = 1
     }
 
