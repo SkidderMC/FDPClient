@@ -34,7 +34,7 @@ class GroundPacket : SpeedMode("GroundPacket") {
             yaw = Math.toRadians(MovementUtils.movingYaw.toDouble())
             mx = -sin(yaw) * d
             mz = cos(yaw) * d
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.onGround))
+            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(x + mx, mc.thePlayer.posY, z + mz, mc.thePlayer.onGround))
             mc.thePlayer.setPosition(x + mx, mc.thePlayer.posY, z + mz)
             d += baseSpeed.get().toDouble()
         }
