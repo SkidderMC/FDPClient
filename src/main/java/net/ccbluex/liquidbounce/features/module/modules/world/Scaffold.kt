@@ -138,7 +138,7 @@ class Scaffold : Module() {
     private val towerTimerValue = FloatValue("TowerTimer", 1f, 0.1f, 5f)
 
     // Safety
-    private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "OFF"), "WhenSpeed")
+    private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "JumpUpY", "OFF"), "WhenSpeed")
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "OFF")
     private val hitableCheckValue = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple")
 
@@ -256,6 +256,12 @@ class Scaffold : Module() {
                 }
                 "autojump" -> {
                     canSameY = true
+                    if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
+                        mc.thePlayer.jump()
+                    }
+                }
+		"jumpupy" -> {
+                    canSameY = false
                     if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
                         mc.thePlayer.jump()
                     }
