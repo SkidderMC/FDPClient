@@ -11,12 +11,16 @@ class Matrix663Nofall : NoFallMode("Matrix6.6.3") {
     override fun onEnable() {
         matrixSend = false
     }
+    override fun onDisable() {
+        mc.timer.timerSpeed =1f
+    }
     override fun onNoFall(event: UpdateEvent) {
         if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3) {
             mc.thePlayer.fallDistance = 0.0f
             matrixSend = true
             mc.timer.timerSpeed = 0.5f
-            nofall.wasTimer = true
+        } else {
+            mc.timer.timerSpeed = 1f
         }
     }
 
