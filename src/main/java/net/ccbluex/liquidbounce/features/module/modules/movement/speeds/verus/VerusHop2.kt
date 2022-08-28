@@ -6,13 +6,16 @@ import net.ccbluex.liquidbounce.value.*
 
 class VerusHop : SpeedMode("VerusHop") {
 
-    private val modeValue = ListValue("VerusMode", arrayOf("Normal", "LowHop", "VerusHard", "FastHop", "Bhop", "Test")
+    private val modeValue = ListValue("VerusMode", arrayOf("Normal", "LowHop", "VerusHard", "FastHop", "Bhop", "Test"), "Normal")
     private val timerBoost = BoolValue("${valuePrefix}TimerBoost",true)
 
     private var jumps = 0
     private var lastY = 0.0
     private var damagedTicks = 0
+    
+    private var verusHopStage = 0 
 
+                                        
     override fun onPreMotion() {
 
         if (MovementUtils.isMoving()) {
@@ -24,7 +27,7 @@ class VerusHop : SpeedMode("VerusHop") {
                 mc.thePlayer.onGround -> {
                     if (modeValue.equals("Normal") || modeValue.equals("LowHop") || modeValue.equals("FastHop")) {
                         MovementUtils.strafe(0.4848f)
-                        if (modeValue.equals("LowHop") {
+                        if (modeValue.equals("LowHop")) {
                             mc.thePlayer.motionY = 0.38
                         } else {
                             mc.thePlayer.motionY = 0.42
@@ -37,7 +40,18 @@ class VerusHop : SpeedMode("VerusHop") {
                      } else if (modeValue.equals("Bhop")) {
                           MovementUtils.strafe(0.35f)
                           mc.thePlayer.jump()
-                     }
+                     } else if (modeValue.equals("Test")) {
+                            if (verusHopStage == 2) {
+                                MovementUtils.strafe(0.61f)
+                                mc.thePlayer.jump()
+                                // MovementUtils.strafe(1.708f)
+                                verusHopStage = 1
+                            } else if (verusHopStage == 1) {
+                                mc.thePlayer.posY += 0.42
+                                MovementUtils.strafe(0.61f)
+                                mc.timer.timerSpeed = 2.0f
+                            }
+                    }
 
                     if (mc.thePlayer.posY == lastY) {
                         jumps++
@@ -64,6 +78,13 @@ class VerusHop : SpeedMode("VerusHop") {
                             if (mc.thePlayer.posY - lastY < 0.35) {
                                 MovementUtils.strafe(0.5f)
                             }
+                        }
+                    } else if (modeValue.equals("Test")) {
+                        if (verusHopStage == 2) {
+                            MovementUtils.strafe(0.61f)
+                            mc.timer.timerSpeed = 2.0f
+                        } else {
+                            mc.timer.timerSpeed = 0.97f
                         }
                     }
                 }
