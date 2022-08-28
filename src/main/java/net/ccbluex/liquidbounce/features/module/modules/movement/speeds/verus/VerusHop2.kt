@@ -1,14 +1,17 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.minecraft.network.play.server.S12PacketEntityVelocity
+import net.ccbluex.liquidbounce.value.*
 
-class VerusHop2 : SpeedMode("VerusHop2") {
+class VerusHop : SpeedMode("VerusHop") {
 
+    private val modeValue = ListValue("VerusMode", arrayOf("Normal", "LowHop", "VerusHard", "FastHop", "Bhop", "Test")
     private val timerBoost = BoolValue("${valuePrefix}TimerBoost",true)
 
     private var jumps = 0
     private var lastY = 0.0
+    private var damagedTicks = 0
 
     override fun onPreMotion() {
 
@@ -19,8 +22,22 @@ class VerusHop2 : SpeedMode("VerusHop2") {
 
             when {
                 mc.thePlayer.onGround -> {
-                    MovementUtils.strafe(0.4848f)
-                    mc.thePlayer.motionY = (0.42f).toDouble()
+                    if (modeValue.equals("Normal") || modeValue.equals("LowHop") || modeValue.equals("FastHop")) {
+                        MovementUtils.strafe(0.4848f)
+                        if (modeValue.equals("LowHop") {
+                            mc.thePlayer.motionY = 0.38
+                        } else {
+                            mc.thePlayer.motionY = 0.42
+                        }
+                     } else if (modeValue.equals("VerusHard")) {
+                         mc.thePlayer.jump()
+                         if(mc.thePlayer.isSprinting()) {
+                            MovementUtils.strafe(MovementUtils.getSpeed().toFloat() + 0.2F)
+                         }
+                     } else if (modeValue.equals("Bhop")) {
+                          MovementUtils.strafe(0.35f)
+                          mc.thePlayer.jump()
+                     }
 
                     if (mc.thePlayer.posY == lastY) {
                         jumps++
@@ -31,9 +48,37 @@ class VerusHop2 : SpeedMode("VerusHop2") {
                     lastY = mc.thePlayer.posY
                 }
                 else -> {
-                    MovementUtils.strafe(0.3772f)
+                    if (modeValue.equals("FastHop")) {
+                        MovementUtils.strafe(0.3772f)
+                    } else if (modeValue.equals("Bhop") {
+                        if (mc.thePlayer.fallDistance >= 1.5) {
+                            if (damagedTicks > 0) {
+                                MovementUtils.strafe(1.0f)
+                            } else {
+                                MovementUtils.strafe(0.26f)
+                            }
+                        } else if (damagedTicks > 0) {
+                            MovementUtils.strafe(1.0f)
+                        } else {
+                            MovementUtils.strafe(0.33f)
+                            if (mc.thePlayer.posY - lastY < 0.35) {
+                                MovementUtils.strafe(0.5f)
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+    
+     override fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+
+        if (packet is S12PacketEntityVelocity && veloBoostValue.get()) {
+            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
+                return
+            }
+            damagedTicks = 20
+        }
+     }
 }
