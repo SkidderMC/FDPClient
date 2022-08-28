@@ -62,6 +62,7 @@ class VerusHop : SpeedMode("VerusHop") {
                                 mc.thePlayer.posY += 0.42
                                 MovementUtils.strafe(0.61f)
                                 mc.timer.timerSpeed = 2.0f
+                                verusHopStage = 2
                             }
                     }
 
@@ -96,7 +97,7 @@ class VerusHop : SpeedMode("VerusHop") {
                             MovementUtils.strafe(0.61f)
                             mc.timer.timerSpeed = 2.0f
                         } else {
-                            mc.timer.timerSpeed = 0.97f
+                            mc.timer.timerSpeed = 0.95f
                         }
                     }
                 }
