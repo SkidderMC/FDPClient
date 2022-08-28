@@ -17,7 +17,7 @@ import java.awt.Color
 class Glint : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Rainbow", "AnotherRainbow", "Custom"), "Custom")
-    private val redValue = IntegerValue("Red", 255, 0, 255).displayable { modeValue.equals("Custom") }
+    private val redValue = IntegerValue("Red", 200, 0, 255).displayable { modeValue.equals("Custom") }
     private val greenValue = IntegerValue("Green", 0, 0, 255).displayable { modeValue.equals("Custom") }
     private val blueValue = IntegerValue("Blue", 0, 0, 255).displayable { modeValue.equals("Custom") }
 
