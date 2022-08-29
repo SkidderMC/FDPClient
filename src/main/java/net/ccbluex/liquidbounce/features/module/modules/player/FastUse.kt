@@ -48,9 +48,7 @@ class FastUse : Module() {
                 "matrix" -> {
                     mc.timer.timerSpeed = 0.5f
                     usedTimer = true
-                    repeat(1) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                    }
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                 }
                 "medusa" -> {
                     if (mc.thePlayer.itemInUseDuration > 5 || !msTimer.hasTimePassed(360L))
