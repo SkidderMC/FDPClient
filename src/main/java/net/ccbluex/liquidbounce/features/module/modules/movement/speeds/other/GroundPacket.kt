@@ -21,21 +21,18 @@ class GroundPacket : SpeedMode("GroundPacket") {
     override fun onUpdate() {
         if (!mc.thePlayer.onGround) return
         var s = moveSpeed.get().toDouble()
-        var x = mc.thePlayer.posX
-        var z = mc.thePlayer.posZ
         var d = baseSpeed.get().toDouble()
         var yaw = Math.toRadians(MovementUtils.movingYaw.toDouble())
-        var mx = -sin(yaw) * d
-        var mz = cos(yaw) * d
+        var mx = -sin(yaw) * baseSpeed.get().toDouble()
+        var mz = cos(yaw) * baseSpeed.get().toDouble()
         while (d < s) {
             if (d > s) {
+                var mx = -sin(yaw) * (d - s)
+                var mz = cos(yaw) * (d - s)
                 d = s
             }
-            yaw = Math.toRadians(MovementUtils.movingYaw.toDouble())
-            mx = -sin(yaw) * d
-            mz = cos(yaw) * d
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(x + mx, mc.thePlayer.posY, z + mz, mc.thePlayer.onGround))
-            mc.thePlayer.setPosition(x + mx, mc.thePlayer.posY, z + mz)
+            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX + mx, mc.thePlayer.posY, mc.thePlayer.posZ + mz, mc.thePlayer.onGround))
+            mc.thePlayer.setPosition(mc.thePlayer.posX + mx, mc.thePlayer.posY, mc.thePlayer.posZ + mz)
             d += baseSpeed.get().toDouble()
         }
     }
