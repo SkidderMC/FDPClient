@@ -13,6 +13,8 @@ import net.minecraft.util.AxisAlignedBB
 
 class Verus4Fly : FlyMode("Verus4") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 3f)
+    private val boostLength = IntegerValue("${valuePrefix}BoostTime", 500, 300, 1000)
+    private val moveBeforeDamage = BoolValue("${valuePrefix}MoveBeforeDamage", true)
 
     private var times = 0
     private var timer = MSTimer()
@@ -24,6 +26,10 @@ class Verus4Fly : FlyMode("Verus4") {
 
     override fun onUpdate(event: UpdateEvent) {
         mc.gameSettings.keyBindJump.pressed = false
+        if (times < 5 && !moveBeforeDamage.get()) {
+            MovementUtils.strafe(0f)
+            return
+        }
         if (mc.thePlayer.onGround && times < 5) {
             times++
             timer.reset()
@@ -34,7 +40,7 @@ class Verus4Fly : FlyMode("Verus4") {
         }
 
         if (times >= 5) {
-            if (!timer.hasTimePassed(500)) {
+            if (!timer.hasTimePassed(boostLength.get().toLong())) {
                 MovementUtils.strafe(speedValue.get())
             } else {
                 times = 0
@@ -46,7 +52,7 @@ class Verus4Fly : FlyMode("Verus4") {
         val packet = event.packet
 
         if (packet is C03PacketPlayer) {
-            packet.onGround = (times >= 5 && !timer.hasTimePassed(500))
+            packet.onGround = (times >= 5 && !timer.hasTimePassed(boostLength.get().toLong()))
         }
     }
 
