@@ -250,7 +250,7 @@ class FollowTargetHud : Module() {
                 drawRect(40f + xChange, yPos + 9, 40 + xChange + (entity.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)   
             }
             
-            "FDP" -> {
+            "fdp" -> {
                 
                 val font = fontValue.get()
                 
