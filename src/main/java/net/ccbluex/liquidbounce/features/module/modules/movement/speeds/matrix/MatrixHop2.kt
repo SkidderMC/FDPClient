@@ -8,15 +8,19 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.client.settings.GameSettings
+import net.ccbluex.liquidbounce.value.BoolValue
 
 class MatrixHop2 : SpeedMode("MatrixHop2") {
     private var ticks = 0
+    
+    private val groundStrafe = BoolValue("${valuePrefix}GroundStrafe", false)
 
     override fun onUpdate() {
         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) {
                 mc.timer.timerSpeed = 1.0f
+                if (groundStrafe.get()) MovementUtils.strafe()
                 mc.thePlayer.jump()
             }
             
