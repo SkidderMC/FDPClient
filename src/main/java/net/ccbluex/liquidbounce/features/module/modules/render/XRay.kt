@@ -18,6 +18,7 @@ import net.minecraft.init.Blocks
 class XRay : Module() {
     val xrayBlocks = mutableListOf<Block>(
             Blocks.coal_ore,
+            Blocks.red_bed,
             Blocks.iron_ore,
             Blocks.gold_ore,
             Blocks.redstone_ore,
