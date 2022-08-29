@@ -14,21 +14,21 @@ class MatchCommand : Command("match", arrayOf("match")) {
      */
     override fun execute(args: Array<String>) {
         if (args.size == 2) {
-            val module = LiquidBounce.moduleManager.getModule(args[1])
-            val module2 = LiquidBounce.moduleManager.getModule(args[2])
+            val module = LiquidBounce.moduleManager.getModule(args[0])
+            val module2 = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
-                alert("Module '${args[1]}' not found.")
+                alert("Module '${args[0]}' not found.")
                 return
             }
             
             if (module2 == null) {
-                alert("Module '${args[2]}' not found.")
+                alert("Module '${args[1]}' not found.")
                 return
             }
             
             if (module == module2) {
-                alert("Must match ${args[1]} to ANOTHER module.")
+                alert("Must match ${args[0]} to ANOTHER module.")
                 return
             }
             
@@ -53,7 +53,7 @@ class MatchCommand : Command("match", arrayOf("match")) {
                     .toList()
             2 -> LiquidBounce.moduleManager.modules
                     .map { it.name }
-                    .filter { it.startsWith(moduleName, true) }
+                    .filter { it.startsWith(args[1], true) }
                     .toList()
             else -> emptyList()
         }
