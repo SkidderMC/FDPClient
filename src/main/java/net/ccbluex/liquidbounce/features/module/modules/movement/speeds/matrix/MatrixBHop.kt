@@ -59,5 +59,6 @@ class MatrixBHop : SpeedMode("MatrixBHop") {
         jumped = false
         mc.timer.timerSpeed = 1f
         mc.gameSettings.keyBindJump.pressed = mc.gameSettings.keyBindJump.isKeyDown
+        mc.thePlayer.jumpMovementFactor = 0.02f
     }
 }
