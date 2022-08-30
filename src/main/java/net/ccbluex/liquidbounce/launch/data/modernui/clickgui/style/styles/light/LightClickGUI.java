@@ -428,7 +428,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         if (isCategoryHovered(startX + 11, startY + 148, startX + 35, startY + 172, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.PLAYER) {
-                    currentCategory = ModuleCategory.PlAYER;
+                    currentCategory = ModuleCategory.PLAYER;
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
