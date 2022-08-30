@@ -154,7 +154,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
         defaultFont.drawString(searchBox.getText().isEmpty() && !searchBox.isFocused() ? "Search..." : searchBox.getText(), (int) (startX + 3), (int) (startY + 25), new Color(80, 80, 80).getRGB());
         if(currentModule == null) {
-            logoFont.drawStringWithShadow("Empty Modules", startX + 80, startY + 130, new Color(100,100,100).getRGB());
+            logoFont.drawStringWithShadow("No Modules Selected", startX + 80, startY + 130, new Color(100,100,100).getRGB());
         }
 //        if(isHovered(startX + 130, startY + 7, startX + 190, startY + 15, mouseX, mouseY) && Mouse.isButtonDown(0))
 //            hovered = true;
@@ -314,7 +314,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             }
             mY = startY + 30;
             if (currentModule.getValues().isEmpty())
-                logoFont.drawString("Empty Settings", (int) (startX + 250), (int) (startY + 130),
+                logoFont.drawString("No Modules Selected", (int) (startX + 250), (int) (startY + 130),
                         new Color(100, 100, 100,valueAnim.getAlpha()).getRGB());
             for (int i = 0; i < currentModule.getValues().size(); i++) {
                 if (mY > startY + 260)
@@ -383,7 +383,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         if(categoryMouse && !Mouse.isButtonDown(0))
             categoryMouse = false;
-        if (isCategoryHovered(startX + 10, startY + 35, startX + 40, startY + 65, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 28, startX + 25, startY + 52, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.COMBAT) {
                     currentCategory = ModuleCategory.COMBAT;
@@ -397,21 +397,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 10, startY + 82, startX + 40, startY + 112, mouseX, mouseY)) {
-            if (Mouse.isButtonDown(0) && !categoryMouse) {
-                if (currentCategory != ModuleCategory.PLAYER) {
-                    currentCategory = ModuleCategory.PLAYER;
-                    categoryMouse = true;
-                    if(searchBox.getText().isEmpty()) {
-                        moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
-                        alphaAnim.resetAlpha();
-                        valueAnim.resetAlpha();
-                    }
-                }
-            }
-        }
-        if (isCategoryHovered(startX + 10, startY + 128, startX + 40, startY + 158, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 68, startX + 35, startY + 92, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.MOVEMENT) {
                     currentCategory = ModuleCategory.MOVEMENT;
@@ -425,21 +411,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 10, startY + 170, startX + 40, startY + 202, mouseX, mouseY)) {
-            if (Mouse.isButtonDown(0) && !categoryMouse) {
-                if (currentCategory != ModuleCategory.RENDER) {
-                    currentCategory = ModuleCategory.RENDER;
-                    categoryMouse = true;
-                    if(searchBox.getText().isEmpty()) {
-                        moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
-                        alphaAnim.resetAlpha();
-                        valueAnim.resetAlpha();
-                    }
-                }
-            }
-        }
-        if (isCategoryHovered(startX + 10, startY + 218, startX + 40, startY + 247, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 108, startX + 35, startY + 132, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.WORLD) {
                     currentCategory = ModuleCategory.WORLD;
@@ -453,28 +425,93 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
+        if (isCategoryHovered(startX + 11, startY + 148, startX + 35, startY + 172, mouseX, mouseY)) {
+            if (Mouse.isButtonDown(0) && !categoryMouse) {
+                if (currentCategory != ModuleCategory.PLAYER) {
+                    currentCategory = ModuleCategory.PlAYER;
+                    categoryMouse = true;
+                    if(searchBox.getText().isEmpty()) {
+                        moduleStart = 0;
+                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        alphaAnim.resetAlpha();
+                        valueAnim.resetAlpha();
+                    }
+                }
+            }
+        }
+        if (isCategoryHovered(startX + 11, startY + 188, startX + 35, startY + 212, mouseX, mouseY)) {
+            if (Mouse.isButtonDown(0) && !categoryMouse) {
+                if (currentCategory != ModuleCategory.EXPLOIT) {
+                    currentCategory = ModuleCategory.EXPLOIT;
+                    categoryMouse = true;
+                    if(searchBox.getText().isEmpty()) {
+                        moduleStart = 0;
+                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        alphaAnim.resetAlpha();
+                        valueAnim.resetAlpha();
+                    }
+                }
+            }
+        }
+        if (isCategoryHovered(startX + 11, startY + 228, startX + 35, startY + 252, mouseX, mouseY)) {
+            if (Mouse.isButtonDown(0) && !categoryMouse) {
+                if (currentCategory != ModuleCategory.MISC) {
+                    currentCategory = ModuleCategory.MISC;
+                    categoryMouse = true;
+                    if(searchBox.getText().isEmpty()) {
+                        moduleStart = 0;
+                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        alphaAnim.resetAlpha();
+                        valueAnim.resetAlpha();
+                    }
+                }
+            }
+        }
+        if (isCategoryHovered(startX + 11, startY + 268, startX + 35, startY + 292, mouseX, mouseY)) {
+            if (Mouse.isButtonDown(0) && !categoryMouse) {
+                if (currentCategory != ModuleCategory.CLIENT) {
+                    currentCategory = ModuleCategory.CLIENT;
+                    categoryMouse = true;
+                    if(searchBox.getText().isEmpty()) {
+                        moduleStart = 0;
+                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        alphaAnim.resetAlpha();
+                        valueAnim.resetAlpha();
+                    }
+                }
+            }
+        }
+        
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过
-        RenderUtils.drawGradientSideways(startX + 50, startY, startX + 55, startY + 280, new Color(0, 0, 0, 70).getRGB(),
-                new Color(0, 0, 0,0).getRGB());//255,255,255,30
+        RenderUtils.drawGradientSideways(startX + 50, startY, startX + 55, startY + 280, new Color(0, 0, 0, 60).getRGB(),
+                new Color(0, 0, 0, 0).getRGB());//255,255,255,30
 
         RenderUtils.drawGradientSideways(startX + 200, startY, startX + 205, startY + 280,
                 new Color(0, 0, 0, 70).getRGB(), new Color(0,0,0,0).getRGB());//239,237,237,30
-        RenderUtils.circle(startX + 25, startY + 50, 15,
-                isCategoryHovered(startX + 10, startY + 35, startX + 40, startY + 65, mouseX, mouseY)
+        
+        RenderUtils.circle(startX + 23, startY + 40, 12,
+                isCategoryHovered(startX + 11, startY + 28, startX + 35, startY + 52, mouseX, mouseY)
                         || currentCategory == ModuleCategory.COMBAT ? new Color(180, 180, 180).getRGB() : new Color(255,255,255).getRGB());
-        RenderUtils.circle(startX + 25, startY + 97, 15,
-                isCategoryHovered(startX + 10, startY + 82, startX + 40, startY + 112, mouseX, mouseY)
-                        || currentCategory == ModuleCategory.PLAYER ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB());
-        RenderUtils.circle(startX + 25, startY + 143, 15,
-                isCategoryHovered(startX + 10, startY + 128, startX + 40, startY + 158, mouseX, mouseY)
+        RenderUtils.circle(startX + 23, startY + 80, 12,
+                isCategoryHovered(startX + 11, startY + 68, startX + 35, startY + 92, mouseX, mouseY)
                         || currentCategory == ModuleCategory.MOVEMENT ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB());
-        RenderUtils.circle(startX + 25, startY + 187, 15,
-                isCategoryHovered(startX + 10, startY + 170, startX + 40, startY + 202, mouseX, mouseY)
-                        || currentCategory == ModuleCategory.RENDER ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB()); // 画出category的圆
-        RenderUtils.circle(startX + 25, startY + 233, 15,
-                isCategoryHovered(startX + 10, startY + 218, startX + 40, startY + 247, mouseX, mouseY)
+        RenderUtils.circle(startX + 23, startY + 120, 12,
+                isCategoryHovered(startX + 11, startY + 108, startX + 35, startY + 132, mouseX, mouseY)
                         || currentCategory == ModuleCategory.WORLD ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB());
+        RenderUtils.circle(startX + 23, startY + 160, 12,
+                isCategoryHovered(startX + 11, startY + 148, startX + 35, startY + 172, mouseX, mouseY)
+                        || currentCategory == ModuleCategory.PLAYER ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB()); // 画出category的圆
+        RenderUtils.circle(startX + 23, startY + 200, 12,
+                isCategoryHovered(startX + 11, startY + 188, startX + 35, startY + 212, mouseX, mouseY)
+                        || currentCategory == ModuleCategory.EXPLOIT ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB());
+        RenderUtils.circle(startX + 23, startY + 240, 12,
+                isCategoryHovered(startX + 11, startY + 228, startX + 35, startY + 252, mouseX, mouseY)
+                        || currentCategory == ModuleCategory.MISC ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB());
+        RenderUtils.circle(startX + 23, startY + 280, 12,
+                isCategoryHovered(startX + 11, startY + 268, startX + 35, startY + 292, mouseX, mouseY)
+                        || currentCategory == ModuleCategory.CLIENT ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB());
+      
 //        iconFont.drawString("1", startX + 14, startY + 43,
 //                /*isCategoryHovered(startX + 10, startY + 35, startX + 40, startY + 65, mouseX, mouseY)
 //                        || currentCategory == ModuleCategory.COMBAT ? -1 : */new Color(107, 107, 107).getRGB());
@@ -490,11 +527,13 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 //        iconFont.drawString("3", startX + 14, startY + 226,
 //                /*isCategoryHovered(startX + 10, startY + 218, startX + 40, startY + 247, mouseX, mouseY)
 //                        || currentCategory == ModuleCategory.WORLD ? -1 : */new Color(107, 107, 107).getRGB());
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 17, (int) startY + 43, 16, 16);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 17, (int) startY + 90, 16, 16);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Move.png"), (int) startX + 17, (int) startY + 136, 16, 16);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Render.png"), (int) startX + 17, (int) startY + 180, 16, 16);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 17, (int) startY + 226, 16, 16);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Movement.png"), (int) startX + 17, (int) startY + 80, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 17, (int) startY + 120, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 17, (int) startY + 160, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Exploit.png"), (int) startX + 17, (int) startY + 200, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Misc.png"), (int) startX + 17, (int) startY + 240, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Client.png"), (int) startX + 17, (int) startY + 280, 12, 12);
     }
 
     public boolean isStringHovered(float f, float y, float g, float y2, int mouseX, int mouseY) {
