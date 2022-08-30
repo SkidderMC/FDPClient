@@ -272,9 +272,9 @@ class FollowTargetHud : Module() {
                     if (fdpText.get()) {
         
                         glScalef(-scale * 3, -scale * 3, scale * 3)
-                        font.drawString(entity.name, 39, 8, Color.WHITE.rgb)
+                        fontRenderer.drawString(entity.name, 39, 8, Color.WHITE.rgb)
                         glScalef(-scale * 2, -scale * 2, scale * 2)
-                        font.drawString("Health ${entity.health.roundToInt()}", 56, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
+                        fontRenderer.drawString("Health ${entity.health.roundToInt()}", 56, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
                     }
                 } else {
                     if (fdpRed.get()) {
