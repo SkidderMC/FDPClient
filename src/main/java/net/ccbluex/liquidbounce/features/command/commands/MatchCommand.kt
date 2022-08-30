@@ -13,7 +13,7 @@ class MatchCommand : Command("match", arrayOf("match")) {
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
-        if (args.size == 2) {
+        if (args.size == 1) {
             val module = LiquidBounce.moduleManager.getModule(args[0])
             val module2 = LiquidBounce.moduleManager.getModule(args[1])
 
