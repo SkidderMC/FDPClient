@@ -253,6 +253,7 @@ class FollowTargetHud : Module() {
             "fdp" -> {
                 
                 val font = fontValue.get()
+                glScalef(-scale * 2, -scale * 2, scale * 2)
                 
                 if (!fdpVertical.get()) {
                     var addedLen = (60 + font.getStringWidth(entity.name) * 1.60f).toFloat()
@@ -270,10 +271,9 @@ class FollowTargetHud : Module() {
         
                     if (fdpText.get()) {
         
-                        GL11.glPushMatrix()
-                        GL11.glScalef(1.5f, 1.5f, 1.5f)
+                        glScalef(-scale * 3, -scale * 3, scale * 3)
                         font.drawString(entity.name, 39, 8, Color.WHITE.rgb)
-                        GL11.glPopMatrix()
+                        glScalef(-scale * 2, -scale * 2, scale * 2)
                         font.drawString("Health ${entity.health.roundToInt()}", 56, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
                     }
                 } else {
