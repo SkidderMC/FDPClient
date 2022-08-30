@@ -52,6 +52,7 @@ class Matrix670 : SpeedMode("Matrix6.7.0") {
     override fun onDisable() {
         mc.timer.timerSpeed = 1f
         noVelocityY = 0
+        mc.thePlayer.jumpMovementFactor = 0.02f
     }
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
