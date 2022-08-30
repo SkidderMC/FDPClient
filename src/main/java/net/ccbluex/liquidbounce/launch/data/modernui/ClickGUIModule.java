@@ -55,7 +55,7 @@ public class ClickGUIModule extends Module {
         if (styleValue.get().contains("Novoline")) {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
-        } else if (styleValue.get().contains("Light")) {
+        } else if (styleValue.get().contains("FDP")) {
             mc.displayGuiScreen(new LightClickGUI());
             this.setState(false);
         } else {
