@@ -16,6 +16,6 @@ object HudShadows : Module() {
 
     val buttonShadowValue = BoolValue("ButtonShadow", true)
     //  do not auto enable this module, it may cause issues with fps 
-    val UiShadowValue = ListValue("UiShadowMode", arrayOf("TextureShadows", "TextureGlow", "None"), "None")
+    val UiShadowValue = ListValue("UiShadowMode", arrayOf("TextureShadows", "TextureGlow", "None"), "TextureShadows")
 
 }
