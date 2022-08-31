@@ -17,6 +17,7 @@ import net.minecraft.init.Blocks
 @ModuleInfo(name = "XRay", category = ModuleCategory.RENDER, autoDisable = EnumAutoDisableType.RESPAWN, moduleCommand = false)
 class XRay : Module() {
     val xrayBlocks = mutableListOf<Block>(
+            Blocks.bed,
             Blocks.coal_ore,
             Blocks.iron_ore,
             Blocks.gold_ore,
