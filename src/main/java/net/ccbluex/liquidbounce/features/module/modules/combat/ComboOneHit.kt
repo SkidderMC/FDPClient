@@ -13,32 +13,43 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation
 
 @ModuleInfo(name = "ComboOneHit", category = ModuleCategory.COMBAT)
+@SuppressWarnings("ALL")
 class ComboOneHit : Module() {
 
     private val amountValue = IntegerValue("Packets", 200, 0, 500)
-    private val swingItemValue = BoolValue("SwingPacket", false)
+    private val swingValue = ListValue("SwingMode", arrayOf("Normal","Packet"), "Normal")
     private val onlyAuraValue = BoolValue("OnlyAura", false)
     private val gameBreaking = BoolValue("GameBreaking", false)
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        event.targetEntity ?: return
+        fun sendPacket() {
+            mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
+        }
+        fun swingPacket() {
+            when(swingValue.get().lowercase()) {
+                "normal" -> mc.thePlayer.swingItem()
+
+                "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
+            }
+        }
         if (onlyAuraValue.get() && !LiquidBounce.moduleManager[KillAura::class.java]!!.state && !LiquidBounce.moduleManager[InfiniteAura::class.java]!!.state) return
 
         repeat (amountValue.get()) {
-            mc.netHandler.addToSendQueue(C0APacketAnimation())
-            mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
+            swingPacket()
+            sendPacket()
         }
         if (gameBreaking.get()) {
             repeat (amountValue.get()) {
-                mc.netHandler.addToSendQueue(C0APacketAnimation())
-                mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
-                mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
-                mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
+                swingPacket()
+                repeat(3) {
+                    sendPacket()
+                }
             }
         }
     }
