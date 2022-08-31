@@ -86,7 +86,11 @@ open class Module : MinecraftInstance(), Listenable {
     }
 
     open fun onLoad() {
-        localizedName = "%module.$name.name%"
+        localizedName = if(LanguageManager.getAndFormat("module.$name.name") == "module.$name.name") {
+            name
+        } else {
+            LanguageManager.getAndFormat("module.$name.name")
+        }
     }
 
     // Current state of module
@@ -101,7 +105,7 @@ open class Module : MinecraftInstance(), Listenable {
             if (!LiquidBounce.isStarting) {
                 if (value) {
                     Modules.playSound(true)
-                    LiquidBounce.hud.addNotification(Notification("%notify.module.title%", LanguageManager.getAndFormat("notify.module.enable", localizedName), NotifyType.SUCCESS))
+                    LiquidBounce.hud.addNotification(Notification(LanguageManager.getAndFormat("notify.module.title"), LanguageManager.getAndFormat("notify.module.enable", localizedName), NotifyType.SUCCESS))
                 } else {
                     Modules.playSound(false)
                     LiquidBounce.hud.addNotification(Notification("%notify.module.title%", LanguageManager.getAndFormat("notify.module.disable", localizedName), NotifyType.ERROR))

@@ -16,8 +16,8 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 
-@ModuleInfo(name = "AntiAim", category = ModuleCategory.PLAYER)
-class AntiAim : Module() {
+@ModuleInfo(name = "SpinBot", category = ModuleCategory.PLAYER)
+class SpinBot : Module() {
     private val yawModeValue = ListValue("YawMove", arrayOf("Jitter", "Spin", "Back", "BackJitter"), "Spin")
     private val pitchModeValue = ListValue("PitchMode", arrayOf("Down", "Up", "Jitter", "AnotherJitter"), "Down")
     private val rotateValue = BoolValue("SilentRotate", true)

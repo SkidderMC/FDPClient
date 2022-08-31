@@ -19,7 +19,6 @@ class MatrixCollideNofall : NoFallMode("MatrixCollide") {
     }
     override fun onNoFall(event: UpdateEvent) {
         if (mc.thePlayer.fallDistance.toInt() - mc.thePlayer.motionY > 3) {
-            ClientUtils.displayChatMessage("HI")
             mc.thePlayer.motionY = 0.0
             mc.thePlayer.fallDistance = 0.0f
             mc.thePlayer.motionX *= 0.1
