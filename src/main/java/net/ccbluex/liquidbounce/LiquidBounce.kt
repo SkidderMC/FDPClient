@@ -70,15 +70,14 @@ object LiquidBounce {
 
     var isStarting = true
     var isLoadingConfig = true
-    var latest = ""
-        private set
+    private var latest = ""
 
     // Managers
     lateinit var moduleManager: ModuleManager
 
     lateinit var commandManager: CommandManager
     lateinit var eventManager: EventManager
-    lateinit var subscriptions: Subscriptions
+    private lateinit var subscriptions: Subscriptions
     lateinit var fileManager: FileManager
     lateinit var scriptManager: ScriptManager
     lateinit var tipSoundManager: TipSoundManager
@@ -120,7 +119,7 @@ object LiquidBounce {
      */
     fun initClient() {
         ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
-        ClientUtils.logInfo("Initialzing...");
+        ClientUtils.logInfo("Initialzing...")
         val startTime = System.currentTimeMillis()
         // Create file manager
         fileManager = FileManager()
@@ -206,7 +205,7 @@ object LiquidBounce {
             scriptManager.loadScripts()
             scriptManager.enableScripts()
         }
-        ClientUtils.setTitle();
+        ClientUtils.setTitle()
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
     }
 
