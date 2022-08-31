@@ -28,7 +28,11 @@ public class Settings extends Setting {
         RenderUtils.drawRect(x, mY - 5, x + 1, mY + 10, new Color(0, 100, 255,alphaAnim.getAlpha()).getRGB());
         font.drawString(listValue.get(),
                 x + 10,
-                mY + 4, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+                mY + 3 - Math.round(font.FONT_HEIGHT / 2) , new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+        font.drawString(listValue.getValues()[listValue.getModeListNumber(listValue.get()) + 1 >= listValue.getValues().length ? 0
+                        : listValue.getModeListNumber(listValue.get()) + 1],
+                x + 10,
+                mY + 5 + Math.round(font.FONT_HEIGHT / 2) , new Color(60, 60, 60,35).getRGB());
         if (this.isHovered(x, mY - 5, x + 80, mY + 11, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !previousMouse) {
                 String current = listValue.get();
@@ -136,8 +140,9 @@ public class Settings extends Setting {
     @Override
     public void drawBoolValue(boolean mouse,int mouseX,int mouseY,float startX,float mY,BoolValue boolValue) {
         float x = startX + 325;
-        font.drawString(boolValue.getName(), startX + 210, mY, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
-        RenderUtils.drawRoundedRect2(x + 30, mY - 2, x + 50, mY + 8, 4, boolValue.get() ? new Color(66, 134, 245,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
+        font.drawString(boolValue.getName(), startX + 210, mY, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB()); 
+        RenderUtils.drawRoundedRect2(x + 30, mY - 2, x + 50, mY + 8, 4, new Color(239, 237, 237,alphaAnim.getAlpha()).getRGB() );
+        RenderUtils.drawRoundedRect2(x + 38, mY - 4, x + 52, mY + 10, 5, boolValue.get() ? new Color(66, 134, 245,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
         RenderUtils.circle(x + 40 + boolValue.getAnimation().getAnimationX(), mY + 3, 4, boolValue.get() ? new Color(255,255,255,alphaAnim.getAlpha()).getRGB() : new Color(164, 168, 175,alphaAnim.getAlpha()).getRGB());
         if(boolValue.getAnimation().getAnimationX() > -5F && !boolValue.get())
             boolValue.getAnimation().animationX -= 1F;
