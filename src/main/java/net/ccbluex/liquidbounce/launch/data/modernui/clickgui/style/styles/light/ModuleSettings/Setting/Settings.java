@@ -28,11 +28,11 @@ public class Settings extends Setting {
         RenderUtils.drawRect(x, mY - 5, x + 1, mY + 10, new Color(0, 100, 255,alphaAnim.getAlpha()).getRGB());
         font.drawString(listValue.get(),
                 x + 10,
-                mY + 3 - Math.round(font.FONT_HEIGHT / 2) , new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+                mY + 4 - Math.round(font.FONT_HEIGHT / 2) , new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
         font.drawString(listValue.getValues()[listValue.getModeListNumber(listValue.get()) + 1 >= listValue.getValues().length ? 0
                         : listValue.getModeListNumber(listValue.get()) + 1],
                 x + 10,
-                mY + 5 + Math.round(font.FONT_HEIGHT / 2) , new Color(60, 60, 60,35).getRGB());
+                mY + 5 + Math.round(font.FONT_HEIGHT / 2) , new Color(60, 60, 60, 50).getRGB());
         if (this.isHovered(x, mY - 5, x + 80, mY + 11, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !previousMouse) {
                 String current = listValue.get();
