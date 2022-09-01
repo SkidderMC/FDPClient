@@ -56,8 +56,8 @@ class Spammer : Module() {
         if (mc.currentScreen != null && mc.currentScreen is GuiChat) {
             return
         }
-        if (modeValue.equals("Single") && message.startsWith(".")) {
-            LiquidBounce.commandManager.executeCommands(message) 
+        if (modeValue.equals("Single") && messageValue.get().startsWith(".")) {
+            LiquidBounce.commandManager.executeCommands(messageValue.get()) 
             return
         }
 
