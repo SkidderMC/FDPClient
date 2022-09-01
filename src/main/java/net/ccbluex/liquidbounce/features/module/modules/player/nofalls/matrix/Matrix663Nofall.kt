@@ -8,6 +8,8 @@ import net.minecraft.network.play.client.C03PacketPlayer
 
 class Matrix663Nofall : NoFallMode("Matrix6.6.3") {
     private var matrixSend = false
+    private val matrixSafe = BoolValue("SafeNoFall", true)
+    
     override fun onEnable() {
         matrixSend = false
     }
@@ -18,7 +20,13 @@ class Matrix663Nofall : NoFallMode("Matrix6.6.3") {
         if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3) {
             mc.thePlayer.fallDistance = 0.0f
             matrixSend = true
-            mc.timer.timerSpeed = 0.5f
+            if (matrixSafe.get()) {
+                mc.timer.timerSpeed = 0.3f
+                mc.thePlayer.motionX *= 0.5
+                mc.thePlayer.motionZ *= 0.5
+            } else {
+                mc.timer.timerSpeed = 0.5f
+            }
         } else {
             mc.timer.timerSpeed = 1f
         }
