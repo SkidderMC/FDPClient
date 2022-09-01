@@ -110,10 +110,9 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
 
         var y = 1F
         tabs.forEachIndexed { index, tab ->
-            val tabName = if (upperCaseValue.get()) {
-                tab.tabName.uppercase()
-            } else {
-                tab.tabName
+            var tabName = tab.tabName
+            if (upperCaseValue.get()) {
+                tabName = tabName.uppercase()
             }
 
             val textX = if (side.horizontal == Side.Horizontal.RIGHT) {
