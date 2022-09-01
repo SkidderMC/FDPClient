@@ -30,6 +30,16 @@ class FastUse : Module() {
     private val msTimer = MSTimer()
     private var usedTimer = false
 
+    private fun send(int: Int) {
+        repeat(int) {
+            mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+        }
+    }
+
+    private fun send() {
+        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+    }
+
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (usedTimer) {
@@ -48,37 +58,29 @@ class FastUse : Module() {
                 "matrix" -> {
                     mc.timer.timerSpeed = 0.5f
                     usedTimer = true
-                    mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    send()
                 }
                 "medusa" -> {
                     if (mc.thePlayer.itemInUseDuration > 5 || !msTimer.hasTimePassed(360L))
                         return
 
-                    repeat(20) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                    }
+                    send(20)
 
                     msTimer.reset()
                 }
                 "delayedinstant" -> if (mc.thePlayer.itemInUseDuration > durationValue.get()) {
-                    repeat(36 - mc.thePlayer.itemInUseDuration) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                    }
+                    send(36 - mc.thePlayer.itemInUseDuration)
 
                     mc.playerController.onStoppedUsingItem(mc.thePlayer)
                 }
 
                 "ncp" -> if (mc.thePlayer.itemInUseDuration > 14) {
-                    repeat(20) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                    }
+                    send(20)
 
                     mc.playerController.onStoppedUsingItem(mc.thePlayer)}
 
                 "instant" -> {
-                    repeat(35) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                    }
+                    send(35)
 
                     mc.playerController.onStoppedUsingItem(mc.thePlayer)
                 }
@@ -86,19 +88,13 @@ class FastUse : Module() {
                     mc.timer.timerSpeed = 0.49F
                     usedTimer = true
                     if (mc.thePlayer.itemInUseDuration > 14) {
-                        repeat(23) {
-                            mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                        }
+                        send(23)
                     }
                 }
                 "newaac" -> {
                     mc.timer.timerSpeed = 0.49F
                     usedTimer = true
-                    repeat(2) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                    }
-
-                    // mc.playerController.onStoppedUsingItem(mc.thePlayer)
+                    send(2)
                 }
                 "timer" -> {
                     mc.timer.timerSpeed = timerValue.get()
@@ -109,9 +105,7 @@ class FastUse : Module() {
                     mc.timer.timerSpeed = 0.5F
                     usedTimer = true
                     if (mc.thePlayer.ticksExisted % 2 == 0) {
-                        repeat(2) {
-                            mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                        }
+                        send(2)
                     }
                 }
 
@@ -120,7 +114,7 @@ class FastUse : Module() {
                         return
                     }
 
-                    mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    send()
                     msTimer.reset()
                 }
             }
