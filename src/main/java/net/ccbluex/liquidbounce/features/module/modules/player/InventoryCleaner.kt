@@ -65,6 +65,7 @@ class InventoryCleaner : Module() {
     private val armorValue = BoolValue("Armor", true)
     private val noCombatValue = BoolValue("NoCombat", false)
     private val itemDelayValue = IntegerValue("ItemDelay", 0, 0, 5000)
+    private val onlySwordDamage = BoolValue("OnlySwordWeapon", true)
     private val nbtGoalValue = ListValue("NBTGoal", ItemUtils.EnumNBTPriorityType.values().map { it.toString() }.toTypedArray(), "NONE")
     private val nbtItemNotGarbage = BoolValue("NBTItemNotGarbage", true).displayable { !nbtGoalValue.equals("NONE") }
     private val nbtArmorPriority = FloatValue("NBTArmorPriority", 0f, 0f, 5f).displayable { !nbtGoalValue.equals("NONE") }
@@ -217,26 +218,10 @@ class InventoryCleaner : Module() {
         return try {
             val item = itemStack.item
 
-            if (item is ItemSword || item is ItemTool) {
-                /*if (slot >= 36 && findBetterItem(slot - 36, mc.thePlayer.inventory.getStackInSlot(slot - 36)) == slot - 36) {
-                    return true
-                }
-
-                for (i in 0..8) {
-                    if (type(i).equals("sword", true) && item is ItemSword ||
-                        type(i).equals("pickaxe", true) && item is ItemPickaxe ||
-                        type(i).equals("axe", true) && item is ItemAxe) {
-                        if (findBetterItem(i, mc.thePlayer.inventory.getStackInSlot(i)) == null) {
-                            return true
-                        }
-                    }
-                }*/
+            if (item is ItemSword || (item is ItemTool && !onlySwordDamage.get())) {
 
                 val damage = (itemStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount ?: 0.0) + ItemUtils.getWeaponEnchantFactor(itemStack, nbtWeaponPriority.get(), goal)
 
-                /*items(0, 45).none { (_, stack) ->
-                    stack != itemStack && stack.javaClass == itemStack.javaClass && damage <= (stack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount ?: 0.0) + ItemUtils.getWeaponEnchantFactor(stack, nbtWeaponPriority.get(), goal)
-                }*/
                 items(0, 45).none { (_, stack) ->
 		            if (stack != itemStack && stack.javaClass == itemStack.javaClass) {
 			            val dmg = (stack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount ?: 0.0) + ItemUtils.getWeaponEnchantFactor(stack, nbtWeaponPriority.get(), goal)
@@ -350,7 +335,7 @@ class InventoryCleaner : Module() {
                 }
 
                 mc.thePlayer.inventory.mainInventory.forEachIndexed { index, itemStack ->
-                    if (itemStack?.item?.javaClass == currentType && !type(index).equals(type, ignoreCase = true)) {
+                    if (itemStack?.item?.javaClass == currentType && !type(index).equals(type, ignoreCase = true) && (!onlySwordDamage.get() || type.equals("Sword", ignoreCase = true)) ) {
                         if (bestWeapon == -1) {
                             bestWeapon = index
                         } else {

@@ -28,14 +28,13 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[]{"Novoline", "LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo"}, "Astolfo") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"FDP", "Novoline", "LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo"}, "Astolfo") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
         }
     };
 
-    private final ListValue modeValue = new ListValue("Mode", new String[]{"LiquidBounce", "Light"}, "LiquidBounce");
 
     public final FloatValue scaleValue = new FloatValue("Scale", 1F, 0.7F, 2F);
     public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
@@ -56,7 +55,7 @@ public class ClickGUIModule extends Module {
         if (styleValue.get().contains("Novoline")) {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
-        } else if (modeValue.get().contains("Light")) {
+        } else if (styleValue.get().contains("FDP")) {
             mc.displayGuiScreen(new LightClickGUI());
             this.setState(false);
         } else {
