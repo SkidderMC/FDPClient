@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB
 
@@ -37,6 +38,8 @@ class NoFall : Module() {
             if (state) onEnable()
         }
     }
+    
+    private val noVoid = BoolValue("NoVoid", false)
 
     var launchX = 0.0
     var launchY = 0.0
@@ -92,6 +95,8 @@ class NoFall : Module() {
             ) { it is BlockLiquid }) {
             return
         }
+        
+        if (checkVoid() && noVoid.get()) return
 
         mode.onNoFall(event)
     }
@@ -128,6 +133,18 @@ class NoFall : Module() {
 
     override val tag: String
         get() = modeValue.get()
+        
+    private fun checkVoid(): Boolean {
+        var i = (-(mc.thePlayer.posY-1.4857625)).toInt()
+        var dangerous = true
+        while (i <= 0) {
+            dangerous = mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX * 0.5, i.toDouble(), mc.thePlayer.motionZ * 0.5)).isEmpty()
+            i++
+            if (!dangerous) break
+        }
+        return dangerous
+    }
+
 
     /**
      * 读取mode中的value并和本体中的value合并

@@ -123,6 +123,7 @@ class Scaffold : Module() {
             "PlusMotion",
             "StableMotion",
             "MotionTP",
+	    "MotionTP2",
             "Packet",
             "Teleport",
             "AAC3.3.9",
@@ -483,12 +484,22 @@ class Scaffold : Module() {
                     mc.thePlayer.motionY = -0.3
                 }
             }
-            "motiontp" -> {
+	    "motiontp" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.42
                 } else if (mc.thePlayer.motionY < 0.23) {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
+                }
+            }
+            "motiontp2" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    mc.thePlayer.motionY = 0.42
+                } else if (mc.thePlayer.motionY < 0.23) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
+		    mc.thePlayer.onGround = true
+		    mc.thePlayer.motionY = 0.42
                 }
             }
             "packet" -> {
