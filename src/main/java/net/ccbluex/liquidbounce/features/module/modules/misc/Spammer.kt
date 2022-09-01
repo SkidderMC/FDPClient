@@ -56,6 +56,10 @@ class Spammer : Module() {
         if (mc.currentScreen != null && mc.currentScreen is GuiChat) {
             return
         }
+        if (modeValue.equals("Single") && message.startsWith(".")) {
+            LiquidBounce.commandManager.executeCommands(message) 
+            return
+        }
 
         if (msTimer.hasTimePassed(delay)) {
             mc.thePlayer.sendChatMessage(when (modeValue.get().lowercase()) {
