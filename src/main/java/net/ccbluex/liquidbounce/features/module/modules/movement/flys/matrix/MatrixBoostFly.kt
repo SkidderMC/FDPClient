@@ -40,9 +40,9 @@ class MatrixBoostFly : FlyMode("MatrixBoost") {
             if (bypassMode.equals("Test")) {
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX + -sin(yaw) * 1.44,
-                        mc.thePlayer.posY + 1.91,
-                        mc.thePlayer.posZ + cos(yaw) * 1.44,
+                        mc.thePlayer.posX + -sin(yaw) * 1.9,
+                        mc.thePlayer.posY + 1,
+                        mc.thePlayer.posZ + cos(yaw) * 1.9,
                         false
                     )
                 )
@@ -63,7 +63,7 @@ class MatrixBoostFly : FlyMode("MatrixBoost") {
             when (bypassMode.get().lowercase()) {
                 "stable" -> mc.thePlayer.motionY = 0.8
                 "new" -> mc.thePlayer.motionY = 0.48
-                "test" -> mc.thePlayer.motionY = 1.91
+                "test" -> mc.thePlayer.motionY = 1
                 "custom" -> mc.thePlayer.motionY = customYMotion.get().toDouble()
             }
             boostMotion = 3
