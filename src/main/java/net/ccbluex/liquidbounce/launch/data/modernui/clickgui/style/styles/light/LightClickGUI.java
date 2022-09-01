@@ -561,13 +561,13 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 //        iconFont.drawString("3", startX + 14, startY + 226,
 //                /*isCategoryHovered(startX + 10, startY + 218, startX + 40, startY + 247, mouseX, mouseY)
 //                        || currentCategory == ModuleCategory.WORLD ? -1 : */new Color(107, 107, 107).getRGB());
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 17, (int) startY + 40, 24, 24);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Movement.png"), (int) startX + 17, (int) startY + 80, 24, 24);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 17, (int) startY + 120, 24, 24);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 17, (int) startY + 160, 24, 24);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Exploit.png"), (int) startX + 17, (int) startY + 200, 24, 24);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Misc.png"), (int) startX + 17, (int) startY + 240, 24, 24);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Client.png"), (int) startX + 17, (int) startY + 280, 24, 24);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Movement.png"), (int) startX + 17, (int) startY + 80, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 17, (int) startY + 120, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 17, (int) startY + 160, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Exploit.png"), (int) startX + 17, (int) startY + 200, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Misc.png"), (int) startX + 17, (int) startY + 240, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Client.png"), (int) startX + 17, (int) startY + 280, 12, 12);
     }
 
     public boolean isStringHovered(float f, float y, float g, float y2, int mouseX, int mouseY) {
