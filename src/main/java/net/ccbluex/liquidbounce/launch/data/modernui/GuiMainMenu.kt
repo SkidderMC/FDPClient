@@ -197,7 +197,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             Color(1, 1, 1, 170).rgb
         )
         var versionMsg =
-            "Version: " + LiquidBounce.CLIENT_VERSION + "($VERSIONNUMBER)"
+            "Version: " + LiquidBounce.CLIENT_VERSION
         FontLoaders.F16.drawString(
             versionMsg,
             this.width - FontLoaders.F16.getStringWidth(versionMsg) - 10F,
