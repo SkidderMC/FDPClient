@@ -54,8 +54,7 @@ object DiscordRPC {
         }
 
         // Check ipc client is connected and send rpc
-        if (ipcClient.status == PipeStatus.CONNECTED)
-            ipcClient.sendRichPresence(builder.build())
+        if (ipcClient.status == PipeStatus.CONNECTED) ipcClient.sendRichPresence(builder.build())
     }
 
     fun stop() {

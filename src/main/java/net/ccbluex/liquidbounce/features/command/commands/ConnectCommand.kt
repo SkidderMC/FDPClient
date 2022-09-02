@@ -26,13 +26,12 @@ class ConnectCommand : Command("connect", emptyArray()) {
                 return
             }
         }
-        if (args.size == 3 && args[2] == "silent") {
-        } else if (args.size == 2) {
+        if (args.size == 3 && args[2] == "silent") return
+        if (args.size == 2) {
             chat("Connecting to §a§l${args[1]}")
             mc.theWorld.sendQuittingDisconnectingPacket()
             mc.displayGuiScreen(GuiConnecting(GuiMultiplayer(GuiMainMenu()), mc, ServerData("", args[1], false)))
-        } else
-            chatSyntax("connect <ip:port> (silent)")
+        } else chatSyntax("connect <ip:port> (silent)")
     }
 
 }
