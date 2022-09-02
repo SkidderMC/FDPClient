@@ -10,7 +10,7 @@ Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows
 Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 
-## Installing FDP
+## How To Install FDP?
 - **Step 1:** Install Java [here](https://www.java.com/en/download/) (Skip if you have Java)
 - **Step 2:** Install Forge 1.8.9 [here](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it
@@ -53,6 +53,8 @@ Mixins can be used to modify classes at runtime before they are loaded. FDPClien
 
 ## Contributing
 We welcome contributions, but you have to follow the following rules in order for us to merge your pull request.
+
+U can make a Pull Request at [here](https://github.com/SkidderMC/FDPClient/issues).
 
 ### Language and Code Quality
 Your code needs to be able to build, please ensure your code has little to no bugs!  
