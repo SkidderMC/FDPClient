@@ -1217,9 +1217,9 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPopMatrix()
 
-        Fonts.Font20.drawString("${target.name}", 45f, 12f, Color.WHITE.rgb)
+        Fonts.font20.drawString("${target.name}", 45f, 12f, Color.WHITE.rgb)
         val df = DecimalFormat("0.00")
-        Fonts.Font14.drawString(
+        Fonts.font14.drawString(
             "Armor ${(df.format(getHealth(target) * 100))}%",
             45f,
             24f,
@@ -1234,7 +1234,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             5f,
             ColorUtils.rainbow().rgb
         )
-        Fonts.Font14.drawString(
+        Fonts.font14.drawString(
             "${((decimalFormat.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
             34f,
