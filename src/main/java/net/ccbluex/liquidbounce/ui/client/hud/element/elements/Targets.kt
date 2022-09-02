@@ -1221,20 +1221,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
 
         GL11.glPopMatrix()
-        
-        
-        
-        Fonts.font40.drawString("${target.name}", 45f, 12f, Color.WHITE.rgb)
-        val df = DecimalFormat("0.00")
-        Fonts.font40.drawString(
 
-            
-
-        Fonts.font40.drawString("${target.name}", 45f, 12f, Color.WHITE.rgb)
+        FontLoaders.F20.DisplayFonts("${target.name}", 45f, 12f, Color.WHITE.rgb, FontLoaders.F20)
         val df = DecimalFormat("0.00");
 
-        Fonts.font40.drawString(
-            "Armor ${(df.format(getHealth(target) * 100))}%",
+        FontLoaders.F14.DisplayFonts(
+            "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
             45f,
             24f,
             Color(200, 200, 200).rgb,
@@ -1249,11 +1241,13 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             5f,
             ColorUtils.rainbow().rgb
         )
-        Fonts.font40.drawString(
+        FontLoaders.F14.DisplayFont2(
+            FontLoaders.F14,
             "${((df.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
             34f,
             Color(255, 255, 255).rgb,
+            true
         )
     }
 
