@@ -20,10 +20,8 @@ public class Wings extends Module {
 
     @EventTarget
     public void onRenderPlayer(Render3DEvent event) {
-        if (onlyThirdPerson.get() && mc.gameSettings.thirdPersonView == 0) {
-            return;
-        }
-        
+        if (onlyThirdPerson.get() && mc.gameSettings.thirdPersonView == 0) return;
+
         RenderWings renderWings = new RenderWings();
         renderWings.renderWings(event.getPartialTicks());
     }
