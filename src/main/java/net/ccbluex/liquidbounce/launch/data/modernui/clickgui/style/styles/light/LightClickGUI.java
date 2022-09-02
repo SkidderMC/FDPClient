@@ -195,7 +195,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         // draw that lil circle that tells you what category u at /////////////////////
         RenderUtils.drawSuperCircle(startX - 5, startY + 50 + animationHeight, 5, new Color(100, 100,255).getRGB());
-        animationHeight += Math.round((categoryYpos - animationHeight)/2.5)
+        animationHeight += Math.round((categoryYpos - animationHeight)/2.5);
 
         
         // mouse scroll now est variable
