@@ -166,12 +166,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // draw big boi background
-        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 55, (int) startY + 310, 4,
+        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 4,
                 new Color(232, 232, 232, 250).getRGB());
-         RenderUtils.drawRoundedRect2((int) startX + 55, (int) startY, (int) startX + 205, (int) startY + 310, 4,
-                new Color(4, 132, 201, 250).getRGB());
-         RenderUtils.drawRoundedRect2((int) startX + 205, (int) startY, (int) startX + 400, (int) startY + 310, 4,
-                new Color(45, 136, 227, 250).getRGB());
         
         
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
