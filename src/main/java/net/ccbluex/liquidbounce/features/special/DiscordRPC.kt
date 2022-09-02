@@ -7,6 +7,7 @@ import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule
 import net.ccbluex.liquidbounce.utils.ServerUtils
+import net.ccbluex.liquidbounce.utils.mc
 import org.json.JSONObject
 import java.time.OffsetDateTime
 import kotlin.concurrent.thread
@@ -41,21 +42,16 @@ object DiscordRPC {
 
     private fun update() {
         val builder = RichPresence.Builder()
-        val discordrpc = LiquidBounce.moduleManager[DiscordRPCModule::class.java]!!
+        val discordRPCModule = LiquidBounce.moduleManager[DiscordRPCModule::class.java]!!
         builder.setStartTimestamp(timestamp)
         builder.setLargeImage("cfb8fe2fe9169dc68f7f8c1236b885")
         builder.setDetails(fdpwebsite + LiquidBounce.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
-            if(discordrpc.showserver.get()) {
-                builder.setState(if(it.equals("idling", true)) "Idling" else "Server: $it ")
-            } else {
-                builder.setState(if(it.equals("idling", true)) "Idling" else "Playing in a server.")
-            }
+            builder.setState(if(it.equals("idling", true)) "Idling" else if(discordRPCModule.showNameValue.get()) "Username: ${if(mc.thePlayer != null) mc.thePlayer.name else "null"}" else "" + if(discordRPCModule.showServerValue.get()) { "Server: $it" } else "Playing in a server")
         }
 
         // Check ipc client is connected and send rpc
-        if (ipcClient.status == PipeStatus.CONNECTED)
-            ipcClient.sendRichPresence(builder.build())
+        if (ipcClient.status == PipeStatus.CONNECTED) ipcClient.sendRichPresence(builder.build())
     }
 
     fun stop() {
