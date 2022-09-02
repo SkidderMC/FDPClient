@@ -48,6 +48,7 @@ class Scaffold : Module() {
 
     // Delay
     private val placeableDelayValue = ListValue("PlaceableDelay", arrayOf("Normal", "Smart", "OFF"), "Normal")
+    private val placeDelayTower = BoolValue("PlaceableDelayWhenTowering", true)
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 0, 0, 1000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minDelayValue.get()
@@ -445,7 +446,7 @@ class Scaffold : Module() {
         if (placeModeValue.equals(eventState.stateName)) place()
 
         // Reset placeable delay
-        if (targetPlace == null && !placeableDelayValue.equals("OFF")) {
+        if (targetPlace == null && !placeableDelayValue.equals("OFF") && (!placeDelayTower.get() || !towerStatus)) {
             if (placeableDelayValue.equals("Smart")) {
                 if (lastPlace == 0) {
                     delayTimer.reset()
