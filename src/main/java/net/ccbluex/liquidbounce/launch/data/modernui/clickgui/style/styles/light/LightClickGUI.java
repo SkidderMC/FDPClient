@@ -166,8 +166,14 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // draw big boi background
-        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 4,
-                new Color(239, 237, 237).getRGB());
+        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 55, (int) startY + 310, 4,
+                new Color(232, 232, 232, 250).getRGB());
+         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 205, (int) startY + 310, 4,
+                new Color(4, 132, 201, 250).getRGB());
+         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 4,
+                new Color(45, 136, 227, 250).getRGB());
+        
+        
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
         
         // search box time
@@ -189,19 +195,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         // draw that lil circle that tells you what category u at /////////////////////
         RenderUtils.drawSuperCircle(startX - 5, startY + 50 + animationHeight, 5, new Color(100, 100,255).getRGB());
-        if (animationHeight < categoryYpos) {
-            if (categoryYpos - animationHeight < 30) {
-                animationHeight += 3;
-            } else {
-                animationHeight += 6;
-            }
-        } else if (animationHeight > categoryYpos) {
-            if (animationHeight - categoryYpos < 30) {
-                animationHeight -= 3;
-            } else {
-                animationHeight -= 6;
-            }
-        }
+        animationHeight += Math.round((categoryYpos - animationHeight)/2.5)
+
         
         // mouse scroll now est variable
         int m = Mouse.getDWheel();//鼠标滚轮.
@@ -234,6 +229,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 && Mouse.isButtonDown(0)) {
             mc.displayGuiScreen(new GuiExit());
         }
+        
+        
         if(!searchBox.getText().isEmpty()) {
             if (this.isCategoryHovered(startX + 60, startY + 40, startX + 200, startY + 280, mouseX, mouseY)) {
                 if (m < 0 && moduleStart < LiquidBounce.moduleManager.getModuleInCategory(currentCategory).size() - 8) {
