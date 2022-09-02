@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.WaterMelo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Particle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.ShapeType
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.utils.AnimationUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
@@ -1173,7 +1172,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glPopMatrix()
     }
 
-    private fun drawWaterMelon(target: EntityLivingBase) {
+    private fun drawWaterMelon(target: EntityLivingBase, DecimalFormat: decimalFormat) {
         RenderUtils.drawRoundedCornerRect(
             -1.5f, 2.5f, 152.5f, 52.5f,
             5.0f, Color(0, 0, 0, 26).rgb
@@ -1225,6 +1224,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         FontLoaders.F20.DisplayFonts("${target.name}", 45f, 12f, Color.WHITE.rgb, FontLoaders.F20)
         DecimalFormat df = new DecimalFormat("0.00");
+
         FontLoaders.F14.DisplayFonts(
             "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
             45f,

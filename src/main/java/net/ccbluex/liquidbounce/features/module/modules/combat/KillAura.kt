@@ -58,8 +58,6 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
-    val simpleArrayList = BoolValue("SimpleArrayListTag", false)
-
     /**
      * OPTIONS
      */
@@ -1258,7 +1256,9 @@ class KillAura : Module() {
     /**
      * HUD Tag
      */
+    
     override val tag: String
+    var simpleArrayList = BoolValue("SimpleArrayListTag", false)
     if (simpleArrayList.equals(true)){
         get() = targetModeValue.get()
     } else {
