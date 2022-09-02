@@ -63,7 +63,7 @@ class MatrixBoostFly : FlyMode("MatrixBoost") {
             when (bypassMode.get().lowercase()) {
                 "stable" -> mc.thePlayer.motionY = 0.8
                 "new" -> mc.thePlayer.motionY = 0.48
-                "test" -> mc.thePlayer.motionY = 1
+                "test" -> mc.thePlayer.motionY = 1.0
                 "custom" -> mc.thePlayer.motionY = customYMotion.get().toDouble()
             }
             boostMotion = 3
