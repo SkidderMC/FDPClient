@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraftforge.fml.client.SplashProgress;
 import net.minecraftforge.fml.common.ProgressManager;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,7 +39,7 @@ public abstract class MixinSplashProgressRunnable {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         int tex;
         try {
-            tex = RenderUtils.loadGlTexture(ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/splash.png")));
+            tex = RenderUtils.loadGlTexture(ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/background.png")));
         } catch (IOException e) {
             tex = 0;
         }
@@ -75,6 +76,13 @@ public abstract class MixinSplashProgressRunnable {
             GL11.glVertex2f(0.0f, height);
             GL11.glEnd();
             GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+            // draw logo (dogshit code will break and prob doesnt work but ok)
+            float yCentre = width / 2;
+            float xCentre = height / 2;
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/logo/logo.png"), (int) xCentre, (int) yCentre, 250, 250);
+
+
 
             // draw progress bar
             float rectX = width * 0.2f;
