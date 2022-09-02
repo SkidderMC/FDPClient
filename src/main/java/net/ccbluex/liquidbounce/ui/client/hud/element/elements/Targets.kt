@@ -15,13 +15,17 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.WaterMelo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Particle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.ShapeType
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.utils.AnimationUtils
+import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.PlayerUtils;
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
@@ -36,6 +40,7 @@ import java.text.DecimalFormatSymbols
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.jvm.internal.Intrinsics
 
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
@@ -1217,13 +1222,15 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPopMatrix()
 
-        Fonts.font40.drawString("${target.name}", 45f, 12f, Color.WHITE.rgb)
-        val df = DecimalFormat("0.00")
-        Fonts.font40.drawString(
-            "Armor ${(df.format(getHealth(target) * 100))}%",
+        FontLoaders.F20.DisplayFonts("${target.name}", 45f, 12f, Color.WHITE.rgb, FontLoaders.F20)
+        val df = DecimalFormat("0.00");
+
+        FontLoaders.F14.DisplayFonts(
+            "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
             45f,
             24f,
             Color(200, 200, 200).rgb,
+            FontLoaders.F14
         )
         RenderUtils.drawRoundedCornerRect(45f, 32f, 145f, 42f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
@@ -1234,11 +1241,13 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             5f,
             ColorUtils.rainbow().rgb
         )
-        Fonts.font40.drawString(
-            "${((decimalFormat.format((easingHP / target.maxHealth) * 100)))}%",
+        FontLoaders.F14.DisplayFont2(
+            FontLoaders.F14,
+            "${((df.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
             34f,
             Color(255, 255, 255).rgb,
+            true
         )
     }
 
