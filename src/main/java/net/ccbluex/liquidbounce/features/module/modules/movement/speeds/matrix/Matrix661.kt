@@ -13,7 +13,6 @@ import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.sqrt
 
-
 class Matrix661 : SpeedMode("Matrix6.6.1") {
     private val veloBoostValue = BoolValue("${valuePrefix}VelocBoost", true)
     private val timerBoostValue = BoolValue("${valuePrefix}TimerBoost", false)
