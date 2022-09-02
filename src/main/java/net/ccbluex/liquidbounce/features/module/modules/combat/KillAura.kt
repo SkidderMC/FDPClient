@@ -1258,18 +1258,11 @@ class KillAura : Module() {
      */
     fun hudTag() {
         val simpleArrayList = BoolValue("SimpleArrayListTag", false)
+
+        val tag: String
         if (simpleArrayList.equals(true)) {
-            override val tag: String
-            get() =
-                "${targetModeValue.get()}, ${priorityValue.get()}, " + "${minCpsValue.get()}-${maxCpsValue.get()}, " + "$maxRange${
-                    if (!autoBlockValue.equals("Off")) {
-                        "-${autoBlockRangeValue.get()}"
-                    } else {
-                        ""
-                    }
-                }-${discoverRangeValue.get()}"
+            get() = "${targetModeValue.get()}, ${priorityValue.get()}, " + "${minCpsValue.get()}-${maxCpsValue.get()}, " + "$maxRange${ if (!autoBlockValue.equals("Off")) { "-${autoBlockRangeValue.get()}"} else {""}}-${discoverRangeValue.get()}"
         } else {
-            override val tag: String
             get() = targetModeValue.get()
         }
     }       
