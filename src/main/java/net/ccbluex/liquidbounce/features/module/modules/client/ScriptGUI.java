@@ -10,11 +10,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.modernui.GuiScriptLoadMenu;
 
-@ModuleInfo(name = "ScriptManager", category = ModuleCategory.CLIENT)
-public class FDPScriptManager extends Module {
+@ModuleInfo(name = "ScriptGUI", category = ModuleCategory.CLIENT, canEnable = false)
+public class ScriptGUI extends Module {
     @Override
     public void onEnable() {
         mc.displayGuiScreen(new GuiScriptLoadMenu());
-        this.setState(false);
     }
 }
