@@ -168,9 +168,9 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         // draw big boi background
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 55, (int) startY + 310, 4,
                 new Color(232, 232, 232, 250).getRGB());
-         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 205, (int) startY + 310, 4,
+         RenderUtils.drawRoundedRect2((int) startX + 55, (int) startY, (int) startX + 205, (int) startY + 310, 4,
                 new Color(4, 132, 201, 250).getRGB());
-         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 4,
+         RenderUtils.drawRoundedRect2((int) startX + 205, (int) startY, (int) startX + 400, (int) startY + 310, 4,
                 new Color(45, 136, 227, 250).getRGB());
         
         
@@ -190,11 +190,14 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         //   FontManager.logo24.drawCenteredStringWithShadow("L", startX + 5, startY + 8, new Color(49, 86, 255).getRGB(),255);
         //FontManager.logo24.drawCenteredStringWithShadow("ight", startX + 5 + FontManager.logo24.getStringWidth("L") + 8, startY + 8, new Color(255,255,255).getRGB(),255); // 客户端名字
         
+        
+        
+        
         // fdp water mark
         Fonts.font35.drawString("FDPClient", startX + 5, startY + 5, new Color(80,80,80).getRGB());
         
         // draw that lil circle that tells you what category u at /////////////////////
-        RenderUtils.drawSuperCircle(startX - 5, startY + 50 + animationHeight, 5, new Color(100, 100,255).getRGB());
+        RenderUtils.drawSuperCircle(startX - 5, startY + animationHeight, 5, new Color(100, 100,255).getRGB());
         animationHeight += Math.round((categoryYpos - animationHeight)/2.5);
 
         
@@ -515,10 +518,10 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过
-        RenderUtils.drawGradientSideways(startX + 50, startY, startX + 55, startY + 280, new Color(0, 0, 0, 60).getRGB(),
+        RenderUtils.drawGradientSideways(startX + 50, startY, startX + 55, startY + 310, new Color(0, 0, 0, 60).getRGB(),
                 new Color(0, 0, 0, 0).getRGB());//255,255,255,30
 
-        RenderUtils.drawGradientSideways(startX + 200, startY, startX + 205, startY + 280,
+        RenderUtils.drawGradientSideways(startX + 200, startY, startX + 205, startY + 310,
                 new Color(0, 0, 0, 70).getRGB(), new Color(0,0,0,0).getRGB());//239,237,237,30
         
         RenderUtils.circle(startX + 23, startY + 45, 12,
