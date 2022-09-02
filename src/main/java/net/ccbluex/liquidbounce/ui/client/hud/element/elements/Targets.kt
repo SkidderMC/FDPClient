@@ -1172,7 +1172,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glPopMatrix()
     }
 
-    private fun drawWaterMelon(target: EntityLivingBase, DecimalFormat: decimalFormat) {
+    private fun drawWaterMelon(target: EntityLivingBase) {
         RenderUtils.drawRoundedCornerRect(
             -1.5f, 2.5f, 152.5f, 52.5f,
             5.0f, Color(0, 0, 0, 26).rgb
@@ -1243,7 +1243,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         )
         FontLoaders.F14.DisplayFont2(
             FontLoaders.F14,
-            "${((decimalFormat.format((easingHP / target.maxHealth) * 100)))}%",
+            "${((df.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
             34f,
             Color(255, 255, 255).rgb,
