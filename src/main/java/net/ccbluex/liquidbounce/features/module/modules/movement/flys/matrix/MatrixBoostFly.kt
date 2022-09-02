@@ -58,6 +58,9 @@ class MatrixBoostFly : FlyMode("MatrixBoost") {
             }
             boostMotion = 1
             mc.timer.timerSpeed = jumpTimer.get()
+        } else if (boostMotion == 1 && bypassMode.equals("Test")) {
+            MovementUtils.strafe(speed.get())
+            mc.thePlayer.motionY = 1.0
         } else if (boostMotion == 2) {
             MovementUtils.strafe(speed.get())
             when (bypassMode.get().lowercase()) {
