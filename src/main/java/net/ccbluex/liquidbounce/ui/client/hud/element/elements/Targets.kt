@@ -1217,14 +1217,13 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPopMatrix()
 
-        FontLoaders.F20.DisplayFonts("${target.name}", 45f, 12f, Color.WHITE.rgb, FontLoaders.F20)
-        DecimalFormat df = new DecimalFormat("0.00");
-        FontLoaders.F14.DisplayFonts(
-            "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
+        Fonts.Font20.drawString("${target.name}", 45f, 12f, Color.WHITE.rgb)
+        val df = DecimalFormat("0.00")
+        Fonts.Font14.drawString(
+            "Armor ${(df.format(getHealth(target) * 100))}%",
             45f,
             24f,
             Color(200, 200, 200).rgb,
-            FontLoaders.F14
         )
         RenderUtils.drawRoundedCornerRect(45f, 32f, 145f, 42f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
@@ -1235,13 +1234,11 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             5f,
             ColorUtils.rainbow().rgb
         )
-        FontLoaders.F14.DisplayFont2(
-            FontLoaders.F14,
+        Fonts.Font14.drawString(
             "${((decimalFormat.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
             34f,
             Color(255, 255, 255).rgb,
-            true
         )
     }
 
