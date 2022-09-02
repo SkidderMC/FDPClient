@@ -39,7 +39,7 @@ public abstract class MixinSplashProgressRunnable {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         int tex;
         try {
-            tex = RenderUtils.loadGlTexture(ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/background.png")));
+            tex = RenderUtils.loadGlTexture(ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/splash.png"))); 
         } catch (IOException e) {
             tex = 0;
         }
