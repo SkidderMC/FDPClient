@@ -34,9 +34,10 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val contentShadow = BoolValue("ContentShadow", true)
     private val whiteText = BoolValue("WhiteTextColor", true)
     private val modeColored = BoolValue("CustomModeColored", true)
-    // my nuts are ur mother campanion object
+    // my nuts are ur mother campanion object -dg
+    // no you -bc
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "LiquidBounce", "Modern", "Skid"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "simple", "Modern", "Skid"), "Modern")
     }
 
     /**
@@ -258,11 +259,19 @@ class Notification(
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
         } yo so dg, WTF */
 
-        if(style.equals("compact")) {
-                RenderUtils.customRounded(-x + 8F + textLength, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0, 0, 0, alpha))
-                RenderUtils.customRounded(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)
-                Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
+
+        // il leave this comment here because ik il be back editing this code in 5 mins <3
+        if(style.equals("simple")) {
+            RenderUtils.customRounded(-x + 8F + textLength, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0,0,0, 180).rgb)
+            RenderUtils.customRounded(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, when(type) {
+                NotifyType.SUCCESS -> Color(80, 255, 80).rgb
+                NotifyType.ERROR -> Color(255, 80, 80).rgb
+                NotifyType.INFO -> Color(255, 255, 255).rgb
+                NotifyType.WARNING -> Color(255, 255, 0).rgb
+            })
+            Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
             } 
+
         if(style.equals("Skid")){
 
             val colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3)
