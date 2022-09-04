@@ -89,12 +89,6 @@ class FileManager : MinecraftInstance() {
                 }
             }
         }
-
-        val legalFile = File(LiquidBounce.fileManager.legalDir, "LICENSE.txt")
-
-        if (!legalFile.exists()) {
-            FileUtils.unpackFile(legalFile, "assets/minecraft/fdpclient/misc/LICENSE.txt")
-        }
     }
 
     /**
