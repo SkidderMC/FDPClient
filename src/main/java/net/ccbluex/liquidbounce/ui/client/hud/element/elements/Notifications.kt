@@ -37,7 +37,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     // my nuts are ur mother campanion object -dg
     // no you -bc
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "simple", "Modern", "Skid"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Skid"), "Modern")
     }
 
     /**
