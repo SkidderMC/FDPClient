@@ -263,12 +263,7 @@ class Notification(
         // il leave this comment here because ik il be back editing this code in 5 mins <3
         if(style.equals("Simple")) {
             RenderUtils.customRoundedinf(-x + 8F + lbtl, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0,0,0, alpha).rgb)
-            RenderUtils.customRoundedinf(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, when(NotifyType) {
-                NotifyType.SUCCESS -> Color(80, 255, 80).rgb
-                NotifyType.ERROR -> Color(255, 80, 80).rgb
-                NotifyType.INFO -> Color(255, 255, 255).rgb
-                NotifyType.WARNING -> Color(255, 255, 0).rgb
-            })
+            RenderUtils.customRoundedinf(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)
             Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
             } 
 
