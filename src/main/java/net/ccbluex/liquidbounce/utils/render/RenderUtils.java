@@ -209,6 +209,12 @@ public final class RenderUtils extends MinecraftInstance {
             glVertex2d(x + Math.sin(i * Math.PI / 180.0D) * xRadius, y + Math.cos(i * Math.PI / 180.0D) * yRadius);
         }
     }
+    
+        public static int getRainbowOpaque(int seconds, float saturation, float brightness, int index) {
+        float hue = ((System.currentTimeMillis() + index) % (int) (seconds * 1000)) / (float) (seconds * 1000);
+        int color = Color.HSBtoRGB(hue, saturation, brightness);
+        return color;
+    }
 
     public static void whatRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, final int color, float radius) {
         float alpharect = (color >> 24 & 0xFF) / 255.0F;
@@ -359,6 +365,7 @@ public final class RenderUtils extends MinecraftInstance {
         glPopMatrix();
     }
 
+    
     public static void drawModalRectWithCustomSizedTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight)
     {
         float f = 1.0F / textureWidth;
@@ -540,6 +547,76 @@ public final class RenderUtils extends MinecraftInstance {
         quickPolygonCircle(x + xRadius,y1 - yRadius, xRadius, yRadius,270,360);
 
         glEnd();
+    }
+
+       // rTL = radius top left, rTR = radius top right, rBR = radius bottom right, rBL = radius bottom left
+    public static void customRoundedinf(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float rTL, float rTR, float rBR, float rBL, int color) {
+        float alpha = (color >> 24 & 0xFF) / 255.0F;
+        float red = (color >> 16 & 0xFF) / 255.0F;
+        float green = (color >> 8 & 0xFF) / 255.0F;
+        float blue = (color & 0xFF) / 255.0F;
+
+        float z = 0;
+        if (paramXStart > paramXEnd) {
+            z = paramXStart;
+            paramXStart = paramXEnd;
+            paramXEnd = z;
+        }
+
+        if (paramYStart > paramYEnd) {
+            z = paramYStart;
+            paramYStart = paramYEnd;
+            paramYEnd = z;
+        }
+
+        double xTL = paramXStart + rTL;
+        double yTL = paramYStart + rTL;
+
+        double xTR = paramXEnd - rTR;
+        double yTR = paramYStart + rTR;
+
+        double xBR = paramXEnd - rBR;
+        double yBR = paramYEnd - rBR;
+
+        double xBL = paramXStart + rBL;
+        double yBL = paramYEnd - rBL;
+
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+
+    	glColor4f(red, green, blue, alpha);
+        glBegin(GL_POLYGON);
+    
+        double degree = Math.PI / 180;
+        if (rBR <= 0)
+            glVertex2d(xBR, yBR);
+        else for (double i = 0; i <= 90; i += 1)
+            glVertex2d(xBR + Math.sin(i * degree) * rBR, yBR + Math.cos(i * degree) * rBR);
+
+        if (rTR <= 0)
+            glVertex2d(xTR, yTR);
+        else for (double i = 90; i <= 180; i += 1)
+            glVertex2d(xTR + Math.sin(i * degree) * rTR, yTR + Math.cos(i * degree) * rTR);
+
+        if (rTL <= 0)
+            glVertex2d(xTL, yTL);
+        else for (double i = 180; i <= 270; i += 1)
+            glVertex2d(xTL + Math.sin(i * degree) * rTL, yTL + Math.cos(i * degree) * rTL);
+
+        if (rBL <= 0)
+            glVertex2d(xBL, yBL);
+        else for (double i = 270; i <= 360; i += 1)
+            glVertex2d(xBL + Math.sin(i * degree) * rBL, yBL + Math.cos(i * degree) * rBL);
+        glEnd();
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
     }
 
     public static void drawRoundedRect2(float x, float y, float x2, float y2, final float round, final int color) {
