@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.WaterMelon
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Particle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.ShapeType
 import net.ccbluex.liquidbounce.ui.font.Fonts
