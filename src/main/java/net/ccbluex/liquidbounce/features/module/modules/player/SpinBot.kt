@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 @ModuleInfo(name = "SpinBot", category = ModuleCategory.PLAYER)
 class SpinBot : Module() {
     private val yawModeValue = ListValue("YawMode", arrayOf("Jitter", "Spin", "Back", "BackJitter"), "Spin")
-    private val pitchModeValue = ListValue("PitchMode", arrayOf("Down", "Up", "Jitter", "AnotherJitter"), "Down")
+    private val pitchModeValue = ListValue("PitchMode", arrayOf("Down", "None", "Up", "Jitter", "AnotherJitter"), "None")
     private val spinSpeedValue = IntegerValue("spinSpeed", 20, 1, 90).displayable { yawModeValue.equals("Spin") }
     private val rotateValue = BoolValue("SilentRotate", true)
 
@@ -55,6 +55,9 @@ class SpinBot : Module() {
             }
             "down" -> {
                 pitch = 90.0f
+            }
+            "none" -> {
+                pitch = 0.0f
             }
             "anotherjitter" -> {
                 pitch = 60f + RandomUtils.nextDouble(-3.0, 3.0).toFloat()
