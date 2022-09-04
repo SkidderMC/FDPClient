@@ -37,7 +37,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     // my nuts are ur mother campanion object -dg
     // no you -bc
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "Simple", "Modern", "Skid"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Skid"), "Modern")
     }
 
     /**
@@ -260,12 +260,12 @@ class Notification(
         } yo so dg, WTF */
 
 
-        // il leave this comment here because ik il be back editing this code in 5 mins <3
+/* 
         if(style.equals("Simple")) {
             RenderUtils.customRoundedinf(-x + 8F + lbtl, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0,0,0, alpha).rgb)
             RenderUtils.customRoundedinf(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)
             Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
-            } 
+            }  */
 
         if(style.equals("Skid")){
 
