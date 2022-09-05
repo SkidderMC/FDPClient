@@ -31,6 +31,8 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
     private Module currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
     private float startX = 50, startY = 25;
+    private float endX = this.width - 50;
+    private float endY = this.height - 25;
     private int moduleStart = 0;
     private int valueStart = 0;
     private boolean previousMouse = true;
@@ -85,8 +87,6 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
     }
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        // yes hud designer here
-        RenderUtils.drawImage(new ResourceLocation( "fdpclient/clickgui/Hud.png"), 9, height - 41, 32, 32);
         
         // set up bool animations?
         if(!firstSetAnimation) {
@@ -127,10 +127,6 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
         // make that variable gurl
         Settings settings = new Settings(valueAnim);//value的settings
         
-        // huddesigner icon sense clik
-        if (Mouse.isButtonDown(0) && mouseX >= 5 && mouseX <= 50 && mouseY <= height - 5 && mouseY >= height - 50)
-            mc.displayGuiScreen(new GuiHudDesigner()); //进入自定义HUD界面
-        
         // click = move target hud
         if (isHovered(startX - 5, startY, startX + 400, startY + 25, mouseX, mouseY) && Mouse.isButtonDown(0)) {//移动窗口
             if (moveX == 0 && moveY == 0) {
@@ -147,12 +143,12 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // draw big boi background
-        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 450, 4,
+        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + endX, (int) startY + endY, 4,
                 new Color(239, 237, 237).getRGB());
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
         
         // search box time
-        defaultFont.drawString(searchBox.getText().isEmpty() && !searchBox.isFocused() ? "Search..." : searchBox.getText(), (int) (startX + 3), (int) (startY + 30), new Color(80, 80, 80).getRGB());
+        defaultFont.drawString(searchBox.getText().isEmpty() && !searchBox.isFocused() ? "Search..." : searchBox.getText(), (int) (startX + 3), (int) (startY + 20), new Color(80, 80, 80).getRGB());
         
         // no module???? holder text
         if(currentModule == null) {
