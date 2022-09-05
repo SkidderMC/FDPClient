@@ -29,6 +29,7 @@ import java.io.IOException;
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
+    private boolean homePage = true;
     private Module currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
     private float startX = 50, startY = 25;
     private int moduleStart = 0;
@@ -165,9 +166,37 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             moveY = 0;
         }
         
-        // draw big boi background
+        // fdp water mark
+        Fonts.font35.drawString("FDPClient", startX + 10, startY + 7, new Color(80,80,80).getRGB());
+        
+        // new sexy background
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 4,
-                new Color(232, 232, 232, 250).getRGB());
+            new Color(20, 25, 25, 250).getRGB());
+        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 25, 4,
+            new Color(22, 91, 196, 250).getRGB());
+            
+        
+        // draw home page yes pog
+        if (homePage) {
+            // row 1
+            RenderUtils.drawRoundedRect2((int) startX + 78, (int) startY + 68, (int) startX + 150, (int) startY + 140, 8, new Color(60, 60, 60, 250).getRGB());
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 90, (int) startY + 80, 24, 24);
+            RenderUtils.drawRoundedRect2((int) startX + 160, (int) startY + 68, (int) startX + 232, (int) startY + 140, 8, new Color(60, 60, 60, 250).getRGB());
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Movement.png"), (int) startX + 172 , (int) startY + 80, 24, 24);
+            RenderUtils.drawRoundedRect2((int) startX + 242, (int) startY + 68, (int) startX + 314, (int) startY + 140, 8, new Color(60, 60, 60, 250).getRGB());
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 254, (int) startY + 80, 24, 24);
+            
+            // row 2
+            RenderUtils.drawRoundedRect2((int) startX + 78, (int) startY + 152, (int) startX + 150, (int) startY + 224, 8, new Color(60, 60, 60, 250).getRGB());
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 90, (int) startY + 164, 24, 24);
+            RenderUtils.drawRoundedRect2((int) startX + 160, (int) startY + 152, (int) startX + 232, (int) startY + 224, 8, new Color(60, 60, 60, 250).getRGB());
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Exploit.png"), (int) startX + 172, (int) startY + 164, 24, 24);
+            RenderUtils.drawRoundedRect2((int) startX + 242, (int) startY + 152, (int) startX + 314, (int) startY + 224, 8, new Color(60, 60, 60, 250).getRGB());
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Misc.png"), (int) startX + 254, (int) startY + 164, 24, 24);
+            
+            // row 3
+            RenderUtils.drawRoundedRect2((int) startX + 242, (int) startY + 236, (int) startX + 314, (int) startY + 308, 8, new Color(60, 60, 60, 250).getRGB());
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Client.png"), (int) startX + 172, (int) startY + 248, 24, 24);
         
         
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
@@ -189,8 +218,6 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         
         
-        // fdp water mark
-        Fonts.font35.drawString("FDPClient", startX + 5, startY + 5, new Color(80,80,80).getRGB());
         
         // draw that lil circle that tells you what category u at /////////////////////
         RenderUtils.drawSuperCircle(startX - 5, startY + animationHeight, 5, new Color(100, 100,255).getRGB());
