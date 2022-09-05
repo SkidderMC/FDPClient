@@ -29,7 +29,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[]{"FDP", "Bread", "Novoline", "LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo"}, "Astolfo") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"FDP", "Novoline", "LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo"}, "Astolfo") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -58,9 +58,6 @@ public class ClickGUIModule extends Module {
             this.setState(false);
         } else if (styleValue.get().contains("FDP")) {
             mc.displayGuiScreen(new LightClickGUI());
-            this.setState(false);
-        } else if (styleValue.get().contains("Bread")) {
-            mc.displayGuiScreen(new BreadClickGUI());
             this.setState(false);
         } else {
             updateStyle();
