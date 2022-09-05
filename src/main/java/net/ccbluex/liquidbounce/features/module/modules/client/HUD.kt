@@ -82,7 +82,6 @@ object HUD : Module() {
                 ).start()
             }
         }
-
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
