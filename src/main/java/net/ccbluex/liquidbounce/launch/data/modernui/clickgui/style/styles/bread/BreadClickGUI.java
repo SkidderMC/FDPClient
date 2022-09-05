@@ -143,12 +143,13 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // draw big boi background
-        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) endX, (int) endY, 4,
-                new Color(239, 237, 237).getRGB());
+        RenderUtils.originalRoundedRect(float startX - 5, float startY, float endX, float endY, float 5, new Color(239, 237, 237).getRGB());)
+       // RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) endX, (int) endY, 4,
+       //         new Color(239, 237, 237).getRGB());
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
         
         // search box time
-        defaultFont.drawString(searchBox.getText().isEmpty() && !searchBox.isFocused() ? "Search..." : searchBox.getText(), (int) (startX + 3), (int) (startY + 20), new Color(80, 80, 80).getRGB());
+        defaultFont.drawString(searchBox.getText().isEmpty() && !searchBox.isFocused() ? "Search..." : searchBox.getText(), (int) (startX + 3), (int) (startY + 22), new Color(80, 80, 80).getRGB());
         
         // no module???? holder text
         if(currentModule == null) {
