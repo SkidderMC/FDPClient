@@ -143,12 +143,12 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // draw big boi background
-        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) endX - startX, (int) endY - startY, 8,
+        RenderUtils.drawRect((int) startX - 5, (int) startY, (int) endX - startY, (int) endY - startY,
                 new Color(239, 237, 237).getRGB());
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
         
         // search box time
-        defaultFont.drawString(searchBox.getText().isEmpty() && !searchBox.isFocused() ? "Search..." : searchBox.getText(), (int) (startX + 3), (int) (startY + 17), new Color(20, 20, 20).getRGB());
+        defaultFont.drawString(searchBox.getText().isEmpty() && !searchBox.isFocused() ? "Search..." : searchBox.getText(), (int) (startX + 3), (int) (startY + 17), new Color(230, 230, 230).getRGB());
         
         // no module???? holder text
         if(currentModule == null) {
@@ -222,7 +222,7 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
                 if (i < moduleStart) {
                     continue;
                 }
-                int moduleColor = new Color(118, 117, 117,alphaAnim.getAlpha()).getRGB();
+                int moduleColor = new Color(218, 217, 217,alphaAnim.getAlpha()).getRGB();
                 if (isSettingsButtonHovered(startX + 160, mY, startX + 180, mY + 10, mouseX, mouseY)) {
                     if (!this.previousMouse && Mouse.isButtonDown(0)) {
                         module.setState(!module.getState());
@@ -239,7 +239,7 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
                 else if(module.getAnimation().getAnimationX() < 5F && module.getState())
                     module.getAnimation().animationX += 1F;
                 defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
-                defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 65), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
+                defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 65), (int) (mY + 13), new Color(188, 188, 188, alphaAnim.getAlpha()).getRGB());
                 if (!Mouse.isButtonDown(0)) {
                     this.previousMouse = false;
                 }
@@ -257,7 +257,7 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         if (currentModule != null) {
             logoFont.drawString(currentModule.getName(), (int) (startX + 205), (int) (startY + 10),
-                    new Color(100, 100, 100,valueAnim.getAlpha()).getRGB());
+                    new Color(200, 200, 200,valueAnim.getAlpha()).getRGB());
             float mY = startY + 30;
             if(searchBox.getText().isEmpty()) {
                 for (int i = 0; i < LiquidBounce.moduleManager.getModuleInCategory(currentCategory).size(); i++) {
@@ -266,7 +266,7 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
                         break;
                     if (i < moduleStart)
                         continue;
-                    int moduleColor = new Color(118, 117, 117,alphaAnim.getAlpha()).getRGB();
+                    int moduleColor = new Color(218, 217, 217,alphaAnim.getAlpha()).getRGB();
                     if (isSettingsButtonHovered(startX + 160, mY, startX + 180, mY + 10, mouseX, mouseY)) {
                         if (!this.previousMouse && Mouse.isButtonDown(0)) {
                             module.setState(!module.getState());
