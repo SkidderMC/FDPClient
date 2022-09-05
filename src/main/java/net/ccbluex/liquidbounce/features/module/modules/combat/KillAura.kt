@@ -58,7 +58,6 @@ import kotlin.math.sin
 
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
-
     /**
      * OPTIONS
      */
@@ -1258,14 +1257,19 @@ class KillAura : Module() {
     /**
      * HUD Tag
      */
-    override val tag: String
-        get() = "${targetModeValue.get()}, ${priorityValue.get()}, " +
-                "${minCpsValue.get()}-${maxCpsValue.get()}, " +
-                "$maxRange${
-                    if (!autoBlockValue.equals("Off")) {
-                        "-${autoBlockRangeValue.get()}"
-                    } else {
-                        ""
-                    }
-                }-${discoverRangeValue.get()}"
+
+        override val tag: String
+            get() = targetModeValue.get()
+
+
+/*     private val simpleArrayList = BoolValue("SimpleArrayListTag", false)
+    init{ if (simpleArrayList.equals(true)) {
+            var tagVal = get() = "${targetModeValue.get()}, ${priorityValue.get()}, " + "${minCpsValue.get()}-${maxCpsValue.get()}, " + "$maxRange${ if (!autoBlockValue.equals("Off")) { "-${autoBlockRangeValue.get()}"} else {""}}-${discoverRangeValue.get()}"
+        } else {
+            var tagVal = get() = targetModeValue.get()
+        }
+    }
+        override val tag: String
+            get() = tagVal   
+*/            
 }
