@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.*;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.LightClickGUI;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.bread.BreadClickGUI;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.launch.options.modernuiLaunchOption;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
