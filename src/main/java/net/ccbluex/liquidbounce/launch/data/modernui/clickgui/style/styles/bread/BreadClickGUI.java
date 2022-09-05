@@ -142,7 +142,7 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
             moveY = 0;
         }
         
-        // draw big boi background
+        // main bg
         RenderUtils.drawRect((int) startX - 5, (int) startY, (int) endX - startY, (int) endY - startY,
                 new Color(239, 237, 237).getRGB());
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
