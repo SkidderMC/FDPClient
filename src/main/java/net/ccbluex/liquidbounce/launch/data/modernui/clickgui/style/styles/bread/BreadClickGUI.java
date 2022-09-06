@@ -143,7 +143,7 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // main bg
-        RenderUtils.drawRect((int) startX - 5, (int) startY, (int) endX - startY, (int) endY - startY,
+        RenderUtils.drawRect((int) endY - startY, (int) endY - startY, (int) startX - 5, (int) startY,
                 new Color(239, 237, 237).getRGB());
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
         
@@ -195,7 +195,7 @@ public class BreadClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // draw current categorys category's name 
-        logoFont.drawString(currentCategory.getDisplayName(), (int) (startX + 60), (int) (startY + 10), new Color(100, 100, 100,alphaAnim.getAlpha()).getRGB());
+        logoFont.drawString(currentCategory.getDisplayName(), (int) (startX + 60), (int) (startY + 10), new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
 
         if(!searchBox.getText().isEmpty()) {
             if (this.isCategoryHovered(startX + 60, startY + 40, startX + 200, startY + 280, mouseX, mouseY)) {
