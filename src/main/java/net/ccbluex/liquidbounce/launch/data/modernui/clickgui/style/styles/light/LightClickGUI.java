@@ -32,7 +32,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private ModuleCategory homeHoveredCategory = ModuleCategory.COMBAT;
     private int homeHoverAnim = 0;
     private int homeX = 0;
-    private int homey = 0;
+    private int homeY = 0;
     private boolean homePage = true;
     private Module currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
     private float startX = 50, startY = 25;
