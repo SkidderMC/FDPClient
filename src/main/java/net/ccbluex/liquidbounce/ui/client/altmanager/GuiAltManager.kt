@@ -58,8 +58,6 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         mc.fontRendererObj.drawCenteredString(status, (width / 2).toFloat(), 32f, 0xffffff)
         mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.username", mc.getSession().username), 6f, 6f, 0xffffff)
         mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.type", if (mc.getSession().token.length >= 32) "%ui.alt.type.premium%" else "%ui.alt.type.cracked%"), 6f, 15f, 0xffffff)
-
-        ), 6f, 15f, 0xffffff)
         randomAltField.drawTextBox()
         if (randomAltField.text.isEmpty() && !randomAltField.isFocused) {
             drawCenteredString(mc.fontRendererObj, "§7" + LanguageManager.getAndFormat("ui.alt.randomAltField"), width / 2 - 55, 66, 0xffffff)
