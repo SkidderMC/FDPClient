@@ -945,12 +945,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         //background is halal
         
         if (tenacityNewStatic.get()) {
-            RenderUtils.drawRoundedCornerRect(0f, 5f, 134f, 45f, 6f, ColorUtils.rainbow().rgb)
+            RenderUtils.drawRoundedCornerRect(0f, 5f, 59f + additionalWidth.toFloat(), 45f, 6f, ColorUtils.rainbow().rgb)
         } else {
 
             //curved sides
             RenderUtils.drawRoundedCornerRect(0f, 5f, 12f, 45f, 6f, ColorUtils.hslRainbow(6, indexOffset = 10).rgb)
-            RenderUtils.drawRoundedCornerRect(120f, 5f, 134f, 45f, 6f, ColorUtils.hslRainbow(129, indexOffset = 10).rgb)
+            RenderUtils.drawRoundedCornerRect(120f, 5f, 59f + additionalWidth.toFloat(), 45f, 6f, ColorUtils.hslRainbow(129, indexOffset = 10).rgb)
 
             //rain bowwww
 
