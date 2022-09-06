@@ -186,7 +186,9 @@ class AutoPlay : Module() {
                     }
                     if (text.contains(mc.getSession().username + " has been") || text.contains(mc.getSession().username + " died.")) {
                         queueAutoPlay {
-                            mc.thePlayer.sendChatMessage("/skywars-normal-solo")
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(2))
+                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(item))
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                         }
                     }
                 }
