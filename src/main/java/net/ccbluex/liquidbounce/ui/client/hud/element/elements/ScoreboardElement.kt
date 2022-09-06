@@ -190,7 +190,7 @@ class ScoreboardElement(
                     GL11.glTranslated(renderX, renderY, 0.0)
                     GL11.glScalef(scale, scale, scale)
                         RenderUtils.newDrawRect(
-                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F,  
+                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F,  -2F,
                             if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
                             (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(),
                             if (shadowColorMode.get().equals("background", true)) 
@@ -206,7 +206,7 @@ class ScoreboardElement(
                     GlStateManager.disableTexture2D()
                     GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
                         RenderUtils.quickDrawRect(
-                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
+                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 2f,
                             if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
                             (maxHeight + fontRenderer.FONT_HEIGHT).toFloat())
                     GlStateManager.enableTexture2D()
