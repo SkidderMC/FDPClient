@@ -35,6 +35,7 @@ class NoSlow : Module() {
     private val consumeStrafeMultiplier = FloatValue("ConsumeStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val bowForwardMultiplier = FloatValue("BowForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F)
+    private val onlyGround = BoolValue("OnlyGround", false)
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
     //AACv4
@@ -110,7 +111,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if(mc.thePlayer == null || mc.theWorld == null)
+        if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
         if (alertTimer.hasTimePassed(10000) && alert1Value.get() && (modeValue.equals("Matrix") || modeValue.equals("Vulcan"))) {
             alertTimer.reset()
@@ -178,7 +179,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
-        if(mc.thePlayer == null || mc.theWorld == null)
+        if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
         val heldItem = mc.thePlayer.heldItem?.item
 
@@ -201,7 +202,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if(mc.thePlayer == null || mc.theWorld == null)
+        if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
@@ -238,7 +239,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if(mc.thePlayer == null || mc.theWorld == null)
+        if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
         val packet = event.packet
         if (modeValue.equals("Medusa")) {
