@@ -188,13 +188,17 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 homeHoverAnim = 0;
             }
             
+            mouseX += 48
+            mouseY += 48
+            // mouse is offset idk
+            
             // row 1 >>>>>>>>>>>>>>>>>>>>>>>>>
             // >>>>>>>>>>>>>>>>>>>>
             homeY = 68;
             
             // -- COMBAT --
             homeX = 78;
-            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+            if (mouseX >= homeX && mouseX <= homeX + 60 && mouseY >= homeY && mouseY <= homeY + 60) {
                 if (Mouse.isButtonDown(0)) {
                     currentCategory = homeHoveredCategory;
                     homePage = false;
@@ -203,18 +207,18 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 homeHoverAnim += 2;
                 if (homeHoverAnim > 6) 
                     homeHoverAnim = 6;
-                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else if (ModuleCategory.COMBAT == homeHoveredCategory) {
-                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else {
-                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
 
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 90, (int) startY + 80, 24, 24);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 90, (int) startY + 80, 36, 36);
             
             // -- MOVEMENT -- 
             homeX = 160;
-            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+            if (mouseX >= homeX && mouseX <= homeX + 60 && mouseY >= homeY && mouseY <= homeY + 60) {
                 if (Mouse.isButtonDown(0)) {
                     currentCategory = homeHoveredCategory;
                     homePage = false;
@@ -223,17 +227,17 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 homeHoverAnim += 2;
                 if (homeHoverAnim > 6) 
                     homeHoverAnim = 6;
-                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else if (ModuleCategory.MOVEMENT == homeHoveredCategory) {
-                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else {
-                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Movement.png"), (int) startX + 172 , (int) startY + 80, 24, 24);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Movement.png"), (int) startX + 172 , (int) startY + 80, 36, 36);
             
             // -- WORLD --
             homeX = 242;
-            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+            if (mouseX >= homeX && mouseX <= homeX + 60 && mouseY >= homeY && mouseY <= homeY + 60) {
                 if (Mouse.isButtonDown(0)) {
                     currentCategory = homeHoveredCategory;
                     homePage = false;
@@ -242,13 +246,13 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 homeHoverAnim += 2;
                 if (homeHoverAnim > 6) 
                     homeHoverAnim = 6;
-                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else if (ModuleCategory.WORLD == homeHoveredCategory) {
-                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else {
-                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 254, (int) startY + 80, 24, 24);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 254, (int) startY + 80, 36, 36);
             
             // row 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -257,7 +261,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                
             // -- PLAYER --
             homeX = 78;
-            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+            if (mouseX >= homeX && mouseX <= homeX + 60 && mouseY >= homeY && mouseY <= homeY + 60) {
                 if (Mouse.isButtonDown(0)) {
                     currentCategory = homeHoveredCategory;
                     homePage = false;
@@ -266,17 +270,17 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 homeHoverAnim += 2;
                 if (homeHoverAnim > 6) 
                     homeHoverAnim = 6;
-                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else if (ModuleCategory.PLAYER == homeHoveredCategory) {
-                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else {
-                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 90, (int) startY + 164, 24, 24);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 90, (int) startY + 164, 36, 36);
             
             // -- EXPLOIT --
             homeX = 160;
-            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+            if (mouseX >= homeX && mouseX <= homeX + 60 && mouseY >= homeY && mouseY <= homeY + 60) {
                 if (Mouse.isButtonDown(0)) {
                     currentCategory = homeHoveredCategory;
                     homePage = false;
@@ -285,17 +289,17 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 homeHoverAnim += 2;
                 if (homeHoverAnim > 6) 
                     homeHoverAnim = 6;
-                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else if (ModuleCategory.EXPLOIT == homeHoveredCategory) {
-                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else {
-                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Exploit.png"), (int) startX + 172, (int) startY + 164, 24, 24);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Exploit.png"), (int) startX + 172, (int) startY + 164, 36, 36);
             
             // -- MISC --
             homeX = 242;
-            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+            if (mouseX >= homeX && mouseX <= homeX + 60 && mouseY >= homeY && mouseY <= homeY + 60) {
                 if (Mouse.isButtonDown(0)) {
                     currentCategory = homeHoveredCategory;
                     homePage = false;
@@ -304,13 +308,13 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 homeHoverAnim += 2;
                 if (homeHoverAnim > 6) 
                     homeHoverAnim = 6;
-                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else if (ModuleCategory.MISC == homeHoveredCategory) {
-                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 60 + homeHoverAnim, (int) startY + homeY + 60 + homeHoverAnim, 8 - homeHoverAnim, new Color(50 + homeHoverAnim, 50 + homeHoverAnim, 50+ homeHoverAnim, 250).getRGB());
             } else {
-                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Misc.png"), (int) startX + 254, (int) startY + 164, 24, 24);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Misc.png"), (int) startX + 254, (int) startY + 164, 36, 36);
             
             // row 3 >>>>>>>>>>>>>>>>>>>
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
