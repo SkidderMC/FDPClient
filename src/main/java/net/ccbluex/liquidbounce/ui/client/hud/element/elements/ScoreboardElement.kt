@@ -28,6 +28,7 @@ import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.scoreboard.Scoreboard
 import net.minecraft.util.EnumChatFormatting
 import java.awt.Color
+import org.lwjgl.opengl.GL11
 
 /**
  * CustomHUD scoreboard
