@@ -188,8 +188,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 homeHoverAnim = 0;
             }
             
-            mouseX += 48;
-            mouseY += 48;
+            mouseX -= 48;
+            mouseY -= 48;
             // mouse is offset idk
             
             // row 1 >>>>>>>>>>>>>>>>>>>>>>>>>
@@ -342,8 +342,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             // made by dg636 no cap
             Fonts.font35.drawString("Designed by skidder mc", startX + 10, startY + 290, new Color(30,30,30).getRGB());
             
-            mouseX -= 48;
-            mouseY -= 48;
+            mouseX += 48;
+            mouseY += 48;
             // mouse is offset idk
             
         }
