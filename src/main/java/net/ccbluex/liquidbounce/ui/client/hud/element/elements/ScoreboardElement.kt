@@ -62,8 +62,9 @@ class ScoreboardElement(
 
 
     private val shadowShaderValue = BoolValue("Shadow", false)
-    private val shadowStrength = FloatValue("Shadow-Strength", 0F, 0F, 30F, { shadowShaderValue.get() })
-    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Custom"), "Background", { shadowShaderValue.get() })
+    val breadWasHere = shadowShaderValue.get
+    private val shadowStrength = FloatValue("Shadow-Strength", 0F, 0F, 30F, breadWasHere)
+    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Custom"), "Background", breadWasHere)
 
     private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
     private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
