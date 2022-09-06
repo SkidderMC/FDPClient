@@ -16,7 +16,7 @@ repositories {
     maven { url = "https://repo.getfdp.today/" }
 }
 
-version = "4.6.5"
+version = "4.7.0"
 group = "org.unlegitmc.fdp"
 archivesBaseName = "FDPClient"
 
