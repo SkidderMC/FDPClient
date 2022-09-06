@@ -253,7 +253,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             // row 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             
-            homeY = 152
+            homeY = 152;
                
             // -- PLAYER --
             homeX = 78;
