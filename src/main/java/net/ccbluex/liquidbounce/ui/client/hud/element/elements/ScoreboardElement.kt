@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShadowUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
@@ -57,8 +58,17 @@ class ScoreboardElement(
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
 
+
+    private val shadowShaderValue = BoolValue("Shadow", false)
+    private val shadowStrength = FloatValue("Shadow-Strength", 0F, 0F, 30F, { shadowShaderValue.get() })
+    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Custom"), "Background", { shadowShaderValue.get() })
+
+    private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
+    private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
+    private val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255, { shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) })
+
     private val rainbowBarValue = BoolValue("RainbowBar", false)
-    private val shadowValue = BoolValue("Shadow", false)
+    private val shadowValue = BoolValue("ShadowText", false)
     private val serverValue = ListValue("ServerIp", arrayOf("None", "ClientName", "Website"), "ClientName")
     private val noPointValue = BoolValue("NoPoints", true)
     private val fontValue = FontValue("Font", Fonts.minecraftFont)
@@ -165,6 +175,65 @@ class ScoreboardElement(
                 fontRenderer.drawString(displayName, (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(), (height -
                         fontRenderer.FONT_HEIGHT).toFloat(), textColor, shadowValue.get())
             }
+
+            // shadow
+            if (shadowShaderValue.get()) {
+                GL11.glTranslated(-renderX, -renderY, 0.0)
+                GL11.glScalef(1F, 1F, 1F)
+                GL11.glPushMatrix()
+                ShadowUtils.shadow(shadowStrength.get(), {
+                    GL11.glPushMatrix()
+                    GL11.glTranslated(renderX, renderY, 0.0)
+                    GL11.glScalef(scale, scale, scale)
+                    if (bgRoundedValue.get())
+                        RenderUtils.originalRoundedRect(
+                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
+                            if (rectValue.get()) -2F - rectHeight.get().toFloat() else -2F, 
+                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
+                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(), roundStrength.get(), 
+                            if (shadowColorMode.get().equals("background", true)) 
+                                Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
+                            else
+                                Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb)
+                    else
+                        RenderUtils.newDrawRect(
+                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
+                            if (rectValue.get()) -2F - rectHeight.get().toFloat() else -2F, 
+                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
+                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(),
+                            if (shadowColorMode.get().equals("background", true)) 
+                                Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
+                            else
+                                Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb)
+                    GL11.glPopMatrix()
+                }, {
+                    GL11.glPushMatrix()
+                    GL11.glTranslated(renderX, renderY, 0.0)
+                    GL11.glScalef(scale, scale, scale)
+                    GlStateManager.enableBlend()
+                    GlStateManager.disableTexture2D()
+                    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+                    if (bgRoundedValue.get())
+                        RenderUtils.fastRoundedRect(
+                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
+                            if (rectValue.get()) -2F - rectHeight.get().toFloat() else -2F, 
+                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
+                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(), roundStrength.get())
+                    else
+                        RenderUtils.quickDrawRect(
+                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
+                            if (rectValue.get()) -2F - rectHeight.get().toFloat() else -2F, 
+                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
+                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat())
+                    GlStateManager.enableTexture2D()
+                    GlStateManager.disableBlend()
+                    GL11.glPopMatrix()
+                })
+                GL11.glPopMatrix()
+                GL11.glScalef(scale, scale, scale)
+                GL11.glTranslated(renderX, renderY, 0.0)
+            }
+
 
             if (rectValue.get()) {
                 val rectColor = when {
