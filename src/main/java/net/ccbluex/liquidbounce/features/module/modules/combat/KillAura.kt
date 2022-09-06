@@ -214,7 +214,7 @@ class KillAura : Module() {
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
 
     // Visuals
-    private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Circle", "None"), "Jello")
+    private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Lies", "Circle", "None"), "Jello")
     private val circleValue = BoolValue("Circle", true)
     private val circleRedValue = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
     private val circleGreenValue = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
@@ -633,7 +633,72 @@ class KillAura : Module() {
                     GL11.glEnable(GL11.GL_TEXTURE_2D)
                     GL11.glPopMatrix()
                 }
-                "jello" -> {
+                "jello" -> { 
+                    // val dizwi#0809 = "angry Russian "
+                    val drawTime = (System.currentTimeMillis() % 2000).toInt()
+                    val drawMode=drawTime>1000
+                    var drawPercent=drawTime/1000.0
+                    //true when goes up
+                    if(!drawMode){
+                        drawPercent=1-drawPercent
+                    }else{
+                        drawPercent-=1
+                    }
+                    drawPercent=EaseUtils.easeInOutQuad(drawPercent)
+                    val points = mutableListOf<Vec3>()
+                    val bb=it.entityBoundingBox
+                    val radius=bb.maxX-bb.minX
+                    val height=bb.maxY-bb.minY
+                    val posX = it.lastTickPosX + (it.posX - it.lastTickPosX) * mc.timer.renderPartialTicks
+                    var posY = it.lastTickPosY + (it.posY - it.lastTickPosY) * mc.timer.renderPartialTicks
+                    if(drawMode){
+                        posY-=0.5
+                    }else{
+                        posY+=0.5
+                    }
+                    val posZ = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * mc.timer.renderPartialTicks
+                    for(i in 0..360 step 7){
+                        points.add(Vec3(posX - sin(i * Math.PI / 180F) * radius,posY+height*drawPercent,posZ + cos(i * Math.PI / 180F) * radius))
+                    }
+                    points.add(points[0])
+                    //draw
+                    mc.entityRenderer.disableLightmap()
+                    GL11.glPushMatrix()
+                    GL11.glDisable(GL11.GL_TEXTURE_2D)
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                    GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                    GL11.glEnable(GL11.GL_BLEND)
+                    GL11.glDisable(GL11.GL_DEPTH_TEST)
+                    GL11.glBegin(GL11.GL_LINE_STRIP)
+                    val baseMove=(if(drawPercent>0.5){1-drawPercent}else{drawPercent})*2
+                    val min=(height/60)*20*(1-baseMove)*(if(drawMode){-1}else{1})
+                    for(i in 0..20) {
+                        var moveFace=(height/60F)*i*baseMove
+                        if(drawMode){
+                            moveFace=-moveFace
+                        }
+                        val firstPoint=points[0]
+                        GL11.glVertex3d(
+                            firstPoint.xCoord - mc.renderManager.viewerPosX, firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY,
+                            firstPoint.zCoord - mc.renderManager.viewerPosZ
+                        )
+                        GL11.glColor4f(1F, 1F, 1F, 0.7F*(i/20F))
+                        for (vec3 in points) {
+                            GL11.glVertex3d(
+                                vec3.xCoord - mc.renderManager.viewerPosX, vec3.yCoord - moveFace - min - mc.renderManager.viewerPosY,
+                                vec3.zCoord - mc.renderManager.viewerPosZ
+                            )
+                        }
+                        GL11.glColor4f(0F,0F,0F,0F)
+                    }
+                    GL11.glEnd()
+                    GL11.glEnable(GL11.GL_DEPTH_TEST)
+                    GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                    GL11.glDisable(GL11.GL_BLEND)
+                    GL11.glEnable(GL11.GL_TEXTURE_2D)
+                    GL11.glPopMatrix()
+                }
+                "lies" -> {
                     val everyTime = 3000
                     val drawTime = (System.currentTimeMillis() % everyTime).toInt()
                     val drawMode = drawTime > (everyTime / 2)
