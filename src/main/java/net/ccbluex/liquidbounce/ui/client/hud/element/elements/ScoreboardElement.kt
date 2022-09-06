@@ -59,9 +59,6 @@ class ScoreboardElement(
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
 
-    private val bgRoundedValue = BoolValue("Rounded", false)
-    private val roundStrength = FloatValue("Rounded-Strength", 5F, 0F, 30F, { bgRoundedValue.get() })
-
 
     private val shadowShaderValue = BoolValue("Shadow", false)
     private val shadowStrength = FloatValue("Shadow-Strength", 0F, 0F, 30F, { shadowShaderValue.get() })
@@ -131,23 +128,9 @@ class ScoreboardElement(
         if(rainbowBarValue.get()) {
             Gui.drawRect(l1 - 7, -6, 9, - 5, ColorUtils.rainbow().rgb)
         }
-
-            // backyard
-            if (bgRoundedValue.get()) {
-                Stencil.write(false)
-                GlStateManager.enableBlend()
-                GlStateManager.disableTexture2D()
-                GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-                RenderUtils.fastRoundedRect(
-                    l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
-                    if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
-                    (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(), roundStrength.get())
-                GlStateManager.enableTexture2D()
-                GlStateManager.disableBlend()
-                Stencil.erase(true)
-            } else {
+        // draw shit
                 Gui.drawRect(l1 - 7, -5, 9, maxHeight + fontRenderer.FONT_HEIGHT + 5, backColor)
-            }
+    
 
         
         shadowRenderUtils.drawShadowWithCustomAlpha(l1 - 7f, -5f, -l1+16f, maxHeight + fontRenderer.FONT_HEIGHT + 10f, 255f)
@@ -206,17 +189,6 @@ class ScoreboardElement(
                     GL11.glPushMatrix()
                     GL11.glTranslated(renderX, renderY, 0.0)
                     GL11.glScalef(scale, scale, scale)
-                    if (bgRoundedValue.get())
-                        RenderUtils.originalRoundedRect(
-                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
-                            if (rectValue.get()) -2F - rectHeight.get().toFloat() else -2F, 
-                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
-                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(), roundStrength.get(), 
-                            if (shadowColorMode.get().equals("background", true)) 
-                                Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
-                            else
-                                Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb)
-                    else
                         RenderUtils.newDrawRect(
                             l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
                             if (rectValue.get()) -2F - rectHeight.get().toFloat() else -2F, 
@@ -234,13 +206,6 @@ class ScoreboardElement(
                     GlStateManager.enableBlend()
                     GlStateManager.disableTexture2D()
                     GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-                    if (bgRoundedValue.get())
-                        RenderUtils.fastRoundedRect(
-                            l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
-                            if (rectValue.get()) -2F - rectHeight.get().toFloat() else -2F, 
-                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
-                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(), roundStrength.get())
-                    else
                         RenderUtils.quickDrawRect(
                             l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 
                             if (rectValue.get()) -2F - rectHeight.get().toFloat() else -2F, 

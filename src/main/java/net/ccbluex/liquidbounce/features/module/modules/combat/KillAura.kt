@@ -44,6 +44,7 @@ import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.Vec3
 import net.minecraft.util.MathHelper
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
