@@ -34,3 +34,35 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
         if (element.isJsonPrimitive) changeValue(element.asString)
     }
 }
+open class ListValueInf(name: String, val values: Array<String>, value: String, displayable: () -> Boolean) : Value<String>(name, value, displayable) {
+
+    constructor(name: String, values: Array<String>, value: String): this(name, values, value, { true } )
+
+    @JvmField
+    var openList = false
+
+    init {
+        this.value = value
+    }
+
+    fun contains(string: String?): Boolean {
+        return Arrays.stream(values).anyMatch { s: String -> s.equals(string, ignoreCase = true) }
+    }
+
+    override fun changeValue(value: String) {
+        for (element in values) {
+            if (element.equals(value, ignoreCase = true)) {
+                this.value = element
+                break
+            }
+        }
+    }
+
+    override fun toJson() = JsonPrimitive(value)
+
+    override fun fromJson(element: JsonElement) {
+        if (element.isJsonPrimitive) changeValue(element.asString)
+    }
+
+
+}
