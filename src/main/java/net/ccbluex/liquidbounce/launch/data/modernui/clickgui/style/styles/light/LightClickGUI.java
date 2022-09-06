@@ -29,6 +29,10 @@ import java.io.IOException;
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
+    private ModuleCategory homeHoveredCategory = ModuleCategory.COMBAT;
+    private int homeHoverAnim = 0;
+    private int homeX = 0;
+    private int homey = 0;
     private boolean homePage = true;
     private Module currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
     private float startX = 50, startY = 25;
@@ -167,7 +171,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // fdp water mark
-        Fonts.font35.drawString("FDPClient", startX + 10, startY + 7, new Color(80,80,80).getRGB());
+        Fonts.font35.drawString("FDPClient", startX + 10, startY + 7, new Color(200,200,200).getRGB());
         
         // new sexy background
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 4,
@@ -178,25 +182,163 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         // draw home page yes pog
         if (homePage) {
-            // row 1
-            RenderUtils.drawRoundedRect2((int) startX + 78, (int) startY + 68, (int) startX + 150, (int) startY + 140, 8, new Color(60, 60, 60, 250).getRGB());
+            // auto lower animation
+            homeHoverAnim -= 1;
+            if (homeHoverAnim < 0) {
+                homeHoverAnim = 0;
+            }
+            
+            // row 1 >>>>>>>>>>>>>>>>>>>>>>>>>
+            // >>>>>>>>>>>>>>>>>>>>
+            homeY = 68;
+            
+            // -- COMBAT --
+            homeX = 78;
+            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+                if (Mouse.isButtonDown(0)) {
+                    currentCategory = homeHoveredCategory;
+                    homePage = false;
+                } 
+                homeHoveredCategory = ModuleCategory.COMBAT;
+                homeHoverAnim += 2;
+                if (homeHoverAnim > 6) 
+                    homeHoverAnim = 6;
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else if (ModuleCategory.COMBAT == homeHoveredCategory) {
+                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else {
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+            }
+
             RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 90, (int) startY + 80, 24, 24);
-            RenderUtils.drawRoundedRect2((int) startX + 160, (int) startY + 68, (int) startX + 232, (int) startY + 140, 8, new Color(60, 60, 60, 250).getRGB());
+            
+            // -- MOVEMENT -- 
+            homeX = 160;
+            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+                if (Mouse.isButtonDown(0)) {
+                    currentCategory = homeHoveredCategory;
+                    homePage = false;
+                } 
+                homeHoveredCategory = ModuleCategory.MOVEMENT;
+                homeHoverAnim += 2;
+                if (homeHoverAnim > 6) 
+                    homeHoverAnim = 6;
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else if (ModuleCategory.MOVEMENT == homeHoveredCategory) {
+                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else {
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+            }
             RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Movement.png"), (int) startX + 172 , (int) startY + 80, 24, 24);
-            RenderUtils.drawRoundedRect2((int) startX + 242, (int) startY + 68, (int) startX + 314, (int) startY + 140, 8, new Color(60, 60, 60, 250).getRGB());
+            
+            // -- WORLD --
+            homeX = 242;
+            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+                if (Mouse.isButtonDown(0)) {
+                    currentCategory = homeHoveredCategory;
+                    homePage = false;
+                } 
+                homeHoveredCategory = ModuleCategory.WORLD;
+                homeHoverAnim += 2;
+                if (homeHoverAnim > 6) 
+                    homeHoverAnim = 6;
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else if (ModuleCategory.WORLD == homeHoveredCategory) {
+                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else {
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+            }
             RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 254, (int) startY + 80, 24, 24);
             
-            // row 2
-            RenderUtils.drawRoundedRect2((int) startX + 78, (int) startY + 152, (int) startX + 150, (int) startY + 224, 8, new Color(60, 60, 60, 250).getRGB());
+            // row 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            
+            homeY = 152
+               
+            // -- PLAYER --
+            homeX = 78;
+            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+                if (Mouse.isButtonDown(0)) {
+                    currentCategory = homeHoveredCategory;
+                    homePage = false;
+                } 
+                homeHoveredCategory = ModuleCategory.PLAYER;
+                homeHoverAnim += 2;
+                if (homeHoverAnim > 6) 
+                    homeHoverAnim = 6;
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else if (ModuleCategory.PLAYER == homeHoveredCategory) {
+                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else {
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+            }
             RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 90, (int) startY + 164, 24, 24);
-            RenderUtils.drawRoundedRect2((int) startX + 160, (int) startY + 152, (int) startX + 232, (int) startY + 224, 8, new Color(60, 60, 60, 250).getRGB());
+            
+            // -- EXPLOIT --
+            homeX = 160;
+            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+                if (Mouse.isButtonDown(0)) {
+                    currentCategory = homeHoveredCategory;
+                    homePage = false;
+                } 
+                homeHoveredCategory = ModuleCategory.EXPLOIT;
+                homeHoverAnim += 2;
+                if (homeHoverAnim > 6) 
+                    homeHoverAnim = 6;
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else if (ModuleCategory.EXPLOIT == homeHoveredCategory) {
+                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else {
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+            }
             RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Exploit.png"), (int) startX + 172, (int) startY + 164, 24, 24);
-            RenderUtils.drawRoundedRect2((int) startX + 242, (int) startY + 152, (int) startX + 314, (int) startY + 224, 8, new Color(60, 60, 60, 250).getRGB());
+            
+            // -- MISC --
+            homeX = 242;
+            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+                if (Mouse.isButtonDown(0)) {
+                    currentCategory = homeHoveredCategory;
+                    homePage = false;
+                } 
+                homeHoveredCategory = ModuleCategory.MISC;
+                homeHoverAnim += 2;
+                if (homeHoverAnim > 6) 
+                    homeHoverAnim = 6;
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else if (ModuleCategory.MISC == homeHoveredCategory) {
+                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else {
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+            }
             RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Misc.png"), (int) startX + 254, (int) startY + 164, 24, 24);
             
-            // row 3
-            RenderUtils.drawRoundedRect2((int) startX + 242, (int) startY + 236, (int) startX + 314, (int) startY + 308, 8, new Color(60, 60, 60, 250).getRGB());
+            // row 3 >>>>>>>>>>>>>>>>>>>
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            homeY = 236;
+            
+            // -- CLIENT --
+            homeX = 160;
+            if (mouseX >= homeX && mouseX <= homeX + 72 && mouseY >= homeY && mouseY <= homeY + 72) {
+                if (Mouse.isButtonDown(0)) {
+                    currentCategory = homeHoveredCategory;
+                    homePage = false;
+                } 
+                homeHoveredCategory = ModuleCategory.CLIENT;
+                homeHoverAnim += 2;
+                if (homeHoverAnim > 6) 
+                    homeHoverAnim = 6;
+                RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else if (ModuleCategory.CLIENT == homeHoveredCategory) {
+                 RenderUtils.drawRoundedRect2((int) startX + homeX - homeHoverAnim ,     (int) startY + homeY - homeHoverAnim, (int) startX + homeX + 72 + homeHoverAnim, (int) startY + homeY + 72 + homeHoverAnim, 8 - homeHoverAnim, new Color(65 + homeHoverAnim, 65 + homeHoverAnim, 65+ homeHoverAnim, 250).getRGB());
+            } else {
+                RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
+            }
             RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Client.png"), (int) startX + 172, (int) startY + 248, 24, 24);
+            
+            // made by dg636 no cap
+            Fonts.font35.drawString("Designed by skidder mc", startX + 10, startY + 290, new Color(30,30,30).getRGB());
+            
+        }
         
         
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
@@ -616,5 +758,5 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     public boolean isHovered(float x, float y, float x2, float y2, int mouseX, int mouseY) {
         return mouseX >= x && mouseX <= x2 && mouseY >= y && mouseY <= y2;
     }
-
+    
 }
