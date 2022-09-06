@@ -575,7 +575,7 @@ class KillAura : Module() {
                     it.entityBoundingBox = bb.expand(0.2, 0.2, 0.2)
                     RenderUtils.drawEntityBox(
                         it,
-                        if (it.hurtTime <= 0) if (it == target) Color.BLUE else Color.GREEN else Color.RED,
+                        if (it.hurtTime <= 0) if (it == target) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170),
                         true,
                         true,
                         4f
