@@ -57,10 +57,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         mc.fontRendererObj.drawCenteredString(LanguageManager.getAndFormat("ui.alt.alts", LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size), (width / 2).toFloat(), 18f, 0xffffff)
         mc.fontRendererObj.drawCenteredString(status, (width / 2).toFloat(), 32f, 0xffffff)
         mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.username", mc.getSession().username), 6f, 6f, 0xffffff)
-        mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.type",
-            if (mc.getSession().token.length >= 32 && altService.currentService == AltService.EnumAltService.MOJANG)
-                "%ui.alt.type.premium%"
-            else "%ui.alt.type.cracked%"
+        mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.type", if (mc.getSession().token.length >= 32) "%ui.alt.type.premium%" else "%ui.alt.type.cracked%"), 6f, 15f, 0xffffff)
 
         ), 6f, 15f, 0xffffff)
         randomAltField.drawTextBox()
@@ -201,9 +198,6 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     companion object {
-
-        val altService = AltService()
-
         var randomAltField = GuiTextField(2, Minecraft.getMinecraft().fontRendererObj, 0, 0, 0, 0)
 
         init {
@@ -212,18 +206,6 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         }
 
         fun login(account: MinecraftAccount): String {
-            if (altService.currentService != AltService.EnumAltService.MOJANG) {
-                try {
-                    altService.switchService(AltService.EnumAltService.MOJANG)
-                } catch (e: NoSuchFieldException) {
-                    error(e)
-                    ClientUtils.logError("Something went wrong while trying to switch alt service.", e)
-                } catch (e: IllegalAccessException) {
-                    error(e)
-                    ClientUtils.logError("Something went wrong while trying to switch alt service.", e)
-                }
-            }
-
             return try {
                 val mc = Minecraft.getMinecraft()
                 mc.session = account.session.let { Session(it.username, it.uuid, it.token, it.type) }
