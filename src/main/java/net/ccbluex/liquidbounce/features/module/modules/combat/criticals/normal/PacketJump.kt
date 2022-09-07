@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.criticals.normal
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.criticals.CriticalMode
 
-class More : CriticalMode("PacketJump") {
+class PacketJump : CriticalMode("PacketJump") {
     override fun onAttack(event: AttackEvent)  {
         critical.sendCriticalPacket(yOffset = 0.41999998688698, ground = false)
         critical.sendCriticalPacket(yOffset = 0.7531999805212, ground = false)
