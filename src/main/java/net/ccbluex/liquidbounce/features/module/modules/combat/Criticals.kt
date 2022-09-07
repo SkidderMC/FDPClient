@@ -44,6 +44,7 @@ class Criticals : Module() {
     val s08FlagValue = BoolValue("FlagPause", true)
     private val s08DelayValue = IntegerValue("FlagPause-Time", 100, 100, 5000).displayable { s08FlagValue.get() }
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
+    private val CritTiming = ListValue("CritTiming", arrayOf("Always", "OnGround", "OffGround"), "Always")
     private val lookValue = BoolValue("UseC06Packet", false)
     private val debugValue = BoolValue("DebugMessage", false)
     private val msTimer = MSTimer()
@@ -70,12 +71,22 @@ class Criticals : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(!state) return
+        when (CritTiming.get().lowercase()) {
+            "always" -> null
+            "onground" -> if (!mc.thePlayer.onGround) return
+            "offground" -> if (mc.thePlayer.onGround) return
+        }
         mode.onUpdate(event)
     }
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if(!state) return
+        when (CritTiming.get().lowercase()) {
+            "always" -> null
+            "onground" -> if (!mc.thePlayer.onGround) return
+            "offground" -> if (mc.thePlayer.onGround) return
+        }
         mode.onMotion(event)
         if(event.eventState != EventState.PRE) return
         mode.onPreMotion(event)
@@ -84,6 +95,11 @@ class Criticals : Module() {
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if(!state) return
+        when (CritTiming.get().lowercase()) {
+            "always" -> null
+            "onground" -> if (!mc.thePlayer.onGround) return
+            "offground" -> if (mc.thePlayer.onGround) return
+        }
         if (event.targetEntity is EntityLivingBase) {
             val entity = event.targetEntity
             target = entity.entityId
@@ -114,6 +130,9 @@ class Criticals : Module() {
         if (packet is S08PacketPlayerPosLook) {
             flagTimer.reset()
             antiDesync = false
+            if (debugValue.get()) {
+                alert("FLAG")
+            }
             /*
             if (s08FlagValue.get()) {
                 jState = 0
