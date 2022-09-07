@@ -48,8 +48,8 @@ object LiquidBounce {
     const val CLIENT_CREATOR = "CCBlueX & SkidderMC TEAM"
     const val CLIENT_WEBSITE = "fdpinfo.github.io"
     const val MINECRAFT_VERSION = "1.8.9"
-    const val VERSIONTYPE = "RELEASE" // Change to RELEASE on release and BETA on beta
-    const val VERSIONNUMBER = "4.6.5" // major build number
+    const val VERSIONTYPE = "BETA" // Change to RELEASE on release and BETA on beta
+    const val VERSIONNUMBER = "4.7.0" // major build number
     
     @JvmField
     val gitInfo = Properties().also {
