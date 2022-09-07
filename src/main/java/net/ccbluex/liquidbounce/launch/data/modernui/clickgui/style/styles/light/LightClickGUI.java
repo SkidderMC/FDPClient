@@ -345,6 +345,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             mouseX += 48;
             mouseY += 48;
             // mouse is offset idk
+            return
             
         }
         
