@@ -235,7 +235,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 }
             }
         } catch (e: Exception) {
-            //My HardDisk Exploded :(
         }
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

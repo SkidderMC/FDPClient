@@ -17,7 +17,6 @@ import net.minecraft.util.BlockPos
 import java.awt.Color
 import kotlin.math.abs
 
-// THANKS FUNC16 GIVE ME THIS IDEA!
 @ModuleInfo(name = "PrevFallPos", category = ModuleCategory.PLAYER)
 class PrevFallPos : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")

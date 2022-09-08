@@ -124,7 +124,7 @@ class ChestStealer : Module() {
         // inventory cleaner
         val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]!!
 
-        // Is empty?
+        // check if it's empty?
         if (!isEmpty(screen) && !(closeOnFullValue.get() && fullInventory)) {
             autoCloseTimer.reset()
 

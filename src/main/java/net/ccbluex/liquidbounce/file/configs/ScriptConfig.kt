@@ -8,8 +8,6 @@ import java.util.*
 class ScriptConfig(file: File) : FileConfig(file) {
     val subscripts = mutableListOf<Subscript>()
 
-    // note from Liulihaocai: WHAT THE FUCK IS THIS SHIT?
-
     override fun loadConfig(config: String) {
         clearSubscripts()
         config.split("\n").forEach { line ->

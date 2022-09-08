@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
-// TODO: remove this?
 @ModuleInfo(name = "Parkour", category = ModuleCategory.MOVEMENT)
 class Parkour : Module() {
 

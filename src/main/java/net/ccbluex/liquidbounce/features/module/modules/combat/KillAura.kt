@@ -635,7 +635,6 @@ class KillAura : Module() {
                     GL11.glPopMatrix()
                 }
                 "jello" -> { 
-                    // val dizwi#0809 = "angry Russian "
                     val drawTime = (System.currentTimeMillis() % 2000).toInt()
                     val drawMode=drawTime>1000
                     var drawPercent=drawTime/1000.0

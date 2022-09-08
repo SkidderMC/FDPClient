@@ -14,7 +14,7 @@ object LanguageManager {
             field = value
         }
 
-    // regex is slow, so we need to cache match results
+    // regex is slow, so cache match results
     private val pattern = Pattern.compile("$key[A-Za-z0-9\u002E]*$key")
 
     private val cachedStrings = HashMap<String, String>()

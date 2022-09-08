@@ -115,7 +115,7 @@ class AutoClicker : Module() {
             if (Random.nextBoolean()) {
                 mc.thePlayer.rotationPitch += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
 
-                // Make sure pitch is not going into blatent values
+                // Make sure pitch does not go in to blatent values
                 if (mc.thePlayer.rotationPitch > 90)
                     mc.thePlayer.rotationPitch = 90F
                 else if (mc.thePlayer.rotationPitch < -90)

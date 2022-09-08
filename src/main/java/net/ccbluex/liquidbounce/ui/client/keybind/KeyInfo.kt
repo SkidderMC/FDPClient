@@ -94,7 +94,7 @@ class KeyInfo(
             yOffset += 20
         }
 
-        // 覆盖多出来的部分
+        // cover the excess
         RenderUtils.drawRect(0F, 0F, baseTabWidth.toFloat(), 12F + Fonts.font40.height + 10F, Color.WHITE.rgb)
         RenderUtils.drawRect(0F, baseTabHeight - 22F - Fonts.font40.height, baseTabWidth.toFloat(), baseTabHeight.toFloat(), Color.WHITE.rgb)
         FontLoaders.C18.DisplayFonts(LanguageManager.getAndFormat("ui.keybind.key", keyDisplayName), 12F, 12F, Color.BLACK.rgb, FontLoaders.C18)
