@@ -44,7 +44,7 @@ import kotlin.jvm.internal.Intrinsics
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon"), "FDP")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "FilhoDaPuta", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -370,6 +370,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "chill" -> drawChill(prevTarget!! as EntityPlayer)
             "remix" -> drawRemix(prevTarget!! as EntityPlayer)
             "rice" -> drawRice(prevTarget!!)
+            "filhodaputa" -> drawPuta(prevTarget!!)
             "slowly" -> drawSlowly(prevTarget!!)
             "what" -> drawWhat(prevTarget!!)
             "watermelon" -> drawWaterMelon(prevTarget!!)
@@ -503,12 +504,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
@@ -519,7 +520,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             font.drawString("Distance ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 40, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
         }
 
-        // Gradient health bar
+        // 渐变血量条
         GL11.glEnable(3042)
         GL11.glDisable(3553)
         GL11.glBlendFunc(770, 771)
@@ -581,18 +582,18 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 7f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
         font.drawString("${target.name}", 48, 8, Color.WHITE.rgb)
 
-        // Gradient health bar
+        // 渐变血量条
         GL11.glEnable(3042)
         GL11.glDisable(3553)
         GL11.glBlendFunc(770, 771)
@@ -655,12 +656,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         //draw head
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         mc.textureManager.bindTexture(target.skin)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
@@ -746,12 +747,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
         
@@ -948,10 +949,11 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             RenderUtils.drawRoundedCornerRect(0f, 5f, 134f, 45f, 6f, ColorUtils.rainbow().rgb)
         } else {
 
-            //rounded sides
+            //curved sides
             RenderUtils.drawRoundedCornerRect(0f, 5f, 12f, 45f, 6f, ColorUtils.hslRainbow(6, indexOffset = 10).rgb)
             RenderUtils.drawRoundedCornerRect(120f, 5f, 134f, 45f, 6f, ColorUtils.hslRainbow(129, indexOffset = 10).rgb)
 
+            //rain bowwww
 
             //random OpenGl stuff idk
             GL11.glEnable(3042)
@@ -960,6 +962,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             GL11.glEnable(2848)
             GL11.glShadeModel(7425)
 
+            //stop pos mometno
             val stopPos = 50 + additionalWidth.toInt()
 
             //draw
@@ -980,7 +983,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
 
 
-        //draw head stuff
+        //HEAD draw thingies
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
             1 - (0.1f * hurtPercent * 2)
         } else {
@@ -1206,12 +1209,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         GL11.glColor4f(1f, 1f, 1f, 1f)
         mc.textureManager.bindTexture(target.skin)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
@@ -1249,6 +1252,108 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     private fun drawRice(entity: EntityLivingBase) {
+        updateAnim(entity.health)
+
+        val font = Fonts.font40
+        val name = "Name: ${entity.name}"
+        val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
+        val healthName = decimalFormat2.format(easingHealth)
+
+        val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
+        val maxHealthLength = font.getStringWidth(decimalFormat2.format(entity.maxHealth)).toFloat()
+
+        // background
+        RenderUtils.drawRoundedRect(0F, 0F, 10F + length, 55F, 8F, bgColor.rgb)
+
+        // particle engine
+        if (riceParticle.get()) {
+            // adding system
+            if (gotDamaged) {
+                for (j in 0..(generateAmountValue.get())) {
+                    val parSize = RandomUtils.nextFloat(minParticleSize.get(), maxParticleSize.get())
+                    val parDistX = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
+                    val parDistY = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
+                    val firstChar = RandomUtils.random(1, "${if (riceParticleCircle.get().equals("none", true)) "" else "c"}${if (riceParticleRect.get().equals("none", true)) "" else "r"}${if (riceParticleTriangle.get().equals("none", true)) "" else "t"}")
+                    val drawType = ShapeType.getTypeFromName(when (firstChar) {
+                        "c" -> "c_${riceParticleCircle.get().lowercase(Locale.getDefault())}"
+                        "r" -> "r_${riceParticleRect.get().lowercase(Locale.getDefault())}"
+                        else -> "t_${riceParticleTriangle.get().lowercase(Locale.getDefault())}"
+                    }) ?: break
+
+                    particleList.add(
+                        Particle(
+                            BlendUtils.blendColors(
+                                floatArrayOf(0F, 1F),
+                                arrayOf<Color>(Color.white, barColor),
+                                if (RandomUtils.nextBoolean()) RandomUtils.nextFloat(0.5F, 1.0F) else 0F),
+                            parDistX, parDistY, parSize, drawType)
+                    )
+                }
+                gotDamaged = false
+            }
+
+            // render and removing system
+            val deleteQueue = mutableListOf<Particle>()
+
+            particleList.forEach { particle ->
+                if (particle.alpha > 0F)
+                    particle.render(20F, 20F, riceParticleFade.get(), riceParticleSpeed.get(), riceParticleFadingSpeed.get(), riceParticleSpin.get())
+                else
+                    deleteQueue.add(particle)
+            }
+
+            particleList.removeAll(deleteQueue)
+        }
+
+        // head
+        if (playerInfo != null) {
+            Stencil.write(false)
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            RenderUtils.fastRoundedRect(4F, 4F, 34F, 34F, 7F)
+            GL11.glDisable(GL11.GL_BLEND)
+            GL11.glEnable(GL11.GL_TEXTURE_2D)
+            Stencil.erase(true)
+            drawHead(playerInfo.locationSkin, 4, 4, 30, 30, 1F - getFadeProgress())
+            Stencil.dispose()
+        }
+
+        // player's info
+        GlStateManager.resetColor()
+        font.drawString(name, 39F, 11F, getColor(-1).rgb)
+        font.drawString(info, 39F, 23F, getColor(-1).rgb)
+
+        // gradient health bar
+        val barWidth = (length - 5F - maxHealthLength) * (easingHealth / entity.maxHealth).coerceIn(0F, 1F)
+        Stencil.write(false)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+
+        if (gradientRoundedBarValue.get()) {
+            if (barWidth > 0F)
+                RenderUtils.fastRoundedRect(5F, 42F, 5F + barWidth, 48F, 3F)
+        } else
+            RenderUtils.quickDrawRect(5F, 42F, 5F + barWidth, 48F)
+
+        GL11.glDisable(GL11.GL_BLEND)
+        Stencil.erase(true)
+        when (colorModeValue.get().lowercase(Locale.getDefault())) {
+            "custom", "health" -> RenderUtils.drawRect(5F, 42F, length - maxHealthLength, 48F, barColor.rgb)
+            else -> for (i in 0 until gradientLoopValue.get()) {
+                val barStart = i.toDouble() / gradientLoopValue.get().toDouble() * (length - 5F - maxHealthLength).toDouble()
+                val barEnd = (i + 1).toDouble() / gradientLoopValue.get().toDouble() * (length - 5F - maxHealthLength).toDouble()
+                RenderUtils.drawGradientSideways(5.0 + barStart, 42.0, 5.0 + barEnd, 48.0, getColorAtIndex(i), getColorAtIndex(i + 1))
+            }
+        }
+        Stencil.dispose()
+
+        GlStateManager.resetColor()
+        font.drawString(healthName, 10F + barWidth, 41F, getColor(-1).rgb)
+    }
+
+    private fun drawPuta(entity: EntityLivingBase) {
         updateAnim(entity.health)
 
         val font = Fonts.font40
