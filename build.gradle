@@ -5,7 +5,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
-    id "com.gorylenko.gradle-git-properties" version "2.4.0"
+    id "com.gorylenko.gradle-git-properties" version "2.4.0" 
 }
 
 repositories {
@@ -16,7 +16,7 @@ repositories {
     maven { url = "https://repo.getfdp.today/" }
 }
 
-version = "4.6.5"
+version = "4.7.0"
 group = "org.unlegitmc.fdp"
 archivesBaseName = "FDPClient"
 
@@ -79,10 +79,6 @@ dependencies {
     } // for read dynamic capes
 
     include("com.github.UnlegitMC:Astar3d:bec2291cf2") // pathfinding
-
-    // TheAltening
-    include 'com.github.TheAltening:TheAltening4j:d0771f42d3'
-    include 'com.github.TheAltening:API-Java-AuthLib:-SNAPSHOT'
 
     include fileTree(include: ["*.jar"], dir: "libs")
 }
