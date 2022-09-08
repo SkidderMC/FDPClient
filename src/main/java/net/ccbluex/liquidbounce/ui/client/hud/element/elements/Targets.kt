@@ -723,7 +723,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private fun drawRiseLatest(target: EntityLivingBase) {
         val font = fontValue.get()
 
-        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(70) + font.getStringWidth("Name: ")
+        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(70) + font.getStringWidth("Name: ") + 7
+        val healthBarWidth = additionalWidth - font.getStringWidth("20") - 16
         RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 6f, Color(0, 0, 0, 150).rgb)
         RenderUtils.drawShadow(2f, 2f, 48f + additionalWidth, 48f)
 
@@ -754,10 +755,11 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         font.drawString("Name:", 50, 8, Color.WHITE.rgb)
 
         // draw health
-        RenderUtils.drawRoundedCornerRect(50f, 35f, 50f + (additionalWidth * (easingHP / target.maxHealth)) , 42f, 4f, Color(122, 214, 255, 255).rgb)
-        RenderUtils.drawRoundedCornerRect(52f, 35f, 48f + (additionalWidth * (easingHP / target.maxHealth)) , 37f, 2f, Color(255, 255, 255, 30).rgb)
-        RenderUtils.drawRoundedCornerRect(52f, 35f, 40f + (additionalWidth * (easingHP / target.maxHealth)) , 42f, 2f, Color(0, 0, 0, 30).rgb)
-        font.drawString(decimalFormat.format(easingHP), stopPos + 5, 38 - font.FONT_HEIGHT / 2, Color.WHITE.rgb)
+        RenderUtils.drawRoundedCornerRect(50f, 35f, 50f + healthBarWidth , 42f, 3f, Color(20, 20, 20, 255).rgb)
+        RenderUtils.drawRoundedCornerRect(50f, 35f, 50f + (healthBarWidth * (easingHP / target.maxHealth)) , 42f, 4f, Color(122, 214, 255, 255).rgb)
+        RenderUtils.drawRoundedCornerRect(52f, 35f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 37f, 2f, Color(255, 255, 255, 30).rgb)
+        RenderUtils.drawRoundedCornerRect(52f, 35f, 40f + (healthBarWidth * (easingHP / target.maxHealth)) , 42f, 2f, Color(0, 0, 0, 30).rgb)
+        font.drawString("${getHealth(target).roundToInt()}", additionalWidth - 7 - font.getStringWidth(getHealth(target).roundToInt()), 38f - (font.FONT_HEIGHT/2).toFloat(), Color(115, 208, 255, 255).rgb)
 
 
         if(target.hurtTime >= 9) {
