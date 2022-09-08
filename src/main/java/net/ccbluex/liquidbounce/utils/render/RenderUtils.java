@@ -2629,15 +2629,15 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     /**
-     * 在LWJGL中渲染AWT图形
-     * @param shape 准备渲染的图形
-     * @param epsilon 图形精细度，传0不做处理
+     * Rendering AWT graphics in LWJGL
+     * @param shape graphics are ready to render
+     * @param epsilon Graphic fineness, pass 0 without processing
      */
     public static void drawAWTShape(Shape shape, double epsilon, GLUtessellatorCallbackAdapter gluTessCallback) {
         PathIterator path=shape.getPathIterator(new AffineTransform());
-        Double[] cp=new Double[2]; // 记录上次操作的点用于计算曲线
+        Double[] cp=new Double[2]; // Record the point of the last operation used to calculate the curve
 
-        GLUtessellator tess = GLU.gluNewTess(); // 创建GLUtessellator用于渲染凹多边形（GL_POLYGON只能渲染凸多边形）
+        GLUtessellator tess = GLU.gluNewTess(); // Create a GLUtesselator for rendering concave polygons (GL_POLYGON can only render convex polygons)
 
         tess.gluTessCallback(GLU.GLU_TESS_BEGIN, gluTessCallback);
         tess.gluTessCallback(GLU.GLU_TESS_END, gluTessCallback);
@@ -2655,7 +2655,7 @@ public final class RenderUtils extends MinecraftInstance {
             }
         }
 
-        // 缓存单个图形路径上的点用于精简以提升性能
+        // Cache points on a single graphics path for refinement to improve performance
         ArrayList<Double[]> pointsCache = new ArrayList<>();
 
         tess.gluTessBeginPolygon(null);
@@ -2692,11 +2692,11 @@ public final class RenderUtils extends MinecraftInstance {
                     break;
                 }
                 case PathIterator.SEG_CLOSE:{
-                    // 精简路径上的点
+                    // Points on a reduced path
                     for(Double[] point : MathUtils.simplifyPoints(pointsCache.toArray(new Double[0][0]), epsilon)){
                         tessVertex(tess, new double[] {point[0], point[1], 0.0, 0.0, 0.0, 0.0});
                     }
-                    // 清除缓存以便画下一个图形
+                    // Clear the cache to draw the next figure
                     pointsCache.clear();
                     tess.gluTessEndContour();
                     break;

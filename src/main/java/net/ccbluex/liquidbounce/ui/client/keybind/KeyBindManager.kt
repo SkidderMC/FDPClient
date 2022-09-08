@@ -52,7 +52,7 @@ class KeyBindManager : GuiScreen() {
 
         GL11.glTranslatef(width * 0.2f, height * 0.2f + FontLoaders.C18.height * 2.3f, 0F)
         val scale = mcWidth / baseWidth.toFloat()
-        // 用scale可以方便些
+        // It's easier to use scale
         GL11.glScalef(scale, scale, scale)
 
         RenderUtils.drawRect(0F, 0F, baseWidth.toFloat(), baseHeight.toFloat(), Color.WHITE.rgb)
@@ -68,10 +68,10 @@ class KeyBindManager : GuiScreen() {
 
         GL11.glPopMatrix()
 
-        // 鼠标滚轮滑动
+        // mouse wheel sliding
         if (Mouse.hasWheel()) {
             val wheel = Mouse.getDWheel()
-            if (wheel != 0) { // 没滚轮，只是正常鼠标移动
+            if (wheel != 0) { // Not scroll wheel, just normal mouse movement
                 if (popUI != null) {
                     popUI!!.onStroll(width, height, mouseX, mouseY, wheel)
                 } else if (nowDisplayKey != null) {
@@ -83,7 +83,7 @@ class KeyBindManager : GuiScreen() {
             }
         }
 
-        // 渲染功能选择弹窗
+        // Rendering function selection popup
         popUI?.onRender(width, height)
     }
 

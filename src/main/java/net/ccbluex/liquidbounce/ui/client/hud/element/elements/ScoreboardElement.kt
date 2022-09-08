@@ -128,7 +128,7 @@ class ScoreboardElement(
         if(rainbowBarValue.get()) {
             Gui.drawRect(l1 - 7, -6, 9, - 5, ColorUtils.rainbow().rgb)
         }
-        // draw shit
+        // draw main rect?
                 Gui.drawRect(l1 - 7, -5, 9, maxHeight + fontRenderer.FONT_HEIGHT + 5, backColor)
     
 

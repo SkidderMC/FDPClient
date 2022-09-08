@@ -34,8 +34,6 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val contentShadow = BoolValue("ContentShadow", true)
     private val whiteText = BoolValue("WhiteTextColor", true)
     private val modeColored = BoolValue("CustomModeColored", true)
-    // my nuts are ur mother campanion object -dg
-    // no you -bc
     companion object {
         val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Skid"), "Modern")
     }
@@ -251,7 +249,7 @@ class Notification(
             return false
         }
 
-        // lbtl = liquidbounce text length
+        // lbtl means liquidbounce text length
         /* if(style.equals("LiquidBounce")) {
             RenderUtils.drawRect(-1F, 0F, lbtl + 9F, -20F, Color(0, 0, 0, alpha))
             FontLoaders.C12.DisplayFont2(FontLoaders.C12, title + ": " + content, -4F, 3F, textColor, titleShadow)

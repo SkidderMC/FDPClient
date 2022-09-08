@@ -131,27 +131,27 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             alphaAnim.alpha = 255;
         else
             alphaAnim.updateAlpha(25);
-        //整个界面的alpha
+        //the entire interface alpha
         if(valueAnim.getAlpha() == 240)
             alphaAnim.alpha = 255;
         else
             valueAnim.updateAlpha(30);
-        //value界面的alpha
+        //value interface alpha 
         
         // animate scale
         if(guiScale < 100)
-            guiScale += 10;//启动动画
+            guiScale += 10;//start animation
         GlStateManager.scale(guiScale / 100, guiScale / 100, guiScale / 100);
         
         // make that variable gurl
-        Settings settings = new Settings(valueAnim);//value的settings
+        Settings settings = new Settings(valueAnim);//value of settings
         
         // huddesigner icon sense clik
         if (Mouse.isButtonDown(0) && mouseX >= 5 && mouseX <= 50 && mouseY <= height - 5 && mouseY >= height - 50)
-            mc.displayGuiScreen(new GuiHudDesigner()); //进入自定义HUD界面
+            mc.displayGuiScreen(new GuiHudDesigner()); //Enter custom HUD interface
         
         // click = move target hud
-        if (isHovered(startX - 5, startY, startX + 400, startY + 25, mouseX, mouseY) && Mouse.isButtonDown(0)) {//移动窗口
+        if (isHovered(startX - 5, startY, startX + 400, startY + 25, mouseX, mouseY) && Mouse.isButtonDown(0)) {//move window
             if (moveX == 0 && moveY == 0) {
                 moveX = mouseX - startX;
                 moveY = mouseY - startY;
@@ -182,7 +182,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 //        else if(!isHovered(startX + 130, startY + 7, startX + 190, startY + 15, mouseX, mouseY) && Mouse.isButtonDown(0))
 //            hovered = false;
         //   FontManager.logo24.drawCenteredStringWithShadow("L", startX + 5, startY + 8, new Color(49, 86, 255).getRGB(),255);
-        //FontManager.logo24.drawCenteredStringWithShadow("ight", startX + 5 + FontManager.logo24.getStringWidth("L") + 8, startY + 8, new Color(255,255,255).getRGB(),255); // 客户端名字
+        //FontManager.logo24.drawCenteredStringWithShadow("ight", startX + 5 + FontManager.logo24.getStringWidth("L") + 8, startY + 8, new Color(255,255,255).getRGB(),255); // client name
         
         // fdp water mark
         Fonts.font35.drawString("FDPClient", startX + 5, startY + 5, new Color(80,80,80).getRGB());
@@ -204,7 +204,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // mouse scroll now est variable
-        int m = Mouse.getDWheel();//鼠标滚轮.
+        int m = Mouse.getDWheel(); //Mouse wheel.
         
         // smth
         if(searchBox.getText().isEmpty()) {
@@ -517,7 +517,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         searchBox.drawTextBox();
-        // 判断category所处的位置是否被按下或者被略过
+        // Determine whether the location of the category is pressed or skipped
         RenderUtils.drawGradientSideways(startX + 50, startY, startX + 55, startY + 280, new Color(0, 0, 0, 60).getRGB(),
                 new Color(0, 0, 0, 0).getRGB());//255,255,255,30
 
@@ -535,7 +535,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         || currentCategory == ModuleCategory.WORLD ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB());
         RenderUtils.circle(startX + 23, startY + 165, 12,
                 isCategoryHovered(startX + 11, startY + 153, startX + 35, startY + 177, mouseX, mouseY)
-                        || currentCategory == ModuleCategory.PLAYER ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB()); // 画出category的圆
+                        || currentCategory == ModuleCategory.PLAYER ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB()); // Draw the circle of the category
         RenderUtils.circle(startX + 23, startY + 205, 12,
                 isCategoryHovered(startX + 11, startY + 193, startX + 35, startY + 217, mouseX, mouseY)
                         || currentCategory == ModuleCategory.EXPLOIT ? new Color(180,180,180).getRGB() : new Color(255,255,255).getRGB());

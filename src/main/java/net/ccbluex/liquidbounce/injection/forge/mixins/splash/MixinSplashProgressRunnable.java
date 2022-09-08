@@ -77,7 +77,7 @@ public abstract class MixinSplashProgressRunnable {
             GL11.glEnd();
             GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-            // draw logo (dogshit code will break and prob doesnt work but ok)
+            // draw logo 
             float yCentre = width / 2;
             float xCentre = height / 2;
             RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/logo/logo.png"), (int) xCentre, (int) yCentre, 250, 250);
