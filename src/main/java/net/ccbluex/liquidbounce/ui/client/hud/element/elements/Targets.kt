@@ -1305,19 +1305,17 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             particleList.removeAll(deleteQueue)
         }
 
-        // head
-        if (playerInfo != null) {
-            Stencil.write(false)
-            GL11.glDisable(GL11.GL_TEXTURE_2D)
-            GL11.glEnable(GL11.GL_BLEND)
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            RenderUtils.fastRoundedRect(4F, 4F, 34F, 34F, 7F)
-            GL11.glDisable(GL11.GL_BLEND)
-            GL11.glEnable(GL11.GL_TEXTURE_2D)
-            Stencil.erase(true)
-            drawHead(playerInfo.locationSkin, 4, 4, 30, 30, 1F - getFadeProgress())
-            Stencil.dispose()
-        }
+        // custom head
+        val scaleHT = (entity.hurtTime.toFloat() / entity.maxHurtTime.coerceAtLeast(1).toFloat()).coerceIn(0F, 1F)
+        if (mc.netHandler.getPlayerInfo(entity.uniqueID) != null)
+            drawHead(mc.netHandler.getPlayerInfo(entity.uniqueID).locationSkin,
+                5F + 15F * (scaleHT * 0.2F),
+                5F + 15F * (scaleHT * 0.2F),
+                1F - scaleHT * 0.2F,
+                30, 30,
+                1F, 0.4F + (1F - scaleHT) * 0.6F, 0.4F + (1F - scaleHT) * 0.6F,
+                1F - getFadeProgress())
+
 
         // player's info
         GlStateManager.resetColor()
@@ -1406,17 +1404,19 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
             particleList.removeAll(deleteQueue)
         }
-
-        // custom head
-        val scaleHT = (entity.hurtTime.toFloat() / entity.maxHurtTime.coerceAtLeast(1).toFloat()).coerceIn(0F, 1F)
-        if (mc.netHandler.getPlayerInfo(entity.uniqueID) != null)
-            drawHead(mc.netHandler.getPlayerInfo(entity.uniqueID).locationSkin,
-                5F + 15F * (scaleHT * 0.2F),
-                5F + 15F * (scaleHT * 0.2F),
-                1F - scaleHT * 0.2F,
-                30, 30,
-                1F, 0.4F + (1F - scaleHT) * 0.6F, 0.4F + (1F - scaleHT) * 0.6F,
-                1F - getFadeProgress())
+        // head
+        if (mc.netHandler.getPlayerInfo(entity.uniqueID != null) {
+            Stencil.write(false)
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            RenderUtils.fastRoundedRect(4F, 4F, 34F, 34F, 7F)
+            GL11.glDisable(GL11.GL_BLEND)
+            GL11.glEnable(GL11.GL_TEXTURE_2D)
+            Stencil.erase(true)
+            drawHead(mc.netHandler.getPlayerInfo(entity.uniqueID).locationSkin, 4, 4, 30, 30, 1F - getFadeProgress())
+            Stencil.dispose()
+        }
 
         // player's info
         GlStateManager.resetColor()
