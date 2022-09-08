@@ -759,7 +759,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRoundedCornerRect(50f, 35f, 50f + (healthBarWidth * (easingHP / target.maxHealth)) , 42f, 4f, Color(122, 214, 255, 255).rgb)
         RenderUtils.drawRoundedCornerRect(52f, 35f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 37f, 2f, Color(255, 255, 255, 30).rgb)
         RenderUtils.drawRoundedCornerRect(52f, 35f, 40f + (healthBarWidth * (easingHP / target.maxHealth)) , 42f, 2f, Color(0, 0, 0, 30).rgb)
-        font.drawString(getHealth(target).roundToInt().toString(), additionalWidth - 7f - font.getStringWidth(getHealth(target).roundToInt().toString()).toFloat(), 38f - (font.FONT_HEIGHT/2).toFloat(), Color(115, 208, 255, 255).rgb)
+        font.drawString(getHealth(target).roundToInt().toString(), additionalWidth.toInt() - 7 - font.getStringWidth(getHealth(target).roundToInt().toString()).toInt(), 38 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
 
 
         if(target.hurtTime >= 9) {
