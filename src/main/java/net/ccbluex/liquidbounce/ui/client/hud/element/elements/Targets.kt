@@ -800,9 +800,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val font = Fonts.fontTahoma
         val minWidth = 126F.coerceAtLeast(47F + font.getStringWidth(entity.name))
 
-        RenderUtils.drawExhiRect(0F, 0F, minWidth, 45F, 1F - getFadeProgress())
-
-        RenderUtils.drawRect(2.5F, 2.5F, 42.5F, 42.5F, getColor(Color(59, 59, 59)).rgb)
+        RenderUtils.drawRect(0, 0F, minWidth, 45F, getColor(Color(19, 19, 19)).rgb)
+        // RenderUtils.drawExhiRect(0F, 0F, minWidth, 45F, 1F - getFadeProgress())
         RenderUtils.drawRect(3F, 3F, 42F, 42F, getColor(Color(19, 19, 19)).rgb)
 
         GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
@@ -865,6 +864,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val font = Fonts.fontTahoma
         val minWidth = 126F.coerceAtLeast(47F + font.getStringWidth(entity.name))
 
+        RenderUtils.drawExhiRect(0F, 0F, minWidth, 45F, 1F - getFadeProgress())
         RenderUtils.drawRect(2.5F, 2.5F, 42.5F, 42.5F, getColor(Color(59, 59, 59)).rgb)
         RenderUtils.drawRect(3F, 3F, 42F, 42F, getColor(Color(19, 19, 19)).rgb)
 
