@@ -723,9 +723,9 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private fun drawRiseLatest(target: EntityLivingBase) {
         val font = fontValue.get()
 
-        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(70) + font.getStringWidth("Name: ") + 7
-        val healthBarWidth = additionalWidth - font.getStringWidth("20") - 16
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 6f, Color(0, 0, 0, 150).rgb)
+        val additionalWidth = ((font.getStringWidth(target.name) * 1.1).coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7).roundToInt()
+        val healthBarWidth = additionalWidth - (font.getStringWidth("20") * 1.15).roundToInt() - 16
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 6f, Color(0, 0, 0, 180).rgb)
         RenderUtils.drawShadow(2f, 2f, 48f + additionalWidth, 48f)
 
         // circle player avatar
@@ -735,7 +735,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         } else {
             0.8f + (0.2f * (hurtPercent - 0.5f) * 2)
         }
-        val size = 36
+        val size = 45
 
         //draw head
         GL11.glPushMatrix()
@@ -747,20 +747,27 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
         // 绘制头部图片
         mc.textureManager.bindTexture(target.skin)
-        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 45, 45, 64f, 64f)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 45, 45, 64f, 64f)
         GL11.glPopMatrix()
 
         // draw name
+        GL11.glPushMatrix()
+        GL11.glScalef(1.1, 1.1, 1.1)
         font.drawString("Name: ${target.name}", 50, 8, Color(115, 208, 255, 255).rgb)
         font.drawString("Name:", 50, 8, Color.WHITE.rgb)
+        GL11.glPopMatrix()
 
         // draw health
-        RenderUtils.drawRoundedCornerRect(50f, 35f, 50f + healthBarWidth , 42f, 3f, Color(20, 20, 20, 255).rgb)
-        RenderUtils.drawRoundedCornerRect(50f, 35f, 50f + (healthBarWidth * (easingHP / target.maxHealth)) , 42f, 4f, Color(122, 214, 255, 255).rgb)
-        RenderUtils.drawRoundedCornerRect(52f, 35f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 37f, 2f, Color(255, 255, 255, 30).rgb)
-        RenderUtils.drawRoundedCornerRect(52f, 35f, 40f + (healthBarWidth * (easingHP / target.maxHealth)) , 42f, 2f, Color(0, 0, 0, 30).rgb)
-        font.drawString(getHealth(target).roundToInt().toString(), additionalWidth.toInt() - 7 - font.getStringWidth(getHealth(target).roundToInt().toString()).toInt(), 38 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
-
+        RenderUtils.drawRoundedCornerRect(50f, 31f, 50f + healthBarWidth , 39f, 3f, Color(20, 20, 20, 255).rgb)
+        RenderUtils.drawRoundedCornerRect(50f, 31f, 50f + (healthBarWidth * (easingHP / target.maxHealth)) , 39f, 4f, Color(122, 214, 255, 255).rgb)
+        RenderUtils.drawRoundedCornerRect(52f, 31f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 34f, 2f, Color(255, 255, 255, 30).rgb)
+        RenderUtils.drawRoundedCornerRect(52f, 36f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 39f, 2f, Color(0, 0, 0, 30).rgb)
+        GL11.glPushMatrix()
+        GL11.glScalef(1.15, 1.15, 1.15)
+        font.drawString(getHealth(target).roundToInt().toString(), 43 + additionalWidth.toInt() - font.getStringWidth((getHealth(target) * 1.15).roundToInt().toString()).toInt(), 35 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
+        GL11.glPopMatrix()
+        
 
         if(target.hurtTime >= 9) {
             for(i in 0 until riseCountValue.get()) {
