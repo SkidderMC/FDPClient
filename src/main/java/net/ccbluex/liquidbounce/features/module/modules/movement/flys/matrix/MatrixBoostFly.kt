@@ -38,14 +38,8 @@ class MatrixBoostFly : FlyMode("MatrixBoost") {
                 )
             )
             if (bypassMode.equals("Test")) {
-                mc.netHandler.addToSendQueue(
-                    C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX + -sin(yaw) * 1.44,
-                        mc.thePlayer.posY + 1.91,
-                        mc.thePlayer.posZ + cos(yaw) * 1.44,
-                        false
-                    )
-                )
+                MovementUtils.strafe(1.89f)
+                mc.thePlayer.motionY = 2.0
             } else {
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
@@ -58,12 +52,20 @@ class MatrixBoostFly : FlyMode("MatrixBoost") {
             }
             boostMotion = 1
             mc.timer.timerSpeed = jumpTimer.get()
+        } else if (boostMotion == 1 && bypassMode.equals("Test")) {
+            MovementUtils.strafe(1.89f)
+            mc.thePlayer.motionY = 2.0
         } else if (boostMotion == 2) {
             MovementUtils.strafe(speed.get())
             when (bypassMode.get().lowercase()) {
                 "stable" -> mc.thePlayer.motionY = 0.8
                 "new" -> mc.thePlayer.motionY = 0.48
-                "test" -> mc.thePlayer.motionY = 1.91
+                "test" -> {
+                    val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + -sin(yaw) * 2,mc.thePlayer.posY + 2.0,mc.thePlayer.posZ + cos(yaw) * 2,true))
+                    mc.thePlayer.motionY = 2.0
+                    MovementUtils.strafe(5f)
+                }
                 "custom" -> mc.thePlayer.motionY = customYMotion.get().toDouble()
             }
             boostMotion = 3
