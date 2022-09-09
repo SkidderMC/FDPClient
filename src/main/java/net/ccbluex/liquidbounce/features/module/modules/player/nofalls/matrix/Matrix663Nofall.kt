@@ -32,7 +32,7 @@ class Matrix663Nofall : NoFallMode("Matrix6.6.3") {
         val fallingPlayer = FallingPlayer(mc.thePlayer)
         val collLoc = fallingPlayer.findCollision(60) // null -> too far to calc or fall pos in void
 
-        if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3 || (abs((collLoc?.y ?: 0) - mc.thePlayer.posY) < 3 && mc.thePlayer.fallDistance - mc.thePlayer.motionY > 1)) {
+        if (mc.thePlayer.fallDistance - mc.thePlayer.motionY > 3 || (abs((collLoc?.y ?: 0) - mc.thePlayer.posY) < 3 && mc.thePlayer.fallDistance - mc.thePlayer.motionY > 2)) {
             mc.thePlayer.fallDistance = 0.0f
             matrixSend = true
             
