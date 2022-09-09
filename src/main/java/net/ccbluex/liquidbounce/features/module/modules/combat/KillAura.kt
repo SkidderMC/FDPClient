@@ -369,6 +369,7 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
+        if (cancelRun) return
         strictStrafe = false
         if(!LiquidBounce.moduleManager[TargetStrafe::class.java]!!.modifyStrafe(event)) {
             strictStrafe = true

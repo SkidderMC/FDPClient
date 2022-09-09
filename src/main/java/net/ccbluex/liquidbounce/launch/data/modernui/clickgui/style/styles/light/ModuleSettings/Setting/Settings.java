@@ -142,7 +142,7 @@ public class Settings extends Setting {
         float x = startX + 325;
         font.drawString(boolValue.getName(), startX + 210, mY, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB()); 
         RenderUtils.drawRoundedRect2(x + 30, mY - 2, x + 50, mY + 8, 4, new Color(239, 237, 237,alphaAnim.getAlpha()).getRGB() );
-        RenderUtils.drawRoundedRect2(x + 38, mY - 4, x + 52, mY + 10, 5, boolValue.get() ? new Color(66, 134, 245,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
+        RenderUtils.drawRoundedRect2(x + 28, mY - 4, x + 52, mY + 10, 5, boolValue.get() ? new Color(66, 134, 245,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
         RenderUtils.circle(x + 40 + boolValue.getAnimation().getAnimationX(), mY + 3, 4, boolValue.get() ? new Color(255,255,255,alphaAnim.getAlpha()).getRGB() : new Color(164, 168, 175,alphaAnim.getAlpha()).getRGB());
         if(boolValue.getAnimation().getAnimationX() > -5F && !boolValue.get())
             boolValue.getAnimation().animationX -= 1F;
