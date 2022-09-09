@@ -8,6 +8,8 @@ import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
+import kotlin.math.abs
+
 class Matrix663Nofall : NoFallMode("Matrix6.6.3") {
     private var matrixSend = false
     
