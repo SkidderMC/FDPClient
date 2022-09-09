@@ -61,6 +61,7 @@ class MatrixBoostFly : FlyMode("MatrixBoost") {
                 "stable" -> mc.thePlayer.motionY = 0.8
                 "new" -> mc.thePlayer.motionY = 0.48
                 "test" -> {
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + -sin(yaw) * 2,mc.thePlayer.posY + 2.0,mc.thePlayer.posZ + cos(yaw) * 2,true))
                     mc.thePlayer.motionY = 2.0
                     MovementUtils.strafe(5f)
                 }
