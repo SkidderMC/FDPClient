@@ -723,7 +723,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private fun drawRiseLatest(target: EntityLivingBase) {
         val font = fontValue.get()
 
-        val additionalWidth = ((font.getStringWidth(target.name) * 1.1).coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7).roundToInt()
+        val additionalWidth = ((font.getStringWidth(target.name) * 1.1).coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
         val healthBarWidth = additionalWidth - (font.getStringWidth("20") * 1.15).roundToInt() - 16
         RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 6f, Color(0, 0, 0, 180).rgb)
         RenderUtils.drawShadow(2f, 2f, 48f + additionalWidth, 48f)
@@ -753,7 +753,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         // draw name
         GL11.glPushMatrix()
-        GL11.glScalef(1.1, 1.1, 1.1)
+        GL11.glScalef(1.1f, 1.1f, 1.1f)
         font.drawString("Name: ${target.name}", 50, 8, Color(115, 208, 255, 255).rgb)
         font.drawString("Name:", 50, 8, Color.WHITE.rgb)
         GL11.glPopMatrix()
@@ -764,7 +764,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRoundedCornerRect(52f, 31f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 34f, 2f, Color(255, 255, 255, 30).rgb)
         RenderUtils.drawRoundedCornerRect(52f, 36f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 39f, 2f, Color(0, 0, 0, 30).rgb)
         GL11.glPushMatrix()
-        GL11.glScalef(1.15, 1.15, 1.15)
+        GL11.glScalef(1.15f, 1.15f, 1.15f)
         font.drawString(getHealth(target).roundToInt().toString(), 43 + additionalWidth.toInt() - font.getStringWidth((getHealth(target) * 1.15).roundToInt().toString()).toInt(), 35 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
         GL11.glPopMatrix()
         
