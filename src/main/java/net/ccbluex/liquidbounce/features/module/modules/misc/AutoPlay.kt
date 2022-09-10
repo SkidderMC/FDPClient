@@ -139,6 +139,13 @@ class AutoPlay : Module() {
                         }
                     }
                 }
+                "hydracraft" -> {
+                    if (text.contains("Has ganado ¿Qué quieres hacer?", true)) {
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/playagain")
+                        }
+                    }
+                }
                 "hycraft" -> {
                     component.siblings.forEach { sib ->
                         val clickEvent = sib.chatStyle.chatClickEvent
