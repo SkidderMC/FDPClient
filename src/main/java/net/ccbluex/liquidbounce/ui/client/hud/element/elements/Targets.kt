@@ -375,7 +375,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "slowly" -> drawSlowly(prevTarget!!)
             "what" -> drawWhat(prevTarget!!)
             "watermelon" -> drawWaterMelon(prevTarget!!) 
-            "sparklingwater" -> drawSparklingWater(prevTarget!!)
+            "sparklingwater" -> drawSparklingWater(prevTarget!! as EntityPlayer)
             "exhibition" -> drawExhibition(prevTarget!! as EntityPlayer)
             "exhibitionold" -> drawExhibitionOld(prevTarget!! as EntityPlayer)
         }
