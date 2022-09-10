@@ -1449,12 +1449,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )//bar
-        RenderUtils.drawRoundedCornerRect(45f, 20f, 145f, 30f, 5f, Color(0, 0, 0, 100).rgb)
+        RenderUtils.drawRoundedCornerRect(45f, 28f, 145f, 26f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
-            20f,
+            18f,
             45f + (easingHP / target.maxHealth) * 100f,
-            30f,
+            26f,
             5f,
             ColorUtils.rainbow().rgb
         )
@@ -1462,10 +1462,32 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             FontLoaders.F14,
             "${((df.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
-            24f,
+            19f,
             Color(255, 255, 255).rgb,
             true
         )
+        //items
+        var x = 45
+        var y = 28
+
+        for (index in 3 downTo 0) {
+            val stack = entity.inventory.armorInventory[index] ?: continue
+
+            if (stack.item == null)
+                continue
+
+            renderItem.renderItemIntoGUI(stack, x, y)
+            renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
+            RenderUtils.drawExhiEnchants(stack, x.toFloat(), y.toFloat())
+
+            x += 16
+        }
+
+        val mainStack = entity.heldItem
+        if (mainStack != null && mainStack.item != null) {
+            renderItem.renderItemIntoGUI(mainStack, x, y)
+            renderItem.renderItemOverlays(mc.fontRendererObj, mainStack, x, y)
+            RenderUtils.drawExhiEnchants(mainStack, x.toFloat(), y.toFloat())
     }
 
     private fun drawRice(entity: EntityLivingBase) {
