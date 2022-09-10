@@ -754,8 +754,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         // draw name
         GL11.glPushMatrix()
         GL11.glScalef(1.1f, 1.1f, 1.1f)
-        font.drawString("Name: ${target.name}", 50, 8, Color(115, 208, 255, 255).rgb)
-        font.drawString("Name:", 50, 8, Color.WHITE.rgb)
+        font.drawString("Name: ${target.name}", 45, 14, Color(115, 208, 255, 255).rgb)
+        font.drawString("Name:", 45, 14, Color.WHITE.rgb)
         GL11.glPopMatrix()
 
         // draw health
@@ -765,7 +765,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRoundedCornerRect(52f, 36f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 39f, 2f, Color(0, 0, 0, 30).rgb)
         GL11.glPushMatrix()
         GL11.glScalef(1.15f, 1.15f, 1.15f)
-        font.drawString(getHealth(target).roundToInt().toString(), 43 + additionalWidth.toInt() - font.getStringWidth((getHealth(target) * 1.15).roundToInt().toString()).toInt(), 35 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
+        font.drawString(getHealth(target).roundToInt().toString(), ((43 + additionalWidth.toInt() - font.getStringWidth((getHealth(target) * 1.15).roundToInt().toString()).toInt()) / 1.15).roundToInt()   , 29 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
         GL11.glPopMatrix()
         
 
