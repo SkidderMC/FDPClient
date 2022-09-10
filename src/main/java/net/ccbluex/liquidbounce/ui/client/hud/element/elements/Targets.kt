@@ -1445,16 +1445,16 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         FontLoaders.F14.DisplayFonts(
             "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
             45f,
-            50f,
+            46f,
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )//bar
-        RenderUtils.drawRoundedCornerRect(45f, 32f, 145f, 25f, 5f, Color(0, 0, 0, 100).rgb)
+        RenderUtils.drawRoundedCornerRect(45f, 22f, 145f, 42f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
-            32f,
+            22f,
             45f + (easingHP / target.maxHealth) * 100f,
-            25f,
+            42f,
             5f,
             ColorUtils.rainbow().rgb
         )
@@ -1462,7 +1462,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             FontLoaders.F14,
             "${((df.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
-            17f,
+            24f,
             Color(255, 255, 255).rgb,
             true
         )
