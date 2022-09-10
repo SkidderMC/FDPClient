@@ -747,8 +747,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
         // 绘制头部图片
         mc.textureManager.bindTexture(target.skin)
-        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 45, 45, 64f, 64f)
-        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 45, 45, 64f, 64f)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
         GL11.glPopMatrix()
 
         // draw name
@@ -765,7 +765,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRoundedCornerRect(52f, 36f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 39f, 2f, Color(0, 0, 0, 30).rgb)
         GL11.glPushMatrix()
         GL11.glScalef(1.15f, 1.15f, 1.15f)
-        font.drawString(getHealth(target).roundToInt().toString(), ((43 + additionalWidth.toInt() - font.getStringWidth((getHealth(target) * 1.15).roundToInt().toString()).toInt()) / 1.15).roundToInt()   , 29 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
+        font.drawString(getHealth(target).roundToInt().toString(), ((38 + additionalWidth.toInt() - font.getStringWidth((getHealth(target) * 1.15).roundToInt().toString()).toInt()) / 1.15).roundToInt()   , 31 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
         GL11.glPopMatrix()
         
 
