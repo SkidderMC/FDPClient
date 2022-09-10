@@ -360,6 +360,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     "original" -> drawRise(prevTarget!!)
                     "new1" -> drawRiseNew(prevTarget!!)
                     "new2" -> drawRiseNewNew(prevTarget!!)
+                    "rise6" -> drawRiseLatest(prevTarget!!)
                 }
             }
 
@@ -504,12 +505,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
@@ -520,7 +521,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             font.drawString("Distance ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 40, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
         }
 
-        // Gradient health bar
+        // 渐变血量条
         GL11.glEnable(3042)
         GL11.glDisable(3553)
         GL11.glBlendFunc(770, 771)
@@ -582,18 +583,18 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 7f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
         font.drawString("${target.name}", 48, 8, Color.WHITE.rgb)
 
-        // Gradient health bar
+        // 渐变血量条
         GL11.glEnable(3042)
         GL11.glDisable(3553)
         GL11.glBlendFunc(770, 771)
@@ -656,12 +657,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         //draw head
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         mc.textureManager.bindTexture(target.skin)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
@@ -719,6 +720,82 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             RenderUtils.drawCircle(x, y, riseSizeValue.get() * 2, Color(rp.color.red, rp.color.green, rp.color.blue, (alpha * 255).toInt()).rgb)
         }
     }
+    
+    private fun drawRiseLatest(target: EntityLivingBase) {
+        val font = fontValue.get()
+
+        val additionalWidth = ((font.getStringWidth(target.name) * 1.1).toInt().coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
+        val healthBarWidth = additionalWidth - (font.getStringWidth("20") * 1.15).roundToInt() - 16
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 6f, Color(0, 0, 0, 180).rgb)
+        RenderUtils.drawShadow(2f, 2f, 48f + additionalWidth, 48f)
+
+        // circle player avatar
+        val hurtPercent = target.hurtPercent
+        val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
+            1 - (0.2f * hurtPercent * 2)
+        } else {
+            0.8f + (0.2f * (hurtPercent - 0.5f) * 2)
+        }
+        val size = 45
+
+        //draw head
+        GL11.glPushMatrix()
+        GL11.glTranslatef(7f, 7f, 0f)
+        // 受伤的缩放效果
+        GL11.glScalef(scale, scale, scale)
+        GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
+        // 受伤的红色效果
+        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+        // 绘制头部图片
+        mc.textureManager.bindTexture(target.skin)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
+        GL11.glPopMatrix()
+
+        // draw name
+        GL11.glPushMatrix()
+        GL11.glScalef(1.1f, 1.1f, 1.1f)
+        font.drawString("Name: ${target.name}", 45, 14, Color(115, 208, 255, 255).rgb)
+        font.drawString("Name:", 45, 14, Color.WHITE.rgb)
+        GL11.glPopMatrix()
+
+        // draw health
+        RenderUtils.drawRoundedCornerRect(50f, 31f, 50f + healthBarWidth , 39f, 3f, Color(20, 20, 20, 255).rgb)
+        RenderUtils.drawRoundedCornerRect(50f, 31f, 50f + (healthBarWidth * (easingHP / target.maxHealth)) , 39f, 4f, Color(122, 214, 255, 255).rgb)
+        RenderUtils.drawRoundedCornerRect(52f, 31f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 34f, 2f, Color(255, 255, 255, 30).rgb)
+        RenderUtils.drawRoundedCornerRect(52f, 36f, 48f + (healthBarWidth * (easingHP / target.maxHealth)) , 39f, 2f, Color(0, 0, 0, 30).rgb)
+        GL11.glPushMatrix()
+        GL11.glScalef(1.15f, 1.15f, 1.15f)
+        font.drawString(getHealth(target).roundToInt().toString(), ((38 + additionalWidth.toInt() - font.getStringWidth((getHealth(target) * 1.15).roundToInt().toString()).toInt()) / 1.15).roundToInt()   , 31 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
+        GL11.glPopMatrix()
+        
+
+        if(target.hurtTime >= 9) {
+            for(i in 0 until riseCountValue.get()) {
+                riseParticleList.add(RiseParticle())
+            }
+        }
+
+        val curTime = System.currentTimeMillis()
+        riseParticleList.map { it }.forEach { rp ->
+            if ((curTime - rp.time) > ((riseMoveTimeValue.get() + riseFadeTimeValue.get()) * 50)) {
+                riseParticleList.remove(rp)
+            }
+            val movePercent = if((curTime - rp.time) < riseMoveTimeValue.get() * 50) {
+                (curTime - rp.time) / (riseMoveTimeValue.get() * 50f)
+            } else {
+                1f
+            }
+            val x = (movePercent * rp.x * 0.5f * riseDistanceValue.get()) + 20
+            val y = (movePercent * rp.y * 0.5f * riseDistanceValue.get()) + 20
+            val alpha = if((curTime - rp.time) > riseMoveTimeValue.get() * 50) {
+                1f - ((curTime - rp.time - riseMoveTimeValue.get() * 50) / (riseFadeTimeValue.get() * 50f)).coerceAtMost(1f)
+            } else {
+                1f
+            } * riseAlphaValue.get()
+            RenderUtils.drawCircle(x, y, riseSizeValue.get() * 2, Color(rp.color.red, rp.color.green, rp.color.blue, (alpha * 255).toInt()).rgb)
+        }
+    }
 
     class RiseParticle {
         val color = ColorUtils.rainbow(RandomUtils.nextInt(0, 30))
@@ -747,12 +824,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
         
@@ -1009,13 +1086,14 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         //background is halal
         
         if (tenacityNewStatic.get()) {
-            RenderUtils.drawRoundedCornerRect(0f, 5f, 134f, 45f, 6f, ColorUtils.rainbow().rgb)
+            RenderUtils.drawRoundedCornerRect(0f, 5f, 59f + additionalWidth.toFloat(), 45f, 6f, ColorUtils.rainbow().rgb)
         } else {
 
-            //rounded sides
+            //curved sides
             RenderUtils.drawRoundedCornerRect(0f, 5f, 12f, 45f, 6f, ColorUtils.hslRainbow(6, indexOffset = 10).rgb)
-            RenderUtils.drawRoundedCornerRect(120f, 5f, 134f, 45f, 6f, ColorUtils.hslRainbow(129, indexOffset = 10).rgb)
+            RenderUtils.drawRoundedCornerRect(120f, 5f, 59f + additionalWidth.toFloat(), 45f, 6f, ColorUtils.hslRainbow(129, indexOffset = 10).rgb)
 
+            //rain bowwww
 
             //random OpenGl stuff idk
             GL11.glEnable(3042)
@@ -1024,6 +1102,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             GL11.glEnable(2848)
             GL11.glShadeModel(7425)
 
+            //stop pos mometno
             val stopPos = 50 + additionalWidth.toInt()
 
             //draw
@@ -1044,7 +1123,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
 
 
-        //draw head stuff
+        //HEAD draw thingies
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
             1 - (0.1f * hurtPercent * 2)
         } else {
@@ -1270,12 +1349,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // Injured zoom effect
+        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // wounded red effect
+        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // Draw the head
+        // 绘制头部图片
         GL11.glColor4f(1f, 1f, 1f, 1f)
         mc.textureManager.bindTexture(target.skin)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
@@ -1557,6 +1636,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     "original" -> Border(0F, 0F, 150F, 50F)
                     "new1" -> Border(0F, 0F, 150F, 50F)
                     "new2" -> Border(0F, 0F, 150F, 45F)
+                    "rise6" -> Border(0F, 0F, 150F, 50F)
                     else -> null
                 }
             }

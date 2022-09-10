@@ -43,7 +43,7 @@ class Velocity : Module() {
         "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
         "Redesky1", "Redesky2",
         "AAC5.2.0", "AAC5.2.0Combat",
-        "MatrixReduce", "MatrixSimple", "MatrixReverse",
+        "MatrixReduce", "MatrixSimple", "MatrixReverse", "MatrixSpoof", "MatrixGround",
         "Reverse", "SmoothReverse",
         "Jump",
         "Phase", "PacketPhase", "Glitch", "Spoof",
@@ -373,6 +373,11 @@ class Velocity : Module() {
                 "matrixreverse" -> {
                     packet.motionX = (packet.getMotionX() * -0.3).toInt()
                     packet.motionZ = (packet.getMotionZ() * -0.3).toInt()
+                }
+                
+                "matrixspoof" -> {
+                    event.cancelEvent()
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + packet.motionX / - 24000.0, mc.thePlayer.posY + packet.motionY / -24000.0, mc.thePlayer.posZ + packet.motionZ / 8000.0, false))
                 }
 
                 "aac4reduce" -> {

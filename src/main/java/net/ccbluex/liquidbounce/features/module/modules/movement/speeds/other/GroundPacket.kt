@@ -25,14 +25,14 @@ class GroundPacket : SpeedMode("GroundPacket") {
         var yaw = Math.toRadians(MovementUtils.movingYaw.toDouble())
         var mx = -sin(yaw) * baseSpeed.get().toDouble()
         var mz = cos(yaw) * baseSpeed.get().toDouble()
-        while (d < s) {
+        while (d <= s) {
             if (d > s) {
                 var mx = -sin(yaw) * (d - s)
                 var mz = cos(yaw) * (d - s)
                 d = s
             }
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX + mx, mc.thePlayer.posY, mc.thePlayer.posZ + mz, mc.thePlayer.onGround))
             mc.thePlayer.setPosition(mc.thePlayer.posX + mx, mc.thePlayer.posY, mc.thePlayer.posZ + mz)
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX + mx, mc.thePlayer.posY, mc.thePlayer.posZ + mz, mc.thePlayer.onGround))
             d += baseSpeed.get().toDouble()
         }
     }
