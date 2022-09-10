@@ -1467,6 +1467,16 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             true
         )
         //items
+        GlStateManager.resetColor()
+        GL11.glPushMatrix()
+        GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
+        GlStateManager.enableRescaleNormal()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderHelper.enableGUIStandardItemLighting()
+
+        val renderItem = mc.renderItem
+
         var x = 45
         var y = 28
 
