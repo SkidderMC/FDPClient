@@ -871,7 +871,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
         RenderUtils.drawEntityOnScreen(22, 40, 16, entity)
 
-        Fonts.minecraftFont.drawStringWithShadow(entity.name, 46, 5, getColor(-1).rgb)
+        Fonts.minecraftFont.drawStringWithShadow(entity.name, 46f, 5f, getColor(-1).rgb)
 
         val barLength = 70F * (entity.health / entity.maxHealth).coerceIn(0F, 1F)
         RenderUtils.drawRect(45F, 14F, 45F + 70F, 18F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth).darker(0.3F)).rgb)
