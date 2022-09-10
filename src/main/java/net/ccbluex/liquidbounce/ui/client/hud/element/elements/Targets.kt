@@ -1432,7 +1432,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         // draw entity
         if(target.hurtTime > 1) {
                GL11.glColor4f(1f, 0f, 0f, 0.5f)
-               RenderUtils.drawEntityOnScreen(25, 45, 26, target)
+               RenderUtils.drawEntityOnScreen(25, 48, 32, target)
             } else {
                GL11.glColor4f(1f, 1f, 1f, 1f)
                RenderUtils.drawEntityOnScreen(25, 45, 30, target)
@@ -1449,12 +1449,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )//bar
-        RenderUtils.drawRoundedCornerRect(45f, 28f, 145f, 26f, 5f, Color(0, 0, 0, 100).rgb)
+        RenderUtils.drawRoundedCornerRect(45f, 18f, 145f, 28f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
             18f,
             45f + (easingHP / target.maxHealth) * 100f,
-            26f,
+            28f,
             5f,
             ColorUtils.rainbow().rgb
         )
@@ -1462,7 +1462,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             FontLoaders.F14,
             "${((df.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
-            19f,
+            20f,
             Color(255, 255, 255).rgb,
             true
         )
