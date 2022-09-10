@@ -1439,22 +1439,22 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             }
 
         // target text
-        FontLoaders.F20.DisplayFonts("${target.name}", 45f, 8f, Color.WHITE.rgb, FontLoaders.F20)
+        FontLoaders.F20.DisplayFonts("${target.name}", 45f, 6f, Color.WHITE.rgb, FontLoaders.F20)
         val df = DecimalFormat("0.00");
         // armour text
         FontLoaders.F14.DisplayFonts(
             "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
             45f,
-            46f,
+            42f,
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )//bar
-        RenderUtils.drawRoundedCornerRect(45f, 22f, 145f, 42f, 5f, Color(0, 0, 0, 100).rgb)
+        RenderUtils.drawRoundedCornerRect(45f, 20f, 145f, 30f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
-            22f,
+            20f,
             45f + (easingHP / target.maxHealth) * 100f,
-            42f,
+            30f,
             5f,
             ColorUtils.rainbow().rgb
         )
