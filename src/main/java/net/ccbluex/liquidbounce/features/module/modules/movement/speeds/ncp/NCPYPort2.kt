@@ -9,8 +9,8 @@ class NCPYPort2 : SpeedMode("NCPYPort2") {
 
     private val jumpBoost = FloatValue("JumpLaunchSpeed", 0.98f, 0f, 2f)
     private val speedMult = FloatValue("BoostSpeed", 1.02f, 0f, 2f)
-    private val launchTimer = FloatValue("LaunchTimer", 0.97f,0f,2f)
-    private val normTimer = FloatValue("Timer", 1.2f,0f,2f)
+    private val launchTimer = FloatValue("LaunchTimer", 0.97f,0.05f,2f)
+    private val normTimer = FloatValue("Timer", 1.2f,0.05f,2f)
 
 
     override fun onEnable() {
