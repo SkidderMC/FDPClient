@@ -22,9 +22,12 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val modeValue = ListValue("Mode", arrayOf("ExtraPacket", "WTap", "Packet"), "ExtraPacket")
+    private val WtapDelay = IntegerValue("WTapDelay", 6, 1, 10)
     private val onlyMoveValue = BoolValue("OnlyMove", false)
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
+    
+    private var ticks = 0
 
     val timer = MSTimer()
 
@@ -48,11 +51,7 @@ class SuperKnockback : Module() {
                 }
 
                 "wtap" -> {
-                    if (mc.thePlayer.isSprinting) {
-                        mc.thePlayer.isSprinting = false
-                    }
-                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
-                    mc.thePlayer.serverSprintState = true
+                    ticks = 0
                 }
                 "packet" -> {
                     if (mc.thePlayer.isSprinting) {
@@ -66,6 +65,19 @@ class SuperKnockback : Module() {
             timer.reset()
         }
     }
+    
+    @EventTarget
+    fun onUpdate() {
+        ticks ++
+        if (modeValue.equals("WTap")) {
+            if (ticks <= WtapDelay.get()) {
+                mc.gameSettings.keyBindForward.pressed = false
+            } else if (ticks == WtapDelay.get() + 1) {
+                mc.gameSettings.keyBindForward.pressed = true
+            }
+        }
+    }
+                
     override val tag: String
         get() = modeValue.get()
 }
