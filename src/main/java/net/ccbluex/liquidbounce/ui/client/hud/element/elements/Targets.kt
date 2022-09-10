@@ -755,7 +755,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glDisable(GL11.GL_BLEND)
         GL11.glEnable(GL11.GL_TEXTURE_2D)
         Stencil.erase(true)
-        drawHead(playerInfo.locationSkin, 4, 4, 30, 30, 1F - getFadeProgress())
+        drawHead(target.skin, 4, 4, 30, 30, 1F - getFadeProgress()) //playerInfo.locationSkin
         Stencil.dispose()
         GL11.glPopMatrix()
 
