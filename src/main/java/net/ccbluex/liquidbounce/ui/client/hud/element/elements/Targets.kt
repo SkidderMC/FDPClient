@@ -1437,14 +1437,14 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         // head
         if(target.hurtTime > 1) {
                GL11.glColor4f(1f, 0f, 0f, 0.5f)
-               RenderUtils.drawEntityOnScreen(22, 40, 33, target)
+               RenderUtils.drawEntityOnScreen(25, 60, 33, target)
             } else {
                GL11.glColor4f(1f, 1f, 1f, 1f)
-               RenderUtils.drawEntityOnScreen(22, 40, 35, target)
+               RenderUtils.drawEntityOnScreen(25, 60, 35, target)
             }
 
         // target text
-        FontLoaders.F20.DisplayFonts("${target.name}", 45f, 12f, Color.WHITE.rgb, FontLoaders.F20)
+        FontLoaders.F20.DisplayFonts("${target.name}", 45f, 8f, Color.WHITE.rgb, FontLoaders.F20)
         val df = DecimalFormat("0.00");
         // armour text
         FontLoaders.F14.DisplayFonts(
