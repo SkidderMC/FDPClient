@@ -1435,7 +1435,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
         val size = 35
         // head
-
+        RenderUtils.drawEntityOnScreen(10, 32, 40, target)
 
         // target text
         FontLoaders.F20.DisplayFonts("${target.name}", 45f, 12f, Color.WHITE.rgb, FontLoaders.F20)
