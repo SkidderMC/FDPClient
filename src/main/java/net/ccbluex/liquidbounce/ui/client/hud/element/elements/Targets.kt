@@ -1467,7 +1467,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(255, 255, 255).rgb,
             true
         )
-        val entity = target
          GlStateManager.resetColor()
         GL11.glPushMatrix()
         GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
