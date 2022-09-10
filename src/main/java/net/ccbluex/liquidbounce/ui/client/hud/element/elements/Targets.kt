@@ -970,7 +970,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val renderItem = mc.renderItem
 
         var x = 40
-        var y = 22
+        var y = 25
 
         for (index in 3 downTo 0) {
             val stack = entity.inventory.armorInventory[index] ?: continue
@@ -1650,7 +1650,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "slowly" -> Border(0F, 0F, 102F, 36F)
             "what" -> Border(-1F, -2F, 110F, 38F)
             "exhibition" -> Border(0F, 0F, 126F, 45F)
-            "exhibitionold" -> Border(0F, 0F, 126F, 41F)
+            "exhibitionold" -> Border(2F, 1F, 122F, 40F)
             "watermelon" -> Border(0F, 0F, 120F, 48F)
             else -> null
         }
