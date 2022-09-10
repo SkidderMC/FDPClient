@@ -1435,7 +1435,13 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
         val size = 35
         // head
-        RenderUtils.drawEntityOnScreen(10, 32, 40, target)
+        if(entity.hurtTime > 1) {
+               GL11.glColor4f(1f, 0f, 0f, 0.5f)
+               RenderUtils.drawEntityOnScreen(18, 34, 40, target)
+            } else {
+               GL11.glColor4f(1f, 1f, 1f, 1f)
+               RenderUtils.drawEntityOnScreen(18, 34, 40, target)
+            }
 
         // target text
         FontLoaders.F20.DisplayFonts("${target.name}", 45f, 12f, Color.WHITE.rgb, FontLoaders.F20)
