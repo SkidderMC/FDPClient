@@ -1466,38 +1466,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(255, 255, 255).rgb,
             true
         )
-        //items
-        GlStateManager.resetColor()
-        GL11.glPushMatrix()
-        GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
-        GlStateManager.enableRescaleNormal()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        RenderHelper.enableGUIStandardItemLighting()
-
-        val renderItem = mc.renderItem
-
-        var x = 45
-        var y = 28
-
-        for (index in 3 downTo 0) {
-            val stack = entity.inventory.armorInventory[index] ?: continue
-
-            if (stack.item == null)
-                continue
-
-            renderItem.renderItemIntoGUI(stack, x, y)
-            renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
-            RenderUtils.drawExhiEnchants(stack, x.toFloat(), y.toFloat())
-
-            x += 16
-        }
-
-        val mainStack = entity.heldItem
-        if (mainStack != null && mainStack.item != null) {
-            renderItem.renderItemIntoGUI(mainStack, x, y)
-            renderItem.renderItemOverlays(mc.fontRendererObj, mainStack, x, y)
-            RenderUtils.drawExhiEnchants(mainStack, x.toFloat(), y.toFloat())
     }
 
     private fun drawRice(entity: EntityLivingBase) {
