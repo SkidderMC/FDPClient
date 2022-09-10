@@ -1445,7 +1445,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         FontLoaders.F14.DisplayFonts(
             "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
             45f,
-            42f,
+            44f,
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )//bar
@@ -1466,6 +1466,47 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(255, 255, 255).rgb,
             true
         )
+         GlStateManager.resetColor()
+        GL11.glPushMatrix()
+        GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
+        GlStateManager.enableRescaleNormal()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderHelper.enableGUIStandardItemLighting()
+
+        val renderItem = mc.renderItem
+
+        var x = 45
+        var y = 28
+
+        for (index in 3 downTo 0) {
+            val stack = entity.inventory.armorInventory[index] ?: continue
+
+            if (stack.item == null)
+                continue
+
+            renderItem.renderItemIntoGUI(stack, x, y)
+            renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
+            RenderUtils.drawExhiEnchants(stack, x.toFloat(), y.toFloat())
+
+            x += 16
+        }
+
+        val mainStack = entity.heldItem
+        if (mainStack != null && mainStack.item != null) {
+            renderItem.renderItemIntoGUI(mainStack, x, y)
+            renderItem.renderItemOverlays(mc.fontRendererObj, mainStack, x, y)
+            RenderUtils.drawExhiEnchants(mainStack, x.toFloat(), y.toFloat())
+        }
+
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.disableRescaleNormal()
+        GlStateManager.enableAlpha()
+        GlStateManager.disableBlend()
+        GlStateManager.disableLighting()
+        GlStateManager.disableCull()
+        GL11.glPopMatrix()
+        
     }
 
     private fun drawRice(entity: EntityLivingBase) {
@@ -1729,6 +1770,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "exhibition" -> Border(0F, 0F, 126F, 45F)
             "exhibitionold" -> Border(2F, 1F, 122F, 40F)
             "watermelon" -> Border(0F, 0F, 120F, 48F)
+            "sparklingwater" -> Border(0F, 0F, 120F, 48F)
             else -> null
         }
     }
