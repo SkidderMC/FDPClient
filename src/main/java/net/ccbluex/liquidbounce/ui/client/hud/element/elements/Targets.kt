@@ -1321,6 +1321,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     private fun drawWaterMelon(target: EntityLivingBase) {
+        // background rect
         RenderUtils.drawRoundedCornerRect(
             -1.5f, 2.5f, 152.5f, 52.5f,
             5.0f, Color(0, 0, 0, 26).rgb
@@ -1345,6 +1346,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             1f, 0f, 150.0f, 50.0f,
             5.0f, Color(0, 0, 0, 50).rgb
         )
+        // head size based on hurt
         val hurtPercent = target.hurtPercent
         val scale = if (hurtPercent == 0f) {
             1f
@@ -1354,7 +1356,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             0.9f + (0.1f * (hurtPercent - 0.5f) * 2)
         }
         val size = 35
-
+        // draw head
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
         // 受伤的缩放效果
@@ -1369,10 +1371,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
 
         GL11.glPopMatrix()
-
+        // draw name of target
         FontLoaders.F20.DisplayFonts("${target.name}", 45f, 12f, Color.WHITE.rgb, FontLoaders.F20)
         val df = DecimalFormat("0.00");
-
+        // draw armour percent
         FontLoaders.F14.DisplayFonts(
             "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
             45f,
@@ -1380,6 +1382,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )
+        // draw bar
         RenderUtils.drawRoundedCornerRect(45f, 32f, 145f, 42f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
@@ -1389,6 +1392,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             5f,
             ColorUtils.rainbow().rgb
         )
+        // draw hp as text
         FontLoaders.F14.DisplayFont2(
             FontLoaders.F14,
             "${((df.format((easingHP / target.maxHealth) * 100)))}%",
@@ -1425,22 +1429,13 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             1f, 0f, 150.0f, 50.0f,
             5.0f, Color(0, 0, 0, 50).rgb
         )
-        val hurtPercent = target.hurtPercent
-        val scale = if (hurtPercent == 0f) {
-            1f
-        } else if (hurtPercent < 0.5f) {
-            1 - (0.1f * hurtPercent * 2)
-        } else {
-            0.9f + (0.1f * (hurtPercent - 0.5f) * 2)
-        }
-        val size = 35
-        // head
+        // draw entity
         if(target.hurtTime > 1) {
                GL11.glColor4f(1f, 0f, 0f, 0.5f)
-               RenderUtils.drawEntityOnScreen(25, 60, 33, target)
+               RenderUtils.drawEntityOnScreen(25, 45, 26, target)
             } else {
                GL11.glColor4f(1f, 1f, 1f, 1f)
-               RenderUtils.drawEntityOnScreen(25, 60, 35, target)
+               RenderUtils.drawEntityOnScreen(25, 45, 30, target)
             }
 
         // target text
@@ -1450,16 +1445,16 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         FontLoaders.F14.DisplayFonts(
             "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
             45f,
-            24f,
+            50f,
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )//bar
-        RenderUtils.drawRoundedCornerRect(45f, 32f, 145f, 42f, 5f, Color(0, 0, 0, 100).rgb)
+        RenderUtils.drawRoundedCornerRect(45f, 32f, 145f, 25f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
             32f,
             45f + (easingHP / target.maxHealth) * 100f,
-            42f,
+            25f,
             5f,
             ColorUtils.rainbow().rgb
         )
@@ -1467,7 +1462,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             FontLoaders.F14,
             "${((df.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
-            34f,
+            17f,
             Color(255, 255, 255).rgb,
             true
         )
