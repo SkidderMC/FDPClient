@@ -874,11 +874,11 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         font.drawString(entity.name, 46, 5, getColor(-1).rgb)
 
         val barLength = 70F * (entity.health / entity.maxHealth).coerceIn(0F, 1F)
-        RenderUtils.drawRect(45F, 14F, 45F + 70F, 16F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth).darker(0.3F)).rgb)
-        RenderUtils.drawRect(45F, 14F, 45F + barLength, 16F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth)).rgb)
+        RenderUtils.drawRect(45F, 14F, 45F + 70F, 18F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth).darker(0.3F)).rgb)
+        RenderUtils.drawRect(45F, 14F, 45F + barLength, 18F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth)).rgb)
 
         for (i in 0..9)
-            RenderUtils.drawRectBasedBorder(45F + i * 7F, 14F, 45F + (i + 1) * 7F, 16F, 0.5F, Color(20, 20, 20, 200).rgb)
+            RenderUtils.drawRectBasedBorder(45F + i * 7F, 14F, 45F + (i + 1) * 7F, 18F, 0.5F, Color(20, 20, 20, 200).rgb)
 
         Fonts.fontTahomaSmall.drawString("HP:${entity.health.toInt()} | Dist:${mc.thePlayer.getDistanceToEntityBox(entity).toInt()}", 45F, 21F, getColor(-1).rgb)
 
@@ -892,8 +892,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         val renderItem = mc.renderItem
 
-        var x = 45
-        var y = 28
+        var x = 42
+        var y = 30
 
         for (index in 3 downTo 0) {
             val stack = entity.inventory.armorInventory[index] ?: continue
