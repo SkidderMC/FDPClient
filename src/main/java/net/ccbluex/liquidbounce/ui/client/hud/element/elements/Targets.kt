@@ -865,7 +865,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val font = Fonts.fontTahoma
         val minWidth = 126F.coerceAtLeast(47F + font.getStringWidth(entity.name))
 
-        RenderUtils.drawRect(0F, 0F, minWidth, 45F, Color(20, 20, 20, 200).rgb)
+        RenderUtils.drawRect(0F, 2F, minWidth, 41F, Color(0, 0, 0, 155).rgb)
        // RenderUtils.drawRect(3F, 3F, 42F, 42F, getColor(Color(19, 19, 19)).rgb)
 
         GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
