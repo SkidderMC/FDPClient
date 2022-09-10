@@ -1404,7 +1404,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         )
     }
 
-    private fun drawSparklingWater(target: EntityLivingBase) {
+    private fun drawSparklingWater(target: EntityLivingBase, entity: EntityPlayer) {
         // background
         RenderUtils.drawRoundedCornerRect(
             -1.5f, 2.5f, 152.5f, 52.5f,
