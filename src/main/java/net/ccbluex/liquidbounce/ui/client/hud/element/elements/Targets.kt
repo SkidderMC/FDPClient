@@ -1437,10 +1437,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         // head
         if(target.hurtTime > 1) {
                GL11.glColor4f(1f, 0f, 0f, 0.5f)
-               RenderUtils.drawEntityOnScreen(18, 34, 40, target)
+               RenderUtils.drawEntityOnScreen(22, 40, 33, target)
             } else {
                GL11.glColor4f(1f, 1f, 1f, 1f)
-               RenderUtils.drawEntityOnScreen(18, 34, 40, target)
+               RenderUtils.drawEntityOnScreen(22, 40, 35, target)
             }
 
         // target text
