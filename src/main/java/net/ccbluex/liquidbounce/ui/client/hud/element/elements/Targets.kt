@@ -505,12 +505,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // 受伤的缩放效果
+        //  Injured zoom effect
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // 受伤的红色效果
+        // wounded red effect
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // 绘制头部图片
+        // Draw the head
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
@@ -521,7 +521,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             font.drawString("Distance ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))}", 40, 11 + font.FONT_HEIGHT, Color.WHITE.rgb)
         }
 
-        // 渐变血量条
+        // Gradient health bar
         GL11.glEnable(3042)
         GL11.glDisable(3553)
         GL11.glBlendFunc(770, 771)
@@ -583,18 +583,18 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 7f, 0f)
-        // 受伤的缩放效果
+        //  Injured zoom effect
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // 受伤的红色效果
+        // wounded red effect
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // 绘制头部图片
+        // Draw the head
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
         font.drawString("${target.name}", 48, 8, Color.WHITE.rgb)
 
-        // 渐变血量条
+        // Gradient health bar
         GL11.glEnable(3042)
         GL11.glDisable(3553)
         GL11.glBlendFunc(770, 771)
@@ -657,12 +657,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         //draw head
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // 受伤的缩放效果
+        //  Injured zoom effect
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // 受伤的红色效果
+        // wounded red effect
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // 绘制头部图片
+        // Draw the head
         mc.textureManager.bindTexture(target.skin)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
@@ -741,12 +741,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         //draw head
         GL11.glPushMatrix()
         GL11.glTranslatef(7f, 7f, 0f)
-        // 受伤的缩放效果
+        //  Injured zoom effect
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // 受伤的红色效果
+        // wounded red effect
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // 绘制头部图片
+        // Draw the head
         mc.textureManager.bindTexture(target.skin)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
@@ -824,12 +824,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // 受伤的缩放效果
+        //  Injured zoom effect
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // 受伤的红色效果
+        // wounded red effect
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // 绘制头部图片
+        // Draw the head
         RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
         GL11.glPopMatrix()
         
@@ -1123,7 +1123,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
 
 
-        //HEAD draw thingies
+        //draw head stuff
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
             1 - (0.1f * hurtPercent * 2)
         } else {
@@ -1349,12 +1349,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
-        // 受伤的缩放效果
+        //  Injured zoom effect
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // 受伤的红色效果
+        // wounded red effect
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // 绘制头部图片
+        // Draw the head
         GL11.glColor4f(1f, 1f, 1f, 1f)
         mc.textureManager.bindTexture(target.skin)
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
