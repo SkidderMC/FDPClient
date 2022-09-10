@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager
