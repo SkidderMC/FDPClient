@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.Entity
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
