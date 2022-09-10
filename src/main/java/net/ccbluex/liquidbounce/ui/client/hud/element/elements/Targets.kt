@@ -360,7 +360,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     "original" -> drawRise(prevTarget!!)
                     "new1" -> drawRiseNew(prevTarget!!)
                     "new2" -> drawRiseNewNew(prevTarget!!)
-                    "rise6" -> drawRiseLatest(prevTarget!!)
+                    "rise6" -> drawRiseLatest(prevTarget!! as EntityPlayer)
                 }
             }
 
@@ -723,6 +723,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     
     private fun drawRiseLatest(target: EntityLivingBase) {
         val font = fontValue.get()
+        val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
 
         val additionalWidth = ((font.getStringWidth(target.name) * 1.1).toInt().coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
         val healthBarWidth = additionalWidth - (font.getStringWidth("20") * 1.15).roundToInt() - 16
@@ -755,7 +756,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glDisable(GL11.GL_BLEND)
         GL11.glEnable(GL11.GL_TEXTURE_2D)
         Stencil.erase(true)
-        drawHead(playerInfo.locationSkin, 4, 4, 30, 30, 1F - getFadeProgress())
+        drawHead(target.skin, 4, 4, 30, 30, 1F - getFadeProgress()) //playerInfo.locationSkin
         Stencil.dispose()
         GL11.glPopMatrix()
 
