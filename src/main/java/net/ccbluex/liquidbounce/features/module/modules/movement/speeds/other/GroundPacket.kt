@@ -31,7 +31,8 @@ class GroundPacket : SpeedMode("GroundPacket") {
                 var mz = cos(yaw) * (d - s)
                 d = s
             }
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX + mx, mc.thePlayer.posY, mc.thePlayer.posZ + mz, mc.thePlayer.onGround))
+            mc.thePlayer.setPosition(mc.thePlayer.posX + mx, mc.thePlayer.posY, mc.thePlayer.posZ + mz)
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX + mx, mc.thePlayer.posY, mc.thePlayer.posZ + mz, mc.thePlayer.onGround))
             d += baseSpeed.get().toDouble()
         }
     }
