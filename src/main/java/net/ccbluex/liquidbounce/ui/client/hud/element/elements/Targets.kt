@@ -1450,12 +1450,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )//bar
-        RenderUtils.drawRoundedCornerRect(45f, 26f, 145f, 36f, 5f, Color(0, 0, 0, 100).rgb)
+        RenderUtils.drawRoundedCornerRect(45f, 23f, 145f, 33f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
-            26f,
+            23f,
             45f + (easingHP / target.maxHealth) * 100f,
-            36f,
+            33f,
             5f,
             ColorUtils.rainbow().rgb
         )
@@ -1463,7 +1463,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             FontLoaders.F14,
             "${((df.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
-            28f,
+            25f,
             Color(255, 255, 255).rgb,
             true
         )
