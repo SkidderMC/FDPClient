@@ -261,7 +261,9 @@ public abstract class MixinItemRenderer {
                                 GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
                                 GlStateManager.rotate(var12 * -20.0F, 1.0F, 0.0F, 0.0F);
                                 doItemRenderGLScale();
+                                doBlockTransformations();
                                 break;
+                                
                             }
                         }
                         break;
