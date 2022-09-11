@@ -28,19 +28,12 @@ class MatrixLowTest : SpeedMode("MatrixLowTest") {
              if (mc.thePlayer.motionY > 0.003) {
                 mc.thePlayer.motionX *= 1.0012
                 mc.thePlayer.motionZ *= 1.0012
-
             }
 
              if (mc.thePlayer.motionY > 0.4) {
-                mc.timer.timerSpeed = 1.14f
+                mc.timer.timerSpeed = 1.4f
 
-            }
-
-             if (mc.thePlayer.motionY < 0.419) {
-                mc.thePlayer.motionY *= -0.11
-                mc.timer.timerSpeed = 1.5f
              }
-
         }
        
     }
