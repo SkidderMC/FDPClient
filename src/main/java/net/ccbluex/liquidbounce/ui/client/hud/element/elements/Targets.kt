@@ -1463,7 +1463,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             FontLoaders.F14,
             "${((df.format((easingHP / target.maxHealth) * 100)))}%",
             80f,
-            20f,
+            23f,
             Color(255, 255, 255).rgb,
             true
         )
