@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 @ModuleInfo(name = "Animations", category = ModuleCategory.CLIENT, canEnable = false)
 object Animations : Module() {
     val blockingModeValue = ListValue(
-        "BlockingMode", arrayOf("Akrien", "Avatar", "ETB", "Exhibition", "Push", "Reverse", "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX", "Swank", "Jello", "Rotate", "Liquid", "None"), "Rotate")
+        "BlockingMode", arrayOf("Akrien", "Avatar", "ETB", "Exhibition", "Push", "Reverse", "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX", "Swank", "Jello", "Rotate", "Liquid", "Yeet", "None"), "Rotate")
 
     val invModeValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Zoom")
     val invEaseModeValue = EaseUtils.getEnumEasingList("InvEase")
