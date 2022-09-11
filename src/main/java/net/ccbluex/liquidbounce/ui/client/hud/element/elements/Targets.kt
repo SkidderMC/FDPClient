@@ -375,7 +375,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "slowly" -> drawSlowly(prevTarget!!)
             "what" -> drawWhat(prevTarget!!)
             "watermelon" -> drawWaterMelon(prevTarget!!) 
-            "sparklingwater" -> drawSparklingWater(prevTarget!! as EntityPlayer)
+            "sparklingwater" -> drawSparklingWater(prevTarget!!)
             "exhibition" -> drawExhibition(prevTarget!! as EntityPlayer)
             "exhibitionold" -> drawExhibitionOld(prevTarget!! as EntityPlayer)
         }
@@ -1404,7 +1404,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         )
     }
 
-    private fun drawSparklingWater(entity: EntityPlayer, target: EntityLivingBase) {
+    private fun drawSparklingWater(target: EntityLivingBase) {
         // background
         RenderUtils.drawRoundedCornerRect(
             -1.5f, 2.5f, 152.5f, 52.5f,
@@ -1467,6 +1467,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(255, 255, 255).rgb,
             true
         )
+/* 
+        // draw items
          GlStateManager.resetColor()
         GL11.glPushMatrix()
         GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
@@ -1507,7 +1509,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GlStateManager.disableLighting()
         GlStateManager.disableCull()
         GL11.glPopMatrix()
-        
+         */
     }
 
     private fun drawRice(entity: EntityLivingBase) {
