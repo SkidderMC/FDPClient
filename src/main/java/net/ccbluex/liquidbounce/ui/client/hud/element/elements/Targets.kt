@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.Entity
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
@@ -44,7 +45,7 @@ import kotlin.jvm.internal.Intrinsics
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon"), "FDP")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "New2")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -373,7 +374,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "rice" -> drawRice(prevTarget!!)
             "slowly" -> drawSlowly(prevTarget!!)
             "what" -> drawWhat(prevTarget!!)
-            "watermelon" -> drawWaterMelon(prevTarget!!)
+            "watermelon" -> drawWaterMelon(prevTarget!!) 
+            "sparklingwater" -> drawSparklingWater(prevTarget!!)
             "exhibition" -> drawExhibition(prevTarget!! as EntityPlayer)
             "exhibitionold" -> drawExhibitionOld(prevTarget!! as EntityPlayer)
         }
@@ -1320,6 +1322,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     private fun drawWaterMelon(target: EntityLivingBase) {
+        // background rect
         RenderUtils.drawRoundedCornerRect(
             -1.5f, 2.5f, 152.5f, 52.5f,
             5.0f, Color(0, 0, 0, 26).rgb
@@ -1344,6 +1347,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             1f, 0f, 150.0f, 50.0f,
             5.0f, Color(0, 0, 0, 50).rgb
         )
+        // head size based on hurt
         val hurtPercent = target.hurtPercent
         val scale = if (hurtPercent == 0f) {
             1f
@@ -1353,7 +1357,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             0.9f + (0.1f * (hurtPercent - 0.5f) * 2)
         }
         val size = 35
-
+        // draw head
         GL11.glPushMatrix()
         GL11.glTranslatef(5f, 5f, 0f)
         // 受伤的缩放效果
@@ -1368,10 +1372,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
 
         GL11.glPopMatrix()
-
+        // draw name of target
         FontLoaders.F20.DisplayFonts("${target.name}", 45f, 12f, Color.WHITE.rgb, FontLoaders.F20)
         val df = DecimalFormat("0.00");
-
+        // draw armour percent
         FontLoaders.F14.DisplayFonts(
             "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
             45f,
@@ -1379,6 +1383,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )
+        // draw bar
         RenderUtils.drawRoundedCornerRect(45f, 32f, 145f, 42f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
@@ -1388,6 +1393,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             5f,
             ColorUtils.rainbow().rgb
         )
+        // draw hp as text
         FontLoaders.F14.DisplayFont2(
             FontLoaders.F14,
             "${((df.format((easingHP / target.maxHealth) * 100)))}%",
@@ -1396,6 +1402,114 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(255, 255, 255).rgb,
             true
         )
+    }
+
+    private fun drawSparklingWater(target: EntityLivingBase) {
+        // background
+        RenderUtils.drawRoundedCornerRect(
+            -1.5f, 2.5f, 152.5f, 52.5f,
+            5.0f, Color(0, 0, 0, 26).rgb
+        )
+        RenderUtils.drawRoundedCornerRect(
+            -1f, 2f, 152f, 52f,
+            5.0f, Color(0, 0, 0, 26).rgb
+        )
+        RenderUtils.drawRoundedCornerRect(
+            -0.5f, 1.5f, 151.5f, 51.5f,
+            5.0f, Color(0, 0, 0, 40).rgb
+        )
+        RenderUtils.drawRoundedCornerRect(
+            -0f, 1f, 151.0f, 51.0f,
+            5.0f, Color(0, 0, 0, 60).rgb
+        )
+        RenderUtils.drawRoundedCornerRect(
+            0.5f, 0.5f, 150.5f, 50.5f,
+            5.0f, Color(0, 0, 0, 50).rgb
+        )
+        RenderUtils.drawRoundedCornerRect(
+            1f, 0f, 150.0f, 50.0f,
+            5.0f, Color(0, 0, 0, 50).rgb
+        )
+        // draw entity
+        if(target.hurtTime > 1) {
+               GL11.glColor4f(1f, 0f, 0f, 0.5f)
+               RenderUtils.drawEntityOnScreen(25, 48, 32, target)
+            } else {
+               GL11.glColor4f(1f, 1f, 1f, 1f)
+               RenderUtils.drawEntityOnScreen(25, 45, 30, target)
+            }
+
+        // target text
+        FontLoaders.F20.DisplayFonts("${target.name}", 45f, 6f, Color.WHITE.rgb, FontLoaders.F20)
+        val df = DecimalFormat("0.00");
+        // armour text
+        FontLoaders.F14.DisplayFonts(
+            "Armor ${(df.format(PlayerUtils.getAr(target) * 100))}%",
+            45f,
+            40f,
+            Color(200, 200, 200).rgb,
+            FontLoaders.F14
+        )//bar
+        RenderUtils.drawRoundedCornerRect(45f, 23f, 145f, 33f, 5f, Color(0, 0, 0, 100).rgb)
+        RenderUtils.drawRoundedCornerRect(
+            45f,
+            23f,
+            45f + (easingHP / target.maxHealth) * 100f,
+            33f,
+            5f,
+            ColorUtils.rainbow().rgb
+        )
+        FontLoaders.F14.DisplayFont2(
+            FontLoaders.F14,
+            "${((df.format((easingHP / target.maxHealth) * 100)))}%",
+            80f,
+            25f,
+            Color(255, 255, 255).rgb,
+            true
+        )
+/* 
+        // draw items
+         GlStateManager.resetColor()
+        GL11.glPushMatrix()
+        GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
+        GlStateManager.enableRescaleNormal()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderHelper.enableGUIStandardItemLighting()
+
+        val renderItem = mc.renderItem
+
+        var x = 45
+        var y = 28
+
+        for (index in 3 downTo 0) {
+            val stack = entity.inventory.armorInventory[index] ?: continue
+
+            if (stack.item == null)
+                continue
+
+            renderItem.renderItemIntoGUI(stack, x, y)
+            renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
+            RenderUtils.drawExhiEnchants(stack, x.toFloat(), y.toFloat())
+
+            x += 16
+        }
+
+        val mainStack = entity.heldItem
+        if (mainStack != null && mainStack.item != null) {
+            renderItem.renderItemIntoGUI(mainStack, x, y)
+            renderItem.renderItemOverlays(mc.fontRendererObj, mainStack, x, y)
+            RenderUtils.drawExhiEnchants(mainStack, x.toFloat(), y.toFloat())
+        }
+
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.disableRescaleNormal()
+        GlStateManager.enableAlpha()
+        GlStateManager.disableBlend()
+        GlStateManager.disableLighting()
+        GlStateManager.disableCull()
+        GL11.glPopMatrix()
+         */
     }
 
     private fun drawRice(entity: EntityLivingBase) {
@@ -1659,6 +1773,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "exhibition" -> Border(0F, 0F, 126F, 45F)
             "exhibitionold" -> Border(2F, 1F, 122F, 40F)
             "watermelon" -> Border(0F, 0F, 120F, 48F)
+            "sparklingwater" -> Border(0F, 0F, 120F, 48F)
             else -> null
         }
     }
