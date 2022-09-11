@@ -1453,9 +1453,9 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRoundedCornerRect(45f, 26f, 145f, 36f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
-            21f,
+            26f,
             45f + (easingHP / target.maxHealth) * 100f,
-            31f,
+            36f,
             5f,
             ColorUtils.rainbow().rgb
         )
