@@ -1450,12 +1450,12 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(200, 200, 200).rgb,
             FontLoaders.F14
         )//bar
-        RenderUtils.drawRoundedCornerRect(45f, 18f, 145f, 28f, 5f, Color(0, 0, 0, 100).rgb)
+        RenderUtils.drawRoundedCornerRect(45f, 21f, 145f, 31f, 5f, Color(0, 0, 0, 100).rgb)
         RenderUtils.drawRoundedCornerRect(
             45f,
-            18f,
+            21f,
             45f + (easingHP / target.maxHealth) * 100f,
-            28f,
+            31f,
             5f,
             ColorUtils.rainbow().rgb
         )
