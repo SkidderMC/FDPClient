@@ -130,7 +130,6 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         }
 
         GL11.glPopMatrix()
-        return false
     }
 
     if(KeyStrokes.keyStyleValue.equals("Jello")) {
@@ -171,7 +170,6 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         font.drawString(keyName, centerX - (font.getStringWidth(keyName) / 2) + 1, centerY - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
 
         GL11.glPopMatrix()
-        return false
     }
 
 
