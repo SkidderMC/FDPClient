@@ -61,7 +61,7 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
             keyStroke.render(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale, Companion)
         }
         if(keyStyleValue.get().equals("Jello")) {
-            RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), -4, -4, 54, 54)
+            RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), -3, -3, 54, 54)
         }
 
         return Border(0F, 0F, 47F, 47F)
@@ -143,10 +143,8 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
     if(style.equals("Jello")) {
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
-
-        if (blurRadius != 0f) {
-            BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, blurRadius)
-        }
+        BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, 10)
+        
 
         val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())
         val clickAlpha = 255 - (255 - bgColor.alpha) * highLightPct
@@ -154,8 +152,8 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         val centerY = height / 2
         val nowTime = System.currentTimeMillis()
 
-        val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } else { bgColor }
-        // RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
+        val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } 
+         RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
 
         val removeAble = ArrayList<Long>()
         for (time in animations) {
