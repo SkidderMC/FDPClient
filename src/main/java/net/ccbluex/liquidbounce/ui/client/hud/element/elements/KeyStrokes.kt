@@ -61,7 +61,7 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
             keyStroke.render(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale, Companion)
         }
         if(keyStyleValue.get().equals("Jello")) {
-            RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), -4, -4, 54, 54)
+            RenderUtils.drawImage2(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5f, -3.5f, 54, 54)
         }
 
         return Border(0F, 0F, 47F, 47F)
@@ -145,7 +145,6 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
         BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, 10f)
         
-
         val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())
         val clickAlpha = 255 - (255 - bgColor.alpha) * highLightPct
         val centerX = width / 2
@@ -174,7 +173,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
 
 
         GL11.glPopMatrix()
-    }
+    } 
 
 
     }
