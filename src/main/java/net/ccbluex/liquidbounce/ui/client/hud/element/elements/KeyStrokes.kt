@@ -84,10 +84,10 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         renderX: Float,
         renderY: Float,
         scale: Float,
-        parent: KeyStrokes.Companion
+        styleValue: KeyStrokes.Companion
     ) {
 
-    if(style.equals("Custom")) {
+    if(styleValue.equals("Custom")) {
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
 
@@ -135,7 +135,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         return false
     }
 
-    if(style.equals("Jello")) {
+    if(styleValue.equals("Jello")) {
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
 
