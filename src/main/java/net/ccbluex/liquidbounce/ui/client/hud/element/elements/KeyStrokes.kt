@@ -61,7 +61,7 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
             keyStroke.render(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale, Companion)
         }
         if(keyStyleValue.get().equals("Jello")) {
-            RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5, -3.5, 54, 54)
+            RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5f, -3.5f, 54f, 54f)
         }
 
         return Border(0F, 0F, 47F, 47F)
