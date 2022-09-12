@@ -152,7 +152,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         val centerY = height / 2
         val nowTime = System.currentTimeMillis()
 
-        val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } 
+        val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } else { Color(0,0,0,0) }
          RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
 
         val removeAble = ArrayList<Long>()
