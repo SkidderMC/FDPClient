@@ -9,10 +9,8 @@ import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.*
+import net.minecraft.util.ResourceLocation
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Keyboard
@@ -37,6 +35,10 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
     private val outlineBoldValue = IntegerValue("OutlineBold", 1, 0, 5)
     private val outlineRainbow = BoolValue("OutLineRainbow", false)
     private val fontValue = FontValue("Font", Fonts.font35)
+    companion object {
+        val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello"), "Custom")
+    }
+
 
     init {
         keys.add(KeyStroke(mc.gameSettings.keyBindForward, 16, 0, 15, 15).initKeyName())
@@ -56,7 +58,10 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
         }
 
         for (keyStroke in keys) {
-            keyStroke.render(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale)
+            keyStroke.render(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale, Companion)
+        }
+        if(keyStyleValue.get().equals("Jello")) {
+            RenderUtils.drawImage2(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5f, -3.5f, 54, 54)
         }
 
         return Border(0F, 0F, 47F, 47F)
@@ -82,8 +87,13 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         blurRadius: Float,
         renderX: Float,
         renderY: Float,
-        scale: Float
+        scale: Float,
+        parent: KeyStrokes.Companion
     ) {
+
+
+    val style = parent.keyStyleValue.get()
+    if(style.equals("Custom")) {
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
 
@@ -128,6 +138,44 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         }
 
         GL11.glPopMatrix()
+    }
+
+    if(style.equals("Jello")) {
+        GL11.glPushMatrix()
+        GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
+        BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, 10f)
+        
+        val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())
+        val clickAlpha = 255 - (255 - bgColor.alpha) * highLightPct
+        val centerX = width / 2
+        val centerY = height / 2
+        val nowTime = System.currentTimeMillis()
+
+        val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } else { Color(0f,0f,0f,0f) }
+         RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
+
+        val removeAble = ArrayList<Long>()
+        for (time in animations) {
+            val pct = (nowTime - time) / (speed.toFloat())
+            if (pct> 1) {
+                removeAble.add(time)
+                continue
+            }
+            RenderUtils.drawLimitedCircle(0F, 0F, width.toFloat(), height.toFloat(), centerX, centerY, (width * 0.7F) * pct, Color(255 - ((255 - highLightColor.red) * pct).toInt(), 255 - ((255 - highLightColor.green) * pct).toInt(), 255 - ((255 - highLightColor.blue) * pct).toInt(), 255 - ((255 - clickAlpha) * pct).toInt()))
+        }
+        for (time in removeAble) {
+            animations.remove(time)
+        }
+        if (!lastClick && key.isKeyDown) {
+            animations.add(nowTime)
+        }
+        lastClick = key.isKeyDown
+
+
+        GL11.glPopMatrix()
+    } 
+
+
     }
 
     fun initKeyName(): KeyStroke {
