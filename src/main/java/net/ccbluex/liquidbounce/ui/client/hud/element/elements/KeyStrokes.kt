@@ -56,12 +56,12 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
         } else {
             Color(textRedValue.get(), textGreenValue.get(), textBlueValue.get(), textAlphaValue.get())
         }
-        if(keyStyleValue.get().equals("Jello")) {
-            RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), 0, 0, 47, 47)
-        }
 
         for (keyStroke in keys) {
             keyStroke.render(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale, Companion)
+        }
+        if(keyStyleValue.get().equals("Jello")) {
+            RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), -7, -7, 54, 54)
         }
 
         return Border(0F, 0F, 47F, 47F)
