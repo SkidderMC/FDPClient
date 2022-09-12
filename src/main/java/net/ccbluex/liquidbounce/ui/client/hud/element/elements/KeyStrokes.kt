@@ -35,9 +35,8 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
     private val outlineBoldValue = IntegerValue("OutlineBold", 1, 0, 5)
     private val outlineRainbow = BoolValue("OutLineRainbow", false)
     private val fontValue = FontValue("Font", Fonts.font35)
-        companion object {
-        val styleValue = ListValue("Mode", arrayOf("Custom", "Jello"), "Custom")
-    }
+    val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello"), "Custom")
+
 
     init {
         keys.add(KeyStroke(mc.gameSettings.keyBindForward, 16, 0, 15, 15).initKeyName())
@@ -84,10 +83,9 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         renderX: Float,
         renderY: Float,
         scale: Float,
-        styleValue: KeyStrokes.Companion
     ) {
 
-    if(styleValue.equals("Custom")) {
+    if(KeyStrokes.keyStyleValue.equals("Custom")) {
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
 
@@ -135,7 +133,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         return false
     }
 
-    if(styleValue.equals("Jello")) {
+    if(KeyStrokes.keyStyleValue.equals("Jello")) {
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
 
