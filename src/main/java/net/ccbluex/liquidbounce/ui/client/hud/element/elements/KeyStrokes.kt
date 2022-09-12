@@ -9,10 +9,8 @@ import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.*
+import net.minecraft.util.ResourceLocation
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Keyboard
@@ -85,7 +83,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         blurRadius: Float,
         renderX: Float,
         renderY: Float,
-        scale: Float
+        scale: Float,
         parent: KeyStrokes.Companion
     ) {
 
@@ -153,7 +151,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
 
         val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } else { bgColor }
         // RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
-        RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), 0F, 0F, 47F, 47F)
+        RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), 0, 0, 47, 47)
 
         val removeAble = ArrayList<Long>()
         for (time in animations) {
