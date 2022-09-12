@@ -56,6 +56,9 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
         } else {
             Color(textRedValue.get(), textGreenValue.get(), textBlueValue.get(), textAlphaValue.get())
         }
+        if(keyStyleValue.get().equals("Jello")) {
+            RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), 0, 0, 47, 47)
+        }
 
         for (keyStroke in keys) {
             keyStroke.render(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale, Companion)
@@ -153,7 +156,6 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
 
         val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } else { bgColor }
         // RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
-        RenderUtils.drawImage(ResourceLocation("fdpclient/misc/keystrokes.png"), 0, 0, 47, 47)
 
         val removeAble = ArrayList<Long>()
         for (time in animations) {
@@ -172,7 +174,6 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         }
         lastClick = key.isKeyDown
 
-        font.drawString(keyName, centerX - (font.getStringWidth(keyName) / 2) + 1, centerY - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
 
         GL11.glPopMatrix()
     }
