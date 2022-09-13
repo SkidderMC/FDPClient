@@ -126,10 +126,10 @@ public abstract class MixinGuiInGame extends MixinGui {
 
         if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
             if(hud.getState() = true){
-            if(HotbarSettings.getHotbarValue().get() = "Rise")){
-            val canBetterHotbar = true
-            } else if(HotbarSettings.getHotbarValue().get() = "Minecraft")){
-            val canBetterHotbar = false
+            if(HotbarSettings.getHotbarValue().get() = "Rise") {
+            val canBetterHotbar = true;
+            } else if(HotbarSettings.getHotbarValue().get() = "Minecraft") {
+            val canBetterHotbar = false;
             }}
 
             Minecraft mc = Minecraft.getMinecraft();
