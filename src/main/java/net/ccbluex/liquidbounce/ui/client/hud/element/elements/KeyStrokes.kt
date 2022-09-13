@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @ElementInfo(name = "KeyStrokes", blur = true)
-class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
+class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
     private val keys = ArrayList<KeyStroke>()
 
     private val backGroundRedValue = IntegerValue("BackGroundRed", 0, 0, 255)
@@ -71,8 +71,8 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
             RenderUtils.drawImage2(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5f, -3.5f, 54, 54)
         }
         if(keyStyleValue.get().equals("Juul")) {
-            RenderUtils.drawRect(0f, 32f, 23f, 15f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(95, 95, 105, 255) } else { Color(65, 65, 75, 255) } )
-            RenderUtils.drawRect(24f, 32f, 23f, 15f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(95, 95, 105, 255) } else { Color(65, 65, 75, 255) } )
+            RenderUtils.drawRect(0f, 64f, 23f, 15f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
+            RenderUtils.drawRect(48f, 64f, 23f, 15f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
             
 /*
 
@@ -213,7 +213,8 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
 
         val nowTime = System.currentTimeMillis()
 
-        val rectColor = if (lastClick) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) }
+        // val rectColor = if (lastClick) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) }
+        val rectColor = if (lastClick) { Color(255, 255, 255, 255) } else { Color(255, 255, 255, 255) }
         RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
         lastClick = key.isKeyDown
 
