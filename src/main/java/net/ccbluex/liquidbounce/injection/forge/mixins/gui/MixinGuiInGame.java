@@ -64,6 +64,7 @@ public abstract class MixinGuiInGame extends MixinGui {
     @Overwrite
     protected void renderTooltip(ScaledResolution sr, float partialTicks) {
         final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
+        final HotbarSettings HotbarSettings = LiquidBounce.moduleManager.getModule(HotbarSettings.class);
 
         float tabHope = this.mc.gameSettings.keyBindPlayerList.isKeyDown() ? 1f : 0f;
         final Animations animations = Animations.INSTANCE;
