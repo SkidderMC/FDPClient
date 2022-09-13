@@ -80,8 +80,8 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
             RenderUtils.drawRect(24f, 32f, 47f, 47f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
             val juulLeft = if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + "CPS" } else { "Left" }
             val juulRight = if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { "Right" }
-            Fonts.font35.drawString(juulLeft, 11.5 - (fontRenderer.getStringWidth(juulLeft) / 2) + 1, 39.5 - (fontRenderer.FONT_HEIGHT / 2) + 2, textColor.rgb)
-            Fonts.font35.drawString(juulRight, 35.5 - (fontRenderer.getStringWidth(juulRight) / 2) + 1, 39.5 - (fontRenderer.FONT_HEIGHT / 2) + 2, textColor.rgb)
+            Fonts.font35.drawString(juulLeft, 11.5f - (fontRenderer.getStringWidth(juulLeft) / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT / 2f) + 2f, textColor.rgb)
+            Fonts.font35.drawString(juulRight, 35.5f - (fontRenderer.getStringWidth(juulRight).toFloat() / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT.toFloat() / 2f) + 2f, textColor.rgb)
 /*   
 
 if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(95, 95, 105, 255) } else { Color(65, 65, 75, 255) } 
