@@ -124,7 +124,7 @@ public abstract class MixinGuiInGame extends MixinGui {
         */
 
         if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
-            boolean canBetterHotbar = hud.getState() && hotbar.getBetterHotbarValue().get();
+            boolean canBetterHotbar = hud.getState() && HotbarSettings.getBetterHotbarValue().get();
             Minecraft mc = Minecraft.getMinecraft();
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -133,15 +133,15 @@ public abstract class MixinGuiInGame extends MixinGui {
             int i = sr.getScaledWidth() / 2;
             float f = this.zLevel;
             this.zLevel = -90.0F;
-            int itemX = i - 91 + hotbar.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
+            int itemX = i - 91 + HotbarSettingsINSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if(canBetterHotbar) {
                 GlStateManager.disableTexture2D();
-                RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, hotbar.INSTANCE.getHotbarAlphaValue().get()));
+                RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettingsINSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
-                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, hotbar.INSTANCE.getHotbarAlphaValue().get()));
+                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettingsINSTANCE.getHotbarAlphaValue().get()));
                 GlStateManager.enableTexture2D();
             } else {
                 this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
