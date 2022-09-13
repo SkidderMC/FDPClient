@@ -76,12 +76,12 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
         }
         if(keyStyleValue.get().equals("Juul")) {
             val fontRenderer = fontValue.get()
-            RenderUtils.drawRect(0f, 32f, 47f, 47f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
+            RenderUtils.drawRect(0f, 32f, 23f, 47f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
             RenderUtils.drawRect(24f, 32f, 47f, 47f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
             val juulLeft = if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + "CPS" } else { "Left" }
             val juulRight = if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { "Right" }
-            Fonts.font35.drawString(juulLeft, 11.5f - (fontRenderer.getStringWidth(juulLeft) / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT / 2f) + 2f, textColor.rgb)
-            Fonts.font35.drawString(juulRight, 35.5f - (fontRenderer.getStringWidth(juulRight).toFloat() / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT.toFloat() / 2f) + 2f, textColor.rgb)
+            Fonts.font32.drawString(juulLeft, 11.5f - (fontRenderer.getStringWidth(juulLeft) / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT / 2f) + 2f, textColor.rgb)
+            Fonts.font32.drawString(juulRight, 35.5f - (fontRenderer.getStringWidth(juulRight).toFloat() / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT.toFloat() / 2f) + 2f, textColor.rgb)
 /*   
 
 if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(95, 95, 105, 255) } else { Color(65, 65, 75, 255) } 
@@ -221,8 +221,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
 
         val nowTime = System.currentTimeMillis()
 
-        // val rectColor = if (lastClick) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) }
-        val rectColor = if (lastClick) { Color(255, 255, 255, 255) } else { Color(255, 255, 255, 255) }
+         val rectColor = if (lastClick) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) }
         RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
         lastClick = key.isKeyDown
 
