@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
+import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.util.ResourceLocation
 import net.minecraft.client.gui.FontRenderer
@@ -18,7 +19,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @ElementInfo(name = "KeyStrokes", blur = true)
-class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
+class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
     private val keys = ArrayList<KeyStroke>()
 
     private val backGroundRedValue = IntegerValue("BackGroundRed", 0, 0, 255)
@@ -36,7 +37,7 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
     private val outlineRainbow = BoolValue("OutLineRainbow", false)
     private val fontValue = FontValue("Font", Fonts.font35)
     companion object {
-        val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello"), "Custom")
+        val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello", "Juul"), "Custom")
     }
 
 
@@ -45,9 +46,19 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
         keys.add(KeyStroke(mc.gameSettings.keyBindLeft, 0, 16, 15, 15).initKeyName())
         keys.add(KeyStroke(mc.gameSettings.keyBindBack, 16, 16, 15, 15).initKeyName())
         keys.add(KeyStroke(mc.gameSettings.keyBindRight, 32, 16, 15, 15).initKeyName())
-        keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 32, 23, 15).initKeyName("L"))
-        keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName("R"))
-    }
+        if(keyStyleValue.get().equals("Custom")) {
+            keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 32, 23, 15).initKeyName("L"))
+            keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName("R"))
+        }
+        if(keyStyleValue.get().equals("Jello")) {
+            keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 32, 23, 15).initKeyName("L"))
+            keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName("R"))
+        }
+        if(keyStyleValue.get().equals("Juul")) {
+            keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 0, 0, 0).initKeyName("L"))
+            keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 0, 0, 0, 0).initKeyName("R"))
+        }
+    } 
 
     override fun drawElement(partialTicks: Float): Border {
         val backGroundColor = Color(backGroundRedValue.get(), backGroundGreenValue.get(), backGroundBlueValue.get(), backGroundAlphaValue.get())
@@ -62,6 +73,15 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
         }
         if(keyStyleValue.get().equals("Jello")) {
             RenderUtils.drawImage2(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5f, -3.5f, 54, 54)
+        }
+        if(keyStyleValue.get().equals("Juul")) {
+            val fontRenderer = fontValue.get()
+            RenderUtils.drawRoundedCornerRect(0f, 32f, 23f, 47f, 4f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255).rgb } else { Color(95, 95, 105, 255).rgb } )
+            RenderUtils.drawRoundedCornerRect(24f, 32f, 47f, 47f, 4f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255).rgb } else { Color(95, 95, 105, 255).rgb } )
+            val juulLeft = if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + " cps" } else { "Left" }
+            val juulRight = if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { "Right" }
+            Fonts.font28.drawString(juulLeft, 11.5f - (fontRenderer.getStringWidth(juulLeft) / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT / 2f) + 2f, textColor.rgb)
+            Fonts.font28.drawString(juulRight, 35.5f - (fontRenderer.getStringWidth(juulRight).toFloat() / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT.toFloat() / 2f) + 2f, textColor.rgb)
         }
 
         return Border(0F, 0F, 47F, 47F)
@@ -174,6 +194,21 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
 
         GL11.glPopMatrix()
     } 
+
+    if(style.equals("Juul")) {
+        GL11.glPushMatrix()
+        GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
+
+        val nowTime = System.currentTimeMillis()
+
+         val rectColor = if (lastClick) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) }
+        RenderUtils.drawRoundedCornerRect(0F, 0F, width.toFloat(), height.toFloat(), 4f, rectColor.rgb)
+        lastClick = key.isKeyDown
+
+        font.drawString(keyName, width / 2 - (font.getStringWidth(keyName) / 2) + 1, height / 2 - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
+
+        GL11.glPopMatrix()
+    }
 
 
     }
