@@ -27,6 +27,9 @@ public class Fonts {
     @FontDetails(fontName = "Light", fontSize = 32, fileName = "regular.ttf")
     public static GameFontRenderer font32;
 
+        @FontDetails(fontName = "superLight", fontSize = 28, fileName = "regular.ttf")
+    public static GameFontRenderer font28;
+
     @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
     public static GameFontRenderer font40;
 
