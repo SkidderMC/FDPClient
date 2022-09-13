@@ -71,8 +71,8 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
             RenderUtils.drawImage2(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5f, -3.5f, 54, 54)
         }
         if(keyStyleValue.get().equals("Juul")) {
-            RenderUtils.drawRect(0f, 64f, 23f, 30f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
-            RenderUtils.drawRect(48f, 64f, 23f, 30f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
+            RenderUtils.drawRect(0f, 64f, 23f, 79f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
+            RenderUtils.drawRect(48f, 64f, 23f, 79f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
             
 /*
 
