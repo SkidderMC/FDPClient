@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
-import net.ccbluex.liquidbounce.features.module.modules.client.Hotbar;
+import net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
@@ -133,15 +133,15 @@ public abstract class MixinGuiInGame extends MixinGui {
             int i = sr.getScaledWidth() / 2;
             float f = this.zLevel;
             this.zLevel = -90.0F;
-            int itemX = i - 91 + HotbarSettingsINSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
+            int itemX = i - 91 + HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if(canBetterHotbar) {
                 GlStateManager.disableTexture2D();
-                RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettingsINSTANCE.getHotbarAlphaValue().get()));
+                RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
-                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettingsINSTANCE.getHotbarAlphaValue().get()));
+                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 GlStateManager.enableTexture2D();
             } else {
                 this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
@@ -161,7 +161,6 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.disableRescaleNormal();
             GlStateManager.disableBlend();
         }
-
         LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks, StaticStorage.scaledResolution));
     }
 
