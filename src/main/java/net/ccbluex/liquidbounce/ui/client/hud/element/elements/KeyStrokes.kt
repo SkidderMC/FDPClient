@@ -54,6 +54,10 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
             keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 32, 23, 15).initKeyName("L"))
             keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName("R"))
         }
+        if(keyStyleValue.get().equals("Juul")) {
+            keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 0, 0, 0).initKeyName("L"))
+            keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 0, 0, 0, 0).initKeyName("R"))
+        }
     } 
 
     override fun drawElement(partialTicks: Float): Border {
