@@ -55,8 +55,8 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
             keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName("R"))
         }
         if(keyStyleValue.get().equals("Juul")) {
-            if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT != 0f) { private val leftCps = CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + "CPS" } else { private val leftCps = "Left" }
-            if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT != 0f) { private val rightCps =  CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { private val rightCps = "Right" }
+            if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT.toFloat() != 0f) { val leftCps = CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + "CPS" } else { val leftCps = "Left" })
+            if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT.toFloat() != 0f) { val rightCps =  CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { val rightCps = "Right" })
             keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 32, 23, 15).initKeyName(leftCps))
             keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName(rightCps))
         }
