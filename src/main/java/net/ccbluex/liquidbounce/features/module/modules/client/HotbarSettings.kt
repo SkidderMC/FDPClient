@@ -16,19 +16,33 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.Animation
+import net.ccbluex.liquidbounce.utils.render.AnimationUtils
 
 // hotbar settings were moved here for less spaghetti code
 
 @ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HotbarSettings : Module() {
-    val betterHotbarValue = BoolValue("BetterHotbar", true)
+    val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Rise"), "Rise")
+    val animHotbarValue = BoolValue("AnimatedHotbar", true) //lb
     val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255).displayable { betterHotbarValue.get() }
     val hotbarEaseValue = BoolValue("HotbarEase", false)
-    // val animHotbarValue = BoolValue("AnimatedHotbar", true)
     private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
     private val hotbarAnimTypeValue = EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
     private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
 
+
+
+    if (hotbarValue.equals("Rise")) {
+        val betterHotbarValue = true
+    } else { if (hotbarValue.equals("Minecraft"))
+        val betterHotbarValue = false
+    } else { if (hotbarValue.equals("Rounded"))
+        val blackHotbarValue = true
+    }
+
+
+
+    // rise
     private var easeAnimation: Animation? = null
     private var easingValue = 0
         get() {
@@ -57,4 +71,20 @@ object HotbarSettings : Module() {
         easingValue = x
         return easingValue
     }
+    // rounded
+    private var hotBarX = 0F
+
+    fun getAnimPos(pos: Float): Float {
+        if (animHotbarValue.get()) hotBarX = AnimationUtils.animate(pos, hotBarX, 0.02F * RenderUtils.deltaTime.toFloat())
+        else hotBarX = pos
+
+        return hotBarX
+    }
+
+
+
+
+
+
+
 }
