@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
+import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.util.ResourceLocation
 import net.minecraft.client.gui.FontRenderer
@@ -36,7 +37,7 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
     private val outlineRainbow = BoolValue("OutLineRainbow", false)
     private val fontValue = FontValue("Font", Fonts.font35)
     companion object {
-        val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello"), "Custom")
+        val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello", "Juul"), "Custom")
     }
 
 
@@ -45,8 +46,20 @@ class KeyStrokes : Element(5.0, 25.0, 1.25F, Side.default()) {
         keys.add(KeyStroke(mc.gameSettings.keyBindLeft, 0, 16, 15, 15).initKeyName())
         keys.add(KeyStroke(mc.gameSettings.keyBindBack, 16, 16, 15, 15).initKeyName())
         keys.add(KeyStroke(mc.gameSettings.keyBindRight, 32, 16, 15, 15).initKeyName())
-        keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 32, 23, 15).initKeyName("L"))
-        keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName("R"))
+        if(keyStyleValue.get().equals("Custom")) {
+            keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 32, 23, 15).initKeyName("L"))
+            keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName("R"))
+        }
+        if(keyStyleValue.get().equals("Jello")) {
+            keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 32, 23, 15).initKeyName("L"))
+            keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName("R"))
+        }
+        if(keyStyleValue.get().equals("Juul")) {
+            if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT != 0f) { private val leftCps = CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + "CPS" } else { private val leftCps = "Left" }
+            if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT != 0f) { private val rightCps =  CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { private val rightCps = "Right" }
+            keys.add(KeyStroke(mc.gameSettings.keyBindAttack, 0, 32, 23, 15).initKeyName(leftCps))
+            keys.add(KeyStroke(mc.gameSettings.keyBindUseItem, 24, 32, 23, 15).initKeyName(rightCps))
+        }
     }
 
     override fun drawElement(partialTicks: Float): Border {
@@ -174,6 +187,41 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
 
         GL11.glPopMatrix()
     } 
+
+    if(style.equals("Juul")) {
+        GL11.glPushMatrix()
+        GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
+
+        val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())
+        val clickAlpha = 255 - (255 - bgColor.alpha) * highLightPct
+        val centerX = width / 2
+        val centerY = height / 2
+        val nowTime = System.currentTimeMillis()
+
+        val rectColor = if (lastClick && animations.isEmpty()) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) }
+        RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
+
+        val removeAble = ArrayList<Long>()
+        for (time in animations) {
+            val pct = (nowTime - time) / (speed.toFloat())
+            if (pct> 1) {
+                removeAble.add(time)
+                continue
+            }
+            RenderUtils.drawLimitedCircle(0F, 0F, width.toFloat(), height.toFloat(), centerX, centerY, (width * 0.7F) * pct, Color(255 - ((255 - highLightColor.red) * pct).toInt(), 255 - ((255 - highLightColor.green) * pct).toInt(), 255 - ((255 - highLightColor.blue) * pct).toInt(), 255 - ((255 - clickAlpha) * pct).toInt()))
+        }
+        for (time in removeAble) {
+            animations.remove(time)
+        }
+        if (!lastClick && key.isKeyDown) {
+            animations.add(nowTime)
+        }
+        lastClick = key.isKeyDown
+
+        font.drawString(keyName, centerX - (font.getStringWidth(keyName) / 2) + 1, centerY - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
+
+        GL11.glPopMatrix()
+    }
 
 
     }
