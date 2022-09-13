@@ -32,12 +32,6 @@ object HUD : Module() {
     val clolormode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")
     val hueInterpolation = BoolValue("hueInterpolation", false)
     val movingcolors = BoolValue("MovingColors", false)
-    val betterHotbarValue = BoolValue("BetterHotbar", true)
-    val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255).displayable { betterHotbarValue.get() }
-    val hotbarEaseValue = BoolValue("HotbarEase", false)
-    private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
-    private val hotbarAnimTypeValue = EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
-    private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
     val inventoryParticle = BoolValue("InventoryParticle", false)
     private val blurValue = BoolValue("Blur", false)
     val fontChatValue = BoolValue("FontChat", false)
@@ -60,7 +54,7 @@ object HUD : Module() {
 
     private var lastFontEpsilon = 0f
 
-    private var easeAnimation: Animation? = null
+/*     private var easeAnimation: Animation? = null
     private var easingValue = 0
         get() {
             if (easeAnimation != null) {
@@ -81,7 +75,7 @@ object HUD : Module() {
                     hotbarAnimSpeedValue.get() * 30L
                 ).start()
             }
-        }
+        } */
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
@@ -148,12 +142,6 @@ object HUD : Module() {
             }
         }
         return arrayOf(firstColor, secondColor)
-    }
-
-    fun getHotbarEasePos(x: Int): Int {
-        if (!state || !hotbarEaseValue.get()) return x
-        easingValue = x
-        return easingValue
     }
 
     fun getButtonRenderer(button: GuiButton): AbstractButtonRenderer? {

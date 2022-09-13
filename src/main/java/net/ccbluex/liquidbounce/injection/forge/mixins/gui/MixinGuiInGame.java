@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.client.Hotbar;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
@@ -74,8 +75,56 @@ public abstract class MixinGuiInGame extends MixinGui {
             overlayPlayerList.renderPlayerlist(sr.getScaledWidth(), mc.theWorld.getScoreboard(), mc.theWorld.getScoreboard().getObjectiveInDisplaySlot(0));
         }
 
+        /*
+        if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer && hud.getState() && (hud.getBlackHotbarValue().get() || hud.getAnimHotbarValue().get())) {
+            final Minecraft mc = Minecraft.getMinecraft();
+            EntityPlayer entityPlayer = (EntityPlayer) mc.getRenderViewEntity();
+
+            boolean blackHB = hud.getBlackHotbarValue().get();
+            int middleScreen = sr.getScaledWidth() / 2;
+            float posInv = hud.getAnimPos(entityPlayer.inventory.currentItem * 20F);
+
+            GlStateManager.resetColor();
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            mc.getTextureManager().bindTexture(widgetsTexPath);
+
+            float f = this.zLevel;
+            this.zLevel = -90.0F;
+            GlStateManager.resetColor();
+
+            if (blackHB) {
+                RenderUtils.originalRoundedRect(middleScreen - 91, sr.getScaledHeight() - 2, middleScreen + 91, sr.getScaledHeight() - 22, 3F, Integer.MIN_VALUE);
+                RenderUtils.originalRoundedRect(middleScreen - 91 + posInv, sr.getScaledHeight() - 2, middleScreen - 91 + posInv + 22, sr.getScaledHeight() - 22, 3F, Integer.MAX_VALUE);
+            } else {
+                this.drawTexturedModalRect(middleScreen - 91F, sr.getScaledHeight() - 22, 0, 0, 182, 22);
+                this.drawTexturedModalRect(middleScreen - 91F + posInv - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+            }
+
+            this.zLevel = f;
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.enableRescaleNormal();
+            GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+            RenderHelper.enableGUIStandardItemLighting();
+
+            for (int j = 0; j < 9; ++j) {
+                int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
+                int l = sr.getScaledHeight() - 19 - (blackHB ? 1 : 0);
+                this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
+            }   
+
+            RenderHelper.disableStandardItemLighting();
+            GlStateManager.disableRescaleNormal();
+            GlStateManager.disableBlend();
+            GlStateManager.resetColor();
+            LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
+            AWTFontRenderer.Companion.garbageCollectionTick();
+            callbackInfo.cancel();
+        }
+        */
+
         if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
-            boolean canBetterHotbar = hud.getState() && hud.getBetterHotbarValue().get();
+            boolean canBetterHotbar = hud.getState() && hotbar.getBetterHotbarValue().get();
             Minecraft mc = Minecraft.getMinecraft();
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -84,15 +133,15 @@ public abstract class MixinGuiInGame extends MixinGui {
             int i = sr.getScaledWidth() / 2;
             float f = this.zLevel;
             this.zLevel = -90.0F;
-            int itemX = i - 91 + HUD.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
+            int itemX = i - 91 + hotbar.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if(canBetterHotbar) {
                 GlStateManager.disableTexture2D();
-                RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HUD.INSTANCE.getHotbarAlphaValue().get()));
+                RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, hotbar.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
-                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HUD.INSTANCE.getHotbarAlphaValue().get()));
+                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, hotbar.INSTANCE.getHotbarAlphaValue().get()));
                 GlStateManager.enableTexture2D();
             } else {
                 this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
