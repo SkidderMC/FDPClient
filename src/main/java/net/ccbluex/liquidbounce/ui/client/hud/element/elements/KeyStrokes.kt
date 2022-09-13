@@ -76,8 +76,8 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
         }
         if(keyStyleValue.get().equals("Juul")) {
             val fontRenderer = fontValue.get()
-            RenderUtils.drawRect(0f, 32f, 23f, 47f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
-            RenderUtils.drawRect(24f, 32f, 47f, 47f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
+            RenderUtils.drawRoundedCornerRect(0f, 32f, 23f, 47f, 8f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
+            RenderUtils.drawRoundedCornerRect(24f, 32f, 47f, 47f, 8f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255).rgb } else { Color(95, 95, 105, 255).rgb } )
             val juulLeft = if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + " cps" } else { "Left" }
             val juulRight = if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { "Right" }
             Fonts.font28.drawString(juulLeft, 11.5f - (fontRenderer.getStringWidth(juulLeft) / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT / 2f) + 2f, textColor.rgb)
@@ -222,7 +222,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         val nowTime = System.currentTimeMillis()
 
          val rectColor = if (lastClick) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) }
-        RenderUtils.drawRoundedCornerRect(0F, 0F, width.toFloat(), height.toFloat(), 22f, rectColor.rgb)
+        RenderUtils.drawRoundedCornerRect(0F, 0F, width.toFloat(), height.toFloat(), 8f, rectColor.rgb)
         lastClick = key.isKeyDown
 
         font.drawString(keyName, width / 2 - (font.getStringWidth(keyName) / 2) + 1, height / 2 - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
