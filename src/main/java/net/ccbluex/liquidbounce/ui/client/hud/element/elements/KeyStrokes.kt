@@ -222,7 +222,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         val nowTime = System.currentTimeMillis()
 
          val rectColor = if (lastClick) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) }
-        RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
+        RenderUtils.originalRoundedRec(0F, 0F, width.toFloat(), height.toFloat(), 22f, rectColor)
         lastClick = key.isKeyDown
 
         font.drawString(keyName, width / 2 - (font.getStringWidth(keyName) / 2) + 1, height / 2 - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
