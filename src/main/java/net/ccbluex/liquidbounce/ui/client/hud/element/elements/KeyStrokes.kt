@@ -75,10 +75,11 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
             RenderUtils.drawImage2(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5f, -3.5f, 54, 54)
         }
         if(keyStyleValue.get().equals("Juul")) {
-            RenderUtils.drawRect(0f, 32f, 23f, 47f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
-            RenderUtils.drawRect(24f, 32f, 23f, 47f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
-            
-/*
+            RenderUtils.drawRect(0f, 32f, 47f, 47f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
+            RenderUtils.drawRect(24f, 32f, 47f, 47f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) } )
+            font.drawString(if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + "CPS" } else { "Left" }, 11.5 - (font.getStringWidth(keyName) / 2) + 1, 39.5 - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
+            font.drawString(if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { "Right" }, 35.5 - (font.getStringWidth(keyName) / 2) + 1, 39.5 - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
+/* 
 
 if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(95, 95, 105, 255) } else { Color(65, 65, 75, 255) } 
 if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(95, 95, 105, 255) } else { Color(65, 65, 75, 255) } 
