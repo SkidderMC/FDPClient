@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 
 // hotbar settings were moved here for less spaghetti code
 
@@ -29,18 +30,6 @@ object HotbarSettings : Module() {
     private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
     private val hotbarAnimTypeValue = EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
     private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
-
-
-
-    if (hotbarValue.equals("Rise")) {
-        val betterHotbarValue = true
-    } else { if (hotbarValue.equals("Minecraft"))
-        val betterHotbarValue = false
-    } else { if (hotbarValue.equals("Rounded"))
-        val blackHotbarValue = true
-    }
-
-
 
     // rise
     private var easeAnimation: Animation? = null
