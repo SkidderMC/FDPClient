@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.utils.render.Animation
 
 // hotbar settings were moved here for less spaghetti code
 
-@ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, defaultOn = true)
+@ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HotbarSettings : Module() {
     val betterHotbarValue = BoolValue("BetterHotbar", true)
     val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255).displayable { betterHotbarValue.get() }
@@ -53,7 +53,7 @@ object HotbarSettings : Module() {
         }
 
     fun getHotbarEasePos(x: Int): Int {
-        if (!state || !hotbarEaseValue.get()) return x
+        if (!hotbarEaseValue.get()) return x
         easingValue = x
         return easingValue
     }
