@@ -112,9 +112,9 @@ public abstract class MixinGuiInGame extends MixinGui {
             for (int j = 0; j < 9; ++j)
             {
             if (hotbarType == "Rounded") { 
-                String lValue = sr.getScaledHeight() - 19 - (true ? 1 : 0); 
+                int lValue = sr.getScaledHeight() - 19 - (true ? 1 : 0); 
             } else {
-                String lValue = sr.getScaledHeight() - 16 - 3; 
+                int lValue = sr.getScaledHeight() - 16 - 3; 
             }
             int l = lValue;
             int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
