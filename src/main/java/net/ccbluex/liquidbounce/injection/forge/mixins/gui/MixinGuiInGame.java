@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -96,6 +97,8 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if(hotbarType == "Rise") {
                 GlStateManager.disableTexture2D();
+//       if (blurRadius != 0f) {}
+                BlurUtils.draw(i - 91, 0, 182, 22, 10); /* x,y,w,h,blurRadius */
                 RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
@@ -109,6 +112,9 @@ public abstract class MixinGuiInGame extends MixinGui {
             } else if (hotbarType == "Rounded") {
                 RenderUtils.originalRoundedRect(middleScreen - 91, sr.getScaledHeight() - 2, middleScreen + 91, sr.getScaledHeight() - 22, 3F, Integer.MIN_VALUE);
                 RenderUtils.originalRoundedRect(middleScreen - 91 + posInv, sr.getScaledHeight() - 2, middleScreen - 91 + posInv + 22, sr.getScaledHeight() - 22, 3F, Integer.MAX_VALUE);
+            } else if (hotbarType == "LB") {
+            RenderUtils.quickDrawRect(middleScreen - 91, sr.getScaledHeight() - 24, middleScreen + 90, sr.getScaledHeight(), Integer.MIN_VALUE);
+            RenderUtils.quickDrawRect(middleScreen - 91 - 1 + posInv + 1, sr.getScaledHeight() - 24, middleScreen - 91 - 1 + posInv + 22, sr.getScaledHeight() - 22 - 1 + 24, Integer.MAX_VALUE);
             } else {
                 this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
                 this.drawTexturedModalRect(itemX - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
