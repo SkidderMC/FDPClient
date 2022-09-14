@@ -125,11 +125,9 @@ public abstract class MixinGuiInGame extends MixinGui {
         */
 
         if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
-        val hotbarType = HotbarSettings.getBetterHotbarValue().get();  
+        // val hotbarType = HotbarSettings.getBetterHotbarValue().get();  
                 //    if(hud.getState() = true){else {false};
-
             Minecraft mc = Minecraft.getMinecraft();
-             boolean canBetterHotbar = hotbarType;
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(widgetsTexPath);
@@ -141,7 +139,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-            if(canBetterHotbar) {
+            if(HotbarSettings.getHotbarValue().get() = Rise) {
                 GlStateManager.disableTexture2D();
                 RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
