@@ -33,12 +33,15 @@ object HotbarSettings : Module() {
     fun getHotbarValue() {
         if (hotbarValue.get().equals("Rise")) {
             val betterHotbarValue = true
+            val blackHotbarValue = false
         } 
         if (hotbarValue.get().equals("Minecraft")) {
             val betterHotbarValue = false
+            val blackHotbarValue = false
         } 
         if (hotbarValue.get().equals("Rounded")) {
             val blackHotbarValue = true
+            val betterHotbarValue = false
         }
     }
     // rise

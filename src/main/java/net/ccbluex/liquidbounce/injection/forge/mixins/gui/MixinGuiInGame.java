@@ -125,13 +125,11 @@ public abstract class MixinGuiInGame extends MixinGui {
         */
 
         if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
-        val hotbarType = HotbarSettings.getHotbarValue().get();
-          boolean canBetterHotbar = if(hotbarType = "Rise") { true } else if(hotbarType = "Minecraft") { false };
-                
+        val hotbarType = HotbarSettings.getBetterHotbarValue().get();  
                 //    if(hud.getState() = true){else {false};
 
             Minecraft mc = Minecraft.getMinecraft();
-            // boolean canBetterHotbar = hud.getState() && HotbarSettings.getBetterHotbarValue().get();
+             boolean canBetterHotbar = hotbarType;
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(widgetsTexPath);
