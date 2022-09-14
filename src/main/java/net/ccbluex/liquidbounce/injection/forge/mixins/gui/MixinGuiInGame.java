@@ -118,6 +118,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             }
             int l = lValue;
             int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
+            EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
             this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
             }
 
