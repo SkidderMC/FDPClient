@@ -84,7 +84,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.resetColor();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(widgetsTexPath);
-            EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
+            final EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
             int i = sr.getScaledWidth() / 2;
             float f = this.zLevel;
             this.zLevel = -90.0F;
@@ -112,13 +112,12 @@ public abstract class MixinGuiInGame extends MixinGui {
             for (int j = 0; j < 9; ++j)
             {
             if (hotbarType == "Rounded") { 
-                string lValue = sr.getScaledHeight() - 19 - (true ? 1 : 0); 
+                String lValue = sr.getScaledHeight() - 19 - (true ? 1 : 0); 
             } else {
-                string lValue = sr.getScaledHeight() - 16 - 3; 
+                String lValue = sr.getScaledHeight() - 16 - 3; 
             }
             int l = lValue;
             int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
-            EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
             this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
             }
 
