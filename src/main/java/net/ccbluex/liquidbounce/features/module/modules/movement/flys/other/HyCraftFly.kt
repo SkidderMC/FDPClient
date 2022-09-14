@@ -10,6 +10,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.client.settings.GameSettings
 import kotlin.math.sqrt
 
 class HyCraftFly : FlyMode("HyCraft") {
@@ -27,11 +28,13 @@ class HyCraftFly : FlyMode("HyCraft") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        fly.antiDesync = false
+        mc.gameSettings.keyBindJump.pressed = false
+        mc.gameSettings.keyBindSneak.pressed = false
+        fly.antiDesync = true
         MovementUtils.strafe((1.2 + Math.random() / 10).toFloat())
-        if(mc.gameSettings.keyBindJump.pressed) {
+        if(GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
             mc.thePlayer.motionY = 0.42
-        } else if(mc.gameSettings.keyBindSneak.pressed) {
+        } else if(GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) {
             mc.thePlayer.motionY = 0.42
         } else {
             mc.thePlayer.motionY = 0.0
