@@ -109,20 +109,9 @@ public abstract class MixinGuiInGame extends MixinGui {
             }
             this.zLevel = f;
             RenderHelper.enableGUIStandardItemLighting();
-            if(hotbarType == "Rise") {
-                
-            } else if (hotbarType == "Rounded") {
-
-            } else {
-
-            }
             for (int j = 0; j < 9; ++j)
             {
-           if (hotbarType == "Rounded") {
-                int l = sr.getScaledHeight() - 19 - (true ? 1 : 0);
-            } else {
-                int l = sr.getScaledHeight() - 16 - 3;
-            }
+            int l = if (hotbarType == "Rounded") { sr.getScaledHeight() - 19 - (true ? 1 : 0); } else { sr.getScaledHeight() - 16 - 3; }
             int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
             this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
             }
@@ -140,12 +129,6 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             RenderHelper.enableGUIStandardItemLighting();
-
-            for (int j = 0; j < 9; ++j) {
-                int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
-                int l = sr.getScaledHeight() - 19 - (blackHB ? 1 : 0);
-                this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
-            }   
 
             RenderHelper.disableStandardItemLighting();
             GlStateManager.disableRescaleNormal();
