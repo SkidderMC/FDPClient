@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.particles.Particle;
 import net.ccbluex.liquidbounce.utils.particles.Vec3;
 import net.ccbluex.liquidbounce.utils.render.glu.DirectTessCallback;
 import net.ccbluex.liquidbounce.utils.render.glu.VertexData;
+import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -2114,6 +2115,10 @@ public final class RenderUtils extends MinecraftInstance {
         return (double[]) (result
                 ? new double[] { screenCoords.get(0), Display.getHeight() - screenCoords.get(1), screenCoords.get(2) }
                 : null);
+    }
+
+    public static void reBlurct(x: Float, y: Float, width: Float, height: Float, radius: Float)  {
+        BlurUtils.draw(x, y, width, height, radius);
     }
 
     public static void rectangle(double left, double top, double right, double bottom, int color) {

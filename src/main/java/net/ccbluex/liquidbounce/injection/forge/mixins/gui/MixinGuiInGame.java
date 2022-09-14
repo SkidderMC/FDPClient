@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -92,14 +91,13 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.resetColor();
             int itemX = i - 91 + HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
             float posInv =  91 - i + itemX;
-            final BlurUtils BlurUtils = net.ccbluex.liquidbounce.utils.render.RenderUtils.class;
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if(hotbarType == "Rise") {
                 GlStateManager.disableTexture2D();
 //       if (blurRadius != 0f) {}
-                BlurUtils.draw(i - 91, 0, 182, 22, 10); /* x,y,w,h,blurRadius */
+                RenderUtils.rectBlur(i - 91, 0, 182, 22, 10); /* x,y,w,h,blurRadius */
                 RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
