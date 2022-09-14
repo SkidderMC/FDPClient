@@ -22,6 +22,7 @@ class MatrixLowTest : SpeedMode("MatrixLowTest") {
             if (mc.thePlayer.onGround) {
                 mc.timer.timerSpeed = 1.0f
                 if (groundStrafe.get()) MovementUtils.strafe()
+                mc.gameSettings.keyBindJump.pressed = false
                 mc.thePlayer.jump()
             }
             
