@@ -92,6 +92,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.resetColor();
             int itemX = i - 91 + HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
             float posInv =  91 - i + itemX;
+            final BlurUtils BlurUtils = net.ccbluex.liquidbounce.utils.render.RenderUtils.class;
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
