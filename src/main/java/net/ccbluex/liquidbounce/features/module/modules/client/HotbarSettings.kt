@@ -32,12 +32,14 @@ object HotbarSettings : Module() {
     private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
     fun getHotbarValue() {
         if (hotbarValue.get().equals("Rise")) {
-         val betterHotbarValue = true
-     } else { if (hotbarValue.get().equals("Minecraft"))
-         val betterHotbarValue = false
-     } else { if (hotbarValue.get().equals("Rounded"))
-         val blackHotbarValue = true
-     }
+            val betterHotbarValue = true
+        } 
+        if (hotbarValue.get().equals("Minecraft")) {
+            val betterHotbarValue = false
+        } 
+        if (hotbarValue.get().equals("Rounded")) {
+            val blackHotbarValue = true
+        }
     }
     // rise
     private var easeAnimation: Animation? = null
