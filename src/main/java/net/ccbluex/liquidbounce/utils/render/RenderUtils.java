@@ -2117,7 +2117,7 @@ public final class RenderUtils extends MinecraftInstance {
                 : null);
     }
 
-    public static void reBlurct(x: Float, y: Float, width: Float, height: Float, radius: Float)  {
+    public static void rectBlur(float x, float y, float width, float height, float radius)  {
         BlurUtils.draw(x, y, width, height, radius);
     }
 
