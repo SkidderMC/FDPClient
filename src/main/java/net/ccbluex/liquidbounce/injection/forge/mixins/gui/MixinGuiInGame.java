@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
+import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
@@ -97,7 +98,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             if(hotbarType == "Rise") {
                 GlStateManager.disableTexture2D();
 //       if (blurRadius != 0f) {}
-                RenderUtils.rectBlur(i - 91, 0, 182, 22, 10); /* x,y,w,h,blurRadius */
+                BlurUtils.INSTANCE.draw(i - 91, 0, 182, 22, 10); /* x,y,w,h,blurRadius */
                 RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
