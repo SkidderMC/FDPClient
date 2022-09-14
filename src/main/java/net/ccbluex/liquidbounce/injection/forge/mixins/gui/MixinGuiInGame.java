@@ -65,6 +65,7 @@ public abstract class MixinGuiInGame extends MixinGui {
     protected void renderTooltip(ScaledResolution sr, float partialTicks) {
         final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
         final HotbarSettings HotbarSettings = LiquidBounce.moduleManager.getModule(HotbarSettings.class);
+        final EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
 
         float tabHope = this.mc.gameSettings.keyBindPlayerList.isKeyDown() ? 1f : 0f;
         final Animations animations = Animations.INSTANCE;
@@ -84,7 +85,6 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.resetColor();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(widgetsTexPath);
-            final EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
             int i = sr.getScaledWidth() / 2;
             float f = this.zLevel;
             this.zLevel = -90.0F;
@@ -109,13 +109,13 @@ public abstract class MixinGuiInGame extends MixinGui {
             }
             this.zLevel = f;
             RenderHelper.enableGUIStandardItemLighting();
-            
+
             if (hotbarType == "Rounded") { 
                 for (int j = 0; j < 9; ++j)
                 {
                     int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
                     int l = sr.getScaledHeight() - 19 - (true ? 1 : 0); 
-                    this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
+                    this.renderHotbarItem(j, k, l, partialTicks, entityplayer);
 
                 }
             } else {
@@ -123,7 +123,7 @@ public abstract class MixinGuiInGame extends MixinGui {
                 {
                     int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
                     int l = sr.getScaledHeight() - 16 - 3; 
-                    this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
+                    this.renderHotbarItem(j, k, l, partialTicks, entityplayer);
 
                 }
             }
