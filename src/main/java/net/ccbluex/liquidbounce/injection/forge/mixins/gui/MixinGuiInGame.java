@@ -90,7 +90,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             this.zLevel = -90.0F;
             GlStateManager.resetColor();
             int itemX = i - 91 + HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
-            float posInv =  91 + itemX;
+            float posInv =  91 - i + itemX;
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
