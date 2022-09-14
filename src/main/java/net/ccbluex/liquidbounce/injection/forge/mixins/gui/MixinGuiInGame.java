@@ -81,7 +81,6 @@ public abstract class MixinGuiInGame extends MixinGui {
                 //    if(hud.getState() = true){else {false};
             Minecraft mc = Minecraft.getMinecraft();
             int middleScreen = sr.getScaledWidth() / 2;
-            float posInv = hud.getAnimPos(entityPlayer.inventory.currentItem * 20F);
             GlStateManager.resetColor();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(widgetsTexPath);
@@ -90,6 +89,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             float f = this.zLevel;
             this.zLevel = -90.0F;
             GlStateManager.resetColor();
+            float posInv = hud.getAnimPos(entityPlayer.inventory.currentItem * 20F);
             int itemX = i - 91 + HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
