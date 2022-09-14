@@ -109,16 +109,23 @@ public abstract class MixinGuiInGame extends MixinGui {
             }
             this.zLevel = f;
             RenderHelper.enableGUIStandardItemLighting();
-            for (int j = 0; j < 9; ++j)
-            {
+            
             if (hotbarType == "Rounded") { 
-                int lValue = sr.getScaledHeight() - 19 - (true ? 1 : 0); 
+                for (int j = 0; j < 9; ++j)
+                {
+                    int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
+                    int l = sr.getScaledHeight() - 19 - (true ? 1 : 0); 
+                    this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
+
+                }
             } else {
-                int lValue = sr.getScaledHeight() - 16 - 3; 
-            }
-            int l = lValue;
-            int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
-            this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
+                for (int j = 0; j < 9; ++j)
+                {
+                    int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
+                    int l = sr.getScaledHeight() - 16 - 3; 
+                    this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
+
+                }
             }
 
             RenderHelper.disableStandardItemLighting();
