@@ -90,22 +90,23 @@ public abstract class MixinGuiInGame extends MixinGui {
             this.zLevel = -90.0F;
             GlStateManager.resetColor();
 
-            int itemX = HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
+            float posInv = hud.getAnimPos(entityPlayer.inventory.currentItem * 20F);
+            int itemX = i - 91 + HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20);
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if(hotbarType == "Rise") {
                 GlStateManager.disableTexture2D();
                 RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
-                RenderUtils.quickDrawRect(i - 91 + itemX, sr.getScaledHeight() - 22, (i - 91 + itemX) + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
-                RenderUtils.quickDrawRect(i - 91 + itemX, sr.getScaledHeight() - 21, (i - 91 + itemX) + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
+                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
+                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 GlStateManager.enableTexture2D();
             } else if (hotbarType == "Rounded") {
                 RenderUtils.originalRoundedRect(middleScreen - 91, sr.getScaledHeight() - 2, middleScreen + 91, sr.getScaledHeight() - 22, 3F, Integer.MIN_VALUE);
-                RenderUtils.originalRoundedRect(middleScreen - 91 + itemX, sr.getScaledHeight() - 2, middleScreen - 91 + itemX + 22, sr.getScaledHeight() - 22, 3F, Integer.MAX_VALUE);
+                RenderUtils.originalRoundedRect(middleScreen - 91 + posInv, sr.getScaledHeight() - 2, middleScreen - 91 + posInv + 22, sr.getScaledHeight() - 22, 3F, Integer.MAX_VALUE);
             } else {
                 this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
-                this.drawTexturedModalRect((i - 91 + itemX) - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+                this.drawTexturedModalRect(itemX - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
             }
             this.zLevel = f;
             RenderHelper.enableGUIStandardItemLighting();
