@@ -21,29 +21,53 @@ import java.util.List;
 
 public class Fonts {
 
-    @FontDetails(fontName = "Small", fontSize = 35, fileName = "regular.ttf")
-    public static GameFontRenderer font35;
-
     @FontDetails(fontName = "Light", fontSize = 32, fileName = "regular.ttf")
     public static GameFontRenderer font32;
-
         @FontDetails(fontName = "superLight", fontSize = 28, fileName = "regular.ttf")
     public static GameFontRenderer font28;
 
-    @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
+    public static TTFFontRenderer fontVerdana;
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 35)
+    public static GameFontRenderer font35;
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 40)
     public static GameFontRenderer font40;
 
-    @FontDetails(fontName = "Minecraft Font")
-    public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
+    @FontDetails(fontName = "Roboto Medium", fontSize = 72)
+    public static GameFontRenderer font72;
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 30)
+    public static GameFontRenderer fontSmall;
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 24)
+    public static GameFontRenderer fontTiny;
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 52)
+    public static GameFontRenderer fontLarge;
+
+    @FontDetails(fontName = "SFUI Regular", fontSize = 35)
+    public static GameFontRenderer fontSFUI35;
+
+    @FontDetails(fontName = "SFUI Regular", fontSize = 40)
+    public static GameFontRenderer fontSFUI40;
+
+    @FontDetails(fontName = "Roboto Bold", fontSize = 180)
+    public static GameFontRenderer fontBold180;
 
     @FontDetails(fontName = "Tahoma Bold", fontSize = 35)
     public static GameFontRenderer fontTahoma;
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 30)
-    public static GameFontRenderer fontSmall;
-    public static TTFFontRenderer fontVerdana;
+    @FontDetails(fontName = "Tahoma Bold", fontSize = 30)
+    public static GameFontRenderer fontTahoma30;
 
     public static TTFFontRenderer fontTahomaSmall;
+
+    @FontDetails(fontName = "Bangers", fontSize = 45)
+    public static GameFontRenderer fontBangers;
+
+    @FontDetails(fontName = "Minecraft Font")
+    public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
 
     private static final List<GameFontRenderer> CUSTOM_FONT_RENDERERS = new ArrayList<>();
 
@@ -54,13 +78,20 @@ public class Fonts {
 
         font35 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 35));
         font40 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 40));
+        font72 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 72));
         fontSmall = new GameFontRenderer(getFont("Roboto-Medium.ttf", 30));
+        fontTiny = new GameFontRenderer(getFont("Roboto-Medium.ttf", 24));
+        fontLarge = new GameFontRenderer(getFont("Roboto-Medium.ttf", 60));
+        fontSFUI35 = new GameFontRenderer(getFont("sfui.ttf", 35));
+        fontSFUI40 = new GameFontRenderer(getFont("sfui.ttf", 40));
+        fontBold180 = new GameFontRenderer(getFont("Roboto-Bold.ttf", 180));
         fontTahoma = new GameFontRenderer(getFont("TahomaBold.ttf", 35));
-        fontVerdana = new TTFFontRenderer(getFont("Verdana.ttf", 7));
+        fontTahoma30 = new GameFontRenderer(getFont("TahomaBold.ttf", 30));
         fontTahomaSmall = new TTFFontRenderer(getFont("Tahoma.ttf", 11));
+        fontVerdana = new TTFFontRenderer(getFont("Verdana.ttf", 7));
+        fontBangers = new GameFontRenderer(getFont("Bangers-Regular.ttf", 45));
 
         for(GameFontRenderer it : getCustomFonts()) {
-            it.close();
         }
 
         initFonts();

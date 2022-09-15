@@ -37,7 +37,7 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
         }
     }
 
-    private fun collectGarbage() {
+    fun collectGarbage() {
         val currentTime = System.currentTimeMillis()
 
         cachedStrings.filter { currentTime - it.value.lastUsage > CACHED_FONT_REMOVAL_TIME }.forEach {
@@ -119,6 +119,7 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
             if (char.toInt() >= charLocations.size) {
                 GL11.glEnd()
 
+                // Ugly solution, because floating point numbers, but I think that shouldn't be that much of a problem
                 GlStateManager.scale(reverse, reverse, reverse)
                 Minecraft.getMinecraft().fontRendererObj.drawString("$char", currX.toFloat() * scale.toFloat() + 1, 2f, color, false)
                 currX += Minecraft.getMinecraft().fontRendererObj.getStringWidth("$char") * reverse

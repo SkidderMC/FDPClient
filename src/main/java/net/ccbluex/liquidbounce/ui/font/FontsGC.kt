@@ -24,7 +24,6 @@ object FontsGC : Listenable {
     }
 
     fun closeAll() {
-        fontRenderers.forEach { it.close() }
         fontRenderers.clear()
     }
 
