@@ -87,6 +87,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(widgetsTexPath);
             int i = sr.getScaledWidth() / 2;
+            float iFloat = i.floatValue(); // this is not an apple product 
             float f = this.zLevel;
             this.zLevel = -90.0F;
             GlStateManager.resetColor();
@@ -98,7 +99,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             if(hotbarType == "Rise") {
                 GlStateManager.disableTexture2D();
 //       if (blurRadius != 0f) {}
-                BlurUtils.INSTANCE.draw(i.floatValue() - 91F, 0F, 182F, 22F, 10F); /* x,y,w,h,blurRadius */
+                BlurUtils.INSTANCE.draw(iFloat - 91F, 0F, 182F, 22F, 10F); /* x,y,w,h,blurRadius */
                 RenderUtils.quickDrawRect(i - 91, sr.getScaledHeigh() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
