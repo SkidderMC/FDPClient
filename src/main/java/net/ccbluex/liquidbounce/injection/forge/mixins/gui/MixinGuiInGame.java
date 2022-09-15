@@ -98,8 +98,8 @@ public abstract class MixinGuiInGame extends MixinGui {
             if(hotbarType == "Rise") {
                 GlStateManager.disableTexture2D();
 //       if (blurRadius != 0f) {}
-                BlurUtils.INSTANCE.draw(i - 91, 0, 182, 22, 10); /* x,y,w,h,blurRadius */
-                RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
+                BlurUtils.INSTANCE.draw(i.floatValue() - 91F, 0F, 182F, 22F, 10F); /* x,y,w,h,blurRadius */
+                RenderUtils.quickDrawRect(i - 91, sr.getScaledHeigh() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 GlStateManager.enableTexture2D();
