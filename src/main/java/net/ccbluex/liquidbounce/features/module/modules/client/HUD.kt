@@ -54,28 +54,6 @@ object HUD : Module() {
 
     private var lastFontEpsilon = 0f
 
-/*     private var easeAnimation: Animation? = null
-    private var easingValue = 0
-        get() {
-            if (easeAnimation != null) {
-                field = easeAnimation!!.value.toInt()
-                if (easeAnimation!!.state == Animation.EnumAnimationState.STOPPED) {
-                    easeAnimation = null
-                }
-            }
-            return field
-        }
-        set(value) {
-            if (easeAnimation == null || (easeAnimation != null && easeAnimation!!.to != value.toDouble())) {
-                easeAnimation = Animation(
-                    EaseUtils.EnumEasingType.valueOf(hotbarAnimTypeValue.get()),
-                    EaseUtils.EnumEasingOrder.valueOf(hotbarAnimOrderValue.get()),
-                    field.toDouble(),
-                    value.toDouble(),
-                    hotbarAnimSpeedValue.get() * 30L
-                ).start()
-            }
-        } */
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return

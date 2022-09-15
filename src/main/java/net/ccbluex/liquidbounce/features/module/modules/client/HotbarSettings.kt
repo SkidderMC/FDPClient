@@ -24,7 +24,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 @ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HotbarSettings : Module() {
     val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Full", "LB", "Rise"), "Rise")
-    val animHotbarValue = BoolValue("AnimatedHotbar", true) //lb
     val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
     val hotbarEaseValue = BoolValue("HotbarEase", false)
     private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
@@ -62,18 +61,5 @@ object HotbarSettings : Module() {
     }
     // rounded
     private var hotBarX = 0F
-
-    fun getAnimPos(pos: Float): Float {
-        if (animHotbarValue.get()) hotBarX = AnimationUtils.animate(pos, hotBarX, 0.02F * RenderUtils.deltaTime.toFloat())
-        else hotBarX = pos
-
-        return hotBarX
-    }
-
-
-
-
-
-
 
 }
