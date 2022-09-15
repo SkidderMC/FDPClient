@@ -58,6 +58,7 @@ class Arraylist(
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tagsValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "Space", "None"), "Space")
     private val shadow = BoolValue("ShadowText", true)
+    val jelloShadowValue = BoolValue("jelloShadow", false)
     private val split = BoolValue("SplitName", false)
     private val slideInAnimation = BoolValue("SlideInAnimation", true)
     private val noRenderModules = BoolValue("NoRenderModules", false)
@@ -75,7 +76,6 @@ class Arraylist(
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
     private val fontValue = FontValue("Font", Fonts.font40)
     private val fontAlphaValue = IntegerValue("TextAlpha", 255, 0, 255)
-    val jelloShadowValue = BoolValue("jelloShadow", false)
     private val cRainbowSecValue = IntegerValue("CRainbow-Seconds", 2, 1, 10)
     private val cRainbowDistValue = IntegerValue("CRainbow-Distance", 2, 1, 6)
     private var x2 = 0
