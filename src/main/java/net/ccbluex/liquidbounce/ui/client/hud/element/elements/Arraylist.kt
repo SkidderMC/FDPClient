@@ -74,6 +74,7 @@ class Arraylist(
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
     private val fontValue = FontValue("Font", Fonts.font40)
     private val fontAlphaValue = IntegerValue("TextAlpha", 255, 0, 255)
+    private val jelloShadowValue = BoolValue("jelloShadow", false)
     private val cRainbowSecValue = IntegerValue("CRainbow-Seconds", 2, 1, 10)
     private val cRainbowDistValue = IntegerValue("CRainbow-Distance", 2, 1, 6)
     private var x2 = 0
@@ -139,6 +140,7 @@ class Arraylist(
         val rectMode = rectValue.get()
         val backgroundCustomColor = Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get(), backgroundColorAlphaValue.get())
         val textShadow = shadow.get()
+        val jelloShadow = jelloShadowValue.get()
         val textSpacer = textHeight + space
         val saturation = saturationValue.get()
         val brightness = brightnessValue.get()
@@ -174,7 +176,7 @@ class Arraylist(
                             else -> backgroundCustomColor.rgb
                         }
                     )
-
+                    if (jelloShadow){RenderUtils.drawImage(ResourceLocation("fdpclient/ui/shadow/shadow.png"), xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY, 87, textHeight)}
                     val mName = changeCase(getModuleName(module))
                     val mTag = changeCase(getModuleTag(module))
                     fontRenderer.drawString(mName, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY,
