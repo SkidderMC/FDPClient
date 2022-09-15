@@ -177,7 +177,7 @@ class Arraylist(
                             else -> backgroundCustomColor.rgb
                         }
                     )
-                    if (jelloShadow){RenderUtils.drawImage(ResourceLocation("fdpclient/ui/shadow/shadow.png"), xPos.toFloat() - if (rectMode.equals("right", true)) 3f else 0f, yPos.toFloat() + textY.toFloat(), 87, textHeight)}
+                    if (jelloShadow){RenderUtils.drawImage(ResourceLocation("fdpclient/ui/shadow/shadow.png"), xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY, 87, textHeight)}
                     val mName = changeCase(getModuleName(module))
                     val mTag = changeCase(getModuleTag(module))
                     fontRenderer.drawString(mName, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY,
