@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.ShadowUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
 import org.lwjgl.opengl.GL11
@@ -176,7 +177,7 @@ class Arraylist(
                             else -> backgroundCustomColor.rgb
                         }
                     )
-                    if (jelloShadow){RenderUtils.drawImage(ResourceLocation("fdpclient/ui/shadow/shadow.png"), xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY, 87, textHeight)}
+                    if (jelloShadow){RenderUtils.drawImage(ResourceLocation("fdpclient/ui/shadow/shadow.png"), xPos.toFloat - if (rectMode.equals("right", true)) 3f else 0f, yPos.toFloat + textY.toFloat, 87f, textHeight.toFloat)}
                     val mName = changeCase(getModuleName(module))
                     val mTag = changeCase(getModuleTag(module))
                     fontRenderer.drawString(mName, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY,
