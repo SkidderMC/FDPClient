@@ -19,11 +19,15 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
+import net.ccbluex.liquidbounce.utils.render.Translate
 import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
+    val translate = Translate(0F,0F)
+    val tab = Translate(0f , 0f)
+    var expanded: Boolean = false
     val animation: AnimationHelper
     var name: String
     var localizedName = ""

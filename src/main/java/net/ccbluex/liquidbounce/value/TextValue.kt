@@ -13,5 +13,11 @@ open class TextValue(name: String, value: String) : Value<String>(name, value) {
         if (element.isJsonPrimitive) {
             value = element.asString
         }
+
     }
-}
+    fun append(o: Any): TextValue {
+        set(get() + o)
+        return this
+    }
+
+    }
