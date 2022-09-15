@@ -75,7 +75,7 @@ class Arraylist(
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
     private val fontValue = FontValue("Font", Fonts.font40)
     private val fontAlphaValue = IntegerValue("TextAlpha", 255, 0, 255)
-    private val jelloShadowValue = BoolValue("jelloShadow", false)
+    val jelloShadowValue = BoolValue("jelloShadow", false)
     private val cRainbowSecValue = IntegerValue("CRainbow-Seconds", 2, 1, 10)
     private val cRainbowDistValue = IntegerValue("CRainbow-Distance", 2, 1, 6)
     private var x2 = 0
