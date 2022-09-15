@@ -47,7 +47,7 @@ class Velocity : Module() {
         "Reverse", "SmoothReverse",
         "Jump",
         "Phase", "PacketPhase", "Glitch", "Spoof",
-        "Legit"), "Simple")
+        "Legit", "Vulcan"), "Simple")
 
     // Reverse
     private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F).displayable { modeValue.equals("Reverse") }
@@ -448,7 +448,11 @@ class Velocity : Module() {
                 "legit" -> {
                     pos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
                 }
-
+                "vulcan":
+                if (mc.thePlayer.hurtTime > 0 && instanceof C0FPacketConfirmTransaction) {
+                    event.cancelEvent()
+                }
+                break;
                 "redesky2" -> {
                     if (packet.getMotionX() == 0 && packet.getMotionZ() == 0) { // ignore horizonal velocity
                         return
