@@ -32,9 +32,9 @@ class HyCraftFly : FlyMode("HyCraft") {
         mc.gameSettings.keyBindSneak.pressed = false
         fly.antiDesync = true
         MovementUtils.strafe((1.2 + Math.random() / 10).toFloat())
-        if(GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
+        if(mc.gameSettings.keyBindJump.pressed)/*if(GameSettings.isKeyDown(mc.gameSettings.keyBindJump))*/ {
             mc.thePlayer.motionY = 0.42
-        } else if(GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) {
+        } else if(mc.gameSettings.keyBindSneak.pressed)/* if(GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)  */ {
             mc.thePlayer.motionY = 0.42
         } else {
             mc.thePlayer.motionY = 0.0
