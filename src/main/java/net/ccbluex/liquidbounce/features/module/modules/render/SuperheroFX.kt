@@ -2,7 +2,6 @@
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
- *  This file is made by: https://github.com/WYSI-Foundation/LiquidBouncePlus
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
@@ -69,8 +68,8 @@ class FXParticle(val posX: Double, val posY: Double, val posZ: Double, val animH
     private val color: Color = listOf(Color.BLUE, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW).random()
 
     private val fadeTimer = MSTimer()
-    private val stringLength = Fonts.font40.getStringWidth(messageString).toDouble()
-    private val fontHeight = Fonts.font40.FONT_HEIGHT.toDouble()
+    private val stringLength = Fonts.fontBangers.getStringWidth(messageString).toDouble()
+    private val fontHeight = Fonts.fontBangers.FONT_HEIGHT.toDouble()
 
     var canRemove = false
     private var firstDraw = true
@@ -98,8 +97,8 @@ class FXParticle(val posX: Double, val posY: Double, val posZ: Double, val animH
         GL11.glScalef(progress * -0.02F, progress * -0.02F, progress * 0.02F)
         GlStateManager.rotate(textY * renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
         GL11.glDepthMask(false)
-        Fonts.font40.drawString(messageString, 0.25F, 0.25F, Color(0F, 0F, 0F, alpha * 0.75F).rgb)
-        Fonts.font40.drawString(messageString, 0F, 0F, ColorUtils.reAlpha(color, alpha).rgb)
+        Fonts.fontBangers.drawString(messageString, 0.25F, 0.25F, Color(0F, 0F, 0F, alpha * 0.75F).rgb)
+        Fonts.fontBangers.drawString(messageString, 0F, 0F, ColorUtils.reAlpha(color, alpha).rgb)
         GL11.glColor4f(187.0f, 255.0f, 255.0f, 1.0f)
         GL11.glDepthMask(true)
         GlStateManager.doPolygonOffset(1.0f, 1500000.0f)

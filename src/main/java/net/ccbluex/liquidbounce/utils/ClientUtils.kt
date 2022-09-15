@@ -13,6 +13,7 @@ import org.lwjgl.opengl.Display
 
 object
 ClientUtils : MinecraftInstance() {
+    @JvmStatic
     val logger = LogManager.getLogger("FDPClient")
 
 

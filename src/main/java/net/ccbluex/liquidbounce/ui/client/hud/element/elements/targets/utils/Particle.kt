@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-
 class Particle(var color: Color, var distX: Float, var distY: Float, var radius: Float, var drawType: ShapeType = ShapeType.SOLID_CIRCLE) {
     var alpha = 1F
     var progress = 0.0
