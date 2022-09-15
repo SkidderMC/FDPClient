@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 
 @ModuleInfo(name = "SpinBot", category = ModuleCategory.PLAYER)
 class SpinBot : Module() {
-    private val yawModeValue = ListValue("YawMode", arrayOf("Jitter", "Spin", "Back", "BackJitter"), "Spin")
+    private val yawModeValue = ListValue("YawMode", arrayOf("Forward", "Jitter", "Spin", "Back", "BackJitter"), "Spin")
     private val pitchModeValue = ListValue("PitchMode", arrayOf("Down", "Straight", "Up", "Jitter", "AnotherJitter"), "Down")
     private val spinSpeedValue = IntegerValue("spinSpeed", 20, 1, 90).displayable { yawModeValue.equals("Spin") }
     private val rotateValue = BoolValue("SilentRotate", true)
@@ -30,6 +30,9 @@ class SpinBot : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         when (yawModeValue.get().lowercase()) {
+            "forward" -> {
+                yaw = mc.thePlayer.rotationYaw + 0f
+            }
             "spin" -> {
                 yaw += spinSpeedValue.get().toFloat()
                 if (yaw > 180.0f) {
