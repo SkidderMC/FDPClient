@@ -73,6 +73,7 @@ class Arraylist(
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
     private val fontValue = FontValue("Font", Fonts.font40)
+    private val fontAlphaValue = IntegerValue("TextAlpha", 255, 0, 255)
     private val cRainbowSecValue = IntegerValue("CRainbow-Seconds", 2, 1, 10)
     private val cRainbowDistValue = IntegerValue("CRainbow-Distance", 2, 1, 6)
     private var x2 = 0
@@ -129,8 +130,8 @@ class Arraylist(
         val colorMode = colorModeValue.get()
         val rectColorMode = rectColorModeValue.get()
         val backgroundColorMode = backgroundColorModeValue.get()
-        val customColor = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
-        val tagCustomColor = Color(tagColorRedValue.get(), tagColorGreenValue.get(), tagColorBlueValue.get())
+        val customColor = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), textAlphaValue.get())
+        val tagCustomColor = Color(tagColorRedValue.get(), tagColorGreenValue.get(), tagColorBlueValue.get(), textAlphaValue.get())
         val rectCustomColor = Color(rectColorRedValue.get(), rectColorGreenValue.get(), rectColorBlueValue.get(), rectColorBlueAlpha.get())
         val space = spaceValue.get()
         val textHeight = textHeightValue.get()
