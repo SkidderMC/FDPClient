@@ -41,15 +41,20 @@ import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.jvm.internal.Intrinsics
+import kotlin.math.abs
 
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
-    private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "New2")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Bar", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
+    private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
     private val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
+
+    private var Health: Float = 0F
+    private var EndingTarget: Entity? = null
+    private val BarAnimationSpeed = FloatValue("BarAnimationSpeed", 2F, 1F, 9F).displayable { modeValue.get().equals("bar", true) }
 
     private val fontValue = FontValue("Font", Fonts.font40)
 
@@ -378,6 +383,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "sparklingwater" -> drawSparklingWater(prevTarget!!)
             "exhibition" -> drawExhibition(prevTarget!! as EntityPlayer)
             "exhibitionold" -> drawExhibitionOld(prevTarget!! as EntityPlayer)
+            "bar" -> drawBar(prevTarget!!)
         }
 
         return getTBorder()
@@ -812,6 +818,34 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val time = System.currentTimeMillis()
         val x = RandomUtils.nextInt(-50, 50)
         val y = RandomUtils.nextInt(-50, 50)
+    }
+
+    private fun drawBar(target: EntityLivingBase) {
+        if (target != EndingTarget || Health < 0 || Health > target.maxHealth ||
+            abs(Health - target.health) < 0.01) {
+            Health = target.health
+        }
+
+        val width = (38 + Fonts.font40.getStringWidth(target.name))
+            .coerceAtLeast(119)
+            .toFloat()
+
+        RenderUtils.drawBorderedRect(3F, 37F, 115F, 42F, 4.2F, Color(16, 16, 16, 255).rgb, Color(10, 10, 10, 100).rgb)
+        RenderUtils.drawBorderedRect(3F, 37F, 115F, 42F, 1.2F, Color(255, 255, 255, 180).rgb, Color(255, 180, 255, 0).rgb)
+        if (Health > target.health)
+            RenderUtils.drawRect(3F, 37F, (Health / target.maxHealth) * width - 4F,
+                42F, Color(250, 0, 0, 120).rgb)
+        RenderUtils.drawRect(3.2F, 37F, (target.health / target.maxHealth) * width - 4F,
+            42F, Color(220, 0, 0, 220).rgb)
+        if (Health < target.health)
+            RenderUtils.drawRect((Health / target.maxHealth) * width, 37F,
+                (target.health / target.maxHealth) * width, 42F, Color(44, 201, 144).rgb)
+        RenderUtils.drawBorderedRect(3F, 37F, 115F, 42F, 1.2F, Color(255, 255, 255, 180).rgb, Color(255, 180, 255, 0).rgb)
+
+
+        Health += ((target.health - Health) / 2.0F.pow(10.0F - BarAnimationSpeed.get())) * RenderUtils.deltaTime
+
+        mc.fontRendererObj.drawStringWithShadow("" + target.name, 36F, 22F, 0xFFFFFF)
     }
 
     private fun drawFDP(target: EntityLivingBase) {

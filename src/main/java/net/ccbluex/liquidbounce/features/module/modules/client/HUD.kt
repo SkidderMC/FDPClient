@@ -25,10 +25,9 @@ import net.minecraft.client.gui.GuiChat
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.util.*
-
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HUD : Module() {
-    val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Outline")
+    val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Autumn")
     val clolormode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")
     val hueInterpolation = BoolValue("hueInterpolation", false)
     val movingcolors = BoolValue("MovingColors", false)
