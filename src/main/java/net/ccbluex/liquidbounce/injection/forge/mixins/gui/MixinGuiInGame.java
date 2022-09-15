@@ -97,24 +97,23 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if(hotbarType == "Rise") {
                 GlStateManager.disableTexture2D();
-//       if (blurRadius != 0f) {}
-                BlurUtils.INSTANCE.draw(i - 91F, 0F, 182F, 22F, 10F); /* x,y,w,h,blurRadius */
+               // BlurUtils.INSTANCE.draw(i - 91F, 0F, 182F, 22F, 10F); /* x,y,w,h,blurRadius */
                 RenderUtils.quickDrawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 GlStateManager.enableTexture2D();
             } else if(hotbarType == "Full") {
                 GlStateManager.disableTexture2D();
-                RenderUtils.quickDrawRect(0, sr.getScaledHeight() - 22, sr.getScaledWidth(), sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
-                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
+                RenderUtils.quickDrawRect(0, sr.getScaledHeight() - 23, sr.getScaledWidth(), sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
+                RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 23, itemX + 22, sr.getScaledHeight() - 21, ColorUtils.INSTANCE.rainbow());
                 RenderUtils.quickDrawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(), new Color(0, 0, 0, HotbarSettings.INSTANCE.getHotbarAlphaValue().get()));
                 GlStateManager.enableTexture2D();
             } else if (hotbarType == "Rounded") {
                 RenderUtils.originalRoundedRect(middleScreen - 91, sr.getScaledHeight() - 2, middleScreen + 91, sr.getScaledHeight() - 22, 3F, Integer.MIN_VALUE);
                 RenderUtils.originalRoundedRect(middleScreen - 91 + posInv, sr.getScaledHeight() - 2, middleScreen - 91 + posInv + 22, sr.getScaledHeight() - 22, 3F, Integer.MAX_VALUE);
             } else if (hotbarType == "LB") {
-            RenderUtils.quickDrawRect(middleScreen - 91, sr.getScaledHeight() - 24, middleScreen + 90, sr.getScaledHeight(), Integer.MIN_VALUE);
-            RenderUtils.quickDrawRect(middleScreen - 91 - 1 + posInv + 1, sr.getScaledHeight() - 24, middleScreen - 91 - 1 + posInv + 22, sr.getScaledHeight() - 22 - 1 + 24, Integer.MAX_VALUE);
+                RenderUtils.quickDrawRect(middleScreen - 91, sr.getScaledHeight() - 24, middleScreen + 90, sr.getScaledHeight(), Integer.MIN_VALUE);
+                RenderUtils.quickDrawRect(middleScreen - 91 - 1 + posInv + 1, sr.getScaledHeight() - 24, middleScreen - 91 - 1 + posInv + 22, sr.getScaledHeight() - 22 - 1 + 24, Integer.MAX_VALUE);
             } else {
                 this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
                 this.drawTexturedModalRect(itemX - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
@@ -144,30 +143,6 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.disableRescaleNormal();
             GlStateManager.disableBlend();
         }
-                /*
-        if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer && hud.getState() && (hud.getBlackHotbarValue().get() || hud.getAnimHotbarValue().get())) {
-
-
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.enableRescaleNormal();
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-            RenderHelper.enableGUIStandardItemLighting();
-
-            RenderHelper.disableStandardItemLighting();
-            GlStateManager.disableRescaleNormal();
-            GlStateManager.disableBlend();
-            GlStateManager.resetColor();
-            LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
-            AWTFontRenderer.Companion.garbageCollectionTick();
-            callbackInfo.cancel();
-        }
-        */
-
-
-
-
-
         LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks, StaticStorage.scaledResolution));
     }
 
