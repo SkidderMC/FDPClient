@@ -11,7 +11,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class GLUtil {
 
-
     public static void render(int mode, Runnable render){
         glBegin(mode);
         render.run();

@@ -19,8 +19,7 @@ public class Main{
     public static boolean reloadModules;
 
     public static float allowedClickGuiHeight = 300;
-
-
+    
     public static List<Module> getModulesInCategory(ModuleCategory c, ModuleManager moduleManager) {
         return moduleManager.getModules().stream().filter(m -> m.getCategory() == c).collect(Collectors.toList());
     }
