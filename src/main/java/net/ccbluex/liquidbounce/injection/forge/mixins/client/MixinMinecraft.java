@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
+import net.ccbluex.liquidbounce.features.module.modules.misc.FakeFPS;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
@@ -98,10 +99,21 @@ public abstract class MixinMinecraft {
     @Shadow
     private boolean fullscreen;
 
+    @Shadow
+    public static int debugFPS;
+
     /**
      * @author Zywl
-     * @reason
      */
+    @Overwrite
+    public static int getDebugFPS() {
+        FakeFPS fakeFPS = (FakeFPS) LiquidBounce.moduleManager.getModule(FakeFPS.class);
+        if (fakeFPS.getState()) {
+            return fakeFPS.getFakeFPS();
+        }
+        return debugFPS;
+    }
+
     @Overwrite
     public int getLimitFramerate() {
         return this.gameSettings.limitFramerate;
