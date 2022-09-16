@@ -12,8 +12,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.button.*
 import net.ccbluex.liquidbounce.launch.data.modernui.ClickGUIModule.*
+import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager.height
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -21,9 +23,12 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiChat
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.MathHelper
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.util.*
+
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HUD : Module() {
     val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Autumn")
@@ -36,6 +41,7 @@ object HUD : Module() {
     val chatRectValue = BoolValue("ChatRect", true)
     val chatCombineValue = BoolValue("ChatCombine", true)
     val chatAnimValue = BoolValue("ChatAnimation", true)
+    val HealthValue = BoolValue("Health", true)
     val rainbowStartValue = FloatValue("RainbowStart", 0.55f, 0f, 1f)
     val rainbowStopValue = FloatValue("RainbowStop", 0.85f, 0f, 1f)
     val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.45f, 0f, 1f)
@@ -56,6 +62,28 @@ object HUD : Module() {
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
         LiquidBounce.hud.render(false, event.partialTicks)
+        renderWatermark()
+        if (HealthValue.get()) mc.fontRendererObj.drawStringWithShadow(
+            MathHelper.ceiling_float_int(mc.thePlayer.health).toString(),
+            (width / 2 - 4).toFloat(), (height / 2 - 13).toFloat(), if (mc.thePlayer.health <= 15) Color(255, 0, 0).rgb else Color(0, 255, 0).rgb)
+        GlStateManager.resetColor()
+    }
+
+    private fun renderWatermark() {
+        var width = 3
+        mc.fontRendererObj.drawStringWithShadow(
+            "FDP",
+            3.0f,
+            3.0f,
+            rainbow().rgb
+        )
+        width += mc.fontRendererObj.getStringWidth("FDP")
+        mc.fontRendererObj.drawStringWithShadow(
+            "CLIENT",
+            width.toFloat(),
+            3.0f,
+            -1
+        )
     }
 
     @EventTarget

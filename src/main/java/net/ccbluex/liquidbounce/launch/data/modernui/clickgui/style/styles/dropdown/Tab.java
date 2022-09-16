@@ -34,7 +34,6 @@ public class Tab {
 
     public void drawScreen(int mouseX, int mouseY) {
 
-
         String l = "";
         if (enumModuleType.name().equalsIgnoreCase("Combat")) {
             l = "D";
@@ -48,7 +47,7 @@ public class Tab {
             l = "G";
         } else if (enumModuleType.name().equalsIgnoreCase("Misc")) {
             l = "F";
-        } else if (enumModuleType.name().equalsIgnoreCase( "Client")) {
+        } else if (enumModuleType.name().equalsIgnoreCase("Client")) {
             l = "E";
         }
         RenderUtils.drawRect(posX - 1, posY, posX + 101, posY + 15, new Color(29, 29, 29, 255).getRGB());

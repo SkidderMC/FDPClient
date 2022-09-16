@@ -128,7 +128,6 @@ public class ModuleRect extends Component {
         }
         settingSize = settingHeight;
 
-
     }
 
     @Override

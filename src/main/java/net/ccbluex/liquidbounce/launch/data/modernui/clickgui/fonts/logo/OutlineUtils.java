@@ -19,7 +19,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 @SideOnly(Side.CLIENT)
 public class OutlineUtils {
-
     public static void renderOne(final float lineWidth) {
         checkSetupFBO();
         glPushAttrib(GL_ALL_ATTRIB_BITS);

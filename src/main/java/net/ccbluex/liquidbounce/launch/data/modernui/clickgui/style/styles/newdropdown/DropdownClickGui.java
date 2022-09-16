@@ -5,15 +5,15 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown;
 
-import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.WbxMain;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.impl.SettingComponents;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.animations.Animation;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.animations.Direction;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.animations.impl.DecelerateAnimation;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.animations.impl.EaseBackIn;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.normal.Main;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.render.DrRenderUtils;
+import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiScreen;
@@ -80,7 +80,11 @@ public class DropdownClickGui extends GuiScreen {
         if (Main.reloadModules) {
             initGui();
         }
+        //   if (Main.walk.isEnabled()) {
+        //        InventoryMove.updateStates();
+        //     }
 
+        //If the closing animation finished then change the gui screen to null
         if (openingAnimation.isDone() && openingAnimation.getDirection().equals(Direction.BACKWARDS)) {
             mc.displayGuiScreen(null);
             return;

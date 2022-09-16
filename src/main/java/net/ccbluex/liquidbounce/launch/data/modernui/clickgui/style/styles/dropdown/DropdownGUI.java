@@ -19,20 +19,17 @@ import org.lwjgl.opengl.GL11;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 public class DropdownGUI extends GuiScreen {
 
     private final List<Tab> tabs = new CopyOnWriteArrayList<>();
-
     private boolean dragging;
     private int dragX;
     private int dragY;
     private int alpha;
-   private final ResourceLocation hudIcon = new ResourceLocation("fdpclient/custom_hud_icon.png");
+   private final ResourceLocation hudIcon = new ResourceLocation("fdpclient/clickgui/Hud.png");
     public DropdownGUI() {
 
     }
-
     @Override
     public void initGui() {
         float x = 75;

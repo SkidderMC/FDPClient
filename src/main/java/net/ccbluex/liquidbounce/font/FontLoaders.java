@@ -1,3 +1,9 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+
 package net.ccbluex.liquidbounce.font;
 
 import net.minecraft.client.Minecraft;
@@ -5,8 +11,6 @@ import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.util.ArrayList;
-
-/* loaded from: LiquidBounce-b73.jar:net/ccbluex/liquidbounce/FontLoaders.class */
 public abstract class FontLoaders {
     public static CFontRenderer F14 = new CFontRenderer(getFont(14), true, true);
     public static CFontRenderer F16 = new CFontRenderer(getFont(16), true, true);

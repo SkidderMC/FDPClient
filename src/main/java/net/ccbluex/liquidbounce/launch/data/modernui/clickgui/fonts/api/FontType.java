@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.api;
 @SuppressWarnings("SpellCheckingInspection")
 public enum FontType {
-
 	DM("diramight.ttf"),
 	FIXEDSYS("tahoma.ttf"),
 	ICONFONT("stylesicons.ttf"),

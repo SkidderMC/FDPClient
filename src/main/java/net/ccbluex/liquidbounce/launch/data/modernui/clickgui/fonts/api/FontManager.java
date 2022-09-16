@@ -4,12 +4,9 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.api;
-
 @FunctionalInterface
 public interface FontManager {
-
 	FontFamily fontFamily(FontType fontType);
-
 	default FontRenderer font(FontType fontType, int size) {
 		return fontFamily(fontType).ofSize(size);
 	}

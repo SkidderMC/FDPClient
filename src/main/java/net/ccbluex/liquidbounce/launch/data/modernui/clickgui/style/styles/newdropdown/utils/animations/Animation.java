@@ -20,7 +20,6 @@ public abstract class Animation {
         this.direction = Direction.FORWARDS;
     }
 
-
     public Animation(int ms, double endPoint, Direction direction) {
         this.duration = ms; //Time in milliseconds of how long you want the animation to take.
         this.endPoint = endPoint; //The desired distance for the animated object to go.
@@ -88,9 +87,6 @@ public abstract class Animation {
         }
     }
 
-
-    //This is where the animation equation should go, for example, a logistic function. Output should range from 0 - 1.
-    //This will take the timer's time as an input, x.
     protected abstract double getEquation(double x);
 
 }
