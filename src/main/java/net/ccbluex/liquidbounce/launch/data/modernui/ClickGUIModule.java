@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
@@ -12,7 +13,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.*;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.dropdown.Client;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.LightClickGUI;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.DropdownClickGui;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.launch.options.modernuiLaunchOption;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -28,14 +31,19 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[]{"FDP", "Novoline", "LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo"}, "Astolfo") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"FDP", "Tenacity", "Classic", "Novoline", "LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo"}, "Astolfo") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
         }
     };
 
+    public static final BoolValue backback = new BoolValue("Background Accent",true);
 
+    public static final ListValue scrollMode = new ListValue("Scroll Mode", new String[]{"Screen Height", "Value"},"Value");
+
+    public static final ListValue colormode = new ListValue("Setting Accent", new String[]{"White", "Color"},"Color");
+    public static final IntegerValue clickHeight = new IntegerValue("Tab Height", 250, 100, 500);
     public final FloatValue scaleValue = new FloatValue("Scale", 1F, 0.7F, 2F);
     public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
     public final ListValue backgroundValue = new ListValue("Background", new String[] {"Default", "Gradient", "None"}, "None");
@@ -46,18 +54,33 @@ public class ClickGUIModule extends Module {
     public static final IntegerValue colorGreenValue = (IntegerValue) new IntegerValue("G", 160, 0, 255).displayable(() -> !colorRainbow.get());
     public static final IntegerValue colorBlueValue = (IntegerValue) new IntegerValue("B", 255, 0, 255).displayable(() -> !colorRainbow.get());
 
+    private static final ListValue clickguicolormode = new ListValue("ClickGuiColor",new String[]{"Drak","White"},"Drak");
+
+    public final BoolValue getClosePrevious = (BoolValue) new BoolValue("ClosePrevious",true);
+
+    public static boolean isLight (){
+        if (clickguicolormode.get().equalsIgnoreCase("White")){
+            return true;
+        }
+        return false;
+    }
+
     public static Color generateColor() {
         return colorRainbow.get() ? ColorUtils.INSTANCE.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
     }
-
     @Override
     public void onEnable() {
+
         if (styleValue.get().contains("Novoline")) {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
         } else if (styleValue.get().contains("FDP")) {
             mc.displayGuiScreen(new LightClickGUI());
             this.setState(false);
+        } else if (styleValue.get().equalsIgnoreCase("Classic")){
+            mc.displayGuiScreen(Client.getInstance().getDropDownGUI());
+        } else if (styleValue.get().equalsIgnoreCase("Tenacity")){
+            mc.displayGuiScreen(new DropdownClickGui());
         } else {
             updateStyle();
             mc.displayGuiScreen(modernuiLaunchOption.clickGui);

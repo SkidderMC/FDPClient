@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Sha
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.utils.AnimationUtils
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.PlayerUtils;
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -24,7 +23,6 @@ import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
@@ -40,7 +38,6 @@ import java.text.DecimalFormatSymbols
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
-import kotlin.jvm.internal.Intrinsics
 import kotlin.math.abs
 
 @ElementInfo(name = "Targets")
@@ -1812,6 +1809,18 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
     }
 
+    private fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    fun handleBlur(entity: EntityPlayer) {
+        val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font72.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.fastRoundedRect(0F, 0F, tWidth, 48F, 7F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
       fun handleBlur(entity: EntityLivingBase) {
           val font = Fonts.font40
           val name = "Name: ${entity.name}"
@@ -1825,8 +1834,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
           GlStateManager.enableTexture2D()
           GlStateManager.disableBlend()
     }
-
-    private fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
 
     private fun handleShadow(entity: EntityPlayer) {
         val font = Fonts.font40
