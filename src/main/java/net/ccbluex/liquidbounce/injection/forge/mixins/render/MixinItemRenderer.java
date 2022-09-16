@@ -253,7 +253,7 @@ public abstract class MixinItemRenderer {
                             }
                             case "Yeet": {
                                 doItemRenderGLTranslate();
-                                GlStateManager.translate(0.0F, equipProgress * -0.6F, 0.0F);
+                                GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
                                 GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
                                 float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
                                 float var12 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
