@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 
 abstract class Value<T>(val name: String, var value: T) {
     val default = value
+    var textHovered: Boolean = false
 
     private var displayableFunc: () -> Boolean = { true }
 

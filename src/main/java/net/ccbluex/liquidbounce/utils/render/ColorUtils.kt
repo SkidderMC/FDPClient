@@ -238,10 +238,12 @@ object ColorUtils {
         return colors
     }
 
+    @JvmStatic
     fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Double): Int {
         return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble())!!.toInt()
     }
 
+    @JvmStatic
     fun interpolateColorC(color1: Color, color2: Color, amount: Float): Color? {
         var amount = amount
         amount = Math.min(1f, Math.max(0f, amount))
