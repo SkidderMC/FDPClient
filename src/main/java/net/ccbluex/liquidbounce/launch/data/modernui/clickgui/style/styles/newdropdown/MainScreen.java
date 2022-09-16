@@ -151,7 +151,7 @@ public class MainScreen implements Screen {
         if (hoveringMods) {
             category.getScroll().onScroll(30);
             float hiddenHeight = (float) ((count * 17) - allowedHeight);
-            category.getScroll().setMinScroll(Math.max(0, hiddenHeight));
+            //category.getScroll().setMinScroll(Math.max(0, hiddenHeight));
         }
 
         StencilUtil.uninitStencilBuffer();
