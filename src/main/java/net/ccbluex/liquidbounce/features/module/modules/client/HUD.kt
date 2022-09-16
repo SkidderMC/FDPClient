@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.launch.data.modernui.ClickGUIModule.*
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager.height
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -61,10 +62,28 @@ object HUD : Module() {
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
         LiquidBounce.hud.render(false, event.partialTicks)
+        renderWatermark()
         if (HealthValue.get()) mc.fontRendererObj.drawStringWithShadow(
             MathHelper.ceiling_float_int(mc.thePlayer.health).toString(),
             (width / 2 - 4).toFloat(), (height / 2 - 13).toFloat(), if (mc.thePlayer.health <= 15) Color(255, 0, 0).rgb else Color(0, 255, 0).rgb)
         GlStateManager.resetColor()
+    }
+
+    private fun renderWatermark() {
+        var width = 3
+        mc.fontRendererObj.drawStringWithShadow(
+            "FDP",
+            3.0f,
+            3.0f,
+            rainbow().rgb
+        )
+        width += mc.fontRendererObj.getStringWidth("FDP")
+        mc.fontRendererObj.drawStringWithShadow(
+            "CLIENT",
+            width.toFloat(),
+            3.0f,
+            -1
+        )
     }
 
     @EventTarget
