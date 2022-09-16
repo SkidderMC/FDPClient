@@ -44,6 +44,7 @@ class Text(
         val HOUR_FORMAT = SimpleDateFormat("HH:mm")
 
         val DECIMAL_FORMAT = DecimalFormat("#.##")
+        val NO_DECIMAL_FORMAT = DecimalFormat("#")
     }
 
     val displayString = TextValue("DisplayText", "")
@@ -89,6 +90,9 @@ class Text(
                 "x" -> return DECIMAL_FORMAT.format(mc.thePlayer.posX)
                 "y" -> return DECIMAL_FORMAT.format(mc.thePlayer.posY)
                 "z" -> return DECIMAL_FORMAT.format(mc.thePlayer.posZ)
+                "xpos" -> return NO_DECIMAL_FORMAT.format(mc.thePlayer.posX)
+                "ypos" -> return NO_DECIMAL_FORMAT.format(mc.thePlayer.posY)
+                "zpos" -> return NO_DECIMAL_FORMAT.format(mc.thePlayer.posZ)
                 "xdp" -> return mc.thePlayer.posX.toString()
                 "ydp" -> return mc.thePlayer.posY.toString()
                 "zdp" -> return mc.thePlayer.posZ.toString()
@@ -167,6 +171,7 @@ class Text(
         val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
 
         val fontRenderer = fontValue.get()
+        
 
         val rectColor = when (rectColorModeValue.get().lowercase()) {
             "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
@@ -219,9 +224,9 @@ class Text(
                 FontLoaders.F40.drawString(
                     displayText, 5F, 0F,Color(255,255,255,140).rgb
                 )
-                FontLoaders.F24.drawString(
-                    LiquidBounce.CLIENT_VERSION.toString() , 5F, 23F,Color(255,255,255,140).rgb
-                )
+/*                  FontLoaders.F24.drawString(
+                    LiquidBounce.CLIENT_VERSION.toString() , 5F, 23F,Color(255,255,255,140).rgb 
+                ) */
             }
         }
 
