@@ -4,9 +4,6 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
-
-import com.guimc.fuckpcl.PCLChecker;
-import com.guimc.fuckpcl.utils.WindowUtils;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
@@ -117,17 +114,6 @@ public abstract class MixinMinecraft {
     @Overwrite
     public int getLimitFramerate() {
         return this.gameSettings.limitFramerate;
-    }
-
-    @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
-    private void startGame(CallbackInfo callbackInfo) throws AccessDeniedException {
-        if (PCLChecker.INSTANCE.fullCheck(this.mcDataDir)) {
-            Display.destroy();
-            String warnStr = "Plain Craft Launcher is NOT supported with this client, please switch another Minecraft Launcher!";
-            MiscUtils.INSTANCE.showErrorPopup(warnStr);
-            throw new AccessDeniedException(warnStr);
-        }
-        LiquidBounce.INSTANCE.initClient();
     }
 
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
