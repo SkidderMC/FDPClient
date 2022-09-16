@@ -14,7 +14,6 @@ public class TimerUtil {
         lastMS = System.currentTimeMillis();
     }
 
-
     public boolean hasTimeElapsed(long time, boolean reset) {
         if (System.currentTimeMillis() - lastMS > time) {
             if (reset) reset();
@@ -23,7 +22,6 @@ public class TimerUtil {
 
         return false;
     }
-
 
     public boolean hasTimeElapsed(long time) {
         return System.currentTimeMillis() - lastMS > time;

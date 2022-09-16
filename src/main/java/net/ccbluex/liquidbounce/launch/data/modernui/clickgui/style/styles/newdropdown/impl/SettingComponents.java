@@ -93,7 +93,6 @@ public class SettingComponents extends Component {
             }
 
 
-
         }
     }
 
@@ -155,7 +154,6 @@ public class SettingComponents extends Component {
 
 
 
-        //
         for (Value setting : module.getValues()) {
             if (!setting.getDisplayable())
                 continue;
@@ -468,11 +466,11 @@ public class SettingComponents extends Component {
                     //   Fonts.SF.SF_18.SF_18.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
                 }
 
-                //Mode的名字
+
                 Fonts.SF.SF_14.SF_14.drawString(modeSetting.getName(), x + 13, settingY + 9, textColor.getRGB());
 
                 DrRenderUtils.resetColor();
-                //当先选择的mode
+
                 Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(modeSetting.get(), x + 13, (float) (settingY + 17.5), textColor.getRGB());
 
                 DrRenderUtils.resetColor();

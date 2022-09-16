@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.drop
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 public class ScaleUtils {
-
     public static int[] getScaledMouseCoordinates(Minecraft mc, int mouseX, int mouseY){
         int x = mouseX;
         int y = mouseY;
@@ -27,7 +26,6 @@ public class ScaleUtils {
         }
         return new int[]{x,y};
     }
-
     public static double[] getScaledMouseCoordinates(Minecraft mc, double mouseX, double mouseY){
         double x = mouseX;
         double y = mouseY;
@@ -46,7 +44,6 @@ public class ScaleUtils {
         }
         return new double[]{x,y};
     }
-
 
     public static void scale(Minecraft mc){
         switch (mc.gameSettings.guiScale){

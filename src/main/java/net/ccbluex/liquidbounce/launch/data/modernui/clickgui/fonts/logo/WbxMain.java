@@ -11,13 +11,11 @@ import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdr
 
 public class WbxMain {
     public static String Name = "FDPCLIENT";
-    public static String Rank = "";
-    public static long playTimeStart = 0;
+
     public static String version = "";
     public static String username;
     private final SideGui sideGui = new SideGui();
     private static WbxMain INSTANCE;
-
     public  SideGui getSideGui() {
         return sideGui;
     }

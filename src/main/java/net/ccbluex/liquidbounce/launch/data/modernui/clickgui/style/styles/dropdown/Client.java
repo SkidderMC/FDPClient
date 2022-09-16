@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.dropdown;
 
 import net.ccbluex.liquidbounce.utils.ClientUtils;
-
 public class Client {
     private static Client INSTANCE;
     public DropdownGUI dropDownGUI;
@@ -14,7 +13,6 @@ public class Client {
         return dropDownGUI;
     }
     public static Client getInstance() {
-
 
         try {
             if (INSTANCE == null) INSTANCE = new Client();
@@ -25,4 +23,3 @@ public class Client {
         }
     }
 }
-

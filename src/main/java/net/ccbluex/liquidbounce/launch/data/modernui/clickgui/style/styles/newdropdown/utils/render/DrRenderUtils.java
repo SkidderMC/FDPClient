@@ -236,7 +236,7 @@ public class DrRenderUtils implements Utils {
         glShadeModel(GL_FLAT);
         setAlphaLimit(1);
     }
-    
+
     public static Color brighter(Color color, float FACTOR) {
         int r = color.getRed();
         int g = color.getGreen();

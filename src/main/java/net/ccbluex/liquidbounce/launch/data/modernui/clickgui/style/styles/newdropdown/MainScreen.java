@@ -82,6 +82,8 @@ public class MainScreen implements Screen {
         DrRenderUtils.setAlphaLimit(0);
         Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(category.name(), x + 5, y + Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getMiddleOfBox(categoryRectHeight), textColor);
 
+        // String icon = category.icon;
+        //绘制图标
         String l = "";
         if (category.name().equalsIgnoreCase("Combat")) {
             l = "D";
@@ -109,6 +111,7 @@ public class MainScreen implements Screen {
                     y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight), textColor);
         }
 
+        //     ClickGuiMod clickGUIMod = (ClickGuiMod) Tenacity.INSTANCE.getModuleCollection().get(ClickGuiMod.class);
 
         if (ClickGUIModule.scrollMode.get().equals("Value")) {
             Main.allowedClickGuiHeight =  ClickGUIModule.clickHeight.get().floatValue();
@@ -153,6 +156,7 @@ public class MainScreen implements Screen {
         if (hoveringMods) {
             category.getScroll().onScroll(30);
             float hiddenHeight = (float) ((count * 17) - allowedHeight);
+            category.getScroll().setMaxScroll(Math.max(0, hiddenHeight));
         }
 
         StencilUtil.uninitStencilBuffer();
