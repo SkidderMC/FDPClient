@@ -61,10 +61,6 @@ dependencies {
         exclude module: "jogl-all" // we use lwjgl
         exclude module: "gluegen-rt" // this is the library for joal
     }
-    include("com.github.unlegitmc:fuckpcl:2.0") {
-        exclude module: "kotlin-stdlib-jdk8"
-        exclude module: "jna-platform"
-    }
     include("com.jagrosh:DiscordIPC:0.4")
     include("com.github.SkidderMC:elixir-2:1.2.4") {
         exclude module: "kotlin-stdlib"
