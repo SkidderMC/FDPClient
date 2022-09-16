@@ -95,8 +95,6 @@ public class MainScreen implements Screen {
             l = "G";
         } else if (category.name().equalsIgnoreCase("Misc")) {
             l = "F";
-        } else if (category.name().equalsIgnoreCase("Client")) {
-            l = "E";
         }
 
         DrRenderUtils.setAlphaLimit(0);
@@ -147,14 +145,13 @@ public class MainScreen implements Screen {
             moduleRect.width = rectWidth;
             moduleRect.drawScreen(mouseX, mouseY);
 
-            // count ups by one but then accounts for setting animation opening
             count += 1 + (moduleRect.getSettingSize());
         }
 
         if (hoveringMods) {
             category.getScroll().onScroll(30);
-            // float hiddenHeight = (float) ((count * 17) - allowedHeight);
-            // category.getScroll().setMaxScroll(Math.max(0, hiddenHeight));
+            float hiddenHeight = (float) ((count * 17) - allowedHeight);
+            category.getScroll().setMaxScroll(Math.max(0, hiddenHeight));
         }
 
         StencilUtil.uninitStencilBuffer();

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown;
 
+import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.WbxMain;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.impl.SettingComponents;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.animations.Animation;
@@ -13,7 +14,6 @@ import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdr
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.animations.impl.EaseBackIn;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.normal.Main;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.utils.render.DrRenderUtils;
-import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiScreen;
