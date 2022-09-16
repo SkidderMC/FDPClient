@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.*;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.dropdown.Client;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.dropdown.DropdownGUI;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.LightClickGUI;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.DropdownClickGui;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.novoline.ClickyUI;
@@ -78,7 +79,7 @@ public class ClickGUIModule extends Module {
             mc.displayGuiScreen(new LightClickGUI());
             this.setState(false);
         } else if (styleValue.get().equalsIgnoreCase("Classic")){
-            mc.displayGuiScreen(Client.getInstance().getDropDownGUI());
+            mc.displayGuiScreen(new DropdownGUI());
         } else if (styleValue.get().equalsIgnoreCase("Tenacity")){
             mc.displayGuiScreen(new DropdownClickGui());
         } else {

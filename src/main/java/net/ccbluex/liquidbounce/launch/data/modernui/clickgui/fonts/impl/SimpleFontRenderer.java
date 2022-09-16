@@ -475,4 +475,5 @@ final class SimpleFontRenderer implements FontRenderer {
     public boolean isFractionalMetrics() {
         return fractionalMetrics;
     }
+    //endregion
 }

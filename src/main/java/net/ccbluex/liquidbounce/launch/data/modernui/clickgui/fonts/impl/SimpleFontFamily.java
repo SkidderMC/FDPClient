@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.impl;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.api.FontFamily;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.api.FontRenderer;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.api.FontType;
-
 final class SimpleFontFamily implements FontFamily {
 
 	private final FontType fontType;

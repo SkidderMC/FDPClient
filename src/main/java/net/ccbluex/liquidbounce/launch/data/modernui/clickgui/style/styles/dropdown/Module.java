@@ -24,16 +24,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
-
 public class Module {
-
     private final net.ccbluex.liquidbounce.features.module.Module module;
     public int yPerModule, y;
     public Tab tab;
     public boolean opened;
     public List<Setting> settings = new CopyOnWriteArrayList<>();
     public Timer hoverTimer = new Timer();
-
     public Module(net.ccbluex.liquidbounce.features.module.Module module, Tab tab) {
         this.module = module;
         this.tab = tab;
@@ -41,13 +38,10 @@ public class Module {
             settings.add(new Setting(setting, this));
         }
     }
-
     private double length = 3, anim = 5;
     private int alph = 0;
-
     float fraction = 0;
     float fractionBackground = 0;
-
     public void drawScreen(int mouseX, int mouseY) {
 
         Minecraft instance = Minecraft.getMinecraft();
@@ -72,13 +66,11 @@ public class Module {
         fraction = MathHelper.clamp_float(fraction, 0.0F, 1.0F);
         fractionBackground = MathHelper.clamp_float(fractionBackground, 0.0F, 1F);
 
-
         if (yPerModule < getY()) {
             yPerModule = (int) (yPerModule + (getY() + 9 - yPerModule) * 0.1);
         } else if (yPerModule > getY()) {
             yPerModule = (int) (yPerModule + (getY() - yPerModule) * 0.1);
         }
-
 
         y = (int) (tab.getPosY() + 15);
         for (Module tabModule : tab.getModules()) {
@@ -125,7 +117,6 @@ public class Module {
                 GL11.glScissor(0,
                         scaledResolution.getScaledHeight() * 2 - y * 2 - yPerModule * 2,scaledResolution.getScaledWidth() * 2,
                         yPerModule * 2);
-                //动画
                 GL11.glEnable(GL11.GL_SCISSOR_TEST);
                 settings.stream().filter(s -> s.setting.getDisplayable()).forEach(setting -> setting.drawScreen(mouseX, mouseY));
                 GL11.glDisable(GL11.GL_SCISSOR_TEST);
@@ -206,13 +197,11 @@ public class Module {
             });
         }
     }
-
     public void mouseReleased(int mouseX, int mouseY, int state) {
         if (opened) {
             settings.stream().filter(s -> s.setting.getDisplayable()).forEach(setting -> setting.mouseReleased(mouseX, mouseY, state));
         }
     }
-
     public boolean isHovered(int mouseX, int mouseY) {
         y = (int) (tab.getPosY() + 15);
         for (Module tabModule : tab.getModules()) {
@@ -226,10 +215,8 @@ public class Module {
             return mouseX >= tab.getPosX() && mouseY >= y && mouseX <= tab.getPosX() + 101 && mouseY <= y + 14;
         return mouseX >= tab.getPosX() && mouseY >= y && mouseX <= tab.getPosX() + 101 && mouseY <= y + yPerModule;
     }
-
     private void update() {
     }
-
     public net.ccbluex.liquidbounce.features.module.Module getModule() {
         return module;
     }

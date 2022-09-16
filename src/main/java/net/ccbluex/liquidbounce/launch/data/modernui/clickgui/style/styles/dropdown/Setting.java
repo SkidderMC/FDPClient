@@ -23,7 +23,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.stream.Collectors;
 public class Setting {
-
     public Value setting;
     private Module module;
     public boolean opened;
@@ -37,7 +36,6 @@ public class Setting {
         this.module = module;
     }
 
-
     public void setPercent(float percent) {
         this.percent = percent;
     }
@@ -49,7 +47,6 @@ public class Setting {
         boolean scissor = scaledResolution.getScaleFactor() != 1;
         double clamp = MathHelper.clamp_double(Minecraft.getMinecraft().getDebugFPS() / 30, 1, 9999);
 
-        //switch (setting.getSettingType()) {
 
         if (setting instanceof FloatValue) {
             final FloatValue numberValue = (FloatValue) setting;

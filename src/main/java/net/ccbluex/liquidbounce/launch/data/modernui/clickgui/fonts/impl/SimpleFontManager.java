@@ -19,19 +19,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumMap;
 
-/**
- * @author Artyom Popov
- * @since June 30, 2020
- */
 public final class SimpleFontManager implements FontManager {
 
-	//region instantiating
 	private SimpleFontManager() {}
 
 	public static FontManager create() {
 		return new SimpleFontManager();
 	}
-	//endregion
 
 	private static final String FONT_DIRECTORY = "fdpclient/font/";
 	private final FontRegistry fonts = new FontRegistry();
@@ -55,7 +49,6 @@ public final class SimpleFontManager implements FontManager {
 			});
 		}
 
-		//region reading font
 		private static Font readFontFromResources(FontType fontType) throws IOException {
 			IResourceManager resourceManager = Minecraft.getMinecraft().getResourceManager();
 			ResourceLocation location = new ResourceLocation(FONT_DIRECTORY + fontType.fileName());

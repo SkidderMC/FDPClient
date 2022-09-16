@@ -25,7 +25,7 @@ public class SideGui extends GuiPanel {
 
   //  private final ConfigPanel configPanel = new ConfigPanel();
   //  private final ScriptPanel scriptPanel = new ScriptPanel();
-    private final String[] categories = {"Scripts", "Configs"};
+  private final String[] categories = {"Scripts", "Configs"};
     public boolean focused;
     public Animation clickAnimation;
     private Animation hoverAnimation;
@@ -36,7 +36,6 @@ public class SideGui extends GuiPanel {
     private String currentCategory = "Configs";
 
     private TimerUtil timerUtil;
-
 
     @Override
     public void initGui() {
@@ -60,15 +59,15 @@ public class SideGui extends GuiPanel {
 
         hoverAnimation = new DecelerateAnimation(250, 1);
         hoverAnimation.setDirection(Direction.BACKWARDS);
-      //  configPanel.initGui();
-     //   scriptPanel.initGui();
+        //  configPanel.initGui();
+        //   scriptPanel.initGui();
     }
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
         switch (currentCategory) {
             case "Configs":
-           //     configPanel.keyTyped(typedChar, keyCode);
+                //     configPanel.keyTyped(typedChar, keyCode);
                 break;
             case "Scripts":
                 //scriptPanel.keyTyped(typedChar, keyCode);
@@ -78,13 +77,13 @@ public class SideGui extends GuiPanel {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks, int alpha) {
-       // if (configPanel.reInit) {
+        // if (configPanel.reInit) {
         //    configPanel.initGui();
-       //     configPanel.reInit = false;
-      //  }
+        //     configPanel.reInit = false;
+        //  }
         //if (scriptPanel.reInit) {
-          //  scriptPanel.initGui();
-       // }
+        //  scriptPanel.initGui();
+        // }
 
         clickAnimation.setDirection(focused ? Direction.FORWARDS : Direction.BACKWARDS);
         boolean hovering = DrRenderUtils.isHovering(drag.getX(), drag.getY(), rectWidth, rectHeight, mouseX, mouseY);
@@ -96,10 +95,10 @@ public class SideGui extends GuiPanel {
 
 
         if(!textAnimation.isDone() || textAnimation.getDirection().equals(Direction.FORWARDS) && textAnimation.isDone()) {
-        //    FontUtil.iconFont26.drawString(FontUtil.PLAY, drag.getX() -
-              //              ((FontUtil.iconFont26.getStringWidth(FontUtil.PLAY) + 10) * textAnimation.getOutput()),
-               //     drag.getY() + FontUtil.iconFont26.getMiddleOfBox(rectHeight),
-                 //   ColorUtil.applyOpacity(-1, (float) textAnimation.getOutput() * 0.5F));
+            //    FontUtil.iconFont26.drawString(FontUtil.PLAY, drag.getX() -
+            //              ((FontUtil.iconFont26.getStringWidth(FontUtil.PLAY) + 10) * textAnimation.getOutput()),
+            //     drag.getY() + FontUtil.iconFont26.getMiddleOfBox(rectHeight),
+            //   ColorUtil.applyOpacity(-1, (float) textAnimation.getOutput() * 0.5F));
         }
 
 
@@ -159,10 +158,10 @@ public class SideGui extends GuiPanel {
             scriptPanel.rectHeight = rectHeight;
             scriptPanel.drawScreen(mouseX, mouseY, partialTicks, (int) rectAlpha);*/
         } else {
-          //  configPanel.x = x;
-       //     configPanel.rawY = y;
-          //  configPanel.rectWidth = rectWidth;
-           // configPanel.rectHeight = rectHeight;
+            //  configPanel.x = x;
+            //     configPanel.rawY = y;
+            //  configPanel.rectWidth = rectWidth;
+            // configPanel.rectHeight = rectHeight;
             //configPanel.drawScreen(mouseX, mouseY, partialTicks, (int) rectAlpha);
         }
         DrRenderUtils.setAlphaLimit(0);
@@ -205,9 +204,9 @@ public class SideGui extends GuiPanel {
             }
 
             if (currentCategory.equals("Configs")) {
-             //   configPanel.mouseClicked(mouseX, mouseY, button);
+                //   configPanel.mouseClicked(mouseX, mouseY, button);
             } else {
-               // scriptPanel.mouseClicked(mouseX, mouseY, button);
+                // scriptPanel.mouseClicked(mouseX, mouseY, button);
             }
 
         }
@@ -223,7 +222,7 @@ public class SideGui extends GuiPanel {
                 focused = false;
             }
             if (currentCategory.equals("Configs")) {
-             //   configPanel.mouseReleased(mouseX, mouseY, button);
+                //   configPanel.mouseReleased(mouseX, mouseY, button);
             }
         }
     }

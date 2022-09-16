@@ -11,7 +11,6 @@ public interface FontRenderer {
 	String trimStringToWidth(CharSequence text, int width, boolean reverse);
 	int stringWidth(CharSequence text);
 	float charWidth(char ch);
-
 	String getName();
 	int getHeight();
 	boolean isAntiAlias();
