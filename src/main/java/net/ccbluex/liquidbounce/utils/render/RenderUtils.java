@@ -1715,7 +1715,7 @@ public final class RenderUtils extends MinecraftInstance {
         glDepthMask(false);
         OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
         glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-//        mc.getTextureManager().bindTexture(image);
+        mc.getTextureManager().bindTexture(image);
         Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
         glDepthMask(true);
         glDisable(GL_BLEND);

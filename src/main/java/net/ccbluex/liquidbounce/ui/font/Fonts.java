@@ -47,19 +47,19 @@ public class Fonts {
     @FontDetails(fontName = "Roboto Medium", fontSize = 52)
     public static GameFontRenderer fontLarge;
 
-    @FontDetails(fontName = "SFUI Regular", fontSize = 35)
+    @FontDetails(fontName = "SF", fontSize = 35)
     public static GameFontRenderer fontSFUI35;
 
-    @FontDetails(fontName = "SFUI Regular", fontSize = 40)
+    @FontDetails(fontName = "SF", fontSize = 40)
     public static GameFontRenderer fontSFUI40;
 
     @FontDetails(fontName = "Roboto Bold", fontSize = 180)
     public static GameFontRenderer fontBold180;
 
-    @FontDetails(fontName = "Tahoma Bold", fontSize = 35)
+    @FontDetails(fontName = "Tahoma", fontSize = 35)
     public static GameFontRenderer fontTahoma;
 
-    @FontDetails(fontName = "Tahoma Bold", fontSize = 30)
+    @FontDetails(fontName = "Tahoma", fontSize = 30)
     public static GameFontRenderer fontTahoma30;
 
     public static TTFFontRenderer fontTahomaSmall;
@@ -93,6 +93,12 @@ public class Fonts {
 
     @FontDetails(fontName = "Minecraft Font")
     public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
+    
+    @FontDetails(fontName = "jello40", fontSize = 40)
+    public static GameFontRenderer fontJello40;
+
+    @FontDetails(fontName = "Jello30", fontSize = 30)
+    public static GameFontRenderer fontJello30;
 
     private static final List<GameFontRenderer> CUSTOM_FONT_RENDERERS = new ArrayList<>();
 
@@ -107,6 +113,7 @@ public class Fonts {
         fontSmall = new GameFontRenderer(getFont("Roboto-Medium.ttf", 30));
         fontTiny = new GameFontRenderer(getFont("Roboto-Medium.ttf", 24));
         fontLarge = new GameFontRenderer(getFont("Roboto-Medium.ttf", 60));
+
         fontSFUI35 = new GameFontRenderer(getFont("sfui.ttf", 35));
         fontSFUI40 = new GameFontRenderer(getFont("sfui.ttf", 40));
         ICONFONT_50 = new GameFontRenderer(getFont("stylesicons.ttf", 50));
@@ -114,15 +121,20 @@ public class Fonts {
         SFUI40 = new GameFontRenderer(getFont("sfui.ttf", 20));
         SFUI35 = new GameFontRenderer(getFont("sfui.ttf", 18));
         SFUI24 = new GameFontRenderer(getFont("sfui.ttf", 10));
+        fontSFUI35 = new GameFontRenderer(getFont("sf.ttf", 35));
+        fontSFUI40 = new GameFontRenderer(getFont("sf.ttf", 40));
         fontBold180 = new GameFontRenderer(getFont("Roboto-Bold.ttf", 180));
-        fontTahoma = new GameFontRenderer(getFont("TahomaBold.ttf", 35));
-        fontTahoma30 = new GameFontRenderer(getFont("TahomaBold.ttf", 30));
         fontTahomaSmall = new TTFFontRenderer(getFont("Tahoma.ttf", 11));
         fontVerdana = new TTFFontRenderer(getFont("Verdana.ttf", 7));
         fontBangers = new GameFontRenderer(getFont("Bangers-Regular.ttf", 45));
         icon18 = new GameFontRenderer(getFontcustom(18,"Icon"));
         icon15 = new GameFontRenderer(getFontcustom(15,"Icon"));
         icon10 = new GameFontRenderer(getFontcustom(10,"Icon"));
+        fontTahoma = new GameFontRenderer(getFont("Tahoma.ttf", 35));
+        fontTahoma30 = new GameFontRenderer(getFont("Tahoma.ttf", 30));
+        fontBangers = new GameFontRenderer(getFont("Bangers.ttf", 45));
+        fontJello30 = new GameFontRenderer(getFont("jello.ttf", 30));
+        fontJello40 = new GameFontRenderer(getFont("jello.ttf", 40));
 
         for(GameFontRenderer it : getCustomFonts()) {
         }
