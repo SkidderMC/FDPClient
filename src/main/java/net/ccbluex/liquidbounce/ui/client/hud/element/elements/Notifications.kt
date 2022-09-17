@@ -326,7 +326,7 @@ class Notification(
                 return false
             }
 
-        if(style.equals("Intellij")) {
+       /*  if(style.equals("Intellij")) {
                 private val notifyDir = "fdpclient/ui/icons/noti/idea/" 
                 private val imgSuccess = ResourceLocation("${notifyDir}checkmark.png")
                 private val imgError = ResourceLocation("${notifyDir}error.png")
@@ -375,7 +375,7 @@ class Notification(
                 GL11.glPopMatrix()
 
                 Fonts.minecraftFont.drawStringWithShadow(message, -x - 4, -13F - y, -1)
-            }
+        } */
 
       
     }
