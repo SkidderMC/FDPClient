@@ -14,7 +14,7 @@ class Test : SpeedMode("Test") {
         if (mc.thePlayer.isInWater) return
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) mc.thePlayer.jump()
-            if (mc.thePlayer.motionY > 0.01 && mc.thePlayer.motionY < 0.09) mc.thePlayer.motionY = -0.08
+            if (mc.thePlayer.motionY > 0.01 && mc.thePlayer.motionY < 0.09) mc.thePlayer.motionY = -0.04
         } else {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
