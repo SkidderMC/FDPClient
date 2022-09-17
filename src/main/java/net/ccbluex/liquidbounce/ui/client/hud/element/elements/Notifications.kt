@@ -36,7 +36,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val whiteText = BoolValue("WhiteTextColor", true)
     private val modeColored = BoolValue("CustomModeColored", true)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Skid"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Tenacity", "Skid"), "Modern")
     }
 
     /**
@@ -281,8 +281,7 @@ class Notification(
             }
 
         if(style.equals("Tenacity")){
-        val thisWidth=100.coerceAtLeast(fontRenderer.getStringWidth(this.title)
-            .coerceAtLeast(fontRenderer.getStringWidth(this.content)) + 20)
+        val thisWidth=100.coerceAtLeast(fontRenderer.getStringWidth(this.title).coerceAtLeast(fontRenderer.getStringWidth(this.content)) + 20)
         val error = ResourceLocation("fdpclient/ui/icons/noti/tenacity/cross.png")
         val successful = ResourceLocation("fdpclient/ui/icons/noti/tenacity/tick.png")
         val warn = ResourceLocation("fdpclient/ui/icons/noti/tenacity/warning.png")
@@ -310,11 +309,6 @@ class Notification(
         }
         return false
         }
-
-Fonts.font28.drawString( 
-
-
-
 
         if(style.equals("Classic")) {
             if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) }
