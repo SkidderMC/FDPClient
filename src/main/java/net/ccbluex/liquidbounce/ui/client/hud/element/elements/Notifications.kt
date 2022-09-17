@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.minecraft.util.ResourceLocation
+import net.minecraft.client.gui.FontRenderer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
@@ -281,6 +282,7 @@ class Notification(
             }
 
         if(style.equals("Tenacity")){
+        val fontRenderer = fontValue.get()
         val thisWidth=100.coerceAtLeast(fontRenderer.getStringWidth(this.title).coerceAtLeast(fontRenderer.getStringWidth(this.content)) + 20)
         val error = ResourceLocation("fdpclient/ui/icons/noti/tenacity/cross.png")
         val successful = ResourceLocation("fdpclient/ui/icons/noti/tenacity/tick.png")
