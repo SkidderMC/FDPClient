@@ -81,7 +81,7 @@ public class GuiMainMenu extends GuiScreen {
         }
 
         Fonts.SF.SF_25.SF_25.drawString("FDPclient", (float)this.width / 2F, (float)this.height / 2.0F - 30.0F, -1);
-       Fonts.SF.SF_20.SF_20.drawString(LiquidBounce.CLIENT_VERSION, (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 10.0F, -1);
+       Fonts.SF.SF_20.SF_20.drawString(LiquidBounce.FRIENDLY_CLIENT_VERSION, (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 10.0F, -1);
         String s = "Hello " + ".";
         Fonts.SF.SF_20.SF_20.drawString(s, (float)this.width / 2f, (float)this.height / 2.0F + 5.0F, -1);
         super.drawScreen(mouseX, mouseY, partialTicks);
