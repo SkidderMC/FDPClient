@@ -65,11 +65,9 @@ public class GuiMainMenu extends GuiScreen {
         this.currentY += yDiff * 0.3F;
         GlStateManager.translate(this.currentX / 30.0F, this.currentY / 15.0F, 0.0F);
         RenderUtils.drawImage(new ResourceLocation("fdpclient/background.png"), -30, -30, this.res.getScaledWidth() + 60, this.res.getScaledHeight() + 60);
-
+        BlurUtils.INSTANCE.draw(0,0,w,h,5);
         GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
         ParticleUtils.drawParticles(mouseX, mouseY);
-
-        // BlurUtils.INSTANCE.draw(0,0,mc.displayWidth, mc.displayHeight,5);
 
         RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F - 50.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 2097152000);
         RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 20.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 1040187392);
@@ -80,8 +78,8 @@ public class GuiMainMenu extends GuiScreen {
             button.draw(startX, (float)this.height / 2.0F + 20.0F, mouseX, mouseY);
         }
 
-        String mainTitle = "FDPclient" + LiquidBounce.FRIENDLY_CLIENT_VERSION;
-        Fonts.SF.SF_25.SF_25.drawString(mainTitle, (float)this.width / 2F - Fonts.SF.SF_25.SF_25.stringWidth(mainTitle), (float)this.height / 2.0F - 30.0F, -1);
+        String mainTitle = "FDPclient " + LiquidBounce.FRIENDLY_CLIENT_VERSION;
+        Fonts.SF.SF_25.SF_25.drawString(mainTitle, (float)this.width / 2F - Fonts.SF.SF_25.SF_25.stringWidth(mainTitle) + 25f, (float)this.height / 2.0F - 40.0F, -1);
         //Fonts.SF.SF_20.SF_20.drawString(LiquidBounce.FRIENDLY_CLIENT_VERSION, (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 10.0F, -1);
         //String s = "Hello " + ".";
         //Fonts.SF.SF_20.SF_20.drawString(s, (float)this.width / 2f, (float)this.height / 2.0F + 5.0F, -1);
