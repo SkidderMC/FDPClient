@@ -80,6 +80,17 @@ public interface Fonts {
 		}
 	}
 
+	interface MAINMENU {
+		FontFamily MAINMENU = FONT_MANAGER.fontFamily(FontType.MAINMENU);
+		final class MAINMENU30 {
+			public static final FontRenderer MAINMENU30 = MAINMENU.ofSize(30);
+
+			private MAINMENU30() {
+			}
+		}
+
+	}
+
 	interface FluxICONFONT {
 
 		FontFamily FluxICONFONT = FONT_MANAGER.fontFamily(FontType.FluxICONFONT);
