@@ -69,7 +69,7 @@ public class GuiMainMenu extends GuiScreen {
         GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
         ParticleUtils.drawParticles(mouseX, mouseY);
 
-        BlurUtils.INSTANCE.draw(0,0,mc.displayWidth, mc.displayHeight,5);
+        // BlurUtils.INSTANCE.draw(0,0,mc.displayWidth, mc.displayHeight,5);
 
         RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F - 50.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 2097152000);
         RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 20.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 1040187392);
