@@ -375,9 +375,9 @@ class Notification(
                 GlStateManager.enableAlpha()
                 GL11.glPopMatrix()
 
-                Fonts.minecraftFont.drawStringWithShadow(message, -x - 4, -13F - y, -1)
-                retun false
+                Fonts.minecraftFont.drawStringWithShadow(content, -x - 4, -13F - y, -1)
         } 
+    retun false
     }
       
 }
