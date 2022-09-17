@@ -21,8 +21,8 @@ import net.minecraft.potion.Potion
  *
  * Shows a list of active potion effects
  */
-@ElementInfo(name = "legacyEffects")
-class LEffects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
+@ElementInfo(name = "Effects2")
+class Effects2(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
               side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
     private val anotherStyle = BoolValue("New", false)
     private val fontValue = FontValue("Font", Fonts.font35)
