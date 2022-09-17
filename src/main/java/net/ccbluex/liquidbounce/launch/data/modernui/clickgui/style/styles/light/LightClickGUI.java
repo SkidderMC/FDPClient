@@ -357,7 +357,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 
             // no module???? holder text
             if(currentModule == null) {
-                logoFont.drawStringWithShadow("No Modules Selected", startX + 80, startY + 130, new Color(100,100,100).getRGB());
+                logoFont.drawStringWithShadow("No SoundModule Selected", startX + 80, startY + 130, new Color(100,100,100).getRGB());
             }
     //        if(isHovered(startX + 130, startY + 7, startX + 190, startY + 15, mouseX, mouseY) && Mouse.isButtonDown(0))
     //            hovered = true;
@@ -513,7 +513,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
                 mY = startY + 30;
                 if (currentModule.getValues().isEmpty())
-                    logoFont.drawString("No Modules Selected", (int) (startX + 250), (int) (startY + 130),
+                    logoFont.drawString("No SoundModule Selected", (int) (startX + 250), (int) (startY + 130),
                             new Color(100, 100, 100,valueAnim.getAlpha()).getRGB());
                 for (int i = 0; i < currentModule.getValues().size(); i++) {
                     if (mY > startY + 260)

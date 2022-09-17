@@ -6,17 +6,15 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
-import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
+import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
-import net.ccbluex.liquidbounce.features.module.modules.misc.FakeFPS;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
-import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 import net.ccbluex.liquidbounce.utils.render.ImageUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
@@ -50,11 +48,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.file.AccessDeniedException;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
@@ -95,21 +90,6 @@ public abstract class MixinMinecraft {
 
     @Shadow
     private boolean fullscreen;
-
-    @Shadow
-    public static int debugFPS;
-
-    /**
-     * @author Zywl
-     */
-    @Overwrite
-    public static int getDebugFPS() {
-        FakeFPS fakeFPS = (FakeFPS) LiquidBounce.moduleManager.getModule(FakeFPS.class);
-        if (fakeFPS.getState()) {
-            return fakeFPS.getFakeFPS();
-        }
-        return debugFPS;
-    }
 
     @Overwrite
     public int getLimitFramerate() {
@@ -169,7 +149,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "dispatchKeypresses", at = @At(value = "HEAD"))
     private void onKey(CallbackInfo callbackInfo) {
         try {
-            if (Keyboard.getEventKeyState() && (currentScreen == null || (Modules.INSTANCE.getToggleIgnoreScreenValue().get() && this.currentScreen instanceof GuiContainer)))
+            if (Keyboard.getEventKeyState() && (currentScreen == null || (SoundModule.INSTANCE.getToggleIgnoreScreenValue().get() && this.currentScreen instanceof GuiContainer)))
                 LiquidBounce.eventManager.callEvent(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
         } catch (Exception e) {
             //e.printStackTrace();
