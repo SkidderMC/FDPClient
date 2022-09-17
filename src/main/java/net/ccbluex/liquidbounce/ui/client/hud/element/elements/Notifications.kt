@@ -288,22 +288,22 @@ class Notification(
         val warn = ResourceLocation("fdpclient/ui/icons/noti/tenacity/warning.png")
         val info = ResourceLocation("fdpclient/ui/icons/noti/tenacity/info.png")
         if(type.renderColor == Color(0x60E092)){
-            RenderUtils.drawRoundedCornerRect(-18F,0F,thisWidthtoFloat(),height.toFloat(),6f,Color(180,0,0,190).rgb,true)
+            RenderUtils.drawRoundedCornerRect(-18F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(180,0,0,190).rgb)
             RenderUtils.drawImage(error,-13,5,18,18)
             Fonts.font35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
             Fonts.font40.drawString(content,9F,6F,Color(255,255,255,255).rgb)
         }else if(type.renderColor == Color(0xFF2F2F)){
-            RenderUtils.drawRoundedCornerRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,180,0,190).rgb,true)
+            RenderUtils.drawRoundedCornerRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,180,0,190).rgb)
             RenderUtils.drawImage(successful,-13,5,18,18)
             Fonts.font35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
             Fonts.font40.drawString(content,9F,6F,Color(255,255,255,255).rgb)
         } else if(type.renderColor == Color(0xF5FD00)){
-            RenderUtils.drawRoundedCornerRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,0,0,190).rgb,true)
+            RenderUtils.drawRoundedCornerRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,0,0,190).rgb)
             RenderUtils.drawImage(warn,-13,5,18,18)
             Fonts.font35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
             Fonts.font40.drawString(content,9F,6F,Color(255,255,255,255).rgb)
         } else {
-            RenderUtils.drawRoundedCornerRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,0,0,190).rgb,true)
+            RenderUtils.drawRoundedCornerRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,0,0,190).rgb)
             RenderUtils.drawImage(info,-13,5,18,18)
             Fonts.font35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
             Fonts.font40.drawString(content,9F,6F,Color(255,255,255,255).rgb)
