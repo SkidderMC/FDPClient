@@ -125,6 +125,7 @@ class Notification(
         val nowTime = System.currentTimeMillis()
         var transY = nowY.toDouble()
         var lbtl = font.getStringWidth(title + ": " + content)
+        var x = 0f
         
         var textColor = Color(255, 255, 255).rgb
         
@@ -185,6 +186,10 @@ class Notification(
         GL11.glTranslated(transX, transY, 0.0)
         // draw notify
         val style = parent.styleValue.get()
+        val typeWarning = if(type.renderColor == Color(0xF5FD00)){ true } else { false }
+        val typeInfo = if(type.renderColor == Color(0x6490A7)) { true } else { false }
+        val typeSuccess = if(type.renderColor == Color(0x60E092)) { true } else { false }
+        val typeError = if(type.renderColor == Color(0xFF2F2F)) { true } else { false }
 
 
         if (style.equals("Modern")) {
@@ -280,19 +285,19 @@ class Notification(
             return false
             }
 
-        if(style.equals("Tenacity")){
+        if(style.equals("Tenacity")){ 
         val fontRenderer = Fonts.font35
-        val thisWidth=100.coerceAtLeast(fontRenderer.getStringWidth(this.title).coerceAtLeast(fontRenderer.getStringWidth(this.content)) + 20)
+        val thisWidth=100.coerceAtLeast(fontRenderer.getStringWidth(this.title).coerceAtLeast(fontRenderer.getStringWidth(this.content)) + 40)
         val error = ResourceLocation("fdpclient/ui/icons/noti/tenacity/cross.png")
         val successful = ResourceLocation("fdpclient/ui/icons/noti/tenacity/tick.png")
         val warn = ResourceLocation("fdpclient/ui/icons/noti/tenacity/warning.png")
         val info = ResourceLocation("fdpclient/ui/icons/noti/tenacity/info.png")
-        if(type.renderColor == Color(0x60E092)){
+        if(type.renderColor == Color(0xFF2F2F)){
             RenderUtils.drawRoundedCornerRect(-18F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(180,0,0,190).rgb)
             RenderUtils.drawImage(error,-13,5,18,18)
             Fonts.font35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
             Fonts.font40.drawString(content,9F,6F,Color(255,255,255,255).rgb)
-        }else if(type.renderColor == Color(0xFF2F2F)){
+        }else if(type.renderColor == Color(0x60E092)){
             RenderUtils.drawRoundedCornerRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,180,0,190).rgb)
             RenderUtils.drawImage(successful,-13,5,18,18)
             Fonts.font35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
@@ -321,6 +326,64 @@ class Notification(
             }
         return false
         }
+
+        if(style.equals("Intellij")) {
+                private val notifyDir = "fdpclient/ui/icons/noti/idea/" 
+                private val imgSuccess = ResourceLocation("${notifyDir}checkmark.png")
+                private val imgError = ResourceLocation("${notifyDir}error.png")
+                private val imgWarning = ResourceLocation("${notifyDir}warning.png")
+                private val imgInfo = ResourceLocation("${notifyDir}info.png")
+
+                val dist = (x + 1 + 26F) - (x - 8 - textLength)
+                val kek = -x - 1 - 20F
+
+                GlStateManager.resetColor()
+
+                Stencil.write(true)
+                if(typeError){
+                    RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - y - 1, 0F, Color(115,69,75).rgb)
+                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F - y, 0F, Color(89,61,65).rgb)
+                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F - y, Color(249,130,108).rgb)
+                }
+                if(typeInfo) {
+                    RenderUtils.drawRoundedRect(-x + 9 + textLength,  1, kek - 1, -28F - y - 1, 0F, Color(70,94,115).rgb)
+                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F - y, 0F, Color(61,72,87).rgb)
+                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F - y, Color(119,145,147).rgb)
+                }
+                if(typeSuccess){
+                    RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - y - 1, 0F, Color(67,104,67).rgb)
+                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F - y, 0F, Color(55,78,55).rgb)
+                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F - y, Color(10,142,2).rgb)
+                }
+                if(typeWarning){
+                    RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - y - 1, 0F, Color(103,103,63).rgb)
+                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F - y, 0F, Color(80,80,57).rgb)
+                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F - y, Color(175,163,0).rgb)
+                }
+
+                Stencil.erase(true)
+
+                GlStateManager.resetColor()
+
+                Stencil.dispose()
+
+                GL11.glPushMatrix()
+                GlStateManager.disableAlpha()
+                GlStateManager.resetColor()
+                GL11.glColor4f(1F, 1F, 1F, 1F)
+
+                RenderUtils.drawImage2(when (type) {
+                    typeSuccess -> imgSuccess
+                    typeError -> imgError
+                    typeWarning -> imgWarning
+                    typeInfo -> imgInfo
+                }, kek + 5, -25F - y, 7, 7)
+                GlStateManager.enableAlpha()
+                GL11.glPopMatrix()
+
+                Fonts.minecraftFont.drawStringWithShadow(message, -x - 4, -13F - y, -1)
+            }
+
       
     }
 
