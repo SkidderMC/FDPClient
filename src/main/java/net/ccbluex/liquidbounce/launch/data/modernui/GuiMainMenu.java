@@ -5,10 +5,12 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.WbxMain;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.MainMenuButton;
+import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.*;
@@ -67,6 +69,8 @@ public class GuiMainMenu extends GuiScreen {
         GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
         ParticleUtils.drawParticles(mouseX, mouseY);
 
+        BlurUtils.INSTANCE.draw(0,0,mc.displayWidth, mc.displayHeight,5);
+
         RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F - 50.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 2097152000);
         RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 20.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 1040187392);
         float startX = (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F);
@@ -76,10 +80,10 @@ public class GuiMainMenu extends GuiScreen {
             button.draw(startX, (float)this.height / 2.0F + 20.0F, mouseX, mouseY);
         }
 
-        Fonts.SF.SF_25.SF_25.drawString("FDPCLIENT", (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 30.0F, -1);
-       Fonts.SF.SF_20.SF_20.drawString(WbxMain.version, (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 10.0F, -1);
+        Fonts.SF.SF_25.SF_25.drawString("FDPclient", (float)this.width / 2F, (float)this.height / 2.0F - 30.0F, -1);
+       Fonts.SF.SF_20.SF_20.drawString(LiquidBounce.CLIENT_VERSION, (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 10.0F, -1);
         String s = "Hello " + ".";
-        Fonts.SF.SF_20.SF_20.drawString(s, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F) - (float) Fonts.SF.SF_20.SF_20.stringWidth(s) - 10.0F, (float)this.height / 2.0F + 5.0F, -1);
+        Fonts.SF.SF_20.SF_20.drawString(s, (float)this.width / 2f, (float)this.height / 2.0F + 5.0F, -1);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
