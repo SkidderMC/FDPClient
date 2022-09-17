@@ -186,10 +186,10 @@ class Notification(
         GL11.glTranslated(transX, transY, 0.0)
         // draw notify
         val style = parent.styleValue.get()
-        val typeWarning = if(type.renderColor == Color(0xF5FD00)){ true } else { false }
-        val typeInfo = if(type.renderColor == Color(0x6490A7)) { true } else { false }
-        val typeSuccess = if(type.renderColor == Color(0x60E092)) { true } else { false }
-        val typeError = if(type.renderColor == Color(0xFF2F2F)) { true } else { false }
+        val nTypeWarning = if(type.renderColor == Color(0xF5FD00)){ true } else { false }
+        val nTypeInfo = if(type.renderColor == Color(0x6490A7)) { true } else { false }
+        val nTypeSuccess = if(type.renderColor == Color(0x60E092)) { true } else { false }
+        val nTypeError = if(type.renderColor == Color(0xFF2F2F)) { true } else { false }
 
 
         if (style.equals("Modern")) {
@@ -339,22 +339,22 @@ class Notification(
                 GlStateManager.resetColor()
 
                 Stencil.write(true)
-                if(typeError){
+                if(nTypeError){
                     RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - 1, 0F, Color(115,69,75).rgb)
                     RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F, 0F, Color(89,61,65).rgb)
                     Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F, Color(249,130,108).rgb)
                 }
-                if(typeInfo) {
+                if(nTypeInfo) {
                     RenderUtils.drawRoundedRect(-x + 9 + textLength,  1, kek - 1, -28F - 1, 0F, Color(70,94,115).rgb)
                     RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F, 0F, Color(61,72,87).rgb)
                     Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F, Color(119,145,147).rgb)
                 }
-                if(typeSuccess){
+                if(nTypeSuccess){
                     RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - 1, 0F, Color(67,104,67).rgb)
                     RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F, 0F, Color(55,78,55).rgb)
                     Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F, Color(10,142,2).rgb)
                 }
-                if(typeWarning){
+                if(nTypeWarning){
                     RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - 1, 0F, Color(103,103,63).rgb)
                     RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F, 0F, Color(80,80,57).rgb)
                     Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F, Color(175,163,0).rgb)
@@ -370,14 +370,7 @@ class Notification(
                 GlStateManager.disableAlpha()
                 GlStateManager.resetColor()
                 GL11.glColor4f(1F, 1F, 1F, 1F)
-
-                RenderUtils.drawImage2(when (type) {
-                    typeSuccess -> imgSuccess
-                    typeError -> imgError
-                    typeWarning -> imgWarning
-                    typeInfo -> imgInfo
-                    else -> imgError
-                }, kek + 5, -25F - y, 7, 7)
+                RenderUtils.drawImage2(if(nTypeSuccess){imgSuccess} else if(nTypeError){imgError} else if(nTypeWarning){imgWarning} else {imgInfo}, kek + 5, -25F - y, 7, 7)
                 GlStateManager.enableAlpha()
                 GL11.glPopMatrix()
 
