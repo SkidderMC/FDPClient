@@ -57,6 +57,7 @@ import java.util.*;
 import static akka.actor.Nobody.start;
 import static akka.actor.Nobody.stop;
 import static java.lang.Math.*;
+import static net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.novoline.AnimationUtil.getAnimationState;
 import static net.minecraft.client.renderer.GlStateManager.disableBlend;
 import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
 import static org.lwjgl.opengl.GL11.*;
@@ -254,6 +255,14 @@ public final class RenderUtils extends MinecraftInstance {
         int color = Color.HSBtoRGB(hue, saturation, brightness);
         return color;
     }
+
+    public static float smoothAnimation(float ani, float finalState, float speed, float scale) {
+        return getAnimationState(ani, finalState, Math.max(10.0F, Math.abs(ani - finalState) * speed) * scale);
+    }
+    public static boolean isHovering(int mouseX, int mouseY, float xLeft, float yUp, float xRight, float yBottom) {
+        return (float)mouseX > xLeft && (float)mouseX < xRight && (float)mouseY > yUp && (float)mouseY < yBottom;
+    }
+
 
     public static void whatRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, final int color, float radius) {
         float alpharect = (color >> 24 & 0xFF) / 255.0F;
@@ -500,6 +509,33 @@ public final class RenderUtils extends MinecraftInstance {
         return x + Fonts.fontTahomaSmall.getWidth(text) - 2F;
     }
 
+    public static void drawGradientRect(float left, float top, float right, float bottom, int startColor, int endColor) {
+        float f = (float)(startColor >> 24 & 255) / 255.0F;
+        float f1 = (float)(startColor >> 16 & 255) / 255.0F;
+        float f2 = (float)(startColor >> 8 & 255) / 255.0F;
+        float f3 = (float)(startColor & 255) / 255.0F;
+        float f4 = (float)(endColor >> 24 & 255) / 255.0F;
+        float f5 = (float)(endColor >> 16 & 255) / 255.0F;
+        float f6 = (float)(endColor >> 8 & 255) / 255.0F;
+        float f7 = (float)(endColor & 255) / 255.0F;
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.shadeModel(7425);
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        worldrenderer.pos((double)right, (double)top, 0.0).color(f1, f2, f3, f).endVertex();
+        worldrenderer.pos((double)left, (double)top, 0.0).color(f1, f2, f3, f).endVertex();
+        worldrenderer.pos((double)left, (double)bottom, 0.0).color(f5, f6, f7, f4).endVertex();
+        worldrenderer.pos((double)right, (double)bottom, 0.0).color(f5, f6, f7, f4).endVertex();
+        tessellator.draw();
+        GlStateManager.shadeModel(7424);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
+    }
     private static int getMainColor(int level) {
         if (level == 4)
             return 0xFFAA0000;
