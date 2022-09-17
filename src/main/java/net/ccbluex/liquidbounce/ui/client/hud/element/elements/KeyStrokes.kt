@@ -42,7 +42,7 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
     private val outlineRainbow = BoolValue("OutLineRainbow", false)
     private val fontValue = FontValue("Font", Fonts.font35)
     companion object {
-        val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello", "Juul"), "Custom")
+        val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello", "Juul"), "Juul")
     }
 
 
