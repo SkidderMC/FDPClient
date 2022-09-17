@@ -280,7 +280,7 @@ class Notification(
             return false
             }
 
-        if(sttyle.equals("Tenacity")){
+        if(style.equals("Tenacity")){
         val thisWidth=100.coerceAtLeast(fontRenderer.getStringWidth(this.title)
             .coerceAtLeast(fontRenderer.getStringWidth(this.content)) + 20)
         val error = ResourceLocation("fdpclient/ui/icons/noti/tenacity/cross.png")
