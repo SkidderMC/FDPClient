@@ -65,7 +65,6 @@ public class GuiMainMenu extends GuiScreen {
         this.currentY += yDiff * 0.3F;
         GlStateManager.translate(this.currentX / 30.0F, this.currentY / 15.0F, 0.0F);
         RenderUtils.drawImage(new ResourceLocation("fdpclient/background.png"), -30, -30, this.res.getScaledWidth() + 60, this.res.getScaledHeight() + 60);
-        BlurUtils.INSTANCE.draw(0,0,w,h,5);
         GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
         ParticleUtils.drawParticles(mouseX, mouseY);
 
