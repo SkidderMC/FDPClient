@@ -22,9 +22,8 @@ import net.minecraft.potion.Potion
  * Shows a list of active potion effects
  */
 @ElementInfo(name = "legacyEffects")
-class legacyEffects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
+class LEffects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
               side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
-
     private val anotherStyle = BoolValue("New", false)
     private val fontValue = FontValue("Font", Fonts.font35)
     private val shadow = BoolValue("Shadow", true)
@@ -32,7 +31,7 @@ class legacyEffects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    override fun drawElement(): Border {
+    fun drawElement(): Border {
         val fontRenderer = fontValue.get()
 
         var y = 0F
