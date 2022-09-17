@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils
 
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.minecraft.client.Minecraft
 import net.minecraft.util.IChatComponent
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.opengl.Display
@@ -57,6 +58,11 @@ ClientUtils : MinecraftInstance() {
         jsonObject.addProperty("text", message)
         mc.thePlayer.addChatMessage(IChatComponent.Serializer.jsonToComponent(jsonObject.toString()))
     }
+
+    /**
+     * Minecraft instance
+     */
+    val mc = Minecraft.getMinecraft()!!
 
     enum class EnumOSType(val friendlyName: String) {
         WINDOWS("win"), LINUX("linux"), MACOS("mac"), UNKNOWN("unk");

@@ -5,8 +5,10 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
+import net.ccbluex.liquidbounce.utils.ClientUtils.mc
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.render.GLUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.Entity
@@ -16,6 +18,7 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
+import javax.vecmath.Vector3d
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -76,3 +79,36 @@ val EntityLivingBase.skin: ResourceLocation // TODO: add special skin for mobs
 
 val EntityLivingBase.ping: Int
     get() = if (this is EntityPlayer) { Minecraft.getMinecraft().netHandler.getPlayerInfo(this.uniqueID)?.responseTime?.coerceAtLeast(0) } else { null } ?: -1
+
+/**
+ * Render entity position
+ */
+val Entity.renderPos: Vector3d
+    get() {
+        val x = GLUtils.interpolate(lastTickPosX, posX) - mc.renderManager.viewerPosX
+        val y = GLUtils.interpolate(lastTickPosY, posY) - mc.renderManager.viewerPosY
+        val z = GLUtils.interpolate(lastTickPosZ, posZ) - mc.renderManager.viewerPosZ
+
+        return Vector3d(x, y, z)
+    }
+
+val Entity.renderBoundingBox: AxisAlignedBB
+    get() {
+        return this.entityBoundingBox
+            .offset(-this.posX, -this.posY, -this.posZ)
+            .offset(this.renderPos.x, this.renderPos.y, this.renderPos.z)
+    }
+
+/**
+ * Gets render distance to [entity]
+ */
+fun Entity.renderDistanceTo(entity: Entity): Double {
+    val fromPos = this.renderPos
+    val toPos = entity.renderPos
+
+    val x = fromPos.x - toPos.x
+    val y = fromPos.y - toPos.y
+    val z = fromPos.z - toPos.z
+
+    return sqrt(x * x + y * y + z * z)
+}

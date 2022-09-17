@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
@@ -13,10 +12,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.*;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.dropdown.Client;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.dropdown.DropdownGUI;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.LightClickGUI;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newdropdown.DropdownClickGui;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.tenacity.TenacityClickGUI;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.launch.options.modernuiLaunchOption;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -81,7 +79,7 @@ public class ClickGUIModule extends Module {
         } else if (styleValue.get().equalsIgnoreCase("Classic")){
             mc.displayGuiScreen(new DropdownGUI());
         } else if (styleValue.get().equalsIgnoreCase("Tenacity")){
-            mc.displayGuiScreen(new DropdownClickGui());
+            mc.displayGuiScreen(new TenacityClickGUI());
         } else {
             updateStyle();
             mc.displayGuiScreen(modernuiLaunchOption.clickGui);

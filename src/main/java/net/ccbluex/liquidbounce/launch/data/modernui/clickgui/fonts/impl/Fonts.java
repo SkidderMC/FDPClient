@@ -9,11 +9,11 @@ import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.api.FontFami
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.api.FontManager;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.api.FontRenderer;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.api.FontType;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.WbxMain;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.info;
 @SuppressWarnings("SpellCheckingInspection")
 public interface Fonts {
 
-	FontManager FONT_MANAGER = WbxMain.getFontManager();
+	FontManager FONT_MANAGER = info.getFontManager();
 
 	interface OXIDE {
 		FontFamily OXIDE = FONT_MANAGER.fontFamily(FontType.OXIDE);

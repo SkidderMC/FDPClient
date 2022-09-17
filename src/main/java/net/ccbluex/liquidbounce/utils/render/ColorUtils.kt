@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils.render
 
 import com.ibm.icu.text.NumberFormat
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
@@ -264,6 +265,12 @@ object ColorUtils {
                 interpolateColorHue(it, it1, angle / 360f)
             }
         } else start?.let { end?.let { it1 -> interpolateColorC(it, it1, angle / 360f) } }
+    }
+
+    fun hsbTransition(from: FloatValue, to: FloatValue, angle: Int, s: Float = 1f, b: Float = 1f): Color {
+        return Color.getHSBColor(
+            if (angle < 180) from + (to - from) * (angle / 180f)
+            else from + (to - from) * (-(angle - 360) / 180f), s, b)
     }
 
     @JvmStatic

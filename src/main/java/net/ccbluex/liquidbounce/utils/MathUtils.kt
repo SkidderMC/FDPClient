@@ -1,9 +1,15 @@
 package net.ccbluex.liquidbounce.utils
 
+import kotlin.math.PI
+import kotlin.math.exp
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 object MathUtils {
+
+    const val DEGREES_TO_RADIANS = 0.017453292519943295
+
+    const val RADIANS_TO_DEGREES = 57.29577951308232
     fun radians(degrees: Double): Double {
         return degrees * Math.PI / 180
     }
@@ -59,6 +65,22 @@ object MathUtils {
             cpoints.add(calcCurvePoint(points, t))
         }
         return cpoints.toTypedArray()
+    }
+
+    /**
+     * Converts double to radians
+     */
+    fun Double.toRadians() = this * DEGREES_TO_RADIANS
+
+    /**
+     * Converts double to degrees
+     */
+    fun Double.toDegrees() = this * RADIANS_TO_DEGREES
+
+    fun gaussian(x: Int, sigma: Float): Float {
+        val s = sigma * sigma * 2
+
+        return (1f / (sqrt(PI.toFloat() * s))) * exp(-(x * x) / s)
     }
 
     @JvmOverloads

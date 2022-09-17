@@ -5,12 +5,10 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.impl.Fonts;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.WbxMain;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.info;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.MainMenuButton;
-import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.*;
@@ -65,6 +63,7 @@ public class GuiMainMenu extends GuiScreen {
         this.currentY += yDiff * 0.3F;
         GlStateManager.translate(this.currentX / 30.0F, this.currentY / 15.0F, 0.0F);
         RenderUtils.drawImage(new ResourceLocation("fdpclient/background.png"), -30, -30, this.res.getScaledWidth() + 60, this.res.getScaledHeight() + 60);
+
         GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
         ParticleUtils.drawParticles(mouseX, mouseY);
 
@@ -77,11 +76,10 @@ public class GuiMainMenu extends GuiScreen {
             button.draw(startX, (float)this.height / 2.0F + 20.0F, mouseX, mouseY);
         }
 
-        String mainTitle = "FDPclient " + LiquidBounce.FRIENDLY_CLIENT_VERSION;
-        Fonts.SF.SF_25.SF_25.drawString(mainTitle, (float)this.width / 2F - Fonts.SF.SF_25.SF_25.stringWidth(mainTitle) + 25f, (float)this.height / 2.0F - 40.0F, -1);
-        //Fonts.SF.SF_20.SF_20.drawString(LiquidBounce.FRIENDLY_CLIENT_VERSION, (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 10.0F, -1);
-        //String s = "Hello " + ".";
-        //Fonts.SF.SF_20.SF_20.drawString(s, (float)this.width / 2f, (float)this.height / 2.0F + 5.0F, -1);
+        Fonts.SF.SF_35.SF_35.drawString("FDPCLIENT", (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 30.0F, -1);
+       Fonts.SF.SF_35.SF_35.drawString(info.version, (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 10.0F, -1);
+        String s = "v4.7.0";
+        Fonts.SF.SF_35.SF_35.drawString(s, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F) - (float) Fonts.SF.SF_35.SF_35.stringWidth(s) - 10.0F, (float)this.height / 2.0F + 5.0F, -1);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
