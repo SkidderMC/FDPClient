@@ -140,9 +140,9 @@ public abstract class MixinGuiScreen {
                 mc.getTextureManager().bindTexture(LiquidBounce.INSTANCE.getBackground());
                 Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
             }
-            if (GuiBackground.Companion.getBlur()) {
-                BlurUtils.INSTANCE.draw(0,0,mc.displayWidth, mc.displayHeight,20);
-            }
+        
+            BlurUtils.INSTANCE.draw(0,0,mc.displayWidth, mc.displayHeight,5);
+            
             GlStateManager.resetColor();
             if (GuiBackground.Companion.getParticles())
                 ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
