@@ -264,7 +264,7 @@ class Notification(
         } yo so dg, WTF */
 
 
-/* 
+        /*  
         if(style.equals("Simple")) {
             RenderUtils.customRoundedinf(-x + 8F + lbtl, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0,0,0, alpha).rgb)
             RenderUtils.customRoundedinf(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)
@@ -326,7 +326,7 @@ class Notification(
                 return false
             }
 
-       /*  if(style.equals("Intellij")) {
+        if(style.equals("Intellij")) {
                 private val notifyDir = "fdpclient/ui/icons/noti/idea/" 
                 private val imgSuccess = ResourceLocation("${notifyDir}checkmark.png")
                 private val imgError = ResourceLocation("${notifyDir}error.png")
@@ -375,10 +375,10 @@ class Notification(
                 GL11.glPopMatrix()
 
                 Fonts.minecraftFont.drawStringWithShadow(message, -x - 4, -13F - y, -1)
-        } */
-
-      
+        } 
     }
+      
+}
 
 //NotifyType Color
 enum class NotifyType(var renderColor: Color) {
