@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
@@ -278,6 +279,37 @@ class Notification(
             font.DisplayFont2(font,content, 4F, 10F, textColor,contentShadow)
             return false
             }
+
+        if(sttyle.equals("Tenacity")){
+        val thisWidth=100.coerceAtLeast(Fonts.fontRegular38.getStringWidth(this.title)
+            .coerceAtLeast(Fonts.fontRegular38.getStringWidth(this.content)) + 20)
+        val error = ResourceLocation("fdpclient/ui/icons/noti/tenacity/cross.png")
+        val successful = ResourceLocation("fdpclient/ui/icons/noti/tenacity/tick.png")
+        val warn = ResourceLocation("fdpclient/ui/icons/noti/tenacity/warning.png")
+        val info = ResourceLocation("fdpclient/ui/icons/noti/tenacity/info.png")
+        if(type.renderColor == Color(0x60E092)){
+            RenderUtils.drawCircleRect(-18F,0F,thisWidthtoFloat(),height.toFloat(),6f,Color(180,0,0,190).rgb,true)
+            RenderUtils.drawImage(error,-13,5,18,18)
+            Fonts.fontBold35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
+            Fonts.fontBold40.drawString(content,9F,6F,Color(255,255,255,255).rgb)
+        }else if(type.renderColor == Color(0xFF2F2F)){
+            RenderUtils.drawCircleRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,180,0,190).rgb,true)
+            RenderUtils.drawImage(successful,-13,5,18,18)
+            Fonts.fontBold35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
+            Fonts.fontBold40.drawString(content,9F,6F,Color(255,255,255,255).rgb)
+        } else if(type.renderColor == Color(0xF5FD00)){
+            RenderUtils.drawCircleRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,0,0,190).rgb,true)
+            RenderUtils.drawImage(warn,-13,5,18,18)
+            Fonts.fontBold35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
+            Fonts.fontBold40.drawString(content,9F,6F,Color(255,255,255,255).rgb)
+        } else {
+            RenderUtils.drawCircleRect(-16F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(0,0,0,190).rgb,true)
+            RenderUtils.drawImage(info,-13,5,18,18)
+            Fonts.fontBold35.drawString(title,9F,17F,Color(255,255,255,255).rgb)
+            Fonts.fontBold40.drawString(content,9F,6F,Color(255,255,255,255).rgb)
+        }
+        return false
+        }
 
         if(style.equals("Classic")) {
             if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) }
