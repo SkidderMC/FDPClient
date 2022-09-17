@@ -267,11 +267,6 @@ object ColorUtils {
         } else start?.let { end?.let { it1 -> interpolateColorC(it, it1, angle / 360f) } }
     }
 
-    fun hsbTransition(from: FloatValue, to: FloatValue, angle: Int, s: Float = 1f, b: Float = 1f): Color {
-        return Color.getHSBColor(
-            if (angle < 180) from + (to - from) * (angle / 180f)
-            else from + (to - from) * (-(angle - 360) / 180f), s, b)
-    }
 
     @JvmStatic
     fun rainbowc(speed: Int, index: Int, saturation: Float, brightness: Float, opacity: Float): Color? {

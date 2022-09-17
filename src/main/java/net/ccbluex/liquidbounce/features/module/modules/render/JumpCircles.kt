@@ -74,7 +74,7 @@ object JumpCircles : Module() {
 
             glBegin(GL_TRIANGLE_STRIP)
             for (i in 0 .. 360) {
-                val color = ColorUtils.hsbTransition(start, end, i)
+                val color = ColorUtils.rainbow(i)
                 val x = (dif * radius * 0.001 * sin(i.toDouble().toRadians()))
                 val z = (dif * radius * 0.001 * cos(i.toDouble().toRadians()))
 
