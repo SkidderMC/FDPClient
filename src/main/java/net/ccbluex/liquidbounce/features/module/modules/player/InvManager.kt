@@ -33,8 +33,8 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
-@ModuleInfo(name = "InventoryCleaner", category = ModuleCategory.PLAYER)
-class InventoryCleaner : Module() {
+@ModuleInfo(name = "InvManager", category = ModuleCategory.PLAYER)
+class InvManager : Module() {
 
     /**
      * OPTIONS
@@ -293,7 +293,7 @@ class InventoryCleaner : Module() {
                         item is ItemEnderPearl || item is ItemBucket || ignoreVehiclesValue.get() && (item is ItemBoat || item is ItemMinecart)
             }
         } catch (ex: Exception) {
-            ClientUtils.logError("(InventoryCleaner) Failed to check item: ${itemStack.unlocalizedName}.", ex)
+            ClientUtils.logError("(InvManager) Failed to check item: ${itemStack.unlocalizedName}.", ex)
             true
         }
     }

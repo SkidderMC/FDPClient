@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
+import net.ccbluex.liquidbounce.features.module.modules.player.InvManager
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -27,8 +27,8 @@ import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
 import kotlin.random.Random
 
-@ModuleInfo(name = "ChestStealer", category = ModuleCategory.WORLD)
-class ChestStealer : Module() {
+@ModuleInfo(name = "Stealer", category = ModuleCategory.WORLD)
+class Stealer : Module() {
     /**
      * OPTIONS
      */
@@ -122,7 +122,7 @@ class ChestStealer : Module() {
         }
 
         // inventory cleaner
-        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]!!
+        val invManager = LiquidBounce.moduleManager[InvManager::class.java]!!
 
         // check if it's empty?
         if (!isEmpty(screen) && !(closeOnFullValue.get() && fullInventory)) {
@@ -136,7 +136,7 @@ class ChestStealer : Module() {
                     for (slotIndex in 0 until screen.inventoryRows * 9) {
                         val slot = screen.inventorySlots.inventorySlots[slotIndex]
 
-                        if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1))) {
+                        if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!invManager.state || invManager.isUseful(slot.stack, -1))) {
                             items.add(slot)
                         }
                     }
@@ -154,7 +154,7 @@ class ChestStealer : Module() {
                 val slot = screen.inventorySlots.inventorySlots[slotIndex]
 
                 if (delayTimer.hasTimePassed(nextDelay) && slot.stack != null &&
-                        (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1))) {
+                        (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!invManager.state || invManager.isUseful(slot.stack, -1))) {
                     move(screen, slot)
                 }
             }
@@ -184,12 +184,12 @@ class ChestStealer : Module() {
     }
 
     private fun isEmpty(chest: GuiChest): Boolean {
-        val inventoryCleaner = LiquidBounce.moduleManager[InventoryCleaner::class.java]!!
+        val invManager = LiquidBounce.moduleManager[InvManager::class.java]!!
 
         for (i in 0 until chest.inventoryRows * 9) {
             val slot = chest.inventorySlots.inventorySlots[i]
 
-            if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1))) {
+            if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!invManager.state || invManager.isUseful(slot.stack, -1))) {
                 return false
             }
         }

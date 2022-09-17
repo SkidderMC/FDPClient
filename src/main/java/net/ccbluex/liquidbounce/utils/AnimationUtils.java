@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-
 public final class AnimationUtils {
     public static double animate(double target, double current, double speed) {
         if (current == target) return current;

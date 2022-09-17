@@ -30,7 +30,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[]{"FDP", "Tenacity", "Classic", "Novoline", "LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo"}, "Astolfo") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Tenacity", "Astolfo", "Novoline", "LiquidBounce", "Null", "Slowly", "Black", "White", "Light"}, "Classic") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -43,8 +43,8 @@ public class ClickGUIModule extends Module {
 
     public static final ListValue colormode = new ListValue("Setting Accent", new String[]{"White", "Color"},"Color");
     public static final IntegerValue clickHeight = new IntegerValue("Tab Height", 250, 100, 500);
-    public final FloatValue scaleValue = new FloatValue("Scale", 1F, 0.7F, 2F);
-    public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
+    public final FloatValue scaleValue = new FloatValue("Scale", 0.70F, 0.7F, 2F);
+    public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 40);
     public final ListValue backgroundValue = new ListValue("Background", new String[] {"Default", "Gradient", "None"}, "None");
 
     public final ListValue animationValue = new ListValue("Animation", new String[] {"Bread", "Slide", "LiquidBounce", "Zoom", "Ziul", "None"}, "Ziul");
@@ -73,7 +73,7 @@ public class ClickGUIModule extends Module {
         if (styleValue.get().contains("Novoline")) {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
-        } else if (styleValue.get().contains("FDP")) {
+        } else if (styleValue.get().contains("Light")) {
             mc.displayGuiScreen(new LightClickGUI());
             this.setState(false);
         } else if (styleValue.get().equalsIgnoreCase("Classic")){

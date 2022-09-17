@@ -28,7 +28,6 @@ import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-
 public class PlayerParticles {
     private static Minecraft mc = Minecraft.getMinecraft();
 
