@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.minecraft.util.ResourceLocation
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
@@ -327,11 +328,11 @@ class Notification(
             }
 
         if(style.equals("Intellij")) {
-                private val notifyDir = "fdpclient/ui/icons/noti/idea/" 
-                private val imgSuccess = ResourceLocation("${notifyDir}checkmark.png")
-                private val imgError = ResourceLocation("${notifyDir}error.png")
-                private val imgWarning = ResourceLocation("${notifyDir}warning.png")
-                private val imgInfo = ResourceLocation("${notifyDir}info.png")
+                val notifyDir = "fdpclient/ui/icons/noti/idea/" 
+                val imgSuccess = ResourceLocation("${notifyDir}checkmark.png")
+                val imgError = ResourceLocation("${notifyDir}error.png")
+                val imgWarning = ResourceLocation("${notifyDir}warning.png")
+                val imgInfo = ResourceLocation("${notifyDir}info.png")
 
                 val dist = (x + 1 + 26F) - (x - 8 - textLength)
                 val kek = -x - 1 - 20F
@@ -375,6 +376,7 @@ class Notification(
                 GL11.glPopMatrix()
 
                 Fonts.minecraftFont.drawStringWithShadow(message, -x - 4, -13F - y, -1)
+                retun false
         } 
     }
       
