@@ -323,9 +323,8 @@ class Notification(
             RenderUtils.drawRect(0F, classicHeight - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat(), type.renderColor)
                 font.drawString(title, 4F, 4F, textColor, false)
                 font.drawString(content, 4F, 17F, textColor, false)
+                return false
             }
-        return false
-        }
 
         if(style.equals("Intellij")) {
                 private val notifyDir = "fdpclient/ui/icons/noti/idea/" 
@@ -341,24 +340,24 @@ class Notification(
 
                 Stencil.write(true)
                 if(typeError){
-                    RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - y - 1, 0F, Color(115,69,75).rgb)
-                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F - y, 0F, Color(89,61,65).rgb)
-                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F - y, Color(249,130,108).rgb)
+                    RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - 1, 0F, Color(115,69,75).rgb)
+                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F, 0F, Color(89,61,65).rgb)
+                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F, Color(249,130,108).rgb)
                 }
                 if(typeInfo) {
-                    RenderUtils.drawRoundedRect(-x + 9 + textLength,  1, kek - 1, -28F - y - 1, 0F, Color(70,94,115).rgb)
-                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F - y, 0F, Color(61,72,87).rgb)
-                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F - y, Color(119,145,147).rgb)
+                    RenderUtils.drawRoundedRect(-x + 9 + textLength,  1, kek - 1, -28F - 1, 0F, Color(70,94,115).rgb)
+                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F, 0F, Color(61,72,87).rgb)
+                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F, Color(119,145,147).rgb)
                 }
                 if(typeSuccess){
-                    RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - y - 1, 0F, Color(67,104,67).rgb)
-                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F - y, 0F, Color(55,78,55).rgb)
-                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F - y, Color(10,142,2).rgb)
+                    RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - 1, 0F, Color(67,104,67).rgb)
+                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F, 0F, Color(55,78,55).rgb)
+                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F, Color(10,142,2).rgb)
                 }
                 if(typeWarning){
-                    RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - y - 1, 0F, Color(103,103,63).rgb)
-                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F - y, 0F, Color(80,80,57).rgb)
-                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F - y, Color(175,163,0).rgb)
+                    RenderUtils.drawRoundedRect(-x + 9 + textLength, 1, kek - 1, -28F - 1, 0F, Color(103,103,63).rgb)
+                    RenderUtils.drawRoundedRect(-x + 8 + textLength, 0, kek, -28F, 0F, Color(80,80,57).rgb)
+                    Fonts.minecraftFont.drawStringWithShadow(title, -x - 4, -25F, Color(175,163,0).rgb)
                 }
 
                 Stencil.erase(true)
@@ -377,6 +376,7 @@ class Notification(
                     typeError -> imgError
                     typeWarning -> imgWarning
                     typeInfo -> imgInfo
+                    else -> imgError
                 }, kek + 5, -25F - y, 7, 7)
                 GlStateManager.enableAlpha()
                 GL11.glPopMatrix()
