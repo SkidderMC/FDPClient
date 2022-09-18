@@ -7,8 +7,6 @@ package net.ccbluex.liquidbounce.launch.data.modernui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.font.FontLoaders;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.impl.Fonts;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.WbxMain;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.MainMenuButton;
 import net.ccbluex.liquidbounce.utils.render.BlurUtils;
