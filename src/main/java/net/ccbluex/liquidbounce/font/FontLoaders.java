@@ -28,6 +28,8 @@ public abstract class FontLoaders {
     public static CFontRenderer C18 = new CFontRenderer(getComfortaa(18), true, true);
     public static CFontRenderer C20 = new CFontRenderer(getComfortaa(20), true, true);
     public static CFontRenderer C22 = new CFontRenderer(getComfortaa(22), true, true);
+    public static CFontRenderer M12 = new CFontRenderer(getMojangles(12), true, true);
+    public static CFontRenderer M20 = new CFontRenderer(getMojangles(20), true, true);
     public static CFontRenderer M30 = new CFontRenderer(getMojangles(30), true, true);
     public static CFontRenderer M35 = new CFontRenderer(getMojangles(35), true, true);
     public static CFontRenderer M40 = new CFontRenderer(getMojangles(40), true, true);
