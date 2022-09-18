@@ -37,7 +37,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val whiteText = BoolValue("WhiteTextColor", true)
     private val modeColored = BoolValue("CustomModeColored", true)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Tenacity", "Skid"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Tenacity", "Intellij", "Skid"), "Modern")
     }
 
     /**
