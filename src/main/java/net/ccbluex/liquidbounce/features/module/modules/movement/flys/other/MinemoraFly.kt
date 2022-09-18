@@ -4,8 +4,10 @@ import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
@@ -14,12 +16,15 @@ import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import java.util.concurrent.LinkedBlockingQueue
 
 class MinemoraFly : FlyMode("Minemora") {
-    
     private var tick = 0
+    private var boost = false
+    private var noGround = false
     private var disableLogger = false
     private val packetBuffer = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
 
     override fun onEnable() {
+        noGround = !mc.thePlayer.onGround
+        boost = false
         tick = 0
         mc.gameSettings.keyBindJump.pressed = false
         mc.gameSettings.keyBindSneak.pressed = false
@@ -35,6 +40,7 @@ class MinemoraFly : FlyMode("Minemora") {
         } finally {
             disableLogger = false
         }
+        mc.timer.timerSpeed = 1f
     }
 
     override fun onPacket(event: PacketEvent) {
@@ -52,7 +58,16 @@ class MinemoraFly : FlyMode("Minemora") {
         }
     }
     override fun onUpdate(event: UpdateEvent) {
-          fly.antiDesync = false
+        fly.antiDesync = false
+        if(boost) {
+            MovementUtils.resetMotion(false)
+            repeat(10) {
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX , mc.thePlayer.posY , mc.thePlayer.posZ , false))
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX , mc.thePlayer.posY , mc.thePlayer.posZ , true))
+            }
+
+            fly.state = false
+        }
     }
     override fun onMotion(event: MotionEvent) {
         if (event.eventState != EventState.PRE) return
@@ -74,6 +89,9 @@ class MinemoraFly : FlyMode("Minemora") {
                 mc.thePlayer.motionY = 1.7
             } else if (mc.gameSettings.keyBindSneak.pressed) {
                 mc.thePlayer.motionY = -1.7
+                if(mc.thePlayer.onGround) {
+                    if(!noGround) fly.state = false else boost = true
+                }
             } else {
                 mc.thePlayer.motionY = 0.0
             }
