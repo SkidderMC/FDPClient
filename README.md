@@ -84,3 +84,10 @@ Please use original code if you can and do not directly steal code,however we we
 ### Useless features
 Useless features are features only you think are useful and or features can be added with a config change.  
 Like the "TimerSpeed" option to InfiniteAura, this feature can be added by binding Timer to the key with InfiniteAura, or use the macro system in FDP Client.
+
+### Old Contributor
+@Liulihaocai(kotonemywaifu) | bruh i quitted minecraft cheating   
+@XiGuaHanHan(Wlenk) | I got fucking crazy exam so leave
+  
+To be continued..  
+thanks for their contributions
