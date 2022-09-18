@@ -11,6 +11,9 @@ import kotlin.math.sin
 class MatrixFlagLongjump : LongJumpMode("MatrixFlag") {
   
     var yes = true
+    override fun onEnable() {
+        yes = true
+    }
 
     override fun onUpdate(event: UpdateEvent) {
         longjump.no = true //No AutoJump / AutoDisable
