@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.utils.render.ShadowUtils;
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils;
 
 import java.awt.*;
-// Made by XiGuaHanHan
 public class MainMenuButton {
     public GuiMainMenu parent;
     public String icon;

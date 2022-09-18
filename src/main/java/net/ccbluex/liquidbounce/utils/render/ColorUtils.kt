@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.utils.render
 
 import com.ibm.icu.text.NumberFormat
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
@@ -229,6 +228,43 @@ object ColorUtils {
     }
 
     @JvmStatic
+    fun astolfoRainbow2(counter: Int, alpha: Int): Int {
+        val width = 110
+        var rainbowState = Math.ceil((System.currentTimeMillis() - counter.toLong() * width).toDouble()) / 11
+        rainbowState %= 360.0
+        val hue =
+            if ((rainbowState / 360).toFloat() < 0.5) -(rainbowState / 360).toFloat() else (rainbowState / 360).toFloat()
+        val color = Color.getHSBColor(hue, 0.7f, 1f)
+        return Color(color.red, color.green, color.blue, alpha).rgb
+    }
+
+    @JvmStatic
+    fun astolfoRainbow2(offset: Int, distance: Float, speedl: Float): Color? {
+        val speed = (30 * 100).toFloat()
+        var hue = System.currentTimeMillis() % speed.toInt() + (distance - offset) * speedl
+        while (hue > speed) {
+            hue -= speed
+        }
+        hue /= speed
+        if (hue > 0.5) hue = 0.5f - (hue - 0.5f)
+        hue += 0.5f
+        return Color.getHSBColor(hue, 0.4f, 1f)
+    }
+
+    @JvmStatic
+    fun astolfoRainbow(offset: Int): Color? {
+        val speed = (30 * 100).toFloat()
+        var hue = (System.currentTimeMillis() % speed.toInt() + offset).toFloat()
+        while (hue > speed) {
+            hue -= speed
+        }
+        hue /= speed
+        if (hue > 0.5) hue = 0.5f - (hue - 0.5f)
+        hue += 0.5f
+        return Color.getHSBColor(hue, 0.4f, 1f)
+    }
+
+    @JvmStatic
     fun hsbTransition(from: Float, to: Float, angle: Int, s: Float = 1f, b: Float = 1f): Color {
         return Color.getHSBColor(
             if (angle < 180) from + (to - from) * (angle / 180f)
@@ -330,6 +366,13 @@ object ColorUtils {
     fun skyRainbow(var2: Int, bright: Float, st: Float, speed: Double): Color {
         var v1 = ceil(System.currentTimeMillis() / speed + var2 * 109L) / 5
         return Color.getHSBColor(if ((360.0.also { v1 %= it } / 360.0) <0.5) { -(v1 / 360.0).toFloat() } else { (v1 / 360.0).toFloat() }, st, bright)
+    }
+
+    @JvmStatic
+     fun StaticRainbow(speed: Int, index: Int): Color {
+        var angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
+        val hue = angle / 360f
+        return Color.getHSBColor(if ((360.0.also { (angle).toInt() } / 360.0).toFloat().toDouble() < 0.5) -(angle / 360.0).toFloat() else (angle / 360.0).toFloat(), 0.5f, 1.0f)
     }
 
     @JvmStatic
