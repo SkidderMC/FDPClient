@@ -5,10 +5,13 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.impl.Fonts;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.info;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.logo.WbxMain;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.MainMenuButton;
+import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.*;
@@ -16,10 +19,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.GuiModList;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
+// Made by XiGuaHanHan
 public class GuiMainMenu extends GuiScreen {
     public ArrayList butt = new ArrayList();
     private float currentX;
@@ -54,32 +58,39 @@ public class GuiMainMenu extends GuiScreen {
     }
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.drawGradientRect(0, 0, this.width, this.height, 16777215, 16777215);
-        int h = this.height;
-        int w = this.width;
-        float xDiff = ((float)(mouseX - h / 2) - this.currentX) / (float)this.res.getScaleFactor();
-        float yDiff = ((float)(mouseY - w / 2) - this.currentY) / (float)this.res.getScaleFactor();
-        this.currentX += xDiff * 0.3F;
-        this.currentY += yDiff * 0.3F;
-        GlStateManager.translate(this.currentX / 30.0F, this.currentY / 15.0F, 0.0F);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/background.png"), -30, -30, this.res.getScaledWidth() + 60, this.res.getScaledHeight() + 60);
+        try {
+            this.drawGradientRect(0, 0, this.width, this.height, 16777215, 16777215);
+            int h = this.height;
+            int w = this.width;
+            float xDiff = ((float) (mouseX - h / 2) - this.currentX) / (float) this.res.getScaleFactor();
+            float yDiff = ((float) (mouseY - w / 2) - this.currentY) / (float) this.res.getScaleFactor();
+            this.currentX += xDiff * 0.3F;
+            this.currentY += yDiff * 0.3F;
+            GlStateManager.translate(this.currentX / 30.0F, this.currentY / 15.0F, 0.0F);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/background.png"), -30, -30, this.res.getScaledWidth() + 60, this.res.getScaledHeight() + 60);
+            GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
+            RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 80).getRGB());
+            FontLoaders.F18.drawCenteredString("Made by SkidderMC with love",(float)this.width / 2.0F,(float)this.height / 2.0F + 70.0F,new Color(255,255,255,255).getRGB());
+            BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 30f);
+            FontLoaders.F40.drawCenteredString("FDPClient",(float)this.width / 2.0F,(float)this.height / 2.0F - 70.0F,new Color(255,255,255).getRGB());
+            BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 10f);
+            ParticleUtils.drawParticles(mouseX, mouseY);
+            RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F - 100.0F, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F + 100.0F, 10, new Color(0, 0, 0, 100).getRGB());
+            //RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 20.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 1040187392);
+            float startX = (float) this.width / 2.0F - 64.5F * ((float) this.butt.size() / 2.0F);
 
-        GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
-        ParticleUtils.drawParticles(mouseX, mouseY);
+            for (Iterator var9 = this.butt.iterator(); var9.hasNext(); startX += 75.0F) {
+                MainMenuButton button = (MainMenuButton) var9.next();
+                button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
+            }
+            FontLoaders.F40.drawCenteredString("FDPClient",(float)this.width / 2.0F,(float)this.height / 2.0F - 70.0F,new Color(255,255,255).getRGB());
+            FontLoaders.F18.drawCenteredString(LiquidBounce.FRIENDLY_CLIENT_VERSION,(float)this.width / 2.0F,(float)this.height / 2.0F - 30.0F,new Color(255,255,255).getRGB());
+            RenderUtils.drawRect((float)this.width / 2.0F - 30f,(float)this.height / 2.0F - 40.0F,(float)this.width / 2.0F + 30f,(float)this.height / 2.0F - 39.5F,new Color(255,255,255,100).getRGB());
+            FontLoaders.F18.drawCenteredString("Made by SkidderMC with love",(float)this.width / 2.0F,(float)this.height / 2.0F + 70.0F,new Color(255,255,255,100).getRGB());
 
-        RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F - 50.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 2097152000);
-        RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 20.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 1040187392);
-        float startX = (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F);
-
-        for(Iterator var9 = this.butt.iterator(); var9.hasNext(); startX += 50.0F) {
-            MainMenuButton button = (MainMenuButton)var9.next();
-            button.draw(startX, (float)this.height / 2.0F + 20.0F, mouseX, mouseY);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
-        Fonts.SF.SF_35.SF_35.drawString("FDPCLIENT", (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 30.0F, -1);
-       Fonts.SF.SF_35.SF_35.drawString(info.version, (float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F) + 80.0F, (float)this.height / 2.0F - 10.0F, -1);
-        String s = "v4.7.0";
-        Fonts.SF.SF_35.SF_35.drawString(s, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F) - (float) Fonts.SF.SF_35.SF_35.stringWidth(s) - 10.0F, (float)this.height / 2.0F + 5.0F, -1);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
