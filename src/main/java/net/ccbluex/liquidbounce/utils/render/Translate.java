@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.utils.render;
 
 import net.ccbluex.liquidbounce.launch.data.modernui.AnimationUtil;
 import net.ccbluex.liquidbounce.utils.AnimationUtils;
-
 public final class Translate {
     private float x;
     private float y;

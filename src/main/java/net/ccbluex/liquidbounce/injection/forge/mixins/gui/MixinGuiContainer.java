@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.KeyEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer;
+import net.ccbluex.liquidbounce.features.module.modules.world.Stealer;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
@@ -52,7 +52,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         GuiScreen guiScreen = Minecraft.getMinecraft().currentScreen;
         if (guiScreen instanceof GuiChest) {
             buttonList.add(new GuiButton(114514, this.width / 2 - 100, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable","%module.KillAura.name%")));
-            buttonList.add(new GuiButton(1919810, this.width / 2 + 1, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable","%module.ChestStealer.name%")));
+            buttonList.add(new GuiButton(1919810, this.width / 2 + 1, this.guiTop - 30, 99, 20, LanguageManager.INSTANCE.getAndFormat("ui.chest.disable","%module.Stealer.name%")));
         }
     }
 
@@ -61,22 +61,22 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         if (button.id == 114514)
             LiquidBounce.moduleManager.getModule(KillAura.class).setState(false);
         if (button.id == 1919810)
-            LiquidBounce.moduleManager.getModule(ChestStealer.class).setState(false);
+            LiquidBounce.moduleManager.getModule(Stealer.class).setState(false);
     }
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo) {
-        ChestStealer chestStealer = LiquidBounce.moduleManager.getModule(ChestStealer.class);
+        Stealer stealer = LiquidBounce.moduleManager.getModule(Stealer.class);
         Minecraft mc = Minecraft.getMinecraft();
         GuiScreen guiScreen = mc.currentScreen;
-        if (chestStealer.getState() && chestStealer.getSilentValue().get() && guiScreen instanceof GuiChest) {
+        if (stealer.getState() && stealer.getSilentValue().get() && guiScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) guiScreen;
-            if (!(chestStealer.getChestTitleValue().get() && (chest.lowerChestInventory == null || !chest.lowerChestInventory.getName().contains(new ItemStack(Item.itemRegistry.getObject(new ResourceLocation("minecraft:chest"))).getDisplayName())))) {
+            if (!(stealer.getChestTitleValue().get() && (chest.lowerChestInventory == null || !chest.lowerChestInventory.getName().contains(new ItemStack(Item.itemRegistry.getObject(new ResourceLocation("minecraft:chest"))).getDisplayName())))) {
                 // mouse focus
                 mc.setIngameFocus();
                 mc.currentScreen = guiScreen;
                 // hide GUI
-                if (chestStealer.getSilentTitleValue().get()) {
+                if (stealer.getSilentTitleValue().get()) {
                     RendererExtensionKt.drawCenteredString(mc.fontRendererObj, LanguageManager.INSTANCE.getAndFormat("ui.chest.stealing"), width / 2, (height / 2) + 30, 0xffffffff, false);
                 }
                 callbackInfo.cancel();
@@ -142,9 +142,9 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
     @Inject(method = "keyTyped", at = @At("HEAD"))
     private void keyTyped(char typedChar, int keyCode, CallbackInfo ci) {
-        ChestStealer chestStealer = LiquidBounce.moduleManager.getModule(ChestStealer.class);
+        Stealer stealer = LiquidBounce.moduleManager.getModule(Stealer.class);
         try {
-            if (chestStealer.getState() && chestStealer.getSilentTitleValue().get() && mc.currentScreen instanceof GuiChest)
+            if (stealer.getState() && stealer.getSilentTitleValue().get() && mc.currentScreen instanceof GuiChest)
                 LiquidBounce.eventManager.callEvent(new KeyEvent(keyCode == 0 ? typedChar + 256 : keyCode));
         }catch (Exception e){
 

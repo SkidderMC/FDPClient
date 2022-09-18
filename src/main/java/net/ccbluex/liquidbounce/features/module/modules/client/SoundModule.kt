@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -9,8 +14,8 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.util.ResourceLocation
 
-@ModuleInfo(name = "Modules", category = ModuleCategory.CLIENT, canEnable = false)
-object Modules : Module() {
+@ModuleInfo(name = "SoundModules", category = ModuleCategory.CLIENT, canEnable = false)
+object SoundModule : Module() {
     val toggleIgnoreScreenValue = BoolValue("ToggleIgnoreScreen", false)
     private val toggleSoundValue = ListValue("ToggleSound", arrayOf("None", "Click", "Custom"), "Click")
 

@@ -1,6 +1,10 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.utils.render
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.client.HudShadows
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.*
@@ -11,8 +15,6 @@ import org.lwjgl.opengl.GL11.GL_BLEND
 import org.lwjgl.opengl.GL11.glDisable
 import org.lwjgl.opengl.GL11.glEnable
 import net.minecraft.client.renderer.GlStateManager
-
-// texture based shadows
 
 object shadowRenderUtils {
     @JvmStatic
