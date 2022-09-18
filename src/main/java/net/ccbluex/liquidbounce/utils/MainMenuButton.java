@@ -7,10 +7,13 @@ package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.launch.data.modernui.GuiMainMenu;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.impl.Fonts;
+import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.utils.render.ShadowUtils;
+import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils;
 
 import java.awt.*;
-
+// Made by XiGuaHanHan
 public class MainMenuButton {
     public GuiMainMenu parent;
     public String icon;
@@ -43,14 +46,18 @@ public class MainMenuButton {
     public void draw(float x, float y, int mouseX, int mouseY) {
         this.x = x;
         this.y = y;
-        Fonts.MAINMENU.MAINMENU30.MAINMENU30.drawString(this.icon, x + 25.0F - (float) Fonts.MAINMENU.MAINMENU30.MAINMENU30.stringWidth(this.icon) / 2.0F - 2.0F, y + 9.0F, Color.WHITE.getRGB(),false);
-        this.yAnimation = RenderUtils.smoothAnimation(this.yAnimation, RenderUtils.isHovering(mouseX, mouseY, x, y, x + 50.0F, y + 30.0F) ? 2.0F : 0.0F, 50.0F, 0.3F);
-        RenderUtils.drawGradientRect(x, y + 30.0F - this.yAnimation * 3.0F, x + 50.0F, y + 30.0F, 3453695, 2016719615);
-        RenderUtils.drawRect(x, y + 30.0F - this.yAnimation, x + 50.0F, y + 30.0F, -13323521);
+        RenderUtils.drawRoundedCornerRect(x-30F,y-30F,x+30f,y+30f,15f,new Color(0,0,0,40).getRGB());
+        BlurUtils.INSTANCE.draw(x-40F,y-40F,80f,80f,20f);
+        this.yAnimation = RenderUtils.smoothAnimation(this.yAnimation, RenderUtils.isHovering(mouseX, mouseY, this.x-30f, this.y-30f, this.x + 30.0F, this.y + 30.0F) ? 4.0F : 0.0F, 20.0F, 0.3F);
+        Fonts.MAINMENU.MAINMENU30.MAINMENU30.drawString(this.icon, x - (float) Fonts.MAINMENU.MAINMENU30.MAINMENU30.stringWidth(this.icon) / 2.0F, y-6f+(this.yAnimation*-1f), Color.WHITE.getRGB(),false);
+        if(this.yAnimation>=0.11) {
+            Fonts.SF.SF_16.SF_16.drawString(this.text, x - (float) Fonts.SF.SF_16.SF_16.stringWidth(this.text) / 2.0F, y + 12f +(this.yAnimation*-1f), new Color(255,255,255, ((((this.yAnimation/4.0f)) * 255.0f)<=255.0f) ? (int)(((this.yAnimation/4.0f)) * 255.0f) : 25).getRGB());
+        }//RenderUtils.drawGradientRect(x, y + 40.0F - this.yAnimation * 3.0F, x + 50.0F, y + 40.0F, 3453695, 2016719615);
+        RenderUtils.drawRoundedCornerRect(x-30F,y-30F,x+30f,y+30f,15f,new Color(255,255,255,50).getRGB());
     }
 
     public void mouseClick(int mouseX, int mouseY, int mouseButton) {
-        if (RenderUtils.isHovering(mouseX, mouseY, this.x, this.y, this.x + 50.0F, this.y + 30.0F) && this.action != null && mouseButton == 0) {
+        if (RenderUtils.isHovering(mouseX, mouseY, this.x-30f, this.y-30f, this.x + 30.0F, this.y + 30.0F) && this.action != null && mouseButton == 0) {
             this.action.execute();
         }
 
