@@ -343,7 +343,7 @@ class Notification(
                 if(nTypeError){
                     RenderUtils.drawRoundedRect(-x + 9 + textLength, 1f, kek - 1, -28F - 1, 0F, Color(115,69,75).rgb)
                     RenderUtils.drawRoundedRect(-x + 8 + textLength, 0f, kek, -28F, 0F, Color(89,61,65).rgb)
-                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x M16, -25F, Color(249,130,108).rgb, true)
+                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x + 6, -25F, Color(249,130,108).rgb, true)
                 }
                 if(nTypeInfo) {
                     RenderUtils.drawRoundedRect(-x + 9 + textLength,  1f, kek - 1, -28F - 1, 0F, Color(70,94,115).rgb)
