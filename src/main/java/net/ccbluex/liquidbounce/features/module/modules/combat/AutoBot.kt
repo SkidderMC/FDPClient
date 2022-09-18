@@ -181,9 +181,9 @@ class AutoBot : Module() {
 
         if(autoPotValue.get()) {
             when (autoPotThrowMode.get().lowercase()) {
-                "up" -> autoPotThrowAngle = 90f
+                "up" -> autoPotThrowAngle = -90f
                 "forward" -> autoPotThrowAngle = 0f
-                "down" -> autoPotThrowAngle = -90f
+                "down" -> autoPotThrowAngle = 90f
                 "custom" -> autoPotThrowAngle = autoPotThrowAngleOption.get().toFloat()
             }
 
