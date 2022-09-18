@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.utils.MobsUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -46,8 +46,8 @@ class NoRender : Module() {
         return (allValue.get()
                 ||(itemsValue.get() && entity is EntityItem)
                 || (playersValue.get() && entity is EntityPlayer)
-                || (mobsValue.get() && EntityUtils.isMob(entity))
-                || (animalsValue.get() && EntityUtils.isAnimal(entity))
+                || (mobsValue.get() && MobsUtils.isMob(entity))
+                || (animalsValue.get() && MobsUtils.isAnimal(entity))
                 || (armorStandValue.get() && entity is EntityArmorStand))
                 && entity != mc.thePlayer!!
                 && (mc.thePlayer!!.getDistanceToEntityBox(entity).toFloat() > maxRenderRange.get())

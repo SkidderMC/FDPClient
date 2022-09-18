@@ -394,7 +394,7 @@ object GLUtils {
         return old + (current - old) * mc.timer.renderPartialTicks.toDouble()
     }
 
-    fun glColor(red: Int, green: Int, blue: Int, alpha: Int = 255) {
+    fun glColor(red: Float, green: Int, blue: Int, alpha: Int = 255) {
         GlStateManager.color(red / 255f, green / 255f, blue / 255f, alpha / 255f)
     }
 
@@ -425,18 +425,6 @@ object GLUtils {
         glDepthMask(false)
 
         val bb = entity.renderBoundingBox
-
-        if (filled) {
-            glColor(color.red, color.green, color.blue, 50)
-            drawFilledBB(bb)
-        }
-
-        if (outlined) {
-            glLineWidth(1f)
-            glEnable(GL_LINE_SMOOTH)
-            glColor(color.red, color.green, color.blue)
-            drawOutlinedBB(bb)
-        }
 
         GlStateManager.resetColor()
         glDisable(GL_BLEND)
@@ -471,11 +459,6 @@ object GLUtils {
         glDisable(GL_TEXTURE_2D)
         glDisable(GL_DEPTH_TEST)
         glDepthMask(false)
-
-        if (filled) {
-            glColor(color.red, color.green, color.blue, 50)
-            drawFilledBB(bb)
-        }
 
         if (outlined) {
             glLineWidth(1f)

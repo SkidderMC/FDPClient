@@ -328,7 +328,7 @@ class Notification(
             }
 
         if(style.equals("Intellij")) {
-                val notifyDir = "fdpclient/ui/icons/noti/idea/" 
+                val notifyDir = "fdpclient/ui/icons/noti/intellij/"
                 val imgSuccess = ResourceLocation("${notifyDir}checkmark.png")
                 val imgError = ResourceLocation("${notifyDir}error.png")
                 val imgWarning = ResourceLocation("${notifyDir}warning.png")
