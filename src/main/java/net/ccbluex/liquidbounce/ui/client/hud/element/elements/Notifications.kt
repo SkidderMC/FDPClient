@@ -378,6 +378,7 @@ class Notification(
                 Fonts.minecraftFont.drawStringWithShadow(content, -x - 4, -13F, -1)
                 return false
         } 
+    return false
     }
       
 }
