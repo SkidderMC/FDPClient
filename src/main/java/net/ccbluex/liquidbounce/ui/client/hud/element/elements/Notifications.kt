@@ -343,22 +343,22 @@ class Notification(
                 if(nTypeError){
                     RenderUtils.drawRoundedRect(-x + 9 + textLength, 1f, kek - 1, -28F - 1, 0F, Color(115,69,75).rgb)
                     RenderUtils.drawRoundedRect(-x + 8 + textLength, 0f, kek, -28F, 0F, Color(89,61,65).rgb)
-                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x - 2, -25F, Color(249,130,108).rgb, true)
+                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x M16, -25F, Color(249,130,108).rgb, true)
                 }
                 if(nTypeInfo) {
                     RenderUtils.drawRoundedRect(-x + 9 + textLength,  1f, kek - 1, -28F - 1, 0F, Color(70,94,115).rgb)
                     RenderUtils.drawRoundedRect(-x + 8 + textLength, 0f, kek, -28F, 0F, Color(61,72,87).rgb)
-                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x - 2, -25F, Color(119,145,147).rgb, true)
+                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x + 6, -25F, Color(119,145,147).rgb, true)
                 }
                 if(nTypeSuccess){
                     RenderUtils.drawRoundedRect(-x + 9 + textLength, 1f, kek - 1, -28F - 1, 0F, Color(67,104,67).rgb)
                     RenderUtils.drawRoundedRect(-x + 8 + textLength, 0f, kek, -28F, 0F, Color(55,78,55).rgb)
-                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x - 2, -25F, Color(10,142,2).rgb, true)
+                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x + 6, -25F, Color(10,142,2).rgb, true)
                 }
                 if(nTypeWarning){
                     RenderUtils.drawRoundedRect(-x + 9 + textLength, 1f, kek - 1, -28F - 1, 0F, Color(103,103,63).rgb)
                     RenderUtils.drawRoundedRect(-x + 8 + textLength, 0f, kek, -28F, 0F, Color(80,80,57).rgb)
-                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x - 2, -25F, Color(175,163,0).rgb, true)
+                    FontLoaders.M16.DisplayFont2(FontLoaders.M16,title, -x + 6, -25F, Color(175,163,0).rgb, true)
                 }
 
                 Stencil.erase(true)
@@ -375,7 +375,7 @@ class Notification(
                 GlStateManager.enableAlpha()
                 GL11.glPopMatrix()
 
-                FontLoaders.M16.DisplayFont2(FontLoaders.M16,content, -x - 2, -13F, -1, true)
+                FontLoaders.M16.DisplayFont2(FontLoaders.M16,content, -x + 6, -13F, -1, true)
                 return false
         } 
     return false
