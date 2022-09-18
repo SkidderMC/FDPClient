@@ -87,7 +87,7 @@ Like the "TimerSpeed" option to InfiniteAura, this feature can be added by bindi
 
 ### Old Contributor
 @Liulihaocai(kotonemywaifu) | bruh i quitted minecraft cheating   
-@XiGuaHanHan(Wlenk) | I got fucking crazy exam so leave 中考啊啊啊啊!  
+@XiGuaHanHan(Wlenk) | I got fucking crazy exam so leave
   
 To be continued..  
 thanks for their contributions
