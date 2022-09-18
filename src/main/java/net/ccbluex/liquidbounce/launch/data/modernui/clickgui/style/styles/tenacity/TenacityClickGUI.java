@@ -29,7 +29,7 @@ public class TenacityClickGUI extends GuiScreen {
     private Animation openingAnimation;
     private EaseBackIn fadeAnimation;
     private DecelerateAnimation configHover;
-    private final ResourceLocation hudIcon = new ResourceLocation("fdpclient/clickgui/Hud.png");
+    private final ResourceLocation hudIcon = new ResourceLocation("fdpclient/ui/clickgui/hud.png");
     private List<MainScreen> categoryPanels;
 
     @Override

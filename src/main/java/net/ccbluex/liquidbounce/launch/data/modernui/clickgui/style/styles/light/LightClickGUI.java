@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.LightSettings.InputBox;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.ModuleSettings.Setting.Settings;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.ModuleSettings.Settings;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.AnimationHelper;
@@ -25,7 +25,6 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.io.IOException;
-
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
@@ -110,7 +109,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         // yes hud designer here
-        RenderUtils.drawImage(new ResourceLocation( "fdpclient/clickgui/Hud.png"), 9, height - 41, 32, 32);
+        RenderUtils.drawImage(new ResourceLocation( "fdpclient/ui/clickgui/hud.png"), 9, height - 41, 32, 32);
         
         // set up bool animations?
         if(!firstSetAnimation) {
@@ -214,7 +213,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
 
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 90, (int) startY + 80, 36, 36);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Combat.png"), (int) startX + 90, (int) startY + 80, 36, 36);
             
             // -- MOVEMENT -- 
             homeX = 160;
@@ -233,7 +232,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             } else {
                 RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Movement.png"), (int) startX + 172 , (int) startY + 80, 36, 36);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Movement.png"), (int) startX + 172 , (int) startY + 80, 36, 36);
             
             // -- WORLD --
             homeX = 242;
@@ -252,7 +251,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             } else {
                 RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 254, (int) startY + 80, 36, 36);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/World.png"), (int) startX + 254, (int) startY + 80, 36, 36);
             
             // row 2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -276,7 +275,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             } else {
                 RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 90, (int) startY + 164, 36, 36);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Player.png"), (int) startX + 90, (int) startY + 164, 36, 36);
             
             // -- EXPLOIT --
             homeX = 160;
@@ -295,7 +294,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             } else {
                 RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Exploit.png"), (int) startX + 172, (int) startY + 164, 36, 36);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Exploit.png"), (int) startX + 172, (int) startY + 164, 36, 36);
             
             // -- MISC --
             homeX = 242;
@@ -314,7 +313,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             } else {
                 RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 60, (int) startY + homeY + 60, 8, new Color(50, 50, 50, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Misc.png"), (int) startX + 254, (int) startY + 164, 36, 36);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Misc.png"), (int) startX + 254, (int) startY + 164, 36, 36);
             
             // row 3 >>>>>>>>>>>>>>>>>>>
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -337,10 +336,10 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             } else {
                 RenderUtils.drawRoundedRect2((int) startX + homeX, (int) startY + homeY, (int) startX + homeX + 72, (int) startY + homeY + 72, 8, new Color(65, 65, 65, 250).getRGB());
             }
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Client.png"), (int) startX + 172, (int) startY + 248, 24, 24);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Client.png"), (int) startX + 172, (int) startY + 248, 24, 24);
             
             // made by dg636 no cap
-            Fonts.font35.drawString("Designed by skidder mc", startX + 10, startY + 290, new Color(30,30,30).getRGB());
+            Fonts.font40.drawString("Designed by skidder mc", startX + 10, startY + 290, new Color(30,30,30).getRGB());
             
             mouseX += 48;
             mouseY += 48;
@@ -735,13 +734,13 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     //        iconFont.drawString("3", startX + 14, startY + 226,
     //                /*isCategoryHovered(startX + 10, startY + 218, startX + 40, startY + 247, mouseX, mouseY)
     //                        || currentCategory == ModuleCategory.WORLD ? -1 : */new Color(107, 107, 107).getRGB());
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Movement.png"), (int) startX + 17, (int) startY + 80, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/World.png"), (int) startX + 17, (int) startY + 120, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Player.png"), (int) startX + 17, (int) startY + 160, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Exploit.png"), (int) startX + 17, (int) startY + 200, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Misc.png"), (int) startX + 17, (int) startY + 240, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/clickgui/Client.png"), (int) startX + 17, (int) startY + 280, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Movement.png"), (int) startX + 17, (int) startY + 80, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/World.png"), (int) startX + 17, (int) startY + 120, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Player.png"), (int) startX + 17, (int) startY + 160, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Exploit.png"), (int) startX + 17, (int) startY + 200, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Misc.png"), (int) startX + 17, (int) startY + 240, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Client.png"), (int) startX + 17, (int) startY + 280, 12, 12);
         }
     }
 

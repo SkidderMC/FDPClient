@@ -135,7 +135,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
     }
 
-    val shieldIcon = ResourceLocation("fdpclient/shield.png")
 
     var animProgress = 0F
 
@@ -1856,12 +1855,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), i * gradientDistanceValue.get(), 100).rgb
             else -> -1
         })
-    }
-
-    fun drawArmorIcon(x: Int, y: Int, width: Int, height: Int) {
-        GlStateManager.disableAlpha()
-        RenderUtils.drawImage(shieldIcon, x, y, width, height)
-        GlStateManager.enableAlpha()
     }
 
 }
