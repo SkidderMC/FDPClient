@@ -82,7 +82,7 @@ public class GuiMainMenu extends GuiScreen {
                 button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
             }
             FontLoaders.F40.drawCenteredString("FDPClient",(float)this.width / 2.0F,(float)this.height / 2.0F - 70.0F,new Color(255,255,255).getRGB());
-            FontLoaders.F18.drawCenteredString(LiquidBounce.FRIENDLY_CLIENT_VERSION,(float)this.width / 2.0F,(float)this.height / 2.0F - 30.0F,new Color(255,255,255).getRGB());
+            FontLoaders.F18.drawCenteredString(LiquidBounce.INSTANCE.CLIENT_VERSION,(float)this.width / 2.0F,(float)this.height / 2.0F - 30.0F,new Color(255,255,255).getRGB());
             RenderUtils.drawRect((float)this.width / 2.0F - 30f,(float)this.height / 2.0F - 40.0F,(float)this.width / 2.0F + 30f,(float)this.height / 2.0F - 39.5F,new Color(255,255,255,100).getRGB());
             FontLoaders.F18.drawCenteredString("Made by SkidderMC with love",(float)this.width / 2.0F,(float)this.height / 2.0F + 70.0F,new Color(255,255,255,100).getRGB());
 
