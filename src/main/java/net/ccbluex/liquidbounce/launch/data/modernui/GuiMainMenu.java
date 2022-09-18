@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.MainMenuButton;
-import net.ccbluex.liquidbounce.utils.render.BlurUtils;
+//import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.*;
@@ -21,7 +21,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-// Made by XiGuaHanHan
 public class GuiMainMenu extends GuiScreen {
     public ArrayList butt = new ArrayList();
     private float currentX;
@@ -69,9 +68,9 @@ public class GuiMainMenu extends GuiScreen {
             GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
             RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 80).getRGB());
             FontLoaders.F18.drawCenteredString("Made by SkidderMC with love",(float)this.width / 2.0F,(float)this.height / 2.0F + 70.0F,new Color(255,255,255,255).getRGB());
-            BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 30f);
+            //BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 30f);
             FontLoaders.F40.drawCenteredString("FDPClient",(float)this.width / 2.0F,(float)this.height / 2.0F - 70.0F,new Color(255,255,255).getRGB());
-            BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 10f);
+            //BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 10f);
             ParticleUtils.drawParticles(mouseX, mouseY);
             RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F - 100.0F, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F + 100.0F, 10, new Color(0, 0, 0, 100).getRGB());
             //RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 20.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 1040187392);

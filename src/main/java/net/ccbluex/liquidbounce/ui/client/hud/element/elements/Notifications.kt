@@ -289,10 +289,10 @@ class Notification(
         if(style.equals("Tenacity")){ 
         val fontRenderer = Fonts.font35
         val thisWidth=100.coerceAtLeast(fontRenderer.getStringWidth(this.title).coerceAtLeast(fontRenderer.getStringWidth(this.content)) + 40)
-        val error = ResourceLocation("fdpclient/ui/icons/noti/tenacity/cross.png")
-        val successful = ResourceLocation("fdpclient/ui/icons/noti/tenacity/tick.png")
-        val warn = ResourceLocation("fdpclient/ui/icons/noti/tenacity/warning.png")
-        val info = ResourceLocation("fdpclient/ui/icons/noti/tenacity/info.png")
+        val error = ResourceLocation("fdpclient/ui/notifications/icons/tenacity/cross.png")
+        val successful = ResourceLocation("fdpclient/ui/notifications/icons/tenacity/tick.png")
+        val warn = ResourceLocation("fdpclient/ui/notifications/icons/tenacity/warning.png")
+        val info = ResourceLocation("fdpclient/ui/notifications/icons/tenacity/info.png")
         if(type.renderColor == Color(0xFF2F2F)){
             RenderUtils.drawRoundedCornerRect(-18F,0F,thisWidth.toFloat(),height.toFloat(),6f,Color(180,0,0,190).rgb)
             RenderUtils.drawImage(error,-13,5,18,18)
@@ -328,7 +328,7 @@ class Notification(
             }
 
         if(style.equals("Intellij")) {
-                val notifyDir = "fdpclient/ui/icons/noti/intellij/"
+                val notifyDir = "fdpclient/notifications/icons/noti/intellij/"
                 val imgSuccess = ResourceLocation("${notifyDir}checkmark.png")
                 val imgError = ResourceLocation("${notifyDir}error.png")
                 val imgWarning = ResourceLocation("${notifyDir}warning.png")

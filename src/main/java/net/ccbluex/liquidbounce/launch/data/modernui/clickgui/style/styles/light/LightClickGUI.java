@@ -734,13 +734,13 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     //        iconFont.drawString("3", startX + 14, startY + 226,
     //                /*isCategoryHovered(startX + 10, startY + 218, startX + 40, startY + 247, mouseX, mouseY)
     //                        || currentCategory == ModuleCategory.WORLD ? -1 : */new Color(107, 107, 107).getRGB());
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Movement.png"), (int) startX + 17, (int) startY + 80, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/World.png"), (int) startX + 17, (int) startY + 120, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Player.png"), (int) startX + 17, (int) startY + 160, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Exploit.png"), (int) startX + 17, (int) startY + 200, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Misc.png"), (int) startX + 17, (int) startY + 240, 12, 12);
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/Client.png"), (int) startX + 17, (int) startY + 280, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Movement.png"), (int) startX + 17, (int) startY + 80, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/World.png"), (int) startX + 17, (int) startY + 120, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Player.png"), (int) startX + 17, (int) startY + 160, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Exploit.png"), (int) startX + 17, (int) startY + 200, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Misc.png"), (int) startX + 17, (int) startY + 240, 12, 12);
+            RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Client.png"), (int) startX + 17, (int) startY + 280, 12, 12);
         }
     }
 
