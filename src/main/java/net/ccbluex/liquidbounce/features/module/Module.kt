@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
-import net.ccbluex.liquidbounce.features.module.modules.client.Modules
+import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
@@ -108,10 +108,10 @@ open class Module : MinecraftInstance(), Listenable {
             // Play sound and add notification
             if (!LiquidBounce.isStarting) {
                 if (value) {
-                    Modules.playSound(true)
+                    SoundModule.playSound(true)
                     LiquidBounce.hud.addNotification(Notification(LanguageManager.getAndFormat("notify.module.title"), LanguageManager.getAndFormat("notify.module.enable", localizedName), NotifyType.SUCCESS))
                 } else {
-                    Modules.playSound(false)
+                    SoundModule.playSound(false)
                     LiquidBounce.hud.addNotification(Notification("%notify.module.title%", LanguageManager.getAndFormat("notify.module.disable", localizedName), NotifyType.ERROR))
                 }
             }
