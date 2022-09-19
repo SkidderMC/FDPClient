@@ -211,7 +211,7 @@ public abstract class MixinItemRenderer {
                             case "Swank":{
                                 GL11.glTranslated(-0.1, 0.15, 0.0);
                                 this.transformFirstPersonItem(f / 0.15f, f1);
-                                final float rot = MathHelper.sin(MathHelper.sqrt_float(f2) * 3.1415927f);
+                                final float rot = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927f);
                                 GlStateManager.rotate(rot * 30.0f, 2.0f, -rot, 9.0f);
                                 GlStateManager.rotate(rot * 35.0f, 1.0f, -rot, -0.0f);
                                 this.doBlockTransformations();
@@ -257,9 +257,9 @@ public abstract class MixinItemRenderer {
                                 GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
                                 float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
                                 float var12 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
-                                GlStateManager.rotate(var11 * 0.0F, 0.0F, 1.0F, 0.0F);
+                                GlStateManager.rotate(var11 * 0.0F, 1.0F, 0.0F, 0.0F);
                                 GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
-                                GlStateManager.rotate(var12 * -20.0F, 1.0F, 0.0F, 0.0F);
+                                GlStateManager.rotate(var12 * -20.0F, 0.0F, 1.0F, 0.0F);
                                 doItemRenderGLScale();
                                 doBlockTransformations();
                                 break;
@@ -277,6 +277,7 @@ public abstract class MixinItemRenderer {
                                 doBlockTransformations();
                                 break;
                             }
+                             
                         }
                         break;
                     case BOW:
