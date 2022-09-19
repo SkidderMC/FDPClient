@@ -171,7 +171,15 @@ public abstract class MixinItemRenderer {
                                 break;
                             }
                             case "SigmaNew": {
-                                sigmaNew(0.2F, f1);
+                                doItemRenderGLTranslate();
+                                GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
+                                GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+                                float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
+                                float var12 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
+                                GlStateManager.rotate(var11 * 0.0F, 1.0F, 0.0F, 0.0F);
+                                GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
+                                GlStateManager.rotate(var12 * 30.0F, 0.0F, 1.0F, 0.0F);
+                                doItemRenderGLScale();
                                 doBlockTransformations();
                                 break;
                             }
@@ -257,9 +265,9 @@ public abstract class MixinItemRenderer {
                                 GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
                                 float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
                                 float var12 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
-                                GlStateManager.rotate(var11 * 0.0F, 1.0F, 0.0F, 0.0F);
+                                GlStateManager.rotate(var11 * 0.0F, 0.0F, 1.0F, 0.0F);
                                 GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
-                                GlStateManager.rotate(var12 * -20.0F, 0.0F, 1.0F, 0.0F);
+                                GlStateManager.rotate(var12 * -40.0F + 10F, 1.0F, 0.0F, 0.0F);
                                 doItemRenderGLScale();
                                 doBlockTransformations();
                                 break;
