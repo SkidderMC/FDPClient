@@ -42,7 +42,7 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
     private val outlineRainbow = BoolValue("OutLineRainbow", false)
     private val fontValue = FontValue("Font", Fonts.font35)
     companion object {
-        val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello", "Juul"), "Juul")
+        val keyStyleValue = ListValue("Mode", arrayOf("Custom", "Jello", "Juul"), "Jello")
     }
 
 
@@ -152,9 +152,14 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         if (!lastClick && key.isKeyDown) {
             animations.add(nowTime)
         }
+        
+        if (lastClick && animations.isEmpty())
+            RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()))
+        
         lastClick = key.isKeyDown
+        
 
-        font.drawString(keyName, centerX - (font.getStringWidth(keyName) / 2) + 1, centerY - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
+        font.drawString(keyName, centerX - (font.getStringWidth(keyName) / 2) + 1, centerY - (font.FONT_HEIGHT / 2) + 1, textColor.rgb)
         if (outline) {
             RenderUtils.drawRect(0F, 0F, outlineBold.toFloat(), height.toFloat(), textColor.rgb)
             RenderUtils.drawRect((width - outlineBold).toFloat(), 0F, width.toFloat(), height.toFloat(), textColor.rgb)
@@ -168,7 +173,6 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
     if(style.equals("Jello")) {
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
-        BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, 10f)
         
         val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())
         val clickAlpha = 255 - (255 - bgColor.alpha) * highLightPct
@@ -177,7 +181,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         val nowTime = System.currentTimeMillis()
 
         val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } else { Color(0f,0f,0f,0f) }
-         RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
+        RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
 
         val removeAble = ArrayList<Long>()
         for (time in animations) {
@@ -206,8 +210,8 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
 
         val nowTime = System.currentTimeMillis()
 
-         val rectColor = if (lastClick) { Color(65, 65, 75, 255) } else { Color(95, 95, 105, 255) }
-        RenderUtils.drawRoundedCornerRect(0F, 0F, width.toFloat(), height.toFloat(), 4f, rectColor.rgb)
+         val rectColor = if (lastClick) { Color(65, 65, 65, 255) } else { Color(95, 95, 95, 255) }
+        RenderUtils.drawRoundedCornerRect(0F, 0F, width.toFloat(), height.toFloat(), 3f, rectColor.rgb)
         lastClick = key.isKeyDown
 
         font.drawString(keyName, width / 2 - (font.getStringWidth(keyName) / 2) + 1, height / 2 - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
