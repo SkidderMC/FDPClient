@@ -13,10 +13,11 @@ import java.time.OffsetDateTime
 import kotlin.concurrent.thread
 
 object DiscordRPC {
-    private val ipcClient = IPCClient(871606857981128724)
+    private val ipcClient = IPCClient(1021236965108109333)
     private val timestamp = OffsetDateTime.now()
     private var running = false
     private var fdpwebsite = "fdpinfo.github.io - "
+    
 
     fun run() {
         ipcClient.setListener(object : IPCListener {
@@ -44,7 +45,7 @@ object DiscordRPC {
         val builder = RichPresence.Builder()
         val discordRPCModule = LiquidBounce.moduleManager[DiscordRPCModule::class.java]!!
         builder.setStartTimestamp(timestamp)
-        builder.setLargeImage("cfb8fe2fe9169dc68f7f8c1236b885")
+        builder.setLargeImage(if (discordRPCModule.animated.get()){"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.gif"} else {"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.png"}) // trollage?
         builder.setDetails(fdpwebsite + LiquidBounce.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
             builder.setState(if(it.equals("idling", true)) "Idling" else if(discordRPCModule.showNameValue.get()) "Username: ${if(mc.thePlayer != null) mc.thePlayer.name else "null"}" else "" + if(discordRPCModule.showServerValue.get()) { "Server: $it" } else "Playing in a server")
