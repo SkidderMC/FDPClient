@@ -156,7 +156,7 @@ class Arraylist(
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
                 modules.forEachIndexed { index, module ->
-                    var arrayY = 0F //  module.yPos
+                    var arrayY = module.yPos
                     if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
                     GL11.glPushMatrix()
@@ -175,12 +175,7 @@ class Arraylist(
                             GL11.glTranslated(renderX, renderY, 0.0)
                             modules.forEachIndexed { index, module ->
                                 val xPos = -module.slide - 2
-                                RenderUtils.quickDrawRect(
-                                        xPos - if (rectValue.get().equals("right", true)) 3 else 2,
-                                        arrayY,
-                                        if (rectValue.get().equals("right", true)) -1F else 0F,
-                                        arrayY + textHeight
-                                )
+                                RenderUtils.quickDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2,arrayY, if (rectValue.get().equals("right", true)) -1F else 0F,arrayY + textHeight)
                             }
                             GL11.glPopMatrix()
                         }
