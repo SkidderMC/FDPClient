@@ -155,7 +155,6 @@ class Arraylist(
         val brightness = brightnessValue.get()
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                modules.forEachIndexed { index, module ->
                     var arrayY = module.yPos
                     if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
@@ -183,6 +182,7 @@ class Arraylist(
                     GL11.glPopMatrix()
                     GL11.glTranslated(renderX, renderY, 0.0)
                 }
+                modules.forEachIndexed { index, module ->
                     var CRainbow: Int
                     CRainbow = RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), counter[0] * (50 * cRainbowDistValue.get()))
                     val xPos = -module.slide - 2
