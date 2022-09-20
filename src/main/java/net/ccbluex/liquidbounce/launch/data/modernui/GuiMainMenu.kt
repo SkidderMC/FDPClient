@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
-    fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
         mc.displayGuiScreen(ModernGuiMainMenu())
     }
