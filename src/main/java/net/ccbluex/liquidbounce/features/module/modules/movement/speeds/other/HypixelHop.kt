@@ -53,22 +53,18 @@ class HypixelHop : SpeedMode("HypixelHop") {
         when (bypassMode.get().lowercase()) {
             
             "stable2" -> {
-                oldMotionX = mc.thePlayer.motionX
-                oldMotionZ = mc.thePlayer.motionZ
-
-                MovementUtils.strafe()
 
                 if (!mc.thePlayer.onGround) {
                     mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX) / 4
                     mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
+                    oldMotionX = mc.thePlayer.motionX
+                    oldMotionZ = mc.thePlayer.motionZ
                 } else if (MovementUtils.isMoving()) {
                     mc.thePlayer.jump()
                 }
             }
                 
             "stable"-> {
-                oldMotionX = mc.thePlayer.motionX
-                oldMotionZ = mc.thePlayer.motionZ
 
                 MovementUtils.strafe()
 
@@ -79,6 +75,9 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionX *= 0.99
                         mc.thePlayer.motionZ *= 0.99
                     }
+                    
+                    oldMotionX = mc.thePlayer.motionX
+                    oldMotionZ = mc.thePlayer.motionZ
                     wasOnGround = false
                 } else if (MovementUtils.isMoving()) {
                     wasOnGround = true
@@ -89,6 +88,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             
             "test2" -> {
                 if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                     watchdogMultiplier = 0.560625
                     wasOnGround = true
@@ -134,7 +134,6 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     if (mc.thePlayer.onGround) {
                         mc.thePlayer.jump()
                         mc.thePlayer.motionY = yMotion.get().toDouble()
-                        minSpeed = Math.max(0.617695, watchdogMultiplier)
                         watchdogMultiplier *= 1.6
                         wasOnGround = true
                     } else if (wasOnGround) {
