@@ -26,6 +26,8 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
+import org.lwjgl.opengl.GL11
+
 /**
  * CustomHUD Arraylist element
  *
@@ -153,6 +155,7 @@ class Arraylist(
         val brightness = brightnessValue.get()
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
+                var arrayY = 0F
                 if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
                     GL11.glPushMatrix()
@@ -204,9 +207,9 @@ class Arraylist(
                             modules.forEachIndexed { index, module ->
                                 val xPos = -module.slide - 2
                                 RenderUtils.quickDrawRect(
-                                        xPos - if (rectRightValue.get().equals("right", true)) 3 else 2,
+                                        xPos - if (rectValue.get().equals("right", true)) 3 else 2,
                                         module.arrayY,
-                                        if (rectRightValue.get().equals("right", true)) -1F else 0F,
+                                        if (recttValue.get().equals("right", true)) -1F else 0F,
                                         module.arrayY + textHeight
                                 )
                             }
