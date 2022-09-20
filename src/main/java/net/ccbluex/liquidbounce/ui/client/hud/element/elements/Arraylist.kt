@@ -169,7 +169,7 @@ class Arraylist(
                                     arrayY,
                                     if (rectRightValue.get().equals("right", true)) -1F else 0F,
                                     arrayY + textHeight, Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb)
-                                   /*  when (shadowColorMode.get().toLowerCase()) {
+                                    /*  when (shadowColorMode.get().toLowerCase()) {
                                         "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
                                          "text" -> {
                                             val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
@@ -194,9 +194,9 @@ class Arraylist(
                                                 else -> customColor
                                             }
                                         }
-                                        else -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb  */
+                                        else -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb  
                                     }
-                            )
+                            ) */
                         }
                         GL11.glPopMatrix()
                         counter[0] = 0
