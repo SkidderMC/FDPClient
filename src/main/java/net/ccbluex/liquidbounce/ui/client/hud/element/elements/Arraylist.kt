@@ -155,8 +155,9 @@ class Arraylist(
         val brightness = brightnessValue.get()
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                var arrayY = 0F //  module.yPos
-                if (shadowShaderValue.get()) {
+                modules.forEachIndexed { index, module ->
+                    var arrayY = 0F //  module.yPos
+                    if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
                     GL11.glPushMatrix()
                     ShadowUtils.shadow(shadowStrength.get().toFloat(), {
@@ -164,39 +165,7 @@ class Arraylist(
                         GL11.glTranslated(renderX, renderY, 0.0)
                         modules.forEachIndexed { index, module ->
                             val xPos = -module.slide - 2
-                            RenderUtils.newDrawRect(
-                                    xPos - if (rectValue.get().equals("right", true)) 3 else 2,
-                                    arrayY,
-                                    if (rectValue.get().equals("right", true)) -1F else 0F,
-                                    arrayY + textHeight, Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb)
-                                    /*  when (shadowColorMode.get().toLowerCase()) {
-                                        "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
-                                         "text" -> {
-                                            val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
-
-                                            var Sky = RenderUtils.SkyRainbow(counter[0] * (skyDistanceValue.get() * 50), saturationValue.get(), brightnessValue.get())
-                                            var CRainbow = RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), counter[0] * (50 * cRainbowDistValue.get()))
-                                            var FadeColor = ColorUtils.fade(Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get()), index * fadeDistanceValue.get(), 100).rgb
-                                            counter[0] = counter[0] - 1 
-
-                                            val test = ColorUtils.LiquidSlowly(System.nanoTime(), index * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())?.rgb
-                                            var LiquidSlowly : Int = test!!
-
-                                            val mixerColor = ColorMixer.getMixedColor(-index * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
-
-                                            when {
-                                                colorMode.equals("Random", ignoreCase = true) -> moduleColor
-                                                colorMode.equals("Sky", ignoreCase = true) -> Sky
-                                                colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
-                                                colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
-                                                colorMode.equals("Fade", ignoreCase = true) -> FadeColor
-                                                colorMode.equals("Mixer", ignoreCase = true) -> mixerColor
-                                                else -> customColor
-                                            }
-                                        }
-                                        else -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb  
-                                    }
-                            ) */
+                            RenderUtils.newDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, arrayY, if (rectValue.get().equals("right", true)) -1F else 0F, arrayY + textHeight, Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb)
                         }
                         GL11.glPopMatrix()
                         counter[0] = 0
@@ -219,7 +188,6 @@ class Arraylist(
                     GL11.glPopMatrix()
                     GL11.glTranslated(renderX, renderY, 0.0)
                 }
-                modules.forEachIndexed { index, module ->
                     var CRainbow: Int
                     CRainbow = RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), counter[0] * (50 * cRainbowDistValue.get()))
                     val xPos = -module.slide - 2
