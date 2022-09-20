@@ -13,7 +13,7 @@ import net.minecraft.client.gui.*
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
-class ClassicGuiMainMenu : GuiScreen(), GuiYesNoCallback {
+class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun drawScreen() {
         drawBackground(0)
         mc.displayGuiScreen(ModernGuiMainMenu())
