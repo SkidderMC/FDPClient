@@ -155,7 +155,7 @@ class Arraylist(
         val brightness = brightnessValue.get()
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                var arrayY = 0F
+                var arrayY = 0F //  module.yPos
                 if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
                     GL11.glPushMatrix()
@@ -165,13 +165,13 @@ class Arraylist(
                         modules.forEachIndexed { index, module ->
                             val xPos = -module.slide - 2
                             RenderUtils.newDrawRect(
-                                    xPos - if (rectRightValue.get().equals("right", true)) 3 else 2,
-                                    module.arrayY,
+                                    xPos - if (rectValue.get().equals("right", true)) 3 else 2,
+                                    arrayY,
                                     if (rectRightValue.get().equals("right", true)) -1F else 0F,
-                                    module.arrayY + textHeight,
-                                    when (shadowColorMode.get().toLowerCase()) {
+                                    arrayY + textHeight, Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb)
+                                   /*  when (shadowColorMode.get().toLowerCase()) {
                                         "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
-                                       /*  "text" -> {
+                                         "text" -> {
                                             val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
                                             var Sky = RenderUtils.SkyRainbow(counter[0] * (skyDistanceValue.get() * 50), saturationValue.get(), brightnessValue.get())
@@ -208,9 +208,9 @@ class Arraylist(
                                 val xPos = -module.slide - 2
                                 RenderUtils.quickDrawRect(
                                         xPos - if (rectValue.get().equals("right", true)) 3 else 2,
-                                        module.arrayY,
-                                        if (recttValue.get().equals("right", true)) -1F else 0F,
-                                        module.arrayY + textHeight
+                                        arrayY,
+                                        if (rectValue.get().equals("right", true)) -1F else 0F,
+                                        arrayY + textHeight
                                 )
                             }
                             GL11.glPopMatrix()
