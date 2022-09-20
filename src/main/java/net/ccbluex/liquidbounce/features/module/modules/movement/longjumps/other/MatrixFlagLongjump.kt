@@ -23,8 +23,6 @@ class MatrixFlagLongjump : LongJumpMode("MatrixFlag") {
     }
     override fun onPacket(event: PacketEvent) {
         if(event.packet is S08PacketPlayerPosLook) {
-            MovementUtils.strafe(1.89f)
-            mc.thePlayer.motionY = 0.42
             yes = false
             return
         }
