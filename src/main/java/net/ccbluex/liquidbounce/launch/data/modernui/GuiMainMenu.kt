@@ -15,7 +15,7 @@ import java.awt.Color
 public class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     fun drawScreen() {
         val sr = ScaledResolution(mc)
-        RenderUtils.drawImage(ResourceLocation("fdpclient/background.png"), 0, 0, sr.ScaledWidth, sr.ScaledHeight)
+        RenderUtils.drawImage(ResourceLocation("fdpclient/background.png"), 0, 0, sr.scaledWidth, sr.scaledHeight)
         mc.displayGuiScreen(ModernGuiMainMenu())
     }
 
