@@ -153,9 +153,9 @@ class Arraylist(
         val textSpacer = textHeight + space
         val saturation = saturationValue.get()
         val brightness = brightnessValue.get()
+        var arrayY = module.yPos
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                    var arrayY = module.yPos
                     if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
                     GL11.glPushMatrix()
