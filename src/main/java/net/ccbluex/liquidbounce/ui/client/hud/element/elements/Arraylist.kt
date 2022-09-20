@@ -167,7 +167,7 @@ class Arraylist(
                             RenderUtils.newDrawRect(
                                     xPos - if (rectValue.get().equals("right", true)) 3 else 2,
                                     arrayY,
-                                    if (rectRightValue.get().equals("right", true)) -1F else 0F,
+                                    if (rectValue.get().equals("right", true)) -1F else 0F,
                                     arrayY + textHeight, Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb)
                                     /*  when (shadowColorMode.get().toLowerCase()) {
                                         "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
