@@ -13,10 +13,10 @@ import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
 public class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
-    fun drawScreen() {
+    overide fun drawScreen() {
+        mc.displayGuiScreen(ModernGuiMainMenu())
         val sr = ScaledResolution(mc)
         RenderUtils.drawImage(ResourceLocation("fdpclient/background.png"), 0, 0, sr.scaledWidth, sr.scaledHeight)
-        mc.displayGuiScreen(ModernGuiMainMenu())
     }
 
 }
