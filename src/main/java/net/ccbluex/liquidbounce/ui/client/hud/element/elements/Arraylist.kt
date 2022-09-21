@@ -59,7 +59,6 @@ class Arraylist(
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tagsValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "Space", "None"), "Space")
     private val shadow = BoolValue("ShadowText", true)
-    val jelloShadowValue = BoolValue("jelloShadow", false)
     private val split = BoolValue("SplitName", false)
     private val slideInAnimation = BoolValue("SlideInAnimation", true)
     private val noRenderModules = BoolValue("NoRenderModules", false)
@@ -149,7 +148,6 @@ class Arraylist(
         val rectMode = rectValue.get()
         val backgroundCustomColor = Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get(), backgroundColorAlphaValue.get())
         val textShadow = shadow.get()
-        val jelloShadow = jelloShadowValue.get()
         val textSpacer = textHeight + space
         val saturation = saturationValue.get()
         val brightness = brightnessValue.get()
@@ -214,7 +212,6 @@ class Arraylist(
                     )
                     val mName = changeCase(getModuleName(module))
                     val mTag = changeCase(getModuleTag(module))
-                    if (jelloShadow){RenderUtils.drawImage(ResourceLocation("fdpclient/ui/shadow/shadow.png"), xPos.toInt() - 23, yPos.toInt() + textY.toInt() - 9, 87, 37)}
                     fontRenderer.drawString(mName, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY,
                         when (colorMode.lowercase()) {
                             "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
