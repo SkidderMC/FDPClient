@@ -16,7 +16,7 @@ import java.awt.Color
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (Hud.mainMenuStyle.equals("Five")){
+        if (HUD.mainMenuStyle.equals("Five")){
             mc.displayGuiScreen(ModernGuiMainMenu())
         } else {
             mc.displayGuiScreen(ClassicGuiMainMenu())
