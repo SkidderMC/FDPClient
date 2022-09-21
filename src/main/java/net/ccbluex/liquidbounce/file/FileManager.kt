@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.file.configs.*
-import net.ccbluex.liquidbounce.utils.FileUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.renderer.texture.DynamicTexture
@@ -22,7 +21,6 @@ import javax.imageio.ImageIO
 
 class FileManager : MinecraftInstance() {
     val dir = File(mc.mcDataDir, "FDPCLIENT-1.8")
-    val cacheDir = File(mc.mcDataDir, ".cache/" + LiquidBounce.CLIENT_NAME)
     val fontsDir = File(dir, "fonts")
     val configsDir = File(dir, "configs")
     val soundsDir = File(dir, "sounds")
@@ -37,7 +35,6 @@ class FileManager : MinecraftInstance() {
     val subscriptsConfig = ScriptConfig(File(dir, "subscripts.json"))
     val specialConfig = SpecialConfig(File(dir, "special.json"))
     val backgroundFile = File(dir, "userbackground.png")
-    private val allowedCacheFolderName = arrayOf("cef", "cef_cache")
 
     /**
      * Setup everything important
@@ -80,15 +77,6 @@ class FileManager : MinecraftInstance() {
             themesDir.mkdir();
         }
 
-        if (!cacheDir.exists()) {
-            cacheDir.mkdirs()
-        } else {
-            for (file in cacheDir.listFiles()) {
-                if (!allowedCacheFolderName.contains(file.name)) {
-                    file.deleteRecursively()
-                }
-            }
-        }
     }
 
     /**
