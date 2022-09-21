@@ -48,14 +48,14 @@ class Text(
     }
 
     val displayString = TextValue("DisplayText", "")
-    val textStyle = ListValue("Text-Style", arrayOf("Default", "Jello"), "Default")
+    val textStyle = ListValue("Text-Style", arrayOf("Default", "Jello", "FDP"), "Default")
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
     val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val shadow = BoolValue("Shadow", false)
-    val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "Rounded", "None", "FDP"), "None")
+    val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "Rounded", "None"), "None")
     val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
@@ -203,12 +203,8 @@ class Text(
                 RenderUtils.drawOutLineRect(-9.0, -9.0, (fontRenderer.getStringWidth(displayText) + 8).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 6.0, 4.0, Color(59, 59, 59).rgb, Color(40, 40, 40).rgb)
                 RenderUtils.drawOutLineRect(-4.0, -4.0, (fontRenderer.getStringWidth(displayText) + 3).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 1.0, 1.0, Color(18, 18, 18).rgb, Color(0, 0, 0).rgb)
             }
-            "logo" -> {
-
-            }
         }
         if(textStyle.get().contains("Default")) {
-            if (!rectValue.get().contains("FDP")) {
                 fontRenderer.drawString(
                     displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
                         "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
@@ -216,21 +212,19 @@ class Text(
                         "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
                         else -> color.rgb
                     }, shadow.get())
-            }
         }
 
         if(textStyle.get().contains("Jello")) {
-            if (!rectValue.get().contains("FDP")) {
                 FontLoaders.F40.drawString(
                     displayText, 5F, 0F,Color(255,255,255,140).rgb
                 )
 /*                  FontLoaders.F24.drawString(
                     LiquidBounce.CLIENT_VERSION.toString() , 5F, 23F,Color(255,255,255,140).rgb 
                 ) */
-            }
         }
 
-        if(rectValue.get().contains("FDP")) {
+        // maybe.
+        if(textStyle.get().contains("FDP")) {
             FontLoaders.F40.drawString(
                 getClientName(0,3), 5F, 0F,Color(255,255,255,180).rgb
             )
