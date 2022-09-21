@@ -153,33 +153,6 @@ class Arraylist(
         val brightness = brightnessValue.get()
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                    var arrayY = module.yPos
-                    if (shadowShaderValue.get()) {
-                    GL11.glTranslated(-renderX, -renderY, 0.0)
-                    GL11.glPushMatrix()
-                    ShadowUtils.shadow(shadowStrength.get().toFloat(), {
-                        GL11.glPushMatrix()
-                        GL11.glTranslated(renderX, renderY, 0.0)
-                        modules.forEachIndexed { index, module ->
-                            val xPos = -module.slide - 2
-                            RenderUtils.newDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, arrayY, if (rectValue.get().equals("right", true)) -1F else 0F, arrayY + textHeight, Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb)
-                        }
-                        GL11.glPopMatrix()
-                        counter[0] = 0
-                    }, {
-                        if (!shadowNoCutValue.get()) {
-                            GL11.glPushMatrix()
-                            GL11.glTranslated(renderX, renderY, 0.0)
-                            modules.forEachIndexed { index, module ->
-                                val xPos = -module.slide - 2
-                                RenderUtils.quickDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2,arrayY, if (rectValue.get().equals("right", true)) -1F else 0F,arrayY + textHeight)
-                            }
-                            GL11.glPopMatrix()
-                        }
-                    })
-                    GL11.glPopMatrix()
-                    GL11.glTranslated(renderX, renderY, 0.0)
-                }
                 modules.forEachIndexed { index, module ->
                     var CRainbow: Int
                     CRainbow = RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), counter[0] * (50 * cRainbowDistValue.get()))
@@ -190,6 +163,31 @@ class Arraylist(
                     if (yPos != realYPos) {
                         module.yPos = realYPos
                     }
+
+                    var arrayY = yPos
+                    if (shadowShaderValue.get()) {
+                    GL11.glTranslated(-renderX, -renderY, 0.0)
+                    GL11.glPushMatrix()
+                    ShadowUtils.shadow(shadowStrength.get().toFloat(), {
+                        GL11.glPushMatrix()
+                        GL11.glTranslated(renderX, renderY, 0.0)
+                            val xPos = -module.slide - 2
+                            RenderUtils.newDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, arrayY, if (rectValue.get().equals("right", true)) -1F else 0F, arrayY + textHeight, Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb)
+                        GL11.glPopMatrix()
+                        counter[0] = 0
+                    }, {
+                        if (!shadowNoCutValue.get()) {
+                            GL11.glPushMatrix()
+                            GL11.glTranslated(renderX, renderY, 0.0)
+                                val xPos = -module.slide - 2
+                                RenderUtils.quickDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2,arrayY, if (rectValue.get().equals("right", true)) -1F else 0F,arrayY + textHeight)
+                            GL11.glPopMatrix()
+                        }
+                    })
+                    GL11.glPopMatrix()
+                    GL11.glTranslated(renderX, renderY, 0.0)
+                }
+
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
                     val rectX = xPos - if (rectMode.equals("right", true)) 5 else 2
