@@ -185,10 +185,6 @@ class Arraylist(
                                         else -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb
                                     }
                             )
-                            
-                            
-                            
-                            )
                         }
                         GL11.glPopMatrix()
                         counter[0] = 0
