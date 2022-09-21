@@ -42,6 +42,7 @@ object HUD : Module() {
     val chatCombineValue = BoolValue("ChatCombine", true)
     val chatAnimValue = BoolValue("ChatAnimation", true)
     val HealthValue = BoolValue("Health", true)
+    val waterMark = BoolValue("Watermark", true)
     val rainbowStartValue = FloatValue("RainbowStart", 0.55f, 0f, 1f)
     val rainbowStopValue = FloatValue("RainbowStop", 0.85f, 0f, 1f)
     val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.45f, 0f, 1f)
@@ -62,7 +63,7 @@ object HUD : Module() {
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
         LiquidBounce.hud.render(false, event.partialTicks)
-        renderWatermark()
+        if(waterMark.get()) renderWatermark()
         if (HealthValue.get()) mc.fontRendererObj.drawStringWithShadow(
             MathHelper.ceiling_float_int(mc.thePlayer.health).toString(),
             (width / 2 - 4).toFloat(), (height / 2 - 13).toFloat(), if (mc.thePlayer.health <= 15) Color(255, 0, 0).rgb else Color(0, 255, 0).rgb)
