@@ -153,13 +153,6 @@ class Arraylist(
         val brightness = brightnessValue.get()
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                    val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
-                            if (side.vertical == Vertical.DOWN) index + 1 else index }
-                    val yPos = module.yPos
-                    if (yPos != realYPos) {
-                        module.yPos = realYPos
-                    }
-                    var arrayY = yPos
                     if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
                     GL11.glPushMatrix()
@@ -167,6 +160,11 @@ class Arraylist(
                         GL11.glPushMatrix()
                         GL11.glTranslated(renderX, renderY, 0.0)
                         modules.forEachIndexed { index, module ->
+                        val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
+                        if (side.vertical == Vertical.DOWN) index + 1 else index }
+                        val yPos = module.yPos
+                        if (yPos != realYPos) { module.yPos = realYPos }
+                        var arrayY = yPos
                             val xPos = -module.slide - 2
                             RenderUtils.newDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, arrayY, if (rectValue.get().equals("right", true)) -1F else 0F, arrayY + textHeight, Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb)
                         }
@@ -177,6 +175,11 @@ class Arraylist(
                             GL11.glPushMatrix()
                             GL11.glTranslated(renderX, renderY, 0.0)
                             modules.forEachIndexed { index, module ->
+                                val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
+                                if (side.vertical == Vertical.DOWN) index + 1 else index }
+                                val yPos = module.yPos
+                                if (yPos != realYPos) { module.yPos = realYPos }
+                                var arrayY = yPos
                                 val xPos = -module.slide - 2
                                 RenderUtils.quickDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2,arrayY, if (rectValue.get().equals("right", true)) -1F else 0F,arrayY + textHeight)
                             }
@@ -193,9 +196,7 @@ class Arraylist(
                     val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
                             if (side.vertical == Vertical.DOWN) index + 1 else index }
                     val yPos = module.yPos
-                    if (yPos != realYPos) {
-                        module.yPos = realYPos
-                    }
+                    if (yPos != realYPos) { module.yPos = realYPos }
 
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
