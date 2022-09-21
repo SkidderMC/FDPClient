@@ -48,7 +48,13 @@ object DiscordRPC {
         builder.setLargeImage(if (discordRPCModule.animated.get()){"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.gif"} else {"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.png"}) // trollage?
         builder.setDetails(fdpwebsite + LiquidBounce.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
-            builder.setState(if(it.equals("idling", true)) "Idling" else if(discordRPCModule.showNameValue.get()) "Username: ${if(mc.thePlayer != null) mc.thePlayer.name else "null"}" else "" + if(discordRPCModule.showServerValue.get()) { "Server: $it" } else "Playing in a server" else if(discordRPCModule.showHealthValue.get()){"health: " + mc.thePlayer.health} else "DEAD")
+            when {
+                discordRPCModule.drpcValue.get().equals("ShowServer") -> val style = "Server: $it"
+                discordRPCModule.drpcValue.get().equals("ShowName") -> val style = "Username: ${if(mc.thePlayer != null) mc.thePlayer.name else "null"}"
+                discordRPCModule.drpcValue.get().equals("ShowHealth") ->  val style = "health: " + mc.thePlayer.health
+            }
+            
+            builder.setState(if(it.equals("idling", true)) "Idling" else "" + style)
         }
 
         // Check ipc client is connected and send rpc
