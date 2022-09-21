@@ -170,9 +170,8 @@ class Arraylist(
                                     when (shadowColorMode.get().toLowerCase()) {
                                         "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
                                         "text" -> {
-                                            val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
                                             when {
-                                                colorModeValue.equals("Random") -> moduleColor
+                                                colorModeValue.equals("Random") -> Color.getHSBColor(module.hue, saturation, brightness).rgb
                                                 colorModeValue.equals("Rainbow") -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
                                                 colorModeValue.equals("SkyRainbow") -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
                                                 colorModeValue.equals("Astolfo") -> RenderUtils.Astolfo(index * speed.get(), saturationValue.get(), brightnessValue.get())
