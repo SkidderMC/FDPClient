@@ -171,8 +171,8 @@ class Arraylist(
                                     arrayY,
                                     if (rectValue.get().equals("right")) -1.toDouble() else 0.toDouble(),
                                     arrayY + textHeight, when (shadowColorMode.get()){
-                                        "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
-                                        "text" -> {
+                                        "Background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
+                                        "Text" -> {
                                             when {
                                                 colorModeValue.equals("Random") -> Color.getHSBColor(module.hue, saturation, brightness).rgb
                                                 colorModeValue.equals("Rainbow") -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
