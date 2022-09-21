@@ -164,7 +164,7 @@ class Arraylist(
                             if (side.vertical == Vertical.DOWN) index + 1 else index }
                             val yPos = module.yPos
                             if (yPos != realYPos) { module.yPos = realYPos }
-                            var arrayY = yPos
+                            var arrayY = yPos.toInt()
                             val xPos = -module.slide - 2
                             RenderUtils.newDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, arrayY, if (rectValue.get().equals("right", true)) -1F else 0F, arrayY + textHeight,
                                     when (shadowColorMode.get().toLowerCase()) {
