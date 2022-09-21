@@ -20,7 +20,7 @@ import java.io.*
 import javax.imageio.ImageIO
 
 class FileManager : MinecraftInstance() {
-    val dir = File(mc.mcDataDir, "FDPCLIENT")
+    val dir = File(mc.mcDataDir, "FDPClient")
     val fontsDir = File(dir, "fonts")
     val configsDir = File(dir, "configs")
     val soundsDir = File(dir, "sounds")
@@ -31,7 +31,7 @@ class FileManager : MinecraftInstance() {
     val accountsConfig = AccountsConfig(File(dir, "accounts.json"))
     var friendsConfig = FriendsConfig(File(dir, "friends.json"))
     val xrayConfig = XRayConfig(File(dir, "xray-blocks.json"))
-    val hudConfig = HudConfig(File(dir, "hud.json"))
+    val hudConfig = HudConfig(File(themesDir, "Default"))
     val subscriptsConfig = ScriptConfig(File(dir, "subscripts.json"))
     val specialConfig = SpecialConfig(File(dir, "special.json"))
     val backgroundFile = File(dir, "userbackground.png")
@@ -171,9 +171,9 @@ class FileManager : MinecraftInstance() {
         try {
             if (!config.hasConfig()) config.createConfig()
             config.saveConfigFile(config.saveConfig())
-            ClientUtils.logInfo("[FileManager] Saved config: " + config.file.name + ".")
+            ClientUtils.logInfo("[FDPManager] Saved config: " + config.file.name + ".")
         } catch (t: Throwable) {
-            ClientUtils.logError("[FileManager] Failed to save config file: " + config.file.name + ".", t)
+            ClientUtils.logError("[FDPManager] Failed to save config file: " + config.file.name + ".", t)
         }
     }
 
@@ -186,9 +186,9 @@ class FileManager : MinecraftInstance() {
                 val bufferedImage = ImageIO.read(FileInputStream(backgroundFile)) ?: return
                 LiquidBounce.background = ResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/background.png")
                 mc.textureManager.loadTexture(LiquidBounce.background, DynamicTexture(bufferedImage))
-                ClientUtils.logInfo("[FileManager] Loaded background.")
+                ClientUtils.logInfo("[FDPManager] Loaded background.")
             } catch (e: Exception) {
-                ClientUtils.logError("[FileManager] Failed to load background.", e)
+                ClientUtils.logError("[FDPManager] Failed to load background.", e)
             }
         }
     }
