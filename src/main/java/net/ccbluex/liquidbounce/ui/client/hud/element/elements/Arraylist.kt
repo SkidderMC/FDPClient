@@ -166,7 +166,7 @@ class Arraylist(
                             if (yPos != realYPos) { module.yPos = realYPos }
                             var arrayY = yPos.toDouble()
                             val xPos = -module.slide - 2
-                            RenderUtils.newDrawRect(xPos.toDouble() - if (rectValue.get().equals("right", true)) 3 else 2, arrayY, if (rectValue.get().equals("right", true)) -1F else 0F, arrayY + textHeight,
+                            RenderUtils.newDrawRect(xPos.toDouble() - if (rectValue.get().equals("right", true)) 3 else 2, arrayY, if (rectValue.get().equals("right", true)) -1 else 0, arrayY + textHeight,
                                     when (shadowColorMode.get().toLowerCase()) {
                                         "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
                                         "text" -> {
