@@ -170,19 +170,14 @@ class Arraylist(
                                         "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
                                         "text" -> {
                                             val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
-
-                                            var FadeColor = ColorUtils.fade(Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get()), index * fadeDistanceValue.get(), 100).rgb
-                                            counter[0] = counter[0] - 1 
                                             when {
-                                                colorModeValue.equals("Random", ignoreCase = true) -> moduleColor
-                                                colorModeValue.equals("Rainbow", ignoreCase = true) -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
-                                             //   colorModeValue.equals("CRainbow", ignoreCase = true) -> CRainbow
-                                                colorModeValue.equals("SkyRainbow", ignoreCase = true) -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                                                colorModeValue.equals("Astolfo", ignoreCase = true) -> RenderUtils.Astolfo(index * speed.get(), saturationValue.get(), brightnessValue.get())
-                                                colorModeValue.equals("Static", ignoreCase = true) -> ColorUtils.StaticRainbow(rainbowSpeed.get(), index + 1).rgb
-                                                colorModeValue.equals("Slowly", ignoreCase = true) -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
-                                                colorModeValue.equals("AnotherRainbow", ignoreCase = true) -> ColorUtils.fade(customColor, 100, index + 1).rgb
-                                              //  colorModeValue.equals("Fade", ignoreCase = true) -> FadeColor
+                                                colorModeValue.equals("Random") -> moduleColor
+                                                colorModeValue.equals("Rainbow") -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
+                                                colorModeValue.equals("SkyRainbow") -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
+                                                colorModeValue.equals("Astolfo") -> RenderUtils.Astolfo(index * speed.get(), saturationValue.get(), brightnessValue.get())
+                                                colorModeValue.equals("Static") -> ColorUtils.StaticRainbow(rainbowSpeed.get(), index + 1).rgb
+                                                colorModeValue.equals("Slowly") -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
+                                                colorModeValue.equals("AnotherRainbow") -> ColorUtils.fade(customColor, 100, index + 1).rgb
                                                 else -> customColor
                                             }
                                         }
