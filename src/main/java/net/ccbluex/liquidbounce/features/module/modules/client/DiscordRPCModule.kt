@@ -12,8 +12,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 
 @ModuleInfo(name = "DiscordRPC", category = ModuleCategory.CLIENT)
 class DiscordRPCModule : Module() {
-    val showServerValue = BoolValue("ShowServer", false)
-    val showNameValue = BoolValue("ShowName", false)
-    val showHealthValue = BoolValue("ShowHealth", false)
+    val drpcValue = ListValue("Mode", arrayOf("ShowServer", "ShowName", "ShowHealth"), "ShowServer")
     val animated = BoolValue("ShouldAnimate?", true)
 }
