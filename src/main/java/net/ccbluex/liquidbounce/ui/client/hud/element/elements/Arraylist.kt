@@ -81,7 +81,7 @@ class Arraylist(
     private val shadowShaderValue = BoolValue("Shadow", false)
     private val shadowNoCutValue = BoolValue("Shadow-NoCut", false)
     private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30)
-    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text"/* , "Custom"*/), "Background")
+    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Background")
     private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255)
     private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255)
     private val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255)
@@ -166,7 +166,8 @@ class Arraylist(
                             if (yPos != realYPos) { module.yPos = realYPos }
                             var arrayY = yPos
                             val xPos = -module.slide - 2
-                            RenderUtils.newDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, arrayY, if (rectValue.get().equals("right", true)) -1F else 0F, arrayY + textHeight, when (shadowColorMode.get().toLowerCase()) {
+                            RenderUtils.newDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2, arrayY, if (rectValue.get().equals("right", true)) -1F else 0F, arrayY + textHeight,
+                                    when (shadowColorMode.get().toLowerCase()) {
                                         "background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
                                         "text" -> {
                                             val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
