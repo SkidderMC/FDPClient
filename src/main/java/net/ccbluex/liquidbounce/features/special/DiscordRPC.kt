@@ -38,7 +38,11 @@ object DiscordRPC {
                 running = false
             }
         })
-        ipcClient.connect()
+        try {
+            ipcClient.connect()
+        } catch (Exception e) {
+            println("discord rpc failed to start")
+        }
     }
 
     private fun update() {
