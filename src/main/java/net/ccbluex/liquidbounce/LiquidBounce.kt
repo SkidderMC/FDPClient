@@ -60,7 +60,9 @@ object LiquidBounce {
     }
 
     @JvmField
+
     val CLIENT_VERSION = "v5.0.0b"
+
 
     @JvmField
     val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "unknown").let {
