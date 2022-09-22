@@ -55,10 +55,14 @@ class HypixelHop : SpeedMode("HypixelHop") {
             "stable2" -> {
 
                 if (!mc.thePlayer.onGround) {
-                    mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX) / 4
-                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
+                    
                     oldMotionX = mc.thePlayer.motionX
                     oldMotionZ = mc.thePlayer.motionZ
+
+                    MovementUtils.strafe()
+                    mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX) / 4
+                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
+
                 } else if (MovementUtils.isMoving()) {
                     mc.thePlayer.jump()
                 }
@@ -66,12 +70,16 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 
             "stable"-> {
 
-                MovementUtils.strafe()
 
                 if (!mc.thePlayer.onGround) {
                     if (!wasOnGround) {
+                        oldMotionX = mc.thePlayer.motionX
+                        oldMotionZ = mc.thePlayer.motionZ
+
+                        MovementUtils.strafe()
                         mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX) / 4
                         mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
+                        
                         mc.thePlayer.motionX *= 0.99
                         mc.thePlayer.motionZ *= 0.99
                     }
