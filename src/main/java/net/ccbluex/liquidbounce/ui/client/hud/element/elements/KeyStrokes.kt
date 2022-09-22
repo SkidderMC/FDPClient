@@ -174,6 +174,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
     if(style.equals("Jello")) {
         GL11.glPushMatrix()
         GL11.glTranslatef(posX.toFloat(), posY.toFloat(), 0F)
+
         BlurUtils.draw((renderX + posX) * scale, (renderY + posY) * scale, width * scale, height * scale, 10f)
         
         val highLightColor = Color(255 - ((255 - bgColor.red) * highLightPct).toInt(), 255 - ((255 - bgColor.blue) * highLightPct).toInt(), 255 - ((255 - bgColor.green) * highLightPct).toInt())

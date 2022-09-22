@@ -141,7 +141,6 @@ public abstract class MixinGuiScreen {
                 Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
             }
         
-            BlurUtils.INSTANCE.draw(0,0,mc.displayWidth, mc.displayHeight,5);
             
             GlStateManager.resetColor();
             if (GuiBackground.Companion.getParticles())

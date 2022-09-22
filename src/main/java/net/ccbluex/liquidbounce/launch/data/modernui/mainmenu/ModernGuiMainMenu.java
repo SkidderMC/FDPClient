@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.launch.data.modernui;
+package net.ccbluex.liquidbounce.launch.data.modernui.mainmenu;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.font.FontLoaders;
@@ -21,7 +21,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-public class GuiMainMenu extends GuiScreen {
+public class ModernGuiMainMenu extends GuiScreen {
     public ArrayList butt = new ArrayList();
     private float currentX;
     private float currentY;
