@@ -16,9 +16,8 @@ import java.awt.Color
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        //Keyboard.KEY_LSHIFT
-        if(GuiScreen.isShiftKeyDown()){
-            //
+        if(GuiScreen.isShiftKeyDown()){ 
+            mc.displayGuiScreen(GuiMainSelectMenu())
         } else if (HUD.mainMenuStyle.equals("Five")){
             mc.displayGuiScreen(ModernGuiMainMenu())
         } else {
