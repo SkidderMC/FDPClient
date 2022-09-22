@@ -22,83 +22,53 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 public class ModernGuiMainMenu extends GuiScreen {
-    public ArrayList butt = new ArrayList();
-    private float currentX;
-    private float currentY;
-    private ScaledResolution res;
+    public String icon;
+    public String text;
+    public Executor action;
+    public int buttonID;
+    public float x;
+    public float y;
+    public float textOffset;
+    public float yAnimation = 0.0F;
 
-    public void initGui() {
-        this.butt.clear();
-        this.butt.add(new MainMenuButton(this, 0, "G", "SinglePlayer", () -> {
-            this.mc.displayGuiScreen(new GuiSelectWorld(this));
-        }));
-        this.butt.add(new MainMenuButton(this, 1, "H", "MultiPlayer", () -> {
-            this.mc.displayGuiScreen(new GuiMultiplayer(this));
-        }));
-        this.butt.add(new MainMenuButton(this, 2, "I", "AltManager", () -> {
-            this.mc.displayGuiScreen(new GuiAltManager(this));
-        }));
-        this.butt.add(new MainMenuButton(this, 3, "J", "Mods", () -> {
-            this.mc.displayGuiScreen(new GuiModList(this));
-        }, 0.5F));
-        this.butt.add(new MainMenuButton(this, 4, "K", "Options", () -> {
-            this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
-        }));
-        this.butt.add(new MainMenuButton(this, 5, "L", "Languages", () -> {
-            this.mc.displayGuiScreen(new GuiLanguage(this, this.mc.gameSettings, this.mc.getLanguageManager()));
-        }));
-        this.butt.add(new MainMenuButton(this, 6, "M", "Quit", () -> {
-            this.mc.shutdown();
-        }));
-        this.res = new ScaledResolution(this.mc);
-        super.initGui();
+    public MainMenuButton(GuiMainMenu parent, int id, String icon, String text, Executor action) {
+        this.parent = parent;
+        this.buttonID = id;
+        this.icon = icon;
+        this.text = text;
+        this.action = action;
+        this.textOffset = 0.0F;
     }
 
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        try {
-            this.drawGradientRect(0, 0, this.width, this.height, 16777215, 16777215);
-            int h = this.height;
-            int w = this.width;
-            float xDiff = ((float) (mouseX - h / 2) - this.currentX) / (float) this.res.getScaleFactor();
-            float yDiff = ((float) (mouseY - w / 2) - this.currentY) / (float) this.res.getScaleFactor();
-            this.currentX += xDiff * 0.3F;
-            this.currentY += yDiff * 0.3F;
-            RenderUtils.drawImage(new ResourceLocation("fdpclient/background.png"), -30, -30, this.res.getScaledWidth() + 60, this.res.getScaledHeight() + 60);
-            GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
-            RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 80).getRGB());
-            FontLoaders.F18.drawCenteredString("Made by SkidderMC with love.",(float)this.width / 2.0F,(float)this.height / 2.0F + 70.0F,new Color(255,255,255,255).getRGB());
-            //BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 30f);
-            FontLoaders.F40.drawCenteredString("FDPClient",(float)this.width / 2.0F,(float)this.height / 2.0F - 70.0F,new Color(255,255,255).getRGB());
-            //BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 10f);
-            RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F - 100.0F, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F + 100.0F, 10, new Color(0, 0, 0, 100).getRGB());
-            //RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 20.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 1040187392);
-            float startX = (float) this.width / 2.0F - 64.5F * ((float) this.butt.size() / 2.0F);
-
-            for (Iterator var9 = this.butt.iterator(); var9.hasNext(); startX += 75.0F) {
-                MainMenuButton button = (MainMenuButton) var9.next();
-                button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
-            }
-            FontLoaders.F40.drawCenteredString("FDPClient",(float)this.width / 2.0F,(float)this.height / 2.0F - 70.0F,new Color(255,255,255).getRGB());
-            FontLoaders.F18.drawCenteredString(LiquidBounce.INSTANCE.CLIENT_VERSION,(float)this.width / 2.0F,(float)this.height / 2.0F - 30.0F,new Color(255,255,255).getRGB());
-            RenderUtils.drawRect((float)this.width / 2.0F - 30f,(float)this.height / 2.0F - 40.0F,(float)this.width / 2.0F + 30f,(float)this.height / 2.0F - 39.5F,new Color(255,255,255,100).getRGB());
-            FontLoaders.F18.drawCenteredString("Made by SkidderMC with love.",(float)this.width / 2.0F,(float)this.height / 2.0F + 70.0F,new Color(255,255,255,100).getRGB());
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    public MainMenuButton(GuiMainMenu parent, int id, String icon, String text, Executor action, float yOffset) {
+        this.parent = parent;
+        this.buttonID = id;
+        this.icon = icon;
+        this.text = text;
+        this.action = action;
+        this.textOffset = yOffset;
     }
 
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        Iterator var4 = this.butt.iterator();
+    public void draw(float x, float y, int mouseX, int mouseY) {
+        this.x = x;
+        this.y = y;
+        RenderUtils.drawRoundedCornerRect(x-30F,y-30F,x+30f,y+30f,15f,new Color(0,0,0,40).getRGB());
+        this.yAnimation = RenderUtils.smoothAnimation(this.yAnimation, RenderUtils.isHovering(mouseX, mouseY, this.x-30f, this.y-30f, this.x + 30.0F, this.y + 30.0F) ? 4.0F : 0.0F, 20.0F, 0.3F);
+        Fonts.MAINMENU.MAINMENU30.MAINMENU30.drawString(this.icon, x - (float) Fonts.MAINMENU.MAINMENU30.MAINMENU30.stringWidth(this.icon) / 2.0F, y-6f+(this.yAnimation*-1f), Color.WHITE.getRGB(),false);
+        if(this.yAnimation>=0.11) {
+            Fonts.SF.SF_16.SF_16.drawString(this.text, x - (float) Fonts.SF.SF_16.SF_16.stringWidth(this.text) / 2.0F, y + 12f +(this.yAnimation*-1f), new Color(255,255,255, ((((this.yAnimation/4.0f)) * 255.0f)<=255.0f) ? (int)(((this.yAnimation/4.0f)) * 255.0f) : 25).getRGB());
+        }//RenderUtils.drawGradientRect(x, y + 40.0F - this.yAnimation * 3.0F, x + 50.0F, y + 40.0F, 3453695, 2016719615);
+        RenderUtils.drawRoundedCornerRect(x-30F,y-30F,x+30f,y+30f,15f,new Color(255,255,255,50).getRGB());
+    }
 
-        while(var4.hasNext()) {
-            MainMenuButton button = (MainMenuButton)var4.next();
-            button.mouseClick(mouseX, mouseY, mouseButton);
+    public void mouseClick(int mouseX, int mouseY, int mouseButton) {
+        if (RenderUtils.isHovering(mouseX, mouseY, this.x-30f, this.y-30f, this.x + 30.0F, this.y + 30.0F) && this.action != null && mouseButton == 0) {
+            this.action.execute();
         }
 
-        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    public void updateScreen() {
+   public interface Executor {
+        void execute();
     }
 }
