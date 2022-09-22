@@ -40,7 +40,7 @@ object DiscordRPC {
         })
         try {
             ipcClient.connect()
-        } catch (Exception e) {
+        } catch (e: Throwable) {
             println("discord rpc failed to start")
         }
     }
