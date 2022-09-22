@@ -1,7 +1,8 @@
-package net.ccbluex.liquidbounce.launch.data
+package net.ccbluex.liquidbounce.launch.data.modernui.mainmenu
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
+import net.ccbluex.liquidbounce.launch.data.modernui.mainmenu.*
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import java.awt.Color
