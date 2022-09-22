@@ -1800,7 +1800,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "exhibitionold" -> Border(2F, 1F, 122F, 40F)
             "watermelon" -> Border(0F, 0F, 120F, 48F)
             "sparklingwater" -> Border(0F, 0F, 120F, 48F)
-            "bar" -> Boarder(3F, 22F, 115F, 42F)
+            "bar" -> Border(3F, 22F, 115F, 42F)
             else -> null
         }
     }
