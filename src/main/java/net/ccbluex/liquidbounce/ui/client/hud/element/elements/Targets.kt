@@ -51,7 +51,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     private var Health: Float = 0F
     private var EndingTarget: Entity? = null
-    private val BarAnimationSpeed = FloatValue("BarAnimationSpeed", 2F, 1F, 9F).displayable { modeValue.get().equals("bar", true) }
 
     private val fontValue = FontValue("Font", Fonts.font40)
 
@@ -817,10 +816,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     private fun drawBar(target: EntityLivingBase) {
-        if (target != EndingTarget || Health < 0 || Health > target.maxHealth ||
-            abs(Health - target.health) < 0.01) {
-            Health = target.health
-        }
+        Health = easingHP
 
         val width = (38 + Fonts.font40.getStringWidth(target.name))
             .coerceAtLeast(119)
@@ -828,20 +824,20 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         RenderUtils.drawBorderedRect(3F, 37F, 115F, 42F, 4.2F, Color(16, 16, 16, 255).rgb, Color(10, 10, 10, 100).rgb)
         RenderUtils.drawBorderedRect(3F, 37F, 115F, 42F, 1.2F, Color(255, 255, 255, 180).rgb, Color(255, 180, 255, 0).rgb)
-        if (Health > target.health)
+        if (Health > getHealth(target))
             RenderUtils.drawRect(3F, 37F, (Health / target.maxHealth) * width - 4F,
                 42F, Color(250, 0, 0, 120).rgb)
-        RenderUtils.drawRect(3.2F, 37F, (target.health / target.maxHealth) * width - 4F,
+            
+        RenderUtils.drawRect(3.2F, 37F, (getHealth(target) / target.maxHealth) * width - 4F,
             42F, Color(220, 0, 0, 220).rgb)
         if (Health < target.health)
             RenderUtils.drawRect((Health / target.maxHealth) * width, 37F,
-                (target.health / target.maxHealth) * width, 42F, Color(44, 201, 144).rgb)
+                (getHealth(target) / target.maxHealth) * width, 42F, Color(44, 201, 144).rgb)
         RenderUtils.drawBorderedRect(3F, 37F, 115F, 42F, 1.2F, Color(255, 255, 255, 180).rgb, Color(255, 180, 255, 0).rgb)
 
 
-        Health += ((target.health - Health) / 2.0F.pow(10.0F - BarAnimationSpeed.get())) * RenderUtils.deltaTime
 
-        mc.fontRendererObj.drawStringWithShadow("" + target.name, 36F, 22F, 0xFFFFFF)
+        mc.fontRendererObj.drawStringWithShadow(target.name.toString(), 36F, 22F, 0xFFFFFF)
     }
 
     private fun drawFDP(target: EntityLivingBase) {
@@ -1804,6 +1800,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "exhibitionold" -> Border(2F, 1F, 122F, 40F)
             "watermelon" -> Border(0F, 0F, 120F, 48F)
             "sparklingwater" -> Border(0F, 0F, 120F, 48F)
+            "bar" -> Boarder(3F, 22F, 115F, 42F)
             else -> null
         }
     }
