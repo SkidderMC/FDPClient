@@ -20,7 +20,7 @@ import java.io.*
 import javax.imageio.ImageIO
 
 class FileManager : MinecraftInstance() {
-    val dir = File(mc.mcDataDir, "FDPCLIENT")
+    val dir = File(mc.mcDataDir, "FDPCLIENT-1.8")
     val fontsDir = File(dir, "fonts")
     val configsDir = File(dir, "configs")
     val soundsDir = File(dir, "sounds")
