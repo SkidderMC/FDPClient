@@ -257,32 +257,30 @@ class FollowTargetHud : Module() {
                 
                 if (!fdpVertical.get()) {
                     var addedLen = (60 + font.getStringWidth(entity.name) * 1.60f).toFloat()
-                    if (!fdpText.get()) addedLen = 80f
+                    if (!fdpText.get()) addedLen = 110f
                     
                     if (fdpRed.get()) {
-                        RenderUtils.drawRect(0f, 0f, addedLen, 47f, Color(212, 63, 63, 90).rgb)
-                        RenderUtils.drawRoundedCornerRect(0f, 0f, healthPercent * addedLen, 47f, 3f, Color(245, 52, 27, 90).rgb)
+                        RenderUtils.drawRect(0f + xChange, 0f, addedLen + xChange, 47f, Color(212, 63, 63, 90).rgb)
+                        RenderUtils.drawRoundedCornerRect(0f + xChange, 0f, healthPercent * addedLen + xChange, 47f, 3f, Color(245, 52, 27, 90).rgb)
                     } else {
-                        RenderUtils.drawRect(0f, 0f, addedLen, 47f, Color(0, 0, 0, 120).rgb)
-                        RenderUtils.drawRoundedCornerRect(0f, 0f, healthPercent * addedLen, 47f, 3f, Color(0, 0, 0, 90).rgb)
+                        RenderUtils.drawRect(0f + xChange, 0f, addedLen + xChange, 47f, Color(0, 0, 0, 120).rgb)
+                        RenderUtils.drawRoundedCornerRect(0f + xChange, 0f, healthPercent * addedLen + xChange, 47f, 3f, Color(0, 0, 0, 90).rgb)
                     }
 
                     drawShadow(0f, 0f, addedLen, 47f)
         
                     if (fdpText.get()) {
         
-                        glScalef(-scale * 3, -scale * 3, scale * 3)
-                        fontRenderer.drawString(entity.name, 39, 8, Color.WHITE.rgb)
-                        glScalef(-scale * 2, -scale * 2, scale * 2)
-                        fontRenderer.drawString("Health ${entity.health.roundToInt()}", 56, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
+                        fontRenderer.drawString(entity.name, 39 + xChange.toInt(), 8, Color.WHITE.rgb)
+                        fontRenderer.drawString("Health ${entity.health.roundToInt()}", 56 + xChange.toInt(), 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
                     }
                 } else {
                     if (fdpRed.get()) {
-                        RenderUtils.drawRect(0f, 0f, 47f, 80f, Color(212, 63, 63, 90).rgb)
-                        RenderUtils.drawRoundedCornerRect(0f, 0f, 47f, healthPercent * 80f, 3f, Color(245, 52, 27, 90).rgb)
+                        RenderUtils.drawRect(0f + xChange, 0f, 47f + xChange, 120f + xChange, Color(212, 63, 63, 90).rgb)
+                        RenderUtils.drawRoundedCornerRect(healthPercent*120f + xChange, 0f, 47f + xChange, 0f, 3f, Color(245, 52, 27, 90).rgb)
                     } else {
-                        RenderUtils.drawRect(0f, 0f, 47f, 80f, Color(0, 0, 0, 120).rgb)
-                        RenderUtils.drawRoundedCornerRect(0f, 0f, 47f, healthPercent * 80f, 3f, Color(0, 0, 0, 90).rgb)
+                        RenderUtils.drawRect(0f + xChange, 0f, 47f + xChange, 120f, Color(0, 0, 0, 120).rgb)
+                        RenderUtils.drawRoundedCornerRect(0f + xChange, 0f, 47f + xChange, healthPercent * 120f, 3f, Color(0, 0, 0, 90).rgb)
                     }
                 }
                 
