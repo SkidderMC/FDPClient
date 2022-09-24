@@ -37,7 +37,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val whiteText = BoolValue("WhiteTextColor", true)
     private val modeColored = BoolValue("CustomModeColored", true)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Tenacity", "Intellij", "Skid"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Tenacity", "Intellij", "Skid", "Tena-Classic"), "Modern")
     }
 
     /**
@@ -318,14 +318,40 @@ class Notification(
         }
 
         if(style.equals("Classic")) {
-            if (blurRadius != 0f) { BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) }
-                RenderUtils.drawRect(0F, 0F, width.toFloat(), classicHeight.toFloat(), Color(0, 0, 0, alpha))
-                shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), classicHeight.toFloat(), 240f)
+            if (blurRadius != 0f)
+                BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) 
+                
+            RenderUtils.drawRect(0F, 0F, width.toFloat(), classicHeight.toFloat(), Color(0, 0, 0, alpha))
+            shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), classicHeight.toFloat(), 240f)
             RenderUtils.drawRect(0F, classicHeight - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat(), type.renderColor)
-                font.drawString(title, 4F, 4F, textColor, false)
-                font.drawString(content, 4F, 17F, textColor, false)
-                return false
+            font.drawString(title, 4F, 4F, textColor, false)
+            font.drawString(content, 4F, 17F, textColor, false)
+            return false
+       }
+        
+       if(style.equals("Tena-Classic")) {
+            val thisWidth = 100.coerceAtLeast(fontRenderer.getStringWidth(this.title).coerceAtLeast(fontRenderer.getStringWidth(this.content)) + 40)
+            
+            if(type.renderColor == Color(0xFF2F2F)){
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/cross.png"),-13,5,18,18)
+            }else if(type.renderColor == Color(0x60E092)){
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/tick.png"),-13,5,18,18)
+            } else if(type.renderColor == Color(0xF5FD00)){
+                RenderUtils.drawImage(sourceLocation("fdpclient/ui/notifications/icons/tenacity/warning.png"),-13,5,18,18)
+            } else {
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/info.png"),-13,5,18,18)
             }
+        
+            if (blurRadius != 0f)
+                BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, thisWidth * scale, classicHeight * scale, blurRadius) 
+                
+            RenderUtils.drawRoundedCornerRect(-16F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 3, Color(0, 0, 0, alpha))
+            shadowRenderUtils.drawShadowWithCustomAlpha(-16F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 240f)
+            RenderUtils.drawRect(-16F, classicHeight - 2F, max(thisWidth - thisWidth * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat(), type.renderColor)
+            font.drawString(title, 9F, 4F, textColor, false)
+            font.drawString(content, 9F, 17F, textColor, false)
+            return false
+       }
 
         if(style.equals("Intellij")) {
                 val notifyDir = "fdpclient/notifications/icons/noti/intellij/"
