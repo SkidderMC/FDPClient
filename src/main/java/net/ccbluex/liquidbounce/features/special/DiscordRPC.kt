@@ -17,7 +17,7 @@ object DiscordRPC {
     private val timestamp = OffsetDateTime.now()
     private var running = false
     private var fdpwebsite = "fdpinfo.github.io - "
-    
+
 
     fun run() {
         ipcClient.setListener(object : IPCListener {
@@ -40,7 +40,9 @@ object DiscordRPC {
         })
         try {
             ipcClient.connect()
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
+            println("discord rpc failed to start")
+        } catch (e: RuntimeException) {
             println("discord rpc failed to start")
         }
     }

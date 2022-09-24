@@ -25,7 +25,7 @@ object BlurUtils : MinecraftInstance() {
     }
 
     fun draw(x: Float, y: Float, width: Float, height: Float, radius: Float) {
-        val scale = StaticStorage.scaledResolution
+        val scale = StaticStorage.scaledResolution ?: return
         val factor = scale.scaleFactor
         val factor2 = scale.scaledWidth
         val factor3 = scale.scaledHeight
