@@ -329,27 +329,50 @@ class Notification(
             return false
        }
         
+        
        if(style.equals("Tena-Classic")) {
-            val thisWidth = 100.coerceAtLeast(fontRenderer.getStringWidth(this.title).coerceAtLeast(fontRenderer.getStringWidth(this.content)) + 40)
+            val thisWidth = 116.coerceAtLeast(font.getStringWidth(this.title).coerceAtLeast(font.getStringWidth(this.content)) + 56)
             
             if(type.renderColor == Color(0xFF2F2F)){
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/cross.png"),-13,5,18,18)
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/cross.png"),3,5,18,18)
             }else if(type.renderColor == Color(0x60E092)){
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/tick.png"),-13,5,18,18)
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/tick.png"),3,5,18,18)
             } else if(type.renderColor == Color(0xF5FD00)){
-                RenderUtils.drawImage(sourceLocation("fdpclient/ui/notifications/icons/tenacity/warning.png"),-13,5,18,18)
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/warning.png"),3,5,18,18)
             } else {
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/info.png"),-13,5,18,18)
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/info.png"),3,5,18,18)
             }
         
             if (blurRadius != 0f)
                 BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, thisWidth * scale, classicHeight * scale, blurRadius) 
                 
-            RenderUtils.drawRoundedCornerRect(-16F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 3, Color(0, 0, 0, alpha))
-            shadowRenderUtils.drawShadowWithCustomAlpha(-16F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 240f)
-            RenderUtils.drawRect(-16F, classicHeight - 2F, max(thisWidth - thisWidth * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat(), type.renderColor)
-            font.drawString(title, 9F, 4F, textColor, false)
-            font.drawString(content, 9F, 17F, textColor, false)
+            RenderUtils.drawRoundedCornerRect(0F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 3F, Color(0, 0, 0, alpha))
+            RenderUtils.drawRect(0F, classicHeight - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat(), type.renderColor)
+            font.drawString(title, 25F, 4F, textColor, false)
+            font.drawString(content, 25F, 17F, textColor, false)
+            return false
+       }
+       
+       if(style.equals("Astolfo")) {
+            val thisWidth = 116.coerceAtLeast(font.getStringWidth(this.title).coerceAtLeast(font.getStringWidth(this.content)) + 56)
+            
+            if(type.renderColor == Color(0xFF2F2F)){
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/cross.png"),3,5,18,18)
+            }else if(type.renderColor == Color(0x60E092)){
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/tick.png"),3,5,18,18)
+            } else if(type.renderColor == Color(0xF5FD00)){
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/warning.png"),3,5,18,18)
+            } else {
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/notifications/icons/tenacity/info.png"),3,5,18,18)
+            }
+        
+                
+            RenderUtils.drawRoundedCornerRect(0F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 3F, Color(72, 71, 89))
+            shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 240f)
+            RenderUtils.drawRect(2F, classicHeight - 4F, thisWidth.toFloat() - 2F, classicHeight.toFloat() - 2F, Color(0, 0, 0, 50))
+            RenderUtils.drawRect(2F, classicHeight - 4F, 2F + max((thisWidth.toFloat() - 4F) - (thisWidth.toFloat() - 4F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat() - 2F, type.renderColor)
+            font.drawString(title, 25F, 4F, textColor, false)
+            font.drawString(content, 25F, 17F, textColor, false)
             return false
        }
 
