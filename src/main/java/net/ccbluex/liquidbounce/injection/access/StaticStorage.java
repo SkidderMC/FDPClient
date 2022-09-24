@@ -26,7 +26,7 @@ public class StaticStorage {
     private static final EnumParticleTypes[] particleTypes = EnumParticleTypes.values();
     private static final EnumWorldBlockLayer[] worldBlockLayers = EnumWorldBlockLayer.values();
 
-    public static ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+    public static ScaledResolution scaledResolution;
 
     public static EnumFacing[] facings() {
         return facings;
