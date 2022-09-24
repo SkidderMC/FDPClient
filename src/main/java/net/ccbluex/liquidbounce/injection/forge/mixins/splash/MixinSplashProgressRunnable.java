@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.splash;
 
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.ReflectionHelper;
 import net.ccbluex.liquidbounce.utils.render.AnimatedValue;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -17,9 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.lang.invoke.MethodHandle;
 import java.util.Iterator;
+import java.util.concurrent.Semaphore;
 
-@Mixin(targets="net.minecraftforge.fml.client.SplashProgress$3", remap=false)
+@Mixin(targets = "net.minecraftforge.fml.client.SplashProgress$3", remap = false)
 public abstract class MixinSplashProgressRunnable {
 
     @Shadow(remap = false)
@@ -49,8 +52,12 @@ public abstract class MixinSplashProgressRunnable {
         animatedValue.setType(EaseUtils.EnumEasingType.CIRC);
         animatedValue.setDuration(600L);
 
+        final MethodHandle doneHandle = ReflectionHelper.lookupStaticFieldHandle(SplashProgress.class, "done");
+        final MethodHandle pauseHandle = ReflectionHelper.lookupStaticFieldHandle(SplashProgress.class, "pause");
+        final MethodHandle mutexHandle = ReflectionHelper.lookupStaticFieldHandle(SplashProgress.class, "mutex");
+
         ClientUtils.INSTANCE.logInfo("[Splash] Starting Render Thread...");
-        while (!SplashProgress.done) {
+        while (Boolean.FALSE.equals(ReflectionHelper.invokeOrNull(doneHandle))) {
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
             int width = Display.getWidth();
             int height = Display.getHeight();
@@ -92,20 +99,21 @@ public abstract class MixinSplashProgressRunnable {
             float rectRadius = height * 0.025f;
             float progress = (float) animatedValue.sync(getProgress());
 
-            if(progress != 1f) {
+            if (progress != 1f) {
                 GL11.glColor4f(0f, 0f, 0f, 0.3f);
                 RenderUtils.drawRoundedCornerRect(rectX, rectY, rectX2, rectY2, rectRadius);
             }
 
-            if(progress != 0f) {
+            if (progress != 0f) {
                 GL11.glColor4f(1f, 1f, 1f, 1f);
                 RenderUtils.drawRoundedCornerRect(rectX, rectY, rectX + (width * 0.6f * progress), rectY2, rectRadius);
             }
 
-            SplashProgress.mutex.acquireUninterruptibly();
+            final Semaphore mutex = (Semaphore) ReflectionHelper.invokeOrNull(mutexHandle);
+            mutex.acquireUninterruptibly();
             Display.update();
-            SplashProgress.mutex.release();
-            if (SplashProgress.pause) {
+            mutex.release();
+            if (Boolean.TRUE.equals(ReflectionHelper.invokeOrNull(pauseHandle))) {
                 this.clearGL();
                 this.setGL();
             }
