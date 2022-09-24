@@ -37,7 +37,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val whiteText = BoolValue("WhiteTextColor", true)
     private val modeColored = BoolValue("CustomModeColored", true)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "Modern", "Tenacity", "Intellij", "Skid", "Tena-Classic"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "FDP", "Modern", "Tenacity", "Intellij", "Skid", "Tena-Classic", "Astolfo"), "Modern")
     }
 
     /**
@@ -226,6 +226,43 @@ class Notification(
    
             
             val colors = Color(colorRed, colorGreen, colorBlue, alpha / 3)
+            
+            if (motionBlur) {
+                when (fadeState) {
+                    FadeState.IN -> {
+                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
+                    }
+
+                    FadeState.STAY -> {
+                        RenderUtils.drawRoundedCornerRect(3f, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(3F, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
+                    }
+
+                    FadeState.OUT -> {
+                        RenderUtils.drawRoundedCornerRect(4F, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
+                        RenderUtils.drawRoundedCornerRect(5F, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
+                    }
+                }
+            } else {
+                RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
+                RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
+            }
+            RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
+            shadowRenderUtils.drawShadowWithCustomAlpha(0F + 3f, 0F, width.toFloat() + 5f, 27f - 5f, 240f)
+            RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 5f, 0F), 27f - 5f, 2f, Color(0, 0, 0, 26).rgb)
+            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title, 4F, 3F, textColor, titleShadow)
+            font.DisplayFont2(font, content, 4F, 10F, textColor, contentShadow)
+            return false
+        }
+        
+        if (style.equals("FDP")) {
+
+            if (blurRadius != 0f) {
+                BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale), (27f - 5f) * scale, blurRadius)
+            }
+            
+            val colors = Color(0, 0, 0, alpha / 4.2)
             
             if (motionBlur) {
                 when (fadeState) {
