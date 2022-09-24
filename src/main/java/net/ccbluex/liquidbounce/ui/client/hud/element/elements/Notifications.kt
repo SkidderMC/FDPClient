@@ -262,7 +262,7 @@ class Notification(
                 BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale), (27f - 5f) * scale, blurRadius)
             }
             
-            val colors = Color(0, 0, 0, alpha / 4.2)
+            val colors = Color(0, 0, 0, alpha / 4)
             
             if (motionBlur) {
                 when (fadeState) {
@@ -383,7 +383,7 @@ class Notification(
             if (blurRadius != 0f)
                 BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, thisWidth * scale, classicHeight * scale, blurRadius) 
                 
-            RenderUtils.drawRoundedCornerRect(0F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 3F, Color(0, 0, 0, alpha))
+            RenderUtils.drawRoundedCornerRect(0F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 3F, Color(0, 0, 0, alpha).rgb)
             RenderUtils.drawRect(0F, classicHeight - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat(), type.renderColor)
             font.drawString(title, 25F, 4F, textColor, false)
             font.drawString(content, 25F, 17F, textColor, false)
@@ -404,7 +404,7 @@ class Notification(
             }
         
                 
-            RenderUtils.drawRoundedCornerRect(0F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 3F, Color(72, 71, 89))
+            RenderUtils.drawRoundedCornerRect(0F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 3F, Color(72, 71, 89).rgb)
             shadowRenderUtils.drawShadowWithCustomAlpha(0F, 0F, thisWidth.toFloat(), classicHeight.toFloat(), 240f)
             RenderUtils.drawRect(2F, classicHeight - 4F, thisWidth.toFloat() - 2F, classicHeight.toFloat() - 2F, Color(0, 0, 0, 50))
             RenderUtils.drawRect(2F, classicHeight - 4F, 2F + max((thisWidth.toFloat() - 4F) - (thisWidth.toFloat() - 4F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), classicHeight.toFloat() - 2F, type.renderColor)
