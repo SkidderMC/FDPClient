@@ -44,7 +44,7 @@ public abstract class MixinGuiButton extends Gui {
    protected static ResourceLocation buttonTextures;
 
    @Shadow
-   public abstract void mouseDragged(Minecraft mc, int mouseX, int mouseY);
+   protected abstract void mouseDragged(Minecraft mc, int mouseX, int mouseY);
 
    @Shadow
    protected abstract int getHoverState(boolean p_getHoverState_1_);
