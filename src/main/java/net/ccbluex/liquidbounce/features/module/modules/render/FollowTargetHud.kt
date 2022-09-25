@@ -284,12 +284,12 @@ class FollowTargetHud : Module() {
                         RenderUtils.drawRoundedCornerRect(0f + xChange, 0f, healthPercent * addedLen + xChange, 47f, 3f, Color(0, 0, 0, 90).rgb)
                     }
 
-                    drawShadow(0f, 0f, addedLen, 47f)
+                    drawShadow(0f, 0f, addedLen + xChange, 47f)
         
                     if (fdpText.get()) {
         
-                        fontRenderer.drawString(entity.name, 39 + xChange.toInt(), 8, Color.WHITE.rgb)
-                        fontRenderer.drawString("Health ${entity.health.roundToInt()}", 56 + xChange.toInt(), 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
+                        fontRenderer.drawString(entity.name, 45 + xChange.toInt(), 8, Color.WHITE.rgb)
+                        fontRenderer.drawString("Health ${entity.health.roundToInt()}", 45 + xChange.toInt(), 11 + (font.FONT_HEIGHT).toInt(), Color.WHITE.rgb)
                     }
                 } else {
                     if (fdpRed.get()) {
