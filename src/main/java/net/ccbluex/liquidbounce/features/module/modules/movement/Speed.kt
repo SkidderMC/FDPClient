@@ -74,9 +74,7 @@ class Speed : Module() {
         }
 
         mode.onMove(event)
-        if(event != null) {
-            LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doMove(event)
-        }
+        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doMove(event)
     }
 
     @EventTarget

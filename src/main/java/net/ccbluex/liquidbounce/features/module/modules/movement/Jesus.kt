@@ -17,15 +17,14 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.block.Block
 import net.minecraft.block.BlockLiquid
 import net.minecraft.block.material.Material
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
-import net.minecraft.util.MovementInput
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 @ModuleInfo(name = "Jesus", category = ModuleCategory.MOVEMENT)
 class Jesus : Module() {
@@ -55,12 +54,12 @@ class Jesus : Module() {
                 }
             }
             "jump" -> {
-                if (BlockUtils.getBlock(blockPos) === Blocks.water && mc.thePlayer.onGround) {
+                if (getBlock(blockPos) === Blocks.water && mc.thePlayer.onGround) {
                     mc.thePlayer.motionY = jumpMotionValue.get().toDouble()
                 }
             }
             "aac" -> {
-                if (!mc.thePlayer.onGround && BlockUtils.getBlock(blockPos) === Blocks.water || mc.thePlayer.isInWater) {
+                if (!mc.thePlayer.onGround && getBlock(blockPos) === Blocks.water || mc.thePlayer.isInWater) {
                     if (!mc.thePlayer.isSprinting) {
                         mc.thePlayer.motionX *= 0.99999
                         mc.thePlayer.motionY *= 0.0
@@ -91,8 +90,8 @@ class Jesus : Module() {
                         mc.thePlayer.motionY = +0.09
                         return
                     }
-                    val block = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ))
-                    val blockUp = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.1, mc.thePlayer.posZ))
+                    val block = getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ))
+                    val blockUp = getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.1, mc.thePlayer.posZ))
                     if (blockUp is BlockLiquid) {
                         mc.thePlayer.motionY = 0.1
                     } else if (block is BlockLiquid) {
@@ -135,7 +134,7 @@ class Jesus : Module() {
                 }
             }
             "aac4.2.1" -> {
-                if (!mc.thePlayer.onGround && BlockUtils.getBlock(blockPos) === Blocks.water || mc.thePlayer.isInWater) {
+                if (!mc.thePlayer.onGround && getBlock(blockPos) === Blocks.water || mc.thePlayer.isInWater) {
                     mc.thePlayer.motionY *= 0.0
                     mc.thePlayer.jumpMovementFactor = 0.08f
                     if (mc.thePlayer.fallDistance > 0) {
@@ -249,8 +248,8 @@ class Jesus : Module() {
             return
         }
 
-        val block = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.01, mc.thePlayer.posZ))
-        if ((noJumpValue.get() || modeValue.get().equals("Vulcan"))&& block is BlockLiquid) {
+        val block = getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.01, mc.thePlayer.posZ))
+        if ((noJumpValue.get() || modeValue.get() == "Vulcan")&& block is BlockLiquid) {
             event.cancelEvent()
         }
     }
@@ -258,28 +257,4 @@ class Jesus : Module() {
     override val tag: String
         get() = modeValue.get()
 
-    fun setSpeed(speed: Double) {
-        var forward = mc.thePlayer.movementInput.moveForward.toDouble()
-        var strafe = mc.thePlayer.movementInput.moveStrafe.toDouble()
-        var yaw = mc.thePlayer.rotationYaw
-        if (forward == 0.0 && strafe == 0.0) {
-            MovementUtils.resetMotion(false)
-        } else {
-            if (forward != 0.0) {
-                if (strafe > 0.0) {
-                    yaw += if(forward > 0.0) -45 else 45
-                } else if (strafe < 0.0) {
-                    yaw += if(forward > 0.0) 45 else -45
-                }
-                strafe = 0.0
-                if (forward > 0.0) {
-                    forward = 1.0
-                } else if (forward < 0.0) {
-                    forward = -1.0
-                }
-            }
-            mc.thePlayer.motionX = forward * speed * cos(Math.toRadians(yaw + 90.0)) + strafe * speed * sin(Math.toRadians(yaw + 90.0))
-            mc.thePlayer.motionZ = forward * speed * sin(Math.toRadians(yaw + 90.0)) - strafe * speed * cos(Math.toRadians(yaw + 90.0))
-        }
-    }
 }

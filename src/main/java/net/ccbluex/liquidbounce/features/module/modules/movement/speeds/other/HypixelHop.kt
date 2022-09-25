@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.value.*
+import kotlin.math.max
 
 
 class HypixelHop : SpeedMode("HypixelHop") {
@@ -48,7 +49,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             }
         }
         
-        moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ).toDouble()
+        moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ)
         
         when (bypassMode.get().lowercase()) {
             
@@ -104,7 +105,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     watchdogMultiplier = moveDist - 0.66 * (moveDist - 0.2875)
                     wasOnGround = false
                 } else {
-                    moveDist = moveDist * 0.91
+                    moveDist *= 0.91
                     if (mc.thePlayer.moveStrafing > 0) {
                         watchdogMultiplier += (MovementUtils.getSpeed().toDouble() - moveDist) * 0.2875
                         watchdogMultiplier -= 0.015
@@ -151,7 +152,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         watchdogMultiplier = moveDist - moveDist / 159
                     }
 
-                    MovementUtils.strafe(Math.max(watchdogMultiplier, minSpeed).toFloat())
+                    MovementUtils.strafe(max(watchdogMultiplier, minSpeed).toFloat())
                 } else {
                     watchdogMultiplier = 0.0
                 }
@@ -173,10 +174,10 @@ class HypixelHop : SpeedMode("HypixelHop") {
 
     override fun onMove(event: MoveEvent) {
         when (bypassMode.get().lowercase()) {
-            "testlowhop" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 0.90151f   - slowdownValue.get()).toDouble()).toFloat())
-            "test2" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
-            "oldsafe" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.081237f    - slowdownValue.get()).toDouble()).toFloat())
-            "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier.toDouble() * ( 1.0f         - slowdownValue.get()).toDouble()).toFloat())
+            "testlowhop" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 0.90151f - slowdownValue.get()).toDouble()).toFloat())
+            "test2" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
+            "oldsafe" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.081237f - slowdownValue.get()).toDouble()).toFloat())
+            "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
             
         }
     }

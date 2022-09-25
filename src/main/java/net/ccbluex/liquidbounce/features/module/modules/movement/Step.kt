@@ -20,8 +20,10 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.stats.StatList
 import net.minecraft.util.MathHelper
+import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 @ModuleInfo(name = "Step", category = ModuleCategory.MOVEMENT)
 class Step : Module() {
@@ -52,9 +54,9 @@ class Step : Module() {
     private var ncpNextStep = 0
     private var spartanSwitch = false
     private var isAACStep = false
-    var wasTimer = false
-    var lastOnGround = false
-    var canStep = false
+    private var wasTimer = false
+    private var lastOnGround = false
+    private var canStep = false
 
     private val timer = MSTimer()
 
@@ -266,7 +268,7 @@ class Step : Module() {
                     wasTimer = true
                     mc.timer.timerSpeed = timerValue.get()
                     if (timerDynValue.get()) {
-                        mc.timer.timerSpeed = (mc.timer.timerSpeed / Math.sqrt(mc.thePlayer.entityBoundingBox.minY - stepY)).toFloat()
+                        mc.timer.timerSpeed = (mc.timer.timerSpeed / sqrt(mc.thePlayer.entityBoundingBox.minY - stepY)).toFloat()
                     }
                 }
                 when {
@@ -347,7 +349,7 @@ class Step : Module() {
                         mc.timer.timerSpeed = 0.42f
                         var stpHight = 0.0
                         fakeJump()
-                        repeat ((Math.ceil(rstepHeight * 2.0) - 1.0).toInt()) {
+                        repeat ((ceil(rstepHeight * 2.0) - 1.0).toInt()) {
                             stpHight += 0.5
                             mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX, stepY + stpHight, stepZ, true))
                         }
@@ -399,7 +401,7 @@ class Step : Module() {
                             rstepHeight <= 3.0042 && rstepHeight > 2.95 -> {
                                 val stpPacket = arrayOf(0.41951, 0.75223, 0.99990, 1.42989, 1.77289, 2.04032, 2.23371, 2.35453, 2.40423)
                                 stpPacket.forEach {
-                                    if(it >= 0.9 && it <= 1.01) {
+                                    if(it in 0.9..1.01) {
                                         mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                             stepY + it, stepZ, true))
                                     }else {
@@ -414,7 +416,7 @@ class Step : Module() {
                             rstepHeight <= 2.95 && rstepHeight > 2.83 -> {
                                 val stpPacket = arrayOf(0.41951, 0.75223, 0.99990, 1.42989, 1.77289, 2.04032, 2.23371, 2.35453)
                                 stpPacket.forEach {
-                                    if(it >= 0.9 && it <= 1.01) {
+                                    if(it in 0.9..1.01) {
                                         mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                             stepY + it, stepZ, true))
                                     }else {
@@ -429,7 +431,7 @@ class Step : Module() {
                             rstepHeight <= 2.83 && rstepHeight > 2.64 -> {
                                 val stpPacket = arrayOf(0.41951, 0.75223, 0.99990, 1.42989, 1.77289, 2.04032, 2.23371)
                                 stpPacket.forEach {
-                                    if(it >= 0.9 && it <= 1.01) {
+                                    if(it in 0.9..1.01) {
                                         mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                             stepY + it, stepZ, true))
                                     }else {
@@ -444,7 +446,7 @@ class Step : Module() {
                             rstepHeight <= 2.64 && rstepHeight > 2.37 -> {
                                 val stpPacket = arrayOf(0.41951, 0.75223, 0.99990, 1.42989, 1.77289, 2.04032)
                                 stpPacket.forEach {
-                                    if(it >= 0.9 && it <= 1.01) {
+                                    if(it in 0.9..1.01) {
                                         mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                             stepY + it, stepZ, true))
                                     }else {
@@ -459,7 +461,7 @@ class Step : Module() {
                             rstepHeight <= 2.37 && rstepHeight > 2.02 -> {
                                 val stpPacket = arrayOf(0.41951, 0.75223, 0.99990, 1.42989, 1.77289)
                                 stpPacket.forEach {
-                                    if(it >= 0.9 && it <= 1.01) {
+                                    if(it in 0.9..1.01) {
                                         mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                             stepY + it, stepZ, true))
                                     }else {
@@ -474,7 +476,7 @@ class Step : Module() {
                             rstepHeight <= 2.02 && rstepHeight > 1.77 -> {
                                 val stpPacket = arrayOf(0.41951, 0.75223, 0.99990, 1.42989)
                                 stpPacket.forEach {
-                                    if(it >= 0.9 && it <= 1.01) {
+                                    if(it in (0.9..1.01)) {
                                         mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                             stepY + it, stepZ, true))
                                     }else {
@@ -489,7 +491,7 @@ class Step : Module() {
                             rstepHeight <= 1.77 && rstepHeight > 1.6 -> {
                                 val stpPacket = arrayOf(0.41999998688698, 0.7531999805212, 1.17319996740818)
                                 stpPacket.forEach {
-                                    if(it >= 0.753 && it <= 0.754) {
+                                    if(it in (0.753..0.754)) {
                                         mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                             stepY + it, stepZ, true))
                                     }else {

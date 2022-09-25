@@ -15,7 +15,7 @@ class VerusFloat : SpeedMode("VerusFloat") {
 
     override fun onPreMotion() {
         ticks++
-        if (!mc.gameSettings.keyBindJump.isKeyDown()) {
+        if (!mc.gameSettings.keyBindJump.isKeyDown) {
             if (mc.thePlayer.onGround) {
                 ticks = 0
                 MovementUtils.strafe(0.44f)

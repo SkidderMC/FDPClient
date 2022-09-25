@@ -15,7 +15,7 @@ class LegitLowHop : SpeedMode("LegitLowHop") {
             if (mc.thePlayer.onGround) {
                 mc.thePlayer.motionY = 0.36
             }
-            mc.thePlayer.setSprinting(true);
+            mc.thePlayer.isSprinting = true
         }
     }
 }

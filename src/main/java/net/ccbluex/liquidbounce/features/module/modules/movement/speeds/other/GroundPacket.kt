@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import kotlin.math.cos
@@ -20,15 +19,15 @@ class GroundPacket : SpeedMode("GroundPacket") {
   
     override fun onUpdate() {
         if (!mc.thePlayer.onGround) return
-        var s = moveSpeed.get().toDouble()
+        val s = moveSpeed.get().toDouble()
         var d = baseSpeed.get().toDouble()
-        var yaw = Math.toRadians(MovementUtils.movingYaw.toDouble())
+        val yaw = Math.toRadians(MovementUtils.movingYaw.toDouble())
         var mx = -sin(yaw) * baseSpeed.get().toDouble()
         var mz = cos(yaw) * baseSpeed.get().toDouble()
         while (d <= s) {
             if (d > s) {
-                var mx = -sin(yaw) * (d - s)
-                var mz = cos(yaw) * (d - s)
+                mx = -sin(yaw) * (d - s)
+                mz = cos(yaw) * (d - s)
                 d = s
             }
             mc.thePlayer.setPosition(mc.thePlayer.posX + mx, mc.thePlayer.posY, mc.thePlayer.posZ + mz)

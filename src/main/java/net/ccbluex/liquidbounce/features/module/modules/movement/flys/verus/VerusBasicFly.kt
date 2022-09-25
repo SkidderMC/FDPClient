@@ -12,7 +12,7 @@ class VerusBasicFly : FlyMode("VerusBasic") {
             mc.thePlayer.jump()
             event.y = 0.42
         }else {
-            mc.thePlayer.motionY = 0.0;
+            mc.thePlayer.motionY = 0.0
             event.y = 0.0
             MovementUtils.strafe(0.35f)
         }

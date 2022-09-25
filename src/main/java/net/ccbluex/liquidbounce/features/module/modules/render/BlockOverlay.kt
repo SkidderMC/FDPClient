@@ -56,7 +56,7 @@ class BlockOverlay : Module() {
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
         RenderUtils.glColor(color)
-        GL11.glLineWidth(colorWidthValue.get().toFloat())
+        GL11.glLineWidth(colorWidthValue.get())
         GlStateManager.disableTexture2D()
         GlStateManager.depthMask(false)
 

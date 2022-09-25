@@ -14,7 +14,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.AxisAlignedBB
 
-class Verus2Fly : FlyMode("Verus2") {
+class VerusBoost2Fly : FlyMode("VerusBoost2") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 5f)
     private val yMotionZero = BoolValue("${valuePrefix}SetYMotion0",true)
     private val blocksBB = BoolValue("${valuePrefix}useBlocksBBfly",true)

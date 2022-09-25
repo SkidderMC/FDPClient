@@ -19,7 +19,7 @@ class AAC2BHop : SpeedMode("AAC2BHop") {
                 mc.thePlayer.motionZ *= 1.02
             } else if (mc.thePlayer.motionY > -0.2) {
                 mc.thePlayer.jumpMovementFactor = 0.08f
-                mc.thePlayer.motionY += 0.0143099999999999999999999999999
+                mc.thePlayer.motionY += 0.01431
                 mc.thePlayer.jumpMovementFactor = 0.07f
             }
         } else {

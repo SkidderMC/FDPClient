@@ -28,7 +28,7 @@ class Sprint : Module() {
     private val blindnessValue = BoolValue("Blindness", true)
     val useItemValue = BoolValue("UseItem", false)
     val foodValue = BoolValue("Food", true)
-    val noStopServerSide = BoolValue("ServerSideKeepSprint", false).displayable { !noPacket.get() }
+    private val noStopServerSide = BoolValue("ServerSideKeepSprint", false).displayable { !noPacket.get() }
     val checkServerSide = BoolValue("CheckServerSide", false)
     val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false).displayable { checkServerSide.get() }
     private val noPacket = BoolValue("NoPacket", false)
@@ -68,26 +68,26 @@ class Sprint : Module() {
                 when (allDirectionsBypassValue.get().lowercase()) {
                     "rotate" -> RotationUtils.setTargetRotation(Rotation(MovementUtils.movingYaw, mc.thePlayer.rotationPitch), 10)
                     "rotate2" -> {
-                        var movingForward = mc.thePlayer.moveForward > 0.0F
-                        var movingBackward = mc.thePlayer.moveForward < 0.0F
-                        var movingRight = mc.thePlayer.moveStrafing > 0.0F
-                        var movingLeft = mc.thePlayer.moveStrafing < 0.0F
+                        val movingForward = mc.thePlayer.moveForward > 0.0F
+                        val movingBackward = mc.thePlayer.moveForward < 0.0F
+                        val movingRight = mc.thePlayer.moveStrafing > 0.0F
+                        val movingLeft = mc.thePlayer.moveStrafing < 0.0F
 
-                        var MovingSideways = movingLeft || movingRight
-                        var MovingStraight = movingForward || movingBackward
+                        val movingSideways = movingLeft || movingRight
+                        val movingStraight = movingForward || movingBackward
                         var direction = mc.thePlayer.rotationYaw
 
-                        if(movingForward && !MovingSideways) {
-
-                        } else if(movingBackward && !MovingSideways) {
+                        if(movingForward && !movingSideways) {
+                            //
+                        } else if(movingBackward && !movingSideways) {
                             direction += 180.0f
                         } else if(movingForward && movingLeft) {
                             direction += 45.0f
                         } else if(movingForward) {
                             direction -= 45.0f
-                        } else if(!MovingStraight && movingLeft) {
+                        } else if(!movingStraight && movingLeft) {
                             direction += 90.0f
-                        } else if(!MovingStraight && movingRight) {
+                        } else if(!movingStraight && movingRight) {
                             direction -= 90.0f
                         } else if(movingBackward && movingRight) {
                             direction -= 135.0f

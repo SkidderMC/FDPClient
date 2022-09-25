@@ -135,14 +135,26 @@ class NoSlow : Module() {
             }
             when (modeValue.get().lowercase()) {
                 "liquidbounce" -> {
-                    sendPacket(event, true, true, false, 0, false)
+                    sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
                 }
 
                 "aac" -> {
                     if (mc.thePlayer.ticksExisted % 3 == 0) {
-                        sendPacket(event, true, false, false, 0, false)
+                        sendPacket(event,
+                            sendC07 = true,
+                            sendC08 = false,
+                            delay = false,
+                            delayValue = 0,
+                            onGround = false
+                        )
                     } else if (mc.thePlayer.ticksExisted % 3 == 1) {
-                        sendPacket(event, false, true, false, 0, false)
+                        sendPacket(event,
+                            sendC07 = false,
+                            sendC08 = true,
+                            delay = false,
+                            delayValue = 0,
+                            onGround = false
+                        )
                     }
                 }
                 
@@ -151,11 +163,17 @@ class NoSlow : Module() {
                 }
 
                 "custom" -> {
-                    sendPacket(event, true, true, true, customDelayValue.get().toLong(), customOnGround.get())
+                    sendPacket(event,
+                        sendC07 = true,
+                        sendC08 = true,
+                        delay = true,
+                        delayValue = customDelayValue.get().toLong(),
+                        onGround = customOnGround.get()
+                    )
                 }
 
                 "ncp" -> {
-                    sendPacket(event, true, true, false, 0, false)
+                    sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
                 }
 
                 "watchdog2" -> {
@@ -168,9 +186,16 @@ class NoSlow : Module() {
 
                 "watchdog" -> {
                     if (mc.thePlayer.ticksExisted % 2 == 0) {
-                        sendPacket(event, true, false, true, 50, true)
+                        sendPacket(event, true, sendC08 = false, delay = true, delayValue = 50, onGround = true)
                     } else {
-                        sendPacket(event, false, true, false, 0, true, true)
+                        sendPacket(event,
+                            sendC07 = false,
+                            sendC08 = true,
+                            delay = false,
+                            delayValue = 0,
+                            onGround = true,
+                            watchDog = true
+                        )
                     }
                 }
             }

@@ -13,7 +13,7 @@ import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 
-class Verus4Fly : FlyMode("Verus4") {
+class VerusJump2Fly : FlyMode("VerusJump2") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 3f)
     private val boostLength = IntegerValue("${valuePrefix}BoostTime", 500, 300, 1000)
     private val moveBeforeDamage = BoolValue("${valuePrefix}MoveBeforeDamage", true)

@@ -107,7 +107,7 @@ class HackerDetector : Module() {
     }
 
     private fun checkPlayer(player: EntityPlayer) {
-        if (player.equals(mc.thePlayer) || EntityUtils.isFriend(player)) return
+        if (player == mc.thePlayer || EntityUtils.isFriend(player)) return
         if (hackerDataMap[player] == null) hackerDataMap[player] = HackerData(player)
         val data = hackerDataMap[player] ?: return
         data.update()
@@ -337,10 +337,10 @@ class HackerData(val player: EntityPlayer) {
     var motionXZ = 0.0
 
     // Previous motion of the movement
-    var lastMotionX = 0.0
+    private var lastMotionX = 0.0
     var lastMotionY = 0.0
-    var lastMotionZ = 0.0
-    var lastMotionXZ = 0.0
+    private var lastMotionZ = 0.0
+    private var lastMotionXZ = 0.0
 
     // combat check
     var aps = 0

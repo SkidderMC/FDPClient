@@ -9,28 +9,24 @@ import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithCustomRotation
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockAir
-import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
-import net.minecraft.item.ItemStack
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import java.util.*
 
 
 /**
- * by @DinoFengz xd | skid = timeout
+ * by @DinoFengz xd
  */
 
-class BlocksMCFly : FlyMode("BlocksMC") {
+class NCPSlimeFly : FlyMode("NCPSlime") {
     enum class Stage {
         WAITING,
         FLYING,
