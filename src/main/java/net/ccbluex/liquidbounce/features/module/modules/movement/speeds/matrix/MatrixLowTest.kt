@@ -12,8 +12,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 //Hopefully this shit will work(my first thing i've made)
 
 class MatrixLowTest : SpeedMode("MatrixLowTest") {
-    private var ticks = 0
-    
     private val groundStrafe = BoolValue("${valuePrefix}GroundStrafe", false)
 
     override fun onUpdate() {

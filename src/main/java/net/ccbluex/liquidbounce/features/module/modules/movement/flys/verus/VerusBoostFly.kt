@@ -13,7 +13,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.AxisAlignedBB
 
-class VerusFly : FlyMode("Verus") {
+class VerusBoostFly : FlyMode("VerusBoost") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 3f)
 
     private var flyable = false

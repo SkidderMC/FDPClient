@@ -9,7 +9,7 @@ import net.minecraft.block.BlockAir
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.util.AxisAlignedBB
 
-class Verus3Fly : FlyMode("Verus3") {
+class VerusJumpFly : FlyMode("VerusJump") {
 
     private val airStrafeValue = BoolValue("${valuePrefix}AirStrafe", true)
 

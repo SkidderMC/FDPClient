@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.server.S12PacketEntityVelocity
+import kotlin.math.abs
 
 class Matrix670 : SpeedMode("Matrix6.7.0") {
     private var noVelocityY = 0
@@ -30,7 +31,7 @@ class Matrix670 : SpeedMode("Matrix6.7.0") {
                 MovementUtils.strafe(0.2177f)
             }
         }
-        if (Math.abs(mc.thePlayer.movementInput.moveStrafe) < 0.1) {
+        if (abs(mc.thePlayer.movementInput.moveStrafe) < 0.1) {
             mc.thePlayer.jumpMovementFactor = 0.026f
         }else{
             mc.thePlayer.jumpMovementFactor = 0.0247f
@@ -38,8 +39,8 @@ class Matrix670 : SpeedMode("Matrix6.7.0") {
         if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
             mc.gameSettings.keyBindJump.pressed = false
             mc.thePlayer.jump()
-            mc.thePlayer.motionY = 0.41050001145141919810
-            if (Math.abs(mc.thePlayer.movementInput.moveStrafe) < 0.1) {
+            mc.thePlayer.motionY = 0.4105000114514192
+            if (abs(mc.thePlayer.movementInput.moveStrafe) < 0.1) {
                 MovementUtils.strafe()
             }
         }

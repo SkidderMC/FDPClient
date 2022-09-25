@@ -12,7 +12,7 @@ class VerusYPort : SpeedMode("VerusYPort") {
 		if (MovementUtils.isMoving()) {
 			mc.gameSettings.keyBindJump.pressed = false
 			if (mc.thePlayer.onGround) {
-				mc.thePlayer.jump() // sproof jump
+				mc.thePlayer.jump()
 				mc.thePlayer.motionY = 0.0
 				MovementUtils.strafe(speedValue.get())
 				event.y = 0.41999998688698

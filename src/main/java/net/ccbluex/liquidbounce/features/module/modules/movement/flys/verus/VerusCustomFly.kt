@@ -12,7 +12,7 @@ import net.minecraft.block.BlockAir
 import net.minecraft.stats.StatList
 import net.minecraft.util.AxisAlignedBB
 
-class Verus6Fly : FlyMode("Verus6") {
+class VerusCustomFly : FlyMode("VerusCustom") {
 
     private val airSpeedValue = FloatValue("${valuePrefix}AirSpeed", 0.5f, 0f, 1f)
     private val groundSpeedValue = FloatValue("${valuePrefix}GroundSpeed", 0.42f, 0f, 1f)

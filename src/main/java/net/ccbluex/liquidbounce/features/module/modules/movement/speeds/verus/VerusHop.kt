@@ -46,8 +46,8 @@ class VerusHop : SpeedMode("VerusHop") {
                         }
                      } else if (modeValue.equals("VerusHard")) {
                          mc.thePlayer.jump()
-                         if(mc.thePlayer.isSprinting()) {
-                            MovementUtils.strafe(MovementUtils.getSpeed().toFloat() + 0.2F)
+                         if(mc.thePlayer.isSprinting) {
+                            MovementUtils.strafe(MovementUtils.getSpeed() + 0.2F)
                          }
                      } else if (modeValue.equals("Bhop")) {
                           MovementUtils.strafe(0.35f)

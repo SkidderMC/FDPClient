@@ -11,8 +11,6 @@ import net.minecraft.client.settings.GameSettings
 import net.ccbluex.liquidbounce.value.BoolValue
 
 class MatrixHop2 : SpeedMode("MatrixHop2") {
-    private var ticks = 0
-    
     private val groundStrafe = BoolValue("${valuePrefix}GroundStrafe", false)
 
     override fun onUpdate() {

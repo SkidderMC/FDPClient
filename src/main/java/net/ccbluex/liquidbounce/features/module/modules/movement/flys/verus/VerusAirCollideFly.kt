@@ -9,7 +9,7 @@ import net.minecraft.block.BlockAir
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.util.AxisAlignedBB
 
-class Verus5Fly : FlyMode("Verus5") {
+class VerusAirCollideFly : FlyMode("VerusAirCollide") {
     private var ticks = 0
 
     override fun onEnable() {
