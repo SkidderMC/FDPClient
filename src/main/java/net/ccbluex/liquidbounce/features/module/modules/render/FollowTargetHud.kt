@@ -33,6 +33,7 @@ class FollowTargetHud : Module() {
     private val zoomTicks = IntegerValue("ZoomInTicks", 4, 2, 15).displayable {zoomIn.get()}
     private val modeValue = ListValue("Mode", arrayOf("Juul", "Jello", "Material", "Material2", "Arris", "FDP"), "Juul")
     private val fontValue = FontValue("Font", Fonts.font40)
+    private val materialShadow = BoolValue("MaterialShadow", false).displayable {modeValue.equals("Material") || modeValue.equals("Material2")}
     private val fdpVertical = BoolValue("FDPVertical", false).displayable {modeValue.equals("FDP")}
     private val fdpText = BoolValue("FDPDrawText", true).displayable {modeValue.equals("FDP") && !fdpVertical.get()}
     private val fdpRed = BoolValue("FDPRed", false).displayable {modeValue.equals("FDP")}
@@ -43,6 +44,7 @@ class FollowTargetHud : Module() {
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.equals("Jello") }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
+    private val staticScale = BoolValue("StaticScale", false)
     private val translateY = FloatValue("TanslateY", 0.55F,-2F,2F)
     private val translateX = FloatValue("TranslateX", 0F, -2F, 2F)
     private var xChange = translateX.get() * 20
@@ -158,9 +160,11 @@ class FollowTargetHud : Module() {
         // Scale
         var distance = mc.thePlayer.getDistanceToEntity(entity) / 4F
 
-        if (distance < 1F) {
+        if (distance < 1F)
             distance = 1F
-        }
+            
+        if (staticScale.get()) 
+            distance = 150F
 
         var scale = (distance / 150F) * scaleValue.get()
         if (zoomIn.get()) {
@@ -210,7 +214,12 @@ class FollowTargetHud : Module() {
                 glScalef(-scale * 2, -scale * 2, scale * 2)
                 
                 // render bg
-                drawRoundedCornerRect(-40f + xChange, 0f, 40f + xChange, 29f, 5f, Color(72, 72, 72, 250).rgb)
+                if (materialShadow.get()) {
+                    drawShadow(-40f + xChange, 0f, 40f + xChange, 29f)
+                    drawRect(-40f + xChange, 0f, 40f + xChange, 29f, Color(72, 72, 72, 250).rgb)
+                else {
+                    drawRoundedCornerRect(-40f + xChange, 0f, 40f + xChange, 29f, 5f, Color(72, 72, 72, 250).rgb)
+                }
                 
                 // draw health bars
                 drawRoundedCornerRect(-35f + xChange, 7f, -35f + (healthPercent * 70) + xChange, 12f, 2f, Color(10, 250, 10, 255).rgb)
@@ -222,8 +231,16 @@ class FollowTargetHud : Module() {
                 glScalef(-scale * 2, -scale * 2, scale * 2)
                 
                 // render bg
-                drawRoundedCornerRect(-40f + xChange, 0f, 40f + xChange, 15f, 5f, Color(72, 72, 72, 250).rgb)
-                drawRoundedCornerRect(-40f + xChange, 20f, 40f + xChange, 35f, 5f, Color(72, 72, 72, 250).rgb)
+                if (materialShadow.get()) {
+                    drawShadow(-40f + xChange, 0f, 40f + xChange, 15f)
+                    drawShadow(-40f + xChange, 0f, 20f + xChange, 35f)
+
+                    drawRect(-40f + xChange, 0f, 40f + xChange, 15f, Color(72, 72, 72, 250).rgb)
+                    drawRect(-40f + xChange, 20f, 40f + xChange, 35f, Color(72, 72, 72, 250).rgb)
+                else {
+                    drawRoundedCornerRect(-40f + xChange, 0f, 40f + xChange, 15f, 5f, Color(72, 72, 72, 250).rgb)
+                    drawRoundedCornerRect(-40f + xChange, 20f, 40f + xChange, 35f, 5f, Color(72, 72, 72, 250).rgb)
+                }
                 
                 // draw health bars
                 drawRoundedCornerRect(-35f + xChange, 5f, -35f + (healthPercent * 70) + xChange, 10f, 2f, Color(10, 250, 10, 255).rgb)
