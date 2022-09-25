@@ -16,10 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
-import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.RaycastUtils
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
@@ -42,6 +39,7 @@ import net.minecraft.item.ItemPickaxe
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
@@ -90,7 +88,6 @@ class KillAura : Module() {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
-
         }
     }
     private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 1.5f, 0f, 8f) {
@@ -129,7 +126,7 @@ class KillAura : Module() {
 
     // vanilla will send block packet at pre
     private val blockTimingValue =
-        ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") }
+            ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") }
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
@@ -185,6 +182,8 @@ class KillAura : Module() {
     private val rotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable { !rotationModeValue.equals("None") }
     private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
     private val keepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
+    private val backtraceValue = BoolValue("Backtrace", false)
+    private val backtraceTickValue = IntegerValue("BacktraceTick", 2, 1, 10).displayable { backtraceValue.get() }
     private val hitableValue = BoolValue("AlwaysHitable", true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
@@ -263,6 +262,17 @@ class KillAura : Module() {
 
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
+
+    private var predictX = 1.0f
+    private var predictY = 1.0f
+    private var predictZ = 1.0f
+
+    private val getAABB: ((Entity) -> AxisAlignedBB) = {
+        var aabb = it.entityBoundingBox
+        aabb = if (backtraceValue.get()) LocationCache.getPreviousAABB(it.entityId, backtraceTickValue.get(), aabb) else aabb
+        aabb = if (predictValue.get()) aabb.offset((it.posX - it.lastTickPosX) * predictX, (it.posY - it.lastTickPosY) * predictY, (it.posZ - it.lastTickPosZ) * predictZ) else aabb
+        aabb
+    }
 
     /**
      * Enable kill aura module
@@ -574,7 +584,7 @@ class KillAura : Module() {
                 }
                 "block" -> {
                     val bb = it.entityBoundingBox
-                    it.entityBoundingBox = bb.expand(0.2, 0.2, 0.2)
+                    it.entityBoundingBox = getAABB(it).expand(0.2, 0.2, 0.2)
                     RenderUtils.drawEntityBox(
                         it,
                         if (it.hurtTime <= 0) if (it == target) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170),
@@ -1077,24 +1087,14 @@ class KillAura : Module() {
             return true
         }
 
-        var boundingBox = entity.entityBoundingBox
-
-        if (predictValue.get() && rotationModeValue.get() != "Test") {
-            boundingBox = boundingBox.offset(
-                (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(
-                    minPredictSizeValue.get(),
-                    maxPredictSizeValue.get()
-                ),
-                (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(
-                    minPredictSizeValue.get(),
-                    maxPredictSizeValue.get()
-                ),
-                (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(
-                    minPredictSizeValue.get(),
-                    maxPredictSizeValue.get()
-                )
-            )
+        if (predictValue.get()) {
+            predictX = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
+            predictY = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
+            predictZ = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
         }
+
+        val boundingBox = if (rotationModeValue.get() == "Test") entity.entityBoundingBox else getAABB(entity)
+
         val rModes = when (rotationModeValue.get()) {
             "LiquidBounce", "SmoothLiquid", "Derp" -> "LiquidBounce"
             "ForceCenter", "SmoothCenter", "OldMatrix", "Spin", "FastSpin" -> "CenterLine"
@@ -1104,16 +1104,16 @@ class KillAura : Module() {
         }
 
         val (_, directRotation) =
-            RotationUtils.calculateCenter(
-                rModes,
-                randomCenterModeValue.get(),
-                (randomCenRangeValue.get()).toDouble(),
-                boundingBox,
-                predictValue.get() && rotationModeValue.get() != "Test",
-                mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
-            ) ?: return false
+                RotationUtils.calculateCenter(
+                        rModes,
+                        randomCenterModeValue.get(),
+                        (randomCenRangeValue.get()).toDouble(),
+                        boundingBox,
+                        predictValue.get() && rotationModeValue.get() != "Test",
+                        mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
+                ) ?: return false
 
-        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = (89.9).toFloat()
+        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = 89.9f
 
         var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
         if (diffAngle < 0) diffAngle = -diffAngle
@@ -1126,9 +1126,7 @@ class KillAura : Module() {
             "Quad" -> (diffAngle / 360.0).pow(2.0) * maxTurnSpeedValue.get() + (1 - (diffAngle / 360.0).pow(2.0)) * minTurnSpeedValue.get()
             "Sine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeedValue.get() + (cos(diffAngle / 360 * Math.PI) * 0.5 + 0.5) * minTurnSpeedValue.get()
             //"QuadSine" -> Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0)) * minTurnSpeedValue.get()
-            "QuadSine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0) * maxTurnSpeedValue.get() + (1 - (-cos(
-                diffAngle / 180 * Math.PI
-            ) * 0.5 + 0.5).pow(2.0)) * minTurnSpeedValue.get()
+            "QuadSine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0) * maxTurnSpeedValue.get() + (1 - (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0)) * minTurnSpeedValue.get()
             else -> 360.0
         }
 

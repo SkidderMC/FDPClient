@@ -18,10 +18,10 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
+import net.minecraft.world.World
+import net.minecraft.world.chunk.Chunk
 import javax.vecmath.Vector3d
-import kotlin.math.abs
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * Allows to get the distance between the current entity and [entity] from the nearest corner of the bounding box
@@ -111,4 +111,22 @@ fun Entity.renderDistanceTo(entity: Entity): Double {
     val z = fromPos.z - toPos.z
 
     return sqrt(x * x + y * y + z * z)
+}
+
+fun World.getEntitiesInRadius(entity: Entity, radius: Double = 16.0): List<Entity> {
+    val box = entity.entityBoundingBox.expand(radius, radius, radius)
+    val chunkMinX = floor(box.minX * 0.0625).toInt()
+    val chunkMaxX = ceil(box.maxX * 0.0625).toInt()
+    val chunkMinZ = floor(box.minZ * 0.0625).toInt()
+    val chunkMaxZ = ceil(box.maxZ * 0.0625).toInt()
+
+    val entities = mutableListOf<Entity>()
+    (chunkMinX..chunkMaxX).forEach { x ->
+        (chunkMinZ..chunkMaxZ)
+                .asSequence()
+                .map { z -> getChunkFromChunkCoords(x, z) }
+                .filter(Chunk::isLoaded)
+                .forEach { it.getEntitiesWithinAABBForEntity(entity, box, entities, null) }
+    }
+    return entities
 }
