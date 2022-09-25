@@ -141,6 +141,7 @@ object LiquidBounce {
         eventManager.registerListener(ServerSpoof)
         eventManager.registerListener(SessionUtils())
         eventManager.registerListener(StatisticsUtils())
+        eventManager.registerListener(LocationCache())
 
         // Create command manager
         commandManager = CommandManager()
