@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.MainMenuButton;
 //import net.ccbluex.liquidbounce.utils.render.BlurUtils;
-import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -70,8 +69,7 @@ public class ModernGuiMainMenu extends GuiScreen {
             FontLoaders.F18.drawCenteredString("Made by SkidderMC with love",(float)this.width / 2.0F,(float)this.height / 2.0F + 70.0F,new Color(255,255,255,255).getRGB());
             //BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 30f);
             FontLoaders.F40.drawCenteredString("FDPClient",(float)this.width / 2.0F,(float)this.height / 2.0F - 70.0F,new Color(255,255,255).getRGB());
-            //BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 10f);
-            ParticleUtils.drawParticles(mouseX, mouseY);
+            //BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 
             RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F - 100.0F, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F + 100.0F, 10, new Color(0, 0, 0, 100).getRGB());
             //RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 20.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 1040187392);
             float startX = (float) this.width / 2.0F - 64.5F * ((float) this.butt.size() / 2.0F);
