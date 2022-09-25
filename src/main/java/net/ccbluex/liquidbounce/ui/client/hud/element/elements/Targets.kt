@@ -44,7 +44,7 @@ import kotlin.math.abs
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
     val modeValue = ListValue("Mode", arrayOf("FDP", "Bar", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
-    private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Todu"), "Todu")
+    private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
     private val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
@@ -361,7 +361,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     "original" -> drawRise(prevTarget!!)
                     "new1" -> drawRiseNew(prevTarget!!)
                     "new2" -> drawRiseNewNew(prevTarget!!)
-                    "todu" -> drawRiseLatest(prevTarget!!)
+                    "rise6" -> drawRiseLatest(prevTarget!!)
                 }
             }
 
@@ -1783,7 +1783,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     "original" -> Border(0F, 0F, 150F, 50F)
                     "new1" -> Border(0F, 0F, 150F, 50F)
                     "new2" -> Border(0F, 0F, 150F, 45F)
-                    "todu" -> Border(0F, 0F, 150F, 50F)
+                    "rise6" -> Border(0F, 0F, 150F, 50F)
                     else -> null
                 }
             }
