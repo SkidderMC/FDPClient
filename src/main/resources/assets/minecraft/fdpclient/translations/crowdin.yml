@@ -1,3 +1,0 @@
-files:
-  - source: source.properties
-    translation: '%original_file_name%'
