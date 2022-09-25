@@ -44,7 +44,7 @@ import kotlin.math.abs
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
     val modeValue = ListValue("Mode", arrayOf("FDP", "Bar", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
-    private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6")
+    private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Todu"), "Todu")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
     private val chillRoundValue = BoolValue("Chill-RoundedBar", true).displayable { modeValue.get().equals("chill", true) }
@@ -361,7 +361,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     "original" -> drawRise(prevTarget!!)
                     "new1" -> drawRiseNew(prevTarget!!)
                     "new2" -> drawRiseNewNew(prevTarget!!)
-                    "rise6" -> drawRiseLatest(prevTarget!!)
+                    "todu" -> drawRiseLatest(prevTarget!!)
                 }
             }
 
@@ -694,7 +694,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glDisable(2848)
         GL11.glShadeModel(7424)
         GL11.glColor4f(1f, 1f, 1f, 1f)
-        font.drawString(decimalFormat.format(easingHP), stopPos + 5, 38 - font.FONT_HEIGHT / 2, Color.WHITE.rgb)
+        font.drawString(decimalFormat.format(easingHP), stopPos + 5, 36 - font.FONT_HEIGHT / 2, Color.WHITE.rgb)
 
 
         if(target.hurtTime >= 9) {
@@ -1783,7 +1783,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     "original" -> Border(0F, 0F, 150F, 50F)
                     "new1" -> Border(0F, 0F, 150F, 50F)
                     "new2" -> Border(0F, 0F, 150F, 45F)
-                    "rise6" -> Border(0F, 0F, 150F, 50F)
+                    "todu" -> Border(0F, 0F, 150F, 50F)
                     else -> null
                 }
             }
