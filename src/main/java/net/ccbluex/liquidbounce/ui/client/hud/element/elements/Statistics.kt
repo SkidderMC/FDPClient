@@ -32,10 +32,15 @@ class Statistics(
     private val rectAlpha = IntegerValue("RectAlpha", 150, 0, 255)
     private val rectShadow = BoolValue("RectShadow", false)
     
-    private val textR = IntegerValue("Text-R", 0, 0, 255)
-    private val textG = IntegerValue("Text-G", 0, 0, 255)
-    private val textB = IntegerValue("Text-B", 0, 0, 255)
-    private val textAlpha = IntegerValue("TextAlpha", 200, 0, 255)
+    private val textR = IntegerValue("Label-R", 0, 0, 255)
+    private val textG = IntegerValue("Label-G", 0, 0, 255)
+    private val textB = IntegerValue("Label-B", 0, 0, 255)
+    private val textAlpha = IntegerValue("LabelAlpha", 200, 0, 255)
+    
+    private val infoR = IntegerValue("Info-R", 0, 0, 255)
+    private val infoG = IntegerValue("Info-G", 0, 0, 255)
+    private val infoB = IntegerValue("Info-B", 0, 0, 255)
+    private val infoAlpha = IntegerValue("InfoAlpha", 180, 0, 255)
     
     
     override fun drawElement(partialTicks: Float): Border {
@@ -44,12 +49,13 @@ class Statistics(
         
         if (rectShadow.get()) {
             RenderUtils.drawShadow(0f, 0f, 140f, height)
+            RenderUtils.drawShadow(-1f, -1f, 141f, height + 1f)
             RenderUtils.drawRect(0f, 0f, 140f, height, Color(rectR.get(), rectG.get(), rectB.get(), rectAlpha.get()).rgb)
         } else {
-            RenderUtils.drawRoundedCornerRect(0f, 0f, 140f, height, 4f, Color(rectR.get(), rectG.get(), rectB.get(), rectAlpha.get()).rgb)
+            RenderUtils.drawRoundedCornerRect(0f, 0f, 140f, height, 5f, Color(rectR.get(), rectG.get(), rectB.get(), rectAlpha.get()).rgb)
         }
 
-        FontLoaders.F22.drawCenteredString("Statistics", (140f / 2f).toDouble(), 5.0, Color(255,255,255,textAlpha.get()).rgb)
+        FontLoaders.F22.drawCenteredString("Statistics", (140f / 2f).toDouble(), 5.0, Color(textR.get(), textG.get(), textB.get(),textAlpha.get()).rgb)
         RenderUtils.drawLine(
             0f.toDouble(),
             FontLoaders.F22.getStringHeight("Statistics") + 7.0f.toDouble(),
@@ -62,22 +68,22 @@ class Statistics(
         GL11.glTranslated(0.0, FontLoaders.F22.getStringHeight("Statistics") + 14.0f.toDouble(), 0.0)
 
         // Player name
-        FontLoaders.C16.drawString("Player Name", 5.0F, 0.0F, Color(255,255,255,textAlpha.get()).rgb)
-        FontLoaders.C16.drawString(mc.thePlayer.name, 135F - FontLoaders.C16.getStringWidth(mc.thePlayer.name), 0.0f, Color(255,255,255,textAlpha.get()).rgb)
+        FontLoaders.C16.drawString("Player Name", 5.0F, 0.0F, Color(textR.get(), textG.get(), textB.get(),textAlpha.get()).rgb)
+        FontLoaders.C16.drawString(mc.thePlayer.name, 135F - FontLoaders.C16.getStringWidth(mc.thePlayer.name), 0.0f, Color(infoR.get(), infoG.get(), infoB.get(),infoAlpha.get()).rgb)
 
         // Play time
-        FontLoaders.C16.drawString("Play Time", 5.0F, 10.0F, Color(255,255,255,textAlpha.get()).rgb)
-        if (!mc.isSingleplayer) FontLoaders.C16.drawString(SessionUtils.getFormatSessionTime(), 135F - FontLoaders.C16.getStringWidth(SessionUtils.getFormatSessionTime()), 10.0f, Color(255,255,255,180).rgb)
-        else FontLoaders.C16.drawString("Singleplayer", 135F - FontLoaders.C16.getStringWidth("Singleplayer"), 10.0f, Color(255,255,255,180).rgb)
+        FontLoaders.C16.drawString("Play Time", 5.0F, 10.0F, Color(textR.get(), textG.get(), textB.get(),textAlpha.get()).rgb)
+        if (!mc.isSingleplayer) FontLoaders.C16.drawString(SessionUtils.getFormatSessionTime(), 135F - FontLoaders.C16.getStringWidth(SessionUtils.getFormatSessionTime()), 10.0f, Color(infoR.get(), infoG.get(), infoB.get(),infoAlpha.get()).rgb)
+        else FontLoaders.C16.drawString("Singleplayer", 135F - FontLoaders.C16.getStringWidth("Singleplayer"), 10.0f, Color(textR.get(), textG.get(), textB.get(),textAlpha).rgb)
 
 
         // Kills
-        FontLoaders.C16.drawString("Kills", 5.0F, 20.0F, Color(255,255,255,textAlpha.get()).rgb)
-        FontLoaders.C16.drawString(StatisticsUtils.getKills().toString(), 135F - FontLoaders.C16.getStringWidth(StatisticsUtils.getKills().toString()), 20.0f, Color(255,255,255,180).rgb)
+        FontLoaders.C16.drawString("Kills", 5.0F, 20.0F, Color(textR.get(), textG.get(), textB.get(),textAlpha.get()).rgb)
+        FontLoaders.C16.drawString(StatisticsUtils.getKills().toString(), 135F - FontLoaders.C16.getStringWidth(StatisticsUtils.getKills().toString()), 20.0f, Color(infoR.get(), infoG.get(), infoB.get(),infoAlpha.get()).rgb)
 
         // Deaths
-        FontLoaders.C16.drawString("Deaths", 5.0F, 30.0F, Color(255,255,255,textAlpha.get()).rgb)
-        FontLoaders.C16.drawString(StatisticsUtils.getDeaths().toString(), 135F - FontLoaders.C16.getStringWidth(StatisticsUtils.getDeaths().toString()), 30.0f, Color(255,255,255,180).rgb)
+        FontLoaders.C16.drawString("Deaths", 5.0F, 30.0F, Color(textR.get(), textG.get(), textB.get(),textAlpha.get()).rgb)
+        FontLoaders.C16.drawString(StatisticsUtils.getDeaths().toString(), 135F - FontLoaders.C16.getStringWidth(StatisticsUtils.getDeaths().toString()), 30.0f, Color(infoR.get(), infoG.get(), infoB.get(),infoAlpha.get()).rgb)
         GL11.glPopMatrix()
 
         return Border(0f, 0f, 140f, height)
