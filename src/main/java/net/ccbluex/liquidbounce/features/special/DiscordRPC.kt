@@ -16,7 +16,7 @@ object DiscordRPC {
     private val ipcClient = IPCClient(1021236965108109333)
     private val timestamp = OffsetDateTime.now()
     private var running = false
-    private var fdpwebsite = "fdpinfo.github.io - "
+    private var fdpwebsite = "dizwi#0809"
 
 
     fun run() {
@@ -51,8 +51,8 @@ object DiscordRPC {
         val builder = RichPresence.Builder()
         val discordRPCModule = LiquidBounce.moduleManager[DiscordRPCModule::class.java]!!
         builder.setStartTimestamp(timestamp)
-        builder.setLargeImage(if (discordRPCModule.animated.get()){"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.gif"} else {"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.png"}) // trollage?
-        builder.setDetails(fdpwebsite + LiquidBounce.CLIENT_VERSION)
+        builder.setLargeImage(if (discordRPCModule.animated.get()){"https://i.ibb.co/ZY2nKgB/dizwi.gif"} else {"https://i.ibb.co/1K4xrLS/icon.jpg"}) // ganyu sexy ass fuck
+        builder.setDetails(fdpwebsite )
         ServerUtils.getRemoteIp().also {
             builder.setState(if(it.equals("idling", true)) "Idling" else "" + if(discordRPCModule.drpcValue.get().equals("ShowServer")){"Server: $it"} else if(discordRPCModule.drpcValue.get().equals("ShowName")){ "Username: ${if(net.ccbluex.liquidbounce.utils.mc.thePlayer != null) net.ccbluex.liquidbounce.utils.mc.thePlayer.name else "null"}" } else if(discordRPCModule.drpcValue.get().equals("ShowHealth")){ "health: " + net.ccbluex.liquidbounce.utils.mc.thePlayer.health } else { " enjoying the breeze <3" })
         }
