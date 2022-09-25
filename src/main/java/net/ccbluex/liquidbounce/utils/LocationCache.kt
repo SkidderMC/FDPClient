@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import java.lang.ref.SoftReference
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Entity AABB cacher for backtracing entities
@@ -20,25 +21,16 @@ class LocationCache : MinecraftInstance(), Listenable {
             val theWorld = mc.theWorld ?: return
             val thePlayer = mc.thePlayer ?: return
 
-            while (playerLocationList.size >= listSize - 1) playerLocationList.removeAt(0)
-
             playerLocationList.add(Location(Vec3(thePlayer.posX, thePlayer.entityBoundingBox.minY, thePlayer.posZ), RotationUtils.serverRotation))
 
-            val entities = theWorld.getEntitiesInRadius(thePlayer, 64.0)
+            val entities = theWorld.getEntitiesInRadius(thePlayer, DISCOVER_RANGE)
 
             // Manual garbage collect by distance check
             aabbList.keys.filterNot(entities.map(Entity::getEntityId)::contains).forEach(aabbList::remove)
 
+            // Add entity locations to ring buffer
             for (entity in entities) {
-                val entityId = entity.entityId
-
-                val list = aabbList[entityId]?.get() ?: mutableListOf()
-
-                while (list.size >= listSize - 1) list.removeAt(0)
-
-                list.add(entity.entityBoundingBox)
-
-                aabbList[entityId] = SoftReference(list)
+                aabbList.getOrPut(entity.entityId) { SoftReference(RingBuffer(CACHE_SIZE)) }.get()?.add(entity.entityBoundingBox)
             }
         }
     }
@@ -46,28 +38,56 @@ class LocationCache : MinecraftInstance(), Listenable {
     override fun handleEvents(): Boolean = true
 
     companion object {
-        private const val listSize = 50
+        private const val CACHE_SIZE = 50
+        private const val DISCOVER_RANGE = 64.0
 
-        // Automated garbage collect by SoftReference
-        private val aabbList = HashMap<Int, SoftReference<MutableList<AxisAlignedBB>>>(listSize)
-        private val playerLocationList = ArrayList<Location>(listSize)
+        private val aabbList = HashMap<Int, SoftReference<RingBuffer<AxisAlignedBB>>>(CACHE_SIZE)
+        private val playerLocationList = RingBuffer<Location>(CACHE_SIZE)
 
-        fun getPreviousAABB(entityId: Int, n: Int, default: AxisAlignedBB): AxisAlignedBB {
+        fun getPreviousAABB(entityId: Int, ticksBefore: Int, default: AxisAlignedBB): AxisAlignedBB {
             if (aabbList.isEmpty()) return default
-
-            return aabbList[entityId]?.get()?.run {
-                val indexLimit = size - 1
-                get((indexLimit - n).coerceIn(0, indexLimit))
-            } ?: default
+            return aabbList[entityId]?.get()?.run { get(size - ticksBefore - 1) } ?: default
         }
 
-        fun getPreviousPlayerLocation(n: Int, default: Location): Location {
-            if (playerLocationList.isEmpty()) return default
+        fun getPreviousPlayerLocation(ticksBefore: Int, default: Location): Location = playerLocationList[playerLocationList.size - ticksBefore - 1]
+                ?: default
+    }
+}
 
-            val indexLimit = playerLocationList.size - 1
+/**
+ * A simple ring buffer (circular queue) implementation
+ * Referenced 'https://gist.github.com/ToxicBakery/05d3d98256aaae50bfbde04ae0c62dbd'
+ */
+class RingBuffer<T>(val maxCapacity: Int) : Iterable<T> {
+    private val array: Array<Any?> = Array(maxCapacity) { null }
 
-            return playerLocationList[(indexLimit - n).coerceIn(0, indexLimit)]
-        }
+    var size = 0
+        private set
+
+    private val head
+        get() = if (size == maxCapacity) (tail + 1) % size else 0
+    private var tail = 0
+
+    fun add(element: T) {
+        tail = (tail + 1) % maxCapacity
+        array[tail] = element
+        if (size < maxCapacity) size++
+    }
+
+    operator fun get(index: Int): T? {
+        return when {
+            size == 0 || index >= size || index < 0 -> null // IndexOOB
+            size == maxCapacity -> array[(head + index) % maxCapacity] // Index circulation
+            else -> array[index] // Default
+        } as? T?
+    }
+
+    override fun iterator(): Iterator<T> = object : Iterator<T> {
+        private val index: AtomicInteger = AtomicInteger(0)
+
+        override fun hasNext(): Boolean = index.get() < size
+
+        override fun next(): T = get(index.getAndIncrement()) ?: throw NoSuchElementException()
     }
 }
 
