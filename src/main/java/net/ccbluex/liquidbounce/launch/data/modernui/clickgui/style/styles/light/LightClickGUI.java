@@ -529,7 +529,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             Fonts.font40.drawString("Misc",     startX + 30 + round(categoryAnimation / 5), startY + 237, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
             Fonts.font40.drawString("Client",   startX + 30 + round(categoryAnimation / 5), startY + 277, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
             
-
+        }
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过
         
