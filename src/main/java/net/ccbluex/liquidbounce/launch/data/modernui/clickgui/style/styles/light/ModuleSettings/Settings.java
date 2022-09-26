@@ -21,20 +21,29 @@ public class Settings extends Setting {
     @Override
     public void drawListValue(boolean previousMouse, int mouseX, int mouseY, float mY, float startX, ListValue listValue) {
         float x = startX + 295;
-        font.drawString(listValue.getName(), startX + 210, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
-        RenderUtils.drawRect(x, mY - 5, x + 80, mY - 4, new Color(0, 100, 255,alphaAnim.getAlpha()).getRGB());
-        RenderUtils.drawRect(x, mY + 10, x + 80, mY + 11, new Color(0, 100, 255,alphaAnim.getAlpha()).getRGB());
-        RenderUtils.drawRect(x + 80, mY - 5, x + 81, mY + 11, new Color(0, 100, 255,alphaAnim.getAlpha()).getRGB());
-        RenderUtils.drawRect(x, mY - 5, x + 1, mY + 10, new Color(0, 100, 255,alphaAnim.getAlpha()).getRGB());
-        font.drawString(listValue.get(),
-                x + 10,
-                mY + 4 - Math.round(font.FONT_HEIGHT / 2) , new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+        int l   = int font.getStringWidth(listValue.getName())
+        font.drawString(listValue.getName(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+        
+        if (listValue.openList) {
+            
+        } else {
+            RenderUtils.drawRoundedRect2(x + 63 - l, mY - 2, x + 82, mY + 12, 2, new Color(0, 0, 0, 30).getRGB());
+            RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
+            font.drawString(listValue.getName(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+            font.drawString("<", x + 75, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+
+        
+        font.drawString(listValue.get(), x + 10, mY + 4 - Math.round(font.FONT_HEIGHT / 2) , new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+        
+        
         font.drawString(listValue.getValues()[listValue.getModeListNumber(listValue.get()) + 1 >= listValue.getValues().length ? 0
                         : listValue.getModeListNumber(listValue.get()) + 1],
                 x + 10,
                 mY + 5 + Math.round(font.FONT_HEIGHT / 2) , new Color(60, 60, 60, 50).getRGB());
         if (this.isHovered(x, mY - 5, x + 80, mY + 11, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !previousMouse) {
+                listValue.openList = !listValue.openList
+                    
                 String current = listValue.get();
                 int next = listValue.getModeListNumber(current) + 1 >= listValue.getValues().length ? 0
                         : listValue.getModeListNumber(current) + 1;
