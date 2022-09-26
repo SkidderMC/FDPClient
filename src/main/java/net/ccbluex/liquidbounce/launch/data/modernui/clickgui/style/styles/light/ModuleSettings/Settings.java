@@ -21,7 +21,7 @@ public class Settings extends Setting {
     @Override
     public void drawListValue(boolean previousMouse, int mouseX, int mouseY, float mY, float startX, ListValue listValue) {
         float x = startX + 295;
-        int l   = int font.getStringWidth(listValue.getName())
+        int l   = font.getStringWidth(listValue.getName());
         font.drawString(listValue.getName(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
         
         if (listValue.openList) {
@@ -31,19 +31,19 @@ public class Settings extends Setting {
             
             font.drawString(listValue.getName(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
             
-            int height = listValue.getValues().length * (font.FONT_HEIGHT + 2)
+            int height = listValue.getValues().length * (font.FONT_HEIGHT + 2);
             
             RenderUtils.drawRoundedRect2(x + 87, mY - 6, x + 152, (int) (mY + height + 4), 2, new Color(0, 0, 0, 30).getRGB());
             RenderUtils.drawRoundedRect2(x + 85, mY - 8, x + 150, (int) (mY + height + 2), 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
             
             for (int i = 0; i < listValue.getValues().length; i++) {
                 font.drawString(listValue.getValues()[i], x + 88, mY - 4 + i * (font.FONT_HEIGHT + 2), new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
-                if (i == listValue.getModeListNumber(listValue.get()))
+                if (i == listValue.getModeListNumber(listValue.get()));
                     RenderUtils.drawRoundedRect2(x + 88, mY - 5 + i * (font.FONT_HEIGHT + 2), x + 150, mY - 3 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(0, 0, 0, 30).getRGB());
                 
                 if (this.isHovered(x + 88, mY - 5 + i * (font.FONT_HEIGHT + 2), x + 150, mY - 3 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), mouseX, mouseY)) {
                     if (Mouse.isButtonDown(0) && !previousMouse) {
-                        listValue.set(listValue.getValues()[i])
+                        listValue.set(listValue.getValues()[i]);
                     }
                 }
             }
@@ -56,16 +56,9 @@ public class Settings extends Setting {
         }
 
         
-        font.drawString(listValue.get(), x + 10, mY + 4 - Math.round(font.FONT_HEIGHT / 2) , new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
-        
-        
-        font.drawString(listValue.getValues()[listValue.getModeListNumber(listValue.get()) + 1 >= listValue.getValues().length ? 0
-                        : listValue.getModeListNumber(listValue.get()) + 1],
-                x + 10,
-                mY + 5 + Math.round(font.FONT_HEIGHT / 2) , new Color(60, 60, 60, 50).getRGB());
         if (this.isHovered(x, mY - 5, x + 80, mY + 11, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !previousMouse) {
-                listValue.openList = !listValue.openList
+                listValue.openList = !listValue.openList;
                     
                 String current = listValue.get();
                 int next = listValue.getModeListNumber(current) + 1 >= listValue.getValues().length ? 0
