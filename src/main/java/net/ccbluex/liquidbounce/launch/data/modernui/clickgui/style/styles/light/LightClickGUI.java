@@ -533,8 +533,6 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             }
         }
         
-        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 7, (int) startX + 35 + categoryAnimation, (int) startY + animationHeight + 13, 3,
-            new Color(29, 143, 237, 250).getRGB());
         
         if (isCategoryHovered(startX + 5, startY + 10, startX + categoryAnimation + 53, startY + 400, mouseX, mouseY)) {
             categoryAnimation += Math.round((50 - categoryAnimation) / 3);
@@ -544,6 +542,9 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
          RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 25, (int) startX + 50 + categoryAnimation, (int) startY + 400, 3,
             new Color(180, 180, 180, 250).getRGB());
+        
+        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 7, (int) startX + 35 + categoryAnimation, (int) startY + animationHeight + 13, 3,
+            new Color(29, 143, 237, 250).getRGB());
         
         
         if (categoryAnimation > 4) {
