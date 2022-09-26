@@ -44,13 +44,13 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private final FontRenderer logoFont = Fonts.font40;
     private boolean rightClickMouse = false;
     private boolean categoryMouse = false;
-    private int animationHeight = 40;
+    private int animationHeight = 0;
     private int categoryAnimation = 0;
     private int slideAnimation = 0;
     private float guiScale = 0;
     private final AnimationHelper alphaAnim = new AnimationHelper();
     private final AnimationHelper valueAnim = new AnimationHelper();
-    private int categoryYpos = 0;
+    private int categoryYpos = 40;
     private InputBox searchBox;
     private boolean firstSetAnimation;
     public LightClickGUI() {
@@ -278,10 +278,10 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     module.getAnimation().animationX += 1F;
                 if (isSettingsButtonHovered(startX + 50, mY - 8, startX + 200, mY + 20, mouseX, mouseY)) {
                     slideAnimation += 3;
-                    if (slideAnimation > 7)
-                        slideAnimation = 7;
-                    defaultFont.drawString(module.getName(), ((int) (startX + 65)) + (int) (Math.round(slideAnimation / 1.5)), (int) (mY + 6), moduleColor);
-                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 36)).getRGB());
+                    if (slideAnimation > 50)
+                        slideAnimation = 50;
+                    defaultFont.drawString(module.getName(), ((int) (startX + 65)) + (int) (Math.round(slideAnimation / 10)), (int) (mY + 6), moduleColor);
+                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 2.5)).getRGB());
                 } else {
                     defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
                 }
@@ -330,10 +330,10 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         module.getAnimation().animationX += 1F;
                     if (isSettingsButtonHovered(startX + 50, mY - 8, startX + 200, mY + 20, mouseX, mouseY)) {
                         slideAnimation += 3;
-                        if (slideAnimation > 7)
-                            slideAnimation = 7;
-                        defaultFont.drawString(module.getName(), ((int) (startX + 65)) + (int) (Math.round(slideAnimation / 1.5)), (int) (mY + 6), moduleColor);
-                        defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 36)).getRGB());
+                        if (slideAnimation > 50)
+                            slideAnimation = 50;
+                        defaultFont.drawString(module.getName(), ((int) (startX + 65)) + (int) (Math.round(slideAnimation / 10)), (int) (mY + 6), moduleColor);
+                        defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 2.5)).getRGB());
                     } else {
                         defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
                     }
@@ -548,14 +548,14 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         
         if (categoryAnimation > 4) {
-            Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 41,  new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Movement", startX + 30 + Math.round(categoryAnimation / 5), startY + 81,  new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 121, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 161, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 201, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 241, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 281, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
-            
+            Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 41,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Movement", startX + 30 + Math.round(categoryAnimation / 5), startY + 81,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 121, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 161, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 201, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 241, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 281, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+          3 
         }
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过
