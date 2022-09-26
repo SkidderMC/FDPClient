@@ -44,7 +44,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private final FontRenderer logoFont = Fonts.font40;
     private boolean rightClickMouse = false;
     private boolean categoryMouse = false;
-    private int animationHeight = 0;
+    private int animationHeight = 40;
     private int categoryAnimation = 0;
     private int slideAnimation = 0;
     private float guiScale = 0;
@@ -176,7 +176,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         // new sexy background
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 3,
-            new Color(230, 230, 230, 140).getRGB());
+            new Color(230, 230, 230, 250).getRGB());
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 25, 3,
             new Color(0, 0, 100, 240).getRGB());
         
@@ -543,18 +543,18 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
          RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 25, (int) startX + 50 + categoryAnimation, (int) startY + 400, 3,
             new Color(180, 180, 180, 250).getRGB());
         
-        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 7, (int) startX + 35 + categoryAnimation, (int) startY + animationHeight + 13, 3,
+        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 6, (int) startX + 35 + categoryAnimation, (int) startY + animationHeight + 14, 3,
             new Color(29, 143, 237, 250).getRGB());
         
         
         if (categoryAnimation > 4) {
-            Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 40,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Movement", startX + 30 + Math.round(categoryAnimation / 5), startY + 80,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 120, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 160, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 200, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 240, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 280, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 41,  new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Movement", startX + 30 + Math.round(categoryAnimation / 5), startY + 81,  new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 121, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 161, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 201, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 241, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 281, new Color(50, 50, 50, Math.round(categoryAnimation * 5)).getRGB());
             
         }
         searchBox.drawTextBox();
