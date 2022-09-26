@@ -41,10 +41,13 @@ public class Settings extends Setting {
             RenderUtils.drawRoundedRect2(x + 85, mY - 8, x + 200, (int) (mY + height + 2), 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
             
             for (int i = 0; i < listValue.getValues().length; i++) {
-                font.drawString(listValue.getValues()[i], x + 88, mY - 4 + i * (font.FONT_HEIGHT + 2), new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+                
                 if (i == listValue.getModeListNumber(listValue.get())) {
-                    RenderUtils.drawRoundedRect2(x + 88, mY - 5 + i * (font.FONT_HEIGHT + 2), x + 150, mY - 3 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(0, 0, 0, 30).getRGB());
+                    RenderUtils.drawRoundedRect2(x + 88, mY - 6 + i * (font.FONT_HEIGHT + 2), x + 150, mY - 2 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(200, 200, 200, 255).getRGB());
                 }
+                
+                font.drawString(listValue.getValues()[i], x + 88, mY - 4 + i * (font.FONT_HEIGHT + 2), new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+
                 
                 if (this.isHovered(x + 88, mY - 5 + i * (font.FONT_HEIGHT + 2), x + 200, mY - 3 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), mouseX, mouseY)) {
                     if (Mouse.isButtonDown(0) && !previousMouse) {
@@ -57,18 +60,13 @@ public class Settings extends Setting {
             RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 81, mY + 11, 2, new Color(0, 0, 0, 200).getRGB());
             RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
             font.drawString(listValue.getName(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
-            font.drawString("<", x + 75, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+            font.drawString("<", x + 73, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
         }
 
         
         if (this.isHovered(x, mY - 5, x + 80, mY + 11, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !previousMouse) {
                 listValue.openList = !listValue.openList;
-                    
-                String current = listValue.get();
-                int next = listValue.getModeListNumber(current) + 1 >= listValue.getValues().length ? 0
-                        : listValue.getModeListNumber(current) + 1;
-                listValue.set(listValue.getValues()[next]);
             }
         }
     }
