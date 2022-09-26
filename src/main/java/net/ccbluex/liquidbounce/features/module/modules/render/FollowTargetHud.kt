@@ -164,7 +164,7 @@ class FollowTargetHud : Module() {
             distance = 1F
             
         if (staticScale.get())
-            distance = 150F
+            distance = 1F
      
         var scale = (distance / 150F) * scaleValue.get()
         if (zoomIn.get()) {
