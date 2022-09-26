@@ -276,7 +276,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     module.getAnimation().animationX -= 1F;
                 else if(module.getAnimation().getAnimationX() < 5F && module.getState())
                     module.getAnimation().animationX += 1F;
-                if (isSettingsButtonHovered(startX + 50, mY - 8, startX + 200, mY + 20, mouseX, mouseY) {
+                if (isSettingsButtonHovered(startX + 50, mY - 8, startX + 200, mY + 20, mouseX, mouseY)) {
                     slideAnimation += 3;
                     if (slideAnimation > 7)
                         slideAnimation = 7;
@@ -328,7 +328,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         module.getAnimation().animationX -= 1F;
                     else if(module.getAnimation().getAnimationX() < 5F && module.getState())
                         module.getAnimation().animationX += 1F;
-                    if (isSettingsButtonHovered(startX + 50, mY - 8, startX + 200, mY + 20, mouseX, mouseY) {
+                    if (isSettingsButtonHovered(startX + 50, mY - 8, startX + 200, mY + 20, mouseX, mouseY)) {
                         slideAnimation += 3;
                         if (slideAnimation > 7)
                             slideAnimation = 7;
