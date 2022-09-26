@@ -30,8 +30,8 @@ public class Settings extends Setting {
             int height = listValue.getValues().length * (font.FONT_HEIGHT + 2);
             
             
-            RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 92, mY + 11, 2, new Color(0, 0, 0, 200).getRGB());
-            RenderUtils.drawRoundedRect2(x + 85, mY - 6, x + 202, (int) (mY + height + 4), 2, new Color(0, 0, 0, 200).getRGB());
+            RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 92, mY + 11, 2, new Color(40, 40, 40, 200).getRGB());
+            RenderUtils.drawRoundedRect2(x + 85, mY - 6, x + 201, (int) (mY + height + 4), 2, new Color(40, 40, 40, 200).getRGB());
             
             RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
             RenderUtils.drawRect(x + 63 - l, mY - 4, x + 85, mY + 10, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
