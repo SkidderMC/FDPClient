@@ -1,5 +1,4 @@
 # FDPClient 
-![ClientFDP](https://i.ibb.co/sWXrFDB/istockphoto-176430993-170667a.jpg)
 [![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/SkidderMC/FDPClient)
 ![GitHub lines of code](https://tokei.rs/b1/github/SkidderMC/FDPClient)
