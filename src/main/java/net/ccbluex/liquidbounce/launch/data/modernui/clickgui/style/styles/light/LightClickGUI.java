@@ -45,6 +45,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private boolean rightClickMouse = false;
     private boolean categoryMouse = false;
     private int animationHeight = 0;
+    private int categoryAnimation = 0;
     private float guiScale = 0;
     private final AnimationHelper alphaAnim = new AnimationHelper();
     private final AnimationHelper valueAnim = new AnimationHelper();
@@ -174,9 +175,9 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         // new sexy background
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 3,
-            new Color(20, 25, 25, 250).getRGB());
+            new Color(20, 25, 25, 80).getRGB());
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 25, 3,
-            new Color(0, 0, 0, 80).getRGB());
+            new Color(0, 0, 100, 240).getRGB());
         
 
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
@@ -403,14 +404,11 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             }
         }
         
-        RenderUtils.drawRoundedRect2((int) startX + 11, (int) animationHeight - 7, (int) startX + 35, (int) animationHeight + 7, 3,
-            new Color(29, 143, 237, 80).getRGB());
-        animationHeight += Math.round((categoryYpos - animationHeight)/2.5);
 
         // detect mouse clicking on categories
         if(categoryMouse && !Mouse.isButtonDown(0))
             categoryMouse = false;
-        if (isCategoryHovered(startX + 11, startY + 38, startX + 35, startY + 52, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 33, startX + 35 + categoryAnimation, startY + 57, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.COMBAT) {
                     currentCategory = ModuleCategory.COMBAT;
@@ -425,7 +423,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 78, startX + 35, startY + 92, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 73, startX + 35 + categoryAnimation, startY + 97, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.MOVEMENT) {
                     currentCategory = ModuleCategory.MOVEMENT;
@@ -440,7 +438,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 118, startX + 35, startY + 132, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 113, startX + 35 + categoryAnimation, startY + 137, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.WORLD) {
                     currentCategory = ModuleCategory.WORLD;
@@ -455,7 +453,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 158, startX + 35, startY + 172, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 153, startX + 35 + categoryAnimation, startY + 177, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.PLAYER) {
                     currentCategory = ModuleCategory.PLAYER;
@@ -470,7 +468,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 198, startX + 35, startY + 212, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 193, startX + 35 + categoryAnimation, startY + 217, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.EXPLOIT) {
                     currentCategory = ModuleCategory.EXPLOIT;
@@ -485,7 +483,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 238, startX + 35, startY + 252, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 233, startX + 35 + categoryAnimation, startY + 257, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.MISC) {
                     currentCategory = ModuleCategory.MISC;
@@ -500,7 +498,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 278, startX + 35, startY + 292, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 273, startX + 35 + categoryAnimation, startY + 297, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.CLIENT) {
                     currentCategory = ModuleCategory.CLIENT;
@@ -515,14 +513,35 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
+        
+        if (isCategoryHovered(startX + 5, startY + 10, startX + categoryAnimation + 53, startY + 400, mouseX, mouseY)) {
+            categoryAnimation += round((50 - categoryAnimation) / 3);
+        } else {
+            categoryAnimation += round((0 - categoryAnimation) / 3);
+        }
+        
+        if (categoryAntimation > 4) {
+            Fonts.font40.drawString("Combat",   startX + 30 + round(categoryAnimation / 5), startY + 37,  new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Movement", startX + 30 + round(categoryAnimation / 5), startY + 77,  new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("World",    startX + 30 + round(categoryAnimation / 5), startY + 117, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Player",   startX + 30 + round(categoryAnimation / 5), startY + 157, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Exploit",  startX + 30 + round(categoryAnimation / 5), startY + 197, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Misc",     startX + 30 + round(categoryAnimation / 5), startY + 237, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Client",   startX + 30 + round(categoryAnimation / 5), startY + 277, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
+            
 
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过
-        RenderUtils.drawGradientSideways(startX + 50, startY, startX + 55, startY + 310, new Color(0, 0, 0, 60).getRGB(),
+        
+        RenderUtils.drawGradientSideways(startX + categoryAnimation + 50, startY, startX + categoryAnimation + 55, startY + 310, new Color(0, 0, 0, 60).getRGB(),
                 new Color(0, 0, 0, 0).getRGB());//255,255,255,30
 
         RenderUtils.drawGradientSideways(startX + 200, startY, startX + 205, startY + 310,
                 new Color(0, 0, 0, 70).getRGB(), new Color(0,0,0,0).getRGB());//239,237,237,30
+        
+        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 10, (int) startX + 35 + categoryAnimation, (int) startY + animationHeight + 10, 3,
+            new Color(29, 143, 237, 250).getRGB());
+        animationHeight += Math.round((categoryYpos - animationHeight)/2.5);
 
         RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
         RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Movement.png"), (int) startX + 17, (int) startY + 80, 12, 12);
