@@ -176,7 +176,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         // new sexy background
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 3,
-            new Color(20, 25, 25, 80).getRGB());
+            new Color(230, 230, 230, 140).getRGB());
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 25, 3,
             new Color(0, 0, 100, 240).getRGB());
         
@@ -280,7 +280,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     slideAnimation += 3;
                     if (slideAnimation > 7)
                         slideAnimation = 7;
-                    defaultFont.drawString(module.getName(), (int) (startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
+                    defaultFont.drawString(module.getName(), Math.round(startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
                     defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 36)).getRGB());
                 } else {
                     defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
@@ -332,7 +332,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         slideAnimation += 3;
                         if (slideAnimation > 7)
                             slideAnimation = 7;
-                        defaultFont.drawString(module.getName(), (int) (startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
+                        defaultFont.drawString(module.getName(), Math.round(startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
                         defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 36)).getRGB());
                     } else {
                         defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
@@ -543,7 +543,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
          RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 25, (int) startX + 50 + categoryAnimation, (int) startY + 400, 3,
-            new Color(40, 40, 40, 250).getRGB());
+            new Color(180, 180, 180, 250).getRGB());
         
         
         if (categoryAnimation > 4) {
