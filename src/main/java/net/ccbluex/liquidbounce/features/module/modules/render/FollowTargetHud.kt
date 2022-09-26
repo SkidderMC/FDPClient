@@ -160,11 +160,13 @@ class FollowTargetHud : Module() {
         // Scale
         var distance = mc.thePlayer.getDistanceToEntity(entity) / 4F
 
-        if (distance < 1F)
+        if (distance < 1F){
             distance = 1F
+        }
             
-        if (staticScale.get()) 
+        if (staticScale.get()) {
             distance = 150F
+        }
 
         var scale = (distance / 150F) * scaleValue.get()
         if (zoomIn.get()) {
