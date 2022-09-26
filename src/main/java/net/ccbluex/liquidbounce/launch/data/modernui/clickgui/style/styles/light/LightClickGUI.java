@@ -25,7 +25,6 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.io.IOException;
-import java.math.round;
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
@@ -516,19 +515,19 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         if (isCategoryHovered(startX + 5, startY + 10, startX + categoryAnimation + 53, startY + 400, mouseX, mouseY)) {
-            categoryAnimation += round((50 - categoryAnimation) / 3);
+            categoryAnimation += Math.round((50 - categoryAnimation) / 3);
         } else {
-            categoryAnimation += round((0 - categoryAnimation) / 3);
+            categoryAnimation += Math.round((0 - categoryAnimation) / 3);
         }
         
         if (categoryAntimation > 4) {
-            Fonts.font40.drawString("Combat",   startX + 30 + round(categoryAnimation / 5), startY + 37,  new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Movement", startX + 30 + round(categoryAnimation / 5), startY + 77,  new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("World",    startX + 30 + round(categoryAnimation / 5), startY + 117, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Player",   startX + 30 + round(categoryAnimation / 5), startY + 157, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Exploit",  startX + 30 + round(categoryAnimation / 5), startY + 197, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Misc",     startX + 30 + round(categoryAnimation / 5), startY + 237, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Client",   startX + 30 + round(categoryAnimation / 5), startY + 277, new Color(200, 200, 200, round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 37,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Movement", startX + 30 + Math.round(categoryAnimation / 5), startY + 77,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 117, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 157, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 197, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 237, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 277, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
             
         }
         searchBox.drawTextBox();
