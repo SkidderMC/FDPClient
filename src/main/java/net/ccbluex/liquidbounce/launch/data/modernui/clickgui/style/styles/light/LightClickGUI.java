@@ -25,6 +25,7 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.io.IOException;
+import java.Math.round
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
