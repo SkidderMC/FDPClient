@@ -46,6 +46,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private boolean categoryMouse = false;
     private int animationHeight = 0;
     private int categoryAnimation = 0;
+    private int slideAnimation = 0;
     private float guiScale = 0;
     private final AnimationHelper alphaAnim = new AnimationHelper();
     private final AnimationHelper valueAnim = new AnimationHelper();
@@ -249,6 +250,9 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
             float mY = startY + 30;
+            slideAnimation -= 2;
+            if (slideAnimation < 0)
+                slideAnimation = 0;
             for(int i = 0; i < LiquidBounce.moduleManager.getModulesByName(searchBox.getText()).size(); i++) {
                 Module module = LiquidBounce.moduleManager.getModulesByName(searchBox.getText()).get(i);
                 if (mY > startY + 250)
@@ -272,8 +276,16 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     module.getAnimation().animationX -= 1F;
                 else if(module.getAnimation().getAnimationX() < 5F && module.getState())
                     module.getAnimation().animationX += 1F;
-                defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
-                defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 65), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
+                if (isSettingsButtonHovered(startX + 50, mY - 8, startX + 200, mY + 20, mouseX, mouseY) {
+                    slideAnimation += 3;
+                    if (slideAnimation > 7)
+                        slideAnimation = 7;
+                    defaultFont.drawString(module.getName(), (int) (startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
+                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 36)).getRGB());
+                } else {
+                    defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
+                }
+                
                 if (!Mouse.isButtonDown(0)) {
                     this.previousMouse = false;
                 }
@@ -316,8 +328,15 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         module.getAnimation().animationX -= 1F;
                     else if(module.getAnimation().getAnimationX() < 5F && module.getState())
                         module.getAnimation().animationX += 1F;
-                    defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
-                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 65), (int) (mY + 13), /*!module.getState() ? */new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB() /*: new Color(220, 220, 220).getRGB()*/);
+                    if (isSettingsButtonHovered(startX + 50, mY - 8, startX + 200, mY + 20, mouseX, mouseY) {
+                        slideAnimation += 3;
+                        if (slideAnimation > 7)
+                            slideAnimation = 7;
+                        defaultFont.drawString(module.getName(), (int) (startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
+                        defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 36)).getRGB());
+                    } else {
+                        defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
+                    }
                     if (!Mouse.isButtonDown(0)) {
                         this.previousMouse = false;
                     }
