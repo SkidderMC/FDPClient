@@ -11,15 +11,12 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
-import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
-import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.RaycastUtils
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
@@ -42,10 +39,7 @@ import net.minecraft.item.ItemPickaxe
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
-import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.Vec3
-import net.minecraft.util.MathHelper
+import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
@@ -90,7 +84,6 @@ class KillAura : Module() {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
-
         }
     }
     private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 1.5f, 0f, 8f) {
@@ -129,7 +122,7 @@ class KillAura : Module() {
 
     // vanilla will send block packet at pre
     private val blockTimingValue =
-        ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") }
+            ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") }
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
@@ -185,6 +178,9 @@ class KillAura : Module() {
     private val rotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable { !rotationModeValue.equals("None") }
     private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
     private val keepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
+    private val backtraceValue = BoolValue("Backtrace", false)
+    private val backtraceMarkValue = BoolValue("BacktraceMark", false).displayable { backtraceValue.get() }
+    private val backtraceTickValue = IntegerValue("BacktraceTick", 2, 1, 10).displayable { backtraceValue.get() }
     private val hitableValue = BoolValue("AlwaysHitable", true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
@@ -263,6 +259,17 @@ class KillAura : Module() {
 
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
+
+    private var predictX = 1.0f
+    private var predictY = 1.0f
+    private var predictZ = 1.0f
+
+    private val getAABB: ((Entity) -> AxisAlignedBB) = {
+        var aabb = it.entityBoundingBox
+        aabb = if (backtraceValue.get()) LocationCache.getPreviousAABB(it.entityId, backtraceTickValue.get(), aabb) else aabb
+        aabb = if (predictValue.get()) aabb.offset((it.posX - it.lastTickPosX) * predictX, (it.posY - it.lastTickPosY) * predictY, (it.posZ - it.lastTickPosZ) * predictZ) else aabb
+        aabb
+    }
 
     /**
      * Enable kill aura module
@@ -565,24 +572,33 @@ class KillAura : Module() {
         }
 
         discoveredTargets.forEach {
+            var bb = it.entityBoundingBox
+            val partialTicks = mc.timer.renderPartialTicks
+
+            bb = if (backtraceValue.get() && backtraceMarkValue.get()) {
+                val ticks = backtraceTickValue.get()
+                val backtraceBB = LocationCache.getPreviousAABB(it.entityId, ticks, bb)
+                val prevBacktraceBB = LocationCache.getPreviousAABB(it.entityId, ticks + 1, backtraceBB)
+                AxisAlignedBB(prevBacktraceBB.minX + (backtraceBB.minX - prevBacktraceBB.minX) * partialTicks, prevBacktraceBB.minY + (backtraceBB.minY - prevBacktraceBB.minY) * partialTicks, prevBacktraceBB.minZ + (backtraceBB.minZ - prevBacktraceBB.minZ) * partialTicks, prevBacktraceBB.maxX + (backtraceBB.maxX - prevBacktraceBB.maxX) * partialTicks, prevBacktraceBB.maxY + (backtraceBB.maxY - prevBacktraceBB.maxY) * partialTicks, prevBacktraceBB.maxZ + (backtraceBB.maxZ - prevBacktraceBB.maxZ) * partialTicks).offset(-mc.renderManager.renderPosX, -mc.renderManager.renderPosY, -mc.renderManager.renderPosZ)
+            } else {
+                val x: Double = (it.lastTickPosX + (it.posX - it.lastTickPosX) * partialTicks - mc.renderManager.renderPosX)
+                val y: Double = (it.lastTickPosY + (it.posY - it.lastTickPosY) * partialTicks - mc.renderManager.renderPosY)
+                val z: Double = (it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * partialTicks - mc.renderManager.renderPosZ)
+                AxisAlignedBB(bb.minX - it.posX + x - 0.05, bb.minY - it.posY + y, bb.minZ - it.posZ + z - 0.05, bb.maxX - it.posX + x + 0.05, bb.maxY - it.posY + y + 0.15, bb.maxZ - it.posZ + z + 0.05).offset(-it.posX, -it.posY, -it.posZ).offset(x, y, z)
+            }
+
+            val pos = Vec3(bb.minX + (bb.maxX - bb.minX) * 0.5,
+                    bb.minY + (bb.maxY - bb.minY) * 0.5,
+                    bb.minZ + (bb.maxZ - bb.minZ) * 0.5)
+
             when (markValue.get().lowercase()) {
                 "liquid" -> {
-                    RenderUtils.drawPlatform(
-                        it,
-                        if (it.hurtTime <= 0) Color(37, 126, 255, 170) else Color(255, 0, 0, 170)
-                    )
+                    RenderUtils.drawAxisAlignedBB(AxisAlignedBB(bb.minX, bb.maxY + 0.2, bb.minZ, bb.maxX, bb.maxY + 0.26, bb.maxZ),
+                            if (it.hurtTime <= 0) Color(37, 126, 255, 170) else Color(255, 0, 0, 170), false, true, 2f)
                 }
                 "block" -> {
-                    val bb = it.entityBoundingBox
-                    it.entityBoundingBox = bb.expand(0.2, 0.2, 0.2)
-                    RenderUtils.drawEntityBox(
-                        it,
-                        if (it.hurtTime <= 0) if (it == target) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170),
-                        true,
-                        true,
-                        4f
-                    )
-                    it.entityBoundingBox = bb
+                    bb.expand(2.05, 2.05, 2.05).addCoord(0.0, 0.1, 0.0)
+                    RenderUtils.drawAxisAlignedBB(bb, if (it.hurtTime <= 0) if (it == target) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170), true, true, 4f)
                 }
                 "fdp" -> {
                     val drawTime = (System.currentTimeMillis() % 1500).toInt()
@@ -603,15 +619,8 @@ class KillAura : Module() {
                     GL11.glEnable(GL11.GL_BLEND)
                     GL11.glDisable(GL11.GL_DEPTH_TEST)
 
-                    val bb = it.entityBoundingBox
                     val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
-                    val height = bb.maxY - bb.minY
-                    val x =
-                        it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-                    val y =
-                        (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
-                    val z =
-                        it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    val y = pos.yCoord + (bb.maxY - bb.minY) * drawPercent
                     mc.entityRenderer.disableLightmap()
                     GL11.glLineWidth((radius * 8f).toFloat())
                     GL11.glBegin(GL11.GL_LINE_STRIP)
@@ -625,7 +634,7 @@ class KillAura : Module() {
                                 }, 0.7f, 1.0f
                             )
                         )
-                        GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
+                        GL11.glVertex3d(pos.xCoord - sin(i * Math.PI / 180F) * radius, y, pos.zCoord + cos(i * Math.PI / 180F) * radius)
                     }
                     GL11.glEnd()
 
@@ -647,19 +656,16 @@ class KillAura : Module() {
                     }
                     drawPercent=EaseUtils.easeInOutQuad(drawPercent)
                     val points = mutableListOf<Vec3>()
-                    val bb=it.entityBoundingBox
                     val radius=bb.maxX-bb.minX
                     val height=bb.maxY-bb.minY
-                    val posX = it.lastTickPosX + (it.posX - it.lastTickPosX) * mc.timer.renderPartialTicks
-                    var posY = it.lastTickPosY + (it.posY - it.lastTickPosY) * mc.timer.renderPartialTicks
+                    var posY = pos.yCoord
                     if(drawMode){
                         posY-=0.5
                     }else{
                         posY+=0.5
                     }
-                    val posZ = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * mc.timer.renderPartialTicks
                     for(i in 0..360 step 7){
-                        points.add(Vec3(posX - sin(i * Math.PI / 180F) * radius,posY+height*drawPercent,posZ + cos(i * Math.PI / 180F) * radius))
+                        points.add(Vec3(pos.xCoord - sin(i * Math.PI / 180F) * radius,posY+height*drawPercent,pos.zCoord + cos(i * Math.PI / 180F) * radius))
                     }
                     points.add(points[0])
                     //draw
@@ -680,14 +686,14 @@ class KillAura : Module() {
                         }
                         val firstPoint=points[0]
                         GL11.glVertex3d(
-                            firstPoint.xCoord - mc.renderManager.viewerPosX, firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY,
-                            firstPoint.zCoord - mc.renderManager.viewerPosZ
+                            firstPoint.xCoord, firstPoint.yCoord - moveFace - min,
+                            firstPoint.zCoord
                         )
                         GL11.glColor4f(1F, 1F, 1F, 0.7F*(i/20F))
                         for (vec3 in points) {
                             GL11.glVertex3d(
-                                vec3.xCoord - mc.renderManager.viewerPosX, vec3.yCoord - moveFace - min - mc.renderManager.viewerPosY,
-                                vec3.zCoord - mc.renderManager.viewerPosZ
+                                vec3.xCoord, vec3.yCoord - moveFace - min,
+                                vec3.zCoord
                             )
                         }
                         GL11.glColor4f(0F,0F,0F,0F)
@@ -721,16 +727,9 @@ class KillAura : Module() {
                     GL11.glDisable(GL11.GL_CULL_FACE)
                     GL11.glShadeModel(7425)
                     mc.entityRenderer.disableLightmap()
-
-                    val bb = it.entityBoundingBox
                     val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
                     val height = bb.maxY - bb.minY
-                    val x =
-                        it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-                    val y =
-                        (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
-                    val z =
-                        it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    val y = pos.yCoord  + height * drawPercent
                     val eased = (height / 3) * (if (drawPercent > 0.5) {
                         1 - drawPercent
                     } else {
@@ -748,10 +747,10 @@ class KillAura : Module() {
                                 HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (-(i - 360) / 180f)
                             }, 0.7f, 1.0f
                         )
-                        val x1 = x - sin(i * Math.PI / 180F) * radius
-                        val z1 = z + cos(i * Math.PI / 180F) * radius
-                        val x2 = x - sin((i - 5) * Math.PI / 180F) * radius
-                        val z2 = z + cos((i - 5) * Math.PI / 180F) * radius
+                        val x1 = pos.xCoord - sin(i * Math.PI / 180F) * radius
+                        val z1 = pos.zCoord + cos(i * Math.PI / 180F) * radius
+                        val x2 = pos.xCoord - sin((i - 5) * Math.PI / 180F) * radius
+                        val z2 = pos.zCoord + cos((i - 5) * Math.PI / 180F) * radius
                         GL11.glBegin(GL11.GL_QUADS)
                         RenderUtils.glColor(color, 0f)
                         GL11.glVertex3d(x1, y + eased, z1)
@@ -772,7 +771,7 @@ class KillAura : Module() {
                     GL11.glPopMatrix()
                 }
                 "circle" -> {
-                    if (espAnimation > target!!.eyeHeight + 0.4 || espAnimation < 0) {
+                    if (espAnimation > it.eyeHeight + 0.4 || espAnimation < 0) {
                         isUp = !isUp
                     }
                     if (isUp) {
@@ -781,20 +780,16 @@ class KillAura : Module() {
                         espAnimation -= 0.05 * 60 / Minecraft.getDebugFPS()
                     }
                     if (isUp) {
-                        esp(target!!, event.partialTicks, circleRadiusValue.get())
+                        esp(pos, circleRadiusValue.get())
                     } else {
-                        esp(target!!, event.partialTicks, circleRadiusValue.get())
+                        esp(pos, circleRadiusValue.get())
                     }
                 }
                 "sims" -> {
                     val radius = 0.15f
                     val side = 4
                     GL11.glPushMatrix()
-                    GL11.glTranslated(
-                        it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX,
-                        (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + it.height * 1.1,
-                        it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
-                    )
+                    GL11.glTranslated( pos.xCoord, pos.yCoord + it.height * 1.1, pos.zCoord)
                     GL11.glRotatef(-it.width, 0.0f, 1.0f, 0.0f)
                     GL11.glRotatef((mc.thePlayer.ticksExisted + mc.timer.renderPartialTicks) * 5, 0f, 1f, 0f)
                     RenderUtils.glColor(if (it.hurtTime <= 0) Color(80, 255, 80) else Color(255, 0, 0))
@@ -830,7 +825,7 @@ class KillAura : Module() {
 //        updateHitable()
 //    }
 
-    private fun esp(entity : EntityLivingBase, partialTicks : Float, radius : Float) {
+    private fun esp(pos: Vec3, radius: Float) {
         GL11.glPushMatrix()
         GL11.glDisable(3553)
         RenderUtils.startSmooth()
@@ -838,13 +833,10 @@ class KillAura : Module() {
         GL11.glDepthMask(false)
         GL11.glLineWidth(1.0F)
         GL11.glBegin(3)
-        val x: Double = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - mc.renderManager.viewerPosX
-        val y: Double = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - mc.renderManager.viewerPosY
-        val z: Double = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - mc.renderManager.viewerPosZ
         for (i in 0..360) {
             val rainbow = Color(Color.HSBtoRGB((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)).toFloat() % 1.0f, 0.7f, 1.0f))
             GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
-            GL11.glVertex3d(x + radius * cos(i * 6.283185307179586 / 45.0), y + espAnimation, z + radius * sin(i * 6.283185307179586 / 45.0))
+            GL11.glVertex3d(pos.xCoord + radius * cos(i * 6.283185307179586 / 45.0), pos.yCoord + espAnimation, pos.zCoord + radius * sin(i * 6.283185307179586 / 45.0))
         }
         GL11.glEnd()
         GL11.glDepthMask(true)
@@ -1077,24 +1069,14 @@ class KillAura : Module() {
             return true
         }
 
-        var boundingBox = entity.entityBoundingBox
-
-        if (predictValue.get() && rotationModeValue.get() != "Test") {
-            boundingBox = boundingBox.offset(
-                (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(
-                    minPredictSizeValue.get(),
-                    maxPredictSizeValue.get()
-                ),
-                (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(
-                    minPredictSizeValue.get(),
-                    maxPredictSizeValue.get()
-                ),
-                (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(
-                    minPredictSizeValue.get(),
-                    maxPredictSizeValue.get()
-                )
-            )
+        if (predictValue.get()) {
+            predictX = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
+            predictY = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
+            predictZ = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
         }
+
+        val boundingBox = if (rotationModeValue.get() == "Test") entity.entityBoundingBox else getAABB(entity)
+
         val rModes = when (rotationModeValue.get()) {
             "LiquidBounce", "SmoothLiquid", "Derp" -> "LiquidBounce"
             "ForceCenter", "SmoothCenter", "OldMatrix", "Spin", "FastSpin" -> "CenterLine"
@@ -1104,16 +1086,16 @@ class KillAura : Module() {
         }
 
         val (_, directRotation) =
-            RotationUtils.calculateCenter(
-                rModes,
-                randomCenterModeValue.get(),
-                (randomCenRangeValue.get()).toDouble(),
-                boundingBox,
-                predictValue.get() && rotationModeValue.get() != "Test",
-                mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
-            ) ?: return false
+                RotationUtils.calculateCenter(
+                        rModes,
+                        randomCenterModeValue.get(),
+                        (randomCenRangeValue.get()).toDouble(),
+                        boundingBox,
+                        predictValue.get() && rotationModeValue.get() != "Test",
+                        mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
+                ) ?: return false
 
-        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = (89.9).toFloat()
+        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = 89.9f
 
         var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
         if (diffAngle < 0) diffAngle = -diffAngle
@@ -1126,9 +1108,7 @@ class KillAura : Module() {
             "Quad" -> (diffAngle / 360.0).pow(2.0) * maxTurnSpeedValue.get() + (1 - (diffAngle / 360.0).pow(2.0)) * minTurnSpeedValue.get()
             "Sine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeedValue.get() + (cos(diffAngle / 360 * Math.PI) * 0.5 + 0.5) * minTurnSpeedValue.get()
             //"QuadSine" -> Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0)) * minTurnSpeedValue.get()
-            "QuadSine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0) * maxTurnSpeedValue.get() + (1 - (-cos(
-                diffAngle / 180 * Math.PI
-            ) * 0.5 + 0.5).pow(2.0)) * minTurnSpeedValue.get()
+            "QuadSine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0) * maxTurnSpeedValue.get() + (1 - (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0)) * minTurnSpeedValue.get()
             else -> 360.0
         }
 
