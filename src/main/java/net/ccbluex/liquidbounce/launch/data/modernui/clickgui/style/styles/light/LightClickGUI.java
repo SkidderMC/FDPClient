@@ -520,7 +520,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             categoryAnimation += Math.round((0 - categoryAnimation) / 3);
         }
         
-        if (categoryAntimation > 4) {
+        if (categoryAnimation > 4) {
             Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 37,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
             Fonts.font40.drawString("Movement", startX + 30 + Math.round(categoryAnimation / 5), startY + 77,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
             Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 117, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
