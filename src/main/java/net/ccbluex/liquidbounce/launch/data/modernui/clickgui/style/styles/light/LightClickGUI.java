@@ -280,7 +280,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     slideAnimation += 3;
                     if (slideAnimation > 7)
                         slideAnimation = 7;
-                    defaultFont.drawString(module.getName(), Math.round(startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
+                    defaultFont.drawString(module.getName(), int(startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
                     defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 36)).getRGB());
                 } else {
                     defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
@@ -332,7 +332,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         slideAnimation += 3;
                         if (slideAnimation > 7)
                             slideAnimation = 7;
-                        defaultFont.drawString(module.getName(), Math.round(startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
+                        defaultFont.drawString(module.getName(), int(startX + 65) + Math.round(slideAnimation / 1.5), (int) (mY + 6), moduleColor);
                         defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 72 - slideAnimation), (int) (mY + 13), new Color(80, 80, 80, (int) (slideAnimation * 36)).getRGB());
                     } else {
                         defaultFont.drawString(module.getName(), (int) (startX + 65), (int) (mY + 6), moduleColor);
