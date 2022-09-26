@@ -514,33 +514,38 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             }
         }
         
+        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 7, (int) startX + 35 + categoryAnimation, (int) startY + animationHeight + 13, 3,
+            new Color(29, 143, 237, 250).getRGB());
+        
         if (isCategoryHovered(startX + 5, startY + 10, startX + categoryAnimation + 53, startY + 400, mouseX, mouseY)) {
             categoryAnimation += Math.round((50 - categoryAnimation) / 3);
         } else {
             categoryAnimation += Math.round((0 - categoryAnimation) / 3);
         }
         
+         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 25, (int) startX + 50 + categoryAnimation, (int) startY + 400, 3,
+            new Color(40, 40, 40, 250).getRGB());
+        
+        
         if (categoryAnimation > 4) {
-            Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 37,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Movement", startX + 30 + Math.round(categoryAnimation / 5), startY + 77,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 117, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 157, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 197, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 237, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 277, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 40,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Movement", startX + 30 + Math.round(categoryAnimation / 5), startY + 80,  new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 120, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 160, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 200, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 240, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 280, new Color(200, 200, 200, Math.round(categoryAnimation * 5)).getRGB());
             
         }
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过
         
-        RenderUtils.drawGradientSideways(startX + categoryAnimation + 50, startY, startX + categoryAnimation + 55, startY + 310, new Color(0, 0, 0, 60).getRGB(),
+        RenderUtils.drawGradientSideways(startX + categoryAnimation + 50, startY + 25, startX + categoryAnimation + 55, startY + 400, new Color(0, 0, 0, 60).getRGB(),
                 new Color(0, 0, 0, 0).getRGB());//255,255,255,30
 
-        RenderUtils.drawGradientSideways(startX + 200, startY, startX + 205, startY + 310,
+        RenderUtils.drawGradientSideways(startX + 200, startY + 25, startX + 205, startY + 400,
                 new Color(0, 0, 0, 70).getRGB(), new Color(0,0,0,0).getRGB());//239,237,237,30
         
-        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 10, (int) startX + 35 + categoryAnimation, (int) startY + animationHeight + 10, 3,
-            new Color(29, 143, 237, 250).getRGB());
         animationHeight += Math.round((categoryYpos - animationHeight)/2.5);
 
         RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
