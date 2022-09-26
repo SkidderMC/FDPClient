@@ -25,6 +25,9 @@ public class Settings extends Setting {
         font.drawString(listValue.getName(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
         
         if (listValue.openList) {
+            int height = listValue.getValues().length * (font.FONT_HEIGHT + 2);
+            
+            
             RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 92, mY + 11, 2, new Color(0, 0, 0, 200).getRGB());
             RenderUtils.drawRoundedRect2(x + 87, mY - 6, x + 152, (int) (mY + height + 4), 2, new Color(0, 0, 0, 200).getRGB());
             
@@ -33,7 +36,6 @@ public class Settings extends Setting {
             
             font.drawString(listValue.getName(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
             
-            int height = listValue.getValues().length * (font.FONT_HEIGHT + 2);
             
            
             RenderUtils.drawRoundedRect2(x + 85, mY - 8, x + 200, (int) (mY + height + 2), 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
