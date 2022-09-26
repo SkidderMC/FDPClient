@@ -591,6 +591,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         animationHeight += Math.round((categoryYpos - animationHeight)/2.5);
         if ((animationHeight - categoryYpos) > -3 || (animationHeight - categoryYpos) < 3) {
             animationHeight = categoryYpos;
+        }
 
         RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
         RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Movement.png"), (int) startX + 17, (int) startY + 80, 12, 12);
