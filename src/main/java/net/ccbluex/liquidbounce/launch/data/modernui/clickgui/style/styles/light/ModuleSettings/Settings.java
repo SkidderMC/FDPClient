@@ -48,7 +48,7 @@ public class Settings extends Setting {
                     RenderUtils.drawRoundedRect2(x + 88, mY - 6 + i * (font.FONT_HEIGHT + 2), x + 150, mY - 2 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(200, 200, 200, 255).getRGB());
                 }
                 
-                font.drawString(listValue.getValues()[i], x + 88, mY - 4 + i * (font.FONT_HEIGHT + 2), new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+                font.drawString(listValue.getValues()[i], x + 91, mY - 2 + i * (font.FONT_HEIGHT + 2), new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
 
                 
                 if (this.isHovered(x + 88, mY - 5 + i * (font.FONT_HEIGHT + 2), x + 200, mY - 3 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), mouseX, mouseY)) {
