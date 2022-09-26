@@ -21,9 +21,9 @@ public class Settings extends Setting {
     @Override
     public void drawListValue(boolean previousMouse, int mouseX, int mouseY, float mY, float startX, ListValue listValue) {
         float x = startX + 295;
-        int l   = font.getStringWidth(listValue.getName());
+        int l   = font.getStringWidth(listValue.get());
         
-        font.drawString(listValue.getName(), x + 210, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+        font.drawString(listValue.getName(), startX + 210, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
         
         
         if (listValue.openList) {
@@ -31,7 +31,7 @@ public class Settings extends Setting {
             
             
             RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 92, mY + 11, 2, new Color(0, 0, 0, 200).getRGB());
-            RenderUtils.drawRoundedRect2(x + 87, mY - 6, x + 152, (int) (mY + height + 4), 2, new Color(0, 0, 0, 200).getRGB());
+            RenderUtils.drawRoundedRect2(x + 85, mY - 6, x + 202, (int) (mY + height + 4), 2, new Color(0, 0, 0, 200).getRGB());
             
             RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
             RenderUtils.drawRect(x + 63 - l, mY - 4, x + 85, mY + 10, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
