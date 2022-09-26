@@ -160,14 +160,12 @@ class FollowTargetHud : Module() {
         // Scale
         var distance = mc.thePlayer.getDistanceToEntity(entity) / 4F
 
-        if (distance < 1F){
+        if (distance < 1F)
             distance = 1F
-        }
             
-        if (staticScale.get()) {
+        if (staticScale.get())
             distance = 150F
-        }
-
+     
         var scale = (distance / 150F) * scaleValue.get()
         if (zoomIn.get()) {
             scale *= (targetTicks.coerceAtMost(zoomTicks.get()) / zoomTicks.get()).toFloat()
@@ -219,7 +217,7 @@ class FollowTargetHud : Module() {
                 if (materialShadow.get()) {
                     drawShadow(-40f + xChange, 0f, 40f + xChange, 29f)
                     drawRect(-40f + xChange, 0f, 40f + xChange, 29f, Color(72, 72, 72, 250).rgb)
-                else {
+                } else {
                     drawRoundedCornerRect(-40f + xChange, 0f, 40f + xChange, 29f, 5f, Color(72, 72, 72, 250).rgb)
                 }
                 
@@ -239,7 +237,7 @@ class FollowTargetHud : Module() {
 
                     drawRect(-40f + xChange, 0f, 40f + xChange, 15f, Color(72, 72, 72, 250).rgb)
                     drawRect(-40f + xChange, 20f, 40f + xChange, 35f, Color(72, 72, 72, 250).rgb)
-                else {
+                } else {
                     drawRoundedCornerRect(-40f + xChange, 0f, 40f + xChange, 15f, 5f, Color(72, 72, 72, 250).rgb)
                     drawRoundedCornerRect(-40f + xChange, 20f, 40f + xChange, 35f, 5f, Color(72, 72, 72, 250).rgb)
                 }
