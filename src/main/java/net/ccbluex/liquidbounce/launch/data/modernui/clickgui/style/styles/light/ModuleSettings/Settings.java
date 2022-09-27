@@ -20,7 +20,7 @@ public class Settings extends Setting {
 
     @Override
     public void drawListValue(boolean previousMouse, int mouseX, int mouseY, float mY, float startX, ListValue listValue) {
-        float x = startX + 295;
+        float x = startX + 310;
         int l   = font.getStringWidth(listValue.get());
         
         font.drawString(listValue.getName(), startX + 210, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
@@ -30,37 +30,38 @@ public class Settings extends Setting {
             int height = listValue.getValues().length * (font.FONT_HEIGHT + 2);
             
             
-            RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 92, mY + 11, 2, new Color(0, 0, 0, 200).getRGB());
-            RenderUtils.drawRoundedRect2(x + 85, mY - 6, x + 202, (int) (mY + height + 4), 2, new Color(0, 0, 0, 200).getRGB());
+            RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 92, mY + 11, 2, new Color(40, 40, 40, 200).getRGB());
+            RenderUtils.drawRoundedRect2(x + 85, mY - 6, x + 201, (int) (mY + height + 4), 2, new Color(40, 40, 40, 200).getRGB());
             
-            RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
-            RenderUtils.drawRect(x + 63 - l, mY - 4, x + 85, mY + 10, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
+            RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250, 250).getRGB());
+            RenderUtils.drawRect(x + 63 - l, mY - 4, x + 85, mY + 10, new Color(250, 250, 250, 250).getRGB());
             
-            font.drawString(listValue.get(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+            font.drawString(listValue.get(), x + 70 - l, mY + 1, new Color(80, 80, 80, 250).getRGB());
             
             
            
-            RenderUtils.drawRoundedRect2(x + 85, mY - 8, x + 200, (int) (mY + height + 2), 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
+            RenderUtils.drawRoundedRect2(x + 85, mY - 8, x + 200, (int) (mY + height + 2), 2, new Color(250, 250, 250, 250).getRGB());
             
             for (int i = 0; i < listValue.getValues().length; i++) {
                 
-                if (i == listValue.getModeListNumber(listValue.get())) {
-                    RenderUtils.drawRoundedRect2(x + 88, mY - 6 + i * (font.FONT_HEIGHT + 2), x + 150, mY - 2 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(200, 200, 200, 255).getRGB());
-                }
-                
-                font.drawString(listValue.getValues()[i], x + 88, mY - 4 + i * (font.FONT_HEIGHT + 2), new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
-
-                
-                if (this.isHovered(x + 88, mY - 5 + i * (font.FONT_HEIGHT + 2), x + 200, mY - 3 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), mouseX, mouseY)) {
+                if (this.isHovered(x + 85, mY - 5 + i * (font.FONT_HEIGHT + 2), x + 200, mY - 3 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), mouseX, mouseY)) {
+                    RenderUtils.drawRoundedRect2(x + 88, mY - 6 + i * (font.FONT_HEIGHT + 2), x + 197, mY - 2 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(220, 220, 220, 255).getRGB());
                     if (Mouse.isButtonDown(0) && !previousMouse) {
                         listValue.set(listValue.getValues()[i]);
                     }
                 }
+                
+                if (i == listValue.getModeListNumber(listValue.get())) {
+                    RenderUtils.drawRoundedRect2(x + 88, mY - 6 + i * (font.FONT_HEIGHT + 2), x + 197, mY - 2 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(200, 200, 200, 255).getRGB());
+                }
+                
+                font.drawString(listValue.getValues()[i], x + 91, mY - 2 + i * (font.FONT_HEIGHT + 2), new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+
             }
                                                       
         } else {
             RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 81, mY + 11, 2, new Color(0, 0, 0, 200).getRGB());
-            RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
+            RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250, 250).getRGB());
             font.drawString(listValue.get(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
             font.drawString("<", x + 73, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
         }
@@ -174,10 +175,18 @@ public class Settings extends Setting {
         RenderUtils.drawRoundedRect2(x + 30, mY - 2, x + 50, mY + 8, 4, new Color(239, 237, 237,alphaAnim.getAlpha()).getRGB() );
         RenderUtils.drawRoundedRect2(x + 28, mY - 4, x + 52, mY + 10, 5, boolValue.get() ? new Color(66, 134, 245,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
         RenderUtils.circle(x + 40 + boolValue.getAnimation().getAnimationX(), mY + 3, 4, boolValue.get() ? new Color(255,255,255,alphaAnim.getAlpha()).getRGB() : new Color(164, 168, 175,alphaAnim.getAlpha()).getRGB());
-        if(boolValue.getAnimation().getAnimationX() > -5F && !boolValue.get())
-            boolValue.getAnimation().animationX -= 1F;
-        else if(boolValue.getAnimation().getAnimationX() < 5F && boolValue.get())
-            boolValue.getAnimation().animationX += 1F;
+        if (boolValue.get()) {
+            boolValue.getAnimation().animationX += (5F - boolValue.getAnimation().animationX) / 1.5;
+            if (boolValue.getAnimation().animationX > 4F) {
+                boolValue.getAnimation().animationX = 5F;
+            }
+        } else {
+            boolValue.getAnimation().animationX += (-5F - boolValue.getAnimation().animationX) / 1.5;
+            if (boolValue.getAnimation().animationX < -4F) {
+                boolValue.getAnimation().animationX = -5F;
+            }
+        }
+        
         if (this.isHovered(x + 30, mY + 2, x + 50, mY + 12, mouseX, mouseY)) {
             if (mouse)
                 boolValue.set(!boolValue.get());
