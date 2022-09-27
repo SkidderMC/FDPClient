@@ -622,7 +622,10 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         
         animationHeight += Math.round((categoryYpos - animationHeight)/2.5);
-        if ( ((animationHeight - categoryYpos) > -3 && (animationHeight - categoryYpos) < 0)) || ((animationHeight - categoryYpos) < 3 && (animationHeight - categoryYpos) > 0)) ) {
+        if ( (animationHeight - categoryYpos) > -3 && (animationHeight - categoryYpos) < 0) ) {
+            animationHeight = categoryYpos;
+        }
+        if ( (animationHeight - categoryYpos) < 3 && (animationHeight - categoryYpos) > 0) ) {
             animationHeight = categoryYpos;
         }
 
