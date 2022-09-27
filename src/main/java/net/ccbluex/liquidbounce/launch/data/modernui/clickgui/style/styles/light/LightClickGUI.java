@@ -267,7 +267,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
                 int moduleColor = new Color(118, 117, 117,alphaAnim.getAlpha()).getRGB();
 
-                RenderUtils.drawRoundedRect2(startX + 160, mY + 6, startX + 180, mY + 16, 4, module.getState() && module.getAnimation().getAnimationX() >= 3F ? new Color(70, 255, 70,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
+                RenderUtils.drawRoundedRect2(startX + 160, mY + 6, startX + 180, mY + 16, 4, module.getState() && module.getAnimation().getAnimationX() >= 3F ? new Color(29, 143, 237,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
                 RenderUtils.circle(startX + 170 + module.getAnimation().getAnimationX(), mY + 11, 4, module.getState() ? new Color(255,255,255,alphaAnim.getAlpha()).getRGB() : new Color(164, 168, 175,alphaAnim.getAlpha()).getRGB());
                 if (module.getState()) {
                     module.getAnimation().animationX += (5F - module.getAnimation().animationX) / 1.5;
@@ -282,7 +282,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
                 
                 RenderUtils.drawRoundedRect2(startX + 64, mY + 2, startX + 186, mY + 24, 4, new Color(200, 200, 200, alphaAnim.getAlpha()).getRGB());
-                RenderUtils.drawRoundedRect2(startX + 65, mY + 3, startX + 185, mY + 23, 4, new Color(250, 250, 250, alphaAnim.getAlpha()).getRGB());
+                RenderUtils.drawRoundedRect2(startX + 65, mY + 3, startX + 185, mY + 23, 4, new Color(250, 250, 245 - (int) (module.getAnimation().animationX), alphaAnim.getAlpha()).getRGB());
                 defaultFont.drawString(module.getName(), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 6), moduleColor);
                 defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 3)), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
 
@@ -329,7 +329,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     
                     int moduleColor = new Color(118, 117, 117,alphaAnim.getAlpha()).getRGB();
 
-                    RenderUtils.drawRoundedRect2(startX + 160, mY + 6, startX + 180, mY + 16, 4, module.getState() && module.getAnimation().getAnimationX() >= 3F ? new Color(70, 255, 70,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
+                    RenderUtils.drawRoundedRect2(startX + 160, mY + 6, startX + 180, mY + 16, 4, module.getState() && module.getAnimation().getAnimationX() >= 3F ? new Color(29, 143, 237,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
                     RenderUtils.circle(startX + 170 + module.getAnimation().getAnimationX(), mY + 11, 4, module.getState() ? new Color(255,255,255,alphaAnim.getAlpha()).getRGB() : new Color(164, 168, 175,alphaAnim.getAlpha()).getRGB());
                     if (module.getState()) {
                         module.getAnimation().animationX += (5F - module.getAnimation().animationX) / 1.5;
@@ -344,7 +344,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     }
 
                     RenderUtils.drawRoundedRect2(startX + 64, mY + 2, startX + 186, mY + 24, 4, new Color(200, 200, 200, alphaAnim.getAlpha()).getRGB());
-                    RenderUtils.drawRoundedRect2(startX + 65, mY + 3, startX + 185, mY + 23, 4, new Color(250, 250, 250, alphaAnim.getAlpha()).getRGB());
+                    RenderUtils.drawRoundedRect2(startX + 65, mY + 3, startX + 185, mY + 23, 4, new Color(250, 250, 245 - (int) (module.getAnimation().animationX), alphaAnim.getAlpha()).getRGB());
                     defaultFont.drawString(module.getName(), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 6), moduleColor);
                     defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 3)), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
 
