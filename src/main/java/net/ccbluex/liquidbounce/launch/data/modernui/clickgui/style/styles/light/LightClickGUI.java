@@ -480,12 +480,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 73, startX + 35 + categoryAnimation, startY + 97, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 58, startX + 35 + categoryAnimation, startY + 92, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.MOVEMENT) {
                     currentCategory = ModuleCategory.MOVEMENT;
                     categoryMouse = true;
-                    categoryYpos = 80;
+                    categoryYpos = 75;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -495,12 +495,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 113, startX + 35 + categoryAnimation, startY + 137, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 93, startX + 35 + categoryAnimation, startY + 127, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.WORLD) {
                     currentCategory = ModuleCategory.WORLD;
                     categoryMouse = true;
-                    categoryYpos = 120;
+                    categoryYpos = 110;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -510,12 +510,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 153, startX + 35 + categoryAnimation, startY + 177, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 128, startX + 35 + categoryAnimation, startY + 162, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.PLAYER) {
                     currentCategory = ModuleCategory.PLAYER;
                     categoryMouse = true;
-                    categoryYpos = 160;
+                    categoryYpos = 145;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -525,12 +525,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 193, startX + 35 + categoryAnimation, startY + 217, mouseX, mouseY)) {
+        if (isCategoryHovered(startX + 11, startY + 163, startX + 35 + categoryAnimation, startY + 197, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.EXPLOIT) {
                     currentCategory = ModuleCategory.EXPLOIT;
                     categoryMouse = true;
-                    categoryYpos = 200;
+                    categoryYpos = 180;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -545,7 +545,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 if (currentCategory != ModuleCategory.MISC) {
                     currentCategory = ModuleCategory.MISC;
                     categoryMouse = true;
-                    categoryYpos = 240;
+                    categoryYpos = 215;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -594,12 +594,13 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         if (categoryAnimation > 4) {
             Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 41,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Move",     startX + 30 + Math.round(categoryAnimation / 5), startY + 81,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 121, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 161, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 201, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 241, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 281, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Move",     startX + 30 + Math.round(categoryAnimation / 5), startY + 76,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 111, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 146, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 181, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 206, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 241, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Render",   startX + 30 + Math.round(categoryAnimation / 5), startY + 276, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
         }
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过
@@ -611,12 +612,14 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
 
         RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Combat.png"), (int) startX + 17, (int) startY + 40, 12, 12);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Movement.png"), (int) startX + 17, (int) startY + 80, 12, 12);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/World.png"), (int) startX + 17, (int) startY + 120, 12, 12);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Player.png"), (int) startX + 17, (int) startY + 160, 12, 12);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Exploit.png"), (int) startX + 17, (int) startY + 200, 12, 12);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Misc.png"), (int) startX + 17, (int) startY + 240, 12, 12);
-        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Client.png"), (int) startX + 17, (int) startY + 280, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Movement.png"), (int) startX + 17, (int) startY + 75, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/World.png"), (int) startX + 17, (int) startY + 110, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Player.png"), (int) startX + 17, (int) startY + 145, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Exploit.png"), (int) startX + 17, (int) startY + 180, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Misc.png"), (int) startX + 17, (int) startY + 205, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Client.png"), (int) startX + 17, (int) startY + 240, 12, 12);
+        RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Render.png"), (int) startX + 17, (int) startY + 275, 12, 12);
+        
     }
 
     public boolean isStringHovered(float f, float y, float g, float y2, int mouseX, int mouseY) {
