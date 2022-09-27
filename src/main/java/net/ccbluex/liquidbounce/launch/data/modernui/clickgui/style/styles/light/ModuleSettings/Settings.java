@@ -20,7 +20,7 @@ public class Settings extends Setting {
 
     @Override
     public void drawListValue(boolean previousMouse, int mouseX, int mouseY, float mY, float startX, ListValue listValue) {
-        float x = startX + 295;
+        float x = startX + 310;
         int l   = font.getStringWidth(listValue.get());
         
         font.drawString(listValue.getName(), startX + 210, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
@@ -44,18 +44,19 @@ public class Settings extends Setting {
             
             for (int i = 0; i < listValue.getValues().length; i++) {
                 
-                if (i == listValue.getModeListNumber(listValue.get())) {
-                    RenderUtils.drawRoundedRect2(x + 88, mY - 6 + i * (font.FONT_HEIGHT + 2), x + 150, mY - 2 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(200, 200, 200, 255).getRGB());
-                }
-                
-                font.drawString(listValue.getValues()[i], x + 91, mY - 2 + i * (font.FONT_HEIGHT + 2), new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
-
-                
-                if (this.isHovered(x + 88, mY - 5 + i * (font.FONT_HEIGHT + 2), x + 200, mY - 3 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), mouseX, mouseY)) {
+                if (this.isHovered(x + 85, mY - 5 + i * (font.FONT_HEIGHT + 2), x + 200, mY - 3 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), mouseX, mouseY)) {
+                    RenderUtils.drawRoundedRect2(x + 88, mY - 6 + i * (font.FONT_HEIGHT + 2), x + 197, mY - 2 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(220, 220, 220, 255).getRGB());
                     if (Mouse.isButtonDown(0) && !previousMouse) {
                         listValue.set(listValue.getValues()[i]);
                     }
                 }
+                
+                if (i == listValue.getModeListNumber(listValue.get())) {
+                    RenderUtils.drawRoundedRect2(x + 88, mY - 6 + i * (font.FONT_HEIGHT + 2), x + 197, mY - 2 + font.FONT_HEIGHT + i * (font.FONT_HEIGHT + 2), 2, new Color(200, 200, 200, 255).getRGB());
+                }
+                
+                font.drawString(listValue.getValues()[i], x + 91, mY - 2 + i * (font.FONT_HEIGHT + 2), new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+
             }
                                                       
         } else {
