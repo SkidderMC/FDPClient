@@ -33,14 +33,14 @@ public class Settings extends Setting {
             RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 92, mY + 11, 2, new Color(40, 40, 40, 200).getRGB());
             RenderUtils.drawRoundedRect2(x + 85, mY - 6, x + 201, (int) (mY + height + 4), 2, new Color(40, 40, 40, 200).getRGB());
             
-            RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
-            RenderUtils.drawRect(x + 63 - l, mY - 4, x + 85, mY + 10, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
+            RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250, 250).getRGB());
+            RenderUtils.drawRect(x + 63 - l, mY - 4, x + 85, mY + 10, new Color(250, 250, 250, 250).getRGB());
             
-            font.drawString(listValue.get(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
+            font.drawString(listValue.get(), x + 70 - l, mY + 1, new Color(80, 80, 80, 250).getRGB());
             
             
            
-            RenderUtils.drawRoundedRect2(x + 85, mY - 8, x + 200, (int) (mY + height + 2), 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
+            RenderUtils.drawRoundedRect2(x + 85, mY - 8, x + 200, (int) (mY + height + 2), 2, new Color(250, 250, 250, 250).getRGB());
             
             for (int i = 0; i < listValue.getValues().length; i++) {
                 
@@ -61,7 +61,7 @@ public class Settings extends Setting {
                                                       
         } else {
             RenderUtils.drawRoundedRect2(x + 61 - l, mY - 3, x + 81, mY + 11, 2, new Color(0, 0, 0, 200).getRGB());
-            RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250,alphaAnim.getAlpha()).getRGB());
+            RenderUtils.drawRoundedRect2(x + 60 - l, mY - 4, x + 80, mY + 10, 2, new Color(250, 250, 250, 250).getRGB());
             font.drawString(listValue.get(), x + 70 - l, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
             font.drawString("<", x + 73, mY + 1, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB());
         }
@@ -175,10 +175,18 @@ public class Settings extends Setting {
         RenderUtils.drawRoundedRect2(x + 30, mY - 2, x + 50, mY + 8, 4, new Color(239, 237, 237,alphaAnim.getAlpha()).getRGB() );
         RenderUtils.drawRoundedRect2(x + 28, mY - 4, x + 52, mY + 10, 5, boolValue.get() ? new Color(66, 134, 245,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
         RenderUtils.circle(x + 40 + boolValue.getAnimation().getAnimationX(), mY + 3, 4, boolValue.get() ? new Color(255,255,255,alphaAnim.getAlpha()).getRGB() : new Color(164, 168, 175,alphaAnim.getAlpha()).getRGB());
-        if(boolValue.getAnimation().getAnimationX() > -5F && !boolValue.get())
-            boolValue.getAnimation().animationX -= 1F;
-        else if(boolValue.getAnimation().getAnimationX() < 5F && boolValue.get())
-            boolValue.getAnimation().animationX += 1F;
+        if (boolValue.getState()) {
+            boolValue.getAnimation().animationX += (5F - boolValue.getAnimation().animationX) / 1.5;
+            if (boolValue.getAnimation().animationX > 4F) {
+                boolValue.getAnimation().animationX = 5F;
+            }
+        } else {
+            boolValue.getAnimation().animationX += (-5F - boolValue.getAnimation().animationX) / 1.5;
+            if (boolValue.getAnimation().animationX < -4F) {
+                boolValue.getAnimation().animationX = -5F;
+            }
+        }
+        
         if (this.isHovered(x + 30, mY + 2, x + 50, mY + 12, mouseX, mouseY)) {
             if (mouse)
                 boolValue.set(!boolValue.get());
