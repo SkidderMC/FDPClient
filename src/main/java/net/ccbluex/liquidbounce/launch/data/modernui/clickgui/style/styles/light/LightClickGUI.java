@@ -620,12 +620,14 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过
         
+        int Hdiff = animationHeight - categoryYpos;
         
         animationHeight += Math.round((categoryYpos - animationHeight)/2.5);
-        if ( (animationHeight - categoryYpos) > -3 && (animationHeight - categoryYpos) < 0) ) {
+        
+        if ( Hdiff > -3 && Hdiff < 0 ) {
             animationHeight = categoryYpos;
         }
-        if ( (animationHeight - categoryYpos) < 3 && (animationHeight - categoryYpos) > 0) ) {
+        if ( Hdiff < 3 && Hdiff > 0 ) {
             animationHeight = categoryYpos;
         }
 
