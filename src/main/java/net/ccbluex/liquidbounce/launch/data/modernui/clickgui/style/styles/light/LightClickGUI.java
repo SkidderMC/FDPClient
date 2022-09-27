@@ -396,7 +396,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 logoFont.drawString("No Settings For Current Module", (int) (startX + 250), (int) (startY + 130),
                         new Color(100, 100, 100,valueAnim.getAlpha()).getRGB());
             for (int i = 0; i < currentModule.getValues().size(); i++) {
-                if (mY > startY + 260)
+                if (mY > startY + 280)
                     break;
                 if (i < valueStart) {
                     continue;
