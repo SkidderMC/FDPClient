@@ -129,7 +129,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         // serach box
         searchBox.xPosition = (int) startX;
-        searchBox.yPosition = (int) (startY + 20);
+        searchBox.yPosition = (int) (startY + 10);
         this.searchBox.setMaxStringLength(20);
         
         // animate alpha
@@ -175,16 +175,16 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         Fonts.font35.drawString("FDPClient", startX + 10, startY + 7, new Color(200,200,200).getRGB());
         
         // new sexy background
-        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 3,
+        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 310, 6,
             new Color(230, 230, 230, 250).getRGB());
-        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 25, 3,
+        RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 10, (int) startX + 400, (int) startY + 25, 3,
             new Color(250, 250, 250, 255).getRGB());
         
 
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
 
         // search box time
-        defaultFont.drawString(searchBox.getText().isEmpty() && !searchBox.isFocused() ? "Search..." : searchBox.getText(), (int) (startX + 3), (int) (startY + 25), new Color(80, 80, 80).getRGB());
+        defaultFont.drawString(searchBox.getText().isEmpty() && !searchBox.isFocused() ? "Search..." : searchBox.getText(), (int) (startX + 3), (int) (startY + 15), new Color(80, 80, 80).getRGB());
 
         // no module???? holder text
         if(currentModule == null) {
@@ -393,7 +393,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             }
             mY = startY + 30;
             if (currentModule.getValues().isEmpty())
-                logoFont.drawString("No Settings For Module", (int) (startX + 250), (int) (startY + 130),
+                logoFont.drawString("No Settings For Current Module", (int) (startX + 250), (int) (startY + 130),
                         new Color(100, 100, 100,valueAnim.getAlpha()).getRGB());
             for (int i = 0; i < currentModule.getValues().size(); i++) {
                 if (mY > startY + 260)
