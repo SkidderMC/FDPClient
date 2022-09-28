@@ -44,8 +44,10 @@ FDPClient uses gradle, so make sure that it is installed properly. Instructions 
 3. Depending on which IDE you are using, execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
     - For Eclipse: `gradlew --debug setupDevWorkspace eclipse build`
-4. Open the folder as a Gradle project in your IDE.
+4. Open the folder as a Gradle project in your IDE. (make sure your ide is using java 8, you will face issues if it isnt)
 5. Select the Forge run configuration.
+### troubleshooting workspace errors
+if you get a "cannot find forgebin" error, download forge 1.8.9 universal from the forge site and place it in `./FDPClient-main/.gradle/minecraft`<br>
 
 ## Additional libraries
 ### Mixins
