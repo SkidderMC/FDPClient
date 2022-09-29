@@ -28,11 +28,6 @@ import java.io.IOException;
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
-    private ModuleCategory homeHoveredCategory = ModuleCategory.COMBAT;
-    private int homeHoverAnim = 0;
-    private int homeX = 0;
-    private int homeY = 0;
-    private boolean homePage = true;
     private Module currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
     private float startX = 50, startY = 25;
     private int moduleStart = 0;
@@ -50,7 +45,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private float guiScale = 0;
     private final AnimationHelper alphaAnim = new AnimationHelper();
     private final AnimationHelper valueAnim = new AnimationHelper();
-    private int categoryYpos = 40;
+    private int categoryYpos = 35;
     private InputBox searchBox;
     private boolean firstSetAnimation;
     public LightClickGUI() {
@@ -172,7 +167,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         }
         
         // fdp water mark
-        Fonts.font35.drawString("FDPClient", startX + 10, startY + 7, new Color(200,200,200).getRGB());
+        Fonts.font35.drawString("Made by SkidderMC", startX + 210, startY + 295, new Color(200,200,200).getRGB());
         
         // new sexy background
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 10, (int) startX + 400, (int) startY + 310, 3,
@@ -231,9 +226,9 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             mc.displayGuiScreen(new GuiExit());
         }
         
-        moduleAnimation += -6;
-        if (moduleAnimation < -5) {
-            moduleAnimation = -5;
+        moduleAnimation += -3;
+        if (moduleAnimation < 0) {
+            moduleAnimation = 0;
         }
 
 
@@ -281,9 +276,9 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     defaultFont.drawString(module.getName(), (int) (startX + 70) + moduleAnimation, (int) (mY + 6), moduleColor);
                     defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
 
-                    moduleAnimation += 7;
-                    if (moduleAnimation > 6) {
-                        moduleAnimation = 6;
+                    moduleAnimation += 5;
+                    if (moduleAnimation > 7) {
+                        moduleAnimation = 7;
                     }
                     if (Mouse.isButtonDown(1) && !rightClickMouse && currentModule != module) {
                         currentModule = module;
@@ -344,9 +339,9 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         defaultFont.drawString(module.getName(), (int) (startX + 70) + moduleAnimation, (int) (mY + 6), moduleColor);
                         defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
 
-                        moduleAnimation += 7;
-                        if (moduleAnimation > 6) {
-                            moduleAnimation = 6;
+                        moduleAnimation += 5;
+                        if (moduleAnimation > 7) {
+                            moduleAnimation = 7;
                         }
                         if (Mouse.isButtonDown(1) && !rightClickMouse && currentModule != module) {
                             currentModule = module;
@@ -594,7 +589,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             new Color(180, 180, 180, 250).getRGB());
         
         // blue box that highlights categories;ll;l
-        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 5, (int) startX + 34 + categoryAnimation, (int) startY + animationHeight + 15, 5,
+        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 5, (int) startX + 34 + categoryAnimation, (int) startY + animationHeight + 16, 5,
             new Color(29, 143, 237, 250).getRGB());
         
         
