@@ -92,4 +92,4 @@ Like the "TimerSpeed" option to InfiniteAura, this feature can be added by bindi
 @XiGuaHanHan(Wlenk) | Got Exams
   
 To be continued...      
-Thanking them for their contributions.
+Thanking them for their amazing contributions.
