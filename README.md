@@ -11,7 +11,7 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 
 ## How To Install FDP?
-- **Step 1:** Install Java [here](https://www.java.com/en/download/) (Skip if you have Java)
+- **Step 1:** Install Java 8 [here](https://www.java.com/en/download/) (Skip if you have Java 8)
 - **Step 2:** Install Forge 1.8.9 [here](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it
 - **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\\.minecraft\mods or if you are using the official launcher, click the installations tab then click the folder icon next to forge)
@@ -44,7 +44,7 @@ FDPClient uses gradle, so make sure that it is installed properly. Instructions 
 3. Depending on which IDE you are using, execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
     - For Eclipse: `gradlew --debug setupDevWorkspace eclipse build`
-4. Open the folder as a Gradle project in your IDE. (make sure your ide is using java 8, you will face issues if it isnt)
+4. Open the folder as a Gradle project in your IDE. (Make sure that your IDE is using Java 8, if not then it will have issues)
 5. Select the Forge run configuration.
 ### Troubleshooting Workspace Errors
 If you get a "cannot find forgebin" error, download forge 1.8.9 universal from the forge site and place it in `./FDPClient-main/.gradle/minecraft`<br>.
