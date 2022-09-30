@@ -42,6 +42,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private int animationHeight = 0;
     private int categoryAnimation = 0;
     private int moduleAnimation = 0;
+    private boolean moduleHover = false;
     private float guiScale = 0;
     private final AnimationHelper alphaAnim = new AnimationHelper();
     private final AnimationHelper valueAnim = new AnimationHelper();
@@ -124,7 +125,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         
         // serach box
         searchBox.xPosition = (int) startX;
-        searchBox.yPosition = (int) (startY + 10);
+        searchBox.yPosition = (int) (startY + 15);
         this.searchBox.setMaxStringLength(20);
         
         // animate alpha
@@ -225,11 +226,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 && Mouse.isButtonDown(0)) {
             mc.displayGuiScreen(new GuiExit());
         }
-        
-        moduleAnimation += -3;
-        if (moduleAnimation < 0) {
-            moduleAnimation = 0;
-        }
+
+        moduleHover = false;
 
 
         if(!searchBox.getText().isEmpty()) {
@@ -273,13 +271,15 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 RenderUtils.drawRoundedRect2(startX + 65, mY + 3, startX + 185, mY + 23, 4, new Color(colorV, colorV, colorV, alphaAnim.getAlpha()).getRGB());
 
                 if (isSettingsButtonHovered(startX + 64, mY + 2, startX + 186, mY + 24, mouseX, mouseY) && categoryAnimation < 15) {
-                    defaultFont.drawString(module.getName(), (int) (startX + 70) + moduleAnimation, (int) (mY + 6), moduleColor);
-                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
+                    defaultFont.drawString(module.getName(), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 6), moduleColor);
+                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + moduleAnimation, (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB() - 14 +  moduleAnimation * 2);
 
-                    moduleAnimation += 5;
-                    if (moduleAnimation > 7) {
-                        moduleAnimation = 7;
+                    moduleAnimation += 1;
+                    if (moduleAnimation > 4) {
+                        moduleAnimation = 4;
                     }
+                    moduleHover = true;
+
                     if (Mouse.isButtonDown(1) && !rightClickMouse && currentModule != module) {
                         currentModule = module;
                         valueAnim.resetAlpha();
@@ -336,13 +336,15 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     RenderUtils.drawRoundedRect2(startX + 65, mY + 3, startX + 185, mY + 23, 4, new Color(colorV, colorV, colorV, alphaAnim.getAlpha()).getRGB());
                     
                     if (isSettingsButtonHovered(startX + 64, mY + 2, startX + 186, mY + 24, mouseX, mouseY) && categoryAnimation < 15) {
-                        defaultFont.drawString(module.getName(), (int) (startX + 70) + moduleAnimation, (int) (mY + 6), moduleColor);
-                        defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
+                        defaultFont.drawString(module.getName(), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 6), moduleColor);
+                        defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + moduleAnimation, (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB() - 14 +  moduleAnimation * 2);
 
-                        moduleAnimation += 5;
-                        if (moduleAnimation > 7) {
-                            moduleAnimation = 7;
+                        moduleAnimation += 1;
+                        if (moduleAnimation > 4) {
+                            moduleAnimation = 4;
                         }
+                        moduleHover = true;
+
                         if (Mouse.isButtonDown(1) && !rightClickMouse && currentModule != module) {
                             currentModule = module;
                             valueAnim.resetAlpha();
@@ -444,17 +446,39 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        
+
+        if (!moduleHover) {
+            moduleAnimation = 0;
+        }
+
+        // set y pos to category
+        if (currentCategory == ModuleCategory.COMBAT)
+            categoryYpos = 35;
+        if (currentCategory == ModuleCategory.MOVEMENT)
+            categoryYpos = 70;
+        if (currentCategory == ModuleCategory.WORLD)
+            categoryYpos = 105;
+        if (currentCategory == ModuleCategory.PLAYER)
+            categoryYpos = 140;
+        if (currentCategory == ModuleCategory.EXPLOIT)
+            categoryYpos = 175;
+        if (currentCategory == ModuleCategory.MISC)
+            categoryYpos = 210;
+        if (currentCategory == ModuleCategory.CLIENT)
+            categoryYpos = 245;
+        if (currentCategory == ModuleCategory.RENDER)
+            categoryYpos = 280;
 
         // detect mouse clicking on categories
+        // and set animation if hovered over
         if(categoryMouse && !Mouse.isButtonDown(0))
             categoryMouse = false;
-        if (isCategoryHovered(startX + 11, startY + 25, startX + 35 + categoryAnimation, startY + 45, mouseX, mouseY)) {
+        if (isCategoryHovered(startX - 5, startY + 25, startX + 35 + categoryAnimation, startY + 13 + 45, mouseX, mouseY)) {
+            categoryYpos = 35;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.COMBAT) {
                     currentCategory = ModuleCategory.COMBAT;
                     categoryMouse = true;
-                    categoryYpos = 35;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -464,12 +488,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 60, startX + 35 + categoryAnimation, startY + 80, mouseX, mouseY)) {
+        if (isCategoryHovered(startX - 5, startY + 3 + 55, startX + 35 + categoryAnimation, startY + 13 + 80, mouseX, mouseY)) {
+            categoryYpos = 70;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.MOVEMENT) {
                     currentCategory = ModuleCategory.MOVEMENT;
                     categoryMouse = true;
-                    categoryYpos = 70;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -479,12 +503,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 95, startX + 35 + categoryAnimation, startY + 115, mouseX, mouseY)) {
+        if (isCategoryHovered(startX - 5, startY + 3 + 90, startX + 35 + categoryAnimation, startY + 13 + 115, mouseX, mouseY)) {
+            categoryYpos = 105;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.WORLD) {
                     currentCategory = ModuleCategory.WORLD;
                     categoryMouse = true;
-                    categoryYpos = 105;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -494,12 +518,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 130, startX + 35 + categoryAnimation, startY + 150, mouseX, mouseY)) {
+        if (isCategoryHovered(startX - 5, startY + 3 + 125, startX + 35 + categoryAnimation, startY + 13 + 150, mouseX, mouseY)) {
+            categoryYpos = 140;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.PLAYER) {
                     currentCategory = ModuleCategory.PLAYER;
                     categoryMouse = true;
-                    categoryYpos = 140;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -509,12 +533,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 165, startX + 35 + categoryAnimation, startY + 185, mouseX, mouseY)) {
+        if (isCategoryHovered(startX - 5, startY + 3 + 160, startX + 35 + categoryAnimation, startY + 13 + 185, mouseX, mouseY)) {
+            categoryYpos = 175;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.EXPLOIT) {
                     currentCategory = ModuleCategory.EXPLOIT;
                     categoryMouse = true;
-                    categoryYpos = 175;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -524,12 +548,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 200, startX + 35 + categoryAnimation, startY + 220, mouseX, mouseY)) {
+        if (isCategoryHovered(startX - 5, startY + 3 + 195, startX + 35 + categoryAnimation, startY + 13 + 220, mouseX, mouseY)) {
+            categoryYpos = 210;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.MISC) {
                     currentCategory = ModuleCategory.MISC;
                     categoryMouse = true;
-                    categoryYpos = 210;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -539,12 +563,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 235, startX + 35 + categoryAnimation, startY + 255, mouseX, mouseY)) {
+        if (isCategoryHovered(startX - 5, startY + 3 + 230, startX + 35 + categoryAnimation, startY + 13 + 255, mouseX, mouseY)) {
+            categoryYpos = 245;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.CLIENT) {
                     currentCategory = ModuleCategory.CLIENT;
                     categoryMouse = true;
-                    categoryYpos = 245;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -554,12 +578,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
-        if (isCategoryHovered(startX + 11, startY + 270, startX + 35 + categoryAnimation, startY + 290, mouseX, mouseY)) {
+        if (isCategoryHovered(startX - 5, startY + 3 + 265, startX + 35 + categoryAnimation, startY + 13 + 290, mouseX, mouseY)) {
+            categoryYpos = 280;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.RENDER) {
                     currentCategory = ModuleCategory.RENDER;
                     categoryMouse = true;
-                    categoryYpos = 280;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
                         currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -569,12 +593,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 }
             }
         }
+
         
-        
-        if (isCategoryHovered(startX + 5, startY + 10, startX + categoryAnimation + 53, startY + 310, mouseX, mouseY)) {
-            categoryAnimation += Math.round((50 - categoryAnimation) / 3);
+        if (isCategoryHovered(startX - 5, startY + 25, startX + categoryAnimation + 53, startY + 310, mouseX, mouseY)) {
+            categoryAnimation += Math.round((50 - categoryAnimation) / 3.5);
         } else {
-            categoryAnimation += Math.round((0 - categoryAnimation) / 3);
+            categoryAnimation += Math.round((0 - categoryAnimation) / 3.5);
         }
         
         // gradient shadwo things
@@ -589,7 +613,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             new Color(180, 180, 180, 250).getRGB());
         
         // blue box that highlights categories;ll;l
-        RenderUtils.drawRoundedRect2((int) startX + 11, (int) startY + animationHeight - 5, (int) startX + 34 + categoryAnimation, (int) startY + animationHeight + 16, 5,
+        RenderUtils.drawRoundedRect2((int) startX + 6, (int) startY + animationHeight - 5, (int) startX + 38 + categoryAnimation, (int) startY + animationHeight + 17, 5,
             new Color(29, 143, 237, 250).getRGB());
         
         
