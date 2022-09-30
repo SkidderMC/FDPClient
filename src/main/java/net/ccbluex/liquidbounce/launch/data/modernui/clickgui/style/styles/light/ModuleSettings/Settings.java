@@ -175,7 +175,7 @@ public class Settings extends Setting {
         font.drawString(boolValue.getName(), startX + 210, mY, new Color(80, 80, 80,alphaAnim.getAlpha()).getRGB()); 
         RenderUtils.drawRoundedRect2(x + 28, mY - 4, x + 52, mY + 10, 5, boolValue.get() ? new Color(66, 134, 245,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB() );
         RenderUtils.drawRoundedRect2(x + 30, mY - 2, x + 50, mY + 8, 4, new Color(250, 250, 250, 255).getRGB());
-        RenderUtils.circle(x + 40 + boolValue.getAnimation().getAnimationX(), mY + 3, 4, boolValue.get() ? new Color(255,255,255,alphaAnim.getAlpha()).getRGB() : new Color(66, 134, 245,alphaAnim.getAlpha()).getRGB());
+        RenderUtils.circle(x + 40 + boolValue.getAnimation().getAnimationX(), mY + 3, 4, boolValue.get() ? new Color(66, 134, 245,alphaAnim.getAlpha()).getRGB() : new Color(174, 174, 174,alphaAnim.getAlpha()).getRGB());
         if (boolValue.get()) {
             boolValue.getAnimation().animationX += (5F - boolValue.getAnimation().animationX) / 2.5;
         } else {
