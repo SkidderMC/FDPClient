@@ -27,7 +27,6 @@ class FileManager : MinecraftInstance() {
     val legacySettingsDir = File(dir, "legacy-settings")
     val capesDir = File(dir, "capes")
     val themesDir = File(dir, "themes")
-    val legalDir = File(dir, "legal")
     val accountsConfig = AccountsConfig(File(dir, "accounts.json"))
     var friendsConfig = FriendsConfig(File(dir, "friends.json"))
     val xrayConfig = XRayConfig(File(dir, "xray-blocks.json"))
@@ -63,10 +62,6 @@ class FileManager : MinecraftInstance() {
 
         if (!soundsDir.exists()) {
             soundsDir.mkdir()
-        }
-
-        if (!legalDir.exists()) {
-            legalDir.mkdir()
         }
 
         if (!capesDir.exists()) {

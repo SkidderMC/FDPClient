@@ -191,7 +191,7 @@ public class Fonts {
 
     private static void initFonts() {
         try {
-            initSingleFont("regular.ttf","assets/minecraft/fdpclient/font/regular.ttf");
+            initSingleFont("regular.ttf", "assets/minecraft/fdpclient/font/regular.ttf");
         }catch(IOException e) {
             e.printStackTrace();
         }
@@ -261,30 +261,57 @@ public class Fonts {
     }
 
     public static FontRenderer getFontRenderer(final String name, final int size) {
-        if(name.equals("Minecraft")){
-            return minecraftFont;
+        for (final Field field : Fonts.class.getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+
+                final Object o = field.get(null);
+
+                if (o instanceof FontRenderer) {
+                    final FontDetails fontDetails = field.getAnnotation(FontDetails.class);
+
+                    if (fontDetails.fontName().equals(name) && fontDetails.fontSize() == size)
+                        return (FontRenderer) o;
+                }
+            } catch (final IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
 
-        for (final FontRenderer fontRenderer : getFonts()) {
-            if(fontRenderer instanceof GameFontRenderer){
-                GameFontRenderer liquidFontRenderer=(GameFontRenderer) fontRenderer;
-                final Font font = liquidFontRenderer.getDefaultFont().getFont();
+        for (final GameFontRenderer liquidFontRenderer : CUSTOM_FONT_RENDERERS) {
+            final Font font = liquidFontRenderer.getDefaultFont().getFont();
 
-                if(font.getName().equals(name) && font.getSize() == size)
-                    return liquidFontRenderer;
-            }
+            if (font.getName().equals(name) && font.getSize() == size)
+                return liquidFontRenderer;
         }
 
         return minecraftFont;
     }
 
     public static Object[] getFontDetails(final FontRenderer fontRenderer) {
+        for (final Field field : Fonts.class.getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+
+                final Object o = field.get(null);
+
+                if (o.equals(fontRenderer)) {
+                    final FontDetails fontDetails = field.getAnnotation(FontDetails.class);
+
+                    return new Object[] {fontDetails.fontName(), fontDetails.fontSize()};
+                }
+            } catch (final IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
         if (fontRenderer instanceof GameFontRenderer) {
             final Font font = ((GameFontRenderer) fontRenderer).getDefaultFont().getFont();
+
             return new Object[] {font.getName(), font.getSize()};
         }
 
-        return new Object[] {"Minecraft", -1};
+        return null;
     }
 
     public static List<FontRenderer> getFonts() {

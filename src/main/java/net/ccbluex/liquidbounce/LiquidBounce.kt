@@ -25,7 +25,6 @@ import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.font.FontsGC
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.utils.*
@@ -44,7 +43,7 @@ object LiquidBounce {
 
     var CLIENTTEXT = "Waiting..."
     var Darkmode = true
-    const val COLORED_NAME = "§7[§b!§7] §b§lFDPCLIENT §c» "
+    const val COLORED_NAME = "§7[§f!§7] §b§lFDPCLIENT §f» "
     const val CLIENT_CREATOR = "CCBlueX & SkidderMC TEAM"
     const val CLIENT_WEBSITE = "fdpinfo.github.io"
     const val VERSIONTYPE = "BETA" // Change to RELEASE on release and BETA on beta
@@ -154,7 +153,6 @@ object LiquidBounce {
         )
         // Load client fonts
         Fonts.loadFonts()
-        eventManager.registerListener(FontsGC)
 
         macroManager = MacroManager()
         eventManager.registerListener(macroManager)
