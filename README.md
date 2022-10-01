@@ -39,15 +39,13 @@ Do the above and share your source code with everyone; just like we do!
 
 ## Setting up a Workspace
 FDPClient uses gradle, so make sure that it is installed properly. Instructions can be found on [Gradle's website](https://gradle.org/install/).
-1. Clone the repository using `git clone --recurse-submodules https://github.com/SkidderMC/FDPClient.git` (Make sure you have git or Github Desktop installed on your system).
+1. Clone the repository using `git clone https://github.com/SkidderMC/FDPClient.git` (Make sure you have git or Github Desktop installed on your system).
 2. CD into the local repository folder.
-3. Depending on which IDE you are using, execute either of the following commands:
-    - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
-    - For Eclipse: `gradlew --debug setupDevWorkspace eclipse build`
+3. If you are using Intelij run the following command `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
 4. Open the folder as a Gradle project in your IDE. (Make sure that your IDE is using Java 8, if not then it will have issues)
 5. Select the Forge run configuration.
 ### Troubleshooting Workspace Errors
-If you get a "cannot find forgebin" error, download forge 1.8.9 universal from the forge site and place it in `./FDPClient-main/.gradle/minecraft`<br>.
+If you get a "cannot find forgebin" error, download forge 1.8.9 universal from the forge site and place it in `./FDPClient-main/.gradle/minecraft`<br>
 
 ## Additional Libraries
 ### Mixins
@@ -59,11 +57,11 @@ We welcome contributions, but you have to follow the following rules in order fo
 You can make a pull request [here](https://github.com/SkidderMC/FDPClient/issues)!
 
 ### Language and Code Quality
-Your code needs to be able to build, please ensure your code has little to no bugs!  
+Your code needs to be able to build, please ensure your code has little to no bugs.
 You also need to use kotlin features to make coding easier and faster, so please use kotlin and pass the [Detekt](https://github.com/detekt/detekt) code quality check, use kotlin features if you can, because we will never merge terrible code.
 
 #### Kotlin Features
-Help enhance the code readability by using kotlin features.
+If applicable please use kotlin since it is more human readable, we have provided an example below of kotlin:
 
 Using kotlin features:
 ~~~kotlin
@@ -87,9 +85,7 @@ Please use original code if you can and do not directly steal code, however we w
 Useless features are features only you think are useful and/or features can be added with a config change.  
 Like the "TimerSpeed" option to InfiniteAura, this feature can be added by binding Timer to the key with InfiniteAura, or use the macro system in FDP Client.
 
-### Old Contributors
-@Liulihaocai(kotonemywaifu) | Quitted Minecraft Cheating    
-@XiGuaHanHan(Wlenk) | Got Exams
+### A special thanks
+Thank you to the devs who made fdp what it is today;<br>
+ @Liulihaocai(kotonemywaifu) @XiGuaHanHan(Wlenk) 
   
-To be continued...      
-Thanking them for their amazing contributions.
