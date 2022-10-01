@@ -3,6 +3,9 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
+
+// by dg636 & opzywl
+
 package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
@@ -37,6 +40,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private float moveX = 0, moveY = 0;
     private final FontRenderer defaultFont = Fonts.font35;
     private final FontRenderer logoFont = Fonts.font40;
+
+    private final int fontHeight = Math.round(defaultFont.FONT_HEIGHT / 2);
     private boolean rightClickMouse = false;
     private boolean categoryMouse = false;
     private int animationHeight = 0;
@@ -108,7 +113,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         // yes hud designer here
         RenderUtils.drawImage(new ResourceLocation( "fdpclient/ui/clickgui/hud.png"), 9, height - 41, 32, 32);
-        
+
         // set up bool animations?
         if(!firstSetAnimation) {
             for (Module i : LiquidBounce.moduleManager.getModules()) {
@@ -122,12 +127,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             }
             firstSetAnimation = true;
         }
-        
+
         // serach box
         searchBox.xPosition = (int) startX;
         searchBox.yPosition = (int) (startY + 15);
         this.searchBox.setMaxStringLength(20);
-        
+
         // animate alpha
         if(alphaAnim.getAlpha() == 250)
             alphaAnim.alpha = 255;
@@ -139,19 +144,19 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         else
             valueAnim.updateAlpha(30);
         //value界面的alpha
-        
+
         // animate scale
         if(guiScale < 100)
             guiScale += 10;//启动动画
         GlStateManager.scale(guiScale / 100, guiScale / 100, guiScale / 100);
-        
+
         // make that variable gurl
         Settings settings = new Settings(valueAnim);//value的settings
-        
+
         // huddesigner icon sense clik
         if (Mouse.isButtonDown(0) && mouseX >= 5 && mouseX <= 50 && mouseY <= height - 5 && mouseY >= height - 50)
             mc.displayGuiScreen(new GuiHudDesigner()); //进入自定义HUD界面
-        
+
         // click = move target hud
         if (isHovered(startX - 5, startY, startX + 400, startY + 25, mouseX, mouseY) && Mouse.isButtonDown(0)) {//移动窗口
             if (moveX == 0 && moveY == 0) {
@@ -166,16 +171,16 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             moveX = 0;
             moveY = 0;
         }
-        
+
         // fdp water mark
         Fonts.font35.drawString("Made by SkidderMC", startX + 210, startY + 295, new Color(200,200,200).getRGB());
-        
+
         // new sexy background
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 10, (int) startX + 400, (int) startY + 310, 3,
-            new Color(235, 235, 235, 255).getRGB());
+                new Color(235, 235, 235, 255).getRGB());
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 25, 10,
-            new Color(250, 250, 250, 255).getRGB());
-        
+                new Color(250, 250, 250, 255).getRGB());
+
 
         //drawBorderedRect(startX + 130, startY + 7, startX + 190, startY + 15, 0.5F, -1, new Color(100,100,100).getRGB());
 
@@ -218,7 +223,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             }
         }
 
-        // draw current categorys category's name 
+        // draw current categorys category's name
         logoFont.drawString(currentCategory.getDisplayName(), (int) (startX + 60), (int) (startY + 10),
                 new Color(100, 100, 100,alphaAnim.getAlpha()).getRGB());
         RenderUtils.circle(startX + 390, startY + 8, 1.5F, new Color(31, 158, 255).getRGB());
@@ -247,7 +252,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     valueStart--;
                 }
             }
-            
+
             // draw categories search box
             float mY = startY + 30;
 
@@ -271,12 +276,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 RenderUtils.drawRoundedRect2(startX + 65, mY + 3, startX + 185, mY + 23, 4, new Color(colorV, colorV, colorV, alphaAnim.getAlpha()).getRGB());
 
                 if (isSettingsButtonHovered(startX + 64, mY + 2, startX + 186, mY + 24, mouseX, mouseY) && categoryAnimation < 15) {
-                    defaultFont.drawString(module.getName(), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 6), moduleColor);
-                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + moduleAnimation, (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB() - 14 +  moduleAnimation * 2);
+                    defaultFont.drawString(module.getName(), (int) (startX + 70) + Math.round(moduleAnimation / 2), (int) (mY + 6 + 5 - fontHeight), moduleColor);
+                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + Math.round(moduleAnimation / 2), (int) (mY + 13 + 5 - fontHeight), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB() - 14 +  moduleAnimation * 2);
 
                     moduleAnimation += 1;
-                    if (moduleAnimation > 4) {
-                        moduleAnimation = 4;
+                    if (moduleAnimation > 6) {
+                        moduleAnimation = 6;
                     }
                     moduleHover = true;
 
@@ -294,12 +299,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         previousMouse = true;
                     }
                 } else {
-                    defaultFont.drawString(module.getName(), (int) (startX + 70), (int) (mY + 6), moduleColor);
-                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
+                    defaultFont.drawString(module.getName(), (int) (startX + 70), (int) (mY + 6 + 5 - fontHeight), moduleColor);
+                    defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70), (int) (mY + 13 + 5 - fontHeight), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
                 }
                 if (rightClickMouse && !Mouse.isButtonDown(1))
                     rightClickMouse = false;
-                
+
                 RenderUtils.drawRoundedRect2(startX + 160, mY + 6, startX + 180, mY + 16, 4, module.getState() && module.getAnimation().getAnimationX() >= 3F ? new Color(29, 143, 237,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
                 RenderUtils.circle(startX + 170 + module.getAnimation().getAnimationX(), mY + 11, 4, module.getState() ? new Color(255,255,255,alphaAnim.getAlpha()).getRGB() : new Color(164, 168, 175,alphaAnim.getAlpha()).getRGB());
                 if (module.getState()) {
@@ -307,7 +312,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                 } else {
                     module.getAnimation().animationX += (-5F - module.getAnimation().animationX) / 2.5;
                 }
-                
+
                 mY += 28;
             }
         }
@@ -322,26 +327,26 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         break;
                     if (i < moduleStart)
                         continue;
-                    
+
                     int moduleColor = new Color(118, 117, 117,alphaAnim.getAlpha()).getRGB();
 
 
                     if (!Mouse.isButtonDown(0)) {
                         this.previousMouse = false;
                     }
-                    
+
                     int colorV =  245 - (int) (module.getAnimation().animationX);
                     RenderUtils.drawRoundedRect2(startX + 63, mY + 1, startX + 187, mY + 25, 6, new Color(210, 210, 210, alphaAnim.getAlpha()).getRGB());
                     RenderUtils.drawRoundedRect2(startX + 64, mY + 2, startX + 186, mY + 24, 5, new Color(230, 230, 230, alphaAnim.getAlpha()).getRGB());
                     RenderUtils.drawRoundedRect2(startX + 65, mY + 3, startX + 185, mY + 23, 4, new Color(colorV, colorV, colorV, alphaAnim.getAlpha()).getRGB());
-                    
+
                     if (isSettingsButtonHovered(startX + 64, mY + 2, startX + 186, mY + 24, mouseX, mouseY) && categoryAnimation < 15) {
-                        defaultFont.drawString(module.getName(), (int) (startX + 70) + (int) (Math.round(moduleAnimation / 2)), (int) (mY + 6), moduleColor);
-                        defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + moduleAnimation, (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB() - 14 +  moduleAnimation * 2);
+                        defaultFont.drawString(module.getName(), (int) (startX + 70) + Math.round(moduleAnimation / 2), (int) (mY + 6 + 5 - fontHeight), moduleColor);
+                        defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70) + Math.round(moduleAnimation / 2), (int) (mY + 13 + 5 - fontHeight), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB() - 14 +  moduleAnimation * 2);
 
                         moduleAnimation += 1;
-                        if (moduleAnimation > 4) {
-                            moduleAnimation = 4;
+                        if (moduleAnimation > 6) {
+                            moduleAnimation = 6;
                         }
                         moduleHover = true;
 
@@ -359,12 +364,12 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                             previousMouse = true;
                         }
                     } else {
-                        defaultFont.drawString(module.getName(), (int) (startX + 70), (int) (mY + 6), moduleColor);
-                        defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70), (int) (mY + 13), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
+                        defaultFont.drawString(module.getName(), (int) (startX + 70), (int) (mY + 6 + 5 - fontHeight), moduleColor);
+                        defaultFont.drawString("KeyBind: " + (!Keyboard.getKeyName(module.getKeyBind()).equalsIgnoreCase("NONE") ? Keyboard.getKeyName(module.getKeyBind()) : "None"), (int) (startX + 70), (int) (mY + 13 + 5 - fontHeight), new Color(80, 80, 80, alphaAnim.getAlpha()).getRGB());
                     }
                     if (rightClickMouse && !Mouse.isButtonDown(1))
                         rightClickMouse = false;
-                    
+
                     RenderUtils.drawRoundedRect2(startX + 160, mY + 6, startX + 180, mY + 16, 4, module.getState() && module.getAnimation().getAnimationX() >= 3F ? new Color(29, 143, 237,alphaAnim.getAlpha()).getRGB() : new Color(114, 118, 125,alphaAnim.getAlpha()).getRGB());
                     RenderUtils.circle(startX + 170 + module.getAnimation().getAnimationX(), mY + 11, 4, module.getState() ? new Color(255,255,255,alphaAnim.getAlpha()).getRGB() : new Color(164, 168, 175,alphaAnim.getAlpha()).getRGB());
                     if (module.getState()) {
@@ -373,13 +378,13 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                         module.getAnimation().animationX += (-5F - module.getAnimation().animationX) / 2.5;
 
                     }
-                    
+
                     mY += 28;
                 }
             }
             mY = startY + 30;
             if (currentModule.getValues().isEmpty())
-                logoFont.drawString("Current Module Has No Settings", (int) (startX + 220), (int) (startY + 130),
+                logoFont.drawString("Current Module Has No Settings", (int) (startX + 220), (int) (startY + 135 - fontHeight),
                         new Color(100, 100, 100,valueAnim.getAlpha()).getRGB());
             for (int i = 0; i < currentModule.getValues().size(); i++) {
                 if (mY > startY + 280)
@@ -594,46 +599,46 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             }
         }
 
-        
+
         if (isCategoryHovered(startX - 5, startY + 25, startX + categoryAnimation + 53, startY + 310, mouseX, mouseY)) {
             categoryAnimation += Math.round((50 - categoryAnimation) / 3.5);
         } else {
             categoryAnimation += Math.round((0 - categoryAnimation) / 3.5);
         }
-        
+
         // gradient shadwo things
-        RenderUtils.drawGradientSideways(startX + categoryAnimation + 48, startY + 25, startX + categoryAnimation + 55, startY + 310, 
+        RenderUtils.drawGradientSideways(startX + categoryAnimation + 48, startY + 25, startX + categoryAnimation + 55, startY + 310,
                 new Color(0, 0, 0, 90).getRGB(), new Color(0, 0, 0, 0).getRGB());//255,255,255,30
 
         RenderUtils.drawGradientSideways(startX + 200, startY + 25, startX + 205, startY + 310,
                 new Color(0, 0, 0, 70).getRGB(), new Color(0,0,0,0).getRGB());//239,237,237,30
-        
+
         // grayish bg of categories
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 25, (int) startX + 50 + categoryAnimation, (int) startY + 310, 1,
-            new Color(180, 180, 180, 250).getRGB());
-        
+                new Color(180, 180, 180, 250).getRGB());
+
         // blue box that highlights categories;ll;l
         RenderUtils.drawRoundedRect2((int) startX + 6, (int) startY + animationHeight - 5, (int) startX + 38 + categoryAnimation, (int) startY + animationHeight + 17, 5,
-            new Color(29, 143, 237, 250).getRGB());
-        
-        
+                new Color(29, 143, 237, 250).getRGB());
+
+
         if (categoryAnimation > 4) {
-            Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 37,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Move",     startX + 30 + Math.round(categoryAnimation / 5), startY + 72,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 107, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 142, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 177, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 212, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 247, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Render",   startX + 30 + Math.round(categoryAnimation / 5), startY + 282, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 35 + 6 - fontHeight,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Move",     startX + 30 + Math.round(categoryAnimation / 5), startY + 70 + 6 - fontHeight,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 105 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 140 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 175 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 210 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 245 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Render",   startX + 30 + Math.round(categoryAnimation / 5), startY + 280 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
         }
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过
-        
+
         int Hdiff = animationHeight - categoryYpos;
-        
+
         animationHeight += Math.round((categoryYpos - animationHeight)/2.5);
-        
+
         if ( Hdiff > -3 && Hdiff < 0 ) {
             animationHeight = categoryYpos;
         }
@@ -649,7 +654,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Misc.png"), (int) startX + 17, (int) startY + 210, 12, 12);
         RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Client.png"), (int) startX + 17, (int) startY + 245, 12, 12);
         RenderUtils.drawImage(new ResourceLocation("fdpclient/ui/clickgui/light/Render.png"), (int) startX + 17, (int) startY + 280, 12, 12);
-        
+
     }
 
     public boolean isStringHovered(float f, float y, float g, float y2, int mouseX, int mouseY) {
@@ -675,5 +680,5 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     public boolean isHovered(float x, float y, float x2, float y2, int mouseX, int mouseY) {
         return mouseX >= x && mouseX <= x2 && mouseY >= y && mouseY <= y2;
     }
-    
+
 }
