@@ -135,6 +135,12 @@ public abstract class MixinItemRenderer {
                                 doBlockTransformations();
                                 break;
                             }
+                            case "PushFall": {
+                                push(f1);
+                                doItemRenderGLScale()
+                                doBlockTransformations();
+                                break;
+                            }
                             case "Avatar": {
                                 avatar(f1);
                                 doBlockTransformations();
