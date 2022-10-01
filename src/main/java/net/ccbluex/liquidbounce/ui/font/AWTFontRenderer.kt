@@ -37,7 +37,7 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255) {
         }
     }
 
-    fun collectGarbage() {
+    private fun collectGarbage() {
         val currentTime = System.currentTimeMillis()
 
         cachedStrings.filter { currentTime - it.value.lastUsage > CACHED_FONT_REMOVAL_TIME }.forEach {

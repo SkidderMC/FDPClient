@@ -11,10 +11,10 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 
 ## How To Install FDP?
-- **Step 1:** Install Java [here](https://www.java.com/en/download/) (Skip if you have Java)
+- **Step 1:** Install Java 8 [here](https://www.java.com/en/download/) (Skip if you have Java 8)
 - **Step 2:** Install Forge 1.8.9 [here](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it
-- **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\\.minecraft\mods) (If you are using the official launcher, click the installations tab then click the folder icon next to forge)
+- **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (%appdata%\\.minecraft\mods or if you are using the official launcher, click the installations tab then click the folder icon next to forge)
 - **Step 5:** Enjoy!
 
 ## Issues
@@ -44,25 +44,25 @@ FDPClient uses gradle, so make sure that it is installed properly. Instructions 
 3. Depending on which IDE you are using, execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
     - For Eclipse: `gradlew --debug setupDevWorkspace eclipse build`
-4. Open the folder as a Gradle project in your IDE. (make sure your ide is using java 8, you will face issues if it isnt)
+4. Open the folder as a Gradle project in your IDE. (Make sure that your IDE is using Java 8, if not then it will have issues)
 5. Select the Forge run configuration.
-### troubleshooting workspace errors
-if you get a "cannot find forgebin" error, download forge 1.8.9 universal from the forge site and place it in `./FDPClient-main/.gradle/minecraft`<br>
+### Troubleshooting Workspace Errors
+If you get a "cannot find forgebin" error, download forge 1.8.9 universal from the forge site and place it in `./FDPClient-main/.gradle/minecraft`<br>.
 
-## Additional libraries
+## Additional Libraries
 ### Mixins
 Mixins can be used to modify classes at runtime before they are loaded. FDPClient uses them to inject its code into the Minecraft client. This way, we do not have to ship Mojang's copyrighted code. If you want to learn more about it, check out their [documentation](https://docs.spongepowered.org/5.1.0/en/plugin/internals/mixins.html).
 
-## Contributing
+## Contributions
 We welcome contributions, but you have to follow the following rules in order for us to merge your pull request.
 
-U can make a Pull Request at [here](https://github.com/SkidderMC/FDPClient/issues).
+You can make a pull request [here](https://github.com/SkidderMC/FDPClient/issues)!
 
 ### Language and Code Quality
 Your code needs to be able to build, please ensure your code has little to no bugs!  
 You also need to use kotlin features to make coding easier and faster, so please use kotlin and pass the [Detekt](https://github.com/detekt/detekt) code quality check, use kotlin features if you can, because we will never merge terrible code.
 
-#### Kotlin features
+#### Kotlin Features
 Help enhance the code readability by using kotlin features.
 
 Using kotlin features:
@@ -80,16 +80,16 @@ Timer().schedule(object : TimerTask() {
 }, 2000L)
 ~~~
 
-### Skidding
-Please use original code if you can and do not directly steal code,however we welcome skidding with a packet logger or anything similar in order to skid from a closed source client and make the cheating community more open!
+### A note about Skidding
+Please use original code if you can and do not directly steal code, however we welcome skidding with a packet logger or anything similar in order to skid from a closed source client and make the cheating community more open!
 
-### Useless features
-Useless features are features only you think are useful and or features can be added with a config change.  
+### Useless Features
+Useless features are features only you think are useful and/or features can be added with a config change.  
 Like the "TimerSpeed" option to InfiniteAura, this feature can be added by binding Timer to the key with InfiniteAura, or use the macro system in FDP Client.
 
-### Old Contributor
-@Liulihaocai(kotonemywaifu) | bruh i quitted minecraft cheating   
-@XiGuaHanHan(Wlenk) | I got fucking crazy exam so leave
+### Old Contributors
+@Liulihaocai(kotonemywaifu) | Quitted Minecraft Cheating    
+@XiGuaHanHan(Wlenk) | Got Exams
   
-To be continued..  
-thanks for their contributions
+To be continued...      
+Thanking them for their amazing contributions.
