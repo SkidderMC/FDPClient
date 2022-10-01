@@ -23,7 +23,7 @@ import java.awt.Color
 import java.awt.Font
 
 class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameSettings,
-        ResourceLocation("textures/font/ascii.png"), Minecraft.getMinecraft().textureManager, false) {
+    ResourceLocation("textures/font/ascii.png"), Minecraft.getMinecraft().textureManager, false) {
 
     var defaultFont = AWTFontRenderer(font)
     private var boldFont = AWTFontRenderer(font.deriveFont(Font.BOLD))
@@ -38,18 +38,17 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
     init {
         FONT_HEIGHT = height
-        FontsGC.register(this)
     }
-    
+
     fun getColorIndex2(type: Char): Int {
-            return when (type) {
-                in '0'..'9' -> type - '0'
-                in 'a'..'f' -> type - 'a' + 10
-                in 'k'..'o' -> type - 'k' + 16
-                'r' -> 21
-                else -> -1
-            }
+        return when (type) {
+            in '0'..'9' -> type - '0'
+            in 'a'..'f' -> type - 'a' + 10
+            in 'k'..'o' -> type - 'k' + 16
+            'r' -> 21
+            else -> -1
         }
+    }
 
     fun drawString(s: String, x: Float, y: Float, color: Int) = drawString(s, x, y, color, false)
 
@@ -62,8 +61,8 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     fun drawCenteredString(s: String, x: Float, y: Float, color: Int) = drawStringWithShadow(s, x - getStringWidth(s) / 2F, y, color)
 
     override fun drawString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
-         val TranslatedCurrentText = LanguageManager.replace(text)
-         var currentText = TranslatedCurrentText
+        val TranslatedCurrentText = LanguageManager.replace(text)
+        var currentText = TranslatedCurrentText
 
         val event = TextEvent(currentText)
         LiquidBounce.eventManager.callEvent(event)
@@ -298,14 +297,14 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
                     if (strikeThrough) {
                         RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 3.0,
-                                (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 3.0,
-                                FONT_HEIGHT / 16F)
+                            (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 3.0,
+                            FONT_HEIGHT / 16F)
                     }
 
                     if (underline) {
                         RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 2.0,
-                                (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
-                                FONT_HEIGHT / 16F)
+                            (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
+                            FONT_HEIGHT / 16F)
                     }
 
                     width += currentFont.getStringWidth(words)
@@ -323,11 +322,11 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     }
 
     override fun getColorCode(charCode: Char) =
-            ColorUtils.hexColors[getColorIndex2(charCode)]
+        ColorUtils.hexColors[getColorIndex2(charCode)]
 
     override fun getStringWidth(text: String): Int {
-         val TranslatedCurrentText = LanguageManager.replace(text)
-         var currentText = TranslatedCurrentText
+        val TranslatedCurrentText = LanguageManager.replace(text)
+        var currentText = TranslatedCurrentText
 
 
         val event = TextEvent(currentText)
@@ -391,13 +390,6 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     override fun onResourceManagerReload(resourceManager: IResourceManager) {}
 
     override fun bindTexture(location: ResourceLocation?) {}
-
-    fun collectGarbage() {
-        defaultFont.collectGarbage()
-        boldFont.collectGarbage()
-        italicFont.collectGarbage()
-        boldItalicFont.collectGarbage()
-    }
 
     companion object {
         @JvmStatic

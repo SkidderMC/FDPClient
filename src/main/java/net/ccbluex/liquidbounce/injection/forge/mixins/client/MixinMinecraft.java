@@ -90,7 +90,22 @@ public abstract class MixinMinecraft {
     public File mcDataDir;
 
     @Shadow
+    public int displayWidth;
+
+    @Shadow
+    public int displayHeight;
+    @Shadow
     private boolean fullscreen;
+
+
+    @Inject(method = "run", at = @At("HEAD"))
+    private void init(CallbackInfo callbackInfo) {
+        if(displayWidth < 1067)
+            displayWidth = 1067;
+
+        if(displayHeight < 622)
+            displayHeight = 622;
+    }
 
     @Overwrite
     public int getLimitFramerate() {
