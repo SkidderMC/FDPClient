@@ -258,6 +258,14 @@ public abstract class MixinItemRenderer {
                                 GlStateManager.translate(-0.5F, 0.2F, 0.0F);
                                 break;
                             }
+                            case "Fall": {
+                                doItemRenderGLTranslate();
+                                GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
+                                GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+                                doItemRenderGLScale();
+                                doBlockTransformations();
+                                break;
+                            }
                             case "Yeet": {
                                 doItemRenderGLTranslate();
                                 GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
