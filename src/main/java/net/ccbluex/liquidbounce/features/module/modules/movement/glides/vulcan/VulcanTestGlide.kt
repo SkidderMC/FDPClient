@@ -10,7 +10,7 @@ class VulcanTestGlide : GlideMode("VulcanTest") {
             mc.thePlayer.onGround = true
             mc.thePlayer.fallDistance = 0f
         }
-        if (mc.thePlayer.ticksExisted % 3 = 0) {
+        if (mc.thePlayer.ticksExisted % 3 == 0) {
             mc.thePlayer.motionY += 0.026
         } else {
             mc.thePlayer.motionY = -0.0991
