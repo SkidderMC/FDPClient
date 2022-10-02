@@ -352,7 +352,8 @@ class Step : Module() {
                         repeat ((ceil(rstepHeight * 2.0) - 1.0).toInt()) {
                             stpHight += 0.5
                             mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX, stepY + stpHight, stepZ, true))
-                        }
+                        } 
+                        wasTimer = true
                     }
                     
                     mode.equals("Vulcan", ignoreCase = true) -> {
