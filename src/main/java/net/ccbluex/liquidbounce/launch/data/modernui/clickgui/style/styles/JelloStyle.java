@@ -87,10 +87,10 @@ public class JelloStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-        Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(255,255,255), moduleElement.hoverTime).getRGB());
+       // Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(255,255,255), moduleElement.hoverTime).getRGB());
         Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(100,165,241, moduleElement.slowlyFade), moduleElement.hoverTime).getRGB());
         GlStateManager.resetColor();
-        Fonts.font35.drawString("    " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.BLACK.getRGB());
+        Fonts.font35.drawString("  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.BLACK.getRGB());
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
