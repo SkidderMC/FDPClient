@@ -18,7 +18,7 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 - **Step 5:** Enjoy!
 
 ## Issues
-Found bugs or a missing features? You can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues)!
+Found bugs or missing features? You can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues)!
 
 ## License
 This project is subject to the [GNU General Public License v3.0](LICENSE). This does only apply for source code located directly in this clean repository. During the development and compilation process, additional source code may be used to which we have obtained no rights. Such code is not covered by the GPL license.
@@ -47,7 +47,7 @@ FDPClient uses gradle, so make sure that it is installed properly. Instructions 
 4. Open the folder as a Gradle project in your IDE. (Make sure that your IDE is using Java 8, if not then it will have issues)
 5. Select the Forge run configuration.
 ### Troubleshooting Workspace Errors
-If you get a "cannot find forgebin" error, download forge 1.8.9 universal from the forge site and place it in `./FDPClient-main/.gradle/minecraft`<br>.
+If you get a "cannot find forgebin" error, download forge 1.8.9 universal from the forge site and place it in `./FDPClient-main/.gradle/minecraft`.
 
 ## Additional Libraries
 ### Mixins
