@@ -7,15 +7,16 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.MathUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.*
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest"), "Stable")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Smooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest"), "Stable")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val yMotion = FloatValue("$valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", true)
@@ -29,6 +30,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private var pastZ = 0.0
     private var moveDist = 0.0
     private var wasOnGround = false
+    private var stage = 0;
 
     override fun onUpdate() {
         if (!MovementUtils.isMoving()) {
@@ -52,6 +54,27 @@ class HypixelHop : SpeedMode("HypixelHop") {
         moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ)
         
         when (bypassMode.get().lowercase()) {
+
+            "smooth" -> {
+
+                mc.thePlayer.isSprinting = true
+
+                if (MovementUtils.isMoving()) {
+                    if (mc.thePlayer.onGround) {
+                        stage = mc.thePlayer.posY.roundToInt()
+                        mc.thePlayer.jump()
+                        mc.thePlayer.motionY = yMotion.get().toDouble()
+                        MovementUtils.strafe(0.47f)
+                    } else {
+                        MovementUtils.strafe(MovementUtils.getSpeed())
+                        if (MovementUtils.getSpeed() < 0.2) {
+                            MovementUtils.strafe(max(0.05, MovementUtils.getSpeed() * 1.1).toFloat())
+                        }
+                    }
+                }
+
+                mc.thePlayer.jumpMovementFactor = 0.028f
+            }
             
             "stable2" -> {
 
