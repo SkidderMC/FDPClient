@@ -12,14 +12,16 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.*
 import kotlin.math.max
 import kotlin.math.roundToInt
+import kotlin.math
 
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Smooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest"), "Stable")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Smooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit"), "Stable")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val yMotion = FloatValue("$valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", true)
+    private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
 
     private var watchdogMultiplier = 1.0
@@ -31,6 +33,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private var moveDist = 0.0
     private var wasOnGround = false
     private var stage = 0;
+    private var offGroundTicks = 0;
 
     override fun onUpdate() {
         if (!MovementUtils.isMoving()) {
@@ -44,17 +47,35 @@ class HypixelHop : SpeedMode("HypixelHop") {
             }
         }
         
+        if (yPort2.get()) {
+            if (offGroundTicks == 5) {
+                mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98
+            }
+        }
+        
         if (damageBoost.get()) {
             if (mc.thePlayer.hurtTime > 0) {
-                mc.thePlayer.motionX *= 1.025
-                mc.thePlayer.motionZ *= 1.025
+                mc.thePlayer.motionX *= 1.028 - Math.random() / 100
+                mc.thePlayer.motionZ *= 1.028 - Math.random() / 100
             }
+        }
+        
+        if (mc.thePlayer.onGround) {
+            offGroundTicks = 0
+        } else {
+            offGroundTicks += 1
         }
         
         moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ)
         
         when (bypassMode.get().lowercase()) {
-
+            
+            "legit" -> {
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                }
+            }
+                    
             "smooth" -> {
 
                 mc.thePlayer.isSprinting = true
