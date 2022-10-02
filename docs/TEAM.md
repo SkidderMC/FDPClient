@@ -14,7 +14,7 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 ### Liulihaocai
 OWNER | https://github.com/kotonemywaifu
 
- ### @opZywl
+ ### Zywl
 OWNER | https://github.com/opZywl
 
 ### Co丶Dynamic 
