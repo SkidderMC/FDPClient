@@ -34,6 +34,8 @@ public abstract class FontLoaders {
     public static CFontRenderer M30 = new CFontRenderer(getMojangles(30), true, true);
     public static CFontRenderer M35 = new CFontRenderer(getMojangles(35), true, true);
     public static CFontRenderer M40 = new CFontRenderer(getMojangles(40), true, true);
+    public static CFontRenderer SF15 = new CFontRenderer(getSF(15), true, true);
+    public static CFontRenderer SF20 = new CFontRenderer(getSF(20), true, true);
     public static CFontRenderer SF25 = new CFontRenderer(getSF(25), true, true);
     public static CFontRenderer SF30 = new CFontRenderer(getSF(30), true, true);
     public static CFontRenderer SF35 = new CFontRenderer(getSF(35), true, true);
