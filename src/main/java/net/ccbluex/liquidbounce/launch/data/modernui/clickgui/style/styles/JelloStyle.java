@@ -86,11 +86,10 @@ public class JelloStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-       // Gui.drawRect(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth(), moduleElement.getY() + moduleElement.getHeight() + 1, new Color(250,250,250).getRGB());
+        Gui.drawRect(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth(), moduleElement.getY() + moduleElement.getHeight() + 1, new Color(250,250,250).getRGB());
         Gui.drawRect(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth(), moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(100,165,241, moduleElement.slowlyFade)).getRGB());
         GlStateManager.resetColor();
-        Fonts.font35.drawString("  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.BLACK.getRGB());
-     //   Fonts.font35.drawString("   " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, hoverColor(new Color(255, 255, 255, moduleElement.slowlyFade)).getRGB());
+        Fonts.font35.drawString(moduleElement.getModule().getState() ? "   " : "  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, moduleElement.getModule().getState() ? new Color(255, 255, 2550.getRGB() : Color.BLACK.getRGB()); 
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
