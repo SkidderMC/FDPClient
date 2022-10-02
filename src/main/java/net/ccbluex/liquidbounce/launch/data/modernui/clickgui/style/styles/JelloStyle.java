@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.elements.ButtonEle
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.Style;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
@@ -62,7 +63,7 @@ public class JelloStyle extends Style {
         RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 15, new Color(231,229,230).getRGB());
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.font40.drawString("  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), panel.getX() + 10, panel.getY() - 7, new Color(116,114,115).getRGB());
+        FontLoaders.SF50.DisplayFont2(FontLoaders.SF50, "  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), panel.getX() + 10, panel.getY(), new Color(116,114,115).getRGB());
     }
 
     @Override
@@ -92,9 +93,9 @@ public class JelloStyle extends Style {
         GlStateManager.resetColor();
         int colour = 0;
         if(moduleElement.getModule().getState() == true){
-             Fonts.font35.drawString("   " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.WHITE.getRGB());
+            FontLoaders.SF35.DisplayFont2(FontLoaders.SF35, "   " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.WHITE.getRGB());
         } else {
-            Fonts.font35.drawString("  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.BLACK.getRGB()); 
+            FontLoaders.SF35.DisplayFont2(FontLoaders.SF35, "  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.BLACK.getRGB()); 
         };
 
         // Draw settings
