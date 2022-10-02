@@ -63,7 +63,7 @@ public class JelloStyle extends Style {
         RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 15, new Color(231,229,230).getRGB());
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        FontLoaders.SF50.DisplayFont2(FontLoaders.SF50, "  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), panel.getX() + 10, panel.getY(), new Color(116,114,115).getRGB());
+        FontLoaders.SF50.DisplayFont(FontLoaders.SF50, "  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), panel.getX() + 10, panel.getY(), new Color(116,114,115).getRGB());
     }
 
     @Override
@@ -93,10 +93,10 @@ public class JelloStyle extends Style {
         GlStateManager.resetColor();
         int colour = 0;
         if(moduleElement.getModule().getState() == true){
-            FontLoaders.SF35.DisplayFont2(FontLoaders.SF35, "   " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.WHITE.getRGB());
+            FontLoaders.SF35.DisplayFont(FontLoaders.SF35, "   " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.WHITE.getRGB());
         } else {
-            FontLoaders.SF35.DisplayFont2(FontLoaders.SF35, "  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.BLACK.getRGB()); 
-        };
+            FontLoaders.SF35.DisplayFont(FontLoaders.SF35,"  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.BLACK.getRGB());
+        }
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
