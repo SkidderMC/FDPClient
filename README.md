@@ -14,7 +14,7 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 [Click for intructions](docs/INSTALLING.md)
 
 ## Media
-[Click for recomended content creators](docs/MEDIA.md)
+[Click to know a little about the team](docs/TEAM.md)
 
 ## Issues
 Found bugs or a missing features? You can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues)!
