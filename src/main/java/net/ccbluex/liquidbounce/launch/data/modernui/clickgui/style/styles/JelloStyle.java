@@ -55,14 +55,14 @@ public class JelloStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 17, 3, new Color(217, 217, 217).getRGB(), new Color(217, 217, 217).getRGB());
+        RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 17, 3, new Color(250, 250, 250).getRGB(), new Color(250, 250, 250).getRGB());
         if (panel.getFade() > 0) {
-            RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() + 17, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), 3, new Color(217, 217, 217).getRGB(), new Color(217, 217, 217).getRGB());
-            RenderUtils.drawBorderedRect((float) panel.getX(), panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade() + 5, 3, new Color(217, 217, 217).getRGB(), new Color(217, 217, 217).getRGB());
+            RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() + 17, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), 3, new Color(250, 250, 250).getRGB(), new Color(250, 250, 250).getRGB());
+            RenderUtils.drawBorderedRect((float) panel.getX(), panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade() + 5, 3, new Color(250, 250, 250).getRGB(), new Color(250, 250, 250).getRGB());
         }
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.font35.drawString(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (panel.getWidth() + 10)), panel.getY() + 7 - 3, Color.BLACK.getRGB());
+        Fonts.font35.drawString(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() + 4 /*(panel.getWidth() + 10)*/), panel.getY() + 7 - 3, Color.BLACK.getRGB());
     }
 
     @Override
@@ -282,10 +282,10 @@ public class JelloStyle extends Style {
         return bigDecimal;
     }
 
-    private Color hoverColor(final Color color, final int hover) {
-        final int r = color.getRed() - (hover * 2);
-        final int g = color.getGreen() - (hover * 2);
-        final int b = color.getBlue() - (hover * 2);
+    private Color hoverColor(final Color color) {
+        final int r = color.getRed();
+        final int g = color.getGreen();
+        final int b = color.getBlue();
 
         return new Color(Math.max(r, 0), Math.max(g, 0), Math.max(b, 0), color.getAlpha());
     }
