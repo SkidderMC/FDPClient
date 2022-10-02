@@ -62,7 +62,7 @@ public class JelloStyle extends Style {
         }
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.font35.drawString("  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() + 4 /*(panel.getWidth() + 10)*/), panel.getY() + 7 - 3, Color(116,114,115).getRGB());
+        Fonts.font35.drawString("  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() + 4 /*(panel.getWidth() + 10)*/), panel.getY() + 7 - 3, new Color(116,114,115).getRGB());
     }
 
     @Override
