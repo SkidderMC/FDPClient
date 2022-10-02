@@ -40,7 +40,7 @@ public abstract class MixinFontRenderer {
      @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)
      public void drawString(String p_drawString_1_, float p_drawString_2_, float p_drawString_3_, int p_drawString_4_, boolean p_drawString_5_, CallbackInfoReturnable<Integer> cir) {
          if(420 == 69){
-             cir.setReturnValue((int) FontLoaders.F30.DisplayFont2(FontLoaders.F30,p_drawString_1_,p_drawString_2_,p_drawString_3_,p_drawString_4_,p_drawString_5_));
+             cir.setReturnValue((int) Fonts.font32.drawString(p_drawString_1_,p_drawString_2_,p_drawString_3_,p_drawString_4_,p_drawString_5_));
              cir.cancel();
          }
      }
