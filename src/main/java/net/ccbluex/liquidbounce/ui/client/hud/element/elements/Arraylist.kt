@@ -153,6 +153,14 @@ class Arraylist(
         val brightness = brightnessValue.get()
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
+               modules.forEachIndexed { index, module ->
+                    val xPos = -module.slide - 2
+                    val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *if (side.vertical == Vertical.DOWN) index + 1 else index }
+                    val yPos = module.yPos
+                    if (yPos != realYPos) { module.yPos = realYPos }
+                    val rectX = xPos - if (rectMode.equals("right", true)) 5 else 2
+                    blur(rectX - backgroundExpand.get(), yPos, if (rectMode.equals("right", true)) -3F else 0F, yPos + textHeight)
+                }
                     if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
                     GL11.glPushMatrix()
@@ -316,6 +324,13 @@ class Arraylist(
             }
 
             Horizontal.LEFT -> {
+                modules.forEachIndexed { index, module ->
+                    val xPos = -(module.width - module.slide) + if (rectMode.equals("left", true)) 5 else 2
+                    val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *if (side.vertical == Vertical.DOWN) index + 1 else index }
+                    val yPos = module.yPos
+                    if (yPos != realYPos) {module.yPos = realYPos}
+                    blur(0F, yPos, xPos + module.width + if (rectMode.equals("right", true)) 5 else 2 + backgroundExpand.get(), yPos + textHeight)
+                }
                 modules.forEachIndexed { index, module ->
                     var CRainbow: Int
                     CRainbow = RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), counter[0] * (50 * cRainbowDistValue.get()))
