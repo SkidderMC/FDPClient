@@ -34,12 +34,12 @@ public abstract class FontLoaders {
     public static CFontRenderer M30 = new CFontRenderer(getMojangles(30), true, true);
     public static CFontRenderer M35 = new CFontRenderer(getMojangles(35), true, true);
     public static CFontRenderer M40 = new CFontRenderer(getMojangles(40), true, true);
-    public static CFontRenderer SF25 = new CFontRenderer(getsf(25), true, true);
-    public static CFontRenderer SF30 = new CFontRenderer(getsf(30), true, true);
-    public static CFontRenderer SF35 = new CFontRenderer(getsf(35), true, true);
-    public static CFontRenderer SF40 = new CFontRenderer(getsf(40), true, true);
-    public static CFontRenderer SF45 = new CFontRenderer(getsf(45), true, true);
-    public static CFontRenderer SF50 = new CFontRenderer(getsf(50), true, true);
+    public static CFontRenderer SF25 = new CFontRenderer(getSF(25), true, true);
+    public static CFontRenderer SF30 = new CFontRenderer(getSF(30), true, true);
+    public static CFontRenderer SF35 = new CFontRenderer(getSF(35), true, true);
+    public static CFontRenderer SF40 = new CFontRenderer(getSF(40), true, true);
+    public static CFontRenderer SF45 = new CFontRenderer(getSF(45), true, true);
+    public static CFontRenderer SF50 = new CFontRenderer(getSF(50), true, true);
     public static CFontRenderer Logo = new CFontRenderer(getNovo(40), true, true);
     public static ArrayList<CFontRenderer> fonts = new ArrayList<>();
 
