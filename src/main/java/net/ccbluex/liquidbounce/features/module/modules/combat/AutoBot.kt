@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -44,12 +45,14 @@ class AutoBot : Module() {
     private val autoPotDelayValue = IntegerValue("AutoPot-Delay", 500, 500, 1000).displayable { autoPotValue.get() }
     private val autoPotThrowTickValue = IntegerValue("AutoPot-ThrowTick", 3, 1, 10).displayable { autoPotValue.get() }
     private val autoPotSelectValue = IntegerValue("AutoPot-SelectSlot", -1, -1, 9).displayable { autoPotValue.get() }
+    private val autoPotGroundDistanceValue = FloatValue("AutoPot-GroundDistance", 2F, 0F, 4F).displayable { autoPotValue.get() && !autoPotOnGround.get() }
     private val autoPotThrowAngleOption = IntegerValue("AutoPot-ThrowAngle", -45, -90, 90).displayable { autoPotThrowMode.equals("Custom") && autoPotValue.get() }
     private val autoPotOpenInventoryValue = BoolValue("AutoPot-OpenInv", false).displayable { autoPotValue.get() }
     private val autoPotSimulateInventoryValue = BoolValue("AutoPot-SimulateInventory", true).displayable { autoPotValue.get() }
     private val autoPotRegenValue = BoolValue("AutoPot-Regen", true).displayable { autoPotValue.get() }
     private val autoPotUtilityValue = BoolValue("AutoPot-Utility", true).displayable { autoPotValue.get() }
     private val autoPotNotCombatValue = BoolValue("AutoPot-NotCombat", true).displayable { autoPotValue.get() }
+    private val autoPotOnGround = BoolValue("AutoPot-OnGround", true).displayable { autoPotValue.get() }
     private var autoPotThrowing = false
     private var autoPotThrowTime = 0
     private var autoPotPot = -1
@@ -188,7 +191,25 @@ class AutoBot : Module() {
             }
 
             if (autoPotNotCombatValue.get() && LiquidBounce.combatManager.inCombat) return
-            if (!mc.thePlayer.onGround) return
+            if (autoPotOnGround.get() && !mc.thePlayer.onGround) return
+            
+            if (!autoPotOnGround.get()) {
+                val fallingPlayer = FallingPlayer(
+                                mc.thePlayer.posX,
+                                mc.thePlayer.posY,
+                                mc.thePlayer.posZ,
+                                mc.thePlayer.motionX,
+                                mc.thePlayer.motionY,
+                                mc.thePlayer.motionZ,
+                                mc.thePlayer.rotationYaw,
+                                mc.thePlayer.moveStrafing,
+                                mc.thePlayer.moveForward,
+                                mc.thePlayer.jumpMovementFactor)
+
+                val collisionBlock = fallingPlayer.findCollision(20)
+                if (mc.thePlayer.posY - (collisionBlock?.y ?: 0) >= (autoPotGroundDistanceValue.get() + 1.01F))
+                    return
+            }
 
             if (autoPotThrowing) {
                 autoPotThrowTime++
