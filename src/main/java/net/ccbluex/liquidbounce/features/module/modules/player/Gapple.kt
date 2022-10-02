@@ -31,7 +31,7 @@ import java.util.*
 @ModuleInfo(name = "Gapple", category = ModuleCategory.PLAYER)
 class Gapple : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Auto", "LegitAuto", "Head"), "Auto")
+    private val modeValue = ListValue("Mode", arrayOf("Auto", "LegitAuto", "Legit", "Head"), "Auto")
     private val percent = FloatValue("HealthPercent", 75.0f, 1.0f, 100.0f)
     private val min = IntegerValue("MinDelay", 75, 1, 5000)
     private val max = IntegerValue("MaxDelay", 125, 1, 5000)
@@ -45,8 +45,12 @@ class Gapple : Module() {
     var delay = 0
     var isDisable = false
     var tryHeal = false
+    var prevSlot = -1
+    var switchBack = false
     override fun onEnable() {
         eating = -1
+	prevSlot = -1
+	switchBack = false
         timer.reset()
         isDisable = false
         tryHeal = false
@@ -107,6 +111,25 @@ class Gapple : Module() {
                         delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
                     }
                 }
+                "legit" -> {
+                    if (eating == -1) {
+                        val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
+                        if(gappleInHotbar == -1) {
+                            tryHeal = false
+                            return
+                        }
+                        if (prevSlot == -1)
+                            prevSlot = mc.thePlayer.inventory.currentItem
+                        
+                        mc.thePlayer.inventory.currentItem = gappleInHotbar - 36
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                        eating = 0
+                    } else if (eating > 35) {
+                        timer.reset()
+                        tryHeal = false
+                        delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
+                    }
+                }
                 "head" -> {
                     val headInHotbar = InventoryUtils.findItem(36, 45, Items.skull)
                     if (headInHotbar != -1) {
@@ -126,6 +149,18 @@ class Gapple : Module() {
             isDisable = false
         }
         val absorp = MathHelper.ceiling_double_int(mc.thePlayer.absorptionAmount.toDouble())
+
+
+        if (!tryHeal && prevSlot != -1) {
+            if (!switchBack) {
+                switchBack = true
+                return
+            }
+            mc.thePlayer.inventory.currentItem = prevSlot
+            prevSlot = -1;
+            switchBack = false
+        }
+
         if ((groundCheck.get() && !mc.thePlayer.onGround) || (invCheck.get() && mc.currentScreen is GuiContainer) || (absorp > 0 && absorpCheck.get()))
             return
         if (waitRegen.get() && mc.thePlayer.isPotionActive(Potion.regeneration) && mc.thePlayer.getActivePotionEffect(Potion.regeneration).duration > regenSec.get() * 20.0f)
