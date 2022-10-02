@@ -61,7 +61,7 @@ public class JelloStyle extends Style {
         RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 15, new Color(231,229,230).getRGB());
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.font40.drawString("  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), panel.getX() + 10, panel.getY() + 10, new Color(116,114,115).getRGB());
+        Fonts.font40.drawString("  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), panel.getX() + 10, panel.getY() - 15, new Color(116,114,115).getRGB());
     }
 
     @Override
@@ -89,7 +89,8 @@ public class JelloStyle extends Style {
         Gui.drawRect(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth(), moduleElement.getY() + moduleElement.getHeight() + 1, new Color(250,250,250).getRGB());
         Gui.drawRect(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth(), moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(100,165,241, moduleElement.slowlyFade)).getRGB());
         GlStateManager.resetColor();
-        Fonts.font35.drawString(moduleElement.getModule().getState() ? "   " : "  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, moduleElement.getModule().getState() ? Color.WHITE.getRGB() : Color.BLACK.getRGB());
+        final int enableColor = Color.WHITE.getRGB()
+        Fonts.font35.drawString(moduleElement.getModule().getState() ? "   " : "  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, if(moduleElement.getModule().getState()){ enabledColor } else { Color.BLACK.getRGB()});
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
