@@ -35,6 +35,7 @@ public abstract class FontLoaders {
     public static CFontRenderer M35 = new CFontRenderer(getMojangles(35), true, true);
     public static CFontRenderer M40 = new CFontRenderer(getMojangles(40), true, true);
     public static CFontRenderer SF15 = new CFontRenderer(getSF(15), true, true);
+    public static CFontRenderer SF17 = new CFontRenderer(getSF(17), true, true);
     public static CFontRenderer SF20 = new CFontRenderer(getSF(20), true, true);
     public static CFontRenderer SF25 = new CFontRenderer(getSF(25), true, true);
     public static CFontRenderer SF30 = new CFontRenderer(getSF(30), true, true);
@@ -42,6 +43,8 @@ public abstract class FontLoaders {
     public static CFontRenderer SF40 = new CFontRenderer(getSF(40), true, true);
     public static CFontRenderer SF45 = new CFontRenderer(getSF(45), true, true);
     public static CFontRenderer SF50 = new CFontRenderer(getSF(50), true, true);
+    public static CFontRenderer JELLO20 = new CFontRenderer(getJELLO(20), true, true);
+    public static CFontRenderer JELLO30 = new CFontRenderer(getJELLO(30), true, true);
     public static CFontRenderer Logo = new CFontRenderer(getNovo(40), true, true);
     public static ArrayList<CFontRenderer> fonts = new ArrayList<>();
 
@@ -102,6 +105,17 @@ public abstract class FontLoaders {
         Font font;
         try {
             font = Font.createFont(0, Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("fdpclient/font/sf.ttf")).getInputStream()).deriveFont(0, (float) size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error loading font");
+            font = new Font("default", 0, size);
+        }
+        return font;
+     }
+        public static Font getJELLO(int size) {
+        Font font;
+        try {
+            font = Font.createFont(0, Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("fdpclient/font/jello.ttf")).getInputStream()).deriveFont(0, (float) size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
