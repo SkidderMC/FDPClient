@@ -13,22 +13,18 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 ### Liulihaocai
 OWNER | https://github.com/kotonemywaifu
- https://youtube.com/channel/UCVwMDCM2oUvzQthG8EfDpHQ
 
- ### Zywl
+ ### @opZywl
 OWNER | https://github.com/opZywl
-https://youtube.com/channel/UCROww-0OhUjSDwvlK7hsckg
 
 ### Co丶Dynamic 
 DEV | https://github.com/contionability
 
 ### gatodepan
 HTML | ORG CONTRIBUTOR | https://github.com/gatooooooo
-https://www.youtube.com/channel/UCpW_Sv9zJGcBuB7pwrtSgUw
 
 ### Dg636
 ORG CONTRIBUTOR | https://github.com/C00LC0D35
-https://www.youtube.com/c/dg636hax
 
 ### WLENK 
 ORG UNMC CONTRIBUTOR | https://github.com/Wlenk
