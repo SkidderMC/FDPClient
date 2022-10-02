@@ -104,7 +104,7 @@ public class ClickGUIModule extends Module {
             case "white":
                 modernuiLaunchOption.clickGui.style = new WhiteStyle();
                 break;
-            case "Jello":
+            case "jello":
                 modernuiLaunchOption.clickGui.style = new JelloStyle();
                 break;
             case "astolfo":
