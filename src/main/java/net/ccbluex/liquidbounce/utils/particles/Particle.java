@@ -20,7 +20,7 @@ public class Particle {
 
     public Particle(final Vec3 position) {
         this.position = position;
-        this.delta = new Vec3((Math.random() * 0.5 - 0.25) * 0.01, (Math.random() * 0.25) * 0.01, (Math.random() * 0.5 - 0.25) * 0.01);
+        this.delta = new Vec3((Math.random() * 2.5 - 0.25) * 0.01, (Math.random() * 0.5) * 0.01, (Math.random() * 2.5 - 0.25) * 0.01);
         this.removeTimer.reset();
     }
 
