@@ -30,6 +30,8 @@ import java.util.List;
 
 public class JelloStyle extends Style {
 
+    // jello edit by gatodepan
+
     private boolean mouseDown;
     private boolean rightMouseDown;
 
@@ -55,13 +57,13 @@ public class JelloStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 27, new Color(250, 250, 250).getRGB());
+        RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() - 25, new Color(250, 250, 250).getRGB());
         if (panel.getFade() > 0) {
             RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() + 17, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), new Color(250, 250, 250).getRGB());
         }
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.font40.drawString("  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() + 4 /*(panel.getWidth() + 10)*/), panel.getY() + 17 - 3, new Color(116,114,115).getRGB());
+        Fonts.font40.drawString("  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() + 4 /*(panel.getWidth() + 10)*/), panel.getY() - 10, new Color(116,114,115).getRGB());
     }
 
     @Override
