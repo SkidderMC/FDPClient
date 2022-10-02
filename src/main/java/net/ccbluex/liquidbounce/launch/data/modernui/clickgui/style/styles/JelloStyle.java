@@ -55,9 +55,9 @@ public class JelloStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 17, 3, new Color(250, 250, 250).getRGB());
+        RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 17, new Color(250, 250, 250).getRGB());
         if (panel.getFade() > 0) {
-            RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() + 17, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), 3, new Color(250, 250, 250).getRGB());
+            RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() + 17, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), new Color(250, 250, 250).getRGB());
           //  RenderUtils.drawBorderedRect((float) panel.getX(), panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade() + 5, 3, new Color(250, 250, 250).getRGB(), new Color(250, 250, 250).getRGB());
         }
         GlStateManager.resetColor();
