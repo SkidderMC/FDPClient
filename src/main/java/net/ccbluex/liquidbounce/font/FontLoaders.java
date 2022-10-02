@@ -99,7 +99,7 @@ public abstract class FontLoaders {
         public static Font getSF(int size) {
         Font font;
         try {
-            font = Font.createFont(0, Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("fdpclient/font/sfui.ttf")).getInputStream()).deriveFont(0, (float) size);
+            font = Font.createFont(0, Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("fdpclient/font/sf.ttf")).getInputStream()).deriveFont(0, (float) size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
