@@ -153,6 +153,14 @@ class Arraylist(
         val brightness = brightnessValue.get()
         when (side.horizontal) {
             Horizontal.RIGHT, Horizontal.MIDDLE -> {
+               modules.forEachIndexed { index, module ->
+                    val xPos = -module.slide - 2
+                    val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *if (side.vertical == Vertical.DOWN) index + 1 else index }
+                    val yPos = module.yPos
+                    if (yPos != realYPos) { module.yPos = realYPos }
+                    val rectX = xPos - if (rectMode.equals("right", true)) 5 else 2
+                    blur(rectX - backgroundExpand.get(), yPos, if (rectMode.equals("right", true)) -3F else 0F, yPos + textHeight)
+                }
                     if (shadowShaderValue.get()) {
                     GL11.glTranslated(-renderX, -renderY, 0.0)
                     GL11.glPushMatrix()
@@ -208,14 +216,6 @@ class Arraylist(
                     })
                     GL11.glPopMatrix()
                     GL11.glTranslated(renderX, renderY, 0.0)
-                }
-                 modules.forEachIndexed { index, module ->
-                    val xPos = -module.slide - 2
-                    val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *if (side.vertical == Vertical.DOWN) index + 1 else index }
-                    val yPos = module.yPos
-                    if (yPos != realYPos) { module.yPos = realYPos }
-                    val rectX = xPos - if (rectMode.equals("right", true)) 5 else 2
-                    blur(rectX - backgroundExpand.get(), yPos, if (rectMode.equals("right", true)) -3F else 0F, yPos + textHeight)
                 }
                 modules.forEachIndexed { index, module ->
                     var CRainbow: Int
