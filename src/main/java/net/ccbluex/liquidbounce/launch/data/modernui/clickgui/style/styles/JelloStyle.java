@@ -57,7 +57,7 @@ public class JelloStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 25, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 40, new Color(231,229,230).getRGB());
+        RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 25, new Color(231,229,230).getRGB());
         if (panel.getFade() > 0) {
             RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() + 17, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), new Color(250, 250, 250).getRGB());
         }
@@ -88,6 +88,7 @@ public class JelloStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
+        Gui.drawRect(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth(), moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(250,250,250).getRGB());
         Gui.drawRect(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth(), moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(100,165,241, moduleElement.slowlyFade)).getRGB());
         GlStateManager.resetColor();
         Fonts.font35.drawString("  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.BLACK.getRGB());
