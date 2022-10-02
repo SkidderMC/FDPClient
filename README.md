@@ -41,8 +41,3 @@ Do the above and share your source code with everyone; just like we do!
 
 ## Contributing
 [Click for information about Contributing to fdp](docs/NOTECONTRUBTIONS.md)
-
-### A special thanks
-Thank you to the devs who made fdp what it is today;<br>
- @Liulihaocai(kotonemywaifu) @XiGuaHanHan(Wlenk) 
-  
