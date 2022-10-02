@@ -43,7 +43,7 @@ public abstract class MixinFontRenderer {
         if(BetterFont.INSTANCE.getState()){
             //cir.setReturnValue((int) FontLoaders.C18.DisplayFont(p_drawString_1_,p_drawString_2_,p_drawString_3_,p_drawString_4_,p_drawString_5_,FontLoaders.C18));
 
-            cir.setReturnValue((int) Fonts.font32.drawString(p_drawString_1_,p_drawString_2_,p_drawString_3_,p_drawString_4_,p_drawString_5_));
+            cir.setReturnValue((int) FontLoaders.F30.DisplayFont2(FontLoaders.F30,p_drawString_1_,p_drawString_2_,p_drawString_3_,p_drawString_4_,p_drawString_5_));
             cir.cancel();
         }
     }
