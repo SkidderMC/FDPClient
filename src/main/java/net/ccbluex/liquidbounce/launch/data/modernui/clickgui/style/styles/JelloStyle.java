@@ -28,6 +28,7 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+
 public class JelloStyle extends Style {
 
     // jello edit by GatoDePan
@@ -61,7 +62,7 @@ public class JelloStyle extends Style {
         RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 15, new Color(231,229,230).getRGB());
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.font40.drawString("  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), panel.getX() + 10, panel.getY() - 15, new Color(116,114,115).getRGB());
+        Fonts.font40.drawString("  " + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), panel.getX() + 10, panel.getY() - 7, new Color(116,114,115).getRGB());
     }
 
     @Override
@@ -91,11 +92,10 @@ public class JelloStyle extends Style {
         GlStateManager.resetColor();
         int colour = 0;
         if(moduleElement.getModule().getState() == true){
-            colour = Color.WHITE.getRGB();
+             Fonts.font35.drawString("   " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.WHITE.getRGB());
         } else {
-            colour = Color.BLACK.getRGB();
+            Fonts.font35.drawString("  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, Color.BLACK.getRGB()); 
         };
-        Fonts.font35.drawString(moduleElement.getModule().getState() ? "   " : "  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 5, colour);
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
