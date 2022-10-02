@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.TextEvent;
-import net.ccbluex.liquidbounce.features.module.modules.render.BetterFont;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,23 +36,21 @@ public abstract class MixinFontRenderer {
         LiquidBounce.eventManager.callEvent(textEvent);
         return textEvent.getText();
     }
+    // the below brreaks if u remove it idk why
+     @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)
+     public void drawString(String p_drawString_1_, float p_drawString_2_, float p_drawString_3_, int p_drawString_4_, boolean p_drawString_5_, CallbackInfoReturnable<Integer> cir) {
+         if(420 == 69){
+             cir.setReturnValue((int) Fonts.font32.drawString(p_drawString_1_,p_drawString_2_,p_drawString_3_,p_drawString_4_,p_drawString_5_));
+             cir.cancel();
+         }
+     }
 
-    @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)
-    public void drawString(String p_drawString_1_, float p_drawString_2_, float p_drawString_3_, int p_drawString_4_, boolean p_drawString_5_, CallbackInfoReturnable<Integer> cir) {
-        if(BetterFont.INSTANCE.getState()){
-            //cir.setReturnValue((int) FontLoaders.C18.DisplayFont(p_drawString_1_,p_drawString_2_,p_drawString_3_,p_drawString_4_,p_drawString_5_,FontLoaders.C18));
+     @Inject(method = "getStringWidth", at = @At("HEAD"), cancellable = true)
+     public void getStringWidth(String p_getStringWidth_1_, CallbackInfoReturnable<Integer> cir) {
+         if(420 == 69){
+             cir.setReturnValue(Fonts.font32.getStringWidth(p_getStringWidth_1_));
+             cir.cancel();
+         }
+     }
 
-            cir.setReturnValue((int) Fonts.font32.drawString(p_drawString_1_,p_drawString_2_,p_drawString_3_,p_drawString_4_,p_drawString_5_));
-            cir.cancel();
-        }
-    }
-
-    @Inject(method = "getStringWidth", at = @At("HEAD"), cancellable = true)
-    public void getStringWidth(String p_getStringWidth_1_, CallbackInfoReturnable<Integer> cir) {
-        if(BetterFont.INSTANCE.getState()){
-            //cir.setReturnValue(FontLoaders.C18.DisplayFontWidth(p_getStringWidth_1_,FontLoaders.C18));
-            cir.setReturnValue(Fonts.font32.getStringWidth(p_getStringWidth_1_));
-            cir.cancel();
-        }
-    }
 }
