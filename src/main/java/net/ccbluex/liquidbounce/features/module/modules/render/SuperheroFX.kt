@@ -32,23 +32,34 @@ class SuperheroFX : Module() {
     @EventTarget
     fun onWorld(event: WorldEvent) = textParticles.clear()
 
-    @EventTarget
+   /* @EventTarget
     fun onEntityDamage(event: EntityDamageEvent) {
         val entity = event.damagedEntity
         if (mc.theWorld.loadedEntityList.contains(entity) && generateTimer.hasTimePassed(500L)) {
             val dirX = RandomUtils.nextDouble(-0.5, 0.5)
             val dirZ = RandomUtils.nextDouble(-0.5, 0.5)
             generateTimer.reset()
-            textParticles.add(
-                FXParticle(
-                    entity.posX + dirX,
-                    entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0,
-                    entity.posZ + dirZ,
-                    dirX, dirZ
-                )
-            )
+            textParticles.add(FXParticle(entity.posX + dirX, entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0, entity.posZ + dirZ,dirX, dirZ))
+        }
+    } */
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+            for(entity in mc.theWorld.loadedEntityList) {
+                if(entity is EntityLivingBase && EntityUtils.isSelected(entity,true)) {
+                    val lastHealth = healthData.getOrDefault(entity.entityId,entity.maxHealth)
+                    healthData[entity.entityId] = entity.health
+                    if(lastHealth == entity.health) continue
+            val dirX = RandomUtils.nextDouble(-0.5, 0.5)
+            val dirZ = RandomUtils.nextDouble(-0.5, 0.5)
+            generateTimer.reset()
+            textParticles.add(FXParticle(entity.posX + dirX, entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0, entity.posZ + dirZ,dirX, dirZ))
+
+                }
+            }
         }
     }
+
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
