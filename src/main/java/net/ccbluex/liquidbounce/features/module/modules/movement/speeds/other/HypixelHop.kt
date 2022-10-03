@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.*
 import kotlin.math.max
 import kotlin.math.roundToInt
-import kotlin.math
+
 
 
 class HypixelHop : SpeedMode("HypixelHop") {
