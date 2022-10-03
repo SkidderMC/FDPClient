@@ -14,7 +14,7 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 ### Liulihaocai
 OWNER | https://github.com/kotonemywaifu
 
- ### Zywl
+### Zywl
 OWNER | https://github.com/opZywl
 
 ### Co丶Dynamic 
@@ -25,6 +25,9 @@ HTML | ORG CONTRIBUTOR | https://github.com/gatooooooo
 
 ### Dg636
 ORG CONTRIBUTOR | https://github.com/C00LC0D35
+
+### Coccocoa's Helper
+OG ORG CONTRIBUTOR | https://github.com/gabrielvicenteYT
 
 ### WLENK 
 ORG UNMC CONTRIBUTOR | https://github.com/Wlenk
