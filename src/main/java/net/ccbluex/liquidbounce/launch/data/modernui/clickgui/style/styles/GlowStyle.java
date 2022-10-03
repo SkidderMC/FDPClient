@@ -72,14 +72,11 @@ public class GlowStyle extends Style {
         GlStateManager.resetColor();
         // draw the module and blur it
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
-        BlurUtils.INSTANCE.draw(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getWidth(), moduleElement.getHeight() + 1, 10);
+        BlurUtils.INSTANCE.draw(moduleElement.getX() + 2, moduleElement.getY() + 5, moduleElement.getWidth() - 2, moduleElement.getHeight() - 5, 6);
         // draw the module 
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
-
-        if(!moduleValues.isEmpty()) {
-            Fonts.font35.drawString("+", moduleElement.getX() + moduleElement.getWidth() - 8, moduleElement.getY() + (moduleElement.getHeight() / 2), Color.WHITE.getRGB());
 
             if(moduleElement.isShowSettings()) {
                 int yPos = moduleElement.getY() + 4;
