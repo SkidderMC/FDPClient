@@ -28,6 +28,7 @@ class SuperheroFX : Module() {
 
     private val textParticles = mutableListOf<FXParticle>()
     private val generateTimer = MSTimer()
+    private val healthData = mutableMapOf<Int, Float>()
 
     @EventTarget
     fun onWorld(event: WorldEvent) = textParticles.clear()
