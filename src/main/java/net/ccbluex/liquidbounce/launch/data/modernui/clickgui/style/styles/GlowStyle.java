@@ -34,6 +34,7 @@ public class GlowStyle extends Style {
     private boolean mouseDown;
     private boolean rightMouseDown;
 
+    // glow style by gatodepan
 
     public void drawGlowElement(int mouseX, int mouseY, ModuleElement moduleElement) {
         int guiColor = ClickGUIModule.generateColor().getRGB();
@@ -42,8 +43,14 @@ public class GlowStyle extends Style {
     }
 
     @Override
-    public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), 1F, new Color(231,229,230,80).getRGB());
+    public void drawPanel(int mouseX, int mouseY, Panel panel, ModuleElement moduleElement) {
+        // draw module text behind panel (gets blured)
+        int guiColor = ClickGUIModule.generateColor().getRGB();
+        GlStateManager.resetColor();
+        Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
+
+        // draw panel 
+        RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), new Color(231,229,230,80).getRGB());
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
         Fonts.font35.drawString("§f" + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7, -16777216);
 
