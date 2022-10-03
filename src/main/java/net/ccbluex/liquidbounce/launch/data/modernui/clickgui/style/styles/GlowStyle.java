@@ -34,14 +34,20 @@ public class GlowStyle extends Style {
     private boolean mouseDown;
     private boolean rightMouseDown;
 
+    string ModuleElementName = LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))
+    int ModuleElementX = moduleElement.getX()
+    int ModuleElementY = moduleElement.getY()
+    int ModuleElementNameWidth = Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")))
+    int ModuleState = moduleElement.getModule().getState()
+
     // glow style by gatodepan
 
     @Override
-    public void drawPanel(int mouseX, int mouseY, Panel panel, ModuleElement moduleElement) {
+    public void drawPanel(int mouseX, int mouseY, Panel panel) {
         // draw module text behind panel (gets blured)
          int guiColor = ClickGUIModule.generateColor().getRGB();
          GlStateManager.resetColor();
-         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
+         Fonts.font35.drawString(ModuleElementName, (int) (ModuleElementX - (ModuleElementNameWidth - 100.0f) / 2.0f), ModuleElementY + 6, ModuleState ? guiColor : Integer.MAX_VALUE);
 
         // draw panel 
         RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), new Color(231,229,230,80).getRGB());
