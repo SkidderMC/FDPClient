@@ -93,7 +93,7 @@ public class JelloStyle extends Style {
         GlStateManager.resetColor();
         int colour = 0;
         if(moduleElement.getModule().getState() == true){
-            FontLoaders.JELLO20.DisplayFont(FontLoaders.JELLO20, "   " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 3, Color.WHITE.getRGB());
+            FontLoaders.JELLO20.DisplayFont(FontLoaders.JELLO20, "    " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 3, Color.WHITE.getRGB());
         } else {
             FontLoaders.JELLO20.DisplayFont(FontLoaders.JELLO20,"  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 3, Color.BLACK.getRGB());
         }

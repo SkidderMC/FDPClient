@@ -43,7 +43,7 @@ public class GlowStyle extends Style {
         RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), new Color(0,0,0,80).getRGB());
         // draw title
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.font35.drawString("§f" + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7, -16777216);
+        Fonts.font35.drawString("§f" + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) panel.getX() + 10, panel.getY() + 7, -16777216);
         // draw scrollbar
        /* if(panel.getScrollbar() && panel.getFade() > 0) {
             RenderUtils.drawRect(panel.getX() - 2, panel.getY() + 21, panel.getX(), panel.getY() + 16 + panel.getFade(), Integer.MAX_VALUE);
@@ -72,7 +72,7 @@ public class GlowStyle extends Style {
         GlStateManager.resetColor();
         // draw the module and blur it
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
-        BlurUtils.INSTANCE.draw(moduleElement.getX() + 2, moduleElement.getY() + 5, moduleElement.getWidth() - 2, moduleElement.getHeight() - 5, 6);
+        BlurUtils.INSTANCE.draw(moduleElement.getX() + 2, moduleElement.getY() + 3, moduleElement.getWidth() - 2, moduleElement.getHeight() - 3, 8);
         // draw the module 
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
