@@ -34,11 +34,11 @@ public class GlowStyle extends Style {
     private boolean mouseDown;
     private boolean rightMouseDown;
 
-    string ModuleElementName = LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))
-    int ModuleElementX = moduleElement.getX()
-    int ModuleElementY = moduleElement.getY()
-    int ModuleElementNameWidth = Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")))
-    int ModuleState = moduleElement.getModule().getState()
+    string ModuleElementName = LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""));
+    int ModuleElementX = moduleElement.getX();
+    int ModuleElementY = moduleElement.getY();
+    int ModuleElementNameWidth = Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")));
+    int ModuleState = moduleElement.getModule().getState();
 
     // glow style by gatodepan
 
