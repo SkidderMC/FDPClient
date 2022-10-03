@@ -39,8 +39,13 @@ public class GlowStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
+        // draw header
+        RenderUtils.newDrawRect((float) panel.getX() + 2, (float) panel.getY() - 1, (float) panel.getX() + panel.getWidth() + 2, (float) panel.getY() + 18, new Color(0,0,0,95).getRGB() ;
         // draw panel background
         RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), new Color(0,0,0,80).getRGB());
+        // draw bottom bar
+            int guiColor = ClickGUIModule.generateColor().getRGB();
+        RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY() + 19 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 22 + panel.getFade(), guiColor);
         // draw title
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
         Fonts.font35.drawString("§f" + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) panel.getX() + 10, panel.getY() + 7, -16777216);
