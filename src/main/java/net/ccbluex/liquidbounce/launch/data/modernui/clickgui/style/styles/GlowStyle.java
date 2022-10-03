@@ -40,7 +40,7 @@ public class GlowStyle extends Style {
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
         // draw header
-        RenderUtils.newDrawRect((float) panel.getX() + 2, (float) panel.getY() - 1, (float) panel.getX() + panel.getWidth() + 2, (float) panel.getY() + 18, new Color(0,0,0,95).getRGB() ;
+        RenderUtils.newDrawRect((float) panel.getX() + 2, (float) panel.getY() - 1, (float) panel.getX() + panel.getWidth() + 2, (float) panel.getY() + 18, new Color(0,0,0,95).getRGB());
         // draw panel background
         RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), new Color(0,0,0,80).getRGB());
         // draw bottom bar
