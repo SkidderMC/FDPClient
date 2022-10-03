@@ -36,12 +36,6 @@ public class GlowStyle extends Style {
 
     // glow style by gatodepan
 
-    public void drawGlowElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-        int guiColor = ClickGUIModule.generateColor().getRGB();
-        GlStateManager.resetColor();
-        Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
-    }
-
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel, ModuleElement moduleElement) {
         // draw module text behind panel (gets blured)
