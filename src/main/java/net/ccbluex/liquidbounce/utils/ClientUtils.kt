@@ -15,7 +15,7 @@ import org.lwjgl.opengl.Display
 object
 ClientUtils : MinecraftInstance() {
     @JvmStatic
-    val logger = LogManager.getLogger("FDPClient")
+    private val logger = LogManager.getLogger("FDPClient")
 
 
     fun logInfo(msg: String) {
@@ -46,7 +46,7 @@ ClientUtils : MinecraftInstance() {
     }
 
     fun displayAlert(message: String) {
-        displayChatMessage(LiquidBounce.COLORED_NAME + message)
+        displayChatMessage("[" + LiquidBounce.COLORED_NAME + "] " + message)
     }
 
     fun displayChatMessage(message: String) {
