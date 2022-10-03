@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.FontRenderer;
@@ -34,26 +35,16 @@ public class GlowStyle extends Style {
     private boolean mouseDown;
     private boolean rightMouseDown;
 
-    String ModuleElementName = LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""));
-    int ModuleElementX = moduleElement.getX();
-    int ModuleElementY = moduleElement.getY();
-    int ModuleElementNameWidth = Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")));
-    int ModuleState = moduleElement.getModule().getState();
-
     // glow style by gatodepan
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        // draw module text behind panel (gets blured)
-         int guiColor = ClickGUIModule.generateColor().getRGB();
-         GlStateManager.resetColor();
-         Fonts.font35.drawString(ModuleElementName, (int) (ModuleElementX - (ModuleElementNameWidth - 100.0f) / 2.0f), ModuleElementY + 6, ModuleState ? guiColor : Integer.MAX_VALUE);
-
-        // draw panel 
+        // draw panel background
         RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), new Color(231,229,230,80).getRGB());
+        // draw title
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
         Fonts.font35.drawString("§f" + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7, -16777216);
-
+        // draw scrollbar
        /* if(panel.getScrollbar() && panel.getFade() > 0) {
             RenderUtils.drawRect(panel.getX() - 2, panel.getY() + 21, panel.getX(), panel.getY() + 16 + panel.getFade(), Integer.MAX_VALUE);
             RenderUtils.drawRect(panel.getX() - 2, panel.getY() + 30 + (panel.getFade() - 24F) / (panel.getElements().size() - LiquidBounce.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get()) * panel.getDragged() - 10.0f, panel.getX(), panel.getY() + 40 + (panel.getFade() - 24.0f) / (panel.getElements().size() - LiquidBounce.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get()) * panel.getDragged(), Integer.MIN_VALUE);
@@ -79,6 +70,10 @@ public class GlowStyle extends Style {
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
         int guiColor = ClickGUIModule.generateColor().getRGB();
         GlStateManager.resetColor();
+        // draw the module and blur it
+        Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
+        BlurUtils.INSTANCE.draw(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getWidth(), moduleElement.getHeight() + 1, 4);
+        // draw the module 
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
