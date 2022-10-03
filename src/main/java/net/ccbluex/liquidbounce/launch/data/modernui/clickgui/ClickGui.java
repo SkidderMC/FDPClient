@@ -63,7 +63,7 @@ public class ClickGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
     float trueCguiScale = 1;
-    String cguiMode = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get()
+    String cguiMode = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get();
     if(cguiMode == "Jello" || "Glow"){
         float trueCguiScale = 1;
     } else {
@@ -202,7 +202,7 @@ public class ClickGui extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         float trueCguiScale = 1;
-        String cguiMode = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get()
+        String cguiMode = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get();
         if(cguiMode == "Jello" || "Glow"){
             float trueCguiScale = 1;
         } else {
@@ -237,7 +237,7 @@ public class ClickGui extends GuiScreen {
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
             float trueCguiScale = 1;
-            String cguiMode = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get()
+            String cguiMode = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get();
         if(cguiMode == "Jello" || "Glow"){
                 float trueCguiScale = 1;
         } else {
