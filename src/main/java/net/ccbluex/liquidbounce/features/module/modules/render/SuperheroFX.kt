@@ -23,7 +23,7 @@ import java.math.BigDecimal
 import java.util.*
 import kotlin.math.abs
 
-@ModuleInfo(name = "SuperheroFX", spacedName = "Superhero FX", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "SuperheroFX", category = ModuleCategory.RENDER)
 class SuperheroFX : Module() {
 
     private val textParticles = mutableListOf<FXParticle>()
