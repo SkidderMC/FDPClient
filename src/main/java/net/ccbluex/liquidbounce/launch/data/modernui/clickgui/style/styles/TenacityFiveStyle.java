@@ -58,8 +58,10 @@ public class TenacityFiveStyle extends Style {
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
       // top RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 17, 3, new Color(217, 217, 217).getRGB(), new Color(217, 217, 217).getRGB());
-        RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), 5, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
-           // bottom RenderUtils.drawBorderedRect((float) panel.getX(), panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade() + 5, 3, new Color(217, 217, 217).getRGB(), new Color(217, 217, 217).getRGB());
+        RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 28 + panel.getFade(), 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
+        //19--->22
+        RenderUtils.customRounded((float) panel.getX() - 2, (float) panel.getY() + 19 + panel.getFade(), (float) panel.getX() + panel.getWidth() - 2, (float) panel.getY() + 25 + panel.getFade() + 5, 0f, 0f, 7, 7, new Color(33, 33, 33).getRGB)
+           // bottom RenderUtils.drawBorderedRect((float) panel.getX() - 2, (float) panel.getY() + 19 + panel.getFade(), (float) panel.getX() + panel.getWidth() - 2, (float) panel.getY() + 25 + panel.getFade() + 5, 3, new Color(217, 217, 217).getRGB(), new Color(217, 217, 217).getRGB());
     //67,156,251, 241,135,251
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
@@ -89,9 +91,9 @@ public class TenacityFiveStyle extends Style {
         //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(58,59,60), moduleElement.hoverTime).getRGB());
         //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(0,0,0,20), moduleElement.hoverTime).getRGB());
         if(moduleElement.getModule().getState() == true){
-                    Gui.drawRect(moduleElement.getX() + 2, moduleElement.getY() - 2, moduleElement.getX() + moduleElement.getWidth() -2, moduleElement.getY() + moduleElement.getHeight() - 2, hoverColor(new Color(0,0,0,20), moduleElement.hoverTime).getRGB());
+                    Gui.drawRect(moduleElement.getX() + 2, moduleElement.getY() - 2, moduleElement.getX() + moduleElement.getWidth() -2, moduleElement.getY() + moduleElement.getHeight(), hoverColor(new Color(0,0,0,20), moduleElement.hoverTime).getRGB());
         } else {
-            Gui.drawRect(moduleElement.getX() +2, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() - 2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
+            Gui.drawRect(moduleElement.getX() +2, moduleElement.getY(), moduleElement.getX() + moduleElement.getWidth() - 2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
         }
         GlStateManager.resetColor();
 
