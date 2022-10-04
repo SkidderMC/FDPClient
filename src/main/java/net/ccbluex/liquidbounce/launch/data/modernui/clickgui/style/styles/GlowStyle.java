@@ -44,10 +44,17 @@ public class GlowStyle extends Style {
         // draw panel background
         RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY() + 18, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 22 + panel.getFade(), new Color(0,0,0,80).getRGB());
         // draw bottom bar
+        if (panel.getFade() > 0) {
         RenderUtils.drawGradientRect(panel.getX() - 0, (float) panel.getY() + 22 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), ClickGUIModule.generateColor().getRGB(), new Color(0,0,0,20).getRGB());
         RenderUtils.drawGradientRect(panel.getX() - 0, (float) panel.getY() + 25 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 27 + panel.getFade(), ClickGUIModule.generateColor().getRGB(), new Color(0,0,0,20).getRGB());
             int guiColor = ClickGUIModule.generateColor().getRGB();
         RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY() + 22 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 25 + panel.getFade(), guiColor);
+        } else {
+        RenderUtils.drawGradientRect(panel.getX() - 3, (float) panel.getY() + 22, (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 19 + panel.getFade(), ClickGUIModule.generateColor().getRGB(), new Color(0,0,0,20).getRGB());
+        RenderUtils.drawGradientRect(panel.getX() - 3, (float) panel.getY() + 25, (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 27 + panel.getFade(), ClickGUIModule.generateColor().getRGB(), new Color(0,0,0,20).getRGB());
+            int guiColor = ClickGUIModule.generateColor().getRGB();
+        RenderUtils.newDrawRect((float) panel.getX() - 3, (float) panel.getY() + 22, (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 25 + panel.getFade(), guiColor); 
+        }
         // draw title
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
         Fonts.font35.drawString("§f" + LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) panel.getX() + 10, panel.getY() + 7, -16777216);
