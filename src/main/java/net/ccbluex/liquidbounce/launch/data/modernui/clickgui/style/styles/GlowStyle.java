@@ -44,7 +44,7 @@ public class GlowStyle extends Style {
         // draw panel background
         RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY() - 18, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), new Color(0,0,0,80).getRGB());
         // draw bottom bar
-        RenderUtils.drawGradientRect(panel.getX() - 0, (float) panel.getY() + 19 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 16 + panel.getFade(), clickGUIModule.generateColor().getRGB(), new Color(0,0,0,20).getRGB());
+        RenderUtils.drawGradientRect(panel.getX() - 0, (float) panel.getY() + 19 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 16 + panel.getFade(), ClickGUIModule.generateColor().getRGB(), new Color(0,0,0,20).getRGB());
         RenderUtils.drawGradientRect(panel.getX() - 0, (float) panel.getY() + 22 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 24 + panel.getFade(), ClickGUIModule.generateColor().getRGB(), new Color(0,0,0,20).getRGB());
             int guiColor = ClickGUIModule.generateColor().getRGB();
         RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY() + 19 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 22 + panel.getFade(), guiColor);
