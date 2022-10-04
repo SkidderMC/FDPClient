@@ -380,7 +380,7 @@ class Scaffold : Module() {
                     if (eagleSneaking != shouldEagle) {
                         mc.netHandler.addToSendQueue(
                             C0BPacketEntityAction(
-                                player, if (shouldEagle) {
+                                this.player, if (shouldEagle) {
                                     C0BPacketEntityAction.Action.START_SNEAKING
                                 } else {
                                     C0BPacketEntityAction.Action.STOP_SNEAKING
