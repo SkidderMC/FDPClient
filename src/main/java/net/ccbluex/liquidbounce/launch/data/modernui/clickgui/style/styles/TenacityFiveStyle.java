@@ -68,9 +68,9 @@ public class TenacityFiveStyle extends Style {
     public void drawDescription(int mouseX, int mouseY, String text) {
         int textWidth = Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(text.replaceAll("%","")));
 
-        RenderUtils.drawBorderedRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.font35.FONT_HEIGHT + 3, 3F, new Color(217, 217, 217).getRGB(), new Color(217, 217, 217).getRGB());
+        RenderUtils.drawBorderedRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.font35.FONT_HEIGHT + 3, 3F, new Color(33, 33, 33).getRGB(), new Color(33,33,33).getRGB());
         GlStateManager.resetColor();
-        Fonts.font35.drawString(LanguageManager.INSTANCE.get(text.replaceAll("%","")), mouseX + 12, mouseY + (Fonts.font35.FONT_HEIGHT / 2), Color.WHITE.getRGB());
+        Fonts.font35.drawString(LanguageManager.INSTANCE.get(text.replaceAll("%","")), mouseX + 12, mouseY + (Fonts.font35.FONT_HEIGHT / 2), Color.black.getRGB());
     }
 
     @Override
@@ -82,24 +82,14 @@ public class TenacityFiveStyle extends Style {
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(buttonElement.getDisplayName().replaceAll("%","")), buttonElement.getX() + 5, buttonElement.getY() + 5, Color.WHITE.getRGB());
     }
 
-    /*public static boolean drawCheckbox(final boolean value, final int x, final int y, final int mouseX, final int mouseY, final Color color) {
-        RenderUtils.drawRect(x, y, x + 20, y + 10, value ? Color.GREEN : Color.RED);
-        RenderUtils.drawFilledCircle(x + (value ? 15 : 5),y + 5, 5, Color.WHITE);
-
-        if(mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 10 && Mouse.isButtonDown(0))
-            return !value;
-
-        return value;
-    }*/
-
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
         //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(58,59,60), moduleElement.hoverTime).getRGB());
         //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(0,0,0,20), moduleElement.hoverTime).getRGB());
         if(moduleElement.getModule().getState() == true){
-                    Gui.drawRect(moduleElement.getX() + 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() -1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(0,0,0,20), moduleElement.hoverTime).getRGB());
+                    Gui.drawRect(moduleElement.getX() + 2, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() -2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(0,0,0,20), moduleElement.hoverTime).getRGB());
         } else {
-            Gui.drawRect(moduleElement.getX() +1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() - 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
+            Gui.drawRect(moduleElement.getX() +2, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() - 2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
         }
         GlStateManager.resetColor();
 
@@ -134,7 +124,7 @@ public class TenacityFiveStyle extends Style {
                             mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
                         }
 
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, ((BoolValue) value).get() ? Color.WHITE.getRGB() : new Color(120, 120, 120).getRGB());
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, ((BoolValue) value).get() ? Color.WHITE.getRGB() : new Color(160, 160, 160).getRGB());
                         moduleElement.slowlySettingsYPos += 11;
                     } else if (value instanceof ListValue) {
                         final ListValue listValue = (ListValue) value;
@@ -144,9 +134,8 @@ public class TenacityFiveStyle extends Style {
 
                         if (moduleElement.getSettingsWidth() < textWidth + 16)
                             moduleElement.setSettingsWidth(textWidth + 16);
-
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, 0xFF000000);
-                        Fonts.font35.drawString(listValue.openList ? "-" : "+", (int) (moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() - (listValue.openList ? 5 : 6)), moduleElement.slowlySettingsYPos + 2, 0xFF000000);
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, Color.WHITE.getRGB());
+                        Fonts.font35.drawString(listValue.openList ? "-" : "+", (int) (moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() - (listValue.openList ? 5 : 6)), moduleElement.slowlySettingsYPos + 2, Color.WHITE.getRGB());
 
                         if (mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= moduleElement.slowlySettingsYPos && mouseY <= moduleElement.slowlySettingsYPos + Fonts.font35.FONT_HEIGHT && Mouse.isButtonDown(0) && moduleElement.isntPressed()) {
                             listValue.openList = !listValue.openList;
@@ -168,7 +157,7 @@ public class TenacityFiveStyle extends Style {
                                 }
 
                                 GlStateManager.resetColor();
-                                Fonts.font35.drawString("- " + valueOfList, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, listValue.get() != null && listValue.get().equalsIgnoreCase(valueOfList) ? Color.WHITE.getRGB() : new Color(120, 120, 120).getRGB());
+                                Fonts.font35.drawString("- " + valueOfList, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, listValue.get() != null && listValue.get().equalsIgnoreCase(valueOfList) ? Color.WHITE.getRGB() : new Color(160, 160, 160).getRGB());
                                 moduleElement.slowlySettingsYPos += Fonts.font35.FONT_HEIGHT + 1;
                             }
                         }
@@ -189,7 +178,7 @@ public class TenacityFiveStyle extends Style {
                         if (valueOfSlide != floatValue.get())
                             floatValue.set(valueOfSlide);
 
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 3, 0xFF000000);
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 3, Color.WHITE.getRGB());
                         moduleElement.slowlySettingsYPos += 19;
                     } else if (value instanceof IntegerValue) {
                         final IntegerValue integerValue = (IntegerValue) value;
@@ -204,7 +193,7 @@ public class TenacityFiveStyle extends Style {
                         if (valueOfSlide != integerValue.get())
                             integerValue.set((int) valueOfSlide);
 
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 3, 0xFF000000);
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 3, Color.WHITE.getRGB());
                         moduleElement.slowlySettingsYPos += 19;
                     } else if (value instanceof FontValue) {
                         final FontValue fontValue = (FontValue) value;
@@ -278,7 +267,7 @@ public class TenacityFiveStyle extends Style {
                             moduleElement.setSettingsWidth(textWidth + 8);
 
                         GlStateManager.resetColor();
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 4, 0xFF000000);
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 4, Color.WHITE.getRGB());
                         moduleElement.slowlySettingsYPos += 12;
                     }
                 }
