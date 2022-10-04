@@ -253,7 +253,7 @@ public class Fonts {
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("default", 0, size);
+            font = new Font("defualt", 0, size);
         }
         return font;
     }
@@ -267,7 +267,35 @@ public class Fonts {
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("default", 0, size);
+            font = new Font("SFBold", 0, size);
+        }
+        return font;
+    }
+    private static Font getFont4(int size) {
+        Font font;
+        try {
+            InputStream is = Minecraft.getMinecraft().getResourceManager()
+                    .getResource(new ResourceLocation("fdpclient/icons/tenacity.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(0, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error loading font");
+            font = new Font("SFBold", 0, size);
+        }
+        return font;
+    }
+    private static Font getFont5(int size) {
+        Font font;
+        try {
+            InputStream is = Minecraft.getMinecraft().getResourceManager()
+                    .getResource(new ResourceLocation("fdpclient/icons/tenacity-bold.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(0, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error loading font");
+            font = new Font("SFBold", 0, size);
         }
         return font;
     }
