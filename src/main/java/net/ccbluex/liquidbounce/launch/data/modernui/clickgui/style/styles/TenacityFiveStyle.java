@@ -64,8 +64,9 @@ public class TenacityFiveStyle extends Style {
         RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 18, 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
         }
         GlStateManager.resetColor();
-        float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.font35.drawString(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7 - 3, Color.WHITE.getRGB());
+
+        float textWidth = Fonts.fontTenacityBold35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
+        Fonts.fontTenacityBold35.drawString(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7 - 3, Color.WHITE.getRGB());
     }
 
     @Override
@@ -97,8 +98,8 @@ public class TenacityFiveStyle extends Style {
         }
         GlStateManager.resetColor();
 
-        float modtextWidth = Fonts.font35.getStringWidth(moduleElement.getDisplayName().replaceAll("%",""));
-        Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() - ((modtextWidth - 100.0F) / 2F), moduleElement.getY() + 5, Color.WHITE.getRGB());
+        float modtextWidth = Fonts.fontTenacity35.getStringWidth(moduleElement.getDisplayName().replaceAll("%",""));
+        Fonts.fontTenacity35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() - ((modtextWidth - 100.0F) / 2F), moduleElement.getY() + 5, Color.WHITE.getRGB());
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();

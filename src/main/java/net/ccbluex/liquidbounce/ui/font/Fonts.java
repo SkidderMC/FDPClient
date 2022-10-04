@@ -134,6 +134,16 @@ public class Fonts {
         fontBangers = new GameFontRenderer(getFont("Bangers.ttf", 45));
         fontJello30 = new GameFontRenderer(getFont("jello.ttf", 30));
         fontJello40 = new GameFontRenderer(getFont("jello.ttf", 40));
+        fontTenacity30 = new GameFontRenderer(getFont("tenacity.ttf", 30));
+        fontTenacity35 = new GameFontRenderer(getFont("tenacity.ttf", 35));
+        fontTenacity40 = new GameFontRenderer(getFont("tenacity.ttf", 40));
+        fontTenacityBold30 = new GameFontRenderer(getFont("tenacity-bold.ttf", 30));
+        fontTenacityBold35 = new GameFontRenderer(getFont("tenacity-bold.ttf", 35));
+        fontTenacityBold40 = new GameFontRenderer(getFont("tenacity-bold.ttf", 40));
+        fontTenacityIcon30 = new GameFontRenderer(getFont("Tenacityicon.ttf", 30));
+        fontTenacityIcon35 = new GameFontRenderer(getFont("Tenacityicon.ttf", 35));
+        fontTenacityIcon40 = new GameFontRenderer(getFont("Tenacityicon.ttf", 40));
+
 
         for(GameFontRenderer it : getCustomFonts()) {
         }
