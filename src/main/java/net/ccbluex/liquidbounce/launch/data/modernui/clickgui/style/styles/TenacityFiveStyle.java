@@ -57,7 +57,7 @@ public class TenacityFiveStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.customRounded((float) panel.getX() + 2, (float) panel.getY() + 19 + panel.getFade(), (float) panel.getX() + panel.getWidth() - 2, (float) panel.getY() + 23 + panel.getFade() + 5, 0f, 0f, 7, 7, new Color(33, 33, 33).getRGB());
+        RenderUtils.customRounded((float) panel.getX() + 2, (float) panel.getY() + 19 + panel.getFade(), (float) panel.getX() + panel.getWidth() - 2, (float) panel.getY() + 23 + panel.getFade() + 5, 0f, 0f, 3f, 3f, new Color(33, 33, 33).getRGB());
         if (panel.getFade() > 0) {
         RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 27 + panel.getFade(), 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
         } else {
