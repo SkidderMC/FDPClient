@@ -40,9 +40,9 @@ public class GlowStyle extends Style {
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
         // draw header
-        RenderUtils.newDrawRect((float) panel.getX() - 2, (float) panel.getY() + 1, (float) panel.getX() + panel.getWidth() + 2, (float) panel.getY() + 20, new Color(0,0,0,96).getRGB());
+        RenderUtils.newDrawRect((float) panel.getX() - 3, (float) panel.getY() -1, (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 18, new Color(0,0,0,96).getRGB());
         // draw panel background
-        RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY() + 20, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 22 + panel.getFade(), new Color(0,0,0,80).getRGB());
+        RenderUtils.newDrawRect((float) panel.getX() - 0, (float) panel.getY() + 18, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 22 + panel.getFade(), new Color(0,0,0,80).getRGB());
         // draw bottom bar
         RenderUtils.drawGradientRect(panel.getX() - 0, (float) panel.getY() + 22 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), ClickGUIModule.generateColor().getRGB(), new Color(0,0,0,20).getRGB());
         RenderUtils.drawGradientRect(panel.getX() - 0, (float) panel.getY() + 25 + panel.getFade(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 27 + panel.getFade(), ClickGUIModule.generateColor().getRGB(), new Color(0,0,0,20).getRGB());
