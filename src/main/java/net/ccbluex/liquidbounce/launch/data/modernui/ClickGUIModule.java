@@ -30,7 +30,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "Jello", "LiquidBounce", "Glow", "Null", "Slowly", "Black", "White"}, "White") {
+    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "Jello", "LiquidBounce", "Tenacity5", "Glow", "Null", "Slowly", "Black", "White"}, "White") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -106,6 +106,9 @@ public class ClickGUIModule extends Module {
                 break;
             case "jello":
                 modernuiLaunchOption.clickGui.style = new JelloStyle();
+                break;
+            case "tenacity5":
+                modernuiLaunchOption.clickGui.style = new TenacityFiveStyle();
                 break;
             case "glow":
                 modernuiLaunchOption.clickGui.style = new GlowStyle();
