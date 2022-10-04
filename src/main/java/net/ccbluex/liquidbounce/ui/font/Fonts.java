@@ -261,7 +261,7 @@ public class Fonts {
         Font font;
         try {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
-                    .getResource(new ResourceLocation("fdpclient/icons/SFBOLD.ttf")).getInputStream();
+                    .getResource(new ResourceLocation("fdpclient/font/SFBOLD.ttf")).getInputStream();
             font = Font.createFont(0, is);
             font = font.deriveFont(0, size);
         } catch (Exception ex) {
@@ -275,7 +275,7 @@ public class Fonts {
         Font font;
         try {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
-                    .getResource(new ResourceLocation("fdpclient/icons/tenacity.ttf")).getInputStream();
+                    .getResource(new ResourceLocation("fdpclient/font/tenacity.ttf")).getInputStream();
             font = Font.createFont(0, is);
             font = font.deriveFont(0, size);
         } catch (Exception ex) {
@@ -289,7 +289,7 @@ public class Fonts {
         Font font;
         try {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
-                    .getResource(new ResourceLocation("fdpclient/icons/tenacity-bold.ttf")).getInputStream();
+                    .getResource(new ResourceLocation("fdpclient/font/tenacity-bold.ttf")).getInputStream();
             font = Font.createFont(0, is);
             font = font.deriveFont(0, size);
         } catch (Exception ex) {
