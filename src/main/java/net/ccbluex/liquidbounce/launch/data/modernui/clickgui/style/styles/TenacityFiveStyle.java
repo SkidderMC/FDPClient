@@ -103,7 +103,7 @@ public class TenacityFiveStyle extends Style {
         }
         GlStateManager.resetColor();
 
-        float modtextWidth = Fonts.font35.getStringWidth(moduleElement.getDisplayName().replaceAll("%","")));
+        float modtextWidth = Fonts.font35.getStringWidth(moduleElement.getDisplayName().replaceAll("%",""));
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() - ((modtextWidth - 100.0F) / 2F), moduleElement.getY() + 5, Color.WHITE.getRGB());
 
         // Draw settings
