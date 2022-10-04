@@ -369,6 +369,7 @@ public final class RenderUtils extends MinecraftInstance {
             Stencil.erase(true)
             drawGradientRect(left, top, right, bottom, startColor, endColor) {
             Stencil.dispose()
+        }
     }
 
     public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
