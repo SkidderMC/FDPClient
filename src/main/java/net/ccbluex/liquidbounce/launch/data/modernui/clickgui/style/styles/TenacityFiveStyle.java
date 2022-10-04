@@ -102,8 +102,9 @@ public class TenacityFiveStyle extends Style {
             Gui.drawRect(moduleElement.getX() +1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() - 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
         }
         GlStateManager.resetColor();
-        float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() - ((textWidth - 100.0F) / 2F), moduleElement.getY() + 5, Color.WHITE.getRGB());
+
+        float modtextWidth = Fonts.font35.getStringWidth(moduleElement.getDisplayName().replaceAll("%","")));
+        Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() - ((modtextWidth - 100.0F) / 2F), moduleElement.getY() + 5, Color.WHITE.getRGB());
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
