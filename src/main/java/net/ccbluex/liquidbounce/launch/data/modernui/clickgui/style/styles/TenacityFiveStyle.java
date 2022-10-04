@@ -57,13 +57,12 @@ public class TenacityFiveStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-      // top RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 17, 3, new Color(217, 217, 217).getRGB(), new Color(217, 217, 217).getRGB());
-        RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 30 + panel.getFade(), 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
-        //19--->22
         if (panel.getFade() > 0) {
-        RenderUtils.customRounded((float) panel.getX() + 2, (float) panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth() - 2, (float) panel.getY() + 23 + panel.getFade() + 5, 0f, 0f, 7, 7, new Color(33, 33, 33).getRGB());
+        RenderUtils.customRounded((float) panel.getX() + 2, (float) panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth() - 2, (float) panel.getY() + 20 + panel.getFade() + 5, 0f, 0f, 7, 7, new Color(33, 33, 33).getRGB());
+        RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 27 + panel.getFade(), 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
+        } else {
+        RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 18, 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
         }
-    //67,156,251, 241,135,251
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7 - 3, Color.WHITE.getRGB());
