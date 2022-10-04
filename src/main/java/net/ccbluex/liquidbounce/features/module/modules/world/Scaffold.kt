@@ -353,7 +353,7 @@ class Scaffold : Module() {
             // Eagle
          if (!eagleValue.get().equals("Off", true) && !shouldGoDown) {
             var dif = 0.5
-            val blockPos = BlockPos(player.posX, player.posY - 1.0, player.posZ)
+            val blockPos = BlockPos(this.player.posX, this.player.posY - 1.0, this.player.posZ)
             if (edgeDistanceValue.get() > 0) {
                 for (facingType in EnumFacing.values()) {
                     if (facingType == EnumFacing.UP || facingType == EnumFacing.DOWN) {
@@ -362,9 +362,9 @@ class Scaffold : Module() {
                     val neighbor = blockPos.offset(facingType)
                     if (isReplaceable(neighbor)) {
                         val calcDif = (if (facingType == EnumFacing.NORTH || facingType == EnumFacing.SOUTH) {
-                            abs((neighbor.z + 0.5) - player.posZ)
+                            abs((neighbor.z + 0.5) - this.player.posZ)
                         } else {
-                            abs((neighbor.x + 0.5) - player.posX)
+                            abs((neighbor.x + 0.5) - this.player.posX)
                         }) - 0.5
 
                         if (calcDif < dif) {
