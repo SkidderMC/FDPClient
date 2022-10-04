@@ -73,8 +73,9 @@ class Scaffold : Module() {
     private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Post")
 
     // Eagle
-    private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "OFF"), "OFF")
-    private val blocksToEagleValue = IntegerValue("BlocksToEagle", 0, 0, 10).displayable { !eagleValue.equals("OFF") }
+    private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Off"), "Off")
+    private val blocksToEagleValue = IntegerValue("BlocksToEagle", 0, 0, 10).displayable { !eagleValue.equals("Off") }
+    private val edgeDistanceValue = FloatValue("EagleEdgeDistance", 0f, 0f, 0.5f).displayable { !eagleValue.equals("Off") }
 
     // Expand
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
@@ -347,24 +348,52 @@ class Scaffold : Module() {
             }
 
             // Eagle
-            if (!eagleValue.equals("off") && !shouldGoDown) {
-                if (placedBlocksWithoutEagle >= blocksToEagleValue.get()) {
-                    val shouldEagle = mc.theWorld.getBlockState(
-                        BlockPos(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY - 1.0, mc.thePlayer.posZ
-                        )
-                    ).block === Blocks.air
-                    if (eagleValue.equals("silent")) {
-                        if (eagleSneaking != shouldEagle) {
-                            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, if (shouldEagle) C0BPacketEntityAction.Action.START_SNEAKING else C0BPacketEntityAction.Action.STOP_SNEAKING))
-                        }
-                        eagleSneaking = shouldEagle
-                    } else mc.gameSettings.keyBindSneak.pressed = shouldEagle
-                    placedBlocksWithoutEagle = 0
-                } else placedBlocksWithoutEagle++
-            }
+         if (!eagleValue.get().equals("Off", true) && !shouldGoDown) {
+            var dif = 0.5
+            val blockPos = BlockPos(player.posX, player.posY - 1.0, player.posZ)
+            if (edgeDistanceValue.get() > 0) {
+                for (facingType in EnumFacing.values()) {
+                    if (facingType == EnumFacing.UP || facingType == EnumFacing.DOWN) {
+                        continue
+                    }
+                    val neighbor = blockPos.offset(facingType)
+                    if (isReplaceable(neighbor)) {
+                        val calcDif = (if (facingType == EnumFacing.NORTH || facingType == EnumFacing.SOUTH) {
+                            abs((neighbor.z + 0.5) - player.posZ)
+                        } else {
+                            abs((neighbor.x + 0.5) - player.posX)
+                        }) - 0.5
 
+                        if (calcDif < dif) {
+                            dif = calcDif
+                        }
+                    }
+                }
+            }
+            if (placedBlocksWithoutEagle >= blocksToEagleValue.get()) {
+                val shouldEagle =
+                    isReplaceable(blockPos) || (edgeDistanceValue.get() > 0 && dif < edgeDistanceValue.get())
+                if (eagleValue.get().equals("Silent", true)) {
+                    if (eagleSneaking != shouldEagle) {
+                        mc.netHandler.addToSendQueue(
+                            C0BPacketEntityAction(
+                                player, if (shouldEagle) {
+                                    C0BPacketEntityAction.Action.START_SNEAKING
+                                } else {
+                                    C0BPacketEntityAction.Action.STOP_SNEAKING
+                                }
+                            )
+                        )
+                    }
+                    eagleSneaking = shouldEagle
+                } else {
+                    mc.gameSettings.keyBindSneak.pressed = shouldEagle
+                }
+                placedBlocksWithoutEagle = 0
+            } else {
+                placedBlocksWithoutEagle++
+            }
+        }
             // Zitter
             if (zitterModeValue.equals("teleport")) {
                 MovementUtils.strafe(zitterSpeedValue.get())
