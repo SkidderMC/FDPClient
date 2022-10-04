@@ -353,7 +353,7 @@ class Scaffold : Module() {
             // Eagle
          if (!eagleValue.get().equals("Off", true) && !shouldGoDown) {
             var dif = 0.5
-            val blockPos = BlockPos(this.player.posX, this.player.posY - 1.0, this.player.posZ)
+            val blockPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)
             if (edgeDistanceValue.get() > 0) {
                 for (facingType in EnumFacing.values()) {
                     if (facingType == EnumFacing.UP || facingType == EnumFacing.DOWN) {
@@ -362,9 +362,9 @@ class Scaffold : Module() {
                     val neighbor = blockPos.offset(facingType)
                     if (isReplaceable(neighbor)) {
                         val calcDif = (if (facingType == EnumFacing.NORTH || facingType == EnumFacing.SOUTH) {
-                            abs((neighbor.z + 0.5) - this.player.posZ)
+                            abs((neighbor.z + 0.5) - mc.thePlayer.posZ)
                         } else {
-                            abs((neighbor.x + 0.5) - this.player.posX)
+                            abs((neighbor.x + 0.5) - mc.thePlayer.posX)
                         }) - 0.5
 
                         if (calcDif < dif) {
@@ -380,7 +380,7 @@ class Scaffold : Module() {
                     if (eagleSneaking != shouldEagle) {
                         mc.netHandler.addToSendQueue(
                             C0BPacketEntityAction(
-                                this.player, if (shouldEagle) {
+                                mc.thePlayer, if (shouldEagle) {
                                     C0BPacketEntityAction.Action.START_SNEAKING
                                 } else {
                                     C0BPacketEntityAction.Action.STOP_SNEAKING
