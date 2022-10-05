@@ -92,7 +92,7 @@ public class TenacityFiveStyle extends Style {
         if(moduleElement.getModule().getState() == true){
                     Gui.drawRect(moduleElement.getX() + 2, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() -2, moduleElement.getY() + moduleElement.getHeight(), hoverColor(new Color(0,0,0,30), moduleElement.hoverTime).getRGB());
         } else {
-            Gui.drawRect(moduleElement.getX() +2, moduleElement.getY(), moduleElement.getX() + moduleElement.getWidth() - 2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
+            Gui.drawRect(moduleElement.getX() +2, moduleElement.getY() + 1, moduleElement.getX() + moduleElement.getWidth() - 2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
         }
         GlStateManager.resetColor();
 
