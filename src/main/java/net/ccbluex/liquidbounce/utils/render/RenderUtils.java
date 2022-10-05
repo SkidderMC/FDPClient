@@ -376,7 +376,7 @@ public final class RenderUtils extends MinecraftInstance {
         int width = bottom - left;
         int height = right - top;
         // get bigger
-        int trueSize = Math.max(height, width) + (Math.max(height, width) / 4);
+        int trueSize = Math.max(height, width) + (Math.max(height, width) / 8);
         // opengl magical shit that does the rotation
         int trueSizeMiddle = trueSize / 2;
         int height2 = height/2;
