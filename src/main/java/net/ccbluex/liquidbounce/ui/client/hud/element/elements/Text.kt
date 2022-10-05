@@ -48,7 +48,7 @@ class Text(
     }
 
     val displayString = TextValue("DisplayText", "")
-    val textStyle = ListValue("Text-Style", arrayOf("Default", "Jello", "FDP"), "Default")
+    val textStyle = ListValue("Text-Style", arrayOf("Default", "FDP"), "Default")
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
@@ -212,15 +212,6 @@ class Text(
                         "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
                         else -> color.rgb
                     }, shadow.get())
-        }
-
-        if(textStyle.get().contains("Jello")) {
-                FontLoaders.F40.drawString(
-                    displayText, 5F, 0F,Color(255,255,255,140).rgb
-                )
-/*                  FontLoaders.F24.drawString(
-                    LiquidBounce.CLIENT_VERSION.toString() , 5F, 23F,Color(255,255,255,140).rgb 
-                ) */
         }
 
         // maybe.
