@@ -47,11 +47,13 @@ class VerusHop : SpeedMode("VerusHop") {
                     if (modeValue.equals("Ground")) { 
                         if (groundTicks > 0) {
                             MovementUtils.strafe(1.01f)
-                        } else {
+                        } else if (mc.thePlayer.ticksExisted % 12 == 0) {
                             MovementUtils.strafe(0.69f)
                             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, false))
                             MovementUtils.strafe(0.41f)
-                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
+                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.35, mc.thePlayer.posZ, false))
+                            MovementUtils.strafe(0.41f)
+                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.35, mc.thePlayer.posZ, true))
                             groundTicks = 12 // 11 bipass but add 1 cuz --
                         }
                         groundTicks--
