@@ -19,25 +19,22 @@ class VerusAirCollideFly : FlyMode("VerusAirCollide") {
     override fun onMove(event: MoveEvent) {
         mc.gameSettings.keyBindJump.pressed = false
         mc.gameSettings.keyBindSneak.pressed = false
-        if (ticks % 10 == 0 && mc.thePlayer.onGround) {
-            MovementUtils.strafe(1f)
+        if (ticks % 14 == 0 && mc.thePlayer.onGround) {
+            MovementUtils.strafe(0.69f)
             event.y = 0.42
             ticks = 0
-            mc.thePlayer.motionY = 0.0
-            mc.timer.timerSpeed = 4f
+            mc.thePlayer.motionY = -(mc.thePlayer.posY - Math.floor(mc.thePlayer.posY))
         } else {
             if (GameSettings.isKeyDown(mc.gameSettings.keyBindJump) && ticks % 2 == 1) {
-                event.y = 0.5
-                MovementUtils.strafe(0.48f)
-                fly.launchY += 0.5
-                mc.timer.timerSpeed = 1f
-                return
+                if (mc.thePlayer.ticksExisted % 2 == 0) {
+                    mc.thePlayer.motionY = 0.42;
+                    MovementUtils.strafe(0.3f);
+                }
             }
-            mc.timer.timerSpeed = 1f
             if (mc.thePlayer.onGround) {
-                MovementUtils.strafe(0.8f)
+                MovementUtils.strafe(1.01f)
             } else {
-                MovementUtils.strafe(0.72f)
+                MovementUtils.strafe(0.41f)
             }
         }
         ticks++
