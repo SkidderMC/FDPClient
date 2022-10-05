@@ -398,7 +398,7 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         Stencil.erase(true); 
-        rawTenacityGradient(left, top, bottom, right, startColor, endColor);
+        drawTenacityGradient(left, top, bottom, right, startColor, endColor);
         Stencil.dispose(); 
     }
 
