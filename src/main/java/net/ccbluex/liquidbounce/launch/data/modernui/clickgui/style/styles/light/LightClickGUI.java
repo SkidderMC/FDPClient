@@ -4,8 +4,6 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 
-// by dg636 & opzywl
-
 package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
@@ -31,7 +29,7 @@ import java.io.IOException;
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 
-    // light style by dg636
+    // light style by dg636 & opzywl
 
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
     private Module currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
@@ -41,6 +39,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     private boolean previousMouse = true;
     private boolean mouse;
     private float moveX = 0, moveY = 0;
+    private float oldX = 0, oldY = 0;
     private final FontRenderer defaultFont = Fonts.font35;
     private final FontRenderer logoFont = Fonts.font40;
 
@@ -161,7 +160,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             mc.displayGuiScreen(new GuiHudDesigner()); //进入自定义HUD界面
 
         // click = move target hud
-        if (isHovered(startX - 5, startY, startX + 400, startY + 25, mouseX, mouseY) && Mouse.isButtonDown(0)) {//移动窗口
+        if ((isHovered(startX - 5, startY, startX + 400, startY + 25, mouseX, mouseY) || isHovered(startX - 5, startY, startX + 400, startY + 25, oldX, oldY)) && Mouse.isButtonDown(0)) {//移动窗口
             if (moveX == 0 && moveY == 0) {
                 moveX = mouseX - startX;
                 moveY = mouseY - startY;
@@ -174,6 +173,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             moveX = 0;
             moveY = 0;
         }
+        oldX = mouseX;
+        oldY = mouseY;
 
         // fdp water mark
         Fonts.font35.drawString("Made by SkidderMC", startX + 210, startY + 295, new Color(200,200,200).getRGB());
@@ -447,9 +448,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     float x = startX + 295;
                     ListValue listValue = (ListValue) value;
                     settings.drawListValue(previousMouse,mouseX,mouseY,mY,startX,listValue);
-                    if (this.isStringHovered(x, mY - 5, x + 80, mY + 11, mouseX, mouseY)) {
-                        this.previousMouse = Mouse.isButtonDown(0);
-                    }
+                    this.previousMouse = Mouse.isButtonDown(0);
                     mY += 25;
                 }
             }
@@ -611,7 +610,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 
         // gradient shadwo things
         RenderUtils.drawGradientSideways(startX + categoryAnimation + 48, startY + 25, startX + categoryAnimation + 55, startY + 310,
-                new Color(0, 0, 0, 90).getRGB(), new Color(0, 0, 0, 0).getRGB());//255,255,255,30
+                new Color(0, 0, 0, 190).getRGB(), new Color(0, 0, 0, 0).getRGB());//255,255,255,30
 
         RenderUtils.drawGradientSideways(startX + 200, startY + 25, startX + 205, startY + 310,
                 new Color(0, 0, 0, 70).getRGB(), new Color(0,0,0,0).getRGB());//239,237,237,30
