@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.particles.Particle;
 import net.ccbluex.liquidbounce.utils.particles.Vec3;
 import net.ccbluex.liquidbounce.utils.render.glu.DirectTessCallback;
 import net.ccbluex.liquidbounce.utils.render.glu.VertexData;
+import net.ccbluex.liquidbounce.utils.SessionUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -376,7 +377,7 @@ public final class RenderUtils extends MinecraftInstance {
                     int trueSize = Math.max(height, width) + (Math.max(height, width) / 2);
                     // opengl magical shit that does the rotation
                     glPushMatrix();
-                    GL11.glRotatef((EntityLivingBase.ticksExisted + mc.timer.renderPartialTicks) * 4f, 0f, 1f, 0f);
+                    GL11.glRotatef((SessionUtils.getFormatSessionTime() + mc.timer.renderPartialTicks) * 4f, 0f, 1f, 0f);
                     drawGradientRect(left - (trueSize / 2), top - (trueSize / 2), trueSize, trueSize, startColor, endColor);
                     glPopMatrix();
     }
