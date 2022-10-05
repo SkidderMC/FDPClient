@@ -89,10 +89,8 @@ public class TenacityFiveStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-        //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(58,59,60), moduleElement.hoverTime).getRGB());
-        //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(0,0,0,20), moduleElement.hoverTime).getRGB());
         if(moduleElement.getModule().getState() == true){
-                    Gui.drawRect(moduleElement.getX() + 2, moduleElement.getY() - 5, moduleElement.getX() + moduleElement.getWidth() -2, moduleElement.getY() + moduleElement.getHeight(), hoverColor(new Color(0,0,0,30), moduleElement.hoverTime).getRGB());
+                    Gui.drawRect(moduleElement.getX() + 2, moduleElement.getY(), moduleElement.getX() + moduleElement.getWidth() -2, moduleElement.getY() + moduleElement.getHeight(), hoverColor(new Color(0,0,0,30), moduleElement.hoverTime).getRGB());
         } else {
             Gui.drawRect(moduleElement.getX() +2, moduleElement.getY(), moduleElement.getX() + moduleElement.getWidth() - 2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
         }
