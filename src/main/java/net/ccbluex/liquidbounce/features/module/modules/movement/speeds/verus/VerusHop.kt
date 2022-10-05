@@ -51,9 +51,6 @@ class VerusHop : SpeedMode("VerusHop") {
                             MovementUtils.strafe(0.69f)
                             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, false))
                             MovementUtils.strafe(0.41f)
-                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.35, mc.thePlayer.posZ, false))
-                            MovementUtils.strafe(0.41f)
-                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.35, mc.thePlayer.posZ, true))
                             groundTicks = 12 // 11 bipass but add 1 cuz --
                         }
                         groundTicks--
