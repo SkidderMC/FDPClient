@@ -10,14 +10,16 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.network.play.server.S12PacketEntityVelocity
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.ccbluex.liquidbounce.value.*
 
 class VerusHop : SpeedMode("VerusHop") {
 
-    private val modeValue = ListValue("VerusMode", arrayOf("Normal", "LowHop", "VerusHard", "FastHop", "Bhop", "Test"), "Normal")
+    private val modeValue = ListValue("VerusMode", arrayOf("Normal", "LowHop", "VerusHard", "FastHop", "Bhop", "Test", "Ground"), "Normal")
     private val timerBoost = BoolValue("${valuePrefix}TimerBoost",true)
 
     private var jumps = 0
+    private var groundTicks = 0
     private var lastY = 0.0
     private var damagedTicks = 0
     
@@ -25,6 +27,11 @@ class VerusHop : SpeedMode("VerusHop") {
     
     override fun onEnable() {
         verusHopStage = 1
+        groundTicks = 0
+    }
+    
+    override fun onDisable() {
+        mc.timer.timerSpeed = 1f
     }
 
                                         
@@ -37,6 +44,20 @@ class VerusHop : SpeedMode("VerusHop") {
 
             when {
                 mc.thePlayer.onGround -> {
+                    if (modeValue.equals("Ground")) { 
+                        if (groundTicks > 0) {
+                            MovementUtils.strafe(1.01f)
+                        } else {
+                            MovementUtils.strafe(0.69f)
+                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, false))
+                            MovementUtils.strafe(0.41f)
+                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
+                            groundTicks = 12 // 11 bipass but add 1 cuz --
+                        }
+                        groundTicks--
+                    }
+                        
+                        
                     if (modeValue.equals("Normal") || modeValue.equals("LowHop") || modeValue.equals("FastHop")) {
                         MovementUtils.strafe(0.4848f)
                         if (modeValue.equals("LowHop")) {
@@ -76,7 +97,7 @@ class VerusHop : SpeedMode("VerusHop") {
                 }
                 else -> {
                     if (modeValue.equals("FastHop")) {
-                        MovementUtils.strafe(0.3772f)
+                        MovementUtils.strafe(0.36f)
                     } else if (modeValue.equals("Bhop")) {
                         if (mc.thePlayer.fallDistance >= 1.5) {
                             if (damagedTicks > 0) {
@@ -102,6 +123,8 @@ class VerusHop : SpeedMode("VerusHop") {
                     }
                 }
             }
+        } else {
+            groundTicks = 0
         }
     }
     
