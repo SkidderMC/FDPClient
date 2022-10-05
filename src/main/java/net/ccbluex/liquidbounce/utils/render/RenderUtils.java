@@ -375,14 +375,14 @@ public final class RenderUtils extends MinecraftInstance {
     public static void drawTenacityGradientRect(int left, int top, int bottom, int right, int startColor, int endColor) {
         int width = bottom - left;
         int height = right - top;
-        Stencil.write(false);
+       /* Stencil.write(false);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         quickDrawRect(left, top, bottom, right);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        Stencil.erase(true);
+        Stencil.erase(true); */
         // get bigger
         int trueSize = Math.max(height, width) * 2;
         // opengl magical shit that does the rotation
@@ -390,7 +390,7 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glRotatef(((System.nanoTime() / 5000000 * 2) % 360), 0f, 0f, 1f);
         drawGradientRect(left - trueSize, top - trueSize, trueSize, trueSize, startColor, endColor);
         glPopMatrix();
-        Stencil.dispose();
+       /* Stencil.dispose(); */
     }
 
     public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
