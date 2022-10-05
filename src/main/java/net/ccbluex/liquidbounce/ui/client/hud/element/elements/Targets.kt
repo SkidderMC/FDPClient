@@ -1094,7 +1094,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
         RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
-        RenderUtils.drawTenacityGradientRect(0, 0, 45f + additionalWidth, 40f, Color(241,135,251).rgb, Color(67,156,251).rgb) {
+        RenderUtils.drawTenacityGradientRect(0, 0, 45f + additionalWidth, 40f, Color(241,135,251).rgb, Color(67,156,251).rgb) 
 
         // circle player avatar
         GL11.glColor4f(1f, 1f, 1f, 1f)
