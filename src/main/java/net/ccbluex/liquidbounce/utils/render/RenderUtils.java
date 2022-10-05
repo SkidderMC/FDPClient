@@ -373,7 +373,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawTenacityGradientRect(int left, int top, int height, int width, int startColor, int endColor) {
-                            int rote;
+                            int rote = 0;
                             while (1 == 1) {
                              if(rote == 360){
                                 rote = 1;
