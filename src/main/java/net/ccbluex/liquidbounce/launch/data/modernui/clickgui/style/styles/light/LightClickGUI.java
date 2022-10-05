@@ -30,6 +30,9 @@ import java.awt.*;
 import java.io.IOException;
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
+
+    // light style by dg636
+
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
     private Module currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
     private float startX = 50, startY = 25;
