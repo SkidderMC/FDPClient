@@ -384,10 +384,10 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         Stencil.erase(true); */
         // get bigger
-        int trueSize = Math.max(height, width) * 1.3;
+        int trueSize = Math.max(height, width) + (Math.max(height, width)/4);
         // opengl magical shit that does the rotation
         glPushMatrix();
-        GL11.glRotatef(((System.nanoTime() / 5000000 * 0.6) % 360), 0f, 0f, 1f);
+        GL11.glRotatef(((System.nanoTime() / 10000000) % 360), 0f, 0f, 1f);
         drawGradientRect(left - (trueSize/4), top - (trueSize/4), trueSize, trueSize, startColor, endColor);
         glPopMatrix();
        /* Stencil.dispose(); */
