@@ -376,16 +376,16 @@ public final class RenderUtils extends MinecraftInstance {
                             int rot;
                             while (1 == 1) {
                              if(rot == 360){
-                                rot = 1
+                                rot = 1;
                              } else {
-                                rot = rot + 1
+                                rot = rot + 1;
                              }
                             }
                     // get bigger
                     int trueSize = Math.max(height, width) + (Math.max(height, width) / 2);
                     // opengl magical shit that does the rotation
                     glPushMatrix();
-                    GL11.glRotatef((rot, 0f, 1f, 0f);
+                    GL11.glRotatef(rot, 0f, 1f, 0f);
                     drawGradientRect(left - (trueSize / 2), top - (trueSize / 2), trueSize, trueSize, startColor, endColor);
                     glPopMatrix();
     }
