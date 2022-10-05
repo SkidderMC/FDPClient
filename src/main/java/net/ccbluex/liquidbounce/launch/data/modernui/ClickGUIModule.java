@@ -30,7 +30,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "Jello", "LiquidBounce", "Null", "Slowly", "Black", "White"}, "Classic") {
+    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "Jello", "LiquidBounce", "Tenacity5", "Glow", "Null", "Slowly", "Black", "White"}, "White") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -44,7 +44,7 @@ public class ClickGUIModule extends Module {
     public static final ListValue colormode = new ListValue("Setting Accent", new String[]{"White", "Color"},"Color");
     public static final IntegerValue clickHeight = new IntegerValue("Tab Height", 250, 100, 500);
     public final FloatValue scaleValue = new FloatValue("Scale", 0.70F, 0.7F, 2F);
-    public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 40);
+    public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
     public final ListValue backgroundValue = new ListValue("Background", new String[] {"Default", "Gradient", "None"}, "None");
 
     public final ListValue animationValue = new ListValue("Animation", new String[] {"Bread", "Slide", "LiquidBounce", "Zoom", "Ziul", "None"}, "Ziul");
@@ -53,14 +53,14 @@ public class ClickGUIModule extends Module {
     public static final IntegerValue colorGreenValue = (IntegerValue) new IntegerValue("G", 160, 0, 255).displayable(() -> !colorRainbow.get());
     public static final IntegerValue colorBlueValue = (IntegerValue) new IntegerValue("B", 255, 0, 255).displayable(() -> !colorRainbow.get());
 
-    private static final ListValue clickguicolormode = new ListValue("ClickGuiColor",new String[]{"Drak","White"},"Drak");
+ //   private static final ListValue clickguicolormode = new ListValue("ClickGuiColor",new String[]{"Drak","White"},"Drak");
 
-    public final BoolValue getClosePrevious = (BoolValue) new BoolValue("ClosePrevious",true);
+    public final BoolValue getClosePrevious = (BoolValue) new BoolValue("ClosePrevious",false);
 
     public static boolean isLight (){
-        if (clickguicolormode.get().equalsIgnoreCase("White")){
-            return true;
-        }
+       // if (clickguicolormode.get().equalsIgnoreCase("White")){
+        //    return true;
+        //}
         return false;
     }
 
@@ -106,6 +106,12 @@ public class ClickGUIModule extends Module {
                 break;
             case "jello":
                 modernuiLaunchOption.clickGui.style = new JelloStyle();
+                break;
+            case "tenacity5":
+                modernuiLaunchOption.clickGui.style = new TenacityFiveStyle();
+                break;
+            case "glow":
+                modernuiLaunchOption.clickGui.style = new GlowStyle();
                 break;
             case "astolfo":
                 modernuiLaunchOption.clickGui.style = new AstolfoStyle();

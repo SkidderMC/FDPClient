@@ -358,6 +358,18 @@ public final class RenderUtils extends MinecraftInstance {
         enableTexture2D();
         GlStateManager.popMatrix();
     }
+    public static void drawGradientRoundedRect(int left, int top, int right, int bottom, int radius, int startColor, int endColor) {
+            Stencil.write(false);
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            fastRoundedRect(left, top, right, bottom, radius);
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            Stencil.erase(true);
+            drawGradientRect(left, top, right, bottom, startColor, endColor);
+            Stencil.dispose();
+    }
 
     public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
         float f = (float) (col1 >> 24 & 255) / 255.0f;

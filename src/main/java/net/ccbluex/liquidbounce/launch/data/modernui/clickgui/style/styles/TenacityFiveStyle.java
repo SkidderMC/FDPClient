@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.elements.ButtonEle
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.Style;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
@@ -29,10 +28,9 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+public class TenacityFiveStyle extends Style {
 
-public class JelloStyle extends Style {
-
-    // jello edit by GatoDePan
+        // Tenacity edit by GatoDePan <3
 
     private boolean mouseDown;
     private boolean rightMouseDown;
@@ -59,44 +57,49 @@ public class JelloStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() + 16, (float) panel.getX() + panel.getWidth(), (float) panel.getY() -16, new Color(231,229,230).getRGB());
-        RenderUtils.newDrawRect((float) panel.getX(), (float) panel.getY() - 3, (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 15, new Color(231,229,230).getRGB());
+        if (panel.getFade() > 0) {
+        RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 26 + panel.getFade(), 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
+        RenderUtils.customRounded((float) panel.getX() + 2, (float) panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth() - 2, (float) panel.getY() + 19 + panel.getFade() + 5, 0f, 0f, 7, 7, new Color(33, 33, 33).getRGB());
+        } else {
+        RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 18, 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
+        }
         GlStateManager.resetColor();
-        float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        FontLoaders.JELLO30.DisplayFont(FontLoaders.JELLO30, LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), panel.getX() + 10, panel.getY() - 6, new Color(116,114,115).getRGB());
+
+        float textWidth = Fonts.fontTenacityBold35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
+        Fonts.fontTenacityBold35.drawString(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7 - 3, Color.WHITE.getRGB());
     }
 
     @Override
     public void drawDescription(int mouseX, int mouseY, String text) {
-        /*
         int textWidth = Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(text.replaceAll("%","")));
 
-        RenderUtils.drawBorderedRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.font35.FONT_HEIGHT + 3, 3F, new Color(217, 217, 217).getRGB(), new Color(217, 217, 217).getRGB());
+        RenderUtils.drawBorderedRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.font35.FONT_HEIGHT + 3, 3F, new Color(33, 33, 33).getRGB(), new Color(33,33,33).getRGB());
         GlStateManager.resetColor();
-        Fonts.font35.drawString(LanguageManager.INSTANCE.get(text.replaceAll("%","")), mouseX + 12, mouseY + (Fonts.font35.FONT_HEIGHT / 2), Color.BLACK.getRGB());
-        */
+        Fonts.font35.drawString(LanguageManager.INSTANCE.get(text.replaceAll("%","")), mouseX + 12, mouseY + (Fonts.font35.FONT_HEIGHT / 2), Color.WHITE.getRGB());
     }
 
     @Override
     public void drawButtonElement(int mouseX, int mouseY, ButtonElement buttonElement) {
-        Gui.drawRect(buttonElement.getX() - 1, buttonElement.getY() - 1, buttonElement.getX() + buttonElement.getWidth() + 1, buttonElement.getY() + buttonElement.getHeight() + 1, hoverColor(buttonElement.getColor() != Integer.MAX_VALUE ? new Color(14, 159, 255) : new Color(217,217,217)).getRGB());
+        Gui.drawRect(buttonElement.getX() - 1, buttonElement.getY() - 1, buttonElement.getX() + buttonElement.getWidth() + 1, buttonElement.getY() + buttonElement.getHeight() + 1, hoverColor(buttonElement.getColor() != Integer.MAX_VALUE ? new Color(14, 159, 255) : new Color(217,217,217), buttonElement.hoverTime).getRGB());
 
         GlStateManager.resetColor();
 
-        Fonts.font35.drawString(LanguageManager.INSTANCE.get(buttonElement.getDisplayName().replaceAll("%","")), buttonElement.getX() + 5, buttonElement.getY() + 5, Color.BLACK.getRGB());
+        Fonts.font35.drawString(LanguageManager.INSTANCE.get(buttonElement.getDisplayName().replaceAll("%","")), buttonElement.getX() + 5, buttonElement.getY() + 5, Color.WHITE.getRGB());
     }
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-        Gui.drawRect(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth(), moduleElement.getY() + moduleElement.getHeight() + 1, new Color(250,250,250).getRGB());
-        Gui.drawRect(moduleElement.getX(), moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth(), moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(100,165,241, moduleElement.slowlyFade)).getRGB());
-        GlStateManager.resetColor();
-        int colour = 0;
+        //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(58,59,60), moduleElement.hoverTime).getRGB());
+        //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(0,0,0,20), moduleElement.hoverTime).getRGB());
         if(moduleElement.getModule().getState() == true){
-            FontLoaders.JELLO20.DisplayFont(FontLoaders.JELLO20, "    " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 3, Color.WHITE.getRGB());
+                    Gui.drawRect(moduleElement.getX() + 2, moduleElement.getY() - 5, moduleElement.getX() + moduleElement.getWidth() -2, moduleElement.getY() + moduleElement.getHeight(), hoverColor(new Color(0,0,0,30), moduleElement.hoverTime).getRGB());
         } else {
-            FontLoaders.JELLO20.DisplayFont(FontLoaders.JELLO20,"  " + LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 5, moduleElement.getY() + 3, Color.BLACK.getRGB());
+            Gui.drawRect(moduleElement.getX() +2, moduleElement.getY(), moduleElement.getX() + moduleElement.getWidth() - 2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
         }
+        GlStateManager.resetColor();
+
+        float modtextWidth = Fonts.fontTenacity35.getStringWidth(moduleElement.getDisplayName().replaceAll("%",""));
+        Fonts.fontTenacity35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() - ((modtextWidth - 100.0F) / 2F), moduleElement.getY() + 5, Color.WHITE.getRGB());
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
@@ -105,7 +108,7 @@ public class JelloStyle extends Style {
 
             if (moduleElement.isShowSettings()) {
                 if (moduleElement.getSettingsWidth() > 0F && moduleElement.slowlySettingsYPos > moduleElement.getY() + 6)
-                    RenderUtils.newDrawRect(moduleElement.getX() + moduleElement.getWidth() + 4, moduleElement.getY() + 6, moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth(), moduleElement.slowlySettingsYPos + 2, Color.white.getRGB());
+                    RenderUtils.drawBorderedRect(moduleElement.getX() + moduleElement.getWidth() + 4, moduleElement.getY() + 6, moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth(), moduleElement.slowlySettingsYPos + 2, 3F, new Color(40,40,40).getRGB(), new Color(40,40,40).getRGB());
 
                 moduleElement.slowlySettingsYPos = moduleElement.getY() + 6;
                 for (final Value value : moduleValues) {
@@ -126,7 +129,7 @@ public class JelloStyle extends Style {
                             mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
                         }
 
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, ((BoolValue) value).get() ? Color.BLACK.getRGB() : new Color(120, 120, 120).getRGB());
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, ((BoolValue) value).get() ? Color.WHITE.getRGB() : new Color(160, 160, 160).getRGB());
                         moduleElement.slowlySettingsYPos += 11;
                     } else if (value instanceof ListValue) {
                         final ListValue listValue = (ListValue) value;
@@ -136,9 +139,8 @@ public class JelloStyle extends Style {
 
                         if (moduleElement.getSettingsWidth() < textWidth + 16)
                             moduleElement.setSettingsWidth(textWidth + 16);
-
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, 0xFF000000);
-                        Fonts.font35.drawString(listValue.openList ? "-" : "+", (int) (moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() - (listValue.openList ? 5 : 6)), moduleElement.slowlySettingsYPos + 2, 0xFF000000);
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, Color.WHITE.getRGB());
+                        Fonts.font35.drawString(listValue.openList ? "-" : "+", (int) (moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() - (listValue.openList ? 5 : 6)), moduleElement.slowlySettingsYPos + 2, Color.WHITE.getRGB());
 
                         if (mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= moduleElement.slowlySettingsYPos && mouseY <= moduleElement.slowlySettingsYPos + Fonts.font35.FONT_HEIGHT && Mouse.isButtonDown(0) && moduleElement.isntPressed()) {
                             listValue.openList = !listValue.openList;
@@ -160,7 +162,7 @@ public class JelloStyle extends Style {
                                 }
 
                                 GlStateManager.resetColor();
-                                Fonts.font35.drawString("- " + valueOfList, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, listValue.get() != null && listValue.get().equalsIgnoreCase(valueOfList) ? Color.BLACK.getRGB() : new Color(120, 120, 120).getRGB());
+                                Fonts.font35.drawString("- " + valueOfList, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, listValue.get() != null && listValue.get().equalsIgnoreCase(valueOfList) ? Color.WHITE.getRGB() : new Color(160, 160, 160).getRGB());
                                 moduleElement.slowlySettingsYPos += Fonts.font35.FONT_HEIGHT + 1;
                             }
                         }
@@ -181,7 +183,7 @@ public class JelloStyle extends Style {
                         if (valueOfSlide != floatValue.get())
                             floatValue.set(valueOfSlide);
 
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 3, 0xFF000000);
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 3, Color.WHITE.getRGB());
                         moduleElement.slowlySettingsYPos += 19;
                     } else if (value instanceof IntegerValue) {
                         final IntegerValue integerValue = (IntegerValue) value;
@@ -196,7 +198,7 @@ public class JelloStyle extends Style {
                         if (valueOfSlide != integerValue.get())
                             integerValue.set((int) valueOfSlide);
 
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 3, 0xFF000000);
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 3, Color.WHITE.getRGB());
                         moduleElement.slowlySettingsYPos += 19;
                     } else if (value instanceof FontValue) {
                         final FontValue fontValue = (FontValue) value;
@@ -218,7 +220,7 @@ public class JelloStyle extends Style {
                             }
                         }
 
-                        Fonts.font35.drawString(displayString, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, Color.BLACK.getRGB());
+                        Fonts.font35.drawString(displayString, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 2, Color.WHITE.getRGB());
                         int stringWidth = Fonts.font35.getStringWidth(displayString);
 
                         if (moduleElement.getSettingsWidth() < stringWidth + 8)
@@ -270,7 +272,7 @@ public class JelloStyle extends Style {
                             moduleElement.setSettingsWidth(textWidth + 8);
 
                         GlStateManager.resetColor();
-                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 4, 0xFF000000);
+                        Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, moduleElement.slowlySettingsYPos + 4, Color.WHITE.getRGB());
                         moduleElement.slowlySettingsYPos += 12;
                     }
                 }
@@ -288,10 +290,10 @@ public class JelloStyle extends Style {
         return bigDecimal;
     }
 
-    private Color hoverColor(final Color color) {
-        final int r = color.getRed();
-        final int g = color.getGreen();
-        final int b = color.getBlue();
+    private Color hoverColor(final Color color, final int hover) {
+        final int r = color.getRed() - (hover * 2);
+        final int g = color.getGreen() - (hover * 2);
+        final int b = color.getBlue() - (hover * 2);
 
         return new Color(Math.max(r, 0), Math.max(g, 0), Math.max(b, 0), color.getAlpha());
     }

@@ -62,7 +62,15 @@ public class ClickGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-	final double scale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+        float trueCguiScale;
+        if (LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Jello") {
+            trueCguiScale = 1;
+        } else if(LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Glow") {
+            trueCguiScale = 1;
+        } else {
+            trueCguiScale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+        }
+        final double scale = trueCguiScale;
         if (progress < 1) progress += 0.1 * (1 - partialTicks);
         else progress = 1;
 
@@ -194,7 +202,15 @@ public class ClickGui extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        final double scale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+        float trueCguiScale;
+        if (LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Jello") {
+            trueCguiScale = 1;
+        } else if(LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Glow") {
+            trueCguiScale = 1;
+        } else {
+            trueCguiScale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+        }
+        final double scale = trueCguiScale;
 
         mouseX /= scale;
         mouseY /= scale;
@@ -222,7 +238,15 @@ public class ClickGui extends GuiScreen {
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-        final double scale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+        float trueCguiScale;
+        if (LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Jello") {
+            trueCguiScale = 1;
+        } else if(LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Glow") {
+            trueCguiScale = 1;
+        } else {
+            trueCguiScale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+        }
+        final double scale = trueCguiScale;
 
         mouseX /= scale;
         mouseY /= scale;
