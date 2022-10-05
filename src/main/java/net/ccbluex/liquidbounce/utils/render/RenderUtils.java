@@ -375,28 +375,27 @@ public final class RenderUtils extends MinecraftInstance {
     public static void drawTenacityGradientRect(int left, int top, int bottom, int right, int startColor, int endColor) {
         int width = bottom - left;
         int height = right - top;
-       /* Stencil.write(false);
+        Stencil.write(false);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         quickDrawRect(left, top, bottom, right);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        Stencil.erase(true); */
+        Stencil.erase(true); 
         // get bigger
-        int trueSize = Math.max(height, width) * 2;
+        int trueSize = Math.max(height, width) + (Math.max(height, width) / 4);
         // opengl magical shit that does the rotation
         int trueSizeMiddle = trueSize / 2;
         int height2 = height/2;
         int width2 = width/2;
         glPushMatrix();
         GL11.glTranslatef(-trueSizeMiddle - -width2, -trueSizeMiddle - -height2, 0);
-        drawGradientRect(left, top, trueSize, trueSize, startColor, endColor); // tempory move
-        //GL11.glRotatef(((System.nanoTime() / 40000000) % 360), 0f, 0f, 1f);
+        GL11.glRotatef(((System.nanoTime() / 40000000) % 360), 0f, 0f, 1f);
         GL11.glTranslatef(trueSizeMiddle + width2, trueSizeMiddle + height2, 0);
-       // drawGradientRect(left, top, trueSize, trueSize, startColor, endColor);
+        drawGradientRect(left, top, trueSize, trueSize, startColor, endColor);
         glPopMatrix();
-       /* Stencil.dispose(); */
+        Stencil.dispose(); 
     }
 
     public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
