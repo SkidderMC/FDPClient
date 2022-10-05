@@ -373,19 +373,19 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawTenacityGradientRect(int left, int top, int height, int width, int startColor, int endColor) {
-                            int rot;
+                            int rote;
                             while (1 == 1) {
-                             if(rot == 360){
-                                rot = 1;
+                             if(rote == 360){
+                                rote = 1;
                              } else {
-                                rot = rot + 1;
+                                rote = rote + 1;
                              }
                             }
                     // get bigger
                     int trueSize = Math.max(height, width) + (Math.max(height, width) / 2);
                     // opengl magical shit that does the rotation
                     glPushMatrix();
-                    GL11.glRotatef(rot, 0f, 1f, 0f);
+                    GL11.glRotatef(rote, 0f, 1f, 0f);
                     drawGradientRect(left - (trueSize / 2), top - (trueSize / 2), trueSize, trueSize, startColor, endColor);
                     glPopMatrix();
     }
