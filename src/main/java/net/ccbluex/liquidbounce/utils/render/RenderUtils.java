@@ -387,8 +387,8 @@ public final class RenderUtils extends MinecraftInstance {
         int trueSize = Math.max(height, width) * 2;
         // opengl magical shit that does the rotation
         int trueSizeMiddle = trueSize / 2;
-        int height2 = height/2
-        int width2 = width/2
+        int height2 = height/2;
+        int width2 = width/2;
         glPushMatrix();
         GL11.glTranslatef(-trueSizeMiddle - -width2, -trueSizeMiddle - -height2, 0);
         drawGradientRect(left, top, trueSize, trueSize, startColor, endColor); // tempory move
