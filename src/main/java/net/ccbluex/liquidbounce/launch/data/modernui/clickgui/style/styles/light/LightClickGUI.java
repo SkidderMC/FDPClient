@@ -160,7 +160,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             mc.displayGuiScreen(new GuiHudDesigner()); //进入自定义HUD界面
 
         // click = move target hud
-        if ((isHovered(startX - 5, startY, startX + 400, startY + 25, mouseX, mouseY) || isHovered(startX - 5, startY, startX + 400, startY + 25, oldX, oldY)) && Mouse.isButtonDown(0)) {//移动窗口
+        if ((isHovered(startX - 5, startY, startX + 400, startY + 25, mouseX, mouseY) || isHovered(startX - 5, startY, startX + 400, startY + 25, (int) oldX, (int) oldY)) && Mouse.isButtonDown(0)) {//移动窗口
             if (moveX == 0 && moveY == 0) {
                 moveX = mouseX - startX;
                 moveY = mouseY - startY;
