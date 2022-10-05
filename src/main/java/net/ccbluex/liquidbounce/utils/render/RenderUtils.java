@@ -382,7 +382,8 @@ public final class RenderUtils extends MinecraftInstance {
                              }
                             }
                     // get bigger
-                    int trueSize = Math.max(height, width) + (Math.max(height, width) / 2);
+                    int trueSize;
+                    trueSize = Math.max(height, width) + (Math.max(height, width) / 2);
                     // opengl magical shit that does the rotation
                     glPushMatrix();
                     GL11.glRotatef(rote, 0f, 1f, 0f);
