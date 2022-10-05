@@ -376,8 +376,8 @@ public final class RenderUtils extends MinecraftInstance {
                     int trueSize = Math.max(height, width) + (Math.max(height, width) / 2);
                     // opengl magical shit that does the rotation
                     glPushMatrix();
-                    GL11.glRotatef((mc.timer.renderPartialTicks) * 4f, 0f, 1f, 0f);
-                    drawGradientRect(left, top, trueSize, trueSize, startColor, endColor);
+                    GL11.glRotatef((EntityLivingBase.ticksExisted + mc.timer.renderPartialTicks) * 4f, 0f, 1f, 0f);
+                    drawGradientRect(left - (trueSize / 2), top - (trueSize / 2), trueSize, trueSize, startColor, endColor);
                     glPopMatrix();
     }
 
