@@ -383,9 +383,10 @@ public final class RenderUtils extends MinecraftInstance {
         int width2 = width/2;
         glPushMatrix();
         GL11.glTranslatef(trueSizeMiddle / 2, trueSizeMiddle / 2, 0);
-        GL11.glRotatef(((System.nanoTime() / 40000000) % 360), 0f, 0f, 1f);
+        drawGradientRect(left, top, trueSize, trueSize, startColor, endColor); // tempory
+        //GL11.glRotatef(((System.nanoTime() / 40000000) % 360), 0f, 0f, 1f);
         GL11.glTranslatef(-trueSizeMiddle / 2, -trueSizeMiddle / 2, 0); 
-        drawGradientRect(left, top, trueSize, trueSize, startColor, endColor);
+        //drawGradientRect(left, top, trueSize, trueSize, startColor, endColor);
         glPopMatrix();
     }
 
