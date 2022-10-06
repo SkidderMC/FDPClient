@@ -62,9 +62,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255).displayable { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
     val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255).displayable { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
 
-    public val xTranslate = IntegerValue("xTranslate", 300, 0, 300)
-    public val yTranslate = IntegerValue("yTranslate", 300, 0, 300)
-
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
     private val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
@@ -1095,6 +1092,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val font = fontValue.get()
 
         val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
+        // RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
         RenderUtils.drawTenacityGradient(0, 0, 45 + additionalWidth.toInt(), 40, Color(241,135,251,98).rgb, Color(67,156,251,98).rgb) 
 
         // circle player avatar
