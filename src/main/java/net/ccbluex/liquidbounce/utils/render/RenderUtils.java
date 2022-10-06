@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils.render;
 
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets;
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
