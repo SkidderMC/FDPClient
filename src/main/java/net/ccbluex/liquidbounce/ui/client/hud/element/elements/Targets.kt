@@ -62,8 +62,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255).displayable { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
     val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255).displayable { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
 
-    val xTranslate = IntegerValue("xTranslate", 300, 0, 300)
-    val yTranslate = IntegerValue("yTranslate", 300, 0, 300)
+    public val xTranslate = IntegerValue("xTranslate", 300, 0, 300)
+    public val yTranslate = IntegerValue("yTranslate", 300, 0, 300)
 
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
