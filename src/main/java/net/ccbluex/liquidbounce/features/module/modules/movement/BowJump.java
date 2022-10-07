@@ -32,6 +32,7 @@ import java.awt.*;
 @ModuleInfo(name = "BowJump", category = ModuleCategory.MOVEMENT)
 public class BowJump extends Module {
 
+    private final BoolValue hypixelValue = new BoolValue("hypixelbypass", true);
     private final FloatValue boostValue = new FloatValue("Boost", 4.25F, 0F, 10F);
     private final FloatValue heightValue = new FloatValue("Height", 0.42F, 0F, 10F);
     private final FloatValue timerValue = new FloatValue("Timer", 1F, 0.1F, 10F);
@@ -114,11 +115,29 @@ public class BowJump extends Module {
                 bowState = 3;
             break;
         case 3:
-            MovementUtils.INSTANCE.strafe(boostValue.get());
-            mc.thePlayer.motionY = heightValue.get();
-            bowState = 4;
-            lastPlayerTick = mc.thePlayer.ticksExisted;
-            break;
+            if (hypixelValue.get()) {
+                if (mc.thePlayer.hurtTime == 8) {
+                    mc.thePlayer.motionY = 0.45f;
+                    MovementUtils.INSTANCE.strafe(0.744107f);
+                }
+
+                if (mc.thePlayer.hurtTime == 7) {
+                    mc.thePlayer.motionY += 0.03;
+                }
+
+                if (mc.thePlayer.hurtTime <= 6) {
+                    mc.thePlayer.motionY += 0.015;
+                }
+                mc.timer.timerSpeed = timerValue.get();
+                if (mc.thePlayer.onGround && mc.thePlayer.ticksExisted - lastPlayerTick >= 1)
+                    bowState = 5;
+            } else {
+                MovementUtils.INSTANCE.strafe(boostValue.get());
+                mc.thePlayer.motionY = heightValue.get();
+                bowState = 4;
+                lastPlayerTick = mc.thePlayer.ticksExisted;
+                break;
+            }
         case 4:
             mc.timer.timerSpeed = timerValue.get();
             if (mc.thePlayer.onGround && mc.thePlayer.ticksExisted - lastPlayerTick >= 1)
