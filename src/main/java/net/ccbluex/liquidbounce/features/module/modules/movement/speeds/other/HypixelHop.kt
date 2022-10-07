@@ -85,9 +85,14 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         stage = mc.thePlayer.posY.roundToInt()
                         mc.thePlayer.jump()
                         mc.thePlayer.motionY = yMotion.get().toDouble()
-                        MovementUtils.strafe(0.47f)
+                        
+                        oldMotionX = mc.thePlayer.motionX
+                        oldMotionZ = mc.thePlayer.motionZ
+
+                        MovementUtils.strafe(0.48f)
+                        mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX) / 4
+                        mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
                     } else {
-                        MovementUtils.strafe(MovementUtils.getSpeed())
                         if (MovementUtils.getSpeed() < 0.2) {
                             MovementUtils.strafe(max(0.05, MovementUtils.getSpeed() * 1.1).toFloat())
                         }
