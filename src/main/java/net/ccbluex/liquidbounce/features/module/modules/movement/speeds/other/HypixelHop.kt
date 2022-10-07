@@ -89,12 +89,12 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         oldMotionX = mc.thePlayer.motionX
                         oldMotionZ = mc.thePlayer.motionZ
 
-                        MovementUtils.strafe(0.48f)
+                        MovementUtils.strafe(0.47f)
                         mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX) / 4
                         mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
                     } else {
                         if (MovementUtils.getSpeed() < 0.2) {
-                            MovementUtils.strafe(max(0.05, MovementUtils.getSpeed() * 1.1).toFloat())
+                            MovementUtils.strafe(max(0.05, MovementUtils.getSpeed() * 1.03).toFloat())
                         }
                     }
                 }
