@@ -816,34 +816,6 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
-        if (counterDisplayValue.get()) {
-            GlStateManager.pushMatrix()
-            val info = LanguageManager.getAndFormat("ui.scaffold.blocks", blocksAmount)
-            val slot = InventoryUtils.findAutoBlockBlock()
-            val height = event.scaledResolution.scaledHeight
-            val width = event.scaledResolution.scaledWidth
-            var stack = barrier
-            //RenderUtils.drawRoundedCornerRect()
-            if (slot != -1) {
-                if (mc.thePlayer.inventory.getCurrentItem() != null) {
-                    val handItem = mc.thePlayer.inventory.getCurrentItem().item
-                    if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
-                        stack = mc.thePlayer.inventory.getCurrentItem()
-                    }
-                }
-                if (stack == barrier) {
-                    stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
-                    if (stack == null) {
-                        stack = barrier
-                    }
-                }
-            }
-            RenderHelper.enableGUIStandardItemLighting()
-            mc.renderItem.renderItemIntoGUI(stack, width / 2 - mc.fontRendererObj.getStringWidth(info), (height * 0.6 - mc.fontRendererObj.FONT_HEIGHT * 0.5).toInt())
-            RenderHelper.disableStandardItemLighting()
-            mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.6f, Color.WHITE.rgb, false)
-            GlStateManager.popMatrix()
-        }
     }
 
     /**
