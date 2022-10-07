@@ -10,7 +10,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C0BPacketEntityAction
 
-class VerusBoost3Fly : FlyMode("VerusBoost2") {
+class VerusBoost3Fly : FlyMode("VerusBoost3") {
     private val reDamage = BoolValue("${valuePrefix}ReDamage", true)
     private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 3f)
 
