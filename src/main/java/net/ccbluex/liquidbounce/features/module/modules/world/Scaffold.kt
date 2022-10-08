@@ -183,7 +183,6 @@ class Scaffold : Module() {
     private val teleportNoMotionValue = BoolValue("TowerTeleportNoMotion", false).displayable { towerModeValue.equals("Teleport") }
 
     // Visuals
-    private val counterDisplayValue = BoolValue("Counter", true)
     private val markValue = BoolValue("Mark", false)
 
     /**
@@ -809,15 +808,7 @@ class Scaffold : Module() {
 
     private val barrier = ItemStack(Item.getItemById(166), 0, 0)
 
-    /**
-     * Scaffold visuals
-     *
-     * @param event
-     */
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
-    }
-
+    val ScaffoldBlocksValue = blocksAmount
     /**
      * Scaffold visuals
      *

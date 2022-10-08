@@ -1,27 +1,44 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
-mport net.ccbluex.liquidbounce.ui.i18n.LanguageManager
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.entity.EntityLivingBase
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.item.ItemBlock
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
-@ElementInfo(name = "ScafoldCounter")
-class Scafold : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("LB", "DMCA6"), "LB"))
-
+@ElementInfo(name = "ScaffoldCounter")
+class ScaffoldCounter : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
+    private val modeValue = ListValue("Mode", arrayOf("LB", "DMCA6"), "LB")
+    private val barrier = ItemStack(Item.getItemById(166), 0, 0)
+    private val blocksAmount: Int
+        get() {
+            var amount = 0
+            for (i in 36..44) {
+                val itemStack = mc.thePlayer.inventoryContainer.getSlot(i).stack
+                if (itemStack != null && itemStack.item is ItemBlock && InventoryUtils.canPlaceBlock((itemStack.item as ItemBlock).block)) {
+                    amount += itemStack.stackSize
+                }
+            }
+            return amount
+        }
 
     override fun drawElement(partialTicks: Float): Border? {
 
@@ -40,10 +57,11 @@ class Scafold : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     }
 
     private fun drawLB() {
+        val sc = ScaledResolution(mc)
         val info = LanguageManager.getAndFormat("ui.scaffold.blocks", blocksAmount)
         val slot = InventoryUtils.findAutoBlockBlock()
-        val height = event.scaledResolution.scaledHeight
-        val width = event.scaledResolution.scaledWidth
+        val height = sc.getScaledHeight()
+        val width = sc.getScaledWidth()
         var stack = barrier
         if (slot != -1) {
             if (mc.thePlayer.inventory.getCurrentItem() != null) {
