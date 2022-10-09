@@ -43,7 +43,7 @@ import kotlin.math.abs
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Bar", "Chill", "Rice", "What", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Bar", "Chill", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -373,7 +373,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "remix" -> drawRemix(prevTarget!! as EntityPlayer)
             "rice" -> drawRice(prevTarget!!)
             "slowly" -> drawSlowly(prevTarget!!)
-            "what" -> drawWhat(prevTarget!!)
             "watermelon" -> drawWaterMelon(prevTarget!!) 
             "sparklingwater" -> drawSparklingWater(prevTarget!!)
             "exhibition" -> drawExhibition(prevTarget!! as EntityPlayer)
@@ -874,38 +873,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glPopMatrix()
         font.drawString("Health ${getHealth(target).roundToInt()}", 56, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
 
-    }
-
-    private fun drawWhat(entity: EntityLivingBase) {
-        val font = Fonts.minecraftFont
-        val fontHeight = font.FONT_HEIGHT
-        val health = entity.health
-        val percent = entity.health.toFloat() / entity.maxHealth.toFloat() * 100F
-        val nameLength = (font.getStringWidth(entity.name)).coerceAtLeast(font.getStringWidth("${decimalFormat4.format(health)}")).toFloat() + 10F
-        val barWidth = (health / entity.maxHealth).coerceIn(0F, entity.maxHealth.toFloat()) * (nameLength - 2F)
-  
-        RenderUtils.whatRoundedRect(-1F, -1F, 2F + nameLength + 36F, 1F + 36F, Color(31, 31, 31, 165).rgb, 3F)
-        if (mc.netHandler.getPlayerInfo(entity.uniqueID) != null) {
-            if(entity.hurtTime > 1) {
-               GL11.glColor4f(1f, 0f, 0f, 0.5f)
-               RenderUtils.drawEntityOnScreen(20, 34, 15, entity)
-            } else {
-               GL11.glColor4f(1f, 1f, 1f, 1f)
-               RenderUtils.drawEntityOnScreen(20, 34, 15, entity)
-            }
-         }
-         font.drawStringWithShadow(entity.name, 2F + 36F + 1F, 2F, barColor.rgb)
-
-         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - fadeSpeed.get())) * RenderUtils.deltaTime
-
-         val animateThingy = (easingHealth.coerceIn(entity.health, entity.maxHealth) / entity.maxHealth) * (nameLength - 2F)
-
-         if (easingHealth > entity.health)
-             RenderUtils.whatRoundedRect(2F + 36F, 15F, 2F + 36F + animateThingy, 25F, Color(200, 0, 0).rgb, 3F)
-                    
-         RenderUtils.whatRoundedRect(2F + 36F, 15F, 2F + 36F + barWidth, 25F, barColor.rgb, 3F)
-                    
-         font.drawStringWithShadow("${decimalFormat4.format(health)}", 2F + 36F + (nameLength - 2F) / 2F - font.getStringWidth("${decimalFormat4.format(health)}").toFloat() / 2F, 16F, -1)
     }
 
     private fun drawExhibition(entity: EntityPlayer) {
@@ -1795,7 +1762,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "remix" -> Border(0F, 0F, 146F, 49F)
             "rice" -> Border(0F, 0F, 135F, 55F)
             "slowly" -> Border(0F, 0F, 102F, 36F)
-            "what" -> Border(-1F, -2F, 110F, 38F)
             "exhibition" -> Border(0F, 0F, 126F, 45F)
             "exhibitionold" -> Border(2F, 1F, 122F, 40F)
             "watermelon" -> Border(0F, 0F, 120F, 48F)

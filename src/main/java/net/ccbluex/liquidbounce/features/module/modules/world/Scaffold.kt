@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.isReplaceable
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.get
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
@@ -36,6 +37,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.stats.StatList
 import net.minecraft.util.*
@@ -73,15 +75,17 @@ class Scaffold : Module() {
     private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Post")
 
     // Eagle
-    private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "OFF"), "OFF")
-    private val blocksToEagleValue = IntegerValue("BlocksToEagle", 0, 0, 10).displayable { !eagleValue.equals("OFF") }
+    private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Off"), "Off")
+    private val blocksToEagleValue = IntegerValue("BlocksToEagle", 0, 0, 10).displayable { !eagleValue.equals("Off") }
+    // New feature
+    private val edgeDistanceValue = FloatValue("EagleEdgeDistance", 0f, 0f, 0.5f).displayable { !eagleValue.equals("Off") }
 
     // Expand
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
-    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
+    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90).displayable { rotationsValue.equals("AAC") }
     private val customYawValue = IntegerValue("CustomYaw", -145, -180, 180).displayable { rotationsValue.equals("Custom") }
     private val customPitchValue = FloatValue("CustomPitch", 82.4f, -90f, 90f).displayable { rotationsValue.equals("Custom") }
@@ -347,24 +351,52 @@ class Scaffold : Module() {
             }
 
             // Eagle
-            if (!eagleValue.equals("off") && !shouldGoDown) {
-                if (placedBlocksWithoutEagle >= blocksToEagleValue.get()) {
-                    val shouldEagle = mc.theWorld.getBlockState(
-                        BlockPos(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY - 1.0, mc.thePlayer.posZ
-                        )
-                    ).block === Blocks.air
-                    if (eagleValue.equals("silent")) {
-                        if (eagleSneaking != shouldEagle) {
-                            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, if (shouldEagle) C0BPacketEntityAction.Action.START_SNEAKING else C0BPacketEntityAction.Action.STOP_SNEAKING))
-                        }
-                        eagleSneaking = shouldEagle
-                    } else mc.gameSettings.keyBindSneak.pressed = shouldEagle
-                    placedBlocksWithoutEagle = 0
-                } else placedBlocksWithoutEagle++
-            }
+         if (!eagleValue.get().equals("Off", true) && !shouldGoDown) {
+            var dif = 0.5
+            val blockPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)
+            if (edgeDistanceValue.get() > 0) {
+                for (facingType in EnumFacing.values()) {
+                    if (facingType == EnumFacing.UP || facingType == EnumFacing.DOWN) {
+                        continue
+                    }
+                    val neighbor = blockPos.offset(facingType)
+                    if (isReplaceable(neighbor)) {
+                        val calcDif = (if (facingType == EnumFacing.NORTH || facingType == EnumFacing.SOUTH) {
+                            abs((neighbor.z + 0.5) - mc.thePlayer.posZ)
+                        } else {
+                            abs((neighbor.x + 0.5) - mc.thePlayer.posX)
+                        }) - 0.5
 
+                        if (calcDif < dif) {
+                            dif = calcDif
+                        }
+                    }
+                }
+            }
+            if (placedBlocksWithoutEagle >= blocksToEagleValue.get()) {
+                val shouldEagle =
+                    isReplaceable(blockPos) || (edgeDistanceValue.get() > 0 && dif < edgeDistanceValue.get())
+                if (eagleValue.get().equals("Silent", true)) {
+                    if (eagleSneaking != shouldEagle) {
+                        mc.netHandler.addToSendQueue(
+                            C0BPacketEntityAction(
+                                mc.thePlayer, if (shouldEagle) {
+                                    C0BPacketEntityAction.Action.START_SNEAKING
+                                } else {
+                                    C0BPacketEntityAction.Action.STOP_SNEAKING
+                                }
+                            )
+                        )
+                    }
+                    eagleSneaking = shouldEagle
+                } else {
+                    mc.gameSettings.keyBindSneak.pressed = shouldEagle
+                }
+                placedBlocksWithoutEagle = 0
+            } else {
+                placedBlocksWithoutEagle++
+            }
+        }
             // Zitter
             if (zitterModeValue.equals("teleport")) {
                 MovementUtils.strafe(zitterSpeedValue.get())
@@ -906,6 +938,9 @@ class Scaffold : Module() {
         if (placeRotation == null) return false
         if (!towerrotationsValue.equals("None") && towerStatus) {
             lockRotation = when (towerrotationsValue.get().lowercase()) {
+                "better" -> {
+                    Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), placeRotation.rotation.pitch)
+                }
                 "aac" -> {
                     placeRotation.rotation
                 }
@@ -950,6 +985,9 @@ class Scaffold : Module() {
                 }
                 "custom" -> {
                     Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), customPitchValue.get().toFloat())
+                }
+                "better" -> {
+                    Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), placeRotation.rotation.pitch)
                 }
                 else -> return false // this should not happen
             }
