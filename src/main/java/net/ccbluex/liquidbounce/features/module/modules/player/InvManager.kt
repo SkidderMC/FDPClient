@@ -195,7 +195,7 @@ class InvManager : Module() {
                     return
                 }
 
-                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 4, 4, mc.thePlayer)
+                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 0, 4, mc.thePlayer)
 
                 delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
 
