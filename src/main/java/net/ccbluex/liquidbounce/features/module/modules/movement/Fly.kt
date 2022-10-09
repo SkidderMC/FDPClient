@@ -42,7 +42,7 @@ class Fly : Module() {
     }
 
     private val motionResetValue = BoolValue("MotionReset", false)
-    private val SmoothCamera = BoolValue("SmoothCamera", false)
+
 
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Up", "Down", "Off"), "Up")
@@ -109,14 +109,6 @@ class Fly : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         mode.onUpdate(event)
-    }
-
-    ///sigma skid $$$
-    if (smoothCamera.isEnabled()) {
-        if (mc.thePlayer.posY > launchY || mode.is("Aac3")) {
-            EntityPlayer.enableCameraYOffset = true
-            EntityPlayer.cameraYPosition = launchY
-        }
     }
 
     @EventTarget
