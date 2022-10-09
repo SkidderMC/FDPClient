@@ -18,7 +18,7 @@ public class Client {
             if (INSTANCE == null) INSTANCE = new Client();
             return INSTANCE;
         } catch (Throwable t) {
-            ClientUtils.logError("Dropdown [e]:", t);
+           // ClientUtils.logError("Dropdown [e]:", t);
             throw t;
         }
     }
