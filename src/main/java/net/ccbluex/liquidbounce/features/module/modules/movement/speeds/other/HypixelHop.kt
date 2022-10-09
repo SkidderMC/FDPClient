@@ -19,9 +19,11 @@ class HypixelHop : SpeedMode("HypixelHop") {
 
     private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Smooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit"), "Stable")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
-    private val yMotion = FloatValue("$valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
-    private val yPort = BoolValue("${valuePrefix}SlightYPort", true)
-    private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", true)
+    private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
+    private val yPort = BoolValue("${valuePrefix}SlightYPort", false)
+    private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", false)
+    private val yPort3 = BoolValue("${valuePrefix}SlightYPort3", true)
+    private val yPort4 = BoolValue("${valuePrefix}SlightYPort4", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
 
     private var watchdogMultiplier = 1.0
@@ -41,6 +43,12 @@ class HypixelHop : SpeedMode("HypixelHop") {
             mc.thePlayer.motionZ = 0.0
         }
         
+        if (mc.thePlayer.onGround) {
+            offGroundTicks = 0
+        } else {
+            offGroundTicks += 1
+        }
+        
         if (yPort.get()) {
             if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0.0) {
                 mc.thePlayer.motionY -= 0.05
@@ -48,8 +56,22 @@ class HypixelHop : SpeedMode("HypixelHop") {
         }
         
         if (yPort2.get()) {
+            if (offGroundTicks == 6) {
+                mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98
+            }
+        }
+        
+        if (yPort3.get()) {
             if (offGroundTicks == 5) {
                 mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98
+            }
+        }
+        
+        if (yPort4.get()) {
+            if (offGroundTicks == 1) {
+                mc.thePlayer.motionY = mc.thePlayer.motionY - 0.02
+                mc.thePlayer.motionX *= 0.98
+                mc.thePlayer.motionZ *= 0.98
             }
         }
         
@@ -60,12 +82,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             }
         }
         
-        if (mc.thePlayer.onGround) {
-            offGroundTicks = 0
-        } else {
-            offGroundTicks += 1
-        }
-        
+
         moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ)
         
         when (bypassMode.get().lowercase()) {
