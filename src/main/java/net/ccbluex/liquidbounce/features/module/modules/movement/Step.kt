@@ -33,7 +33,7 @@ class Step : Module() {
      */
 
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "Matrix6.7.0",
-                                                      "NCP", "NCPNew", "MotionNCP", "OldNCP",
+                                                      "NCP", "NCPNew", "MotionNCP", "MotionNCP2", "OldNCP",
                                                       "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0",
                                                       "Spartan", "Rewinside", "Vulcan", "Verus"), "NCP")
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
@@ -189,6 +189,9 @@ class Step : Module() {
 
         // Motion steps
         when {
+            mode.equals("motionncp2", true) && mc.thePlayer.isCollidedHorizontally {
+                mc.thePlayer.motionY = (0.404 + Math.random() / 500)
+            }
             mode.equals("motionncp", true) && mc.thePlayer.isCollidedHorizontally && !mc.gameSettings.keyBindJump.isKeyDown -> {
                 when {
                     mc.thePlayer.onGround && couldStep() -> {
