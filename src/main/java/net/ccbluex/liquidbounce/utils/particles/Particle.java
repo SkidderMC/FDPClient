@@ -20,7 +20,7 @@ public class Particle {
 
     public Particle(final Vec3 position) {
         this.position = position;
-        this.delta = new Vec3((Math.random() * 2.5 - 0.25) * 0.01, (Math.random() * 0.5) * 0.01, (Math.random() * 2.5 - 0.25) * 0.01);
+        this.delta = new Vec3((Math.random() * 2.5 - 1.25) * 0.01, (Math.random() * 0.5 - 0.2) * 0.01, (Math.random() * 2.5 - 1.25) * 0.01);
         this.removeTimer.reset();
     }
 
@@ -54,8 +54,8 @@ public class Particle {
         this.position.xCoord += this.delta.xCoord;
         this.position.yCoord += this.delta.yCoord;
         this.position.zCoord += this.delta.zCoord;
-        this.delta.xCoord /= 0.999998F;
-        this.delta.yCoord -= 0.0000015;
-        this.delta.zCoord /= 0.999998F;
+        this.delta.xCoord /= 0.999997F;
+        this.delta.yCoord -= 0.0000017;
+        this.delta.zCoord /= 0.999997F;
     }
 }
