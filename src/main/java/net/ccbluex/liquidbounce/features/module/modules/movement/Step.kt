@@ -189,7 +189,7 @@ class Step : Module() {
 
         // Motion steps
         when {
-            mode.equals("motionncp2", true) && mc.thePlayer.isCollidedHorizontally {
+            mode.equals("motionncp2", true) && mc.thePlayer.isCollidedHorizontally -> {
                 mc.thePlayer.motionY = (0.404 + Math.random() / 500)
             }
             mode.equals("motionncp", true) && mc.thePlayer.isCollidedHorizontally && !mc.gameSettings.keyBindJump.isKeyDown -> {
