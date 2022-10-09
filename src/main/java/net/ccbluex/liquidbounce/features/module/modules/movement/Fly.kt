@@ -113,9 +113,10 @@ class Fly : Module() {
 
     ///sigma skid $$$
     if (smoothCamera.isEnabled()) {
-            if (mc.thePlayer.posY > oPositionY || mode.is("Aac3")) {
-                EntityPlayer.enableCameraYOffset = true;
-                EntityPlayer.cameraYPosition = oPositionY;
+        if (mc.thePlayer.posY > launchY || mode.is("Aac3")) {
+            EntityPlayer.enableCameraYOffset = true
+            EntityPlayer.cameraYPosition = launchY
+        }
     }
 
     @EventTarget
