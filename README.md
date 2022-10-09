@@ -10,11 +10,11 @@ Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows
 Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 
-## How To Install FDP?
+## How Do I Install FDP?
 [Click for intructions](docs/INSTALLING.md)
 
-## STAFF
-[Click to know a little about the team](docs/TEAM.md)
+## The Staff
+[Click here to find out about the team](docs/TEAM.md)
 
 ## Issues
 Found bugs or a missing features? You can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues)!
