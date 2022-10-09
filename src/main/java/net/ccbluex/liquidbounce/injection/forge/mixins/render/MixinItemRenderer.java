@@ -293,7 +293,7 @@ public abstract class MixinItemRenderer {
                                 break;
                             }
                             case "Dortware": {
-                                float var9 = MathHelper.sin(MathHelper.sqrt_float(f1)) * 3.1415927F);
+                                float var9 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
                                 GL11.glTranslated(-0.04D, 0.0D, 0.0D);
                                 this.transformFirstPersonItem(f / 2.5F, 0.0f);
                                 GlStateManager.rotate(-var9 * 0.0F / 2.0F, var9 / 2.0F, 1.0F, 4.0F);
