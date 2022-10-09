@@ -111,8 +111,9 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
                     } else {
                         if (MovementUtils.getSpeed() < 0.2) {
-                            mc.thePlayer.motionX *= 1.05
-                            mc.thePlayer.motionZ *= 1.05
+                            watchdogMultiplier = 0.2 / MovementUtils.getSpeed().toDouble()
+                            mc.thePlayer.motionX *= watchdogMultiplier
+                            mc.thePlayer.motionZ *= watchdogMultiplier
                         }
                     }
                 }
