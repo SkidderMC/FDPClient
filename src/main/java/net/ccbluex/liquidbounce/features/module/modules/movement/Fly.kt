@@ -43,6 +43,7 @@ class Fly : Module() {
 
     private val motionResetValue = BoolValue("MotionReset", false)
 
+
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Up", "Down", "Off"), "Up")
     private val fakeDamageValue = BoolValue("FakeDamage", false)
