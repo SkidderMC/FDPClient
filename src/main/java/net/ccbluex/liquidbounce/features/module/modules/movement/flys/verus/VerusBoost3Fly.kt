@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.verus
 
-import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
@@ -61,11 +60,4 @@ class VerusBoost3Fly : FlyMode("VerusBoost3") {
         ticks ++
     }
 
-    override fun onPacket(event: PacketEvent) {
-        val packet = event.packet
-
-        if (packet is C03PacketPlayer) {
-            packet.onGround = true
-        }
-    }
 }
