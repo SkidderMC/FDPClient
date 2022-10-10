@@ -49,8 +49,9 @@ class VerusHop : SpeedMode("VerusHop") {
                             MovementUtils.strafe(1.01f)
                         } else if (mc.thePlayer.ticksExisted % 12 == 0) {
                             MovementUtils.strafe(0.69f)
-                            mc.thePlayer.posY += 0.42
-                            groundTicks = 12 // 11 bipass but add 1 cuz --
+                            mc.thePlayer.posY = 0.42
+                            mc.thePlayer.motionY = -(mc.thePlayer.posY - Math.floor(mc.thePlayer.posY))
+                            groundTicks = 13 // 11 bipass but add 1 cuz -- and another cuz -- 
                         }
                         groundTicks--
                     }
@@ -98,6 +99,7 @@ class VerusHop : SpeedMode("VerusHop") {
                         MovementUtils.strafe(0.36f)
                     } else if (modeValue.equals("Ground")) {
                         MovementUtils.strafe(0.41f)
+                        groundTicks--
                     } else if (modeValue.equals("Bhop")) {
                         if (mc.thePlayer.fallDistance >= 1.5) {
                             if (damagedTicks > 0) {
