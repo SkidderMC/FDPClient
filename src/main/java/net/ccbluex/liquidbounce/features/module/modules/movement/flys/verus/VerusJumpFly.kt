@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.client.settings.GameSettings
-import java.lang.Math.floor
+
 
 class VerusJumpFly : FlyMode("VerusJump") {
 
@@ -16,7 +16,7 @@ class VerusJumpFly : FlyMode("VerusJump") {
         if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
             mc.thePlayer.jump()
             if (mc.thePlayer.fallDistance > 1) {
-                mc.thePlayer.motionY = -((mc.thePlayer.posY) - floor(mc.thePlayer.posY));
+                mc.thePlayer.motionY = -((mc.thePlayer.posY) - Math.floor(mc.thePlayer.posY))
             }
 
             if (mc.thePlayer.motionY == 0.0) {
