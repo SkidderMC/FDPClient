@@ -49,8 +49,7 @@ class VerusHop : SpeedMode("VerusHop") {
                             MovementUtils.strafe(1.01f)
                         } else if (mc.thePlayer.ticksExisted % 12 == 0) {
                             MovementUtils.strafe(0.69f)
-                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, false))
-                            MovementUtils.strafe(0.41f)
+                            mc.thePlayer.posY += 0.42
                             groundTicks = 12 // 11 bipass but add 1 cuz --
                         }
                         groundTicks--
@@ -58,7 +57,7 @@ class VerusHop : SpeedMode("VerusHop") {
                         
                         
                     if (modeValue.equals("Normal") || modeValue.equals("LowHop") || modeValue.equals("FastHop")) {
-                        MovementUtils.strafe(0.4848f)
+                        MovementUtils.strafe(0.48f)
                         if (modeValue.equals("LowHop")) {
                             mc.thePlayer.motionY = 0.38
                         } else {
@@ -97,6 +96,8 @@ class VerusHop : SpeedMode("VerusHop") {
                 else -> {
                     if (modeValue.equals("FastHop")) {
                         MovementUtils.strafe(0.36f)
+                    } else if (modeValue.equals("Ground")) {
+                        MovementUtils.strafe(0.41f)
                     } else if (modeValue.equals("Bhop")) {
                         if (mc.thePlayer.fallDistance >= 1.5) {
                             if (damagedTicks > 0) {
