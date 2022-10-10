@@ -206,24 +206,11 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 }
             }
             "dortwarehop" -> {
-                if (MovementUtils.isMoving()) {
-                    minSpeed = 0.2873
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.jump()
-                        mc.thePlayer.motionY = yMotion.get().toDouble()
-                        watchdogMultiplier *= 1.6
-                        wasOnGround = true
-                    } else if (wasOnGround) {
-                        watchdogMultiplier -= 0.76 * (watchdogMultiplier - minSpeed)
-                        wasOnGround = false
-                    } else {
-                        watchdogMultiplier = moveDist - moveDist / 159
-                    }
+                watchdogMultiplier = (MovementUtils.getSpeed() - 0.819999f * (MovementUtils.getSpeed() - 0.28f)).toDouble()
+                watchdogMultiplier = watchdogMultiplier / MovementUtils.getSpeed().toDouble()
+                mc.thePlayer.motionX *= watchdogMultiplier
+                mc.thePlayer.motionZ *= watchdogMultiplier
 
-                    MovementUtils.strafe(max(watchdogMultiplier, minSpeed).toFloat())
-                } else {
-                    watchdogMultiplier = 0.0
-                }
             }
         }
         if (watchdogMultiplier > 1) {
