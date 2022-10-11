@@ -164,7 +164,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             }
             
             "test2" -> {
-                if (mc.thePlayer.onGround) {
+                if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                     watchdogMultiplier = 0.560625
@@ -206,6 +206,10 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 }
             }
             "dortwarehop" -> {
+                if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                    mc.thePlayer.motionY = yMotion.get().toDouble()
+                }
                 watchdogMultiplier = (MovementUtils.getSpeed() - 0.819999f * (MovementUtils.getSpeed() - 0.28f)).toDouble()
                 watchdogMultiplier = watchdogMultiplier / MovementUtils.getSpeed().toDouble()
                 mc.thePlayer.motionX *= watchdogMultiplier
