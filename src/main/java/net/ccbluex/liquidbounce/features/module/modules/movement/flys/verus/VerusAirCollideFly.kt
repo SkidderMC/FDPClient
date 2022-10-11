@@ -15,7 +15,7 @@ class VerusAirCollideFly : FlyMode("VerusAirCollide") {
 
     override fun onEnable() {
         ticks = 0
-        justEnabled = True
+        justEnabled = true
     }
 
     override fun onMove(event: MoveEvent) {
