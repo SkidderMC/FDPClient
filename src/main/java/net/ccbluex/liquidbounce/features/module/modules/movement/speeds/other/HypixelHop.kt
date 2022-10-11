@@ -210,7 +210,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     mc.thePlayer.jump()
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
-                watchdogMultiplier = (MovementUtils.getSpeed() - 0.819999f * (MovementUtils.getSpeed() - 0.28f)).toDouble()
+                watchdogMultiplier = (moveDist - 0.819999f * (moveDist - 0.28f)).toDouble()
                 watchdogMultiplier = watchdogMultiplier / MovementUtils.getSpeed().toDouble()
                 mc.thePlayer.motionX *= watchdogMultiplier
                 mc.thePlayer.motionZ *= watchdogMultiplier
