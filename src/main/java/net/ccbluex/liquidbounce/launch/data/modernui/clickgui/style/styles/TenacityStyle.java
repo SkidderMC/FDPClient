@@ -28,9 +28,7 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class TenacityFiveStyle extends Style {
-
-        // Tenacity edit by GatoDePan <3
+public class TenacityStyle extends Style {
 
     private boolean mouseDown;
     private boolean rightMouseDown;

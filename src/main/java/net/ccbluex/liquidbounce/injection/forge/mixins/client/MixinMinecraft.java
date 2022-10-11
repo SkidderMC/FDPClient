@@ -40,9 +40,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -105,11 +103,6 @@ public abstract class MixinMinecraft {
 
         if(displayHeight < 622)
             displayHeight = 622;
-    }
-
-    @Overwrite
-    public int getLimitFramerate() {
-        return this.gameSettings.limitFramerate;
     }
 
 
@@ -285,5 +278,9 @@ public abstract class MixinMinecraft {
             Display.setResizable(false);
             Display.setResizable(true);
         }
+    }
+    @ModifyConstant(method = "getLimitFramerate", constant = @Constant(intValue = 30))
+    public int getLimitFramerate(int constant) {
+        return 60;
     }
 }

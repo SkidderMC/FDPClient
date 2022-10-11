@@ -35,8 +35,6 @@ public class GlowStyle extends Style {
     private boolean mouseDown;
     private boolean rightMouseDown;
 
-    // glow style by gatodepan
-
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
         // draw header

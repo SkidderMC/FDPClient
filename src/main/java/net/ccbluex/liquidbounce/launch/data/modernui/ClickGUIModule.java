@@ -108,7 +108,7 @@ public class ClickGUIModule extends Module {
                 modernuiLaunchOption.clickGui.style = new JelloStyle();
                 break;
             case "tenacity5":
-                modernuiLaunchOption.clickGui.style = new TenacityFiveStyle();
+                modernuiLaunchOption.clickGui.style = new TenacityStyle();
                 break;
             case "glow":
                 modernuiLaunchOption.clickGui.style = new GlowStyle();
