@@ -17,8 +17,10 @@ import kotlin.math.roundToInt
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Smooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit"), "Stable")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Smooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom"), "Stable")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
+    private val customStartSpeed = FloatValue("${valuePrefix}CustomStartSpeed", 1.3f, 1f, 1.6f).displayable {bypassMode.equals("Custom")}  
+    private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}  
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", false)
     private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", false)
@@ -205,6 +207,13 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
             }
+            "custom"-> {
+                if(MovementUtils.isMoving() && mc.thePlayer.onGround) {
+                    watchdogMultiplier = customStartSpeed.get().toDouble()
+                    mc.thePlayer.jump()
+                    mc.thePlayer.motionY = yMotion.get().toDouble()
+                }
+            }
             "dortwarehop" -> {
                 if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
@@ -222,6 +231,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 "oldsafe" -> watchdogMultiplier -= 0.2
                 "oldtest" -> watchdogMultiplier -= 0.05
                 "testlowhop" -> watchdogMultiplier -= 0.05
+                "custom" -> watchdogMultiplier -= customSlowValue.get().toDouble()
             }
         } else {
             watchdogMultiplier = 1.0
