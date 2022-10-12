@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 @ModuleInfo(name = "Animations", category = ModuleCategory.CLIENT, canEnable = false)
 object Animations : Module() {
     val blockingModeValue = ListValue(
-        "BlockingMode", arrayOf("Akrien", "Avatar", "ETB", "Exhibition", "Push", "Reverse", "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX", "Swank", "Jello", "Rotate", "Liquid", "Fall", "Yeet", "Yeet2", "None"), "Rotate")
+        "BlockingMode", arrayOf("Akrien", "Avatar", "ETB", "Exhibition", "Push", "Reverse", "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX", "Swank", "Jello", "Rotate", "Liquid", "Fall", "Yeet", "Yeet2", "None"), "SlideDown")
 
     val invModeValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Zoom")
     val invEaseModeValue = EaseUtils.getEnumEasingList("InvEase")
@@ -29,9 +29,9 @@ object Animations : Module() {
     val tabEaseModeValue = EaseUtils.getEnumEasingList("TabEase")
     val tabEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("TabEaseOrder")
     val tabTimeValue = IntegerValue("TabTime", 500, 0, 1000).displayable { !tabModeValue.equals("None") }
-    val translateXValue = FloatValue("TranslateX", 0.0f, 0.0f, 1.5f)
-    val translateYValue = FloatValue("TranslateY", 0.0f, 0.0f, 0.5f)
-    val translateZValue = FloatValue("TranslateZ", 0.0f, 0.0f, -2.0f)
+    val translateXValue = FloatValue("TranslateX", 0.0f, 0.0f, 0.0f)
+    val translateYValue = FloatValue("TranslateY", 0.0f, 0.0f, 0.1f)
+    val translateZValue = FloatValue("TranslateZ", 0.0f, 0.0f, 0.0f)
     val rotateXValue = FloatValue("RotateX", 0.0f, -180f, 180f)
     val rotateYValue = FloatValue("RotateY", 0.0f, -180f, 180f)
     val rotateZValue = FloatValue("RotateZ", 0.0f, -180f, 180f)
