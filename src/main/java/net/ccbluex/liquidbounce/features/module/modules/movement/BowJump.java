@@ -32,7 +32,7 @@ import java.awt.*;
 @ModuleInfo(name = "BowJump", category = ModuleCategory.MOVEMENT)
 public class BowJump extends Module {
 
-    private final BoolValue hypixelValue = new BoolValue("hypixelbypass", true);
+    private final BoolValue hypixelBypassValue = new BoolValue("hypixelBypass", true);
     private final FloatValue boostValue = new FloatValue("Boost", 4.25F, 0F, 10F);
     private final FloatValue heightValue = new FloatValue("Height", 0.42F, 0F, 10F);
     private final FloatValue timerValue = new FloatValue("Timer", 1F, 0.1F, 10F);
@@ -115,7 +115,7 @@ public class BowJump extends Module {
                 bowState = 3;
             break;
         case 3:
-            if (hypixelValue.get()) {
+            if (hypixelBypassValue.get()) {
                 if (mc.thePlayer.hurtTime == 8) {
                     mc.thePlayer.motionY = 0.45f;
                     MovementUtils.INSTANCE.strafe(0.744107f);
