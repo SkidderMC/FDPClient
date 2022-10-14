@@ -349,7 +349,7 @@ class Step : Module() {
                     
                     mode.equals("Verus", ignoreCase = true) -> {
                         val rstepHeight = mc.thePlayer.entityBoundingBox.minY - stepY
-                        mc.timer.timerSpeed = 0.42f
+                        mc.timer.timerSpeed = 1f / ceil(rstepHeight * 2.0).toFloat()
                         var stpHight = 0.0
                         fakeJump()
                         repeat ((ceil(rstepHeight * 2.0) - 1.0).toInt()) {

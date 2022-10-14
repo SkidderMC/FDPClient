@@ -17,11 +17,15 @@ import kotlin.math.roundToInt
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Smooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit"), "Stable")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Smooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom"), "Stable")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
-    private val yMotion = FloatValue("$valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
-    private val yPort = BoolValue("${valuePrefix}SlightYPort", true)
-    private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", true)
+    private val customStartSpeed = FloatValue("${valuePrefix}CustomStartSpeed", 1.3f, 1f, 1.6f).displayable {bypassMode.equals("Custom")}  
+    private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}  
+    private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
+    private val yPort = BoolValue("${valuePrefix}SlightYPort", false)
+    private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", false)
+    private val yPort3 = BoolValue("${valuePrefix}SlightYPort3", true)
+    private val yPort4 = BoolValue("${valuePrefix}SlightYPort4", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
 
     private var watchdogMultiplier = 1.0
@@ -41,6 +45,12 @@ class HypixelHop : SpeedMode("HypixelHop") {
             mc.thePlayer.motionZ = 0.0
         }
         
+        if (mc.thePlayer.onGround) {
+            offGroundTicks = 0
+        } else {
+            offGroundTicks += 1
+        }
+        
         if (yPort.get()) {
             if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0.0) {
                 mc.thePlayer.motionY -= 0.05
@@ -48,8 +58,22 @@ class HypixelHop : SpeedMode("HypixelHop") {
         }
         
         if (yPort2.get()) {
+            if (offGroundTicks == 6) {
+                mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98
+            }
+        }
+        
+        if (yPort3.get()) {
             if (offGroundTicks == 5) {
                 mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98
+            }
+        }
+        
+        if (yPort4.get()) {
+            if (offGroundTicks == 1) {
+                mc.thePlayer.motionY = mc.thePlayer.motionY - 0.02
+                mc.thePlayer.motionX *= 0.98
+                mc.thePlayer.motionZ *= 0.98
             }
         }
         
@@ -60,12 +84,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             }
         }
         
-        if (mc.thePlayer.onGround) {
-            offGroundTicks = 0
-        } else {
-            offGroundTicks += 1
-        }
-        
+
         moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ)
         
         when (bypassMode.get().lowercase()) {
@@ -94,7 +113,9 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
                     } else {
                         if (MovementUtils.getSpeed() < 0.2) {
-                            MovementUtils.strafe(max(0.05, MovementUtils.getSpeed() * 1.03).toFloat())
+                            watchdogMultiplier = 0.2 / MovementUtils.getSpeed().toDouble()
+                            mc.thePlayer.motionX *= watchdogMultiplier
+                            mc.thePlayer.motionZ *= watchdogMultiplier
                         }
                     }
                 }
@@ -145,7 +166,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             }
             
             "test2" -> {
-                if (mc.thePlayer.onGround) {
+                if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                     watchdogMultiplier = 0.560625
@@ -186,25 +207,23 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
             }
-            "dortwarehop" -> {
-                if (MovementUtils.isMoving()) {
-                    minSpeed = 0.2873
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.jump()
-                        mc.thePlayer.motionY = yMotion.get().toDouble()
-                        watchdogMultiplier *= 1.6
-                        wasOnGround = true
-                    } else if (wasOnGround) {
-                        watchdogMultiplier -= 0.76 * (watchdogMultiplier - minSpeed)
-                        wasOnGround = false
-                    } else {
-                        watchdogMultiplier = moveDist - moveDist / 159
-                    }
-
-                    MovementUtils.strafe(max(watchdogMultiplier, minSpeed).toFloat())
-                } else {
-                    watchdogMultiplier = 0.0
+            "custom"-> {
+                if(MovementUtils.isMoving() && mc.thePlayer.onGround) {
+                    watchdogMultiplier = customStartSpeed.get().toDouble()
+                    mc.thePlayer.jump()
+                    mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
+            }
+            "dortwarehop" -> {
+                if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                    mc.thePlayer.motionY = yMotion.get().toDouble()
+                }
+                watchdogMultiplier = (moveDist - 0.819999f * (moveDist - 0.28f)).toDouble()
+                watchdogMultiplier = watchdogMultiplier / MovementUtils.getSpeed().toDouble()
+                mc.thePlayer.motionX *= watchdogMultiplier
+                mc.thePlayer.motionZ *= watchdogMultiplier
+
             }
         }
         if (watchdogMultiplier > 1) {
@@ -212,6 +231,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 "oldsafe" -> watchdogMultiplier -= 0.2
                 "oldtest" -> watchdogMultiplier -= 0.05
                 "testlowhop" -> watchdogMultiplier -= 0.05
+                "custom" -> watchdogMultiplier -= customSlowValue.get().toDouble()
             }
         } else {
             watchdogMultiplier = 1.0
