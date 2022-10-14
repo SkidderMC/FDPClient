@@ -11,15 +11,18 @@ import net.minecraft.util.AxisAlignedBB
 
 class VerusAirCollideFly : FlyMode("VerusAirCollide") {
     private var ticks = 0
+    private var justEnabled = true
 
     override fun onEnable() {
         ticks = 0
+        justEnabled = true
     }
 
     override fun onMove(event: MoveEvent) {
         mc.gameSettings.keyBindJump.pressed = false
         mc.gameSettings.keyBindSneak.pressed = false
         if (ticks % 14 == 0 && mc.thePlayer.onGround) {
+            justEnabled = false
             MovementUtils.strafe(0.69f)
             event.y = 0.42
             ticks = 0
@@ -32,7 +35,9 @@ class VerusAirCollideFly : FlyMode("VerusAirCollide") {
                 }
             }
             if (mc.thePlayer.onGround) {
-                MovementUtils.strafe(1.01f)
+                if (!justEnabled) {
+                    MovementUtils.strafe(1.01f)
+                }
             } else {
                 MovementUtils.strafe(0.41f)
             }
