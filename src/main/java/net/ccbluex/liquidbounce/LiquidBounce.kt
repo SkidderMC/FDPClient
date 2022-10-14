@@ -60,7 +60,7 @@ object LiquidBounce {
 
     @JvmField
 
-    val CLIENT_VERSION = "v5.0.0d"
+    val CLIENT_VERSION = "v5.0.0f"
 
 
     @JvmField
