@@ -247,6 +247,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             "test2" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
             "oldsafe" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.081237f - slowdownValue.get()).toDouble()).toFloat())
             "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
+            "custom" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
             
         }
     }
