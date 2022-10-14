@@ -21,8 +21,8 @@ import kotlin.concurrent.schedule
 
 @ModuleInfo(name = "AutoLogin", category = ModuleCategory.MISC)
 class AutoLogin : Module() {
-    private val registerCommand = TextValue("Register", "/register %p %p")
-    private val loginCommand = TextValue("Login", "/login %p")
+    private val registerCommandValue = TextValue("Register", "/register %p %p")
+    private val loginCommandValue = TextValue("Login", "/login %p")
     private val passwordValue = TextValue("Password", "password")
     private val delayValue = IntegerValue("Delay", 1500, 100, 5000)
     private val titleValue = BoolValue("Title", true)
@@ -55,16 +55,16 @@ class AutoLogin : Module() {
     }
 
     private fun processMessage(msg: String) {
-        if (registerCommand.get().isNotBlank()) {
-            val regCommand = registerCommand.get().split(" ")[0]
+        if (registerCommandValue.get().isNotBlank()) {
+            val regCommand = registerCommandValue.get().split(" ")[0]
             if (regCommand.isNotEmpty() && msg.contains(regCommand, ignoreCase = true)) {
-                delayedMessage(registerCommand.get().replace("%p", passwordValue.get()))
+                delayedMessage(registerCommandValue.get().replace("%p", passwordValue.get()))
             }
         }
-        if (loginCommand.get().isNotBlank()) {
-            val logCommand = loginCommand.get().split(" ")[0]
+        if (loginCommandValue.get().isNotBlank()) {
+            val logCommand = loginCommandValue.get().split(" ")[0]
             if (logCommand.isNotEmpty() && msg.contains(logCommand, ignoreCase = true)) {
-                delayedMessage(loginCommand.get().replace("%p", passwordValue.get()))
+                delayedMessage(loginCommandValue.get().replace("%p", passwordValue.get()))
             }
         }
     }
