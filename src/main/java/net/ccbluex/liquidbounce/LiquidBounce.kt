@@ -41,7 +41,6 @@ object LiquidBounce {
 
     const val CLIENT_NAME = "FDPClient"
 
-    var CLIENTTEXT = "Waiting..."
     var Darkmode = true
     const val COLORED_NAME = "§7[§f!§7] §b§lFDPCLIENT §f» "
     const val CLIENT_CREATOR = "CCBlueX & SkidderMC TEAM"
