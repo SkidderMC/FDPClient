@@ -196,7 +196,7 @@ class InvManager : Module() {
                     return
                 }
 		
-		if(swingValue) mc.thePlayer.swingItem()
+		if(swingValue.get()) mc.thePlayer.swingItem()
 
                 mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 0, 0, mc.thePlayer)
                 mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, -999, 0, 0, mc.thePlayer)
