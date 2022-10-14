@@ -52,7 +52,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
         }
         
         if (yPort.get()) {
-            if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0.0) {
+            if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0.0 && !mc.thePlayer.onGround) {
                 mc.thePlayer.motionY -= 0.05
             }
         }
