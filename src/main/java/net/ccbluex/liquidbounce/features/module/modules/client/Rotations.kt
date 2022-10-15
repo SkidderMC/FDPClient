@@ -9,11 +9,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.ListValue
-@ModuleInfo(name = "Rotations", category = ModuleCategory.CLIENT, canEnable = false)
-object Rotations : Module() {
+
+@ModuleInfo(name = "Rotations", category = ModuleCategory.RENDER, forceNoSound = true, onlyEnable = true, array = false)
+class Rotations : Module() {
+
     val headValue = BoolValue("Head", true)
     val bodyValue = BoolValue("Body", true)
-    val fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
-    val nanValue = BoolValue("NaNCheck", true)
-}
+
