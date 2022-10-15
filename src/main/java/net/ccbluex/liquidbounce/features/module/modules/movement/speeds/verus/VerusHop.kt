@@ -19,7 +19,7 @@ class VerusHop : SpeedMode("VerusHop") {
     private val timerBoost = BoolValue("${valuePrefix}TimerBoost",true)
 
     private var jumps = 0
-    private var groundTicks = 0
+    private var firstHop = false
     private var lastY = 0.0
     private var damagedTicks = 0
     
@@ -27,7 +27,7 @@ class VerusHop : SpeedMode("VerusHop") {
     
     override fun onEnable() {
         verusHopStage = 1
-        groundTicks = 0
+        firstHop = true
     }
     
     override fun onDisable() {
@@ -45,19 +45,19 @@ class VerusHop : SpeedMode("VerusHop") {
             when {
                 mc.thePlayer.onGround -> {
                     if (modeValue.equals("Ground")) { 
-                        if (groundTicks > 0) {
-                            MovementUtils.strafe(1.01f)
-                        } else if (mc.thePlayer.ticksExisted % 12 == 0) {
+                        if (mc.thePlayer.ticksExisted % 12 == 0) {
+                            firstHop = false
                             MovementUtils.strafe(0.69f)
                             mc.thePlayer.posY += 0.42
                             mc.thePlayer.motionY = -(mc.thePlayer.posY - Math.floor(mc.thePlayer.posY))
-                            groundTicks = 13 // 11 bipass but add 1 cuz -- and another cuz -- 
+                        } else if (!firstHop) {
+                             MovementUtils.strafe(1.01f)
                         }
-                        groundTicks--
                     }
                         
                         
                     if (modeValue.equals("Normal") || modeValue.equals("LowHop") || modeValue.equals("FastHop")) {
+                        mc.thePlayer.jump()
                         MovementUtils.strafe(0.48f)
                         if (modeValue.equals("LowHop")) {
                             mc.thePlayer.motionY = 0.38
@@ -99,7 +99,6 @@ class VerusHop : SpeedMode("VerusHop") {
                         MovementUtils.strafe(0.36f)
                     } else if (modeValue.equals("Ground")) {
                         MovementUtils.strafe(0.41f)
-                        groundTicks--
                     } else if (modeValue.equals("Bhop")) {
                         if (mc.thePlayer.fallDistance >= 1.5) {
                             if (damagedTicks > 0) {
@@ -125,8 +124,6 @@ class VerusHop : SpeedMode("VerusHop") {
                     }
                 }
             }
-        } else {
-            groundTicks = 0
         }
     }
     
