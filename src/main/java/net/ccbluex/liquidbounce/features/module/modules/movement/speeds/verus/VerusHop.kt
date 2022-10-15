@@ -38,7 +38,7 @@ class VerusHop : SpeedMode("VerusHop") {
     override fun onPreMotion() {
 
         if (MovementUtils.isMoving()) {
-            if (timerBoost.get() && (jumps >= 1)) {
+            if (timerBoost.get() && (jumps >= 1) && !modeValue.equals("Ground")) {
                 mc.timer.timerSpeed = if (mc.thePlayer.motionY < 0) { 0.88f } else { 1.25f }
             }
 
@@ -48,8 +48,12 @@ class VerusHop : SpeedMode("VerusHop") {
                         if (mc.thePlayer.ticksExisted % 12 == 0) {
                             firstHop = false
                             MovementUtils.strafe(0.69f)
-                            mc.thePlayer.posY += 0.42
-                            mc.thePlayer.motionY = -(mc.thePlayer.posY - Math.floor(mc.thePlayer.posY))
+                            mc.thePlayer.jump()
+                            mc.thePlayer.motionY = 0
+                            MovementUtils.strafe(0.69f)
+                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, false))
+                            MovementUtils.strafe(0.41f)
+                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
                         } else if (!firstHop) {
                              MovementUtils.strafe(1.01f)
                         }
