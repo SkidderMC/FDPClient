@@ -9,7 +9,7 @@ import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 
-class RewinsideFly : FlyMode("Rewinside") {
+class RewinsideFly : FlyMode("RewinsideXD") {
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
@@ -31,4 +31,13 @@ class RewinsideFly : FlyMode("Rewinside") {
     override fun onStep(event: StepEvent) {
         event.stepHeight = 0f
     }
+    override fun onDisable() {
+        MovementUtils.resetMotion(true)
+
+    }
+    override fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+        if(packet is C03PacketPlayer) {
+            event.cancelEvent()
+        }
 }
