@@ -31,7 +31,7 @@ class VulcanYPort : SpeedMode("VulcanYPort") {
 	    if (!mc.thePlayer.isAirBorne) {
                 return //Prevent flag with Fly
             }
-            mc.timer.timerSpeed = 1.4f
+            mc.timer.timerSpeed = 1.2f
             wasTimer = true
             if(MovementUtils.getSpeed() < 0.48f) {
                 MovementUtils.strafe(0.48f)

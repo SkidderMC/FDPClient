@@ -19,7 +19,6 @@ class NoInvClose : Module() {
     fun onPacket(event: PacketEvent){
         if (mc.theWorld == null || mc.thePlayer == null) return
         
-        if (event.packet is S2EPacketCloseWindow && mc.currentScreen is GuiInventory)
-            event.cancelEvent()
+        if (event.packet is S2EPacketCloseWindow && mc.currentScreen is GuiInventory) event.cancelEvent()
     }
 }

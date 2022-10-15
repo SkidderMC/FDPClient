@@ -19,7 +19,7 @@ import sun.audio.AudioPlayer.player
 
 @ModuleInfo(name = "AntiVanish", category = ModuleCategory.MISC)
 class AntiVanish : Module() {
-    private var lastNotify=-1L
+    private var lastNotify = -1L
 
     @EventTarget
     fun onPacket(event: PacketEvent){

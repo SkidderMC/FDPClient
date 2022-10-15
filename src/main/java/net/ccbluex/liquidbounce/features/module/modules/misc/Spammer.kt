@@ -37,7 +37,7 @@ class Spammer : Module() {
     }
 
     private val modeValue = ListValue("Mode", arrayOf("Single", "Insult", "OrderInsult"), "Single")
-    private val endingChars = IntegerValue("EndingRandomChars",5,0,30)
+    private val endingCharsValue = IntegerValue("EndingRandomChars",5,0,30)
     private val messageValue = TextValue("Message", "Buy %r Minecraft %r Legit %r and %r stop %r using %r cracked %r servers %r%r")
         .displayable { !modeValue.contains("insult") }
     private val insultMessageValue = TextValue("InsultMessage", "[%s] %w [%s]")
@@ -88,6 +88,6 @@ class Spammer : Module() {
         return str.replace("%r", RandomUtils.nextInt(0, 99).toString())
                     .replace("%s", RandomUtils.randomString(3))
                     .replace("%c", RandomUtils.randomString(1))
-                    .replace("%name%", if (LiquidBounce.combatManager.target != null) { LiquidBounce.combatManager.target!!.name } else { "You" }) + (RandomUtils.randomString(endingChars.get().toInt()).toString())
+                    .replace("%name%", if (LiquidBounce.combatManager.target != null) { LiquidBounce.combatManager.target!!.name } else { "You" }) + (RandomUtils.randomString(endingCharsValue.get().toInt()).toString())
     }
 }
