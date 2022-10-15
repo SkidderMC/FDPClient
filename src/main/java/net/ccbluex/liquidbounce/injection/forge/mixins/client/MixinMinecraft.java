@@ -40,9 +40,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -107,16 +105,10 @@ public abstract class MixinMinecraft {
             displayHeight = 622;
     }
 
-    @Overwrite
-    public int getLimitFramerate() {
-        return this.gameSettings.limitFramerate;
-    }
-
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
      private void startGame(CallbackInfo callbackInfo) {
          LiquidBounce.INSTANCE.initClient();
-         DiscordRPC.INSTANCE.run();
      }
 
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
@@ -285,5 +277,9 @@ public abstract class MixinMinecraft {
             Display.setResizable(false);
             Display.setResizable(true);
         }
+    }
+    @ModifyConstant(method = "getLimitFramerate", constant = @Constant(intValue = 30))
+    public int getLimitFramerate(int constant) {
+        return 60;
     }
 }

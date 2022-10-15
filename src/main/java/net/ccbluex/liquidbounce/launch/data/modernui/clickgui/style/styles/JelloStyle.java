@@ -32,8 +32,6 @@ import java.util.List;
 
 public class JelloStyle extends Style {
 
-    // jello edit by GatoDePan
-
     private boolean mouseDown;
     private boolean rightMouseDown;
 

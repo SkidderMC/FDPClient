@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.dropd
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.light.LightClickGUI;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.tenacity.TenacityClickGUI;
 import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.novoline.ClickyUI;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newVer.NewUi;
 import net.ccbluex.liquidbounce.launch.options.modernuiLaunchOption;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
@@ -30,7 +31,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "Jello", "LiquidBounce", "Tenacity5", "Glow", "Null", "Slowly", "Black", "White"}, "White") {
+    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LiquidBouncePlus", "Jello", "LiquidBounce", "Tenacity5", "Glow", "Null", "Slowly", "Black", "White"}, "White") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -52,6 +53,7 @@ public class ClickGUIModule extends Module {
     public static final IntegerValue colorRedValue = (IntegerValue) new IntegerValue("R", 0, 0, 255).displayable(() -> !colorRainbow.get());
     public static final IntegerValue colorGreenValue = (IntegerValue) new IntegerValue("G", 160, 0, 255).displayable(() -> !colorRainbow.get());
     public static final IntegerValue colorBlueValue = (IntegerValue) new IntegerValue("B", 255, 0, 255).displayable(() -> !colorRainbow.get());
+    public static final BoolValue fastRenderValue = new BoolValue("FastRender", false);
 
  //   private static final ListValue clickguicolormode = new ListValue("ClickGuiColor",new String[]{"Drak","White"},"Drak");
 
@@ -80,6 +82,8 @@ public class ClickGUIModule extends Module {
             mc.displayGuiScreen(new DropdownGUI());
         } else if (styleValue.get().equalsIgnoreCase("Tenacity")){
             mc.displayGuiScreen(new TenacityClickGUI());
+        }  else if (styleValue.get().equalsIgnoreCase("LiquidBouncePlus")){
+            mc.displayGuiScreen(NewUi.getInstance());
         } else {
             updateStyle();
             mc.displayGuiScreen(modernuiLaunchOption.clickGui);
@@ -108,7 +112,7 @@ public class ClickGUIModule extends Module {
                 modernuiLaunchOption.clickGui.style = new JelloStyle();
                 break;
             case "tenacity5":
-                modernuiLaunchOption.clickGui.style = new TenacityFiveStyle();
+                modernuiLaunchOption.clickGui.style = new TenacityStyle();
                 break;
             case "glow":
                 modernuiLaunchOption.clickGui.style = new GlowStyle();

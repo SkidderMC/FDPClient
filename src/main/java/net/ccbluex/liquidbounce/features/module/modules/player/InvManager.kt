@@ -66,6 +66,7 @@ class InvManager : Module() {
     private val noCombatValue = BoolValue("NoCombat", false)
     private val itemDelayValue = IntegerValue("ItemDelay", 0, 0, 5000)
     private val onlySwordDamage = BoolValue("OnlySwordWeapon", true)
+    private val swingValue = BoolValue("Swing", true)
     private val nbtGoalValue = ListValue("NBTGoal", ItemUtils.EnumNBTPriorityType.values().map { it.toString() }.toTypedArray(), "NONE")
     private val nbtItemNotGarbage = BoolValue("NBTItemNotGarbage", true).displayable { !nbtGoalValue.equals("NONE") }
     private val nbtArmorPriority = FloatValue("NBTArmorPriority", 0f, 0f, 5f).displayable { !nbtGoalValue.equals("NONE") }
@@ -194,6 +195,8 @@ class InvManager : Module() {
                 if (checkOpen()) {
                     return
                 }
+		
+		if(swingValue.get()) mc.thePlayer.swingItem()
 
                 mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 0, 0, mc.thePlayer)
                 mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, -999, 0, 0, mc.thePlayer)

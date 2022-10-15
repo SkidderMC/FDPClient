@@ -61,6 +61,7 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
         scriptEngine.put("MovementUtils", MovementUtils)
         scriptEngine.put("PacketUtils", PacketUtils)
         scriptEngine.put("InventoryUtils", InventoryUtils)
+        scriptEngine.put("ClientUtils", ClientUtils)
 
         // Global functions
         scriptEngine.put("registerScript", RegisterScript())
