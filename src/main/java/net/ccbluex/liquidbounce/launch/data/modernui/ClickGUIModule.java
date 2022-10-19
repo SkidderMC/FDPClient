@@ -31,7 +31,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LiquidBouncePlus", "Jello", "LiquidBounce", "Tenacity5", "Glow", "Null", "Slowly", "Black", "White"}, "White") {
+    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Glow", "Null", "Slowly", "Black", "White"}, "Classic") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -82,7 +82,7 @@ public class ClickGUIModule extends Module {
             mc.displayGuiScreen(new DropdownGUI());
         } else if (styleValue.get().equalsIgnoreCase("Tenacity")){
             mc.displayGuiScreen(new TenacityClickGUI());
-        }  else if (styleValue.get().equalsIgnoreCase("LiquidBouncePlus")){
+        }  else if (styleValue.get().equalsIgnoreCase("LB+")){
             mc.displayGuiScreen(NewUi.getInstance());
         } else {
             updateStyle();
