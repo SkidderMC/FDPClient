@@ -5,26 +5,29 @@
  */
 package net.ccbluex.liquidbounce.launch.data.modernui
 
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.launch.data.modernui.mainmenu.*
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
-import net.ccbluex.liquidbounce.ui.client.GuiBackground
+import net.ccbluex.liquidbounce.launch.data.modernui.mainmenu.*
 import net.minecraft.client.gui.*
-import net.minecraft.util.ResourceLocation
-import java.awt.Color
+import net.minecraft.client.settings.GameSettings
+import net.minecraft.client.Minecraft;
+
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if(GuiScreen.isShiftKeyDown()){ 
-            mc.displayGuiScreen(GuiMainSelectMenu())
-        } 
-        if (HUD.mainMenuStyle.equals("Five")){
-            mc.displayGuiScreen(ModernGuiMainMenu())
-        } else {
-            mc.displayGuiScreen(ClassicGuiMainMenu())
+        fun isFastRenderEnabled(): Boolean {
+            return try {
+                val fastRender = GameSettings::class.java.getDeclaredField("ofFastRender")
+                fastRender.getBoolean(Minecraft.getMinecraft().gameSettings)
+            } catch (var1: Exception) {
+                false
+            }
         }
-        drawBackground(0)
+        if (isFastRenderEnabled()){
+            mc.displayGuiScreen(ClassicGuiMainMenu())
+        } else {
+            mc.displayGuiScreen(ModernGuiMainMenu())
+        }
+        drawBackground(1)
     }
 
 }
