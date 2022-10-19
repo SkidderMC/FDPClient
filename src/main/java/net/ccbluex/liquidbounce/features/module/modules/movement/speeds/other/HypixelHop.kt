@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.minecraft.potion.Potion
 import net.ccbluex.liquidbounce.value.*
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -17,15 +18,16 @@ import kotlin.math.roundToInt
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Smooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom"), "Stable")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "OldSmooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom"), "Latest")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val customStartSpeed = FloatValue("${valuePrefix}CustomStartSpeed", 1.3f, 1f, 1.6f).displayable {bypassMode.equals("Custom")}  
     private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}  
+    private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotModifier", 0.2f, 0f, 0.4f)
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", false)
     private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", false)
     private val yPort3 = BoolValue("${valuePrefix}SlightYPort3", true)
-    private val yPort4 = BoolValue("${valuePrefix}SlightYPort4", true)
+    private val yPort4 = BoolValue("${valuePrefix}SlightYPort4", false)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
 
     private var watchdogMultiplier = 1.0
@@ -52,7 +54,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
         }
         
         if (yPort.get()) {
-            if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0.0) {
+            if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0.0 && !mc.thePlayer.onGround) {
                 mc.thePlayer.motionY -= 0.05
             }
         }
@@ -89,9 +91,18 @@ class HypixelHop : SpeedMode("HypixelHop") {
         
         when (bypassMode.get().lowercase()) {
             
-            "legit" -> {
+            "latest" -> {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
+                    MovementUtils.strafe(MovementUtils.getSpeed())
+                    if (MovementUtils.getSpeed() < 0.46f) {
+                        MovementUtils.strafe(0.46f)
+                    }
+
+                    if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                        MovementUtils.strafe(MovementUtils.getSpeed() * (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)).toFloat() )
+                
+                    }
                 }
             }
                     
@@ -247,6 +258,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
             "test2" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
             "oldsafe" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.081237f - slowdownValue.get()).toDouble()).toFloat())
             "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
+            "custom" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
             
         }
     }
