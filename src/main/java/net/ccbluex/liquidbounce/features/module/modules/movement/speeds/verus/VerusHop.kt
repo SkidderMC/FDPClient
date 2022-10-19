@@ -49,7 +49,7 @@ class VerusHop : SpeedMode("VerusHop") {
                             firstHop = false
                             MovementUtils.strafe(0.69f)
                             mc.thePlayer.jump()
-                            mc.thePlayer.motionY = 0
+                            mc.thePlayer.motionY = 0.0
                             MovementUtils.strafe(0.69f)
                             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, false))
                             MovementUtils.strafe(0.41f)
