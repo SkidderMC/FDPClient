@@ -95,7 +95,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
                     MovementUtils.strafe(MovementUtils.getSpeed())
-                    if (MovementUtils.getSpeed < 0.46f) {
+                    if (MovementUtils.getSpeed() < 0.46f) {
                         MovementUtils.strafe(0.46f)
                     }
 
