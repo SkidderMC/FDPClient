@@ -42,8 +42,6 @@ class NoSlow : Module() {
     private val c07Value = BoolValue("AAC4-C07", true).displayable { modeValue.equals("AAC4") }
     private val c08Value = BoolValue("AAC4-C08", true).displayable { modeValue.equals("AAC4") }
     private val groundValue = BoolValue("AAC4-OnGround", true).displayable { modeValue.equals("AAC4") }
-    // Soulsand
-    val soulsandValue = BoolValue("Soulsand", false)
     // Slowdown on teleport
     private val teleportValue = BoolValue("Teleport", false)
     private val teleportModeValue = ListValue("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla").displayable { teleportValue.get() }
