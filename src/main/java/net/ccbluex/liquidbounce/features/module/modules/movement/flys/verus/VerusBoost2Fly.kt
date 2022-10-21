@@ -16,7 +16,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 
-class VerusBoost2Fly : FlyMode("VerusBoost3") {
+class VerusBoost2Fly : FlyMode("VerusBoost2") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 5f)
 
     private var times = 0
