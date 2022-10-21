@@ -98,7 +98,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     if (MovementUtils.getSpeed() < 0.47f) {
                         MovementUtils.strafe(0.47f)
                     }
-                    MovementUtils.strafe(MovementUtils.getSpeed() * 1.0666)
+                    MovementUtils.strafe(MovementUtils.getSpeed() * 1.01f)
 
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                         MovementUtils.strafe(MovementUtils.getSpeed() * (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)).toFloat() )
