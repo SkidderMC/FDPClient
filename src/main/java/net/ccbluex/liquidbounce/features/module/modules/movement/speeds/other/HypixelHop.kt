@@ -100,8 +100,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     oldMotionX = mc.thePlayer.motionX
                     oldMotionZ = mc.thePlayer.motionZ
                     MovementUtils.strafe(MovementUtils.getSpeed() * 1.01f)
-                    mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX) / 4
-                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ) / 4
+                    mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX * 2) / 5
+                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ + 2) / 5
                     
                     if (MovementUtils.getSpeed() < 0.47) {
                         watchdogMultiplier = 0.47 / MovementUtils.getSpeed().toDouble()
@@ -118,8 +118,14 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     mc.thePlayer.motionZ *= (1.0 + customSpeedBoostAir.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                 }
             }
+            
+            "legit" -> {
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                }
+            }
                     
-            "smooth" -> {
+            "oldsmooth" -> {
 
                 mc.thePlayer.isSprinting = true
 
