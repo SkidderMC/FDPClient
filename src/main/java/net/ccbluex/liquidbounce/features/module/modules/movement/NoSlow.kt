@@ -38,6 +38,7 @@ class NoSlow : Module() {
     private val onlyGround = BoolValue("OnlyGround", false)
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
+    public val soulSandValue = BoolValue("SoulSand", true)
     //AACv4
     private val c07Value = BoolValue("AAC4-C07", true).displayable { modeValue.equals("AAC4") }
     private val c08Value = BoolValue("AAC4-C08", true).displayable { modeValue.equals("AAC4") }
