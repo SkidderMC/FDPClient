@@ -178,9 +178,9 @@ public abstract class MixinGuiNewChat {
 
                                 if(hud.getChatRectValue().get()) {
                                     RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 9, i2 + l + 4, j2, 5, l1 / 6 << 24);
-                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 8, i2 + l + 5, j2, 5, l1 / 6 << 24);
-                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 7, i2 + l + 6, j2, 6, l1 / 6 << 24);
-                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 6, i2 + l + 7, j2, 6, l1 / 6 << 24);
+                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 10, i2 + l + 5, j2, 5, l1 / 6 << 24);
+                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 11, i2 + l + 6, j2, 6, l1 / 6 << 24);
+                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 12, i2 + l + 7, j2, 6, l1 / 6 << 24);
                                 }
                                 GlStateManager.enableBlend();
                                 if(hud.getChatRectValue().get()) {
