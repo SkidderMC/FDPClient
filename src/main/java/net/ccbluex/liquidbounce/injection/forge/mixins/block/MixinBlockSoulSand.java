@@ -20,7 +20,8 @@ public class MixinBlockSoulSand {
     private void onEntityCollidedWithBlock(CallbackInfo callbackInfo) {
         final NoSlow noSlow = LiquidBounce.moduleManager.getModule(NoSlow.class);
 
-        if(noSlow.getState())
+        if(noSlow.getState() && noSlow.getSoulSandValue().get()) {
             callbackInfo.cancel();
+        }
     }
 }
