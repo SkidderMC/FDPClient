@@ -23,7 +23,6 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private val customStartSpeed = FloatValue("${valuePrefix}CustomStartSpeed", 1.3f, 1f, 1.6f).displayable {bypassMode.equals("Custom")}  
     private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}  
     private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotJumpModifier", 0.13f, 0f, 0.4f)
-    private val customSpeedBoostAir = FloatValue("${valuePrefix}SpeedPotAirModifier", 0.13f, 0f, 0.4f)
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", false)
     private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", false)
@@ -113,9 +112,6 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionZ *= (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
                     
-                } else {
-                    mc.thePlayer.motionX *= (1.0 + customSpeedBoostAir.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)) / 10
-                    mc.thePlayer.motionZ *= (1.0 + customSpeedBoostAir.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)) / 10
                 }
             }
             
