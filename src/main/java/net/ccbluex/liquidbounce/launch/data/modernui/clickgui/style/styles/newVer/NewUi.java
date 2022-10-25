@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.modernui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.IconManager;
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.CategoryElement;
-import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.SearchElement;
+import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newVer.element.SearchElement;
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.ModuleElement;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MouseUtils;

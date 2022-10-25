@@ -1,11 +1,11 @@
-package net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element
+package net.ccbluex.liquidbounce.launch.data.modernui.clickgui.style.styles.newVer.element
 
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.IconManager
-import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.ModuleElement
+import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.CategoryElement
+import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.SearchBox
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
@@ -29,10 +29,10 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         Stencil.write(true)
         RenderUtils.originalRoundedRect(xPos, yPos, xPos + width, yPos + height, 4F, ColorManager.textBox.rgb)
         Stencil.erase(true)
-        if (searchBox.isFocused()) {
+        if (searchBox.isFocused) {
             RenderUtils.newDrawRect(xPos, yPos + height - 1F, xPos + width, yPos + height, accentColor.rgb)
             searchBox.drawTextBox()
-        } else if (searchBox.text.length <= 0) {
+        } else if (searchBox.text.isEmpty()) {
             searchBox.text = "Search"
             searchBox.drawTextBox()
             searchBox.text = ""
@@ -43,7 +43,7 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         GlStateManager.disableAlpha()
         RenderUtils.drawImage2(IconManager.search, xPos + width - 15F, yPos + 5F, 10, 10)
         GlStateManager.enableAlpha()
-        return searchBox.text.length > 0
+        return searchBox.text.isNotEmpty()
     }
 
     fun drawPanel(mX: Int, mY: Int, x: Float, y: Float, w: Float, h: Float, wheel: Int, ces: List<CategoryElement>, accentColor: Color) {
@@ -70,10 +70,10 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         for (ce in ces) {
             for (me in ce.moduleElements) {
                 if (me.module.name.startsWith(searchBox.text, true)) {
-                    if (startY + animScrollHeight > y + h || startY + animScrollHeight + 40F + me.animHeight < y + 50F)
-                        startY += 40F + me.animHeight
+                    startY += if (startY + animScrollHeight > y + h || startY + animScrollHeight + 40F + me.animHeight < y + 50F)
+                        40F + me.animHeight
                     else
-                        startY += me.drawElement(mouseX, mouseY, x, startY + animScrollHeight, w, 40F, accentColor)
+                        me.drawElement(mouseX, mouseY, x, startY + animScrollHeight, w, 40F, accentColor)
                 }
             }
         }
@@ -110,7 +110,7 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         var mouseX = mX
         var mouseY = mY
         searchBox.mouseClicked(mouseX, mouseY, mouseButton)
-        if (searchBox.text.length <= 0) return
+        if (searchBox.text.isEmpty()) return
         if (mouseY < y + 50F || mouseY >= y + h)
             mouseY = -1
         var startY = y + 50F
@@ -125,7 +125,7 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
     fun handleMouseRelease(mX: Int, mY: Int, mouseButton: Int, x: Float, y: Float, w: Float, h: Float, ces: List<CategoryElement>) {
         var mouseX = mX
         var mouseY = mY
-        if (searchBox.text.length <= 0) return
+        if (searchBox.text.isEmpty()) return
         if (mouseY < y + 50F || mouseY >= y + h)
             mouseY = -1
         var startY = y + 50F
@@ -139,7 +139,7 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
 
     fun handleTyping(typedChar: Char, keyCode: Int, x: Float, y: Float, w: Float, h: Float, ces: List<CategoryElement>): Boolean {
         searchBox.textboxKeyTyped(typedChar, keyCode)
-        if (searchBox.text.length <= 0) return false
+        if (searchBox.text.isEmpty()) return false
         for (ce in ces)
             for (me in ce.moduleElements)
                 if (me.module.name.startsWith(searchBox.text, true))
@@ -148,6 +148,6 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         return false
     }
 
-    fun isTyping(): Boolean = (searchBox.text.length > 0)
+    fun isTyping(): Boolean = (searchBox.text.isNotEmpty())
 
 }
