@@ -181,7 +181,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 
         // new sexy background
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 10, (int) startX + 400, (int) startY + 310, 3,
-                new Color(235, 235, 235, 255).getRGB());
+                new Color(230, 230, 230, 255).getRGB());
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY, (int) startX + 400, (int) startY + 25, 10,
                 new Color(250, 250, 250, 255).getRGB());
 
@@ -617,7 +617,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 
         // grayish bg of categories
         RenderUtils.drawRoundedRect2((int) startX - 5, (int) startY + 25, (int) startX + 50 + categoryAnimation, (int) startY + 310, 1,
-                new Color(180, 180, 180, 250).getRGB());
+                new Color(255, 255, 255, 250).getRGB());
 
         // blue box that highlights categories;ll;l
         RenderUtils.drawRoundedRect2((int) startX + 6, (int) startY + animationHeight - 5, (int) startX + 38 + categoryAnimation, (int) startY + animationHeight + 17, 5,
