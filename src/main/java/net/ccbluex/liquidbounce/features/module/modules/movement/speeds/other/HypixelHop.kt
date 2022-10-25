@@ -22,7 +22,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val customStartSpeed = FloatValue("${valuePrefix}CustomStartSpeed", 1.3f, 1f, 1.6f).displayable {bypassMode.equals("Custom")}  
     private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}  
-    private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotJumpModifier", 0.13f, 0f, 0.4f)
+    private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotJumpModifier", 0.1f, 0f, 0.4f)
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", false)
     private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", false)
@@ -99,8 +99,8 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     oldMotionX = mc.thePlayer.motionX
                     oldMotionZ = mc.thePlayer.motionZ
                     MovementUtils.strafe(MovementUtils.getSpeed() * 1.01f)
-                    mc.thePlayer.motionX = (mc.thePlayer.motionX * 3 + oldMotionX * 2) / 5
-                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 3 + oldMotionZ + 2) / 5
+                    mc.thePlayer.motionX = (mc.thePlayer.motionX * 1 + oldMotionX * 2) / 3
+                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 1 + oldMotionZ * 2) / 3
                     
                     if (MovementUtils.getSpeed() < 0.47) {
                         watchdogMultiplier = 0.47 / (MovementUtils.getSpeed().toDouble() + 0.001)
