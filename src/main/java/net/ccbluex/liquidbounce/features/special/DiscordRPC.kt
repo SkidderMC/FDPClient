@@ -7,6 +7,8 @@ import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule
 import net.ccbluex.liquidbounce.utils.ServerUtils
+import net.ccbluex.liquidbounce.utils.SessionUtils
+import net.ccbluex.liquidbounce.utils.StatisticsUtils
 import net.ccbluex.liquidbounce.utils.mc
 import org.json.JSONObject
 import java.time.OffsetDateTime
@@ -54,7 +56,8 @@ object DiscordRPC {
         builder.setLargeImage(if (discordRPCModule.animated.get()){"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.gif"} else {"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.png"})
         builder.setDetails(fdpwebsite + LiquidBounce.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
-            builder.setState(if(it.equals("idling", true)) "Idling" else "" + if(discordRPCModule.drpcValue.get() == "ShowServer"){"Server: $it"} else if(discordRPCModule.drpcValue.get() == "ShowName"){ "Username: ${if(mc.thePlayer != null) mc.thePlayer.name else mc.session.username}" } else if(discordRPCModule.drpcValue.get().equals("ShowHealth")){ "health: " + mc.thePlayer.health } else { " enjoying the breeze <3" })
+            val str = (if(discordRPCModule.showServerValue.get()) "Server: $it\n" else "\n") + (if(discordRPCModule.showNameValue.get()) "Username: ${if(mc.thePlayer != null) mc.thePlayer.name else mc.session.username}\n" else "\n") + (if(discordRPCModule.showHealthValue.get()) "HP: ${mc.thePlayer.health}\n" else "\n") + (if(discordRPCModule.showOtherValue.get()) "PlayTime: ${if(mc.isSingleplayer) "SinglePlayer\n" else SessionUtils.getFormatSessionTime()} Kills: ${StatisticsUtils.getKills()} Deaths: ${StatisticsUtils.getDeaths()}\n" else "\n")
+            builder.setState(if(it.equals("idling", true)) "Idling" else str)
         }
 
         // Check ipc client is connected and send rpc
