@@ -163,6 +163,7 @@ class AntiVoid : Module() {
                         for (packet in packetCache) {
                             mc.netHandler.addToSendQueue(packet)
                         }
+                        packetCache.clear()
                     }
                     canCancel = false
                 }
