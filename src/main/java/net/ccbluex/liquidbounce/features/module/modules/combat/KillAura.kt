@@ -1304,7 +1304,7 @@ class KillAura : Module() {
      */
 
         override val tag: String
-            get() = targetModeValue.get() + ", " + autoBlockValue.get() + ", " + rangeValue.get() + ", " + maxCpsValue.get() + " - " + minCpsValue.get()
+            get() = targetModeValue.get() + ", " + autoBlockValue.get() + ", " + rangeValue.get() + ", " + minCpsValue.get() + " - " + maxCpsValue.get()
 
 
 /*     private val simpleArrayList = BoolValue("SimpleArrayListTag", false)
