@@ -139,7 +139,9 @@ public abstract class MixinGuiNewChat {
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(2.0F, 20.0F, 0.0F);
                 GlStateManager.scale(f1, f1, 1.0F);
-
+                
+                int minH = 0;
+                int maxH = 0;
                 int i1;
                 int j1;
                 int l1;
@@ -177,11 +179,15 @@ public abstract class MixinGuiNewChat {
                                 }
 
                                 if(hud.getChatRectValue().get()) {
-                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 9, i2 + l + 4, j2, 5, l1 / 6 << 24);
-                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 10, i2 + l + 5, j2, 5, l1 / 6 << 24);
-                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 11, i2 + l + 6, j2, 6, l1 / 6 << 24);
-                                    RenderUtils.drawRoundedCornerRect(i2 - 2, j2 - 12, i2 + l + 7, j2, 6, l1 / 6 << 24);
+                                    if (j2 - 9 < minH) {
+                                        minH = j2 - 9;
+                                    }
+                                    if (j2 > maxH) {
+                                        maxH = j2;
+                                    }
+                                    RenderUtils.drawRect(i2 - 2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
                                 }
+                                
                                 GlStateManager.enableBlend();
                                 if(hud.getChatRectValue().get()) {
                                     if (canFont)
@@ -218,6 +224,13 @@ public abstract class MixinGuiNewChat {
                         RenderUtils.drawRect(0, -j3, 2, -j3 - k1, l3 + (l1 << 24));
                         RenderUtils.drawRect(2, -j3, 1, -j3 - k1, 13421772 + (l1 << 24));
                     }
+                }
+                
+                if (hud.getChatRectValue().get()) {
+                    RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 9, i2 + l + 4, maxH, 4, l1 / 6 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 10, i2 + l + 5, maxH, 4, l1 / 6 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 11, i2 + l + 6, maxH, 4, l1 / 6 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 12, i2 + l + 7, maxH, 4, l1 / 6 << 24);
                 }
 
                 GlStateManager.popMatrix();
