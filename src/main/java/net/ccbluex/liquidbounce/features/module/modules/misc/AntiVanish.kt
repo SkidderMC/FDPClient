@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S1DPacketEntityEffect
-import sun.audio.AudioPlayer.player
 
 @ModuleInfo(name = "AntiVanish", category = ModuleCategory.MISC)
 class AntiVanish : Module() {
