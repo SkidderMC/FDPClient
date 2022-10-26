@@ -115,7 +115,7 @@ class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
         return when (args.size) {
             1 -> listOf("delete", "list", "load", "save").filter { it.startsWith(args[0], true) }
             2 -> {
-                when (args[0].toLowerCase()) {
+                when (args[0].lowercase()) {
                     "delete", "load" -> {
                         val settings = this.getLocalThemes() ?: return emptyList()
 
