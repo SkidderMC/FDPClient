@@ -1061,7 +1061,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
 
         val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 45f, 5f, Color(0, 0, 0, 110).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 40f, 5f, Color(0, 0, 0, 110).rgb)
 
         // circle player avatar
         GL11.glColor4f(1f, 1f, 1f, 1f)
@@ -1079,13 +1079,13 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
 
         // info text
-        font.drawCenteredString(target.name, 42f, 5f, Color.WHITE.rgb, false)
+        font.drawCenteredString(target.name, 50f, 5f, Color.WHITE.rgb, false)
         "${decimalFormat.format((easingHP / target.maxHealth) * 100)}%".also {
-            font.drawString(it, (40f + (easingHP / target.maxHealth) * additionalWidth).coerceAtLeast(40f), 23f - font.FONT_HEIGHT, Color.WHITE.rgb, false)
+            font.drawString(it, (35f + (easingHP / target.maxHealth) * additionalWidth).coerceAtLeast(40f), 23f - font.FONT_HEIGHT, Color.WHITE.rgb, false)
         }
 
         // hp bar
-        RenderUtils.drawRoundedCornerRect(40f, 24f, 40f + (easingHP / target.maxHealth) * additionalWidth, 30f, 2f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRect(40f, 24f, 40f + (easingHP / target.maxHealth) * additionalWidth, 29f, ColorUtils.rainbow().rgb)
     }
     
     private fun drawTenacityNew(target: EntityLivingBase) {
