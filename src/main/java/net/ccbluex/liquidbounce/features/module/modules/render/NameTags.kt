@@ -264,7 +264,7 @@ class NameTags : Module() {
                 if (jelloColorValue.get() && name.startsWith("§")) {
                     hpBarColor = ColorUtils.colorCode(name.substring(1, 2), jelloAlphaValue.get())
                 }
-                val bgColor = Color(50, 50, 50, jelloAlphaValue.get())
+                val bgColor = Color(20, 20, 20, jelloAlphaValue.get())
                 val width = fontRenderer.getStringWidth(tag) / 2
                 val maxWidth = (width + 4F) - (-width - 4F)
                 var healthPercent = entity.health / entity.maxHealth
