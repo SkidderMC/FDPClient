@@ -140,7 +140,7 @@ public abstract class MixinGuiNewChat {
                 GlStateManager.translate(2.0F, 20.0F, 0.0F);
                 GlStateManager.scale(f1, f1, 1.0F);
                 
-                int minH = 0;
+                int minH = 10000;
                 int maxH = 0;
                 int i1;
                 int j1;
@@ -185,7 +185,6 @@ public abstract class MixinGuiNewChat {
                                     if (j2 > maxH) {
                                         maxH = j2;
                                     }
-                                    RenderUtils.drawRect(i2 - 2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
                                 }
                                 
                                 GlStateManager.enableBlend();
@@ -228,10 +227,11 @@ public abstract class MixinGuiNewChat {
                 
                 if (hud.getChatRectValue().get()) {
                     int i2 = 0;
-                    RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 9, i2 + l + 4, maxH, 4, 50 << 24);
-                    RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 10, i2 + l + 5, maxH, 4, 50 << 24);
-                    RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 11, i2 + l + 6, maxH, 4, 50 << 24);
-                    RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 12, i2 + l + 7, maxH, 4, 50 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 9, i2 + l + 4, maxH, 4, 67 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 10, i2 + l + 5, maxH, 4, 55 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 11, i2 + l + 6, maxH, 4, 42 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 12, i2 + l + 7, maxH, 4, 30 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 13, i2 + l + 8, maxH, 4, 13 << 24);
                 }
 
                 GlStateManager.popMatrix();
