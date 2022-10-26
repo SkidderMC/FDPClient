@@ -966,25 +966,27 @@ class Scaffold : Module() {
                 "custom" -> {
                     Rotation(mc.thePlayer.rotationYaw + customtowerYawValue.get(), customtowerPitchValue.get().toFloat())
                 }
-				"advanced" -> {
-					var advancedYaw = 0f
-					var advancedPitch = 0f
-					advancedYaw = when (advancedYawModeValue.get().lowercase()) {
-						"offset" -> placeRotation.rotation.yaw + advancedYawOffsetValue.get()
-						"static" -> mc.thePlayer.rotationYaw + advancedYawStaticValue.get()
-						"vanilla" -> mc.thePlayer.rotationYaw
-						"round" -> ((placeRotation.rotation.yaw / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
-						"roundstatic" -> (((mc.thePlayer.rotationYaw + advancedYawStaticValue.get()) / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
-						"movedirection" -> MovementUtils.movingYaw - 180
-						"offsetmove" -> MovementUtils.movingYaw - 180 + advancedYawMoveOffsetValue.get()
-					}
-					advancedPitch = when (advancedPitchModeValue.get().lowercase()) {
-						"offset" -> placeRotation.rotation.pitch + advancedPitchOffsetValue.get().toFloat()
-						"static" -> advancedPitchStaticValue.get().toFloat()
-						"vanilla" -> placeRotation.rotation.pitch
-					}
-					Rotation(advancedYaw, advancedPitch)
-				}
+		"advanced" -> {
+			var advancedYaw = 0f
+			var advancedPitch = 0f
+			advancedYaw = when (advancedYawModeValue.get().lowercase()) {
+				"offset" -> placeRotation.rotation.yaw + advancedYawOffsetValue.get()
+				"static" -> mc.thePlayer.rotationYaw + advancedYawStaticValue.get()
+				"vanilla" -> placeRotation.rotation.yaw
+				"round" -> ((placeRotation.rotation.yaw / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
+				"roundstatic" -> (((mc.thePlayer.rotationYaw + advancedYawStaticValue.get()) / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
+				"movedirection" -> MovementUtils.movingYaw - 180
+				"offsetmove" -> MovementUtils.movingYaw - 180 + advancedYawMoveOffsetValue.get()
+				else -> placeRotation.rotation.yaw
+			}
+			advancedPitch = when (advancedPitchModeValue.get().lowercase()) {
+				"offset" -> placeRotation.rotation.pitch + advancedPitchOffsetValue.get().toFloat()
+				"static" -> advancedPitchStaticValue.get().toFloat()
+				"vanilla" -> placeRotation.rotation.pitch
+				else -> placeRotation.rotation.pitch
+			}
+			Rotation(advancedYaw, advancedPitch)
+		}
                 else -> return false // this should not happen
             }
             if (silentRotationValue.get()) {
@@ -1017,6 +1019,27 @@ class Scaffold : Module() {
                 "better" -> {
                     Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), placeRotation.rotation.pitch)
                 }
+		"advanced" -> {
+			var advancedYaw = 0f
+			var advancedPitch = 0f
+			advancedYaw = when (advancedYawModeValue.get().lowercase()) {
+				"offset" -> placeRotation.rotation.yaw + advancedYawOffsetValue.get()
+				"static" -> mc.thePlayer.rotationYaw + advancedYawStaticValue.get()
+				"vanilla" -> placeRotation.rotation.yaw
+				"round" -> ((placeRotation.rotation.yaw / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
+				"roundstatic" -> (((mc.thePlayer.rotationYaw + advancedYawStaticValue.get()) / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
+				"movedirection" -> MovementUtils.movingYaw - 180
+				"offsetmove" -> MovementUtils.movingYaw - 180 + advancedYawMoveOffsetValue.get()
+				else -> placeRotation.rotation.yaw
+			}
+			advancedPitch = when (advancedPitchModeValue.get().lowercase()) {
+				"offset" -> placeRotation.rotation.pitch + advancedPitchOffsetValue.get().toFloat()
+				"static" -> advancedPitchStaticValue.get().toFloat()
+				"vanilla" -> placeRotation.rotation.pitch
+				else -> placeRotation.rotation.pitch
+			}
+			Rotation(advancedYaw, advancedPitch)
+		}
                 else -> return false // this should not happen
             }
             if (silentRotationValue.get()) {
