@@ -1058,25 +1058,34 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     private fun drawTenacity(target: EntityLivingBase) {
         val font = fontValue.get()
+        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
 
         val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 45f, 5f, Color(0, 0, 0, 110).rgb)
 
         // circle player avatar
         GL11.glColor4f(1f, 1f, 1f, 1f)
-        mc.textureManager.bindTexture(target.skin)
-        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
-        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
+        if (playerInfo != null) {
+            Stencil.write(false)
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            RenderUtils.fastRoundedRect(4F, 4F, 34F, 34F, 7F)
+            GL11.glDisable(GL11.GL_BLEND)
+            GL11.glEnable(GL11.GL_TEXTURE_2D)
+            Stencil.erase(true)
+            drawHead(playerInfo.locationSkin, 4, 4, 30, 30, 1F - getFadeProgress())
+            Stencil.dispose()
+        }
 
         // info text
-        font.drawCenteredString(target.name, 40 + (additionalWidth / 2f), 5f, Color.WHITE.rgb, false)
+        font.drawCenteredString(target.name, 42f, 5f, Color.WHITE.rgb, false)
         "${decimalFormat.format((easingHP / target.maxHealth) * 100)}%".also {
-            font.drawString(it, (40f + (easingHP / target.maxHealth) * additionalWidth - font.getStringWidth(it)).coerceAtLeast(40f), 28f - font.FONT_HEIGHT, Color.WHITE.rgb, false)
+            font.drawString(it, (40f + (easingHP / target.maxHealth) * additionalWidth).coerceAtLeast(40f), 23f - font.FONT_HEIGHT, Color.WHITE.rgb, false)
         }
 
         // hp bar
-        RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + additionalWidth, 33f, 2.5f, Color(0, 0, 0, 70).rgb)
-        RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRoundedCornerRect(40f, 24f, 40f + (easingHP / target.maxHealth) * additionalWidth, 30f, 2f, ColorUtils.rainbow().rgb)
     }
     
     private fun drawTenacityNew(target: EntityLivingBase) {
