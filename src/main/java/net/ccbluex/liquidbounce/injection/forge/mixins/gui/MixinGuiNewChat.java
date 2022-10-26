@@ -228,6 +228,7 @@ public abstract class MixinGuiNewChat {
                 
                 if (hud.getChatRectValue().get()) {
                     int i2 = 0;
+                    int l1 = 255;
                     RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 9, i2 + l + 4, maxH, 4, l1 / 6 << 24);
                     RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 10, i2 + l + 5, maxH, 4, l1 / 6 << 24);
                     RenderUtils.drawRoundedCornerRect(i2 - 2, minH - 11, i2 + l + 6, maxH, 4, l1 / 6 << 24);
