@@ -101,7 +101,7 @@ class ModuleManager : Listenable {
     }
 
     fun getModulesByName(name: String): List<Module> {
-        return this.modules.filter { it.name.toLowerCase().contains(name.toLowerCase()) }
+        return this.modules.filter { it.name.lowercase().contains(name.lowercase()) }
     }
 
     /**

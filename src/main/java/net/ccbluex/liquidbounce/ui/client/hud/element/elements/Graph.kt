@@ -97,7 +97,7 @@ class Graph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
         lastValue = graphValue.get()
 
         if (timer.hasTimePassed(updateDelay.get().toLong())) {
-            when (graphValue.get().toLowerCase()) {
+            when (graphValue.get().lowercase()) {
                 "speed" -> valueStore.add(MovementUtils.getSpeed() * 10F)
                 "bps" -> valueStore.add(speedVal)
                 "packet-in" -> valueStore.add(PacketCounterUtils.avgInBound.toFloat())

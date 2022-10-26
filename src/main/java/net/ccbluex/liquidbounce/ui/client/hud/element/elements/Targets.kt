@@ -217,10 +217,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         if (target != null) {
 
-            if (!(Display::class.java.getMethod("g&e&t&T&i&t&l&e".replace("&","")).invoke(null) as String).toLowerCase().contains("f#d#p#c#l#i#e#n#t".replace("#",""))) {
+            if (!(Display::class.java.getMethod("g&e&t&T&i&t&l&e".replace("&","")).invoke(null) as String).lowercase().contains("f#d#p#c#l#i#e#n#t".replace("#",""))) {
                 //System.out.println("你将会被执行神必代码! ")
             }
-            /*if (!(Text::class.java.getMethod("getClientName").invoke(Element,0,9) as String).toLowerCase().contains("fdp")) {
+            /*if (!(Text::class.java.getMethod("getClientName").invoke(Element,0,9) as String).lowercase().contains("fdp")) {
                 System.out.println("你将会被执行神必代码! ")
             }*/
 
