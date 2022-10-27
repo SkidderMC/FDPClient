@@ -143,6 +143,57 @@ public abstract class MixinGuiNewChat {
                 int minH = 10000;
                 int maxH = 0;
                 int i1;
+                for(i1 = 0; i1 + this.scrollPos < this.drawnChatLines.size() && i1 < i; ++i1) {
+                    ChatLine chatline = this.drawnChatLines.get(i1 + this.scrollPos);
+                    if (chatline != null) {
+                        j1 = updateCounter - chatline.getUpdatedCounter();
+                        if (j1 < 200 || flag) {
+                            if (l1 > 3) {
+
+                                int i2 = 0;
+                                int j2 = -i1 * 9;
+
+                                if(hud.getChatRectValue().get()) {
+                                    if (j2 - 9 < minH) {
+                                        minH = j2 - 9;
+                                    }
+                                    if (j2 > maxH) {
+                                        maxH = j2;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (flag) {
+                    i1 = this.mc.fontRendererObj.FONT_HEIGHT;
+                    GlStateManager.translate(-3.0F, 0.0F, 0.0F);
+                    int l2 = k * i1 + k;
+                    j1 = j * i1 + j;
+                    int j3 = this.scrollPos * j1 / k;
+                    int k1 = j1 * j1 / l2;
+                    if (l2 != j1) {
+                        l1 = j3 > 0 ? 170 : 96;
+                        int l3 = this.isScrolled ? 13382451 : 3355562;
+                        RenderUtils.drawRect(0, -j3, 2, -j3 - k1, l3 + (l1 << 24));
+                        RenderUtils.drawRect(2, -j3, 1, -j3 - k1, 13421772 + (l1 << 24));
+                    }
+                }
+                
+                if (hud.getChatRectValue().get()) {
+                    int i2 = 0;
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 9, i2 + l + 4, maxH, 4, 75 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 10, i2 + l + 5, maxH, 4, 50 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 11, i2 + l + 6, maxH, 4, 35 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 12, i2 + l + 7, maxH, 4, 20 << 24);
+                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 13, i2 + l + 8, maxH, 4, 10 << 24);
+                }
+                
+                float f1 = this.getChatScale();
+                int l = MathHelper.ceiling_float_int((float)this.getChatWidth() / f1);
+                
+                int i1;
                 int j1;
                 int l1;
                 for(i1 = 0; i1 + this.scrollPos < this.drawnChatLines.size() && i1 < i; ++i1) {
@@ -178,15 +229,6 @@ public abstract class MixinGuiNewChat {
                                     }
                                 }
 
-                                if(hud.getChatRectValue().get()) {
-                                    if (j2 - 9 < minH) {
-                                        minH = j2 - 9;
-                                    }
-                                    if (j2 > maxH) {
-                                        maxH = j2;
-                                    }
-                                }
-                                
                                 GlStateManager.enableBlend();
                                 if(hud.getChatRectValue().get()) {
                                     if (canFont)
@@ -208,30 +250,6 @@ public abstract class MixinGuiNewChat {
                             }
                         }
                     }
-                }
-
-                if (flag) {
-                    i1 = this.mc.fontRendererObj.FONT_HEIGHT;
-                    GlStateManager.translate(-3.0F, 0.0F, 0.0F);
-                    int l2 = k * i1 + k;
-                    j1 = j * i1 + j;
-                    int j3 = this.scrollPos * j1 / k;
-                    int k1 = j1 * j1 / l2;
-                    if (l2 != j1) {
-                        l1 = j3 > 0 ? 170 : 96;
-                        int l3 = this.isScrolled ? 13382451 : 3355562;
-                        RenderUtils.drawRect(0, -j3, 2, -j3 - k1, l3 + (l1 << 24));
-                        RenderUtils.drawRect(2, -j3, 1, -j3 - k1, 13421772 + (l1 << 24));
-                    }
-                }
-                
-                if (hud.getChatRectValue().get()) {
-                    int i2 = 0;
-                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 9, i2 + l + 4, maxH, 4, 67 << 24);
-                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 10, i2 + l + 5, maxH, 4, 55 << 24);
-                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 11, i2 + l + 6, maxH, 4, 42 << 24);
-                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 12, i2 + l + 7, maxH, 4, 30 << 24);
-                    RenderUtils.drawRoundedCornerRect(i2 - 7, minH - 13, i2 + l + 8, maxH, 4, 13 << 24);
                 }
 
                 GlStateManager.popMatrix();
