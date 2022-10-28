@@ -22,11 +22,12 @@ class VerusBoost3Fly : FlyMode("VerusBoost3") {
     override fun onUpdate(event: UpdateEvent) {
 
         if (ticks == 1) {
-            mc.timer.timerSpeed = 0.15f
             mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.42, mc.thePlayer.posZ, false))
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+            mc.timer.timerSpeed = 0.15f
             mc.thePlayer.jump()
             mc.thePlayer.onGround = true
         } else if (ticks == 2) {
@@ -48,9 +49,12 @@ class VerusBoost3Fly : FlyMode("VerusBoost3") {
             mc.thePlayer.fallDistance = 0f
         }
 
-        if (ticks <= 30) {
+        if (ticks < 25) {
             MovementUtils.strafe(speedValue.get())
         } else {
+            if (ticks == 25){
+                MovementUtils.strafe(0.48f)
+            }
             if (reDamage.get()) {
                 ticks = 1
             }

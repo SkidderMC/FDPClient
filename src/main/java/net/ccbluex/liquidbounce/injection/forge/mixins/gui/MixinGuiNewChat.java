@@ -124,6 +124,10 @@ public abstract class MixinGuiNewChat {
         boolean canFont = hud.getState() && hud.getFontChatValue().get();
 
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
+            
+            int minH = 1000;
+            int maxH = 0;
+            
             int i = this.getLineCount();
             boolean flag = false;
             int j = 0;
@@ -178,6 +182,12 @@ public abstract class MixinGuiNewChat {
 
                                 if(hud.getChatRectValue().get()) {
                                     RenderUtils.drawRect(i2 - 2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
+                                    if (j2 - 9 < minH) {
+                                        minH = j2 - 9;
+                                    }
+                                    if (j2 > maxH) {
+                                        maxH = j2;
+                                    }
                                 }
                                 GlStateManager.enableBlend();
                                 if(hud.getChatRectValue().get()) {
@@ -199,6 +209,12 @@ public abstract class MixinGuiNewChat {
                                 GL11.glPopMatrix();
                             }
                         }
+                    }
+                }
+                
+                if (hud.getBetterChatRectValue().get()) {
+                    if (minH < 900) {
+                        RenderUtils.drawShadow(-2f, minH, MathHelper.ceiling_float_int((float)this.getChatWidth() / f1) + 4, maxH);
                     }
                 }
 
