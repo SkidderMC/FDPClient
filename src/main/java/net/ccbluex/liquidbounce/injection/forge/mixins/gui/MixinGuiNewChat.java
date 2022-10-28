@@ -214,7 +214,7 @@ public abstract class MixinGuiNewChat {
                 
                 if (hud.getbetterChatRectValue().get()) {
                     if (minH < 900) {
-                        RenderUtils.drawShadow(-2f, minH, MathHelper.ceiling_float_int((float)this.getChatWidth() / f1); + 4, maxH);
+                        RenderUtils.drawShadow(-2f, minH, MathHelper.ceiling_float_int((float)this.getChatWidth() / f1) + 4, maxH);
                     }
                 }
 
