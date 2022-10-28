@@ -1060,23 +1060,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val font = fontValue.get()
         val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
 
-        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
+        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(100)
         RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 40f, 5f, Color(0, 0, 0, 110).rgb)
 
-        // circle player avatar
-        GL11.glColor4f(1f, 1f, 1f, 1f)
-        if (playerInfo != null) {
-            Stencil.write(false)
-            GL11.glDisable(GL11.GL_TEXTURE_2D)
-            GL11.glEnable(GL11.GL_BLEND)
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            RenderUtils.fastRoundedRect(4F, 4F, 34F, 34F, 7F)
-            GL11.glDisable(GL11.GL_BLEND)
-            GL11.glEnable(GL11.GL_TEXTURE_2D)
-            Stencil.erase(true)
-            drawHead(playerInfo.locationSkin, 4, 4, 30, 30, 1F - getFadeProgress())
-            Stencil.dispose()
-        }
+        RenderUtils.drawHead(target.skin, 5, 5, 40, 40)
 
         // info text
         font.drawCenteredString(target.name, 50f, 5f, Color.WHITE.rgb, false)
@@ -1085,7 +1072,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
 
         // hp bar
-        RenderUtils.drawRect(40f, 24f, 40f + (easingHP / target.maxHealth) * additionalWidth, 29f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRect(40f, 27f, 40f + additionalWidth, 32f, Color(190,190,190,190).rgb)
+        RenderUtils.drawRect(40f, 27f, 40f + (easingHP / target.maxHealth) * additionalWidth, 32f, ColorUtils.rainbow().rgb)
     }
     
     private fun drawTenacityNew(target: EntityLivingBase) {
