@@ -22,7 +22,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val customStartSpeed = FloatValue("${valuePrefix}CustomStartSpeed", 1.3f, 1f, 1.6f).displayable {bypassMode.equals("Custom")}  
     private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}  
-    private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotModifier", 0.2f, 0f, 0.4f)
+    private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotJumpModifier", 0.1f, 0f, 0.4f)
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
     private val yPort = BoolValue("${valuePrefix}SlightYPort", false)
     private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", false)
@@ -94,19 +94,34 @@ class HypixelHop : SpeedMode("HypixelHop") {
             "latest" -> {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    MovementUtils.strafe(MovementUtils.getSpeed())
-                    if (MovementUtils.getSpeed() < 0.46f) {
-                        MovementUtils.strafe(0.46f)
+                    mc.thePlayer.motionY = yMotion.get().toDouble()
+                    
+                    oldMotionX = mc.thePlayer.motionX
+                    oldMotionZ = mc.thePlayer.motionZ
+                    MovementUtils.strafe(MovementUtils.getSpeed() * 1.01f)
+                    mc.thePlayer.motionX = (mc.thePlayer.motionX * 1 + oldMotionX * 2) / 3
+                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 1 + oldMotionZ * 2) / 3
+                    
+                    if (MovementUtils.getSpeed() < 0.47) {
+                        watchdogMultiplier = 0.47 / (MovementUtils.getSpeed().toDouble() + 0.001)
+                        mc.thePlayer.motionX *= watchdogMultiplier
+                        mc.thePlayer.motionZ *= watchdogMultiplier
                     }
-
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        MovementUtils.strafe(MovementUtils.getSpeed() * (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)).toFloat() )
-                
+                        mc.thePlayer.motionX *= (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionZ *= (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
+                    
+                }
+            }
+            
+            "legit" -> {
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
                 }
             }
                     
-            "smooth" -> {
+            "oldsmooth" -> {
 
                 mc.thePlayer.isSprinting = true
 
@@ -231,7 +246,7 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
                 watchdogMultiplier = (moveDist - 0.819999f * (moveDist - 0.28f)).toDouble()
-                watchdogMultiplier = watchdogMultiplier / MovementUtils.getSpeed().toDouble()
+                watchdogMultiplier = watchdogMultiplier / (MovementUtils.getSpeed().toDouble() + 0.001)
                 mc.thePlayer.motionX *= watchdogMultiplier
                 mc.thePlayer.motionZ *= watchdogMultiplier
 

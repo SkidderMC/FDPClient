@@ -32,14 +32,14 @@ class Statistics(
     private val rectAlpha = IntegerValue("RectAlpha", 150, 0, 255)
     private val rectShadow = BoolValue("RectShadow", false)
     
-    private val textR = IntegerValue("Label-R", 0, 0, 255)
-    private val textG = IntegerValue("Label-G", 0, 0, 255)
-    private val textB = IntegerValue("Label-B", 0, 0, 255)
+    private val textR = IntegerValue("Label-R", 255, 0, 255)
+    private val textG = IntegerValue("Label-G", 255, 0, 255)
+    private val textB = IntegerValue("Label-B", 255, 0, 255)
     private val textAlpha = IntegerValue("LabelAlpha", 200, 0, 255)
     
-    private val infoR = IntegerValue("Info-R", 0, 0, 255)
-    private val infoG = IntegerValue("Info-G", 0, 0, 255)
-    private val infoB = IntegerValue("Info-B", 0, 0, 255)
+    private val infoR = IntegerValue("Info-R", 200, 0, 255)
+    private val infoG = IntegerValue("Info-G", 200, 0, 255)
+    private val infoB = IntegerValue("Info-B", 200, 0, 255)
     private val infoAlpha = IntegerValue("InfoAlpha", 180, 0, 255)
     
     

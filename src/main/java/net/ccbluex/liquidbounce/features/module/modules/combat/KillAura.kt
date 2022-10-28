@@ -57,7 +57,7 @@ class KillAura : Module() {
      * OPTIONS
      */
 
-    // CPS - Attack speed
+    // CPS - Attack speed 
     private val maxCpsValue: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minCpsValue.get()
@@ -79,7 +79,7 @@ class KillAura : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val combatDelayValue = BoolValue("1.9CombatDelay", false)
 
-    // Range
+    // Range  
     val rangeValue = object : FloatValue("Range", 3.7f, 1f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
@@ -1304,7 +1304,7 @@ class KillAura : Module() {
      */
 
         override val tag: String
-            get() = targetModeValue.get()
+            get() = targetModeValue.get() + ", " + autoBlockValue.get() + ", " + rangeValue.get() + ", " + minCpsValue.get() + " - " + maxCpsValue.get()
 
 
 /*     private val simpleArrayList = BoolValue("SimpleArrayListTag", false)

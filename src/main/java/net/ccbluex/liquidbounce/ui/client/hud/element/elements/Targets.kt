@@ -1058,25 +1058,22 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     private fun drawTenacity(target: EntityLivingBase) {
         val font = fontValue.get()
+        val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
 
-        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(75)
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 45f + additionalWidth, 40f, 7f, Color(0, 0, 0, 110).rgb)
+        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(100)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 40f, 5f, Color(0, 0, 0, 110).rgb)
 
-        // circle player avatar
-        GL11.glColor4f(1f, 1f, 1f, 1f)
-        mc.textureManager.bindTexture(target.skin)
-        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
-        RenderUtils.drawScaledCustomSizeModalCircle(5, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
+        RenderUtils.drawHead(target.skin, 5, 5, 40, 40)
 
         // info text
-        font.drawCenteredString(target.name, 40 + (additionalWidth / 2f), 5f, Color.WHITE.rgb, false)
+        font.drawCenteredString(target.name, 50f, 5f, Color.WHITE.rgb, false)
         "${decimalFormat.format((easingHP / target.maxHealth) * 100)}%".also {
-            font.drawString(it, (40f + (easingHP / target.maxHealth) * additionalWidth - font.getStringWidth(it)).coerceAtLeast(40f), 28f - font.FONT_HEIGHT, Color.WHITE.rgb, false)
+            font.drawString(it, (35f + (easingHP / target.maxHealth) * additionalWidth).coerceAtLeast(40f), 23f - font.FONT_HEIGHT, Color.WHITE.rgb, false)
         }
 
         // hp bar
-        RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + additionalWidth, 33f, 2.5f, Color(0, 0, 0, 70).rgb)
-        RenderUtils.drawRoundedCornerRect(40f, 28f, 40f + (easingHP / target.maxHealth) * additionalWidth, 33f, 2.5f, ColorUtils.rainbow().rgb)
+        RenderUtils.drawRect(40f, 27f, 40f + additionalWidth, 32f, Color(190,190,190,190).rgb)
+        RenderUtils.drawRect(40f, 27f, 40f + (easingHP / target.maxHealth) * additionalWidth, 32f, ColorUtils.rainbow().rgb)
     }
     
     private fun drawTenacityNew(target: EntityLivingBase) {
