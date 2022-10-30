@@ -536,7 +536,7 @@ class Scaffold : Module() {
                     fakeJump()
                     mc.thePlayer.motionY = 0.42
                 } else if (mc.thePlayer.motionY < 0.18) {
-                    mc.thePlayer.motionY -= 0.06
+                    mc.thePlayer.motionY -= 0.02
                 }
             }
 	    "motiontp" -> {
