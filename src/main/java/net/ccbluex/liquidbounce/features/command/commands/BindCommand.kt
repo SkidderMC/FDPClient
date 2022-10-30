@@ -21,7 +21,7 @@ class BindCommand : Command("bind", emptyArray()) {
             val module = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
-                alert("Module §a§l" + args[1] + "§3 not found.")
+                alert("Module §l" + args[1] + "§r not found.")
                 return
             }
 
@@ -31,7 +31,7 @@ class BindCommand : Command("bind", emptyArray()) {
                 module.keyBind = key
 
                 // Response to user
-                alert("Bound module §a§l${module.name}§3 to key §a§l${Keyboard.getKeyName(key)}§3.")
+                alert("Bound module §l${module.name}§r to key §a§l${Keyboard.getKeyName(key)}§3.")
                 LiquidBounce.hud.addNotification(
                     Notification("KeyBind", "Bound ${module.name} to ${Keyboard.getKeyName(key)}.", NotifyType.INFO)
                 )

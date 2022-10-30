@@ -11,7 +11,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import org.lwjgl.opengl.GL11
 
 @ModuleInfo(name = "Chams", category = ModuleCategory.RENDER)
@@ -20,17 +22,15 @@ class Chams : Module() {
     val chestsValue = BoolValue("Chests", true)
     val itemsValue = BoolValue("Items", true)
 
-    private val colorRainbowValue = BoolValue("Rainbow", false)
-    private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorGreenValue = IntegerValue("Green", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorAlphaValue = IntegerValue("Alpha", 200, 0, 255)
-
-    fun setColor() {
-        if (colorRainbowValue.get()) {
-            RenderUtils.glColor(ColorUtils.rainbowWithAlpha(colorAlphaValue.get()))
-        } else {
-            GL11.glColor4f(colorRedValue.get() / 255f, colorGreenValue.get() / 255f, colorBlueValue.get() / 255f, colorAlphaValue.get() / 255f)
-        }
-    }
+    val localPlayerValue = BoolValue("LocalPlayer", true)
+    val legacyMode = BoolValue("Legacy-Mode", false)
+    val texturedValue = BoolValue("Textured", false).displayable { legacyMode.get() }
+    val colorModeValue = ListValue("Color", arrayOf("Custom", "Slowly", "Fade"), "Custom").displayable { legacyMode.get() }
+    val behindColorModeValue = ListValue("Behind-Color", arrayOf("Same", "Opposite", "Red"), "Red").displayable { legacyMode.get() }
+    val redValue = IntegerValue("Red", 0, 0, 255).displayable { legacyMode.get() }
+    val greenValue = IntegerValue("Green", 200, 0, 255).displayable { legacyMode.get() }
+    val blueValue = IntegerValue("Blue", 0, 0, 255).displayable { legacyMode.get() }
+    val alphaValue = IntegerValue("Alpha", 255, 0, 255).displayable { legacyMode.get() }
+    val saturationValue = FloatValue("Saturation", 1F, 0F, 1F).displayable { legacyMode.get() }
+    val brightnessValue = FloatValue("Brightness", 1F, 0F, 1F).displayable { legacyMode.get() }
 }

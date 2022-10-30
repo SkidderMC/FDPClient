@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
-import net.ccbluex.liquidbounce.utils.MobsUtils;
+import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.item.ItemUtils;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -110,7 +110,7 @@ public final class ESP2D extends Module {
             if (entityLivingBase.hurtTime > 0)
                 return Color.RED;
 
-            if (MobsUtils.isFriend(entityLivingBase))
+            if (EntityUtils.INSTANCE.isFriend(entityLivingBase))
                 return Color.BLUE;
 
             if (colorTeam.get()) {
@@ -405,7 +405,7 @@ public final class ESP2D extends Module {
 
         for(int playerEntitiesSize = playerEntities.size(); i < playerEntitiesSize; ++i) {
             Entity entity = (Entity)playerEntities.get(i);
-            if (MobsUtils.isSelected(entity, false) || (localPlayer.get() && entity instanceof EntityPlayerSP && mc.gameSettings.thirdPersonView != 0) || (droppedItems.get() && entity instanceof EntityItem)) {
+            if (EntityUtils.INSTANCE.isSelected(entity, false) || (localPlayer.get() && entity instanceof EntityPlayerSP && mc.gameSettings.thirdPersonView != 0) || (droppedItems.get() && entity instanceof EntityItem)) {
                 collectedEntities.add(entity);
             }
         }
