@@ -16,12 +16,12 @@ import net.ccbluex.liquidbounce.utils.render.Animation
 
 @ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HotbarSettings : Module() {
-    val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Full", "LB", "Rise"), "Rounded")
-    val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
-    val hotbarEaseValue = BoolValue("HotbarEase", false)
-    private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
-    private val hotbarAnimTypeValue = EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
-    private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }
+    val hotbarValue = ListValue("Mode", arrayOf("Minecraft", "Rounded", "Full", "LB", "Rise"), "Rounded")
+    val hotbarAlphaValue = IntegerValue("Alpha", 70, 0, 255)
+    val hotbarEaseValue = BoolValue("Ease", false)
+    private val hotbarAnimSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
+    private val hotbarAnimTypeValue = EaseUtils.getEnumEasingList("AnimType").displayable { hotbarEaseValue.get() }
+    private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("AnimOrder").displayable { hotbarEaseValue.get() }
     
     // rise
     private var easeAnimation: Animation? = null
