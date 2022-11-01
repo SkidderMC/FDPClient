@@ -25,5 +25,7 @@ class NCPPacketFly : FlyMode("NCPPacket") {
         mc.timer.timerSpeed = timerValue.get()
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX + x, mc.thePlayer.motionY , mc.thePlayer.motionZ + z, false))
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX + x, mc.thePlayer.motionY - 490, mc.thePlayer.motionZ + z, true))
+        mc.thePlayer.posX += x
+        mc.thePlayer.posZ += z
     }
 }
