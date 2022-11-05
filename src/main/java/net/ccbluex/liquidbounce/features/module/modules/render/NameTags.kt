@@ -38,6 +38,7 @@ class NameTags : Module() {
     private val healthBarValue = BoolValue("Bar", true)
     private val distanceValue = BoolValue("Distance", false)
     private val armorValue = BoolValue("Armor", true)
+    private val enchantValue = BoolValue("Enchant", true)
     private val potionValue = BoolValue("Potions", true)
     private val clearNamesValue = BoolValue("ClearNames", true)
     private val fontValue = FontValue("Font", Fonts.font40)
@@ -255,6 +256,32 @@ class NameTags : Module() {
                     disableBlend()
                     enableTexture2D()
                 }
+
+                if (enchantValue.get() && entity is EntityPlayer) {
+                    glPushMatrix()
+                    for (index in 0..4) {
+                        if (entity.getEquipmentInSlot(index) == null)
+                            continue
+
+                        mc.renderItem.renderItemOverlays(mc.fontRendererObj, entity.getEquipmentInSlot(index), -50 + index * 20, if (potionValue.get() && foundPotion) -42 else -22)
+                        RenderUtils.drawExhiEnchants(entity.getEquipmentInSlot(index), -50f + index * 20f, if (potionValue.get() && foundPotion) -42f else -22f)
+                    }
+
+
+                    // Disable lightning and depth test
+                    glDisable(GL_LIGHTING)
+                    glDisable(GL_DEPTH_TEST)
+
+                    glEnable(GL_LINE_SMOOTH)
+
+                    // Enable blend
+                    glEnable(GL_BLEND)
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+                    glPopMatrix()
+                }
+
+
             }
 
             "jello" -> {
