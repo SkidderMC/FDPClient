@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.ping
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.*
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager.*
@@ -264,7 +265,7 @@ class NameTags : Module() {
                             continue
 
                         mc.renderItem.renderItemOverlays(mc.fontRendererObj, entity.getEquipmentInSlot(index), -50 + index * 20, if (potionValue.get() && foundPotion) -42 else -22)
-                        RenderUtils.drawExhiEnchants(entity.getEquipmentInSlot(index), -50f + index * 20f, if (potionValue.get() && foundPotion) -42f else -22f)
+                        drawExhiEnchants(entity.getEquipmentInSlot(index), -50f + index * 20f, if (potionValue.get() && foundPotion) -42f else -22f)
                     }
 
 
