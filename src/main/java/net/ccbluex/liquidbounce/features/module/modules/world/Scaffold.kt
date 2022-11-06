@@ -141,7 +141,7 @@ class Scaffold : Module() {
             "Packet",
             "Teleport",
             "AAC3.3.9",
-            "AAC3.6.4",
+            "AAC3.6.4/Matrix",
             "AAC4.4Constant",
             "AAC4Jump",
             "Verus"
@@ -604,7 +604,7 @@ class Scaffold : Module() {
                     mc.timer.timerSpeed = 1.6f
                 }
             }
-            "aac3.6.4" -> {
+            "aac3.6.4/matrix" -> {
                 if (mc.thePlayer.ticksExisted % 4 == 1) {
                     mc.thePlayer.motionY = 0.4195464
                     mc.thePlayer.setPosition(mc.thePlayer.posX - 0.035, mc.thePlayer.posY, mc.thePlayer.posZ)
