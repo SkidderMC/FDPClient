@@ -14,17 +14,15 @@ import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.block.BlockLiquid
 import net.minecraft.block.material.Material
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
-import kotlin.math.cos
-import kotlin.math.sin
 
 @ModuleInfo(name = "Jesus", category = ModuleCategory.MOVEMENT)
 class Jesus : Module() {

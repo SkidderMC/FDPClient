@@ -10,8 +10,9 @@ import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.Value
+import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.Value
+import net.minecraft.entity.player.EntityPlayer
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -144,13 +145,18 @@ abstract class Element(
      * Called when key pressed
      */
     open fun handleKey(c: Char, keyCode: Int) {}
+
+    /**
+     * Called when damage sound received
+     */
+    open fun handleDamage(ent: EntityPlayer) {}
 }
 
 /**
  * Element info
  */
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-annotation class ElementInfo(val name: String, val blur: Boolean = false)
+annotation class ElementInfo(val name: String, val blur: Boolean = false, val single: Boolean = false, val force: Boolean = false, val disableScale: Boolean = false, val priority: Int = 0, val retrieveDamage: Boolean = false)
 
 /**
  * CustomHUD Side

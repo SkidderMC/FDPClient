@@ -10,11 +10,10 @@ import net.ccbluex.liquidbounce.font.CFontRenderer
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.*
-import net.ccbluex.liquidbounce.ui.realpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.minecraft.util.ResourceLocation
 import net.minecraft.client.renderer.GlStateManager

@@ -3,7 +3,6 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.BoolValue
 
 class ZoneCraftFly2 : FlyMode("ZoneCraft2") {
     

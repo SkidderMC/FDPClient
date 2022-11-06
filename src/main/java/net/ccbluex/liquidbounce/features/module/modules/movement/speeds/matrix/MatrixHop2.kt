@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.client.settings.GameSettings
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.features.value.BoolValue
 
 class MatrixHop2 : SpeedMode("MatrixHop2") {
     private val groundStrafe = BoolValue("${valuePrefix}GroundStrafe", false)

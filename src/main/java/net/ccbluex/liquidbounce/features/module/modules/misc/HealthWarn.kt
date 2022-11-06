@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.features.value.IntegerValue
 
 @ModuleInfo(name = "HealthWarn", category = ModuleCategory.MISC, array = false, defaultOn = true)
 class HealthWarn : Module() {

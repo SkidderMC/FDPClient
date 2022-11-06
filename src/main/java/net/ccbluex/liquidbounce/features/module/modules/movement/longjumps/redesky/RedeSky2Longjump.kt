@@ -2,8 +2,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.rede
 
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.features.value.FloatValue
 
 class RedeSky2Longjump : LongJumpMode("RedeSky2") {
     private val airSpeedValue = FloatValue("${valuePrefix}AirSpeed", 0.1F, 0.05F, 0.25F)

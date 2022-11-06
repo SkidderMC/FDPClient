@@ -69,6 +69,13 @@ public class Colors {
         }
         return color;
     }
+
+
+    public static Color astolfoRainbow(int delay,int offset, int index) {
+        double rainbowDelay = Math.ceil(System.currentTimeMillis() + (long)(delay * index)) / offset;
+        return Color.getHSBColor((double)((float)((rainbowDelay %= 360.0) / 360.0)) < 0.5 ? -((float)(rainbowDelay / 360.0)) : (float)(rainbowDelay / 360.0), 0.5F, 1.0F);
+    }
+
     public static int[] getFractionIndicies(float[] fractions, float progress) {
         int startPoint;
         int[] range = new int[2];

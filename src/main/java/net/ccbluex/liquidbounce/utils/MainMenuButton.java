@@ -5,12 +5,10 @@
  */
 package net.ccbluex.liquidbounce.utils;
 
-import net.ccbluex.liquidbounce.launch.data.modernui.mainmenu.ModernGuiMainMenu;
-import net.ccbluex.liquidbounce.launch.data.modernui.clickgui.fonts.impl.Fonts;
+import net.ccbluex.liquidbounce.ui.client.clickgui.data.modernui.mainmenu.ModernGuiMainMenu;
+import net.ccbluex.liquidbounce.ui.client.clickgui.data.modernui.clickgui.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.render.ShadowUtils;
-import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils;
 
 import java.awt.*;
 public class MainMenuButton {

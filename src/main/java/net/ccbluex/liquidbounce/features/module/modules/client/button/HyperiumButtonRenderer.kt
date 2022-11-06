@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.client.button
 
-import net.ccbluex.liquidbounce.features.module.modules.client.HudShadows
+import net.ccbluex.liquidbounce.features.module.modules.client.UIEffects
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.minecraft.client.Minecraft
@@ -21,6 +21,6 @@ class HyperiumButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button)
         var fading = 100
         fading = if (hovered) min(100, fading + hoverInc) else max(0, hoverInc - hoverInc)
         RenderUtils.drawRect(button.xPosition.toFloat(), button.yPosition.toFloat(), button.xPosition.toFloat() + button.width.toFloat(), button.yPosition.toFloat() + button.height.toFloat(), Color(0, 0, 0, (100 - (fading / 2))).rgb)
-        if (HudShadows.buttonShadowValue.equals(true)) { shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f) }
+        if (UIEffects.buttonShadowValue.equals(true)) { shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f) }
     }
 }
