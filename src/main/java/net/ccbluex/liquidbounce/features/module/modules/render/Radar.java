@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.render.Colors;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.StringConversions;
-import net.ccbluex.liquidbounce.value.FloatValue;
+import net.ccbluex.liquidbounce.features.value.FloatValue;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;

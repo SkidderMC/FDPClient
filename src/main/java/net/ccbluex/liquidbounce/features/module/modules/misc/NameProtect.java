@@ -14,8 +14,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.file.configs.FriendsConfig;
 import net.ccbluex.liquidbounce.utils.misc.StringUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.TextValue;
+import net.ccbluex.liquidbounce.features.value.BoolValue;
+import net.ccbluex.liquidbounce.features.value.TextValue;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
 @ModuleInfo(name = "NameProtect", category = ModuleCategory.CLIENT)

@@ -24,7 +24,7 @@ import net.ccbluex.liquidbounce.utils.extensions.getBlock
 import net.ccbluex.liquidbounce.utils.extensions.getEyeVec3
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.features.value.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
 import net.minecraft.client.gui.ScaledResolution

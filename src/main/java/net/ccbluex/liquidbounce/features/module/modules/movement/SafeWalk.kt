@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.features.value.BoolValue
 
 @ModuleInfo(name = "SafeWalk", category = ModuleCategory.MOVEMENT)
 class SafeWalk : Module() {

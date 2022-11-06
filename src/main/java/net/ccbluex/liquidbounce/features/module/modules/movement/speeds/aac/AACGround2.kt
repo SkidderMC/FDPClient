@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.FloatValue
 
 class AACGround2 : SpeedMode("AACGround2") {
     private val timerValue = FloatValue("${valuePrefix}Timer", 3f, 1.1f, 10f)

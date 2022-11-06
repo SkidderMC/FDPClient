@@ -15,8 +15,8 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMod
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
-import net.ccbluex.liquidbounce.value.ListValue
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB
 

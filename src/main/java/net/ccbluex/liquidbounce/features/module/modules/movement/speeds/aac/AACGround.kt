@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
 class AACGround : SpeedMode("AACGround") {

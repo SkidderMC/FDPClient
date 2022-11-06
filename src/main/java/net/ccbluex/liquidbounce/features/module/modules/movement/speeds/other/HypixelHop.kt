@@ -10,8 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.potion.Potion
-import net.ccbluex.liquidbounce.value.*
-import kotlin.math.max
+import net.ccbluex.liquidbounce.features.value.*
 import kotlin.math.roundToInt
 
 
