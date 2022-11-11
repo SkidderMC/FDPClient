@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.ui.client.clickgui.data.modernui.GuiMainMenu;
+import net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu;
 import net.ccbluex.liquidbounce.utils.StatisticsUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiGameOver;
