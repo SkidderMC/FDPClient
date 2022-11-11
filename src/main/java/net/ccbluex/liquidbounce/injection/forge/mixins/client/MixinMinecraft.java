@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
 import net.ccbluex.liquidbounce.features.special.DiscordRPC;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
+import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
@@ -33,9 +34,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Util;
+import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -202,6 +205,14 @@ public abstract class MixinMinecraft {
     @Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At("HEAD"))
     private void loadWorld(WorldClient p_loadWorld_1_, String p_loadWorld_2_, final CallbackInfo callbackInfo) {
         LiquidBounce.eventManager.callEvent(new WorldEvent(p_loadWorld_1_));
+    }
+
+    @Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;theWorld:Lnet/minecraft/client/multiplayer/WorldClient;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
+    private void clearRenderCache(CallbackInfo ci) {
+        //noinspection ResultOfMethodCallIgnored
+        MinecraftForgeClient.getRenderPass(); // Ensure class is loaded, strange accessor issue
+        MinecraftForgeClientAccessor.getRegionCache().invalidateAll();
+        MinecraftForgeClientAccessor.getRegionCache().cleanUp();
     }
 
     @Inject(method = "getRenderViewEntity", at = @At("HEAD"))
