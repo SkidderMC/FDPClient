@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.features.module
 
 import lombok.Getter
-import net.ccbluex.liquidbounce.ui.client.clickgui.data.modernui.clickgui.utils.normal.Main
-import net.ccbluex.liquidbounce.ui.client.clickgui.data.modernui.clickgui.utils.objects.Drag
-import net.ccbluex.liquidbounce.ui.client.clickgui.data.modernui.clickgui.utils.render.Scroll
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.normal.Main
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.objects.Drag
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.render.Scroll
 
 enum class ModuleCategory(val displayName: String, val configName: String, val htmlIcon: String) {
     COMBAT("%module.category.combat%", "Combat", "&#xe000;"),

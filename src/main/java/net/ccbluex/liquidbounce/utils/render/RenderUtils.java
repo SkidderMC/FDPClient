@@ -57,7 +57,7 @@ import java.util.*;
 import static akka.actor.Nobody.start;
 import static akka.actor.Nobody.stop;
 import static java.lang.Math.*;
-import static net.ccbluex.liquidbounce.ui.client.clickgui.data.modernui.clickgui.style.styles.novoline.AnimationUtil.getAnimationState;
+import static net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline.AnimationUtil.getAnimationState;
 import static net.minecraft.client.renderer.GlStateManager.disableBlend;
 import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
 import static org.lwjgl.opengl.GL11.*;

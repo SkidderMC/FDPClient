@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.button.*
-import net.ccbluex.liquidbounce.ui.client.clickgui.data.modernui.ClickGUIModule.*
+import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule.*
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager.height
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.ColorUtils

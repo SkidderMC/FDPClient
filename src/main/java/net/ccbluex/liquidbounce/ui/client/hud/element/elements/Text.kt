@@ -224,7 +224,7 @@ class Text(
             )
             RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,120).rgb)
             FontLoaders.C14.drawString(
-                LiquidBounce.CLIENT_VERSION + " | "+LiquidBounce.VERSIONTYPE, 5F, 27F,Color(255,255,255,180).rgb
+                LiquidBounce.CLIENT_VERSION, 5F, 27F,Color(255,255,255,180).rgb
             )
         }
 
