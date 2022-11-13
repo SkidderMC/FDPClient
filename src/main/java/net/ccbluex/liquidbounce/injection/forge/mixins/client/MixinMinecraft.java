@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
+import net.ccbluex.liquidbounce.features.module.modules.render.PerspectiveMod;
 import net.ccbluex.liquidbounce.features.module.modules.world.FastPlace;
 import net.ccbluex.liquidbounce.features.special.DiscordRPC;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
@@ -147,6 +148,15 @@ public abstract class MixinMinecraft {
     @Inject(method = "runTick", at = @At("HEAD"))
     private void runTick(final CallbackInfo callbackInfo) {
         StaticStorage.scaledResolution = new ScaledResolution((Minecraft) (Object) this);
+    }
+
+    @Redirect(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;thirdPersonView:I", opcode = PUTFIELD))
+    public void setThirdPersonView(GameSettings gameSettings, int value) {
+        if(PerspectiveMod.perspectiveToggled) {
+            PerspectiveMod.resetPerspective();
+        } else {
+            gameSettings.thirdPersonView = value;
+        }
     }
 
     public long getTime() {

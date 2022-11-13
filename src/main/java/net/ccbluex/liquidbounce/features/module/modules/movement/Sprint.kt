@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.potion.Potion
 
-@ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
+@ModuleInfo(name = "KeepSprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
 class Sprint : Module() {
     val jumpDirectionsValue = BoolValue("JumpDirections", false)
     val allDirectionsValue = BoolValue("AllDirections", true)
