@@ -54,6 +54,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static org.objectweb.asm.Opcodes.PUTFIELD;
+
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
 
