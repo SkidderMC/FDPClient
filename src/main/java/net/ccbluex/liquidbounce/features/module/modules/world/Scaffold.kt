@@ -831,9 +831,9 @@ class Scaffold : Module() {
             val slot = InventoryUtils.findAutoBlockBlock()
             val height = event.scaledResolution.scaledHeight
             val width = event.scaledResolution.scaledWidth
-            val w2=(FontLoaders.C16.getStringWidth(info))
+            val w2=(mc.fontRendererObj.getStringWidth(info))
             SmoothRenderUtils.drawRoundRect((width-w2-20) / 2f, height * 0.8f - 24f,(width+w2+18) / 2f,height * 0.8f + 12f,3f,Color(43,45,48).rgb)
-            FontLoaders.F30.drawCenteredString("▼",width / 2.0 + 2, height * 0.8+8,Color(43,45,48).rgb)
+            mc.fontRendererObj.drawCenteredString("▼",width / 2.0 + 2, height * 0.8+8,Color(43,45,48).rgb)
             var stack = barrier
             if (slot != -1) {
                 if (mc.thePlayer.inventory.getCurrentItem() != null) {
@@ -852,7 +852,7 @@ class Scaffold : Module() {
             RenderHelper.enableGUIStandardItemLighting()
             mc.renderItem.renderItemIntoGUI(stack, width / 2 - 10, (height * 0.8 - 20).toInt())
             RenderHelper.disableStandardItemLighting()
-            FontLoaders.C16.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
+            mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
             GlStateManager.popMatrix()
         }
     }
