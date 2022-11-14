@@ -479,6 +479,35 @@ public final class RenderUtils extends MinecraftInstance {
         return x + Fonts.fontTahomaSmall.getWidth(text) - 2F;
     }
 
+    public static void drawFilledCircle(int xx, int yy, float radius, int col) {
+        float f = (float) (col >> 24 & 255) / 255.0f;
+        float f1 = (float) (col >> 16 & 255) / 255.0f;
+        float f2 = (float) (col >> 8 & 255) / 255.0f;
+        float f3 = (float) (col & 255) / 255.0f;
+        int sections = 50;
+        double dAngle = 6.283185307179586 / sections;
+        GL11.glPushMatrix();
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glEnable(2848);
+        GL11.glBlendFunc(770, 771);
+        GL11.glBegin(6);
+        int i = 0;
+        while (i < sections) {
+            float x = (float) (radius * Math.sin(i * dAngle));
+            float y = (float) (radius * Math.cos(i * dAngle));
+            GL11.glColor4f(f1, f2, f3, f);
+            GL11.glVertex2f((float) xx + x, (float) yy + y);
+            ++i;
+        }
+        GlStateManager.color(0.0f, 0.0f, 0.0f);
+        GL11.glEnd();
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glDisable(2848);
+        GL11.glPopMatrix();
+    }
+
     public static void drawGradientRect(float left, float top, float right, float bottom, int startColor, int endColor) {
         float f = (float)(startColor >> 24 & 255) / 255.0F;
         float f1 = (float)(startColor >> 16 & 255) / 255.0F;

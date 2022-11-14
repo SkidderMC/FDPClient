@@ -219,14 +219,6 @@ public abstract class MixinMinecraft {
         LiquidBounce.eventManager.callEvent(new WorldEvent(p_loadWorld_1_));
     }
 
-    @Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;theWorld:Lnet/minecraft/client/multiplayer/WorldClient;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
-    private void clearRenderCache(CallbackInfo ci) {
-        //noinspection ResultOfMethodCallIgnored
-        MinecraftForgeClient.getRenderPass(); // Ensure class is loaded, strange accessor issue
-        MinecraftForgeClientAccessor.getRegionCache().invalidateAll();
-        MinecraftForgeClientAccessor.getRegionCache().cleanUp();
-    }
-
     @Inject(method = "getRenderViewEntity", at = @At("HEAD"))
     public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir) {
         if (RotationUtils.targetRotation != null && thePlayer != null) {
