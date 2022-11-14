@@ -832,8 +832,15 @@ class Scaffold : Module() {
             val height = event.scaledResolution.scaledHeight
             val width = event.scaledResolution.scaledWidth
             val w2=(mc.fontRendererObj.getStringWidth(info))
-            SmoothRenderUtils.drawRoundRect((width-w2-20) / 2f, height * 0.8f - 24f,(width+w2+18) / 2f,height * 0.8f + 12f,3f,Color(43,45,48).rgb)
-            mc.fontRendererObj.drawCenteredString("▼",width / 2.0f + 2f, height * 0.8f+8f,Color(43,45,48).rgb)
+            RenderUtils.drawRoundedCornerRect(
+		    (width - w2 - 20) / 2f,
+		    height * 0.8f - 24f,
+		    (width + w2 + 18) / 2f,
+		    height * 0.8f + 12f,
+		    3f,
+		    Color(43, 45, 48).rgb
+		)
+	    mc.fontRendererObj.drawCenteredString("▼",width / 2.0f + 2f, height * 0.8f+8f,Color(43,45,48).rgb)
             var stack = barrier
             if (slot != -1) {
                 if (mc.thePlayer.inventory.getCurrentItem() != null) {
