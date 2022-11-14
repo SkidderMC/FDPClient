@@ -15,5 +15,8 @@ public class NoClickDelay extends Module {
 
             mc.leftClickCounter = 0;
         }
+
     }
 }
+
+
