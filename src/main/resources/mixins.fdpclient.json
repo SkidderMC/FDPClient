@@ -14,6 +14,7 @@
     "render.MixinLayerArmorBase",
     "render.MixinRender",
     "block.MixinBlock",
+    "block.MixinBlockRedstoneTorch",
     "block.MixinBlockAnvil",
     "block.MixinBlockModelRenderer",
     "block.MixinBlockSoulSand",
@@ -89,6 +90,24 @@
     "render.MixinRenderPlayer",
     "render.MixinVisGraph",
     "render.MixinRenderManager",
-    "resources.MixinDefaultResourcePack"
+    "resources.MixinDefaultResourcePack",
+    "patcher.bugfixes.MixinBlockFluidRenderer",
+    "patcher.bugfixes.MixinClientCommandHandler",
+    "patcher.bugfixes.MixinCommandHandler",
+    "patcher.bugfixes.MixinEntityPackets",
+    "patcher.bugfixes.MixinItemModelMesher",
+    "patcher.bugfixes.MixinLazyLoadBase",
+    "patcher.bugfixes.MixinRegionRenderCache",
+    "patcher.bugfixes.MixinScoreboard",
+    "patcher.bugfixes.MixinServerAddress",
+    "patcher.bugfixes.MixinServerList",
+    "patcher.bugfixes.MixinSoundManager",
+    "patcher.performance.MixinAnvilChunkLoader",
+    "patcher.performance.MixinBlockPos",
+    "patcher.performance.MixinFluidRegistry",
+    "patcher.performance.MixinGameRulesValue",
+    "patcher.performance.MixinMinecraftServer",
+    "patcher.performance.MixinNodeProcessor",
+    "accessors.MinecraftForgeClientAccessor"
   ]
 }
