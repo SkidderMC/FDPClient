@@ -112,6 +112,11 @@ class HypixelHop : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionZ *= (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
                     
+                } else {
+                    if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                        mc.thePlayer.motionX *= (1.005 + 0.007 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionZ *= (1.005 + 0.007 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                    }
                 }
             }
             
