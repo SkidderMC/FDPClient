@@ -233,6 +233,13 @@ public abstract class MixinMinecraft {
         }
     }
 
+    @Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;theWorld:Lnet/minecraft/client/multiplayer/WorldClient;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
+    private void clearRenderCache(CallbackInfo ci) {
+        MinecraftForgeClient.getRenderPass();
+        MinecraftForgeClientAccessor.getRegionCache().invalidateAll();
+        MinecraftForgeClientAccessor.getRegionCache().cleanUp();
+    }
+
     /**
      * @author CCBlueX
      * @reason
