@@ -17,7 +17,6 @@
     "block.MixinBlockAnvil",
     "block.MixinBlockModelRenderer",
     "block.MixinBlockSoulSand",
-    "block.MixinBlockRedstoneTorch",
     "client.MixinEnumFacing",
     "client.MixinItemStack",
     "client.MixinLanguageManager",
@@ -25,7 +24,6 @@
     "client.MixinResourcePackRepository",
     "client.MixinWorldClient",
     "client.MixinGameSettings",
-    "client.MixinNBTTagCompound",
     "entity.MixinAbstractClientPlayer",
     "entity.MixinEntity",
     "entity.MixinEntityLivingBase",
@@ -57,8 +55,6 @@
     "gui.MixinGuiSpectator",
     "gui.MixinGuiTextField",
     "gui.MixinGuiGameOver",
-    "gui.MixinGuiIngameForge",
-    "gui.MixinServerSelectionList",
     "network.MixinC00Handshake",
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
@@ -93,8 +89,6 @@
     "render.MixinRenderPlayer",
     "render.MixinVisGraph",
     "render.MixinRenderManager",
-    "render.MixinModelPlayer",
-    "resources.MixinDefaultResourcePack",
-    "accessors.MinecraftForgeClientAccessor"
+    "resources.MixinDefaultResourcePack"
   ]
 }
