@@ -41,6 +41,7 @@ object AntiBot : Module() {
     private val derpValue = BoolValue("Derp", true)
     private val wasInvisibleValue = BoolValue("WasInvisible", false)
     private val validNameValue = BoolValue("ValidName", true)
+    private val hiddenNameValue = BoolValue("HiddenName", false)
     private val armorValue = BoolValue("Armor", false)
     private val pingValue = BoolValue("Ping", false)
     private val needHitValue = BoolValue("NeedHit", false)
@@ -108,6 +109,10 @@ object AntiBot : Module() {
         }
 
         if (validNameValue.get() && !entity.name.matches(regex)) {
+            return true
+        }
+        
+        if (hiddenNameValue.get() && (entity.getName().contains("\u00A7") || (entity.hasCustomName() && entity.getCustomNameTag().contains(entity.getName()))){
             return true
         }
 
