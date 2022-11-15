@@ -856,7 +856,7 @@ class Scaffold : Module() {
                     }
                 }
             }
-	    RenderUtils.drawRoundedCornerRect(width / 2 - mc.fontRendererObj.getStringWidth(info) - 2, (height * 0.6 - mc.fontRendererObj.FONT_HEIGHT * 0.5) - 1, width / 2f + mc.fontRendererObj.getStringWidth(info) + 2, (height * 0.6 + mc.fontRendererObj.FONT_HEIGHT * 0.5) + 1, 2, Color(20,20,20,90).rgb)
+
             RenderHelper.enableGUIStandardItemLighting()
             mc.renderItem.renderItemIntoGUI(stack, width / 2 - mc.fontRendererObj.getStringWidth(info), (height * 0.6 - mc.fontRendererObj.FONT_HEIGHT * 0.5).toInt())
             RenderHelper.disableStandardItemLighting()
