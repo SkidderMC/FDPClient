@@ -134,6 +134,7 @@ class Scaffold : Module() {
         "TowerMode", arrayOf(
             "Jump",
             "Motion",
+	    "Motion2",
             "ConstantMotion",
             "PlusMotion",
             "StableMotion",
@@ -531,7 +532,15 @@ class Scaffold : Module() {
                     mc.thePlayer.motionY = -0.3
                 }
             }
-	    	"motiontp" -> {
+	    "motion2" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    mc.thePlayer.motionY = 0.42
+                } else if (mc.thePlayer.motionY < 0.18) {
+                    mc.thePlayer.motionY -= 0.02
+                }
+            }
+	    "motiontp" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.42
@@ -857,6 +866,7 @@ class Scaffold : Module() {
                     }
                 }
             }
+
             RenderHelper.enableGUIStandardItemLighting()
             mc.renderItem.renderItemIntoGUI(stack, width / 2 - 10, (height * 0.8 - 20).toInt())
             RenderHelper.disableStandardItemLighting()

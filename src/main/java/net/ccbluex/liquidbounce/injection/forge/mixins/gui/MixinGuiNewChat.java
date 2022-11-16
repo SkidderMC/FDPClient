@@ -126,7 +126,7 @@ public abstract class MixinGuiNewChat {
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
             
             int minH = 1000;
-            int maxH = 0;
+            int maxH = -1000;
             
             int i = this.getLineCount();
             boolean flag = false;
