@@ -112,7 +112,7 @@ object AntiBot : Module() {
             return true
         }
         
-        if (hiddenNameValue.get() && (entity.getName().contains("\u00A7") || (entity.hasCustomName() && entity.getCustomNameTag().contains(entity.getName()))){
+        if (hiddenNameValue.get() && ( entity.getName().contains("\u00A7") || (entity.hasCustomName() && entity.getCustomNameTag().contains(entity.getName()) ))){
             return true
         }
 
