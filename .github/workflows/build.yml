@@ -23,9 +23,9 @@ jobs:
       - name: Build
         run: chmod +x ./gradlew && ./gradlew setupCiWorkspace && ./gradlew build 
       - name: Rename build artifacts
-        run: mv build/libs/FDPClient-*.jar build/libs/FDPClient-build${{ steps.vars.outputs.sha_short }}.jar
+        run: mv build/libs/FDPClient-*.jar build/libs/FDPClient-build-${{ steps.vars.outputs.sha_short }}.jar
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
         with:
           name: FDPClient
-          path: build/libs/FDPClient-build${{ steps.vars.outputs.sha_short }}.jar
+          path: build/libs/FDPClient-build-${{ steps.vars.outputs.sha_short }}.jar
