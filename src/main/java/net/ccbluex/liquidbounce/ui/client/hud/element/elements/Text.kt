@@ -17,10 +17,12 @@ import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.ping
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShadowUtils
 import net.ccbluex.liquidbounce.features.value.*
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -48,7 +50,8 @@ class Text(
     }
 
     val displayString = TextValue("DisplayText", "")
-    val textStyle = ListValue("Text-Style", arrayOf("Default", "FDP"), "Default")
+    val shadowValue = BoolValue("Shadow", false)
+    val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 8F).displayable { shadowValue.get() }
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
@@ -76,7 +79,7 @@ class Text(
     private val display: String
         get() {
             val textContent = if (displayString.get().isEmpty() && !editMode) {
-                "Text Element"
+                "Click To Add Text"
             } else {
                 displayString.get()
             }
@@ -169,9 +172,10 @@ class Text(
      */
     override fun drawElement(partialTicks: Float): Border {
         val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
+        val colorNoAlpha = Color(redValue.get(), greenValue.get(), blueValue.get())
 
         val fontRenderer = fontValue.get()
-        
+
 
         val rectColor = when (rectColorModeValue.get().lowercase()) {
             "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
@@ -184,11 +188,11 @@ class Text(
             "normal" -> {
                 RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, rectColor)
             }
-            
+
             "rounded" -> {
                 RenderUtils.drawRoundedCornerRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, 2 + (expand / 4) * rectRoundValue.get(), rectColor)
             }
-            
+
             "rnormal" -> {
                 RenderUtils.drawRect(-expand, -expand - 1, fontRenderer.getStringWidth(displayText) + expand, -expand, ColorUtils.rainbow())
                 RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, rectColor)
@@ -204,29 +208,32 @@ class Text(
                 RenderUtils.drawOutLineRect(-4.0, -4.0, (fontRenderer.getStringWidth(displayText) + 3).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 1.0, 1.0, Color(18, 18, 18).rgb, Color(0, 0, 0).rgb)
             }
         }
-        if(textStyle.get().contains("Default")) {
+        if (shadowValue.get()) {
+            GL11.glTranslated(-renderX, -renderY, 0.0)
+            GL11.glPushMatrix()
+            ShadowUtils.shadow(shadowStrength.get(), {
+                GL11.glPushMatrix()
+                GL11.glTranslated(renderX, renderY, 0.0)
                 fontRenderer.drawString(
-                    displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
+                    displayText, 0F*scale, 0F*scale, when (colorModeValue.get().lowercase()) {
                         "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
                         "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
                         "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
-                        else -> color.rgb
-                    }, shadow.get())
+                        else -> colorNoAlpha.rgb
+                    }, false)
+                GL11.glPopMatrix()
+            }, {})
+            GL11.glPopMatrix()
+            GL11.glTranslated(renderX, renderY, 0.0)
         }
+            fontRenderer.drawString(
+                displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
+                    "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
+                    "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+                    "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
+                    else -> color.rgb
+                }, shadow.get())
 
-        // maybe.
-        if(textStyle.get().contains("FDP")) {
-            FontLoaders.F40.drawString(
-                getClientName(0,3), 5F, 0F,Color(255,255,255,180).rgb
-            )
-            FontLoaders.C16.drawString(
-                getClientName(3,9), 5F + FontLoaders.F40.getStringWidth("FDP"), 13F,Color(255,255,255,180).rgb
-            )
-            RenderUtils.drawRect(5f,22.5f,70f,22.8f,Color(200,200,200,120).rgb)
-            FontLoaders.C14.drawString(
-                LiquidBounce.CLIENT_VERSION, 5F, 27F,Color(255,255,255,180).rgb
-            )
-        }
 
         if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) {
             fontRenderer.drawString("_", fontRenderer.getStringWidth(displayText) + 2F,
