@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.client.button
 import net.ccbluex.liquidbounce.utils.render.EaseUtils.easeInOutQuad
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
-import net.ccbluex.liquidbounce.features.module.modules.client.HudShadows
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
