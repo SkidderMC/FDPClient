@@ -19,7 +19,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-@SideOnly(Side.CLIENT)
 public class SkeetStyle extends GuiScreen {
     boolean previousmouse = true;
 
