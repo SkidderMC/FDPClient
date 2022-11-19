@@ -14,12 +14,10 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-public class SkeetStyle extends GuiScreen {
+public class BjurStyle extends GuiScreen {
     boolean previousmouse = true;
 
     public float moveX = 0.0F;
