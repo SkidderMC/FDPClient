@@ -32,7 +32,9 @@ class FloatElement(val savedValue: FloatValue): ValueElement<Float>(savedValue) 
         Fonts.font40.drawString("${savedValue.minimum}",
                                 x + width - 30F - sliderWidth - maxLength - minLength - valueDisplay, 
                                 y + 10F - Fonts.font40.FONT_HEIGHT / 2F + 2F, -1)
-        slider.setValue(savedValue.get().coerceIn(savedValue.minimum, savedValue.maximum), savedValue.minimum, savedValue.maximum)
+        slider.setValue(savedValue.get().coerceIn(savedValue.minimum.coerceAtMost(savedValue.maximum),
+            savedValue.minimum.coerceAtLeast(savedValue.maximum)
+        ), savedValue.minimum, savedValue.maximum)
         slider.onDraw(x + width - 20F - sliderWidth - maxLength - valueDisplay, y + 10F, sliderWidth, accentColor)
         RenderUtils.originalRoundedRect(x + width - 5F - valueDisplay, y + 2F, x + width - 10F, y + 18F, 4F, ColorManager.button.rgb)
         RenderUtils.customRounded(x + width - 18F, y + 2F, x + width - 10F, y + 18F, 0F, 4F, 4F, 0F, ColorManager.buttonOutline.rgb)
