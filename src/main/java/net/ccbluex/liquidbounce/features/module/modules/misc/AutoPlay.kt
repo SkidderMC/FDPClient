@@ -94,6 +94,8 @@ class AutoPlay : Module() {
                             clicking = false
                             clickState = 0
                             mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId, slot, 0, 0, item, 1919))
+                            var message = "gg"
+                            mc.thePlayer.sendChatMessage(message)
                         }
                     }
                 }
@@ -110,6 +112,8 @@ class AutoPlay : Module() {
                     if (modeValue.equals("hypixel") && clickState == 1 && windowId != 0 && itemName.equals("item.fireworks", ignoreCase = true)) {
                         mc.netHandler.addToSendQueue(C0EPacketClickWindow(windowId, slot, 0, 0, item, 1919))
                         mc.netHandler.addToSendQueue(C0DPacketCloseWindow(windowId))
+                        var message = "gg"
+                        mc.thePlayer.sendChatMessage(message)
                     }
                 }
             }
@@ -122,6 +126,8 @@ class AutoPlay : Module() {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/sw leave")
                             mc.thePlayer.sendChatMessage("/sw randomjoin solo")
+                            var message = "gg"
+                            mc.thePlayer.sendChatMessage(message)
                         }
                     }
                     if (text.contains("El juego ya fue iniciado.", true)) {
@@ -129,6 +135,8 @@ class AutoPlay : Module() {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/sw leave")
                             mc.thePlayer.sendChatMessage("/sw randomjoin solo")
+                            var message = "gg"
+                            mc.thePlayer.sendChatMessage(message)
                         }
                     }
                 }
@@ -136,6 +144,8 @@ class AutoPlay : Module() {
                     if (text.contains("Has click en alguna de las siguientes opciones", true)) {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/join")
+                            var message = "gg"
+                            mc.thePlayer.sendChatMessage(message)
                         }
                     }
                 }
@@ -143,6 +153,8 @@ class AutoPlay : Module() {
                     if (text.contains("Has ganado ¿Qué quieres hacer?", true)) {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/playagain")
+                            var message = "gg"
+                            mc.thePlayer.sendChatMessage(message)
                         }
                     }
                 }
@@ -152,6 +164,8 @@ class AutoPlay : Module() {
                         if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.contains("playagain")) {
                             queueAutoPlay {
                                 mc.thePlayer.sendChatMessage(clickEvent.value)
+                                var message = "gg"
+                                mc.thePlayer.sendChatMessage(message)
                             }
                         }
                     }
@@ -164,6 +178,8 @@ class AutoPlay : Module() {
                             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
                             repeat(2) {
                                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+                                var message = "gg"
+                                mc.thePlayer.sendChatMessage(message)
                             }
                         }
                     }
@@ -175,6 +191,8 @@ class AutoPlay : Module() {
                             if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.startsWith("/")) {
                                 queueAutoPlay {
                                     mc.thePlayer.sendChatMessage(clickEvent.value)
+                                    var message = "gg"
+                                    mc.thePlayer.sendChatMessage(message)
                                 }
                             }
                         }
@@ -187,6 +205,8 @@ class AutoPlay : Module() {
                             if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.startsWith("/")) {
                                 queueAutoPlay {
                                     mc.thePlayer.sendChatMessage(clickEvent.value)
+                                    var message = "gg"
+                                    mc.thePlayer.sendChatMessage(message)
                                 }
                             }
                         }
@@ -194,6 +214,8 @@ class AutoPlay : Module() {
                     if (text.contains(mc.getSession().username + " has been") || text.contains(mc.getSession().username + " died.")) {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/skywars-normal-solo")
+                            var message = "gg"
+                            mc.thePlayer.sendChatMessage(message)
                         }
                     }
                 }
@@ -203,6 +225,8 @@ class AutoPlay : Module() {
                         if (value != null && value.startsWith("/play", true)) {
                             queueAutoPlay {
                                 mc.thePlayer.sendChatMessage(value)
+                                var message = "gg"
+                                mc.thePlayer.sendChatMessage(message)
                             }
                         }
                         component.siblings.forEach {
