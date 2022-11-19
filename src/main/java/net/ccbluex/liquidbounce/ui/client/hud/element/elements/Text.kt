@@ -51,6 +51,11 @@ class Text(
 
     val displayString = TextValue("DisplayText", "")
     val shadowValue = BoolValue("Shadow", false)
+    private val newskeetRectValue = BoolValue("NewSkeetRect", false)
+    private val artemisRectValue = BoolValue("ArtemisRect", false)
+    private val fluxRectValue = BoolValue("FluxRect", false)
+    private val novolineRectValue = BoolValue("NovolineRect",false)
+    private val lineValue = BoolValue("Line", true)
     val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 8F).displayable { shadowValue.get() }
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 255, 0, 255)
@@ -182,6 +187,22 @@ class Text(
             "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()), 100, rainbowIndex.get()).rgb
             else -> Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
+        }
+        if (newskeetRectValue.get()) {
+            drawExhiRect(-4F, if (lineValue.get()) -5F else -4F, fontRenderer.getStringWidth(displayText) + 4F, fontRenderer.FONT_HEIGHT + 2F)
+        }
+        if(artemisRectValue.get()){
+            RenderUtils.drawGradientRoundedNoAlphaOutline(-4, if (lineValue.get()) -5 else -4, fontRenderer.getStringWidth(displayText) + 4, fontRenderer.FONT_HEIGHT + 2,5,ColorMixer.getMixedColor(1 * distanceValue.get(), cRainbowSecValue.get()).rgb,ColorMixer.getMixedColor((1 + 1) * distanceValue.get(), cRainbowSecValue.get()).rgb,1)
+        }
+        if(fluxRectValue.get()){
+            RenderUtils.drawRect(-2F, -6F, fontRenderer.getStringWidth(displayText) + 2F, fontRenderer.FONT_HEIGHT + 0F,Color(50,50,50,255))
+            RenderUtils.drawGradientRect(-1, -5, fontRenderer.getStringWidth(displayText) +1, -2,ColorMixer.getMixedColor(1 * distanceValue.get(), cRainbowSecValue.get()).rgb,ColorMixer.getMixedColor((-1) * distanceValue.get(), cRainbowSecValue.get()).rgb)
+        }
+        if(novolineRectValue.get()){
+            RenderUtils.drawGradientRoundedNoAlphaOutline(-4, if (lineValue.get()) -5 else -4, fontRenderer.getStringWidth(displayText) + 4, fontRenderer.FONT_HEIGHT + 2,5,Color(0,255,50,255).rgb,Color(50,0,255,255).rgb,1)
+        }
+        if (lineValue.get()) {
+            val barLength = (fontRenderer.getStringWidth(displayText) + 4F).toDouble()
         }
         val expand = fontRenderer.FONT_HEIGHT * rectExpandValue.get()
         when (rectValue.get().lowercase()) {
