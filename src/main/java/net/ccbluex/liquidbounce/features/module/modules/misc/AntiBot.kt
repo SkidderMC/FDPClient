@@ -218,7 +218,11 @@ object AntiBot : Module() {
         }
 
         if (alwaysInRadiusValue.get() && !notAlwaysInRadius.contains(entity.entityId)) {
+            if (alwaysInRadiusRemoveValue.get()) {
+                mc.theWorld.removeEntity(entity)
+            }
             return true
+            
         }
 
         return entity.name.isEmpty() || entity.name == mc.thePlayer.name
@@ -266,9 +270,6 @@ object AntiBot : Module() {
 
             if ((!livingTimeValue.get() || entity.ticksExisted > livingTimeTicksValue.get() || !alwaysInRadiusWithTicksCheckValue.get()) && !notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer.getDistanceToEntity(entity) > alwaysRadiusValue.get()) {
                 notAlwaysInRadius.add(entity.entityId)
-                if (alwaysInRadiusRemoveValue.get()) {
-                    mc.theWorld.removeEntity(entity)
-                }
             }
         }
     }
