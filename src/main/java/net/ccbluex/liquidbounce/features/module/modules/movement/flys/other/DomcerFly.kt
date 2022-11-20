@@ -10,7 +10,7 @@ import net.minecraft.block.BlockAir
 import net.minecraft.util.AxisAlignedBB
 
 class DomcerFly : FlyMode("Domcer") {
-    private var flyy = FloatValue("Fly-Y", 0.5f, 0.1f, 3f)
+    private var flyy = FloatValue("${valuePrefix}-Vertical", 0.5f, 0.1f, 3f)
     private var ticks = 0
 
     override fun onEnable() {
