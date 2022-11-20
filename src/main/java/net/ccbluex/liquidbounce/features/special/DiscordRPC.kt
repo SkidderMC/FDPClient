@@ -6,10 +6,8 @@ import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule
-import net.ccbluex.liquidbounce.utils.ServerUtils
-import net.ccbluex.liquidbounce.utils.SessionUtils
-import net.ccbluex.liquidbounce.utils.StatisticsUtils
-import net.ccbluex.liquidbounce.utils.mc
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown.Client
+import net.ccbluex.liquidbounce.utils.*
 import org.json.JSONObject
 import java.time.OffsetDateTime
 import kotlin.concurrent.thread
@@ -65,6 +63,6 @@ object DiscordRPC {
     }
 
     fun stop() {
-        ipcClient.close()
+        if (ipcClient.status == PipeStatus.CONNECTED) ipcClient.close()
     }
 }
