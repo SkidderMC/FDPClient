@@ -28,7 +28,7 @@ class TargetStrafe : Module() {
     private val thirdPersonViewValue = BoolValue("ThirdPersonView", false)
     private val renderModeValue = ListValue("RenderMode", arrayOf("Circle", "Polygon", "None"), "Polygon")
     private val lineWidthValue = FloatValue("LineWidth", 1f, 1f, 10f). displayable{!renderModeValue.equals("None")}
-    private val radiusModeValue = ListValue("RadiusMode", arrayOf("Normal", "Strict"/*, "Dynamic"*/), "Normal")
+    private val radiusModeValue = ListValue("RadiusMode", arrayOf("Normal", "Strict"), "Normal")
     private val radiusValue = FloatValue("Radius", 0.5f, 0.1f, 5.0f)
     private val ongroundValue = BoolValue("OnlyOnGround",false)
     private val holdSpaceValue = BoolValue("HoldSpace", false)
@@ -47,7 +47,6 @@ class TargetStrafe : Module() {
         if (renderModeValue.get() != "None" && canStrafe(target)) {
             if (target == null || !doStrafe) return
             val counter = intArrayOf(0)
-            val target_ = target
             if (renderModeValue.get().equals("Circle", ignoreCase = true)) {
                 GL11.glPushMatrix()
                 GL11.glDisable(3553)
@@ -63,12 +62,9 @@ class TargetStrafe : Module() {
                 GL11.glDepthMask(false)
                 GL11.glLineWidth(lineWidthValue.get())
                 GL11.glBegin(3)
-                val x =
-                    target_!!.lastTickPosX + (target_!!.posX - target_!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-                val y =
-                    target_!!.lastTickPosY + (target_!!.posY - target_!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
-                val z =
-                    target_!!.lastTickPosZ + (target_!!.posZ - target_!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                val x = target.lastTickPosX + (target.posX - target.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                val y = target.lastTickPosY + (target.posY - target.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
+                val z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
                 for (i in 0..359) {
                     val rainbow = Color(
                         Color.HSBtoRGB(
@@ -94,9 +90,6 @@ class TargetStrafe : Module() {
                 GL11.glPopMatrix()
             } else {
                 val rad = radiusValue.get()
-                if (target_ == null) {
-                    return
-                }
                 GL11.glPushMatrix()
                 GL11.glDisable(3553)
                 RenderUtils.startDrawing()
@@ -104,12 +97,9 @@ class TargetStrafe : Module() {
                 GL11.glDepthMask(false)
                 GL11.glLineWidth(lineWidthValue.get())
                 GL11.glBegin(3)
-                val x =
-                    target_!!.lastTickPosX + (target_!!.posX - target_!!.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-                val y =
-                    target_!!.lastTickPosY + (target_!!.posY - target_!!.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
-                val z =
-                    target_!!.lastTickPosZ + (target_!!.posZ - target_!!.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                val x = target.lastTickPosX + (target.posX - target.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                val y = target.lastTickPosY + (target.posY - target.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
+                val z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
                 for (i in 0..10) {
                     counter[0] = counter[0] + 1
                     val rainbow = Color(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
