@@ -19,6 +19,7 @@ public class JumpCircle extends Module {
     private final IntegerValue blueValue = new IntegerValue("Blue", 255, 0, 255);
     private final IntegerValue radiusValue = new IntegerValue("Radius", 3, 1, 5);
     private final FloatValue widthValue = new FloatValue("Width", 0.5F, 0.1F, 50F);
+    private final FloatValue strengthValue = new FloatValue("Strength", 0.02F, 0.01F, 0.2F);
     private final CopyOnWriteArrayList<Circle> circles = new CopyOnWriteArrayList<>();
     private boolean lastOnGround;
 
@@ -39,7 +40,7 @@ public class JumpCircle extends Module {
     public void onRender3D(Render3DEvent ignored) {
         if (!circles.isEmpty()) {
             for (Circle circle : circles) {
-                if (circle.add(0.02) > radiusValue.get()) {
+                if (circle.add(strengthValue.get()) > radiusValue.get()) {
                     circles.remove(circle);
                     continue;
                 }
