@@ -23,8 +23,9 @@ class AntiBlind : Module() {
     val confusionEffectValue = BoolValue("Confusion", true)
     val pumpkinEffectValue = BoolValue("Pumpkin", true)
     val fireEffectValue = FloatValue("FireAlpha", 0.3f, 0f, 1f)
-    private val brightValue = ListValue("Bright", arrayOf("None", "Gamma", "NightVision"), "Gamma")
-    val bossHealth = BoolValue("Boss-Health", true)
+    private val fullBrightValue = BoolValue("FullBright", true)
+    private val fullBrightModeValue = ListValue("FullBrightMode", arrayOf("None", "Gamma", "NightVision"), "Gamma").displayable { fullBrightValue.get() }
+    val bossHealthValue = BoolValue("Boss-Health", true)
 
     private var prevGamma = -1f
 
@@ -42,9 +43,11 @@ class AntiBlind : Module() {
     @EventTarget(ignoreCondition = true)
     fun onUpdate(event: UpdateEvent) {
         if (state || LiquidBounce.moduleManager[XRay::class.java]!!.state) {
-            when (brightValue.get().lowercase()) {
-                "gamma" -> if (mc.gameSettings.gammaSetting <= 100f) mc.gameSettings.gammaSetting++
-                "nightvision" -> mc.thePlayer.addPotionEffect(PotionEffect(Potion.nightVision.id, 1337, 1))
+            if(fullBrightValue.get()) {
+                when (fullBrightModeValue.get().lowercase()) {
+                    "gamma" -> if (mc.gameSettings.gammaSetting <= 100f) mc.gameSettings.gammaSetting++
+                    "nightvision" -> mc.thePlayer.addPotionEffect(PotionEffect(Potion.nightVision.id, 1337, 1))
+                }
             }
         } else if (prevGamma != -1f) {
             mc.gameSettings.gammaSetting = prevGamma

@@ -10,7 +10,7 @@ import net.minecraft.block.BlockAir
 import net.minecraft.util.AxisAlignedBB
 
 class DomcerFly : FlyMode("Domcer") {
-    private var flyy = FloatValue("${valuePrefix}-Vertical", 0.5f, 0.1f, 3f)
+    private var flyValue = FloatValue("${valuePrefix}Vertical", 0.5f, 0.1f, 3f)
     private var ticks = 0
 
     override fun onEnable() {
@@ -30,9 +30,9 @@ class DomcerFly : FlyMode("Domcer") {
             MovementUtils.setMotion(1.1485 + Math.random() / 50)
         } else {
             if (mc.gameSettings.keyBindJump.isKeyDown && ticks % 2 == 1) {
-                event.y = flyy.get().toDouble()
+                event.y = flyValue.get().toDouble()
                 MovementUtils.strafe(0.425f)
-                fly.launchY += flyy.get().toDouble()
+                fly.launchY += flyValue.get().toDouble()
                 mc.timer.timerSpeed = 0.95f
                 return
             }

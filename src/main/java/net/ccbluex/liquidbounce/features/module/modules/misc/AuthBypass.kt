@@ -35,11 +35,11 @@ import net.minecraft.network.play.server.S2FPacketSetSlot
 import java.util.*
 
 /***
- * @author liulihaocai (redesky / remicraft) + dinofeng (kchscraft)
+ * @author liulihaocai (redesky / remicraft)
  */
 @ModuleInfo(name = "AuthBypass", category = ModuleCategory.MISC)
 class AuthBypass : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("RedeSky", "RemiCraft", "HyCraft","KchsCraft"), "RedeSky")
+    private val modeValue = ListValue("Mode", arrayOf("RedeSky", "RemiCraft", "OldHyCraft"), "RedeSky")
     private val delayValue = IntegerValue("Delay", 1500, 100, 5000)
 
     private var skull: String? = null
@@ -88,8 +88,7 @@ class AuthBypass : Module() {
         when(modeValue.get().lowercase()) {
             "redesky" -> handleRedeSky(event)
             "remicraft" -> handleRemiCraft(event)
-            "hycraft" -> handleHyCraft(event)
-            "kchscraft" -> handleKchsCraft(event)
+            "oldhycraft" -> handleHyCraft(event)
         }
     }
 
@@ -137,18 +136,6 @@ class AuthBypass : Module() {
         }
     }
 
-
-    private fun handleKchsCraft(event: PacketEvent) {
-        if (event.packet is S02PacketChat) {
-            val raw = event.packet.chatComponent.unformattedText
-            if(raw.contains("To register you have to solve a captcha first, please use the command")) {
-                mc.thePlayer.sendChatMessage(raw.replace("To register you have to solve a captcha first, please use the command: ", ""))
-            }
-            if (raw.contains("To log in you have to solve a captcha code, please use the command")) {
-                mc.thePlayer.sendChatMessage(raw.replace("To log in you have to solve a captcha code, please use the command: ", ""))
-            }
-        }
-    }
 
     private fun handleRedeSky(event: PacketEvent) {
         val packet = event.packet

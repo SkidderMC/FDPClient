@@ -16,7 +16,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class BoostHypixelFly : FlyMode("BoostHypixel") {
+class OldBoostHypixelFly : FlyMode("OldBoostHypixel") {
     private var boostState = 1
     private var moveSpeed = 0.0
     private var lastDistance = 0.0

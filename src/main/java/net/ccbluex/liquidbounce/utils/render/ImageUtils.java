@@ -16,7 +16,7 @@ public class ImageUtils {
         for(int rgb : rgbArray){
             byteBuffer.putInt(rgb << 8 | rgb >> 24 & 255);
         }
-        byteBuffer.flip();
+//        byteBuffer.flip();
 
         return byteBuffer;
     }

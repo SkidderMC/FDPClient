@@ -22,8 +22,8 @@ import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.entity.player.EntityPlayer
 import java.io.File
 
-@ModuleInfo(name = "KillInsults", category = ModuleCategory.MISC)
-object KillInsults : Module() {
+@ModuleInfo(name = "Insult", category = ModuleCategory.MISC)
+object Insult : Module() {
 
     val modeValue = ListValue(
         "Mode", arrayOf(
