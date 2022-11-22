@@ -15,14 +15,19 @@ import net.minecraft.client.Minecraft;
 
 @ModuleInfo(name = "ToggleSprint", category = ModuleCategory.MOVEMENT)
 public final class ToggleSprint extends Module {
-
-    @EventTarget
-    public void UpdateEvent(UpdateEvent event) {
+    boolean enabled;
+    public void onEnable() {
         ((IMixinKeyBinding) Minecraft.getMinecraft().gameSettings.keyBindSprint).setPressed(true);
+        enabled = true;
+    }
+
+    public void UpdateEvent(final UpdateEvent event) {
+        ((IMixinKeyBinding) Minecraft.getMinecraft().gameSettings.keyBindSprint).setPressed(enabled);
     }
 
     @Override
     public void onDisable() {
         ((IMixinKeyBinding) Minecraft.getMinecraft().gameSettings.keyBindSprint).setPressed(false);
+        enabled = false;
     }
 }
