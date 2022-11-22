@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
@@ -156,7 +155,7 @@ public abstract class MixinGuiInGame extends MixinGui {
     @Inject(method = "renderBossHealth", at = @At("HEAD"), cancellable = true)
     private void renderBossHealth(CallbackInfo callbackInfo) {
         final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
-        if (antiBlind.getState() && antiBlind.getBossHealth().get())
+        if (antiBlind.getState() && antiBlind.getBossHealthValue().get())
             callbackInfo.cancel();
     }
 

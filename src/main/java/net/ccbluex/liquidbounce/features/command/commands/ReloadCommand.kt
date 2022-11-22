@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.command.CommandManager
-import net.ccbluex.liquidbounce.features.module.modules.misc.KillInsults
+import net.ccbluex.liquidbounce.features.module.modules.misc.Insult
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 
@@ -34,7 +34,7 @@ class ReloadCommand : Command("reload", emptyArray()) {
         Fonts.loadFonts()
         alert("§c§lReloading modules...")
         LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig, false)
-        KillInsults.loadFile()
+        Insult.loadFile()
         GuiCapeManager.load()
         alert("§c§lReloading accounts...")
         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.accountsConfig)

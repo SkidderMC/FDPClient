@@ -64,14 +64,14 @@ class Spammer : Module() {
         if (msTimer.hasTimePassed(delay)) {
             mc.thePlayer.sendChatMessage(when (modeValue.get().lowercase()) {
                 "insult" -> {
-                    replaceAbuse(KillInsults.getRandomOne())
+                    replaceAbuse(Insult.getRandomOne())
                 }
                 "orderinsult" -> {
                     lastIndex++
-                    if (lastIndex >= (KillInsults.insultWords.size - 1)) {
+                    if (lastIndex >= (Insult.insultWords.size - 1)) {
                         lastIndex = 0
                     }
-                    replaceAbuse(KillInsults.insultWords[lastIndex])
+                    replaceAbuse(Insult.insultWords[lastIndex])
                 }
                 else -> replace(messageValue.get())
             })

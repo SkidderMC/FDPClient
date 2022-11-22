@@ -11,7 +11,7 @@ import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 
-class HypixelFly : FlyMode("Hypixel") {
+class OldHypixelFly : FlyMode("OldHypixel") {
     private val boostValue = BoolValue("${valuePrefix}Boost", true)
     private val boostDelayValue = IntegerValue("${valuePrefix}BoostDelay", 1200, 0, 2000)
     private val boostTimerValue = FloatValue("${valuePrefix}BoostTimer", 1f, 0f, 5f)

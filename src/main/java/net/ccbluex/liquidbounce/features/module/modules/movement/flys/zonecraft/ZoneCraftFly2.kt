@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
+package net.ccbluex.liquidbounce.features.module.modules.movement.flys.zonecraft
 
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
