@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import kotlin.math.cos
 import kotlin.math.sin
 
-class CubeCraftFly : FlyMode("CubeCraft") {
+class OldCubeCraftFly : FlyMode("OldCubeCraft") {
     private var timer = TickTimer()
 
     override fun onUpdate(event: UpdateEvent) {

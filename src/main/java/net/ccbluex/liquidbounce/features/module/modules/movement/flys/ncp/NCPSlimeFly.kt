@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
+package net.ccbluex.liquidbounce.features.module.modules.movement.flys.ncp
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
@@ -20,18 +20,7 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import java.util.*
-
-
-/**
- * by @DinoFengz xd
- */
-
 class NCPSlimeFly : FlyMode("NCPSlime") {
-    enum class Stage {
-        WAITING,
-        FLYING,
-        INFFLYING
-    }
     private val timerBoostValue = BoolValue("${valuePrefix}DoTimer", true)
     private val swingModeValue = ListValue("${valuePrefix}SwingMode", arrayOf("Normal","Packet"), "Normal")
     private var stage = Stage.WAITING
@@ -203,5 +192,11 @@ class NCPSlimeFly : FlyMode("NCPSlime") {
         if(stage == Stage.WAITING) return
 
         event.stepHeight = 0.0f
+    }
+
+    enum class Stage {
+        WAITING,
+        FLYING,
+        INFFLYING
     }
 }
