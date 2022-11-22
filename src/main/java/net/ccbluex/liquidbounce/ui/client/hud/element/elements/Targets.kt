@@ -1323,8 +1323,15 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         // health bar
         RenderUtils.drawRoundedRect(4F, 38F, tWidth - 4F, 44F, 3F, reColorBar.darker().darker().darker().rgb)
+        Stencil.write(false)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         RenderUtils.fastRoundedRect(4F, 38F, tWidth - 4F, 44F, 3F)
-        RenderUtils.drawRoundedCornerRect(4F, 38F, 4F + (easingHealth / entity.maxHealth) * (tWidth - 8F), 44F, 3F, reColorBar.rgb)
+        GL11.glDisable(GL11.GL_BLEND)
+        Stencil.erase(true)
+        RenderUtils.drawRect(4F, 38F, 4F + (easingHealth / entity.maxHealth) * (tWidth - 8F), 44F, reColorBar.rgb)
+        Stencil.dispose()
 
         GL11.glScalef(1F, 1F, 1F)
         GL11.glTranslated(renderX, renderY, 0.0)

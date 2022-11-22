@@ -21,9 +21,11 @@ public final class ToggleSprint extends Module {
         enabled = true;
     }
 
-    @EventTarget
-    public void UpdateEvent(final UpdateEvent event) { if(enabled){ ((IMixinKeyBinding) Minecraft.getMinecraft().gameSettings.keyBindSprint).setPressed(true); } else{((IMixinKeyBinding) Minecraft.getMinecraft().gameSettings.keyBindSprint).setPressed(false);} }
+    public void UpdateEvent(final UpdateEvent event) {
+        ((IMixinKeyBinding) Minecraft.getMinecraft().gameSettings.keyBindSprint).setPressed(enabled);
+    }
 
+    @Override
     public void onDisable() {
         ((IMixinKeyBinding) Minecraft.getMinecraft().gameSettings.keyBindSprint).setPressed(false);
         enabled = false;
