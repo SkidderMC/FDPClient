@@ -48,6 +48,9 @@ class Velocity : Module() {
         "Jump",
         "Phase", "PacketPhase", "Glitch", "Spoof",
         "Legit"), "Simple")
+    
+    //spoof
+    private val spoofTimerValue = BoolValue("SpoofTimerFix", true)
 
     // Reverse
     private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F).displayable { modeValue.equals("Reverse") }
@@ -105,6 +108,8 @@ class Velocity : Module() {
     private var templateZ = 0
 
     private var isMatrixOnGround = false
+    
+    private var wasTimer = false
 
     override val tag: String
         get() = modeValue.get()
@@ -115,6 +120,11 @@ class Velocity : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        
+        if (wasTimer) {
+            mc.timer.timerSpeed = 1f
+            wasTimer = false
+        }
         if(velocityInput) {
             velocityTick++
         }else velocityTick = 0
@@ -417,6 +427,8 @@ class Velocity : Module() {
                 "spoof" -> {
                     event.cancelEvent()
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + packet.motionX / 8000.0, mc.thePlayer.posY + packet.motionY / 8000.0, mc.thePlayer.posZ + packet.motionZ / 8000.0, false))
+                    mc.timer.timerSpeed = 0.6f
+                    wasTimer = true
                 }
 
                 "packetphase" -> {
