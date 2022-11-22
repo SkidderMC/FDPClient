@@ -23,6 +23,7 @@ import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.server.S12PacketEntityVelocity
+import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import kotlin.math.cos
@@ -47,7 +48,7 @@ class Velocity : Module() {
         "Reverse", "SmoothReverse",
         "Jump",
         "Phase", "PacketPhase", "Glitch", "Spoof",
-        "Legit"), "Simple")
+        "Legit", "HytNew"), "Simple")
     
     //spoof
     private val spoofTimerValue = BoolValue("SpoofTimerFix", true)
@@ -155,7 +156,7 @@ class Velocity : Module() {
             }
 
             "jump" -> if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
-                mc.thePlayer.motionY = 0.42
+                mc.thePlayer.jump()
             }
 
             "reverse" -> {
@@ -167,6 +168,14 @@ class Velocity : Module() {
                     MovementUtils.strafe(MovementUtils.getSpeed() * reverseStrengthValue.get())
                 } else if (velocityTimer.hasTimePassed(80L)) {
                     velocityInput = false
+                }
+            }
+
+            "hytnew" -> {
+                if (mc.thePlayer.hurtTime in 1..5 && !mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                    mc.thePlayer.motionX *= 0.1599999964237213
+                    mc.thePlayer.motionZ *= 0.1599999964237213
+                    mc.thePlayer.motionY /= 1.4500000476837158
                 }
             }
 
