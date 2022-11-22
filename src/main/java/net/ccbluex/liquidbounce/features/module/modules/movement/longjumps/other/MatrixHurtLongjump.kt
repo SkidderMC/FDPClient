@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.other
+package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.matrix
 
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
