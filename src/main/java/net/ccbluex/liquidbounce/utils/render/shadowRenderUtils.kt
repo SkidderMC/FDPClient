@@ -59,7 +59,8 @@ object shadowRenderUtils {
             drawTexturedRectWithCustomAlpha(x, y - 9, width, 9f, "glowpaneltop", alpha)
             drawTexturedRectWithCustomAlpha(x, y + height, width, 9f, "glowpanelbottom", alpha)
         } else if (UIEffects.UiShadowValue.equals("None")) {
-            return; }
+            return
+        }
     }
 
     @JvmStatic
