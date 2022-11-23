@@ -44,7 +44,7 @@ class Nuker : Module() {
     private val layerValue = BoolValue("Layer", false)
     private val hitDelayValue = IntegerValue("HitDelay", 4, 0, 20)
     private val nukeValue = IntegerValue("Nuke", 1, 1, 20)
-    private val nukeDelay = IntegerValue("NukeDelay", 1, 1, 20)
+    private val nukeDelayValue = IntegerValue("NukeDelay", 1, 1, 20)
 
     private val attackedBlocks = arrayListOf<BlockPos>()
     private var currentBlock: BlockPos? = null
@@ -61,7 +61,7 @@ class Nuker : Module() {
         }
 
         nukeTimer.update()
-        if (nukeTimer.hasTimePassed(nukeDelay.get())) {
+        if (nukeTimer.hasTimePassed(nukeDelayValue.get())) {
             nuke = 0
             nukeTimer.reset()
         }

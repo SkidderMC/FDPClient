@@ -20,7 +20,7 @@ import net.minecraft.util.EnumFacing
 
 @ModuleInfo(name = "SpeedMine", category = ModuleCategory.WORLD)
 class SpeedMine : Module() {
-    private val speed = FloatValue("Speed", 1.5f, 1f, 3f)
+    private val speedValue = FloatValue("Speed", 1.5f, 1f, 3f)
     private var facing: EnumFacing? = null
     private var pos: BlockPos? = null
     private var boost = false
@@ -32,7 +32,7 @@ class SpeedMine : Module() {
             if (pos != null && boost) {
                 val blockState = mc.theWorld.getBlockState(pos) ?: return
                 damage += try {
-                    blockState.block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, pos) * speed.get()
+                    blockState.block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, pos) * speedValue.get()
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     return
