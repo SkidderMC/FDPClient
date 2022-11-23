@@ -20,7 +20,7 @@ import java.text.DecimalFormat
 
 @ModuleInfo(name = "LightningDetect", category = ModuleCategory.WORLD, array = false, defaultOn = true)
 class LightningDetect : Module() {
-    private val chatlog = BoolValue("debug", false)
+    private val debugValue = BoolValue("debug", false)
 
     private val decimalFormat = DecimalFormat("0.0")
 
@@ -29,7 +29,7 @@ class LightningDetect : Module() {
         if (event.packet is S2CPacketSpawnGlobalEntity) {
             val packet = event.packet
             if (packet.func_149053_g() != 1) return
-            if(chatlog.get()) ClientUtils.displayChatMessage("Lightning at X:${decimalFormat.format(packet.func_149051_d() / 32.0)} Y:${decimalFormat.format(packet.func_149050_e() / 32.0)} Z:${decimalFormat.format(packet.func_149049_f() / 32.0)}")
+            if(debugValue.get()) ClientUtils.displayChatMessage("Lightning at X:${decimalFormat.format(packet.func_149051_d() / 32.0)} Y:${decimalFormat.format(packet.func_149050_e() / 32.0)} Z:${decimalFormat.format(packet.func_149049_f() / 32.0)}")
             LiquidBounce.hud.addNotification(Notification(name, "Lightning at X:${decimalFormat.format(packet.func_149051_d() / 32.0)} Y:${decimalFormat.format(packet.func_149050_e() / 32.0)} Z:${decimalFormat.format(packet.func_149049_f() / 32.0)}", NotifyType.WARNING, time = 5000))
         }
     }
