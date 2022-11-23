@@ -245,7 +245,7 @@ class AntiVoid : Module() {
             }
             
             "packet" -> {
-                if (canCancel && (packet is C03PacketPlayer || packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook )) {
+                if (canCancel && (packet is C03PacketPlayer)) {
                     packetCache.add(packet)
                     event.cancelEvent()
                 }
