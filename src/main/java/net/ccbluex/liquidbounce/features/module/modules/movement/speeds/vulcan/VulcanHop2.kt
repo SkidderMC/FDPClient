@@ -13,7 +13,6 @@ class VulcanHop2 : SpeedMode("VulcanHop2") {
 
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) {
-                MovementUtils.strafe((0.2773 - (Math.random() / 2000) ).toFloat())
                 mc.thePlayer.jump()
 
                 jumpTicks = 0
@@ -21,7 +20,7 @@ class VulcanHop2 : SpeedMode("VulcanHop2") {
                 if (jumpTicks > 3)
                     mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98
 
-                MovementUtils.strafe(MovementUtils.getSpeed() * (1.1 - (Math.random() / 500)).toFloat() )
+                MovementUtils.strafe(MovementUtils.getSpeed() * (1.01 - (Math.random() / 500)).toFloat() )
             }
         } else {
             mc.timer.timerSpeed = 1.00f
