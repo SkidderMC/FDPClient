@@ -37,7 +37,7 @@ class NCPLatest : SpeedMode("NCPLatest") {
                 mc.thePlayer.jump()
                 MovementUtils.strafe(MovementUtils.getSpeed() * 1.01f)
                 if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                    MovementUtils.strafe(MovementUtils.getSpeed() * (1.0 + 0.1 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)))
+                    MovementUtils.strafe(MovementUtils.getSpeed() * (1.0 + 0.1f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)))
                 }
             }
             MovementUtils.strafe(MovementUtils.getSpeed() * 1.0035f)
