@@ -84,7 +84,7 @@ public class ClickGUIModule extends Module {
             mc.displayGuiScreen(new TenacityClickGUI());
         }  else if (styleValue.get().equalsIgnoreCase("LB+")){
             mc.displayGuiScreen(NewUi.getInstance());
-        } else if (styleValue.get().equalsIgnoreCase("Skeet")){
+        } else if (styleValue.get().equalsIgnoreCase("Bjur")){
             mc.displayGuiScreen(new BjurStyle());
         } else {
             updateStyle();
