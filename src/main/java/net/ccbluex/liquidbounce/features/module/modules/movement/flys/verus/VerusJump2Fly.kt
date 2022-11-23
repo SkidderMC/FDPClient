@@ -30,7 +30,6 @@ class VerusJump2Fly : FlyMode("VerusJump2") {
         mc.gameSettings.keyBindJump.pressed = false
         if (times < 5 && !moveBeforeDamage.get()) {
             MovementUtils.strafe(0f)
-            return
         }
         if (mc.thePlayer.onGround && times < 5) {
             times++
