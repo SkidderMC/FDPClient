@@ -43,7 +43,7 @@ class Velocity : Module() {
         "AACPush", "AACZero", "AAC4Reduce", "AAC5Reduce",
         "Redesky1", "Redesky2",
         "AAC5.2.0", "AAC5.2.0Combat",
-        "MatrixReduce", "MatrixSimple", "MatrixReverse", "MatrixSpoof", "MatrixGround",
+        "MatrixReduce", "MatrixSimple", "MatrixReverse",
         "Reverse", "SmoothReverse",
         "Jump",
         "Phase", "PacketPhase", "Glitch", "Spoof",
@@ -144,8 +144,12 @@ class Velocity : Module() {
                 }
             }
 
-            "jump" -> if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
-                mc.thePlayer.motionY = 0.42
+            "jump" -> {
+                if (mc.thePlayer.hurtTime == 8) {
+                    mc.gameSettings.keyBindJump.pressed = true
+                } else if (mc.thePlayer.hurtTime == 7) {
+                    mc.gameSettings.keyBindJump.pressed = false
+                }
             }
 
             "reverse" -> {
@@ -262,10 +266,6 @@ class Velocity : Module() {
                 }
             }
 
-            "matrixground" -> {
-                isMatrixOnGround = mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown
-                if (isMatrixOnGround) mc.thePlayer.onGround = false
-            }
 
             "glitch" -> {
                 mc.thePlayer.noClip = velocityInput
@@ -360,24 +360,9 @@ class Velocity : Module() {
                     }
                 }
 
-                "matrixground" -> {
-                    packet.motionX = (packet.getMotionX() * 0.36).toInt()
-                    packet.motionZ = (packet.getMotionZ() * 0.36).toInt()
-                    if (isMatrixOnGround) {
-                        packet.motionY = (-628.7).toInt()
-                        packet.motionX = (packet.getMotionX() * 0.6).toInt()
-                        packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
-                    }
-                }
-
                 "matrixreverse" -> {
                     packet.motionX = (packet.getMotionX() * -0.3).toInt()
                     packet.motionZ = (packet.getMotionZ() * -0.3).toInt()
-                }
-                
-                "matrixspoof" -> {
-                    event.cancelEvent()
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + packet.motionX / - 24000.0, mc.thePlayer.posY + packet.motionY / -24000.0, mc.thePlayer.posZ + packet.motionZ / 8000.0, false))
                 }
 
                 "aac4reduce" -> {
