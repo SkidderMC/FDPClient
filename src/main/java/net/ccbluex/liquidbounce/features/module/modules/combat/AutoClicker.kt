@@ -62,19 +62,19 @@ class AutoClicker : Module() {
 
             leftLastSwing = System.currentTimeMillis()
             if (legitJitter.get()) {
-               if (Random.nextInt(1, 14) <= 3) {
-                  if (Random.nextInt(1,3) == 2) {
-                      leftDelay = (Random.nextInt(98,102)).toLong()
-                  } else {
-                      leftDelay = (Random.nextInt(114,117)).toLong()
-                  }
-               } else {
-                   if (Random.nextInt(1,4) == 1) {
-                       leftDelay = (Random.nextInt(64,68)).toLong()
-                   } else {
-                       leftDelay = (Random.nextInt(84,85)).toLong()
-                   }
-               }
+                leftDelay = if (Random.nextInt(1, 14) <= 3) {
+                    if (Random.nextInt(1,3) == 2) {
+                        (Random.nextInt(98,102)).toLong()
+                    } else {
+                        (Random.nextInt(114,117)).toLong()
+                    }
+                } else {
+                    if (Random.nextInt(1,4) == 1) {
+                        (Random.nextInt(64,68)).toLong()
+                    } else {
+                        (Random.nextInt(84,85)).toLong()
+                    }
+                }
             } else {
                 leftDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
             }
