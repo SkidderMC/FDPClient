@@ -2,15 +2,16 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
+import java.awt.Desktop
 import java.io.File
 import java.nio.file.Files
 
 class ConfigCommand : Command("config", arrayOf("cfg")) {
     override fun execute(args: Array<String>) {
-        if (args.size> 1) {
+        if (args.size > 1) {
             when (args[1].lowercase()) {
                 "create" -> {
-                    if (args.size> 2) {
+                    if (args.size > 2) {
                         val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
                         if (!file.exists()) {
                             LiquidBounce.configManager.load(args[2], true)
@@ -24,7 +25,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 }
 
                 "load", "forceload" -> {
-                    if (args.size> 2) {
+                    if (args.size > 2) {
                         val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
                         if (file.exists()) {
                             LiquidBounce.configManager.load(args[2], args[1].equals("load", true))
@@ -38,7 +39,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 }
 
                 "delete" -> {
-                    if (args.size> 2) {
+                    if (args.size > 2) {
                         val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
                         if (file.exists()) {
                             file.delete()
@@ -49,6 +50,10 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                     } else {
                         chatSyntax("${args[1]} <configName>")
                     }
+                }
+
+                "openfolder" -> {
+                    Desktop.getDesktop().open(LiquidBounce.fileManager.configsDir)
                 }
 
                 "list" -> {
@@ -85,7 +90,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 }
 
                 "rename" -> {
-                    if (args.size> 3) {
+                    if (args.size > 3) {
                         val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
                         val newFile = File(LiquidBounce.fileManager.configsDir, "${args[3]}.json")
                         if (file.exists() && !newFile.exists()) {
@@ -110,7 +115,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 }
 
                 "copy" -> {
-                    if (args.size> 3) {
+                    if (args.size > 3) {
                         val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
                         val newFile = File(LiquidBounce.fileManager.configsDir, "${args[3]}.json")
                         if (file.exists() && !newFile.exists()) {
@@ -125,23 +130,6 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                         chatSyntax("${args[1]} <configName> <newName>")
                     }
                 }
-
-//                "tolegacy" -> {
-//                    if(args.size>2){
-//                        val file=File(LiquidBounce.fileManager.configsDir,"${args[2]}.json")
-//                        if(file.exists()) {
-//                            if(LiquidBounce.configManager.nowConfig.equals(args[2],true)){
-//                                LiquidBounce.configManager.save(true,true)
-//                            }
-//                            LiquidBounce.configManager.toLegacy(args[2])
-//                            chat("Successfully converted config ${args[2]}")
-//                        }else {
-//                            chat("Config ${args[2]} not exist")
-//                        }
-//                    }else{
-//                        chatSyntax("${args[1]} <configName>")
-//                    }
-//                }
             }
         } else {
             chatSyntax(arrayOf("current",
@@ -153,8 +141,9 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 "rename <configName> <newName>",
                 "reload",
                 "list",
-                "save"/*,
-                "toLegacy <configName>"*/))
+                "openfolder",
+                "save"
+            ))
         }
     }
 
@@ -162,23 +151,33 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
         if (args.isEmpty()) return emptyList()
 
         return when (args.size) {
-            1 -> listOf("current", "copy", "create", "load", "forceload", "delete", "rename", "reload", "list", "save"/*, "toLegacy"*/).filter { it.startsWith(args[0], true) }
+            1 -> listOf("current",
+                "copy",
+                "create",
+                "load",
+                "forceload",
+                "delete",
+                "rename",
+                "reload",
+                "list",
+                "openfolder",
+                "save").filter { it.startsWith(args[0], true) }
             2 -> when (args[0].lowercase()) {
-                    "delete", "load", "forceload", "rename", "copy" -> {
-                        (LiquidBounce.fileManager.configsDir.listFiles() ?: return emptyList())
-                            .filter { it.isFile }
-                            .map {
-                                val name = it.name
-                                if (name.endsWith(".json")) {
-                                    name.substring(0, name.length - 5)
-                                } else {
-                                    name
-                                }
+                "delete", "load", "forceload", "rename", "copy" -> {
+                    (LiquidBounce.fileManager.configsDir.listFiles() ?: return emptyList())
+                        .filter { it.isFile }
+                        .map {
+                            val name = it.name
+                            if (name.endsWith(".json")) {
+                                name.substring(0, name.length - 5)
+                            } else {
+                                name
                             }
-                            .filter { it.startsWith(args[1], true) }
-                    }
-                    else -> emptyList()
+                        }
+                        .filter { it.startsWith(args[1], true) }
                 }
+                else -> emptyList()
+            }
             else -> emptyList()
         }
     }

@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.utils.math;
 
 import java.math.BigDecimal;
+import java.util.Random;
+
 public final class MathUtils {
     public static double round(final double value, final double inc) {
         if (inc == 0.0) return value;
@@ -20,6 +22,11 @@ public final class MathUtils {
             else return new BigDecimal(floored)
                     .doubleValue();
         }
+    }
+
+    public static double calculateGaussianDistribution(float x, float sigma) {
+        Random random = new Random();
+        return Math.sqrt(sigma) * random.nextGaussian() + x;
     }
 
     public static float interpolateFloat(float oldValue, float newValue, double interpolationValue){
