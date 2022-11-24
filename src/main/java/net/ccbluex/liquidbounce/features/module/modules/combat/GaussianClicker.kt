@@ -44,8 +44,9 @@ class GaussianClicker : Module() {
             leftValue.get() &&
             (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) &&
             mc.playerController.curBlockDamageMP == 0F &&
-            timer.check(updateDelay())
+            timer.check(clickDelay)
         ) {
+            updateDelay()
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
         }
 
@@ -54,8 +55,9 @@ class GaussianClicker : Module() {
             !mc.thePlayer.isUsingItem &&
             rightValue.get() &&
             (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) &&
-            timer.check(updateDelay())
+            timer.check(clickDelay)
         ) {
+            updateDelay()
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode) // Minecraft Click Handling
         }
     }
@@ -81,6 +83,7 @@ class GaussianClicker : Module() {
 
     override fun onEnable() {
         timer.reset()
+        updateDelay()
     }
 
     private fun updateDelay(): Float {
