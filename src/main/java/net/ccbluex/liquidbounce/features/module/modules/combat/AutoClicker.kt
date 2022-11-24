@@ -14,7 +14,11 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.utils.math.MathUtils
+import net.ccbluex.liquidbounce.utils.timer.Timer
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemSword
@@ -23,104 +27,184 @@ import kotlin.random.Random
 @ModuleInfo(name = "AutoClicker", category = ModuleCategory.COMBAT)
 class AutoClicker : Module() {
 
-    private val maxCPSValue: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 40) {
+    private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian"), "Normal")
+
+    // Normal
+    private val normalMaxCPSValue: IntegerValue = object : IntegerValue("Normal-MaxCPS", 8, 1, 40) {
         override fun onChanged(oldValue: Int, newValue: Int) {
-            val minCPS = minCPSValue.get()
+            val minCPS = normalMinCPSValue.get()
             if (minCPS > newValue) {
                 set(minCPS)
             }
         }
     }
-    private val minCPSValue: IntegerValue = object : IntegerValue("MinCPS", 5, 1, 40) {
+    private val normalMinCPSValue: IntegerValue = object : IntegerValue("Normal-MinCPS", 5, 1, 40) {
         override fun onChanged(oldValue: Int, newValue: Int) {
-            val maxCPS = maxCPSValue.get()
+            val maxCPS = normalMaxCPSValue.get()
             if (maxCPS < newValue) {
                 set(maxCPS)
             }
         }
     }
-    private val legitJitter = BoolValue("LegitJitterCPS", false)
+    private val normalLegitJitterValue = BoolValue("Normal-LegitJitterCPS", false).displayable { modeValue.equals("Normal") }
 
-    private val rightValue = BoolValue("Right", true)
-    private val rightBlockOnlyValue = BoolValue("RightBlockOnly", false)
-    private val leftValue = BoolValue("Left", true)
-    private val leftSwordOnlyValue = BoolValue("LeftSwordOnly", false)
-    private val jitterValue = BoolValue("Jitter", false)
+    private val normalRightValue = BoolValue("Normal-Right", true).displayable { modeValue.equals("Normal") }
+    private val normalRightBlockOnlyValue = BoolValue("Normal-RightBlockOnly", false).displayable { modeValue.equals("Normal") }
+    private val normalLeftValue = BoolValue("Normal-Left", true).displayable { modeValue.equals("Normal") }
+    private val normalLeftSwordOnlyValue = BoolValue("Normal-LeftSwordOnly", false).displayable { modeValue.equals("Normal") }
+    private val normalJitterValue = BoolValue("Normal-Jitter", false).displayable { modeValue.equals("Normal") }
 
-    private var rightDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
-    private var rightLastSwing = 0L
-    private var leftDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
-    private var leftLastSwing = 0L
+    private var normalRightDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get())
+    private var normalRightLastSwing = 0L
+    private var normalLeftDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get())
+    private var normalLeftLastSwing = 0L
+
+    // Gaussian
+    private val gaussianCpsValue = IntegerValue("Gaussian-CPS", 5, 1, 40).displayable { modeValue.equals("Gaussian") }
+    private val gaussianSigmaValue = FloatValue("Gaussian-Sigma", 0.5F, 0.1F, 5F).displayable { modeValue.equals("Gaussian") }
+
+    private val gaussianRightValue = BoolValue("Gaussian-Right", true).displayable { modeValue.equals("Gaussian") }
+    private val gaussianRightBlockOnlyValue = BoolValue("Gaussian-RightBlockOnly", false).displayable { modeValue.equals("Gaussian") }
+    private val gaussianLeftValue = BoolValue("Gaussian-Left", true).displayable { modeValue.equals("Gaussian") }
+    private val gaussianLeftSwordOnlyValue = BoolValue("Gaussian-LeftSwordOnly", false).displayable { modeValue.equals("Gaussian") }
+    private val gaussianJitterValue = BoolValue("Gaussian-Jitter", false).displayable { modeValue.equals("Gaussian") }
+
+    private val gaussianTimer = Timer()
+    private var gaussianClickDelay = 0F
+
 
 
     @EventTarget
     fun onRender(event: Render3DEvent) {
         // Left click
-        if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() &&
-            System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && mc.playerController.curBlockDamageMP == 0F) {
-            KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
+        when (modeValue.get().lowercase()) {
+            "normal" -> {
+                if (mc.gameSettings.keyBindAttack.isKeyDown && normalLeftValue.get() &&
+                    System.currentTimeMillis() - normalLeftLastSwing >= normalLeftDelay && (!normalLeftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && mc.playerController.curBlockDamageMP == 0F) {
+                    KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
 
-            leftLastSwing = System.currentTimeMillis()
-            if (legitJitter.get()) {
-                leftDelay = if (Random.nextInt(1, 14) <= 3) {
-                    if (Random.nextInt(1,3) == 2) {
-                        (Random.nextInt(98,102)).toLong()
+                    normalLeftLastSwing = System.currentTimeMillis()
+                    if (normalLegitJitterValue.get()) {
+                        normalLeftDelay = if (Random.nextInt(1, 14) <= 3) {
+                            if (Random.nextInt(1,3) == 2) {
+                                (Random.nextInt(98,102)).toLong()
+                            } else {
+                                (Random.nextInt(114,117)).toLong()
+                            }
+                        } else {
+                            if (Random.nextInt(1,4) == 1) {
+                                (Random.nextInt(64,68)).toLong()
+                            } else {
+                                (Random.nextInt(84,85)).toLong()
+                            }
+                        }
                     } else {
-                        (Random.nextInt(114,117)).toLong()
-                    }
-                } else {
-                    if (Random.nextInt(1,4) == 1) {
-                        (Random.nextInt(64,68)).toLong()
-                    } else {
-                        (Random.nextInt(84,85)).toLong()
+                        normalLeftDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get())
                     }
                 }
-            } else {
-                leftDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+
+                // Right click
+                if (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && normalRightValue.get() &&
+                    System.currentTimeMillis() - normalRightLastSwing >= normalRightDelay &&
+                    (!normalRightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && normalRightValue.get()) {
+                    KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode) // Minecraft Click Handling
+
+                    normalRightLastSwing = System.currentTimeMillis()
+                    if (normalLegitJitterValue.get()) {
+                        normalRightDelay = if (Random.nextInt(1, 14) <= 3) {
+                            if (Random.nextInt(1,3) == 2) {
+                                (Random.nextInt(98,102)).toLong()
+                            } else {
+                                (Random.nextInt(114,117)).toLong()
+                            }
+                        } else {
+                            if (Random.nextInt(1,4) == 1) {
+                                (Random.nextInt(64,68)).toLong()
+                            } else {
+                                (Random.nextInt(84,85)).toLong()
+                            }
+                        }
+                    } else {
+                        normalRightDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get())
+                    }
+                }
             }
-        }
 
-        // Right click
-        if (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() &&
-            System.currentTimeMillis() - rightLastSwing >= rightDelay &&
-            (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && rightValue.get()) {
-            KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode) // Minecraft Click Handling
+            "gaussian" -> {
+                // Left click
+                if (mc.gameSettings.keyBindAttack.isKeyDown &&
+                    gaussianLeftValue.get() &&
+                    (!gaussianLeftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) &&
+                    mc.playerController.curBlockDamageMP == 0F &&
+                    gaussianTimer.check(gaussianClickDelay)
+                ) {
+                    gaussianUpdateDelay()
+                    KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
+                }
 
-            rightLastSwing = System.currentTimeMillis()
-            if (legitJitter.get()) {
-               if (Random.nextInt(1, 14) <= 3) {
-                  if (Random.nextInt(1,3) == 2) {
-                      rightDelay = (Random.nextInt(98,102)).toLong()
-                  } else {
-                      rightDelay = (Random.nextInt(114,117)).toLong()
-                  }
-               } else {
-                   if (Random.nextInt(1,4) == 1) {
-                       rightDelay = (Random.nextInt(64,68)).toLong()
-                   } else {
-                       rightDelay = (Random.nextInt(84,85)).toLong()
-                   }
-               }
-            } else {
-                rightDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+                // Right click
+                if (mc.gameSettings.keyBindUseItem.isKeyDown &&
+                    !mc.thePlayer.isUsingItem &&
+                    gaussianRightValue.get() &&
+                    (!gaussianRightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) &&
+                    gaussianTimer.check(gaussianClickDelay)
+                ) {
+                    gaussianUpdateDelay()
+                    KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode) // Minecraft Click Handling
+                }
             }
         }
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (jitterValue.get() && (leftValue.get() && mc.gameSettings.keyBindAttack.isKeyDown || rightValue.get() && mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem)) {
-            if (Random.nextBoolean()) mc.thePlayer.rotationYaw += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
+        when (modeValue.get().lowercase()) {
+            "normal" -> {
+                if (normalJitterValue.get() && (normalLeftValue.get() && mc.gameSettings.keyBindAttack.isKeyDown || normalRightValue.get() && mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem)) {
+                    if (Random.nextBoolean()) mc.thePlayer.rotationYaw += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
 
-            if (Random.nextBoolean()) {
-                mc.thePlayer.rotationPitch += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
+                    if (Random.nextBoolean()) {
+                        mc.thePlayer.rotationPitch += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
 
-                // Make sure pitch does not go in to blatent values
-                if (mc.thePlayer.rotationPitch > 90)
-                    mc.thePlayer.rotationPitch = 90F
-                else if (mc.thePlayer.rotationPitch < -90)
-                    mc.thePlayer.rotationPitch = -90F
+                        // Make sure pitch does not go in to blatent values
+                        if (mc.thePlayer.rotationPitch > 90)
+                            mc.thePlayer.rotationPitch = 90F
+                        else if (mc.thePlayer.rotationPitch < -90)
+                            mc.thePlayer.rotationPitch = -90F
+                    }
+                }
+            }
+
+            "gaussian" -> {
+                if (gaussianJitterValue.get() && (gaussianLeftValue.get() && mc.gameSettings.keyBindAttack.isKeyDown || gaussianRightValue.get() && mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem)) {
+                    if (Random.nextBoolean()) mc.thePlayer.rotationYaw += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F,
+                        1F) else RandomUtils.nextFloat(0F, 1F)
+
+                    if (Random.nextBoolean()) {
+                        mc.thePlayer.rotationPitch += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F,
+                            1F) else RandomUtils.nextFloat(0F, 1F)
+
+                        // Make sure pitch does not go in to blatant values
+                        if (mc.thePlayer.rotationPitch > 90)
+                            mc.thePlayer.rotationPitch = 90F
+                        else if (mc.thePlayer.rotationPitch < -90)
+                            mc.thePlayer.rotationPitch = -90F
+                    }
+                }
             }
         }
+    }
+
+    override fun onEnable() {
+        if(modeValue.get() == "Gaussian") {
+            gaussianUpdateDelay()
+        }
+    }
+
+    private fun gaussianUpdateDelay(): Float {
+        gaussianTimer.reset()
+        gaussianClickDelay = 1000F / (MathUtils.calculateGaussianDistribution(gaussianCpsValue.get().toFloat(), gaussianSigmaValue.get()).toFloat()
+            .coerceAtLeast(1F)) // 1000ms = 1s
+        return gaussianClickDelay
     }
 }
