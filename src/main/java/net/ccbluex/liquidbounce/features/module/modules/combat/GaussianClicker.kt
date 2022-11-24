@@ -82,13 +82,13 @@ class GaussianClicker : Module() {
     }
 
     override fun onEnable() {
-        timer.reset()
         updateDelay()
     }
 
     private fun updateDelay(): Float {
-        clickDelay = MathUtils.calculateGaussianDistribution(1F / cpsValue.get().toFloat(), sigmaValue.get()).toFloat()
-            .coerceAtLeast(0F)
+        timer.reset()
+        clickDelay = 1000F / (MathUtils.calculateGaussianDistribution(cpsValue.get().toFloat(), sigmaValue.get()).toFloat()
+            .coerceAtLeast(1F)) // 1000ms = 1s
         return clickDelay
     }
 }
