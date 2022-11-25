@@ -305,8 +305,8 @@ class NameTags : Module() {
                     healthPercent = 1F
                 }
 
-                drawRect(-width - 4F, -3F, (-width - 4F) + (maxWidth * healthPercent), 1F, hpBarColor)
-                drawRect((-width - 4F) + (maxWidth * healthPercent), -3F, width + 4F, 1F, bgColor)
+                drawRect(-width - 4F, -3F, (-width - 4F) + (maxWidth * healthPercent), 0F, hpBarColor)
+                drawRect((-width - 4F) + (maxWidth * healthPercent), -3F, width + 4F, 0F, bgColor)
 
                 // string
                 fontRenderer.drawString(tag, -width, -fontRenderer.FONT_HEIGHT * 2 - 4, Color.WHITE.rgb)
