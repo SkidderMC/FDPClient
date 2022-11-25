@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
-class VulcanHop2 : SpeedMode("VulcanHop2") {
+class VulcanHop2Speed : SpeedMode("VulcanHop2") {
 
     private var jumpTicks = 0
 
