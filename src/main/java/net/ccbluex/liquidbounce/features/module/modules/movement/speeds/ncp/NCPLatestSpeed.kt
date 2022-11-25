@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.potion.Potion
 
-class NCPLatest : SpeedMode("NCPLatest") {
+class NCPLatestSpeed : SpeedMode("NCPLatest") {
   
     private var wasSlow = false
 
