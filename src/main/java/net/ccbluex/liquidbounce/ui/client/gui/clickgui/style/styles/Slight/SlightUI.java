@@ -94,7 +94,7 @@ public class SlightUI extends GuiScreen implements GuiYesNoCallback {
             scale = 0.8F;
         }
 
-        RenderUtil.drawImage(new ResourceLocation("fdpclient/ui/clickgui/background.png"), 0, 0, (int) ((float) sr.getScaledWidth() * (1.0F / scale)), (int) ((float) sr.getScaledHeight() * (1.0F / scale)));
+        RenderUtil.drawImage(new ResourceLocation("fdpclient/ui/clickgui/slight/background.png"), 0, 0, (int) ((float) sr.getScaledWidth() * (1.0F / scale)), (int) ((float) sr.getScaledHeight() * (1.0F / scale)));
         this.opacity.interpolate((float) this.opacityx);
         boolean countMod = false;
         int[] counter = new int[1];
