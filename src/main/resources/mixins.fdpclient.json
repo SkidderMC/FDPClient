@@ -58,6 +58,7 @@
     "gui.MixinGuiGameOver",
     "network.MixinC00Handshake",
     "network.MixinNetHandlerPlayClient",
+    "network.MixinC08PacketPlayerBlockPlacement",
     "network.MixinNetworkManager",
     "performance.MixinBlock",
     "performance.MixinChunk",
