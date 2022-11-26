@@ -18,7 +18,8 @@ enum class ModuleCategory(val displayName: String, val configName: String, val h
     CLIENT("%module.category.client%", "Client", "&#xe869;"),
     WORLD("%module.category.world%", "World", "&#xe55b;"),
     MISC("%module.category.misc%", "Misc", "&#xe5d3;"),
-    EXPLOIT("%module.category.exploit%", "Exploit", "&#xe868;");
+    EXPLOIT("%module.category.exploit%", "Exploit", "&#xe868;"),
+    VIP("%module.category.vip%", "VIP", "&#xe846;"); // troll category (trolling only do not add anything that damages or harms!)
 
     var namee: String? = null
     var posX = 0
