@@ -7,8 +7,11 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.minecraft.potion.Potion
 
 class NCPLatestSpeed : SpeedMode("NCPLatest") {
+  
+    private var wasSlow = false
 
   
     override fun onEnable() {
@@ -22,8 +25,6 @@ class NCPLatestSpeed : SpeedMode("NCPLatest") {
 
     override fun onUpdate() {
       
-        mc.thePlayer.jumpMovementFactor = 0.02725f
-      
         if (mc.thePlayer.ticksExisted % 20 <= 9) {
             mc.timer.timerSpeed = 1.05f
         } else {
@@ -32,12 +33,24 @@ class NCPLatestSpeed : SpeedMode("NCPLatest") {
       
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) {
+                wasSlow = false
                 mc.thePlayer.jump()
+                MovementUtils.strafe(MovementUtils.getSpeed() * 1.01f)
+                if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                    MovementUtils.strafe(MovementUtils.getSpeed() * (1.0f + 0.1f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)))
+                }
             }
             MovementUtils.strafe(MovementUtils.getSpeed() * 1.0035f)
+            if (MovementUtils.getSpeed() < 0.277)
+                wasSlow = true
+            if (wasSlow) 
+                MovementUtils.strafe(0.277f)
+               
+            
         } else {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
+            wasSlow = true
         }
     }
 }
