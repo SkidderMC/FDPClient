@@ -3,26 +3,31 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-
-// This Made by: https://github.com/WYSI-Foundation/LiquidBouncePlus
 package net.ccbluex.liquidbounce.features.module.modules.render;
 
+import java.awt.Color;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector4d;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.EventTarget;
-import net.ccbluex.liquidbounce.event.Render2DEvent;
+import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.features.value.*;
+import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.item.ItemUtils;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.features.value.BoolValue;
-import net.ccbluex.liquidbounce.features.value.FloatValue;
-import net.ccbluex.liquidbounce.features.value.IntegerValue;
-import net.ccbluex.liquidbounce.features.value.ListValue;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -43,20 +48,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector4d;
-import java.awt.*;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 @ModuleInfo(name = "ESP2D", category = ModuleCategory.RENDER)
 public final class ESP2D extends Module {
-    
     public final BoolValue outline = new BoolValue("Outline", true);
     public final ListValue boxMode = new ListValue("Mode", new String[]{"Box", "Corners"}, "Box");
     public final BoolValue healthBar = new BoolValue("Health-bar", true);
@@ -73,6 +66,7 @@ public final class ESP2D extends Module {
     public final BoolValue tagsValue = new BoolValue("Tags", true);
     public final BoolValue tagsBGValue = new BoolValue("Tags-Background", true);
     public final BoolValue itemTagsValue = new BoolValue("Item-Tags", true);
+    public final BoolValue outlineFont = new BoolValue("OutlineFont", true);
     public final BoolValue clearNameValue = new BoolValue("Use-Clear-Name", false);
     public final BoolValue localPlayer = new BoolValue("Local-Player", true);
     public final BoolValue droppedItems = new BoolValue("Dropped-Items", false);
@@ -82,6 +76,7 @@ public final class ESP2D extends Module {
     private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
     private final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
     private final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
+    private final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
     private final FloatValue fontScaleValue = new FloatValue("Font-Scale", 0.5F, 0F, 1F);
     private final BoolValue colorTeam = new BoolValue("Team", false);
     public static List collectedEntities = new ArrayList();
@@ -106,9 +101,6 @@ public final class ESP2D extends Module {
     public final Color getColor(final Entity entity) {
         if (entity instanceof EntityLivingBase) {
             final EntityLivingBase entityLivingBase = (EntityLivingBase) entity;
-
-            if (entityLivingBase.hurtTime > 0)
-                return Color.RED;
 
             if (EntityUtils.INSTANCE.isFriend(entityLivingBase))
                 return Color.BLUE;
@@ -166,7 +158,7 @@ public final class ESP2D extends Module {
         int background = this.backgroundColor;
         float scale = 0.65F;
         float upscale = 1.0F / scale;
-        FontRenderer fr = mc.fontRendererObj;
+        FontRenderer fr = Fonts.minecraftFont;
         RenderManager renderMng = mc.getRenderManager();
         EntityRenderer entityRenderer = mc.entityRenderer;
         boolean outline = this.outline.get();
@@ -261,7 +253,7 @@ public final class ESP2D extends Module {
                             String healthDisplay = dFormat.format(entityLivingBase.getHealth()) + " §c❤";
                             String healthPercent = ((int) ((entityLivingBase.getHealth() / itemDurability) * 100F)) + "%";
                             if (healthNumber.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution)))
-                                drawScaledString(hpMode.get().equalsIgnoreCase("health") ? healthDisplay : healthPercent, posX - 4.0 - mc.fontRendererObj.getStringWidth(hpMode.get().equalsIgnoreCase("health") ? healthDisplay : healthPercent) * fontScaleValue.get(), (endPosY - textWidth) - mc.fontRendererObj.FONT_HEIGHT / 2F * fontScaleValue.get(), fontScaleValue.get(), -1);
+                                drawScaledString(hpMode.get().equalsIgnoreCase("health") ? healthDisplay : healthPercent, posX - 4.0 - Fonts.minecraftFont.getStringWidth(hpMode.get().equalsIgnoreCase("health") ? healthDisplay : healthPercent) * fontScaleValue.get(), (endPosY - textWidth) - Fonts.minecraftFont.FONT_HEIGHT / 2F * fontScaleValue.get(), fontScaleValue.get(), -1);
                             RenderUtils.newDrawRect(posX - 3.5D, posY - 0.5D, posX - 1.5D, endPosY + 0.5D, background);
                             if (armorValue > 0.0F) {
                                 int healthColor = BlendUtils.getHealthColor(armorValue, itemDurability).getRGB();
@@ -312,7 +304,7 @@ public final class ESP2D extends Module {
                                 itemDurability = (float)(maxDamage - itemStack.getItemDamage());
                                 durabilityWidth = (endPosY - posY) * (double)itemDurability / (double)maxDamage;
                                 if (armorNumber.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution)))
-                                    drawScaledString(((int) itemDurability) + "", endPosX + 4.0, (endPosY - durabilityWidth) - mc.fontRendererObj.FONT_HEIGHT / 2F * fontScaleValue.get(), fontScaleValue.get(), -1);
+                                    drawScaledString(((int) itemDurability) + "", endPosX + 4.0, (endPosY - durabilityWidth) - Fonts.minecraftFont.FONT_HEIGHT / 2F * fontScaleValue.get(), fontScaleValue.get(), -1);
                                 RenderUtils.newDrawRect(endPosX + 1.5D, posY - 0.5D, endPosX + 3.5D, endPosY + 0.5D, background);
                                 RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - durabilityWidth, new Color(0, 255, 255).getRGB());
                             }
@@ -336,8 +328,8 @@ public final class ESP2D extends Module {
                         entityLivingBase = (EntityLivingBase) entity;
                         String entName = clearNameValue.get() ? entityLivingBase.getName() : entityLivingBase.getDisplayName().getFormattedText();
                         if (tagsBGValue.get())
-                            RenderUtils.newDrawRect(posX + (endPosX - posX) / 2F - (mc.fontRendererObj.getStringWidth(entName) / 2F + 2F) * fontScaleValue.get(), posY - 1F - (mc.fontRendererObj.FONT_HEIGHT + 2F) * fontScaleValue.get(), posX + (endPosX - posX) / 2F + (mc.fontRendererObj.getStringWidth(entName) / 2F + 2F) * fontScaleValue.get(), posY - 1F + 2F * fontScaleValue.get(), 0xA0000000);
-                        drawScaledCenteredString(entName, posX + (endPosX - posX) / 2F, posY - 1F - mc.fontRendererObj.FONT_HEIGHT * fontScaleValue.get(), fontScaleValue.get(), -1);
+                            RenderUtils.newDrawRect(posX + (endPosX - posX) / 2F - (Fonts.minecraftFont.getStringWidth(entName) / 2F + 2F) * fontScaleValue.get(), posY - 1F - (Fonts.minecraftFont.FONT_HEIGHT + 2F) * fontScaleValue.get(), posX + (endPosX - posX) / 2F + (Fonts.minecraftFont.getStringWidth(entName) / 2F + 2F) * fontScaleValue.get(), posY - 1F + 2F * fontScaleValue.get(), 0xA0000000);
+                        drawScaledCenteredString(entName, posX + (endPosX - posX) / 2F, posY - 1F - Fonts.minecraftFont.FONT_HEIGHT * fontScaleValue.get(), fontScaleValue.get(), -1);
                     }
 
                     if (itemTagsValue.get()) {
@@ -346,13 +338,13 @@ public final class ESP2D extends Module {
                             if (entityLivingBase.getHeldItem() != null && entityLivingBase.getHeldItem().getItem() != null) {
                                 String itemName = entityLivingBase.getHeldItem().getDisplayName();
                                 if (tagsBGValue.get())
-                                    RenderUtils.newDrawRect(posX + (endPosX - posX) / 2F - (mc.fontRendererObj.getStringWidth(itemName) / 2F + 2F) * fontScaleValue.get(), endPosY + 1F - 2F * fontScaleValue.get(), posX + (endPosX - posX) / 2F + (mc.fontRendererObj.getStringWidth(itemName) / 2F + 2F) * fontScaleValue.get(), endPosY + 1F + (mc.fontRendererObj.FONT_HEIGHT + 2F) * fontScaleValue.get(), 0xA0000000);
+                                    RenderUtils.newDrawRect(posX + (endPosX - posX) / 2F - (Fonts.minecraftFont.getStringWidth(itemName) / 2F + 2F) * fontScaleValue.get(), endPosY + 1F - 2F * fontScaleValue.get(), posX + (endPosX - posX) / 2F + (Fonts.minecraftFont.getStringWidth(itemName) / 2F + 2F) * fontScaleValue.get(), endPosY + 1F + (Fonts.minecraftFont.FONT_HEIGHT + 2F) * fontScaleValue.get(), 0xA0000000);
                                 drawScaledCenteredString(itemName, posX + (endPosX - posX) / 2F, endPosY + 1F, fontScaleValue.get(), -1);
                             }
                         } else if (entity instanceof EntityItem) {
                             String entName = ((EntityItem) entity).getEntityItem().getDisplayName();
                             if (tagsBGValue.get())
-                                RenderUtils.newDrawRect(posX + (endPosX - posX) / 2F - (mc.fontRendererObj.getStringWidth(entName) / 2F + 2F) * fontScaleValue.get(), endPosY + 1F - 2F * fontScaleValue.get(), posX + (endPosX - posX) / 2F + (mc.fontRendererObj.getStringWidth(entName) / 2F + 2F) * fontScaleValue.get(), endPosY + 1F + (mc.fontRendererObj.FONT_HEIGHT + 2F) * fontScaleValue.get(), 0xA0000000);
+                                RenderUtils.newDrawRect(posX + (endPosX - posX) / 2F - (Fonts.minecraftFont.getStringWidth(entName) / 2F + 2F) * fontScaleValue.get(), endPosY + 1F - 2F * fontScaleValue.get(), posX + (endPosX - posX) / 2F + (Fonts.minecraftFont.getStringWidth(entName) / 2F + 2F) * fontScaleValue.get(), endPosY + 1F + (Fonts.minecraftFont.FONT_HEIGHT + 2F) * fontScaleValue.get(), 0xA0000000);
                             drawScaledCenteredString(entName, posX + (endPosX - posX) / 2F, endPosY + 1F, fontScaleValue.get(), -1);
                         }
                     }
@@ -374,12 +366,21 @@ public final class ESP2D extends Module {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, x);
         GlStateManager.scale(scale, scale, scale);
-        mc.fontRendererObj.drawStringWithShadow(text, 0, 0, color);
+        if(outlineFont.get()) {
+            Fonts.minecraftFont.drawString(text, 0 - 1, 0, Color.black.getRGB());
+            Fonts.minecraftFont.drawString(text, 0 + 1, 0, Color.black.getRGB());
+            Fonts.minecraftFont.drawString(text, 0, 0 - 1, Color.black.getRGB());
+            Fonts.minecraftFont.drawString(text, 0, 0 + 1, Color.black.getRGB());
+            Fonts.minecraftFont.drawString(text, 0, 0, color);
+        }else{
+            Fonts.minecraftFont.drawStringWithShadow(text, 0, 0, color);
+
+        }
         GlStateManager.popMatrix();
     }
 
     private void drawScaledCenteredString(String text, double x, double y, double scale, int color) {
-        drawScaledString(text, x - mc.fontRendererObj.getStringWidth(text) / 2F * scale, y, scale, color);
+        drawScaledString(text, x - Fonts.minecraftFont.getStringWidth(text) / 2F * scale, y, scale, color);
     }
 
     private void renderItemStack(ItemStack stack, double x, double y) {
@@ -391,7 +392,7 @@ public final class ESP2D extends Module {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         RenderHelper.enableGUIStandardItemLighting();
         mc.getRenderItem().renderItemAndEffectIntoGUI(stack, 0, 0);
-        mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, stack, 0, 0);
+        mc.getRenderItem().renderItemOverlays(Fonts.minecraftFont, stack, 0, 0);
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableRescaleNormal();
         GlStateManager.disableBlend();

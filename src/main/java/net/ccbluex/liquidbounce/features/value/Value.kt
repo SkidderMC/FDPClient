@@ -9,6 +9,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import java.awt.Color
+import kotlin.jvm.internal.Intrinsics
 
 abstract class Value<T>(val name: String, var value: T) {
     val default = value
@@ -86,5 +88,29 @@ abstract class Value<T>(val name: String, var value: T) {
         } else {
             false
         }
+    }
+
+    private var Expanded = false
+
+    open fun getExpanded(): Boolean {
+        return Expanded
+    }
+
+    open fun setExpanded(b: Boolean) {
+        this.Expanded
+    }
+
+    open fun isExpanded(): Boolean {
+        return Expanded
+    }
+
+
+    open fun getAwtColor(): Color {
+        return Color((this as Value<Number>).value.toInt(), true)
+    }
+
+    open fun ColorValue(name: String, value: Int) {
+        Intrinsics.checkParameterIsNotNull(name, "name")
+        ColorValue(name, value)
     }
 }

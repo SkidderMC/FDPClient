@@ -2781,6 +2781,113 @@ public final class RenderUtils extends MinecraftInstance {
         tess.gluDeleteTess();
     }
 
+
+    public static void drawNewRect(double left, double top, double right, double bottom, int color) {
+        if (left < right) {
+            double i = left;
+            left = right;
+            right = i;
+        }
+        if (top < bottom) {
+            double j = top;
+            top = bottom;
+            bottom = j;
+        }
+        float f3 = (float)(color >> 24 & 0xFF) / 255.0f;
+        float f = (float)(color >> 16 & 0xFF) / 255.0f;
+        float f1 = (float)(color >> 8 & 0xFF) / 255.0f;
+        float f2 = (float)(color & 0xFF) / 255.0f;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer vertexbuffer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
+        GlStateManager.color(f, f1, f2, f3);
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION);
+        vertexbuffer.pos(left, bottom, 0.0).endVertex();
+        vertexbuffer.pos(right, bottom, 0.0).endVertex();
+        vertexbuffer.pos(right, top, 0.0).endVertex();
+        vertexbuffer.pos(left, top, 0.0).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
+    public static void drawCheckeredBackground(final float x, float y, final float x2, final float y2) {
+        drawRect(x, y, x2, y2, getColor(16777215));
+        boolean offset = false;
+        while (y < y2) {
+            for (float x3 = x + ((offset = !offset) ? 1 : 0); x3 < x2; x3 += 2.0f) {
+                if (x3 <= x2 - 1.0f) {
+                    drawRect(x3, y, x3 + 1.0f, y + 1.0f, getColor(8421504));
+                }
+            }
+            ++y;
+        }
+    }
+
+    public static int getColor(final int color) {
+        final int r = color >> 16 & 0xFF;
+        final int g = color >> 8 & 0xFF;
+        final int b = color & 0xFF;
+        final int a = 255;
+        return (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF) | (a & 0xFF) << 24;
+    }
+
+    public static void scissor(final double x, final double y, final double width, final double height) {
+        int scaleFactor;
+        for (scaleFactor = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor(); scaleFactor < 2 && Minecraft.getMinecraft().displayWidth / (scaleFactor + 1) >= 320 && Minecraft.getMinecraft().displayHeight / (scaleFactor + 1) >= 240; ++scaleFactor) {}
+        GL11.glScissor((int)(x * scaleFactor), (int)(Minecraft.getMinecraft().displayHeight - (y + height) * scaleFactor), (int)(width * scaleFactor), (int)(height * scaleFactor));
+    }
+
+    public static void drawRoundedRectd(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color) {
+        drawRoundedRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true);
+    }
+
+    public static void drawGradientRect(final double d, final double e, final double e2, final double g, final int startColor, final int endColor) {
+        final float f = (startColor >> 24 & 0xFF) / 255.0f;
+        final float f2 = (startColor >> 16 & 0xFF) / 255.0f;
+        final float f3 = (startColor >> 8 & 0xFF) / 255.0f;
+        final float f4 = (startColor & 0xFF) / 255.0f;
+        final float f5 = (endColor >> 24 & 0xFF) / 255.0f;
+        final float f6 = (endColor >> 16 & 0xFF) / 255.0f;
+        final float f7 = (endColor >> 8 & 0xFF) / 255.0f;
+        final float f8 = (endColor & 0xFF) / 255.0f;
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
+        GlStateManager.shadeModel(7425);
+        final Tessellator tessellator = Tessellator.getInstance();
+        final WorldRenderer bufferbuilder = tessellator.getWorldRenderer();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        bufferbuilder.pos(e2, e, (double)RenderUtils.zLevel).color(f2, f3, f4, f).endVertex();
+        bufferbuilder.pos(d, e, (double)RenderUtils.zLevel).color(f2, f3, f4, f).endVertex();
+        bufferbuilder.pos(d, g, (double)RenderUtils.zLevel).color(f6, f7, f8, f5).endVertex();
+        bufferbuilder.pos(e2, g, (double)RenderUtils.zLevel).color(f6, f7, f8, f5).endVertex();
+        tessellator.draw();
+        GlStateManager.shadeModel(7424);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
+    }
+
+    public static void render(final int mode, final Runnable render) {
+        GL11.glBegin(mode);
+        render.run();
+        GL11.glEnd();
+    }
+
+    public static void setup2DRendering(final Runnable f) {
+        GL11.glEnable(3042);
+        GL11.glBlendFunc(770, 771);
+        GL11.glDisable(3553);
+        f.run();
+        GL11.glEnable(3553);
+        GlStateManager.disableBlend();
+    }
+
+
     public static void tessVertex(GLUtessellator tessellator, double[] coords) {
         tessellator.gluTessVertex(coords, 0, new VertexData(coords));
     }

@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.*;
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.Slight.SlightUI;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown.DropdownGUI;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.light.LightClickGUI;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.tenacity.TenacityClickGUI;
@@ -31,12 +32,13 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Bjur", "Glow", "Null", "Slowly", "Black", "White"}, "Classic") {
+    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Slight", "Bjur", "Glow", "Null", "Slowly", "Black", "White"}, "Classic") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
         }
     };
+
 
     public static final BoolValue backback = new BoolValue("Background Accent",true);
 
@@ -54,17 +56,8 @@ public class ClickGUIModule extends Module {
     public static final IntegerValue colorGreenValue = (IntegerValue) new IntegerValue("G", 160, 0, 255).displayable(() -> !colorRainbow.get());
     public static final IntegerValue colorBlueValue = (IntegerValue) new IntegerValue("B", 255, 0, 255).displayable(() -> !colorRainbow.get());
     public static final BoolValue fastRenderValue = new BoolValue("FastRender", false);
-
- //   private static final ListValue clickguicolormode = new ListValue("ClickGuiColor",new String[]{"Drak","White"},"Drak");
-
     public final BoolValue getClosePrevious = (BoolValue) new BoolValue("ClosePrevious",false);
 
-    public static boolean isLight (){
-       // if (clickguicolormode.get().equalsIgnoreCase("White")){
-        //    return true;
-        //}
-        return false;
-    }
 
     public static Color generateColor() {
         return colorRainbow.get() ? ColorUtils.INSTANCE.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
@@ -86,6 +79,9 @@ public class ClickGUIModule extends Module {
             mc.displayGuiScreen(NewUi.getInstance());
         } else if (styleValue.get().equalsIgnoreCase("Bjur")){
             mc.displayGuiScreen(new BjurStyle());
+        } else if (styleValue.get().contains("Slight")) {
+                mc.displayGuiScreen(new SlightUI());
+            this.setState(false);
         } else {
             updateStyle();
             mc.displayGuiScreen(modernuiLaunchOption.clickGui);
