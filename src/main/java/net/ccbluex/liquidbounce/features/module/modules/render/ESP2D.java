@@ -102,6 +102,9 @@ public final class ESP2D extends Module {
         if (entity instanceof EntityLivingBase) {
             final EntityLivingBase entityLivingBase = (EntityLivingBase) entity;
 
+            if (entityLivingBase.hurtTime > 0)
+                return Color.RED;
+
             if (EntityUtils.INSTANCE.isFriend(entityLivingBase))
                 return Color.BLUE;
 
