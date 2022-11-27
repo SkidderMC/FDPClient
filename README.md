@@ -7,7 +7,7 @@ Discord: <a href="https://dsc.gg/fdpdiscord">dsc.gg/fdpdiscord</a><br>
 </div>
 
 ## How Do I Install FDP?
-[Click for intructions](docs/INSTALLING.md)
+[Click for instructions](docs/INSTALLING.md)
 
 ## The Staff
 [Click here to find out about the team](docs/TEAM.md)
