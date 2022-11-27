@@ -15,7 +15,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Objects;
 
-public class KugouMusicAPI { // Apis from https://github.com/ecitlm/Kugou-api
+public class KugouMusicAPI {
 
     @Getter
     private static long total;
