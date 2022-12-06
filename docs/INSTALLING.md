@@ -13,5 +13,17 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 - **Step 1:** Install Java 8 [here](https://www.java.com/en/download/) (Skip if you have Java 8)
 - **Step 2:** Install Forge 1.8.9 [here](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.8.9.html) (Skip if you have Forge)
 - **Step 3:** Start Forge and then close it
-- **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (① %appdata%\\.minecraft\mods or if you are using the official launcher, click the installations tab then click the folder icon next to forge.② You cannot use PCL initiator to start!)
+- **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (① %appdata%\\.minecraft\mods or if you are using the official launcher, click the installations tab then click the folder icon next to forge.)
 - **Step 5:** Enjoy.
+
+## important note about unsafe/bad launchers
+# Tlauncher
+we realy encourage against the use of tlauncher due to it being dangerous and the devs being shady
+cite: https://youtu.be/SBTH9n6lz9o
+# PCLauncher
+bad launcher which we strongly advise you dont use
+
+## we suggest you use the offical launcher with a demo account if you dont have a premium account
+we have an alt manager that supports non premium
+
+
