@@ -115,7 +115,7 @@ public class Fonts {
     public static GameFontRenderer fontTenacityBold40;
 
     @FontDetails(fontName = "TenacityIcon30", fontSize = 30)
-    public static GameFontRenderer fontTenacityIcon30
+    public static GameFontRenderer fontTenacityIcon30;
 
     //fontTenacity35  fontTenacityBold35
 
