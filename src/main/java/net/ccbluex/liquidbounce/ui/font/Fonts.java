@@ -100,13 +100,10 @@ public class Fonts {
     public static GameFontRenderer fontJello30;
 
     @FontDetails(fontName = "Tenacity35", fontSize = 35)
+    public static GameFontRenderer fontTenacity35;
+
+    @FontDetails(fontName = "TenacityBold35", fontSize = 35)
     public static GameFontRenderer fontTenacityBold35;
-
-    @FontDetails(fontName = "TenacityBold35", fontSize = 35)
-    public static GameFontRenderer fontTenacity35;
-
-    @FontDetails(fontName = "TenacityBold35", fontSize = 35)
-    public static GameFontRenderer fontTenacity35;
 
     @FontDetails(fontName = "tenacity40", fontSize = 40)
     public static GameFontRenderer fontTenacity40;
