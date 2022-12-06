@@ -13,6 +13,7 @@ class MedusaSpeed : SpeedMode("MedusaFloat") {
 
     override fun onUpdate() {
         if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -0.4875, 0.0)).isEmpty()) {
+            launchY = mc.thePlayer.posY
             return
         }
         mc.thePlayer.motionX = 0.0
