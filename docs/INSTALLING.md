@@ -16,14 +16,3 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 - **Step 4:** Put the FDP jar in the mods folder in your Minecraft directory (① %appdata%\\.minecraft\mods or if you are using the official launcher, click the installations tab then click the folder icon next to forge.)
 - **Step 5:** Enjoy.
 
-## important note about unsafe/bad launchers
-# Tlauncher
-we realy encourage against the use of tlauncher due to it being dangerous and the devs being shady
-cite: https://youtu.be/SBTH9n6lz9o
-# PCLauncher
-bad launcher which we strongly advise you dont use
-
-## we suggest you use the offical launcher with a demo account if you dont have a premium account
-we have an alt manager that supports non premium
-
-
