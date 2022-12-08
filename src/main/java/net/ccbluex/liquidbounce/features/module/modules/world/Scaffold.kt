@@ -250,6 +250,9 @@ class Scaffold : Module() {
         lastGroundY = mc.thePlayer.posY.toInt()
         lastPlace = 2
         clickDelay = TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get())
+	delayTimer.reset()
+	zitterTimer.reset()
+	clickTimer.reset()
     }
 
     /**
