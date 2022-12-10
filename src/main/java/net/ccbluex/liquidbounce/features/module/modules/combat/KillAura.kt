@@ -211,7 +211,7 @@ class KillAura : Module() {
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
 
     // Visuals
-    private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Lies", "Circle", "None"), "Jello")
+    private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Lies", "None"), "Jello")
     private val circleValue = BoolValue("Circle", true)
     private val circleRedValue = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
     private val circleGreenValue = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
@@ -770,21 +770,6 @@ class KillAura : Module() {
                     GL11.glEnable(GL11.GL_TEXTURE_2D)
                     GL11.glPopMatrix()
                 }
-                "circle" -> {
-                    if (espAnimation > it.eyeHeight + 0.4 || espAnimation < 0) {
-                        isUp = !isUp
-                    }
-                    if (isUp) {
-                        espAnimation += 0.05 * 60 / Minecraft.getDebugFPS()
-                    } else {
-                        espAnimation -= 0.05 * 60 / Minecraft.getDebugFPS()
-                    }
-                    if (isUp) {
-                        esp(pos, circleRadiusValue.get())
-                    } else {
-                        esp(pos, circleRadiusValue.get())
-                    }
-                }
                 "sims" -> {
                     val radius = 0.15f
                     val side = 4
@@ -812,20 +797,7 @@ class KillAura : Module() {
         }
     }
 
-    /**
-     * Handle entity move
-     */
-//    @EventTarget
-//    fun onEntityMove(event: EntityMovementEvent) {
-//        val movedEntity = event.movedEntity
-//
-//        if (target == null || movedEntity != currentTarget)
-//            return
-//
-//        updateHitable()
-//    }
-
-    private fun esp(pos: Vec3, radius: Float) {
+    private fun esp(entity : EntityLivingBase, partialTicks : Float, radius : Float) {
         GL11.glPushMatrix()
         GL11.glDisable(3553)
         RenderUtils.startSmooth()
@@ -833,10 +805,13 @@ class KillAura : Module() {
         GL11.glDepthMask(false)
         GL11.glLineWidth(1.0F)
         GL11.glBegin(3)
+        val x: Double = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - mc.renderManager.viewerPosX
+        val y: Double = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - mc.renderManager.viewerPosY
+        val z: Double = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - mc.renderManager.viewerPosZ
         for (i in 0..360) {
             val rainbow = Color(Color.HSBtoRGB((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)).toFloat() % 1.0f, 0.7f, 1.0f))
             GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
-            GL11.glVertex3d(pos.xCoord + radius * cos(i * 6.283185307179586 / 45.0), pos.yCoord + espAnimation, pos.zCoord + radius * sin(i * 6.283185307179586 / 45.0))
+            GL11.glVertex3d(x + radius * cos(i * 6.283185307179586 / 45.0), y + espAnimation, z + radius * sin(i * 6.283185307179586 / 45.0))
         }
         GL11.glEnd()
         GL11.glDepthMask(true)

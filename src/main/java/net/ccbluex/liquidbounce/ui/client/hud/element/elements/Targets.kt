@@ -43,7 +43,7 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Bar", "Chill", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Bar", "Chill", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "Tenacity5", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6").displayable { modeValue.equals("Rise") }
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -326,6 +326,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "zamorozka" -> drawZamorozka(prevTarget!!)
             "arris" -> drawArris(prevTarget!!)
             "tenacity" -> drawTenacity(prevTarget!!)
+            "tenacity5" -> drawTenacity5(prevTarget!!)
             "tenacitynew" -> drawTenacityNew(prevTarget!!)
             "chill" -> drawChill(prevTarget!! as EntityPlayer)
             "remix" -> drawRemix(prevTarget!! as EntityPlayer)
@@ -1165,6 +1166,45 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRect(40f, 27f, 40f + (easingHP / target.maxHealth) * additionalWidth, 32f, ColorUtils.rainbow().rgb)
     }
 
+    private fun drawTenacity5(target: EntityLivingBase) {
+        // you wont find cedos girlfriends nudes here :(
+        val additionalWidth = Fonts.fontTenacityBold40.getStringWidth(target.name).coerceAtLeast(75)
+
+        //colours
+        val c1 = ColorUtils.interpolateColorsBackAndForth(17, 0, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
+        val c2 = ColorUtils.interpolateColorsBackAndForth(17, 90, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
+        val c3 = ColorUtils.interpolateColorsBackAndForth(17, 270, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
+        val c4 = ColorUtils.interpolateColorsBackAndForth(17, 180, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
+
+        // glow
+        GL11.glTranslated(-renderX * scale, -renderY * scale, 0.0)
+        GL11.glPushMatrix()
+        ShadowUtils.shadow(8F, { GL11.glPushMatrix(); GL11.glTranslated(renderX * scale, renderY * scale, 0.0); RoundedUtil.drawGradientRound(0f * scale, 5f * scale, 59f + additionalWidth.toFloat() * scale, 45f * scale, 6F, c1, c2, c3, c4); GL11.glPopMatrix(); }, {})
+        GL11.glPopMatrix()
+        GL11.glTranslated(renderX * scale, renderY * scale, 0.0)
+
+        // background
+        RoundedUtil.drawGradientRound(0f, 5f, 59f + additionalWidth.toFloat(), 45f, 6F, c1, c2, c3, c4);
+
+        // circle player avatar
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+        GL11.glPushMatrix()
+        GL11.glTranslatef(5f, 5f, 0f)
+        mc.textureManager.bindTexture(target.skin)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 7, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
+        RenderUtils.drawScaledCustomSizeModalCircle(5, 7, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
+        GL11.glPopMatrix()
+
+        // text
+        Fonts.fontTenacityBold40.drawCenteredString(target.name, 47 + (additionalWidth / 2f), 1f + Fonts.fontTenacityBold40.FONT_HEIGHT, Color.WHITE.rgb, false)
+        val infoStr = ((((easingHP / target.maxHealth) * 100).roundToInt()).toString() + "% - " + ((mc.thePlayer.getDistanceToEntityBox(target)).roundToInt()).toString() + "M")
+        Fonts.fontTenacity40.drawString(infoStr, 47f + ((additionalWidth - Fonts.fontTenacity40.getStringWidth(infoStr)) / 2f), 45f - (Fonts.fontTenacity40.FONT_HEIGHT), Color.WHITE.rgb, false)
+
+        //hp bar
+        RenderUtils.drawRoundedCornerRect(46f, 24f, 46f + additionalWidth, 29f, 2.5f, Color(60, 60, 60, 130).rgb)
+        RenderUtils.drawRoundedCornerRect(46f, 24f, 46f + (easingHP / target.maxHealth) * additionalWidth, 29f, 2.5f, Color(240, 240, 240, 250).rgb)
+    }
+
     private fun drawTenacityNew(target: EntityLivingBase) {
         val font = fontValue.get()
 
@@ -1940,6 +1980,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "zamorozka" -> Border(0F, 0F, 150F, 55F)
             "arris" -> Border(0F, 0F, 120F, 40F)
             "tenacity" -> Border(0F, 0F, 120F, 40F)
+            "tenacity5" -> Border(-2F, 3F, 62F + mc.thePlayer.name.let(Fonts.font40::getStringWidth).coerceAtLeast(75).toFloat(), 50F)
             "tenacitynew" -> Border(0F, 5F, 125F, 45F)
             "chill" -> Border(0F, 0F, 120F, 48F)
             "remix" -> Border(0F, 0F, 146F, 49F)
