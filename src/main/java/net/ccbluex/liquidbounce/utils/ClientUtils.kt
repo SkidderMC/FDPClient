@@ -15,7 +15,7 @@ import org.lwjgl.opengl.Display
 object
 ClientUtils : MinecraftInstance() {
     @JvmStatic
-    private val logger = LogManager.getLogger("FDPClient")
+    val logger = LogManager.getLogger("FDPClient")
 
 
     fun logInfo(msg: String) {
