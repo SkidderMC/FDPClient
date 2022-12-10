@@ -80,4 +80,8 @@ object EntityUtils : MinecraftInstance() {
     fun isMob(entity: Entity): Boolean {
         return entity is EntityMob || entity is EntitySlime || entity is EntityGhast || entity is EntityDragon
     }
+
+    fun isRendered(entityToCheck: Entity?): Boolean {
+        return mc.theWorld != null && mc.theWorld.getLoadedEntityList().contains(entityToCheck)
+    }
 }
