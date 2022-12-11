@@ -328,6 +328,17 @@ object MovementUtils : MinecraftInstance() {
         )
     }
 
+    @JvmStatic
+    fun getDirectioon(): Double {
+        var rotationYaw = mc.thePlayer.rotationYaw
+        if (mc.thePlayer.moveForward < 0f) rotationYaw += 180f
+        var forward = 1f
+        if (mc.thePlayer.moveForward < 0f) forward = -0.5f else if (mc.thePlayer.moveForward > 0f) forward = 0.5f
+        if (mc.thePlayer.moveStrafing > 0f) rotationYaw -= 90f * forward
+        if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward
+        return Math.toRadians(rotationYaw.toDouble())
+    }
+
     fun isBlockUnder(): Boolean {
         if (mc.thePlayer == null) return false
         if (mc.thePlayer.posY < 0.0) {

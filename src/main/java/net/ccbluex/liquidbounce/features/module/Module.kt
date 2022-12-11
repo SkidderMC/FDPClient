@@ -22,6 +22,7 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.Translate
 import net.ccbluex.liquidbounce.features.value.Value
 import org.lwjgl.input.Keyboard
+import java.util.ArrayList
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
@@ -30,6 +31,9 @@ open class Module : MinecraftInstance(), Listenable {
     var expanded: Boolean = false
     val animation: AnimationHelper
     var name: String
+    private var suffix: String? = null
+    private val properties: List<Value<*>> = ArrayList<Value<*>>()
+    var toggled = false
     var localizedName = ""
         get() = field.ifEmpty { name }
     var description: String
@@ -167,6 +171,7 @@ open class Module : MinecraftInstance(), Listenable {
             }
         }
 
+
     // Tag
     open val tag: String?
         get() = null
@@ -184,6 +189,32 @@ open class Module : MinecraftInstance(), Listenable {
      */
     fun toggle() {
         state = !state
+    }
+    open fun getSuffix(): String? {
+        return suffix
+    }
+
+    open fun setSuffix(suffix: String?) {
+        this.suffix = suffix
+    }
+
+    open fun getProperties(): List<Value<*>?>? {
+        return properties
+    }
+
+    open fun hasMode(): Boolean {
+        return suffix != null
+    }
+    open fun isToggled(): Boolean {
+        return toggled
+    }
+    open fun toggleSilent() {
+        this.toggled = !this.toggled
+        if (this.toggled) {
+            onEnable()
+        } else {
+            onDisable()
+        }
     }
 
     /**
