@@ -102,9 +102,6 @@ public final class ESP2D extends Module {
         if (entity instanceof EntityLivingBase) {
             final EntityLivingBase entityLivingBase = (EntityLivingBase) entity;
 
-            if (entityLivingBase.hurtTime > 0)
-                return Color.RED;
-
             if (EntityUtils.INSTANCE.isFriend(entityLivingBase))
                 return Color.BLUE;
 
@@ -132,6 +129,8 @@ public final class ESP2D extends Module {
         switch (colorModeValue.get()) {
             case "Custom":
                 return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
+            case "Rainbow":
+                return new Color(RenderUtils.getRainbowOpaque(mixerSecondsValue.get(), saturationValue.get(), brightnessValue.get(), 0));
             case "Slowly":
                 return ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get());
             default:
@@ -364,17 +363,20 @@ public final class ESP2D extends Module {
     private boolean isHovering(double minX, double maxX, double minY, double maxY, ScaledResolution sc) {
         return sc.getScaledWidth() / 2 >= minX && sc.getScaledWidth() / 2 < maxX && sc.getScaledHeight() / 2 >= minY && sc.getScaledHeight() / 2 < maxY;
     }
+    public void drawOutlineStringWithoutGL(String s,float x , float y, int color,FontRenderer fontRenderer) {
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 - 1), (int) (y * 2), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 + 1), (int) (y * 2), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 - 1), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 + 1), Color.BLACK.getRGB());
+        fontRenderer.drawString(s, (int) (x * 2), (int) (y * 2), color);
+    }
 
     private void drawScaledString(String text, double x, double y, double scale, int color) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, x);
         GlStateManager.scale(scale, scale, scale);
         if(outlineFont.get()) {
-            Fonts.minecraftFont.drawString(text, 0 - 1, 0, Color.black.getRGB());
-            Fonts.minecraftFont.drawString(text, 0 + 1, 0, Color.black.getRGB());
-            Fonts.minecraftFont.drawString(text, 0, 0 - 1, Color.black.getRGB());
-            Fonts.minecraftFont.drawString(text, 0, 0 + 1, Color.black.getRGB());
-            Fonts.minecraftFont.drawString(text, 0, 0, color);
+            drawOutlineStringWithoutGL(text, 0, 0, color,mc.fontRendererObj);
         }else{
             Fonts.minecraftFont.drawStringWithShadow(text, 0, 0, color);
 
