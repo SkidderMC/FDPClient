@@ -47,7 +47,9 @@ class FastUse : Module() {
     private fun stopUsing() {
         if (viaFixValue.get()) {
             sentPacket = true
-            mc.thePlayer.itemInUseCount = 10
+            if (mc.thePlayer.itemInUseCount < 10) {
+                mc.thePlayer.itemInUseCount = 20
+            }
         } else {
             sentPacket = false
             mc.playerController.onStoppedUsingItem(mc.thePlayer)
@@ -72,7 +74,9 @@ class FastUse : Module() {
         lastState = mc.thePlayer.isUsingItem
         
         if (viaFixValue.get() && sentPacket) {
-            mc.thePlayer.itemInUseCount = 10
+            if (mc.thePlayer.itemInUseCount < 10) {
+                mc.thePlayer.itemInUseCount = 20
+            }
             return
         }
 
@@ -154,7 +158,9 @@ class FastUse : Module() {
             }
             if (mc.thePlayer.itemInUseDuration >= 30 && viaFixValue.get()) {
                 sentPacket = true
-                mc.thePlayer.itemInUseCount = 10
+                if (mc.thePlayer.itemInUseCount < 10) {
+                    mc.thePlayer.itemInUseCount = 20
+                }
             }
         }
     }
