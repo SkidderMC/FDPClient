@@ -27,23 +27,23 @@ class VulcanYPort2Speed : SpeedMode("VulcanYPort2") {
             wasTimer = false
         }
         if (portSwitcher > 1) {
-			      mc.thePlayer.motionY = -0.2784
-			      mc.timer.timerSpeed = 1.5
+            mc.thePlayer.motionY = -0.2784
+            mc.timer.timerSpeed = 1.5
             wasTimer = true
-			      if(portSwitcher > 1) {
-				        Switcher = 0
-			      }
-		    }
+            if(portSwitcher > 1) {
+                Switcher = 0
+            }
+        }
         if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
-			      mc.thePlayer.jump()
-			      MovementUtils.INSTANCE.strafe()
-			      if(portSwitcher >= 1) {
-				        mc.thePlayer.motionY = 0.2
-				        mc.timer.timerSpeed = 1.5f
-			      }
-			      portSwitcher++
-		    }else if(MovementUtils.getSpeed() < 0.225){
-			      MovementUtils.strafe(0.225f)
-		    }
+            mc.thePlayer.jump()
+            MovementUtils.INSTANCE.strafe()
+            if(portSwitcher >= 1) {
+                mc.thePlayer.motionY = 0.2
+                mc.timer.timerSpeed = 1.5f
+            }
+            portSwitcher++
+        }else if(MovementUtils.getSpeed() < 0.225){
+            MovementUtils.strafe(0.225f)
+        }
     }
 }
