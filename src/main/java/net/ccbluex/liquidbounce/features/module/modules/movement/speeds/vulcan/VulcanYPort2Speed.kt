@@ -28,7 +28,7 @@ class VulcanYPort2Speed : SpeedMode("VulcanYPort2") {
         }
         if (portSwitcher > 1) {
             mc.thePlayer.motionY = -0.2784
-            mc.timer.timerSpeed = 1.5
+            mc.timer.timerSpeed = 1.5f
             wasTimer = true
             if(portSwitcher > 1) {
                 portSwitcher = 0
