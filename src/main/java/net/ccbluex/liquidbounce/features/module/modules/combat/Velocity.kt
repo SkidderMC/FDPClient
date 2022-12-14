@@ -174,9 +174,11 @@ class Velocity : Module() {
     fun onStep(event: StepEvent) {
         mode.onStep(event)
     }
-
     override val tag: String
-        get() = modeValue.get()
+        get() = if (modeValue.get() == "Simple")
+            "${horizontalValue.get()}% ${verticalValue.get()}%"
+        else
+            modeValue.get()
 
     /**
      * 读取mode中的value并和本体中的value合并
