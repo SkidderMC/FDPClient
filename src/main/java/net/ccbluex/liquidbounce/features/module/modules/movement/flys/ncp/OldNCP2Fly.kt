@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
-class NCPFly : FlyMode("NCP") {
+class OldNCP2Fly : FlyMode("OldNCP2") {
     private val motionValue = FloatValue("${valuePrefix}Motion", 0f, 0f, 1f)
 
     override fun onEnable() {

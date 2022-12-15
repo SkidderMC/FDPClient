@@ -114,7 +114,7 @@ class NCPSlimeFly : FlyMode("NCPSlime") {
 
                         if(slot == -1) {
                             fly.state = false
-                            LiquidBounce.hud.addNotification(Notification("BlocksMCFly", "U need a slime blocks to use this fly", NotifyType.ERROR, 1000))
+                            LiquidBounce.hud.addNotification(Notification("NCPSlimeFly", "U need a slime blocks to use this fly", NotifyType.ERROR, 1000))
                             return
                         }
 
