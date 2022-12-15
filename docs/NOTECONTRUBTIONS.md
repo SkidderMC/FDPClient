@@ -25,8 +25,9 @@ We welcome contributions, but you have to follow the following rules in order fo
 You can make a pull request [here](https://github.com/SkidderMC/FDPClient/issues)!
 
 ### Language and Code Quality
-Your code needs to be able to be built, also please ensure your code has little to no bugs.
-You also need to use kotlin features to make coding easier and faster, so please use kotlin and make sure you pass the [Detekt](https://github.com/detekt/detekt) code quality check, if you can, make sure to use kotlin features, because we will never merge "shit-code".
+Your code needs to be able to be compiled, and also make sure that your code has little to no bugs.
+
+You also need to use kotlin features to make coding more accessible and faster, so please use kotlin and make sure you pass the [Detekt](https://github.com/detekt/detekt) code quality check, since we never merge "shit-code".
 
 #### Kotlin Features
 If applicable please use kotlin since it is more human readable, we have provided an example below of kotlin:
@@ -47,8 +48,9 @@ Timer().schedule(object : TimerTask() {
 ~~~
 
 ### About Skidding
-Please use original code if you can and do not directly steal code, however we welcome skidding with a packet logger or anything similar in order to skid from a closed source client, and making the cheating community more open!
+Please use original code if you can, and do not directly steal code. However, we allow you to skid code, using a packet logger or any similar tool (Deobfuscators, decompilers, etc.) in order to skid from a closed source client, making the cheating community more open!
 
 ### Useless Features
-Useless features are features only you think are useful, and/or features that can be added with a config change.  
-Like the "Timer" option to InfiniteAura, this feature can be added by binding Timer to the same key as the one in InfiniteAura, or by using the macro system in FDPClient.
+Useless features are features only you think are useful, and/or features that can be added with a config change.
+
+Like the "Timer" option for InfiniteAura, this feature can be added by binding Timer to the same key as the one in InfiniteAura or using the macro system in FDPClient.
