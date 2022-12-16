@@ -38,4 +38,8 @@ class LatestNCP : FlyMode("LatestNCP") {
         }
     }
 
+    override fun onDisable() {
+        if(blockPos != null) mc.theWorld.destroyBlock(blockPos, false)
+    }
+
 }
