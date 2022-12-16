@@ -13,11 +13,13 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.ListValue
 import kotlin.math.cos
 import kotlin.math.sin
 
 @ModuleInfo(name = "BoatFly", category = ModuleCategory.MOVEMENT)
 class BoatFly : Module() {
+    private val modeValue = ListValue("Mode", arrayOf("Motion", "Clip", "Velocity"), "Motion")
     private val speedValue = FloatValue("Speed", 0.3f, 0.0f, 1.0f)
 
     override fun onEnable() {
@@ -29,14 +31,25 @@ class BoatFly : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(!mc.thePlayer.isRiding) return
-        ClientUtils.displayChatMessage("Hi")
 
         val vehicle = mc.thePlayer.ridingEntity
-            vehicle.setVelocity(-sin(MovementUtils.direction) * speedValue.get(), if(mc.gameSettings.keyBindJump.pressed) speedValue.get().toDouble() else vehicle.motionY, cos(MovementUtils.direction) * speedValue.get())
-    }
+        val x = -sin(MovementUtils.direction) * speedValue.get()
+        val z = cos(MovementUtils.direction) * speedValue.get()
 
-    /**
-     * 读取mode中的value并和本体中的value合并
-     * 所有的value必须在这个之前初始化
-     */
+        when (modeValue.get().lowercase()) {
+            "motion" -> {
+                vehicle.motionX = x
+                vehicle.motionY = (if(mc.gameSettings.keyBindJump.pressed) speedValue.get() else 0).toDouble()
+                vehicle.motionZ = z
+            }
+
+            "clip" -> {
+                vehicle.setPosition(vehicle.posX + x , vehicle.posY + (if (mc.gameSettings.keyBindJump.pressed) speedValue.get() else 0).toDouble() , vehicle.posZ + z)
+            }
+
+            "velocity" -> {
+                vehicle.addVelocity(x, if(mc.gameSettings.keyBindJump.pressed) speedValue.get().toDouble() else vehicle.motionY, z)
+            }
+        }
+    }
 }
