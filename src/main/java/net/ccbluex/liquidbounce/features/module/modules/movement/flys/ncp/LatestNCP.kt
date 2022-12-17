@@ -12,34 +12,30 @@ import net.minecraft.util.BlockPos
 class LatestNCP : FlyMode("LatestNCP") {
     private val speedValue = FloatValue("Speed", 15f, 10f, 20f)
     private val timerValue = FloatValue("Timer", 0.8F , 0.5f , 1.0f)
-    private var blockPos: BlockPos? = null
-    private var setBlocks = false
     private var jumped = false
 
     override fun onEnable() {
-        blockPos = null
-        setBlocks = false
-        jumped = false
-    }
-
-    override fun onUpdate(event: UpdateEvent) {
-        if(!setBlocks) {
-            blockPos = BlockPos(mc.thePlayer.posX , mc.thePlayer.posY + 2, mc.thePlayer.posZ)
-            mc.theWorld.setBlockState(blockPos, Blocks.barrier.defaultState)
-            setBlocks = true
+        if(!mc.thePlayer.onGround) {
+            fly.state = false
+            //alert
         } else {
-            mc.timer.timerSpeed = timerValue.get()
-            if(!jumped) {
-                mc.thePlayer.jump()
-                jumped = true
-            } else {
-                MovementUtils.strafe(speedValue.get())
-            }
+            mc.thePlayer.jump()
+            mc.thePlayer.motionY = 0.2
+            jumped = true
         }
     }
 
+    override fun onUpdate(event: UpdateEvent) {
+        mc.timer.timerSpeed = timerValue.get()
+        if(jumped) {
+            jumped = false
+            mc.thePlayer.motionY = -0.0784
+        }
+        MovementUtils.strafe(speedValue.get())
+    }
+
     override fun onDisable() {
-        if(blockPos != null) mc.theWorld.destroyBlock(blockPos, false)
+        mc.timer.timerSpeed = 1.0f
     }
 
 }
