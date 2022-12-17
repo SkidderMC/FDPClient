@@ -18,11 +18,12 @@ class Matrix692Speed : SpeedMode("Matrix6.9.2") {
             wasTimer = false
             mc.timer.timerSpeed = 1.0f
         }
+        mc.thePlayer.motionY -= 0.00348
         mc.thePlayer.jumpMovementFactor = 0.026f
         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
             mc.gameSettings.keyBindJump.pressed = false
-            mc.timer.timerSpeed = 2.0f
+            mc.timer.timerSpeed = 1.35f
             wasTimer = true
             mc.thePlayer.jump()
             MovementUtils.strafe()
