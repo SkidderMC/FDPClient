@@ -24,8 +24,7 @@ import net.minecraft.world.WorldSettings
 class BackTrack : Module() {
 
     var fakePlayer: EntityOtherPlayerMP? = null
-    private val pulseDelayValue =
-        IntegerValue("PulseDelay", 1000, 5, 2000)
+    private val pulseDelayValue: IntegerValue = object : IntegerValue("PulseDelay", 1000, 5, 2000)
     private val pulseTimer = MSTimer()
     var currentTarget: EntityLivingBase? = null
     private var shown = false
