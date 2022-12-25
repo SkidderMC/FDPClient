@@ -23,11 +23,11 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}  
     private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotJumpModifier", 0.1f, 0f, 0.4f)
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
-    private val yPort = BoolValue("${valuePrefix}SlightYPort", false)
-    private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", false)
-    private val yPort3 = BoolValue("${valuePrefix}SlightYPort3", true)
-    private val yPort4 = BoolValue("${valuePrefix}SlightYPort4", false)
-    private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
+    private val yPort = BoolValue("${valuePrefix}OldHypixelYPort", false)
+    private val yPort2 = BoolValue("${valuePrefix}BadNCPYPort", false)
+    private val yPort3 = BoolValue("${valuePrefix}SemiHypixelYPort", true)
+    private val damageBoost = BoolValue("${valuePrefix}DamageBoost", false)
+    private val damagestrafe = BoolValue("${valuePrefix}StrafeOnDamage", true)
 
     private var watchdogMultiplier = 1.0
     private var minSpeed = 0.0
@@ -80,8 +80,13 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         
         if (damageBoost.get()) {
             if (mc.thePlayer.hurtTime > 0) {
-                mc.thePlayer.motionX *= 1.028 - Math.random() / 100
-                mc.thePlayer.motionZ *= 1.028 - Math.random() / 100
+                mc.thePlayer.motionX *= 1.018 - Math.random() / 100
+                mc.thePlayer.motionZ *= 1.018 - Math.random() / 100
+            }
+        }
+        if (damageStrafe.get()) {
+            if (mc.thePlayer.hurtTime > 0) {
+                MovementUtils.strafe(MovementUtils.getSpeed())
             }
         }
         
