@@ -27,7 +27,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private val yPort2 = BoolValue("${valuePrefix}BadNCPYPort", false)
     private val yPort3 = BoolValue("${valuePrefix}SemiHypixelYPort", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", false)
-    private val damagestrafe = BoolValue("${valuePrefix}StrafeOnDamage", true)
+    private val damageStrafe = BoolValue("${valuePrefix}StrafeOnDamage", true)
 
     private var watchdogMultiplier = 1.0
     private var minSpeed = 0.0
@@ -70,13 +70,6 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             }
         }
         
-        if (yPort4.get()) {
-            if (offGroundTicks == 1) {
-                mc.thePlayer.motionY = mc.thePlayer.motionY - 0.02
-                mc.thePlayer.motionX *= 0.98
-                mc.thePlayer.motionZ *= 0.98
-            }
-        }
         
         if (damageBoost.get()) {
             if (mc.thePlayer.hurtTime > 0) {
