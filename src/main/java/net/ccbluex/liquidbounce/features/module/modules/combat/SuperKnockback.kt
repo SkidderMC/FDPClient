@@ -77,6 +77,17 @@ class SuperKnockback : Module() {
             }
         }
     }
+    
+    @EventTarget
+    fun onPreMotion() {
+        if (modeValue.equals("WTap")) {
+            if (ticks <= WtapDelay.get()) {
+                mc.gameSettings.keyBindForward.pressed = false
+            } else if (ticks == WtapDelay.get() + 1) {
+                mc.gameSettings.keyBindForward.pressed = true
+            }
+        }
+    }
                 
     override val tag: String
         get() = modeValue.get()
