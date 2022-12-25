@@ -516,8 +516,6 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        @EventTarget
-    fun onRender3D(event: Render3DEvent) {
         if (circleValue.get()) {
             GL11.glPushMatrix()
             GL11.glTranslated(
