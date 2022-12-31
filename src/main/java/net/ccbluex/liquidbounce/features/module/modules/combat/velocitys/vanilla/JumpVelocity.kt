@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 
 class JumpVelocity : VelocityMode("Jump") {
-    private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Motion", "Jump", "Both"), "Motion")
+    private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Motion", "Jump", "Both"), "Jump")
     private val motionValue = FloatValue("${valuePrefix}Motion", 0.42f, 0.4f, 0.5f)
     override fun onVelocity(event: UpdateEvent) {
         if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
