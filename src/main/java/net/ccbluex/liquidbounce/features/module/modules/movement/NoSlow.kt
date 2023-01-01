@@ -50,14 +50,12 @@ class NoSlow : Module() {
     private val teleportCustomSpeedValue = FloatValue("Teleport-CustomSpeed", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
     private val teleportCustomYValue = BoolValue("Teleport-CustomY", false).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
     private val teleportDecreasePercentValue = FloatValue("Teleport-DecreasePercent", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Decrease") }
-    private val alert1Value = BoolValue("updateAlert1", true).displayable { false }
 
     private var pendingFlagApplyPacket = false
     private var lastMotionX = 0.0
     private var lastMotionY = 0.0
     private var lastMotionZ = 0.0
     private val msTimer = MSTimer()
-    private val alertTimer = MSTimer()
     private var sendBuf = false
     private var packetBuf = LinkedList<Packet<INetHandlerPlayServer>>()
     private var nextTemp = false
@@ -112,11 +110,6 @@ class NoSlow : Module() {
     fun onMotion(event: MotionEvent) {
         if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
-        if (alertTimer.hasTimePassed(10000) && alert1Value.get() && (modeValue.equals("Matrix") || modeValue.equals("Vulcan"))) {
-            alertTimer.reset()
-            ClientUtils.displayChatMessage("§8[§c§lNoSlow§8]§aPlease notice that Vulcan/Matrix NoSlow §cDO NOT §asupport FakeLag Disabler!")
-            ClientUtils.displayChatMessage("§8[§c§lNoSlow§8]§aType .noslow updateAlert1 to disable this notice!")
-        }
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
         if (!MovementUtils.isMoving()) {
             return
