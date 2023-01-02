@@ -53,7 +53,7 @@ class NCPDamage2Longjump : LongJumpMode("NCPDamage2") {
             MovementUtils.strafe(0.278f * speed)
             speed -= 0.001f
         }   
-        if(longjump.autoDisableValue.get() && hasJumped) {
+        if(longjump.autoDisableValue.get() && damageStat && mc.thePlayer.onGround) {
             longjump.state = false
         }
     }
