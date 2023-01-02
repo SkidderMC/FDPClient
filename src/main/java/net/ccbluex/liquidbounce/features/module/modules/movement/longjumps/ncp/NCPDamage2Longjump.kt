@@ -14,17 +14,15 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
 class NCPDamage2Longjump : LongJumpMode("NCPDamage2") {
- 
+    private val jumpYPosArr = arrayOf(0.41999998688698, 0.7531999805212, 1.00133597911214, 1.16610926093821, 1.24918707874468, 1.24918707874468, 1.1707870772188, 1.0155550727022, 0.78502770378924, 0.4807108763317, 0.10408037809304, 0.0)
     private var canBoost = false
     private var x = 0.0
     private var y = 0.0
     private var z = 0.0
     private var balance = 0
     private var damageStat = false
-    private var hasJumped = false
     private var speed = 0.0f
     override fun onEnable() {
-        hasJumped = false
         damageStat = false
         balance = 0
         LiquidBounce.hud.addNotification(Notification(longjump.name, "Wait for damage...", NotifyType.SUCCESS, jumpYPosArr.size * 4 * 50))
@@ -45,14 +43,16 @@ class NCPDamage2Longjump : LongJumpMode("NCPDamage2") {
                 }
                 PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
                 damageStat = true
+                mc.thePlayer.jump()
+                mc.thePlayer.motionY = 0.419999
             }
-        } else if (!hasJumped) {
+        } else {
+            mc.thePlayer.motionY += 0.0049
+        }
+        if (mc.thePlayer.hurtTime > 0){
             MovementUtils.strafe(0.278f * speed)
             speed -= 0.001f
-            mc.thePlayer.jump()
-            mc.thePlayer.motionY = 0.419999
-            hasJumped = true
-        }
+        }   
         if(longjump.autoDisableValue.get() && hasJumped) {
             longjump.state = false
         }
