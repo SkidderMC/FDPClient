@@ -3,9 +3,11 @@ package net.ccbluex.liquidbounce.features.module.modules.misc;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.UpdateEvent;
+import net.ccbluex.liquidbounce.event.WorldEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.features.value.BoolValue;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
@@ -18,13 +20,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
-// I didn't test you, so good luck, MurderDetector!
+// Tested on blocksmc.com (1.8.9) - works fine
 
 @ModuleInfo(name = "MurderDetector", category = ModuleCategory.MISC)
 public class MurderDetector extends Module {
+
     public static Minecraft mc = Minecraft.getMinecraft();
+    private static boolean mode; // Are you Killer?
+    public static BoolValue sendMessages = new BoolValue("SendMessages", false);
+    public static ArrayList<EntityPlayer> detectedPlayers = new ArrayList<>();
     public static int[] itemIds = {288, 396, 412, 398, 75, 50};
     public static Item[] itemTypes = new Item[]{
             Items.fishing_rod,
@@ -55,35 +61,10 @@ public class MurderDetector extends Module {
             Items.iron_shovel,
             Items.wooden_shovel
     };
-    private static boolean mode; // Are you Killer?
-    public static HashMap<EntityPlayer, KillerData> killerData = new HashMap<>();
-
-    @EventTarget
-    public static void onUpdate(UpdateEvent ignored) {
-        for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (entity instanceof EntityPlayer) {
-                EntityPlayer player = (EntityPlayer) entity;
-                if (player.inventory.getCurrentItem() != null && entity != mc.thePlayer) {
-                    if (killerData.get(player) == null) {
-                        if (isWeapon(player.inventory.getCurrentItem().getItem())) {
-                            ClientUtils.INSTANCE.displayChatMessage("§a[%module.MurderDetector.name%]§c " + player.getName() + " is Killer!!!");
-                            LiquidBounce.hud.addNotification(new Notification("§a[%module.MurderDetector.name%]§c", player.getName() + " is Killer!!!", NotifyType.WARNING, 4000, 500));
-                            if (killerData.get(player) == null) killerData.put(player, new KillerData(player));
-                        }
-                    } else {
-                        if (!isWeapon(player.inventory.getCurrentItem().getItem())) {
-                            killerData.remove(player);
-                        }
-                    }
-
-                }
-            }
-        }
-    }
 
     @Override
     public void onEnable() {
-        killerData.clear();
+        detectedPlayers.clear();
         for (ItemStack itemStack : mc.thePlayer.inventory.mainInventory) {
             if (itemStack.getItem() != null && isWeapon(itemStack.getItem())) {
                 mode = true;
@@ -91,6 +72,30 @@ public class MurderDetector extends Module {
             }
         }
         mode = false;
+    }
+
+    @EventTarget
+    public static void onUpdate(UpdateEvent ignored) {
+        for (Entity entity : mc.theWorld.loadedEntityList) {
+            if (entity instanceof EntityPlayer) {
+                EntityPlayer player = (EntityPlayer) entity;
+                if (entity == mc.thePlayer) continue;
+                if (detectedPlayers.contains(player)) continue;
+                if (player.inventory.getCurrentItem() != null) {
+                    if (isWeapon(player.inventory.getCurrentItem().getItem())) {
+                        ClientUtils.INSTANCE.displayChatMessage("§8[§dMurderDetector§8]§c " + player.getName() + " is the murderer!");
+                        LiquidBounce.hud.addNotification(new Notification("§dMurderDetector", player.getName() + " is the murderer!", NotifyType.WARNING, 4000, 500));
+                        if (sendMessages.get()) sendChatMessage(player.getName());
+                        detectedPlayers.add(player);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventTarget
+    public static void onWorldChange(WorldEvent ignored) {
+        detectedPlayers.clear();
     }
 
     public static boolean isWeapon(Item item) {
@@ -110,12 +115,19 @@ public class MurderDetector extends Module {
         }
         return false;
     }
-}
 
-class KillerData {
-    public static String playerName = "";
-
-    public KillerData(EntityPlayer player) {
-
+    private static void sendChatMessage(String target) {
+        int i = (int) (Math.random() * 3);
+        switch (i) {
+            case 0:
+                mc.thePlayer.sendChatMessage(target + " is the killer!");
+                break;
+            case 1:
+                mc.thePlayer.sendChatMessage(target + " is the murderer!");
+                break;
+            case 2:
+                mc.thePlayer.sendChatMessage(target + " has tried to kill me");
+                break;
+        }
     }
 }
