@@ -633,6 +633,19 @@ class Step : Module() {
                         // Reset timer
                         timer.reset()
                     }
+                    mode.equals("BlocksMC", ignoreCase = true) -> {
+                        fakeJump()
+
+                        mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                            stepY + 0.41999998688698, stepZ, false))
+                        mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                            stepY + 0.7531999805212, stepZ, false))
+                        mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                            stepY + 1, stepZ, true))
+
+                        // Reset timer
+                        timer.reset()
+                    }
                 }
             }
 
