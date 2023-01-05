@@ -64,7 +64,6 @@ class LongJump : Module() {
             if (airTick > 1 && autoDisableValue.get()) {
                 mode.onAttemptDisable()
             }
-            airTick = 0
         }
         mode.onUpdate(event)
         if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving()) {
