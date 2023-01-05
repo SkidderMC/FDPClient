@@ -11,16 +11,20 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
 class NCPDamageLongjump : LongJumpMode("NCPDamage") {
-    private val ncpBoostValue = FloatValue("${valuePrefix}Boost", 4.25f, 1f, 10f)
+    private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Normal", "OldHypixel"), "Normal")
+    private val hypBoostValue = FloatValue("${valuePrefix}BoostSpeed", 1.2f, 1f, 2f).displayable { modeValue.equals("OldHypixel") }
+    private val ncpBoostValue = FloatValue("${valuePrefix}Boost", 4.25f, 1f, 10f).displayable { modeValue.equals("Normal") }
     private val ncpdInstantValue = BoolValue("${valuePrefix}DamageInstant", false)
     private val jumpYPosArr = arrayOf(0.0, 0.41999998688698, 0.7531999805212, 1.00133597911214, 1.16610926093821, 1.24918707874468, 1.24918707874468, 1.1707870772188, 1.0155550727022, 0.78502770378924, 0.4807108763317, 0.10408037809304)
     private var canBoost = false
     private var x = 0.0
     private var y = 0.0
     private var z = 0.0
+    private var boostSpeed = 0.0
     private var balance = 0
     private var damageStat = false
     private var hasJumped = false
@@ -36,6 +40,7 @@ class NCPDamageLongjump : LongJumpMode("NCPDamage") {
         x = mc.thePlayer.posX
         y = mc.thePlayer.posY
         z = mc.thePlayer.posZ
+        boostSpeed = hypBoostValue.get()
     }
     override fun onUpdate(event: UpdateEvent) {
         if (!damageStat) {
@@ -53,12 +58,26 @@ class NCPDamageLongjump : LongJumpMode("NCPDamage") {
                 }
                 PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true))
                 damageStat = true
+                if (modeValue.equals("OldHypixel", true)) {
+                    mc.thePlayer.onGround = true
+                    onAttemptJump()
+                    MovementUtils.strafe(0.472f + 0.08f * boostSpeed)
+                    mc.thePlayer.motionY = 0.419999
+                }
+            }
+        } else if (modeValue.equals("OldHypixel", true)) {
+            mc.thePlayer.motionY += 0.0049
+            if (longjump.airTick <= 10) {
+                MovementUtils.strafe(0.278f * boostSpeed)
+                boostSpeed -= 0.0008f + hypBoostValue.get() * 0.000167f
             }
         }
     }
 
     override fun onJump(event: JumpEvent) {
-        MovementUtils.strafe(0.50f * ncpBoostValue.get())
+        if (modeValue.equals("Normal", true)) {
+            MovementUtils.strafe(0.50f * ncpBoostValue.get())
+        }
         longjump.airTick = 0
         hasJumped = true
     }
