@@ -20,7 +20,7 @@ import net.minecraft.util.BlockPos
 
 @ModuleInfo(name = "AirJump", category = ModuleCategory.MOVEMENT)
 class AirJump : Module() {
-    private val airSpoofValue = BoolValue("AirSpoof", false)
+    private val spoofGroundValue = BoolValue("SpoofGround", false)
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         mc.thePlayer.onGround = true
@@ -30,7 +30,7 @@ class AirJump : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if(packet is C03PacketPlayer) {
-            if(airSpoofValue.get()) {
+            if(spoofGroundValue.get()) {
                 packet.onGround = true
             }
         }
