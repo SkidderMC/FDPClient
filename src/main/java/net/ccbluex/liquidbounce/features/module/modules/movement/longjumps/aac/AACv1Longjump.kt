@@ -12,4 +12,7 @@ class AACv1Longjump : LongJumpMode("AACv1") {
     override fun onAttemptJump() {
         mc.thePlayer.jump()
     }
+    override fun onAttemptDisable() {
+        longjump.state = false
+    }
 }
