@@ -29,4 +29,7 @@ class AACv3Longjump : LongJumpMode("AACv3") {
             teleported = true
         }
     }
+    override fun onAttemptJump() {
+        mc.thePlayer.jump()
+    }
 }

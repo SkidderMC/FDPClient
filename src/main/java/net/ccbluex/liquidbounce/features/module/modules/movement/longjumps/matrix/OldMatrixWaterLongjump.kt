@@ -8,11 +8,22 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 class OldMatrixWaterLongjump : LongJumpMode("OldMatrixWater") {
     private val hValue = FloatValue("${valuePrefix}Horizon", 1.0f, 0.8f, 4.0f)
     private val yValue = FloatValue("${valuePrefix}MotionY", 0.42f, 0.0f, 2.0f)
+    private var doDisable = false
+    override fun onEnable() {
+        doDisable = false
+    }
     override fun onPreMotion(event: MotionEvent) {
         if(mc.thePlayer.isInWater) {
+            if (doDisable) {
+                onAttemptDisable()
+                return
+            }
             mc.thePlayer.motionY = yValue.get().toDouble()
             MovementUtils.strafe(hValue.get())
-            longjump.hasJumped = true
+            doDisable = true
         }
+    }
+    override fun onAttemptDisable() {
+        longjump.state = false
     }
 }

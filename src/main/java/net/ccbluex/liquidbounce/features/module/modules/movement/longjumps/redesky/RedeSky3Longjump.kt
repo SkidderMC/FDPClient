@@ -30,4 +30,12 @@ class RedeSky3Longjump : LongJumpMode("RedeSky3") {
     override fun onJump(event: JumpEvent) {
         timer.reset()
     }
+    
+    override fun onAttemptJump() {
+        mc.thePlayer.jump()
+    }
+    
+    override fun onAttemptDisable() {
+        longjump.state = false
+    }
 }
