@@ -14,4 +14,7 @@ class OldAAC5Longjump : LongJumpMode("OldAAC5") {
         mc.thePlayer.jump()
         mc.thePlayer.motionY = 0.425
     }
+    override fun onAttemptDisable() {
+        longjump.state = false
+    }
 }
