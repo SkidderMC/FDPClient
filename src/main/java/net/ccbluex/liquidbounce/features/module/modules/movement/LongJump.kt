@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.*
@@ -32,14 +37,12 @@ class LongJump : Module() {
 
     val autoJumpValue = BoolValue("AutoJump", true)
     val autoDisableValue = BoolValue("AutoDisable", true)
-    var jumped = false
-    var hasJumped = false
-    var no = false
+    var airTick = 0
+    var isJumped = false
 
     override fun onEnable() {
-        jumped = false
-        hasJumped = false
-        no = false
+        airTick = 0
+        isJumped = false
         mode.onEnable()
     }
 
@@ -55,15 +58,17 @@ class LongJump : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(!state) return
-        mode.onUpdate(event)
-        if (!no && autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving()) {
-            jumped = true
-            if (hasJumped && autoDisableValue.get()) {
-                state = false
-                return
+        if (!mc.thePlayer.onGround) {
+            airTick++
+        }else {
+            if (airTick > 1 && autoDisableValue.get()) {
+                mode.onAttemptDisable()
             }
-            mc.thePlayer.jump()
-            hasJumped = true
+            airTick = 0
+        }
+        mode.onUpdate(event)
+        if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving()) {
+            mode.onAttemptJump()
         }
     }
 
@@ -97,7 +102,6 @@ class LongJump : Module() {
     fun onJump(event: JumpEvent) {
         if(!state) return
         mode.onJump(event)
-        jumped = true
     }
 
     @EventTarget
