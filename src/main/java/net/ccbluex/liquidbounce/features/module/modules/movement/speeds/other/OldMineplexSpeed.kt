@@ -19,7 +19,7 @@ class OldMineplexSpeed : SpeedMode("OldMineplex") {
     }
 
     override fun onDisable() {
-        mc.timer.timerSpeed =1.0
+        mc.timer.timerSpeed = 1.0f
         mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionZ = 0.0
     }
@@ -29,7 +29,7 @@ class OldMineplexSpeed : SpeedMode("OldMineplex") {
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
             mc.thePlayer.jump()
-            MovementUtils.strafe(-0.025)
+            MovementUtils.strafe(-0.025f)
             lastJump = true
             return
         } else if (MovementUtils.isMoving() && lastJump) {
@@ -38,7 +38,7 @@ class OldMineplexSpeed : SpeedMode("OldMineplex") {
             lastSpeed = speedValue.get()
             return
         }
-        lastSpeed = lastSpeed * 0.75 + MovementUtils.getSpeed() * 0.25
+        lastSpeed = (lastSpeed * 0.75f + MovementUtils.getSpeed() * 0.25f).toFloat()
         MovementUtils.strafe(lastSpeed)
     }
 }
