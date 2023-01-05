@@ -13,4 +13,7 @@ class OldBlocksMC2Longjump : LongJumpMode("OldBlocksMC2") {
     override fun onAttemptJump() {
         mc.thePlayer.jump()
     }
+    override fun onAttemptDisable() {
+        longjump.state = false
+    }
 }
