@@ -16,7 +16,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 class NCPDamageLongjump : LongJumpMode("NCPDamage") {
     private val ncpBoostValue = FloatValue("${valuePrefix}Boost", 4.25f, 1f, 10f)
     private val ncpdInstantValue = BoolValue("${valuePrefix}DamageInstant", false)
-    private val jumpYPosArr = arrayOf(0.41999998688698, 0.7531999805212, 1.00133597911214, 1.16610926093821, 1.24918707874468, 1.24918707874468, 1.1707870772188, 1.0155550727022, 0.78502770378924, 0.4807108763317, 0.10408037809304, 0.0)
+    private val jumpYPosArr = arrayOf(0.0, 0.41999998688698, 0.7531999805212, 1.00133597911214, 1.16610926093821, 1.24918707874468, 1.24918707874468, 1.1707870772188, 1.0155550727022, 0.78502770378924, 0.4807108763317, 0.10408037809304)
     private var canBoost = false
     private var x = 0.0
     private var y = 0.0
@@ -40,28 +40,39 @@ class NCPDamageLongjump : LongJumpMode("NCPDamage") {
     override fun onUpdate(event: UpdateEvent) {
         if (!damageStat) {
             mc.thePlayer.setPosition(x, y, z)
-            if (balance > jumpYPosArr.size * 4) {
-                repeat(4) {
+            mc.thePlayer.onGround = false
+            mc.thePlayer.motionY = 0.0
+            mc.thePlayer.motionX = 0.0
+            mc.thePlayer.motionZ = 0.0
+            mc.thePlayer.jumpMovementFactor = 0.0f
+            if (balance >= jumpYPosArr.size * 3) {
+                repeat(3) {
                     jumpYPosArr.forEach {
                         PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y + it, z, false))
                     }
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y, z, false))
                 }
-                PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
+                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true))
                 damageStat = true
             }
-        } else if (!hasJumped) {
-            MovementUtils.strafe(0.50f * ncpBoostValue.get())
-            mc.thePlayer.jump()
-            hasJumped = true
-        }
-        if(longjump.autoDisableValue.get() && hasJumped) {
-            longjump.state = false
         }
     }
 
     override fun onJump(event: JumpEvent) {
-        canBoost = true
+        MovementUtils.strafe(0.50f * ncpBoostValue.get())
+        longjump.airTick = 0
+        hasJumped = true
+    }
+    
+    override fun onAttemptJump() {
+        if (damageStat && !hasJumped) {
+            mc.thePlayer.jump()
+        }
+    }
+    
+    override fun onAttemptDisable() {
+        mc.thePlayer.motionX = 0.0
+        mc.thePlayer.motionZ = 0.0
+        longjump.state = false
     }
 
     override fun onPacket(event: PacketEvent) {
