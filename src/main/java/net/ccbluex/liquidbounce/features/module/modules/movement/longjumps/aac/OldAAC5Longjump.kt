@@ -10,4 +10,11 @@ class OldAAC5Longjump : LongJumpMode("OldAAC5") {
         MovementUtils.strafe(MovementUtils.getSpeed() * 1.0114514f)
         mc.timer.timerSpeed = 1.0114514f
     }
+    override fun onAttemptJump() {
+        mc.thePlayer.jump()
+        mc.thePlayer.motionY = 0.425
+    }
+    override fun onAttemptDisable() {
+        longjump.state = false
+    }
 }

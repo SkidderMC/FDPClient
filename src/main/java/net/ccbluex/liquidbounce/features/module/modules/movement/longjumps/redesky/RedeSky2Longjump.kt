@@ -14,15 +14,12 @@ class RedeSky2Longjump : LongJumpMode("RedeSky2") {
     private val minYMotionValue = FloatValue("${valuePrefix}MinYMotion", 0.04F, 0.01F, 0.20F)
     private val reduceYMotionValue = FloatValue("${valuePrefix}ReduceYMotion", 0.15F, 0.01F, 0.20F)
     private val yMotionReducerValue = BoolValue("${valuePrefix}YMotionReducer", true)
-    private var airTicks = 0
-    override fun onEnable() {
-        airTicks = 0
-    }
+    
     override fun onUpdate(event: UpdateEvent) {
         if (!mc.thePlayer.onGround) {
             if (yMotionReducerValue.get()) {
-                val motY = yMotionValue.get() - (airTicks * (reduceYMotionValue.get() / 100))
-                if (motY <minYMotionValue.get()) {
+                val motY = yMotionValue.get() - (longjump.airTick * (reduceYMotionValue.get() / 100))
+                if (motY < minYMotionValue.get()) {
                     mc.thePlayer.motionY += minYMotionValue.get()
                 } else {
                     mc.thePlayer.motionY += motY
@@ -30,10 +27,10 @@ class RedeSky2Longjump : LongJumpMode("RedeSky2") {
             } else {
                 mc.thePlayer.motionY += yMotionValue.get()
             }
-            // as reduce
+            
             if (airSpeedReducerValue.get()) {
-                val airSpeed = airSpeedValue.get() - (airTicks * (reduceAirSpeedValue.get() / 100))
-                if (airSpeed <minAirSpeedValue.get()) {
+                val airSpeed = airSpeedValue.get() - (longjump.airTick * (reduceAirSpeedValue.get() / 100))
+                if (airSpeed < minAirSpeedValue.get()) {
                     mc.thePlayer.speedInAir = minAirSpeedValue.get()
                 } else {
                     mc.thePlayer.speedInAir = airSpeed
@@ -42,5 +39,13 @@ class RedeSky2Longjump : LongJumpMode("RedeSky2") {
                 mc.thePlayer.speedInAir = airSpeedValue.get()
             }
         }
+    }
+    
+    override fun onAttemptJump() {
+        mc.thePlayer.jump()
+    }
+    
+    override fun onAttemptDisable() {
+        longjump.state = false
     }
 }

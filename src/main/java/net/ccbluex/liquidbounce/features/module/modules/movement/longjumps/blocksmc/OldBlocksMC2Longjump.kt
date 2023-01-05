@@ -10,4 +10,10 @@ class OldBlocksMC2Longjump : LongJumpMode("OldBlocksMC2") {
         MovementUtils.strafe(MovementUtils.getSpeed() * 1.114514f)
         mc.timer.timerSpeed = 0.917555f
     }
+    override fun onAttemptJump() {
+        mc.thePlayer.jump()
+    }
+    override fun onAttemptDisable() {
+        longjump.state = false
+    }
 }

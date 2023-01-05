@@ -14,6 +14,10 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 
 class VerusBasicFly : FlyMode("VerusBasic") {
     private val verusMode = ListValue("${valuePrefix}Mode", arrayOf("Packet1", "Packet2"), "Packet1")
+    private var jumped = false
+    override fun onEnable() {
+        jumped = false
+    }
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
@@ -40,9 +44,10 @@ class VerusBasicFly : FlyMode("VerusBasic") {
             C08PacketPlayerBlockPlacement(pos, 1,
                 ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
         )
-        if(mc.thePlayer.onGround) {
+        if(mc.thePlayer.onGround && !jumped) {
             mc.thePlayer.jump()
             event.y = 0.42
+            jumped = true
         }else {
             event.y = 0.0
             MovementUtils.strafe(0.35f)
