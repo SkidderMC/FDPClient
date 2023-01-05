@@ -13,15 +13,16 @@ class MatrixHurtLongjump : LongJumpMode("MatrixHurt") {
     private val boostSpeed = FloatValue("${valuePrefix}BoostSpeed", 0.416f, 0.1f, 1.0f)
     private val ticks = IntegerValue("${valuePrefix}Ticks", 10, 5, 20)
     private var detected = false
+    private var doDisable = false
     private var motiony = 0.0
     private var tick = 0
     override fun onEnable() {
         detected = false
+        doDisable = false
         motiony = 0.0
         tick = 0
     }
     override fun onUpdate(event: UpdateEvent) {
-        longjump.no = true //No AutoJump / AutoDisable
         if(detected) {
             val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
             mc.thePlayer.motionY = motiony
@@ -32,7 +33,7 @@ class MatrixHurtLongjump : LongJumpMode("MatrixHurt") {
                 tick = 0
                 detected = false
                 motiony = 0.0
-                if(longjump.autoDisableValue.get()) longjump.state = false //Better Auto Disable
+                onAttemptDisable()
             }
         }
     }
@@ -44,5 +45,8 @@ class MatrixHurtLongjump : LongJumpMode("MatrixHurt") {
                 motiony = event.packet.motionY / 8000.0
             }
         }
+    }
+    override fun onAttemptDisable() {
+        longjump.state = false
     }
 }
