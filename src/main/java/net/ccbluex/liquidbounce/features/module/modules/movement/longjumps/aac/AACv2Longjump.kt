@@ -11,4 +11,7 @@ class AACv2Longjump : LongJumpMode("AACv2") {
         mc.thePlayer.jumpMovementFactor = 0.08f
         MovementUtils.strafe()
     }
+    override fun onAttemptJump() {
+        mc.thePlayer.jump()
+    }
 }
