@@ -14,4 +14,7 @@ class AACv2Longjump : LongJumpMode("AACv2") {
     override fun onAttemptJump() {
         mc.thePlayer.jump()
     }
+    override fun onAttemptDisable() {
+        longjump.state = false
+    }
 }
