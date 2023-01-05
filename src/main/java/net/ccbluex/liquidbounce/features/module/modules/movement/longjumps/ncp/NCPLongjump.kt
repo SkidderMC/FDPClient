@@ -10,18 +10,30 @@ class NCPLongjump : LongJumpMode("NCP") {
     private val ncpBoostValue = FloatValue("${valuePrefix}Boost", 4.25f, 1f, 10f)
     private var canBoost = false
     override fun onEnable() {
-        canBoost = true
+        canBoost = false
     }
     override fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.onGround) {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
+        }else {
+            MovementUtils.strafe(MovementUtils.getSpeed() * if (canBoost) ncpBoostValue.get() else 1f)
+            if(canBoost) canBoost = false
         }
-        MovementUtils.strafe(MovementUtils.getSpeed() * if (canBoost) ncpBoostValue.get() else 1f)
-        if(canBoost) canBoost = false
     }
 
     override fun onJump(event: JumpEvent) {
         canBoost = true
+        MovementUtils.strafe()
+        mc.thePlayer.motionX = 0.0
+        mc.thePlayer.motionZ = 0.0
+    }
+    
+    override fun onAttemptJump() {
+        mc.thePlayer.jump()
+    }
+    
+    override fun onAttemptDisable() {
+        longjump.state = false
     }
 }
