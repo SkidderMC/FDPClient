@@ -16,4 +16,7 @@ class OldBlocksMCLongjump : LongJumpMode("OldBlocksMC") {
         mc.thePlayer.jump()
         MovementUtils.strafe(0.48f)
     }
+    override fun onAttemptDisable() {
+        longjump.state = false
+    }
 }
