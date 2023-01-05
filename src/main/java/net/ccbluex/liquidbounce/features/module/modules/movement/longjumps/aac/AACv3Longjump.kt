@@ -31,6 +31,7 @@ class AACv3Longjump : LongJumpMode("AACv3") {
     }
     override fun onAttemptJump() {
         mc.thePlayer.jump()
+        teleported = false
     }
     override fun onAttemptDisable() {
         longjump.state = false
