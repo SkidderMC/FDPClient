@@ -14,7 +14,7 @@ class OldMineplexSpeed : SpeedMode("OldMineplex") {
     private var lastJump = false
     private var lastSpeed = 0.1f
     override fun onEnable() {
-        lastJump = false;
+        lastJump = false
         lastSpeed = MovementUtils.getSpeed()
     }
 
