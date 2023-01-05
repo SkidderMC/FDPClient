@@ -35,10 +35,10 @@ class MurderDetector : Module() {
     companion object {
         var mc: Minecraft = Minecraft.getMinecraft()
         private var mode = false // Are you Killer?
-        private var sendMessages = BoolValue("SendMessages", false)
+        var sendMessages = BoolValue("SendMessages", false)
         var detectedPlayers = ArrayList<EntityPlayer>()
-        private var itemIds = intArrayOf(288, 396, 412, 398, 75, 50)
-        private var itemTypes = arrayOf(
+        var itemIds = intArrayOf(288, 396, 412, 398, 75, 50)
+        var itemTypes = arrayOf(
             Items.fishing_rod,
             Items.diamond_hoe,
             Items.golden_hoe,
