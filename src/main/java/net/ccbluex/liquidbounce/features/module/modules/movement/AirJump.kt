@@ -21,10 +21,9 @@ import net.minecraft.util.BlockPos
 @ModuleInfo(name = "AirJump", category = ModuleCategory.MOVEMENT)
 class AirJump : Module() {
     private val airSpoofValue = BoolValue("AirSpoof", false)
-    private val alwaysGroundValue = BoolValue("AlwaysOnGround", false)
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (alwaysGroundValue.get()) mc.thePlayer.onGround = true
+        mc.thePlayer.onGround = true
     }
 
     @EventTarget
