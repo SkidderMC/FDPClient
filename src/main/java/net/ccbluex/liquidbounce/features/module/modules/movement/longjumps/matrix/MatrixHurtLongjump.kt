@@ -13,12 +13,10 @@ class MatrixHurtLongjump : LongJumpMode("MatrixHurt") {
     private val boostSpeed = FloatValue("${valuePrefix}BoostSpeed", 0.416f, 0.1f, 1.0f)
     private val ticks = IntegerValue("${valuePrefix}Ticks", 10, 5, 20)
     private var detected = false
-    private var doDisable = false
     private var motiony = 0.0
     private var tick = 0
     override fun onEnable() {
         detected = false
-        doDisable = false
         motiony = 0.0
         tick = 0
     }
