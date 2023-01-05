@@ -25,8 +25,6 @@ class NCPLongjump : LongJumpMode("NCP") {
     override fun onJump(event: JumpEvent) {
         canBoost = true
         MovementUtils.strafe()
-        mc.thePlayer.motionX = 0.0
-        mc.thePlayer.motionZ = 0.0
     }
     
     override fun onAttemptJump() {
