@@ -58,12 +58,8 @@ class NCPDamageLongjump : LongJumpMode("NCPDamage") {
                 }
                 PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(x, y, z, true))
                 damageStat = true
-                if (modeValue.equals("OldHypixel")) {
-                    mc.thePlayer.onGround = true
-                    onAttemptJump()
-                    MovementUtils.strafe(0.472f + 0.08f * boostSpeed)
-                    mc.thePlayer.motionY = 0.419999
-                }
+                mc.thePlayer.onGround = true
+                longjump.airTick = 0
             }
         } else if (modeValue.equals("OldHypixel")) {
             mc.thePlayer.motionY += 0.0049
@@ -85,6 +81,10 @@ class NCPDamageLongjump : LongJumpMode("NCPDamage") {
     override fun onAttemptJump() {
         if (damageStat && !hasJumped) {
             mc.thePlayer.jump()
+        }
+        if (modeValue.equals("OldHypixel")) {
+            MovementUtils.strafe(0.472f + 0.08f * boostSpeed)
+            mc.thePlayer.motionY = 0.419999
         }
     }
     
