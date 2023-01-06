@@ -37,7 +37,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     }
     
     override fun onUpdate(event: UpdateEvent) {
-        if ((!onlyDamageValue.get() || mc.thePlayer.hurtTime > 0) && !waitFlag && !isFlagged && mc.thePlayer.onGround) {
+        if ((onlyDamageValue.get() && mc.thePlayer.hurtTime == 0) && !waitFlag && !isFlagged && mc.thePlayer.onGround) {
             mc.thePlayer.onGround = false
             MovementUtils.resetMotion(true)
             mc.thePlayer.jumpMovementFactor = 0.0f
@@ -86,7 +86,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     }
     
     override fun onAttemptJump() {
-        if (!onlyDamageValue.get() || mc.thePlayer.hurtTime > 0)
+        if (onlyDamageValue.get() && mc.thePlayer.hurtTime == 0)
             return
         mc.thePlayer.jump()
         MovementUtils.strafe(0.485f)
