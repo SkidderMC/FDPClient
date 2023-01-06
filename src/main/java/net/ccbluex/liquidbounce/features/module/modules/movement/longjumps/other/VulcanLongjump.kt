@@ -79,7 +79,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
             isFlagged = true
         }
         if (packet is S12PacketEntityVelocity) {
-            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(event.packet.entityID) ?: return) != mc.thePlayer) return
+            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) return
             event.cancelEvent()
         }
     }
