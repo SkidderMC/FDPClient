@@ -94,6 +94,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     
     override fun onJump(event: JumpEvent) {
         waitFlag = true
+        mc.timer.timerSpeed = 1.0f
         lastTickOnGround = true
     }
 }
