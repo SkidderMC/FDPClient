@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.*
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -53,6 +54,9 @@ class MedusaLongjump : LongJumpMode("Medusa") {
         val packet = event.packet
         if (packet is C03PacketPlayer && canBoost) {
             packet.onGround = true
+        }
+        if (packet is S12PacketEntityVelocity) {
+            event.cancelEvent()
         }
     }
     
