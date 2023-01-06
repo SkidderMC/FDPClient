@@ -37,7 +37,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     }
     
     override fun onUpdate(event: UpdateEvent) {
-        if ((onlyDamageValue.get() && mc.thePlayer.hurtTime == 0) && !waitFlag && !isFlagged) {
+        if ((onlyDamageValue.get() && mc.thePlayer.hurtTime == 0) && !waitFlag && !isFlagged && longjump.airTick < 888) {
             mc.thePlayer.onGround = false
             MovementUtils.resetMotion(true)
             mc.thePlayer.jumpMovementFactor = 0.0f
