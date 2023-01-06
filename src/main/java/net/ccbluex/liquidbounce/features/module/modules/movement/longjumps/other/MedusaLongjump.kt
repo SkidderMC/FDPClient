@@ -35,7 +35,7 @@ class MedusaLongjump : LongJumpMode("Medusa") {
     }
     
     override fun onUpdate(event: UpdateEvent) {
-        if (boosting && mc.timer.timerSpeed < 1.0) {
+        if (canBoost && boosting && mc.timer.timerSpeed < 1.0f) {
             skipDetect = true
             mc.thePlayer.jump()
             mc.thePlayer.onGround = true
@@ -74,7 +74,7 @@ class MedusaLongjump : LongJumpMode("Medusa") {
             return
         }
         event.cancelEvent()
-        if ((mc.thePlayer.hurtTime > 0 || !onlyDamageValue.get()) && !canBoost && mc.thePlayer.onGround) {
+        if ((mc.thePlayer.hurtTime > 0 || !onlyDamageValue.get()) && !canBoost && mc.thePlayer.onGround && longjump.airTick < 100) {
             canBoost = true
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ, false))
             mc.thePlayer.onGround = false
