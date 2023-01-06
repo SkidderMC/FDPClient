@@ -39,11 +39,12 @@ class Speed : Module() {
 
     private val noWater = BoolValue("NoWater", true)
     private val debug = BoolValue("Debug", false)
+    private val forceSprint = BoolValue("alwaysSprint", true)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) return
-        if (MovementUtils.isMoving()) mc.thePlayer.isSprinting = true
+        if (MovementUtils.isMoving() && forceSprint.get()) mc.thePlayer.isSprinting = true
         mode.onUpdate()
     }
 
@@ -54,7 +55,7 @@ class Speed : Module() {
             alert("YMotion: " + mc.thePlayer.motionY.toString())
         }
         
-        if (MovementUtils.isMoving()) {
+        if (MovementUtils.isMoving() && forceSprint.get()) {
             mc.thePlayer.isSprinting = true
         }
 
@@ -99,13 +100,11 @@ class Speed : Module() {
     }
 
     override fun onEnable() {
-        if (mc.thePlayer == null) return
         mc.timer.timerSpeed = 1f
         mode.onEnable()
     }
 
     override fun onDisable() {
-        if (mc.thePlayer == null) return
         mc.timer.timerSpeed = 1f
         mode.onDisable()
     }
