@@ -19,6 +19,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
     var waitFlag = false
     var isFlagged = false
+    var lastTickOnGround = false
     
     override fun onEnable() {
         if(!mc.thePlayer.onGround) {
@@ -27,6 +28,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
         mc.timer.timerSpeed = 1.0f
         waitFlag = false
         isFlagged = false
+        lastTickOnGround = mc.thePlayer.onGround
     }
     
     override fun onDisable() {
@@ -35,7 +37,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     }
     
     override fun onUpdate(event: UpdateEvent) {
-        if ((!onlyDamageValue.get() || mc.thePlayer.hurtTime > 0) && !waitFlag && !isFlagged) {
+        if ((!onlyDamageValue.get() || mc.thePlayer.hurtTime > 0) && !waitFlag && !isFlagged && mc.thePlayer.onGround) {
             mc.thePlayer.onGround = false
             MovementUtils.resetMotion(true)
             mc.thePlayer.jumpMovementFactor = 0.0f
@@ -87,7 +89,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
         if (!onlyDamageValue.get() || mc.thePlayer.hurtTime > 0)
             return
         mc.thePlayer.jump()
-        MovementUtils.strafe(0.485)
+        MovementUtils.strafe(0.485f)
     }
     
     override fun onJump(event: JumpEvent) {
