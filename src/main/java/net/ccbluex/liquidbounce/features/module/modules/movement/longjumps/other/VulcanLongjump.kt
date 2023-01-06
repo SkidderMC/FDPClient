@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -76,6 +77,10 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
         val packet = event.packet
         if (packet is S08PacketPlayerPosLook && waitFlag) {
             isFlagged = true
+        }
+        if (packet is S12PacketEntityVelocity) {
+            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(event.packet.entityID) ?: return) != mc.thePlayer) return
+            event.cancelEvent()
         }
     }
     
