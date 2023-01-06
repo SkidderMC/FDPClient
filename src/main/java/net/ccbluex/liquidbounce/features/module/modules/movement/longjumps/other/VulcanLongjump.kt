@@ -14,7 +14,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class VulcanLongjump : LongJumpMode("Vulcan") {
-    private val repeatValue = IntegerValue("${valuePrefix}RepeatTimes", 2, 1, 3)
+    private val repeatValue = IntegerValue("${valuePrefix}RepeatTimes", 2, 1, 6)
     private val distanceValue = FloatValue("${valuePrefix}Distance", 7.0f, 2.0f, 8.0f)
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
     var waitFlag = false
