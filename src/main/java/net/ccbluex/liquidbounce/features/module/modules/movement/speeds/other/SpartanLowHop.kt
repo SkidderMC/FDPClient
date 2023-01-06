@@ -10,7 +10,7 @@ class SpartanLowHopSpeed : SpeedMode("SpartanLowHop") {
 
     override fun onUpdate() {
         ticks++
-        if (mc.thePlayer.onGround && Movement.isMoving()) {
+        if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
             mc.thePlayer.jump()
             ticks = 0
             MovementUtils.strafe(0.48f)
