@@ -94,9 +94,7 @@ class Speed : Module() {
 
     @EventTarget
     fun onJump(event: JumpEvent) {
-        if (mode.noJump) {
-            event.cancelEvent()
-        }
+        mode.onJump(event)
     }
 
     override fun onEnable() {
