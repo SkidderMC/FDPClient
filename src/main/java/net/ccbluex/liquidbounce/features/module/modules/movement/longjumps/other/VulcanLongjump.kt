@@ -82,7 +82,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
         if (!onlyDamageValue.get() || mc.thePlayer.hurtTime > 0)
             return
         mc.thePlayer.jump()
-        MovementUtils.INSTANCE.strafe(0.485)
+        MovementUtils.strafe(0.485)
     }
     
     override fun onJump(event: JumpEvent) {
