@@ -59,6 +59,8 @@ class MedusaLongjump : LongJumpMode("Medusa") {
     override fun onAttemptDisable() {
         if (!firstEnable) {
             longjump.state = false
+        } else {
+            longjump.airTick = -1
         }
     }
     
