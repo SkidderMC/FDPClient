@@ -22,11 +22,15 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     override fun onEnable() {
         if(!mc.thePlayer.onGround) {
             onAttemptDisable()
-		}
+        }
+        mc.timer.timerSpeed = 1.0f
+        waitFlag = false
+        isFlagged = false
     }
     
     override fun onDisable() {
-        
+        MovementUtils.resetMotion(false)
+        mc.timer.timerSpeed = 1.0f
     }
     
     override fun onUpdate(event: UpdateEvent) {
