@@ -42,7 +42,7 @@ object LiquidBounce {
     const val CLIENT_NAME = "FDPClient"
 
     var Darkmode = true
-    const val COLORED_NAME = "§7[§f!§7] §b§lFDPCLIENT §f» "
+    const val COLORED_NAME = "§7[§b§lFDPClient§7] "
     const val CLIENT_CREATOR = "CCBlueX, Zywl & SkidderMC TEAM"
     const val CLIENT_WEBSITE = "fdpinfo.github.io"
     
@@ -257,7 +257,7 @@ object LiquidBounce {
 
             // Save all available configs
             GuiCapeManager.save()
-            configManager.save(true, true)
+            configManager.save(true, forceSave = true)
             fileManager.saveAllConfigs()
 
             dynamicLaunchOptions.forEach {

@@ -83,7 +83,7 @@ open class Module : MinecraftInstance(), Listenable {
     init {
         name = moduleInfo.name
         animation = AnimationHelper(this)
-        description = LanguageManager.getAndFormat("module.$name.description")
+        description = moduleInfo.description.ifEmpty { LanguageManager.getAndFormat("module.$name.description") }
         category = moduleInfo.category
         keyBind = moduleInfo.keyBind
         array = moduleInfo.array

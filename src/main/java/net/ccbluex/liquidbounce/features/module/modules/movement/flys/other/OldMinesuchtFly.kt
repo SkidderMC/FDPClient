@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
-class MinesuchtFly : FlyMode("Minesucht") {
+class OldMinesuchtFly : FlyMode("OldMinesucht") {
     private val timer = MSTimer()
 
     override fun onUpdate(event: UpdateEvent) {

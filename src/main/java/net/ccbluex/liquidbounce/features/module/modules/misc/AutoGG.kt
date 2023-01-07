@@ -55,7 +55,7 @@ class AutoGG : Module() {
     fun onUpdate(event: UpdateEvent) {
         if(winning) {
             if(timer.hasTimePassed(delayValue.get().toLong())){
-                LiquidBounce.hud.addNotification(Notification("AutoGG", "Sent GG at chat", NotifyType.SUCCESS, 1000, 500))
+                LiquidBounce.hud.addNotification(Notification("AutoGG", "Sent", NotifyType.SUCCESS, 1000, 500))
                 mc.thePlayer.sendChatMessage(ggMessageValue.get())
                 timer.reset()
                 winning = false

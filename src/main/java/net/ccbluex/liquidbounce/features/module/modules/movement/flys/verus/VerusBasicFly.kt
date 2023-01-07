@@ -31,7 +31,6 @@ class VerusBasicFly : FlyMode("VerusBasic") {
 
     override fun onUpdate(event: UpdateEvent) {
         if(verusMode.get() === "Packet1") {
-            // Simple Float ?
             if(mc.thePlayer.motionY < 0.4) {
                 mc.thePlayer.motionY = 0.0
             }
@@ -39,18 +38,20 @@ class VerusBasicFly : FlyMode("VerusBasic") {
         }
     }
     override fun onMove(event: MoveEvent) {
-        val pos = mc.thePlayer.position.add(0.0, -1.5, 0.0)
-        PacketUtils.sendPacketNoEvent(
-            C08PacketPlayerBlockPlacement(pos, 1,
-                ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
-        )
-        if(mc.thePlayer.onGround && !jumped) {
-            mc.thePlayer.jump()
-            event.y = 0.42
-            jumped = true
-        }else {
-            event.y = 0.0
-            MovementUtils.strafe(0.35f)
+        if(verusMode.get() === "Packet2") {
+            val pos = mc.thePlayer.position.add(0.0, -1.5, 0.0)
+            PacketUtils.sendPacketNoEvent(
+                C08PacketPlayerBlockPlacement(pos, 1,
+                    ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
+            )
+            if(mc.thePlayer.onGround && !jumped) {
+                mc.thePlayer.jump()
+                event.y = 0.42
+                jumped = true
+            }else {
+                event.y = 0.0
+                MovementUtils.strafe(0.35f)
+            }
         }
     }
 }

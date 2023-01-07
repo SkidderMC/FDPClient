@@ -9,7 +9,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import kotlin.math.cos
 import kotlin.math.sin
 
-class MineSecureFly : FlyMode("MineSecure") {
+class OldMineSecureFly : FlyMode("OldMineSecure") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
 
     private val timer = MSTimer()

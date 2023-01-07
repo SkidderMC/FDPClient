@@ -30,7 +30,7 @@ object ScriptSafetyManager {
     }
 
     init {
-        ClientUtils.logInfo("[ScriptAPI] Script safety level: ${ProtectionLevel.values().find { it.level == level }?.name}($level)") // maybe we should think about performance here?
+        ClientUtils.logInfo("[FDPScriptAPI] Script safety level: ${ProtectionLevel.values().find { it.level == level }?.name}($level)") // maybe we should think about performance here?
 
         val restrictedClasses = mutableMapOf<Class<*>, Int>()
         val restrictedChilds = mutableMapOf<Class<*>, Pair<String, Int>>()
@@ -136,7 +136,7 @@ object ScriptSafetyManager {
         val message = klass + (if(child.isNotEmpty()) ".$child" else "")
         if(!alerted.contains(message)) {
             alerted.add(message)
-            ClientUtils.logWarn("[ScriptAPI] \n" +
+            ClientUtils.logWarn("[FDPScriptAPI] \n" +
                     "========= WARNING =========\n" +
                     "The script tried to make a restricted call: $message,\n" +
                     "please add a jvm argument to disable this check: -Dfdp.script.safety=HARMFUL\n" +

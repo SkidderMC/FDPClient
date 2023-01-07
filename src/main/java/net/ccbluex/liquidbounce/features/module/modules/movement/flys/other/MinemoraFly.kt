@@ -4,10 +4,9 @@ import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
+import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
@@ -18,12 +17,13 @@ import java.util.concurrent.LinkedBlockingQueue
 class MinemoraFly : FlyMode("Minemora") {
     private var tick = 0
     private var boost = false
-    private var noGround = false
+    private var boostGround = false
     private var disableLogger = false
     private val packetBuffer = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
+    private val boostValue = BoolValue("BoostBetter", false)
 
     override fun onEnable() {
-        noGround = !mc.thePlayer.onGround
+        boostGround = !mc.thePlayer.onGround
         boost = false
         tick = 0
         mc.gameSettings.keyBindJump.pressed = false
@@ -46,6 +46,7 @@ class MinemoraFly : FlyMode("Minemora") {
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if (mc.thePlayer == null || disableLogger) return
+
         if (packet is C03PacketPlayer) {
             event.cancelEvent()
         }
@@ -59,9 +60,10 @@ class MinemoraFly : FlyMode("Minemora") {
     }
     override fun onUpdate(event: UpdateEvent) {
         fly.antiDesync = false
-        if(boost) {
+        if(boost && boostValue.get()) {
             MovementUtils.resetMotion(false)
             repeat(10) {
+                mc.timer.timerSpeed = (it / 10).toFloat()
                 mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX , mc.thePlayer.posY , mc.thePlayer.posZ , false))
                 mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX , mc.thePlayer.posY , mc.thePlayer.posZ , true))
             }
@@ -85,12 +87,18 @@ class MinemoraFly : FlyMode("Minemora") {
             } else {
                 MovementUtils.resetMotion(false)
             }
+
             if (mc.gameSettings.keyBindJump.pressed) {
                 mc.thePlayer.motionY = 1.7
-            } else if (mc.gameSettings.keyBindSneak.pressed) {
+            }
+            if (mc.gameSettings.keyBindSneak.pressed) {
                 mc.thePlayer.motionY = -1.7
                 if(mc.thePlayer.onGround) {
-                    if(!noGround) fly.state = false else boost = true
+                    if(boostGround) {
+                        boost = true
+                    } else {
+                        fly.state = false
+                    }
                 }
             } else {
                 mc.thePlayer.motionY = 0.0

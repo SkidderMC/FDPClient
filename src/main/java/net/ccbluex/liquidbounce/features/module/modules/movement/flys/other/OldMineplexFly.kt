@@ -13,7 +13,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 
-class MineplexFly : FlyMode("Mineplex") {
+class OldMineplexFly : FlyMode("OldMineplex") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1f, 0.5f, 10f)
 
     private val timer = MSTimer()

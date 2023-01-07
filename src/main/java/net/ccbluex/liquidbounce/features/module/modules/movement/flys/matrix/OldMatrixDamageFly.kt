@@ -14,7 +14,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 
-class MatrixDamageFly : FlyMode("MatrixDamage") {
+class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
 
 
     private val mode = ListValue("${valuePrefix}Mode", arrayOf("Stable","Test","Custom"), "Stable")

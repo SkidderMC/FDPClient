@@ -28,6 +28,11 @@ object Setting {
         return BoolValue(name, default)
     }
 
+    @JvmStatic
+    fun bool(settingInfo: JSObject): BoolValue {
+        return boolean(settingInfo)
+    }
+
     /**
      * Creates an integer value.
      * @param settingInfo JavaScript object containing information about the value.
@@ -41,6 +46,11 @@ object Setting {
         val max = (settingInfo.getMember("max") as Number).toInt()
 
         return IntegerValue(name, default, min, max)
+    }
+
+    @JvmStatic
+    fun int(settingInfo: JSObject): IntegerValue {
+        return integer(settingInfo)
     }
 
     /**

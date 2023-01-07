@@ -13,9 +13,9 @@ object Notifications {
 
     @Suppress("unused")
     @JvmStatic
-    fun create(name: String, content: String, notify: String, time: Int) {
-        var notifytype = NotifyType.INFO
-        when(notify.lowercase()) {
+    fun create(name: String?, content: String?, notify: String?, time: Int?) {
+        var notifytype = NotifyType.WARNING
+        when(notify?.lowercase()) {
             "success" -> notifytype = NotifyType.SUCCESS
 
             "info" -> notifytype = NotifyType.INFO
@@ -24,6 +24,6 @@ object Notifications {
 
             "warning" -> notifytype = NotifyType.WARNING
         }
-        LiquidBounce.hud.addNotification(Notification(name ?: "Invalid String", content ?: "Invalid String", notifytype?: NotifyType.WARNING, time?: 1000))
+        LiquidBounce.hud.addNotification(Notification(name ?: "ScriptAPI", content ?: "Notification register failed", notifytype, time ?: 1000))
     }
 }

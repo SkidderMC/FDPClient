@@ -15,6 +15,10 @@ class CreativeFly : FlyMode("Creative") {
         mc.thePlayer.capabilities.isFlying = true
     }
 
+    override fun onUpdate(event: UpdateEvent) {
+        mc.thePlayer.capabilities.isFlying = true
+    }
+
     override fun onDisable() {
         mc.thePlayer.capabilities.isFlying = false
     }

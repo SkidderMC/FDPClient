@@ -23,7 +23,7 @@ class ScriptManager {
             scriptsFolder.mkdir()
         }
 
-        scriptsFolder.listFiles().forEach {
+        scriptsFolder.listFiles()?.forEach {
             if (it.name.endsWith(".js", true)) {
                 Remapper.loadSrg() // load SRG if needed, this will optimize the performance
                 loadJsScript(it)
@@ -52,9 +52,9 @@ class ScriptManager {
     fun loadJsScript(scriptFile: File) {
         try {
             scripts.add(Script(scriptFile))
-            ClientUtils.logInfo("[ScriptAPI] Successfully loaded script '${scriptFile.name}'.")
+            ClientUtils.logInfo("[FDPScriptAPI] Successfully loaded script '${scriptFile.name}'.")
         } catch (t: Throwable) {
-            ClientUtils.logError("[ScriptAPI] Failed to load script '${scriptFile.name}'.", t)
+            ClientUtils.logError("[FDPScriptAPI] Failed to load script '${scriptFile.name}'.", t)
         }
     }
 

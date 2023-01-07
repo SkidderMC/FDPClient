@@ -72,6 +72,7 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
         events[eventName] = handler
     }
 
+
     override fun onEnable() = callEvent("enable")
 
     override fun onDisable() = callEvent("disable")
@@ -80,8 +81,13 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
     fun onUpdate(updateEvent: UpdateEvent) = callEvent("update")
 
     @EventTarget
-    fun onMotion(motionEvent: MotionEvent) = callEvent("motion", motionEvent)
-
+    fun onMotion(motionEvent: MotionEvent) {
+        callEvent("motion", motionEvent)
+        when(motionEvent.eventState) {
+            EventState.PRE -> callEvent("premotion", motionEvent)
+            EventState.POST -> callEvent("postmotion", motionEvent)
+        }
+    }
     @EventTarget
     fun onRender2D(render2DEvent: Render2DEvent) = callEvent("render2D", render2DEvent)
 
@@ -101,7 +107,7 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
     fun onBlockBB(blockBBEvent: BlockBBEvent) = callEvent("blockBB", blockBBEvent)
 
     @EventTarget
-    fun onClientShutdown(clientShutdownEvent: ClientShutdownEvent) = callEvent("clientShutdown")
+    fun onClientShutdown(clientShutdownEvent: ClientShutdownEvent) = callEvent("clientShutdown", clientShutdownEvent)
 
     @EventTarget
     fun onPushOut(pushOutEvent: PushOutEvent) = callEvent("pushOut", pushOutEvent)
@@ -110,7 +116,7 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
     fun onScreen(screenEvent: ScreenEvent) = callEvent("screen", screenEvent)
 
     @EventTarget
-    fun onTick(tickEvent: TickEvent) = callEvent("tick")
+    fun onTick(tickEvent: TickEvent) = callEvent("tick", tickEvent)
 
     @EventTarget
     fun onKey(keyEvent: KeyEvent) = callEvent("key", keyEvent)
@@ -148,7 +154,7 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
         try {
             events[eventName]?.call(moduleObject, payload)
         } catch (throwable: Throwable) {
-            ClientUtils.logError("[ScriptAPI] Exception in module '$name'!", throwable)
+            ClientUtils.logError("[FDPScriptAPI] Exception in module '$name'!", throwable)
         }
     }
 }

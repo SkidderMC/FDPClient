@@ -48,7 +48,7 @@ class BoatFly : Module() {
             }
 
             "velocity" -> {
-                vehicle.addVelocity(x, if(mc.gameSettings.keyBindJump.pressed) speedValue.get().toDouble() else vehicle.motionY, z)
+                vehicle.addVelocity(x, if(mc.gameSettings.keyBindJump.pressed) speedValue.get().toDouble() else 0.0, z)
             }
         }
     }

@@ -29,7 +29,7 @@ class ScriptCommand(private val commandObject: JSObject) : Command(commandObject
         try {
             events["execute"]?.call(commandObject, args)
         } catch (throwable: Throwable) {
-            ClientUtils.logError("[ScriptAPI] Exception in command '$command'!", throwable)
+            ClientUtils.logError("[FDPScriptAPI] Exception in command '$command'!", throwable)
         }
     }
 }

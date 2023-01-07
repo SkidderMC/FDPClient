@@ -13,7 +13,7 @@ import kotlin.math.sin
 
 class VulcanFly : FlyMode("Vulcan") {
 
-    val canClipValue = BoolValue("CanClip", true)
+    private val canClipValue = BoolValue("CanClip", true)
 
     private var waitFlag = false
     private var canGlide = false
