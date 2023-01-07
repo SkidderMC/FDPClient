@@ -26,8 +26,6 @@ class VulcanLowHopSpeed : SpeedMode("VulcanLowHop") {
         }
         if (MovementUtils.getSpeed() < 0.215) {
             MovementUtils.strafe(0.215f)
-        }else {
-            MovementUtils.strafe()
         }
     }
 
