@@ -10,7 +10,7 @@ class VulcanLowHopSpeed : SpeedMode("VulcanLowHop") {
 
     override fun onUpdate() {
         ticks++
-        mc.thePlayer.jumpMovementFactor = 0.0245
+        mc.thePlayer.jumpMovementFactor = 0.0245f
         if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
             mc.thePlayer.jump()
             ticks = 0
