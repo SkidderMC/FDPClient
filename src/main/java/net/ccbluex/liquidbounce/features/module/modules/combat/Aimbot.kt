@@ -58,6 +58,14 @@ class Aimbot : Module() {
         if (!lockValue.get() && RotationUtils.isFaced(entity, range.toDouble())) {
             return
         }
+        var diffAngle = RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), if (centerValue.get()) {
+                RotationUtils.toRotation(RotationUtils.getCenter(entity.entityBoundingBox), true)
+            } else {
+                RotationUtils.searchCenter(entity.entityBoundingBox, false, false, true,
+                    false).rotation
+            })
+        
+        
 
         val rotation = RotationUtils.limitAngleChange(
             Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
@@ -67,7 +75,7 @@ class Aimbot : Module() {
                 RotationUtils.searchCenter(entity.entityBoundingBox, false, false, true,
                     false).rotation
             },
-            (turnSpeedValue.get() + Math.random() * randomTurnValue.get() - Math.random() * randomTurnValue.get()).toFloat()
+            diffAngle * diffAngle / 129600 * (turnSpeedValue.get() + Math.random() * randomTurnValue.get() - Math.random() * randomTurnValue.get()).toFloat()
         )
 
         rotation.toPlayer(mc.thePlayer)
