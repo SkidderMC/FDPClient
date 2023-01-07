@@ -90,8 +90,7 @@ class MinemoraFly : FlyMode("Minemora") {
 
             if (mc.gameSettings.keyBindJump.pressed) {
                 mc.thePlayer.motionY = 1.7
-            }
-            if (mc.gameSettings.keyBindSneak.pressed) {
+            } else if (mc.gameSettings.keyBindSneak.pressed) {
                 mc.thePlayer.motionY = -1.7
                 if(mc.thePlayer.onGround) {
                     if(boostGround) {
