@@ -232,7 +232,7 @@ class Jesus : Module() {
                         mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.01,
                         mc.thePlayer.entityBoundingBox.minZ))) {
                             nextTick = !nextTick
-                            event.packet.y = mc.thePlayer.posY + if (nextTick) yportUpValue.get().toDouble() else yportDownValue.get().toDouble()
+                            event.packet.y = mc.thePlayer.posY + if (nextTick) yportUpValue.get().toDouble() else -yportDownValue.get().toDouble()
                             if (msTimer.hasTimePassed(yportConvertDelayValue.get().toLong()) && yportConvertValue.get() && !yportGroundValue.get()) {
                                 event.packet.onGround = true
                                 msTimer.reset()
