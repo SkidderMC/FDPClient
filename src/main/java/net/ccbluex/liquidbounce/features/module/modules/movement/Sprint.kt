@@ -34,8 +34,6 @@ class Sprint : Module() {
     private val noPacket = BoolValue("NoPacket", false)
     private val allDirectionsLimitSpeedGround = BoolValue("AllDirectionsLimitSpeedOnlyGround", true)
     private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed", 0.7f, 0.5f, 1f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
-    
-    var currentState = false
 
     private var spoofStat = false
         set(value) {
@@ -59,16 +57,18 @@ class Sprint : Module() {
                 !allDirectionsValue.get() && RotationUtils.targetRotation != null &&
                 RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30)) {
             mc.thePlayer.isSprinting = false
-            currentState = false
+            return
+        }
+        if (mc.thePlayer.movementInput.moveForward < 0.8F && !allDirectionsValue.get()) {
+            mc.thePlayer.isSprinting = false
             return
         }
         mc.thePlayer.isSprinting = true
-        currentState = true
 
         if (allDirectionsValue.get()) {
             if (RotationUtils.getRotationDifference(Rotation((MovementUtils.direction * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch)) > 30) {
                 when (allDirectionsBypassValue.get().lowercase()) {
-                    "rotate" -> RotationUtils.setTargetRotation(Rotation(MovementUtils.movingYaw, mc.thePlayer.rotationPitch), 10)
+                    "rotate" -> RotationUtils.setTargetRotation(Rotation(MovementUtils.movingYaw, mc.thePlayer.rotationPitch), 20)
                     "rotate2" -> {
                         val movingForward = mc.thePlayer.moveForward > 0.0F
                         val movingBackward = mc.thePlayer.moveForward < 0.0F
@@ -97,7 +97,7 @@ class Sprint : Module() {
                             direction += 135.0f
                         }
 
-                        RotationUtils.setTargetRotation(Rotation(direction, mc.thePlayer.rotationPitch), 10)
+                        RotationUtils.setTargetRotation(Rotation(direction, mc.thePlayer.rotationPitch), 20)
                         
                     }
                     "toggle" -> {
