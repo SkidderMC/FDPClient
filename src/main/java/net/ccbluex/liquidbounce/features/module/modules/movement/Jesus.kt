@@ -215,25 +215,33 @@ class Jesus : Module() {
                         }
                 }
                 "Medusa" -> {
-                    nextTick = !nextTick
-                    event.packet.y = mc.thePlayer.posY + if (nextTick) 0.1 else -0.1
-                    if (msTimer.hasTimePassed(1000)) {
-                        event.packet.onGround = true
-                        msTimer.reset()
-                    } else {
-                        event.packet.onGround = false
-                    }
+                    if (isLiquidBlock(AxisAlignedBB(mc.thePlayer.entityBoundingBox.maxX, mc.thePlayer.entityBoundingBox.maxY,
+                        mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.01,
+                        mc.thePlayer.entityBoundingBox.minZ))) {
+                            nextTick = !nextTick
+                            event.packet.y = mc.thePlayer.posY + if (nextTick) 0.1 else -0.1
+                            if (msTimer.hasTimePassed(1000)) {
+                                event.packet.onGround = true
+                                msTimer.reset()
+                            } else {
+                                event.packet.onGround = false
+                            }
+                        }
                 }
                 "Vulcan" -> {
-                    nextTick = !nextTick
-                    event.packet.y = mc.thePlayer.posY + if (nextTick) 0.1 else -0.1
-                    if (msTimer.hasTimePassed(1500)) {
-                        event.cancelEvent()
-                        PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
-                        msTimer.reset()
-                    } else {
-                        event.packet.onGround = false
-                    }
+                    if (isLiquidBlock(AxisAlignedBB(mc.thePlayer.entityBoundingBox.maxX, mc.thePlayer.entityBoundingBox.maxY,
+                        mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.01,
+                        mc.thePlayer.entityBoundingBox.minZ))) {
+                            nextTick = !nextTick
+                            event.packet.y = mc.thePlayer.posY + if (nextTick) 0.1 else -0.1
+                            if (msTimer.hasTimePassed(1500)) {
+                                event.cancelEvent()
+                                PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
+                                msTimer.reset()
+                            } else {
+                                event.packet.onGround = false
+                            }
+                        }
                 }
             }
 
