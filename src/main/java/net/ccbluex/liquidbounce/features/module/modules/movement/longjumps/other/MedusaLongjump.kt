@@ -16,12 +16,14 @@ import kotlin.math.sin
 class MedusaLongjump : LongJumpMode("Medusa") {
     private val boostValue = FloatValue("${valuePrefix}Boost", 2.0f, 0.6f, 2.5f)
     private val motionYValue = FloatValue("${valuePrefix}MotionY", 0.625f, 0.8f, 0.42f)
+    private val timerValue = FloatValue("${valuePrefix}BoostTimer", 0.2f, 0.05f, 0.4f)
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
     private val motionResetValue = BoolValue("${valuePrefix}MotionReset", true)
     var canBoost = false
     var boosting = false
     var firstEnable = false
     var skipDetect = false
+    var flagReveiced = false
     var n_f10x_ = "Medusa LongJump Bypass - by Co Dynamic 2022 12 22"
     
     override fun onEnable() {
@@ -38,7 +40,7 @@ class MedusaLongjump : LongJumpMode("Medusa") {
     }
     
     override fun onUpdate(event: UpdateEvent) {
-        if (canBoost && boosting && mc.timer.timerSpeed < 1.0f) {
+        if (canBoost && boosting && mc.timer.timerSpeed < 1.0f && flagReveiced) {
             skipDetect = true
             mc.thePlayer.jump()
             mc.thePlayer.onGround = true
@@ -57,6 +59,9 @@ class MedusaLongjump : LongJumpMode("Medusa") {
     
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
+        if (packet is S08PacketPlayerPosLook) {
+            flagReveiced = true
+        }
         if (packet is C03PacketPlayer && canBoost) {
             packet.onGround = true
         }
@@ -87,13 +92,14 @@ class MedusaLongjump : LongJumpMode("Medusa") {
         }
         event.cancelEvent()
         if ((mc.thePlayer.hurtTime > 0 || !onlyDamageValue.get()) && !canBoost && mc.thePlayer.onGround && longjump.airTick < 100) {
+            flagReveiced = false
             canBoost = true
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ, false))
             mc.thePlayer.onGround = false
             MovementUtils.resetMotion(true)
             mc.thePlayer.jumpMovementFactor = 0.0f
             longjump.airTick = -1
-            mc.timer.timerSpeed = 0.2f
+            mc.timer.timerSpeed = timerValue.get()
             boosting = true
         }
     }
