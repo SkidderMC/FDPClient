@@ -5,6 +5,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -12,7 +13,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import kotlin.math.sqrt
 
-class Vulcan4Fly : FlyMode("Vulcan4") {
+class VulcanDamageFly : FlyMode("VulcanDamage") {
     private var flag = false
     
     private var lastSentX = 0.0
@@ -24,10 +25,15 @@ class Vulcan4Fly : FlyMode("Vulcan4") {
         lastSentX = mc.thePlayer.posX
         lastSentY = mc.thePlayer.posY
         lastSentZ = mc.thePlayer.posZ
-        if(mc.thePlayer.onGround) {
+        if(mc.thePlayer.onGround && mc.thePlayer.hurtTime > 0) {
             mc.timer.timerSpeed = 0.3f
             PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 2 + Math.random() / 2, mc.thePlayer.posZ, false))
         } else {
+            if (mc.thePlayer.hurtTime == 0 && mc.thePlayer.onGround) {
+                ClientUtils.displayChatMessage("§8[§c§Vulcan-Dmg-Fly§8] §aGetting damage from other entities is required to bypass.")
+            }else {
+                ClientUtils.displayChatMessage("§8[§c§Vulcan-Dmg-Fly§8] §aYou need to stand on Ground.")
+            }
             fly.state = false
         }
     }
@@ -41,7 +47,7 @@ class Vulcan4Fly : FlyMode("Vulcan4") {
         if(GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
             mc.thePlayer.motionY = 0.42
         } else if(GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
-            mc.thePlayer.motionY = 0.42
+            mc.thePlayer.motionY = -0.42
         } else {
             mc.thePlayer.motionY = 0.0
         }
@@ -57,7 +63,7 @@ class Vulcan4Fly : FlyMode("Vulcan4") {
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if(packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook) {
+        if(packet is C03PacketPlayer && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)) {
             val deltaX = packet.x - lastSentX
             val deltaY = packet.y - lastSentY
             val deltaZ = packet.z - lastSentZ
