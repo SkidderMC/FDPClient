@@ -34,6 +34,8 @@ class Sprint : Module() {
     private val noPacket = BoolValue("NoPacket", false)
     private val allDirectionsLimitSpeedGround = BoolValue("AllDirectionsLimitSpeedOnlyGround", true)
     private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed", 0.7f, 0.5f, 1f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
+    
+    var currentState = false
 
     private var spoofStat = false
         set(value) {
@@ -49,8 +51,6 @@ class Sprint : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        mc.thePlayer.isSprinting = true
-
         if (!MovementUtils.isMoving() || mc.thePlayer.isSneaking || blindnessValue.get() &&
                 mc.thePlayer.isPotionActive(Potion.blindness) || foodValue.get() &&
                 !(mc.thePlayer.foodStats.foodLevel > 6.0f || mc.thePlayer.capabilities.allowFlying) ||
@@ -59,11 +59,13 @@ class Sprint : Module() {
                 !allDirectionsValue.get() && RotationUtils.targetRotation != null &&
                 RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30)) {
             mc.thePlayer.isSprinting = false
+            currentState = false
             return
         }
+        mc.thePlayer.isSprinting = true
+        currentState = true
 
         if (allDirectionsValue.get()) {
-            mc.thePlayer.isSprinting = true
             if (RotationUtils.getRotationDifference(Rotation((MovementUtils.direction * 180f / Math.PI).toFloat(), mc.thePlayer.rotationPitch)) > 30) {
                 when (allDirectionsBypassValue.get().lowercase()) {
                     "rotate" -> RotationUtils.setTargetRotation(Rotation(MovementUtils.movingYaw, mc.thePlayer.rotationPitch), 10)
