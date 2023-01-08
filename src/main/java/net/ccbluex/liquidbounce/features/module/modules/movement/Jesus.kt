@@ -61,9 +61,11 @@ class Jesus : Module() {
                 }
             }
             "silentyport" -> {
-                if (isLiquidBlock() && mc.thePlayer.isInsideOfMaterial(Material.air) && mc.thePlayer.onGround && getBlock(blockPos) === Blocks.water) {
-                    mc.thePlayer.motionX *= yportSpeedValue.get().toDouble()
-                    mc.thePlayer.motionZ *= yportSpeedValue.get().toDouble()
+                if (mc.thePlayer.onGround && isLiquidBlock(AxisAlignedBB(mc.thePlayer.entityBoundingBox.maxX, mc.thePlayer.entityBoundingBox.maxY,
+                        mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.015626,
+                        mc.thePlayer.entityBoundingBox.minZ))) {
+                            mc.thePlayer.motionX *= yportSpeedValue.get().toDouble()
+                            mc.thePlayer.motionZ *= yportSpeedValue.get().toDouble()
                 }
             }
             "jump" -> {
