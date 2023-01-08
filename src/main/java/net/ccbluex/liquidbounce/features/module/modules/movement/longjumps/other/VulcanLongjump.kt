@@ -21,7 +21,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     var waitFlag = false
     var isFlagged = false
     var lastTickOnGround = false
-    var _f10x_ = "Vulcan LongJump Bypass - by Co Dynamic 2023 01 05"
+    var n_f10x_ = "Vulcan LongJump Bypass - by Co Dynamic 2023 01 05"
     
     override fun onEnable() {
         if(!mc.thePlayer.onGround) {
