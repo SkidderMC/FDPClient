@@ -62,7 +62,7 @@ class Aimbot : Module() {
         }
         
         val calcBaseSpeed = turnSpeedValue.get() + Math.random() * randomTurnValue.get() - Math.random() * randomTurnValue.get()
-        val angleDiff = RotationUtils.getRotationDifference(it)
+        val angleDiff = RotationUtils.getRotationDifference(entity)
         val calcPrecent = if (angleDiff >= smoothAngleValue.get() || !smoothValue.get()) { 1.0 } else { angleDiff / smoothAngleValue.get() }
 
         val rotation = RotationUtils.limitAngleChange(
