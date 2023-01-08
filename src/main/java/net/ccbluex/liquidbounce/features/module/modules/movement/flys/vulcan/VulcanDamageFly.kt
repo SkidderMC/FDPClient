@@ -39,7 +39,11 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        mc.timer.timerSpeed = 1.0f
+        if (!flag) {
+            mc.timer.timerSpeed = 0.3f
+        }else {
+            mc.timer.timerSpeed = 1.0f
+        }
         mc.gameSettings.keyBindJump.pressed = false
         mc.gameSettings.keyBindSneak.pressed = false
         fly.antiDesync = true
@@ -80,6 +84,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         }
         if(packet is S08PacketPlayerPosLook) {
             if (!flag) {
+                flag = true
                 val deltaX = packet.x - mc.thePlayer.posX
                 val deltaY = packet.y - mc.thePlayer.posY
                 val deltaZ = packet.z - mc.thePlayer.posZ
