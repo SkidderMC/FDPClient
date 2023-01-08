@@ -27,6 +27,8 @@ class Aimbot : Module() {
     private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)
     private val turnSpeedValue = FloatValue("TurnSpeed", 2F, 1F, 180F)
     private val randomTurnValue = FloatValue("TurnSpeedRandomRate", 1.0F, 0F, 15F)
+    private val smoothValue = BoolValue("Smooth", false)
+    private val smoothAngleValue = IntegerValue("SmoothMinAngle", 30, 1, 180).displayable { smoothValue.get() }
     private val fovValue = FloatValue("FOV", 180F, 1F, 180F)
     private val centerValue = BoolValue("Center", false)
     private val lockValue = BoolValue("Lock", true)
@@ -58,6 +60,10 @@ class Aimbot : Module() {
         if (!lockValue.get() && RotationUtils.isFaced(entity, range.toDouble())) {
             return
         }
+        
+        val calcBaseSpeed = turnSpeedValue.get() + Math.random() * randomTurnValue.get() - Math.random() * randomTurnValue.get()
+        val angleDiff = RotationUtils.getRotationDifference(it)
+        val calcPrecent = if (angleDiff >= smoothAngleValue.get() || !smoothValue.get()) { 1.0 } else { angleDiff / smoothAngleValue.get() }
 
         val rotation = RotationUtils.limitAngleChange(
             Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
@@ -67,7 +73,7 @@ class Aimbot : Module() {
                 RotationUtils.searchCenter(entity.entityBoundingBox, false, false, true,
                     false).rotation
             },
-            (turnSpeedValue.get() + Math.random() * randomTurnValue.get() - Math.random() * randomTurnValue.get()).toFloat()
+            (calcBaseSpeed * calcPrecent).toFloat()
         )
 
         rotation.toPlayer(mc.thePlayer)
