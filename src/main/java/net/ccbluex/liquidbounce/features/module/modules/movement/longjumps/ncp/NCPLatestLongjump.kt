@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
-class LatestNCP : LongJumpModeMode("LatestNCP") {
+class LatestNCP : LongJumpMode("LatestNCP") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 0.65f, 0.28f, 1f)
     private val timerValue = FloatValue("${valuePrefix}Timer", 1.1F , 0.5f , 2.0f)
     private val baseMoveValue = BoolValue("${valuePrefix}MinBaseMoveSpeed", true)
