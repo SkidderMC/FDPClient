@@ -37,6 +37,8 @@ class LongJump : Module() {
 
     val autoJumpValue = BoolValue("AutoJump", true)
     val autoDisableValue = BoolValue("AutoDisable", true)
+    val timerValue = FloatValue("GlobalTimer", 1.0f, 0.1f, 2.0f)
+    val onlyAirValue = BoolValue("TimerOnlyAir", true)
     var airTick = 0
     var isJumped = false
 
@@ -58,6 +60,9 @@ class LongJump : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(!state) return
+        if (!onlyAirValue.get() || !mc.thePlayer.onGround) {
+            mc.timer.timerSpeed = timerValue.get()
+        }
         if (!mc.thePlayer.onGround) {
             airTick++
         }else {
