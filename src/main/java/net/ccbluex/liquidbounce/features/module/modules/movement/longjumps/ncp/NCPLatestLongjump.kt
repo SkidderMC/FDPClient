@@ -45,14 +45,14 @@ class LatestNCP : LongJumpModeMode("LatestNCP") {
             jumped = false
             MovementUtils.strafe(speedValue.get())
         }
-        if (mc.thePlayer.onGround) {
-          mc.thePlayer.jump()
-          jumped = true
-        }
     }
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1.0f
+    }
+    
+    override fun onAttemptDisable() {
+        longjump.state = false
     }
 
 }
