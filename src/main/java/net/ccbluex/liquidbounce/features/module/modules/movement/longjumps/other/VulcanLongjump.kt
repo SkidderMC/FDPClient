@@ -24,6 +24,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     var n_f10x_ = "Vulcan LongJump Bypass - by Co Dynamic 2023 01 05"
     
     override fun onEnable() {
+        longjump.noTimerModify = true
         if(!mc.thePlayer.onGround) {
             onAttemptDisable()
         }
@@ -34,6 +35,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     }
     
     override fun onDisable() {
+        longjump.noTimerModify = false
         MovementUtils.resetMotion(false)
         mc.timer.timerSpeed = 1.0f
     }
