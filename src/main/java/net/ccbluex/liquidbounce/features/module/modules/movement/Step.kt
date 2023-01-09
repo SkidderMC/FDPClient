@@ -35,7 +35,7 @@ class Step : Module() {
     val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "Matrix6.7.0",
                                                       "NCP", "NCPNew", "MotionNCP", "MotionNCP2", "OldNCP",
                                                       "OldAAC", "LAAC", "AAC3.3.4", "AAC3.6.4", "AAC4.4.0",
-                                                      "Spartan", "Rewinside", "Vulcan", "Verus"), "NCP")
+                                                      "Spartan", "Rewinside", "Vulcan", "Verus", "BlocksMC"), "NCP")
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
     private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") || modeValue.equals("TimerJump") }
     private val delayValue = IntegerValue("Delay", 0, 0, 500)
