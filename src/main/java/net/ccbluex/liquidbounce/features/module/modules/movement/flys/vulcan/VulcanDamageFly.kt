@@ -26,7 +26,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         lastSentY = mc.thePlayer.posY
         lastSentZ = mc.thePlayer.posZ
         if(mc.thePlayer.onGround && mc.thePlayer.hurtTime > 0) {
-            mc.timer.timerSpeed = 0.3f
+            mc.timer.timerSpeed = 0.2f
             PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 2 + Math.random() / 2, mc.thePlayer.posZ, false))
         } else {
             if (mc.thePlayer.hurtTime == 0 && mc.thePlayer.onGround) {
@@ -40,14 +40,14 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
 
     override fun onUpdate(event: UpdateEvent) {
         if (!flag) {
-            mc.timer.timerSpeed = 0.3f
+            mc.timer.timerSpeed = 0.2f
         }else {
             mc.timer.timerSpeed = 1.0f
         }
         mc.gameSettings.keyBindJump.pressed = false
         mc.gameSettings.keyBindSneak.pressed = false
         fly.antiDesync = true
-        MovementUtils.strafe((1.2 + Math.random() / 10).toFloat())
+        MovementUtils.strafe((0.96 + Math.random() / 50).toFloat())
         if(GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
             mc.thePlayer.motionY = 0.42
         } else if(GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
@@ -72,7 +72,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             val deltaY = packet.y - lastSentY
             val deltaZ = packet.z - lastSentZ
             
-            if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 8) {
+            if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 9.5) {
                 lastSentX = packet.x
                 lastSentY = packet.y
                 lastSentZ = packet.z
