@@ -17,7 +17,7 @@ import kotlin.math.sin
 class MedusaLongjump : LongJumpMode("Medusa") {
     private val boostValue = FloatValue("${valuePrefix}Boost", 2.0f, 0.6f, 2.5f)
     private val motionYValue = FloatValue("${valuePrefix}MotionY", 0.625f, 0.8f, 0.42f)
-    private val timerValue = FloatValue("${valuePrefix}BoostTimer", 0.2f, 0.05f, 0.4f)
+    private val bTimerValue = FloatValue("${valuePrefix}BoostTimer", 0.2f, 0.05f, 0.4f)
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
     private val motionResetValue = BoolValue("${valuePrefix}MotionReset", true)
     var canBoost = false
@@ -52,6 +52,7 @@ class MedusaLongjump : LongJumpMode("Medusa") {
             firstEnable = false
             boosting = false
             canBoost = false
+            longjump.noTimerModify = false
         }else if (mc.thePlayer.onGround && motionResetValue.get()) {
             MovementUtils.resetMotion(false)
             //more convenient operation, but sometimes will flag a little bit (not so important)
@@ -100,7 +101,8 @@ class MedusaLongjump : LongJumpMode("Medusa") {
             MovementUtils.resetMotion(true)
             mc.thePlayer.jumpMovementFactor = 0.0f
             longjump.airTick = -1
-            mc.timer.timerSpeed = timerValue.get()
+            mc.timer.timerSpeed = bTimerValue.get()
+            longjump.noTimerModify = true
             boosting = true
         }
     }
