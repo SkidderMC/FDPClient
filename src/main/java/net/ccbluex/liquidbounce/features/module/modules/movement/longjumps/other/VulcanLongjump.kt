@@ -134,7 +134,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
         longjump.airTick = -1
         mc.thePlayer.jumpMovementFactor = 0.0f
         if (mc.thePlayer.onGround) {
-            if (dmgJumpCount >= 3) {
+            if (dmgJumpCount >= 4) {
                 isDamaged = true
                 dmgJumpCount = 999
                 return false
