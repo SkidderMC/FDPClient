@@ -18,9 +18,12 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     private val repeatValue = IntegerValue("${valuePrefix}RepeatTimes", 2, 1, 6)
     private val distanceValue = FloatValue("${valuePrefix}Distance", 7.0f, 2.0f, 8.0f)
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
+    private val selfDamageValue = BoolValue("${valuePrefix}SelfDamage", true)
     var waitFlag = false
     var isFlagged = false
     var lastTickOnGround = false
+    var isDamaged = false
+    var dmgJumpCount = 0
     var n_f10x_ = "Vulcan LongJump Bypass - by Co Dynamic 2023 01 05"
     
     override fun onEnable() {
@@ -31,7 +34,10 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
         mc.timer.timerSpeed = 1.0f
         waitFlag = false
         isFlagged = false
+        isDamaged = false
+        dmgJumpCount = 0
         lastTickOnGround = mc.thePlayer.onGround
+        runSelfDamageCore()
     }
     
     override fun onDisable() {
@@ -41,6 +47,9 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     }
     
     override fun onUpdate(event: UpdateEvent) {
+        if (runSelfDamageCore()) {
+            return
+        }
         if ((onlyDamageValue.get() && mc.thePlayer.hurtTime == 0) && !waitFlag && !isFlagged && longjump.airTick < 888) {
             mc.thePlayer.onGround = false
             MovementUtils.resetMotion(true)
@@ -61,6 +70,8 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
             waitFlag = false
             isFlagged = false
             longjump.airTick = 999
+            isDamaged = false
+            dmgJumpCount = 0
         }
         if (waitFlag && !isFlagged && mc.thePlayer.onGround) {
             if (!lastTickOnGround) {
@@ -85,6 +96,9 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) return
             event.cancelEvent()
         }
+        if (packet is C03PacketPlayer && dmgJumpCount < 3) {
+            packet.onGround = false
+        }
     }
     
     override fun onAttemptDisable() {
@@ -104,5 +118,31 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
         waitFlag = true
         mc.timer.timerSpeed = 1.0f
         lastTickOnGround = true
+    }
+    
+    fun runSelfDamageCore(): Boolean {
+        if (!onlyDamageValue.get() || !selfDamageValue.get()) {
+            isDamaged = true
+            dmgJumpCount = 999
+            return false
+        }
+        if (isDamaged) {
+            dmgJumpCount = 999
+            return false
+        }
+        longjump.airTick = -1
+        mc.thePlayer.jumpMovementFactor = 0.0f
+        if (mc.thePlayer.onGround) {
+            if (dmgJumpCount >= 3) {
+                isDamaged = true
+                dmgJumpCount = 999
+                return false
+            }
+            dmgJumpCount++
+            MovementUtils.resetMotion(true)
+            mc.thePlayer.jump()
+        }
+        MovementUtils.resetMotion(false)
+        return true
     }
 }
