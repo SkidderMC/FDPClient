@@ -97,7 +97,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) return
             event.cancelEvent()
         }
-        if (packet is C03PacketPlayer && dmgJumpCount < 3) {
+        if (packet is C03PacketPlayer && dmgJumpCount < 4) {
             packet.onGround = false
         }
     }
@@ -135,6 +135,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
         mc.thePlayer.jumpMovementFactor = 0.0f
         if (mc.thePlayer.onGround) {
             if (dmgJumpCount >= 4) {
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
                 isDamaged = true
                 dmgJumpCount = 999
                 return false
