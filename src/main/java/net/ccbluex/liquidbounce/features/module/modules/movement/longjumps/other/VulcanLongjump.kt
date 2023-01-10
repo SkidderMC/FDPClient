@@ -71,8 +71,6 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
             waitFlag = false
             isFlagged = false
             longjump.airTick = 999
-            isDamaged = false
-            dmgJumpCount = 0
         }
         if (waitFlag && !isFlagged && mc.thePlayer.onGround) {
             if (!lastTickOnGround) {
