@@ -14,7 +14,11 @@ class RedeSky2Longjump : LongJumpMode("RedeSky2") {
     private val minYMotionValue = FloatValue("${valuePrefix}MinYMotion", 0.04F, 0.01F, 0.20F)
     private val reduceYMotionValue = FloatValue("${valuePrefix}ReduceYMotion", 0.15F, 0.01F, 0.20F)
     private val yMotionReducerValue = BoolValue("${valuePrefix}YMotionReducer", true)
-    
+
+    override fun onEnable() {
+        sendLegacy()
+    }
+
     override fun onUpdate(event: UpdateEvent) {
         if (!mc.thePlayer.onGround) {
             if (yMotionReducerValue.get()) {

@@ -6,6 +6,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.features.value.Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.ClientUtils
 
 abstract class LongJumpMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"
@@ -15,6 +18,13 @@ abstract class LongJumpMode(val modeName: String) : MinecraftInstance() {
 
     open val values: List<Value<*>>
         get() = ClassUtils.getValues(this.javaClass, this)
+
+    fun sendLegacy() {
+        if(!longjump.legacyWarningValue.get()) return
+
+        ClientUtils.displayChatMessage("§7[§bLongJump§7] §cThis bypass is patched on latest anticheat!")
+        LiquidBounce.hud.addNotification(Notification("LongJump", "This Bypass is a legacy bypass!", NotifyType.WARNING, 1000))
+    }
 
     open fun onEnable() {}
     open fun onDisable() {}

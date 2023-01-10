@@ -14,7 +14,10 @@ class RedeSkyLongjump : LongJumpMode("RedeSky") {
     private val reduceYMotionValue = FloatValue("${valuePrefix}ReduceYMotion", 0.15F, 0.01F, 0.20F)
     private val useTimerValue = BoolValue("${valuePrefix}Timer", true)
     private val timerValue = FloatValue("${valuePrefix}Timer", 0.30F, 0.1F, 1F)
-    
+
+    override fun onEnable() {
+        sendLegacy()
+    }
     override fun onUpdate(event: UpdateEvent) {
         if (!mc.thePlayer.onGround) {
             if (moveReducerValue.get()) {

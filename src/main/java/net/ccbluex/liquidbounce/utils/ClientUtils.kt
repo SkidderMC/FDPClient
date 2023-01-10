@@ -46,7 +46,7 @@ ClientUtils : MinecraftInstance() {
     }
 
     fun displayAlert(message: String) {
-        displayChatMessage("[" + LiquidBounce.COLORED_NAME + "] " + message)
+        displayChatMessage(LiquidBounce.COLORED_NAME + message)
     }
 
     fun displayChatMessage(message: String) {

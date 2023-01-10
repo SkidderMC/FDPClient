@@ -40,6 +40,7 @@ class LongJump : Module() {
     val autoDisableValue = BoolValue("AutoDisable", true)
     val timerValue = FloatValue("GlobalTimer", 1.0f, 0.1f, 2.0f)
     val onlyAirValue = BoolValue("TimerOnlyAir", true)
+    val legacyWarningValue = BoolValue("LegacyWarn", true)
     var airTick = 0
     var isJumped = false
     var noTimerModify = false

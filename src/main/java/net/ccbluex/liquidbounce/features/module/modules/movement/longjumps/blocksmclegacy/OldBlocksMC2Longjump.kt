@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.blocksmc
+package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.blocksmclegacy
 
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
@@ -10,6 +10,11 @@ class OldBlocksMC2Longjump : LongJumpMode("OldBlocksMC2") {
         MovementUtils.strafe(MovementUtils.getSpeed() * 1.114514f)
         mc.timer.timerSpeed = 0.917555f
     }
+
+    override fun onEnable() {
+        sendLegacy()
+    }
+
     override fun onAttemptJump() {
         mc.thePlayer.jump()
     }

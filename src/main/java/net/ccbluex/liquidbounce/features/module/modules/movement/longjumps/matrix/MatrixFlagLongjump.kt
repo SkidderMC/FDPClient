@@ -17,6 +17,7 @@ class MatrixFlagLongjump : LongJumpMode("MatrixFlag") {
     override fun onEnable() {
         isFlag = false
         doBoost = false
+        sendLegacy()
     }
 
     override fun onUpdate(event: UpdateEvent) {

@@ -19,6 +19,7 @@ class MatrixHurtLongjump : LongJumpMode("MatrixHurt") {
         detected = false
         motiony = 0.0
         tick = 0
+        sendLegacy()
     }
     override fun onUpdate(event: UpdateEvent) {
         if(detected) {

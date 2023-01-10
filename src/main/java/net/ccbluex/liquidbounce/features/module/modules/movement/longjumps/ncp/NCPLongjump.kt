@@ -10,6 +10,7 @@ class NCPLongjump : LongJumpMode("NCP") {
     private val ncpBoostValue = FloatValue("${valuePrefix}Boost", 4.25f, 1f, 10f)
     private var canBoost = false
     override fun onEnable() {
+        sendLegacy()
         canBoost = false
     }
     override fun onUpdate(event: UpdateEvent) {

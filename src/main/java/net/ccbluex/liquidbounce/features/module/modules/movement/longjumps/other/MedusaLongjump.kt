@@ -25,7 +25,7 @@ class MedusaLongjump : LongJumpMode("Medusa") {
     var firstEnable = false
     var skipDetect = false
     var flagReveiced = false
-    var n_f10x_ = "Medusa LongJump Bypass - by Co Dynamic 2022 12 22"
+    var coDynamic = "Medusa LongJump Bypass - by Co Dynamic 2022 12 22"
     
     override fun onEnable() {
         mc.timer.timerSpeed = 1.0f

@@ -25,7 +25,7 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
     var lastTickOnGround = false
     var isDamaged = false
     var dmgJumpCount = 0
-    var n_f10x_ = "Vulcan LongJump Bypass - by Co Dynamic 2023 01 05"
+    var coDynamic = "Vulcan LongJump Bypass - by Co Dynamic 2023 01 05"
     
     override fun onEnable() {
         longjump.noTimerModify = true

@@ -16,6 +16,7 @@ class RedeSky3Longjump : LongJumpMode("RedeSky3") {
     private val timer = MSTimer()
     override fun onEnable() {
         timer.reset()
+        sendLegacy()
     }
     override fun onUpdate(event: UpdateEvent) {
         if (!timer.hasTimePassed(jumpTimeValue.get().toLong())) {

@@ -29,6 +29,7 @@ class NCPDamageLongjump : LongJumpMode("NCPDamage") {
     private var damageStat = false
     private var hasJumped = false
     override fun onEnable() {
+        sendLegacy()
         hasJumped = false
         damageStat = false
         if(ncpdInstantValue.get()) {

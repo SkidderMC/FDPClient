@@ -49,6 +49,7 @@ class Fly : Module() {
     private val fakeDamageValue = BoolValue("FakeDamage", false)
     private val viewBobbingValue = BoolValue("ViewBobbing", false)
     private val viewBobbingYawValue = FloatValue("ViewBobbingYaw", 0.1f, 0f, 0.5f)
+    val legacyWarningValue = BoolValue("LegacyWarn", true)
 
     var launchX = 0.0
     var launchY = 0.0

@@ -10,6 +10,7 @@ class RedeSkyTestLongjump : LongJumpMode("RedeSkyTest") {
     
     override fun onEnable() {
         canBoost = false
+        sendLegacy()
     }
     
     override fun onUpdate(event: UpdateEvent) {
