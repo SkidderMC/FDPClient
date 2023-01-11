@@ -11,7 +11,7 @@ class MatrixJesus : JesusMode("Matrix") {
         if (mc.thePlayer.isInWater) {
             mc.gameSettings.keyBindJump.pressed = false
             if (mc.thePlayer.isCollidedHorizontally) {
-                mc.thePlayer.motionY = +0.09
+                mc.thePlayer.motionY = 0.09
                 return
             }
             val block = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ))
