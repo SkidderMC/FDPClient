@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C0BPacketEntityAction
+import kotlin.math.floor
 
 class VerusBoostFly : FlyMode("VerusBoost") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 10f)
@@ -29,7 +30,7 @@ class VerusBoostFly : FlyMode("VerusBoost") {
     override fun onMove(event: MoveEvent) {
         when (boostModeValue.get()) {
             "Boost1" -> {
-                var speed = speedValue.get()
+                val speed = speedValue.get()
                 val pos = mc.thePlayer.position.add(0.0, -1.5, 0.0)
                 PacketUtils.sendPacketNoEvent(
                     C08PacketPlayerBlockPlacement(pos, 1,
@@ -58,7 +59,7 @@ class VerusBoostFly : FlyMode("VerusBoost") {
                     PacketUtils.sendPacketNoEvent(
                         C08PacketPlayerBlockPlacement(pos, 1,
                             ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
-                    );
+                    )
                     val x = mc.thePlayer.posX
                     val y = mc.thePlayer.posY
                     val z = mc.thePlayer.posZ
@@ -131,7 +132,7 @@ class VerusBoostFly : FlyMode("VerusBoost") {
             }
 
             if (mc.thePlayer.fallDistance > 1) {
-                mc.thePlayer.motionY = -((mc.thePlayer.posY) - Math.floor(mc.thePlayer.posY))
+                mc.thePlayer.motionY = -((mc.thePlayer.posY) - floor(mc.thePlayer.posY))
             }
 
             if (mc.thePlayer.motionY == 0.0) {

@@ -17,6 +17,7 @@ class VerusBasicFly : FlyMode("VerusBasic") {
     private var jumped = false
     override fun onEnable() {
         jumped = false
+        sendLegacy()
     }
 
     override fun onPacket(event: PacketEvent) {

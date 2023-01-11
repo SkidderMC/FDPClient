@@ -24,6 +24,7 @@ class VerusCustomFly : FlyMode("VerusCustom") {
     override fun onEnable() {
         if (!mc.thePlayer.onGround && onlyOnGround.get()) return
         waitTicks = 0
+        sendLegacy()
     }
 
     override fun onMove(event: MoveEvent) {

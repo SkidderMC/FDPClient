@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.block.BlockAir
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.util.AxisAlignedBB
+import kotlin.math.floor
 
 class VerusCollideFly : FlyMode("VerusCollide") {
     private var ticks = 0
@@ -16,6 +17,7 @@ class VerusCollideFly : FlyMode("VerusCollide") {
     override fun onEnable() {
         ticks = 0
         justEnabled = true
+        sendLegacy()
     }
 
     override fun onMove(event: MoveEvent) {
@@ -26,12 +28,12 @@ class VerusCollideFly : FlyMode("VerusCollide") {
             MovementUtils.strafe(0.69f)
             event.y = 0.42
             ticks = 0
-            mc.thePlayer.motionY = -(mc.thePlayer.posY - Math.floor(mc.thePlayer.posY))
+            mc.thePlayer.motionY = -(mc.thePlayer.posY - floor(mc.thePlayer.posY))
         } else {
             if (GameSettings.isKeyDown(mc.gameSettings.keyBindJump) && ticks % 2 == 1) {
                 if (mc.thePlayer.ticksExisted % 2 == 0) {
-                    mc.thePlayer.motionY = 0.42;
-                    MovementUtils.strafe(0.3f);
+                    mc.thePlayer.motionY = 0.42
+                    MovementUtils.strafe(0.3f)
                 }
             }
             if (mc.thePlayer.onGround) {

@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.vulcan
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
+import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
@@ -13,9 +14,10 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
 import kotlin.math.sqrt
 
-class Vulcan2Fly : FlyMode("Vulcan2") {
+class VulcanFastFly : FlyMode("Vulcan2") {
 
-    private val timerValue = FloatValue("${valuePrefix}Speed", 1f, 0.1f, 6f)
+    private val speedValue = FloatValue("${valuePrefix}Speed", 1f, 0.1f, 6f)
+    private val verticalValue = BoolValue("${valuePrefix}Vertical", false)
 
     private var isSuccess = false
     private var vticks = 0
@@ -28,16 +30,19 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     override fun onEnable() {
         vticks = 0
         doCancel = false
+        if(verticalValue.get()) {
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §cVertical Flying sometimes flag!")
+        }
         if(mc.thePlayer.posY % 1 != 0.0) {
             fly.state = false
-            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cPlease stand on a solid block to fly!")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §cPlease stand on a solid block to fly!")
             isSuccess = true
             return
         }
         stage = FlyStage.FLYING
         isSuccess = false
-        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aPlease press Sneak before you land on ground!")
-        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §7Tips: DO NOT Use killaura when you're flying!")
+        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §aPlease press Sneak before you land on ground!")
+        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §7Tips: DO NOT Use killaura when you're flying!")
         startX = mc.thePlayer.posX
         startY = mc.thePlayer.posY
         startZ = mc.thePlayer.posZ
@@ -47,8 +52,8 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
         mc.timer.timerSpeed = 1.0f
         if (!isSuccess) {
             mc.thePlayer.setPosition(startX, startY, startZ)
-            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
-            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cIf it keeps happen, DONT use it again in CURRENT gameplay")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §cFly attempt Failed...")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §cIf it keeps happen, Don't use it again in CURRENT gameplay")
         }
     }
 
@@ -57,14 +62,23 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
             FlyStage.FLYING -> {
                 isSuccess = false
 
-                MovementUtils.resetMotion(true)
+                MovementUtils.resetMotion(false)
                 
-                MovementUtils.strafe(timerValue.get())
+                MovementUtils.strafe(speedValue.get())
                 doCancel = true
                 
                 if(mc.gameSettings.keyBindSneak.pressed) {
                     MovementUtils.strafe(0.45f)
-                    //More easy to land on ground ....
+                    if(verticalValue.get()) {
+                        mc.thePlayer.motionY = speedValue.get().toDouble()
+                    }
+                }
+                if(verticalValue.get()) {
+                    if(mc.gameSettings.keyBindJump.pressed) {
+                        mc.thePlayer.motionY = speedValue.get().toDouble()
+                    } else if(!mc.gameSettings.keyBindSneak.pressed) {
+                        mc.thePlayer.motionY = 0.0
+                    }
                 }
                 if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 2 == 1) {
                     val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
@@ -117,27 +131,30 @@ class Vulcan2Fly : FlyMode("Vulcan2") {
     }
 
     override fun onPacket(event: PacketEvent) {
-        val packet = event.packet
 
-        if(packet is C03PacketPlayer) {
-            if(doCancel) {
-                event.cancelEvent()
-                doCancel = false
-            }
-            packet.onGround = true
-        } else if(packet is S08PacketPlayerPosLook) {
-            if (stage == FlyStage.WAIT_APPLY) {
-                if(sqrt((packet.x-mc.thePlayer.posX)*(packet.x-mc.thePlayer.posX)
-                             +(packet.y-mc.thePlayer.posY)*(packet.y-mc.thePlayer.posY)
-                             +(packet.z-mc.thePlayer.posZ)*(packet.z-mc.thePlayer.posZ)) < 1.4) {
-                    isSuccess = true
-                    fly.state = false
-                    return
+        when (val packet = event.packet) {
+            is C03PacketPlayer -> {
+                if(doCancel) {
+                    event.cancelEvent()
+                    doCancel = false
                 }
+                packet.onGround = true
             }
-            event.cancelEvent()
-        } else if(packet is C0BPacketEntityAction) {
-            event.cancelEvent()
+            is S08PacketPlayerPosLook -> {
+                if (stage == FlyStage.WAIT_APPLY) {
+                    if(sqrt((packet.x-mc.thePlayer.posX)*(packet.x-mc.thePlayer.posX)
+                                +(packet.y-mc.thePlayer.posY)*(packet.y-mc.thePlayer.posY)
+                                +(packet.z-mc.thePlayer.posZ)*(packet.z-mc.thePlayer.posZ)) < 1.4) {
+                        isSuccess = true
+                        fly.state = false
+                        return
+                    }
+                }
+                event.cancelEvent()
+            }
+            is C0BPacketEntityAction -> {
+                event.cancelEvent()
+            }
         }
     }
 

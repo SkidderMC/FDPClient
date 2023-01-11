@@ -20,7 +20,7 @@ class MinemoraFly : FlyMode("Minemora") {
     private var boostGround = false
     private var disableLogger = false
     private val packetBuffer = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
-    private val boostValue = BoolValue("BoostBetter", false)
+    private val boostValue = BoolValue("Boost", false)
 
     override fun onEnable() {
         boostGround = !mc.thePlayer.onGround

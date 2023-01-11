@@ -19,44 +19,45 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
     private var lastSentX = 0.0
     private var lastSentY = 0.0
     private var lastSentZ = 0.0
+    private var started = false
 
     override fun onEnable() {
         flag = false
         lastSentX = mc.thePlayer.posX
         lastSentY = mc.thePlayer.posY
         lastSentZ = mc.thePlayer.posZ
-        if(mc.thePlayer.onGround && mc.thePlayer.hurtTime > 0) {
-            mc.timer.timerSpeed = 0.2f
-            PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 2 + Math.random() / 2, mc.thePlayer.posZ, false))
-        } else {
-            if (mc.thePlayer.hurtTime == 0 && mc.thePlayer.onGround) {
-                ClientUtils.displayChatMessage("§8[§c§Vulcan-Dmg-Fly§8] §aGetting damage from other entities is required to bypass.")
-            }else {
-                ClientUtils.displayChatMessage("§8[§c§Vulcan-Dmg-Fly§8] §aYou need to stand on Ground.")
-            }
-            fly.state = false
-        }
+        started = false
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if (!flag) {
+        if(mc.thePlayer.onGround && mc.thePlayer.hurtTime > 0 && !started) {
+            started = true
             mc.timer.timerSpeed = 0.2f
-        }else {
-            mc.timer.timerSpeed = 1.0f
+            PacketUtils.sendPacketNoEvent(
+                C04PacketPlayerPosition(
+                    mc.thePlayer.posX,
+                    mc.thePlayer.posY - 2 + Math.random() / 2,
+                    mc.thePlayer.posZ,
+                    false
+                )
+            )
         }
-        mc.gameSettings.keyBindJump.pressed = false
-        mc.gameSettings.keyBindSneak.pressed = false
-        fly.antiDesync = true
-        MovementUtils.strafe((0.96 + Math.random() / 50).toFloat())
-        if(GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
-            mc.thePlayer.motionY = 0.42
-        } else if(GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
-            mc.thePlayer.motionY = -0.42
-        } else {
-            mc.thePlayer.motionY = 0.0
-        }
-        if(!MovementUtils.isMoving()) {
-            MovementUtils.resetMotion(false)
+        if(started) {
+            mc.timer.timerSpeed = if(!flag) 0.2f else 1.0f
+            mc.gameSettings.keyBindJump.pressed = false
+            mc.gameSettings.keyBindSneak.pressed = false
+            fly.antiDesync = true
+            MovementUtils.strafe((0.96 + Math.random() / 50).toFloat())
+            if(GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
+                mc.thePlayer.motionY = 0.42
+            } else if(GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
+                mc.thePlayer.motionY = -0.42
+            } else {
+                mc.thePlayer.motionY = 0.0
+            }
+            if(!MovementUtils.isMoving()) {
+                MovementUtils.resetMotion(false)
+            }
         }
     }
 
