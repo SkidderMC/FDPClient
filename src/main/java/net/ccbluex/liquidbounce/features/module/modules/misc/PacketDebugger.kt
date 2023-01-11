@@ -51,7 +51,7 @@ class PacketDebugger : Module() {
     }
 
     @EventTarget
-    private fun onPacket(event: PacketEvent) {
+    fun onPacket(event: PacketEvent) {
         val packet = event.packet
         var clazz: Class<*> = packet::class.java
 
