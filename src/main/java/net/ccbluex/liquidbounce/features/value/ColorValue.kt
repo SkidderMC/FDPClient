@@ -2,9 +2,8 @@ package net.ccbluex.liquidbounce.features.value
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import java.awt.Color
 
-open class ColorValue(name : String, value: Int) : Value<Int>(name, value) {
+open class  ColorValue(name : String, value: Int) : Value<Int>(name, value) {
     open fun getValue(): Int {
         return super.get()
     }
@@ -26,9 +25,9 @@ open class ColorValue(name : String, value: Int) : Value<Int>(name, value) {
         val saturation: Float
         val brightness: Float
         var hue: Float
-        var cMax: Int = Math.max(getValue() ushr 16 and 0xFF, getValue() ushr 8 and 0xFF)
+        var cMax: Int = (getValue() ushr 16 and 0xFF).coerceAtLeast(getValue() ushr 8 and 0xFF)
         if (getValue() and 0xFF > cMax) cMax = getValue() and 0xFF
-        var cMin: Int = Math.min(getValue() ushr 16 and 0xFF, getValue() ushr 8 and 0xFF)
+        var cMin: Int = (getValue() ushr 16 and 0xFF).coerceAtMost(getValue() ushr 8 and 0xFF)
         if (getValue() and 0xFF < cMin) cMin = getValue() and 0xFF
         brightness = cMax.toFloat() / 255.0f
         saturation = if (cMax != 0) (cMax - cMin).toFloat() / cMax.toFloat() else 0F
