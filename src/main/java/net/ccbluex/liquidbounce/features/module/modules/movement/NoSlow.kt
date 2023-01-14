@@ -28,17 +28,22 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
+    //Basic settings
     private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5", "Matrix", "Vulcan","Medusa"), "Vanilla")
+    private val onlyGround = BoolValue("OnlyGround", false)
+    private val onlyMove = BoolValue("OnlyMove", false)
+    //Modify Slowdown / Packets
     private val blockModifyValue = BoolValue("Blocking", true)
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { blockModifyValue.get() }
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F).displayable { blockModifyValue.get() }
     private val consumeModifyValue = BoolValue("Consume", true)
+    private val consumePacketValue = ListValue("ConsumePacket", arrayOf("None"), "None").displayable { consumeModifyValue.get() }
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { consumeModifyValue.get() }
     private val consumeStrafeMultiplier = FloatValue("ConsumeStrafeMultiplier", 1.0F, 0.2F, 1.0F).displayable { consumeModifyValue.get() }
     private val bowModifyValue = BoolValue("Bow", true)
+    private val bowPacketValue = ListValue("ConsumePacket", arrayOf("None"), "None").displayable { bowModifyValue.get() }
     private val bowForwardMultiplier = FloatValue("BowForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { bowModifyValue.get() }
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F).displayable { bowModifyValue.get() }
-    private val onlyGround = BoolValue("OnlyGround", false)
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
     public val soulSandValue = BoolValue("SoulSand", true)
@@ -111,23 +116,24 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
+        if(mc.thePlayer == null || mc.theWorld == null)
             return
+        
+        if ((!MovementUtils.isMoving() && onlyMove.get()) || (onlyGround.get() && !mc.thePlayer.onGround)) {
+            return
+        }
+        
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
-        if (!MovementUtils.isMoving()) {
-            return
+        val heldItem = mc.thePlayer.heldItem?.item
+        if (consumeModifyValue.get() && mc.thePlayer.isUsingItem && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk)) {
+            
+        }
+        
+        if (bowModifyValue.get() && mc.thePlayer.isUsingItem && heldItem is ItemBow) {
+            
         }
 
-        if (modeValue.get().lowercase() == "aac5") {
-            if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockingStatus)) {
-                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
-            }
-            return
-        }
-        if (modeValue.get().lowercase() != "aac5") {
-            if (!mc.thePlayer.isBlocking && !killAura.blockingStatus) {
-                return
-            }
+        if (blockModifyValue.get() && (mc.thePlayer.isBlocking || killAura.blockingStatus) && heldItem is ItemSword) {
             when (modeValue.get().lowercase()) {
                 "liquidbounce" -> {
                     sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
@@ -155,6 +161,12 @@ class NoSlow : Module() {
                 
                 "aac4" -> {
                     sendPacket(event, c07Value.get(), c08Value.get(), true, 80, groundValue.get())
+                }
+                
+                "aac5" -> {
+                    if (event.eventState == EventState.POST) {
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
+                    }
                 }
 
                 "custom" -> {
