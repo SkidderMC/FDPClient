@@ -125,7 +125,7 @@ class NoSlow : Module() {
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
             }
             "spamplace" -> {
-                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem().item))
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
             }
             "spamemptyplace" -> {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement())
