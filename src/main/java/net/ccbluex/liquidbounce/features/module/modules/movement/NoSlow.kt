@@ -37,11 +37,13 @@ class NoSlow : Module() {
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { blockModifyValue.get() }
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F).displayable { blockModifyValue.get() }
     private val consumeModifyValue = BoolValue("Consume", true)
-    private val consumePacketValue = ListValue("ConsumePacket", arrayOf("None"), "None").displayable { consumeModifyValue.get() }
+    private val consumePacketValue = ListValue("ConsumePacket", arrayOf("None", "AAC5", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Glitch"), "None").displayable { consumeModifyValue.get() }
+    private val consumeTimingValue = ListValue("ConsumeTiming", arrayOf("Pre", "Post"), "Pre").displayable { consumeModifyValue.get() }
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { consumeModifyValue.get() }
     private val consumeStrafeMultiplier = FloatValue("ConsumeStrafeMultiplier", 1.0F, 0.2F, 1.0F).displayable { consumeModifyValue.get() }
     private val bowModifyValue = BoolValue("Bow", true)
-    private val bowPacketValue = ListValue("ConsumePacket", arrayOf("None"), "None").displayable { bowModifyValue.get() }
+    private val bowPacketValue = ListValue("BowPacket", arrayOf("None", "AAC5", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Glitch"), "None").displayable { bowModifyValue.get() }
+    private val bowTimingValue = ListValue("BowTiming", arrayOf("Pre", "Post"), "Pre").displayable { bowModifyValue.get() }
     private val bowForwardMultiplier = FloatValue("BowForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { bowModifyValue.get() }
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F).displayable { bowModifyValue.get() }
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
@@ -113,6 +115,27 @@ class NoSlow : Module() {
             }
         }
     }
+    
+    private fun sendPacket2(packetType: String) {
+        when (packetType.lowercase()) {
+            "aac5" -> {
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
+            }
+            "spamitemchange" -> {
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+            }
+            "spamplace" -> {
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.currentItem))
+            }
+            "spamemptyplace" -> {
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement())
+            }
+            "glitch" -> {
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+            }
+        }
+    }
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
@@ -126,11 +149,15 @@ class NoSlow : Module() {
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
         val heldItem = mc.thePlayer.heldItem?.item
         if (consumeModifyValue.get() && mc.thePlayer.isUsingItem && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk)) {
-            
+            if ((consumeTimingValue.equals("Pre") && event.eventState == EventState.PRE) || (consumeTimingValue.equals("Post") && event.eventState == EventState.POST)) {
+                sendPacket2(consumePacketValue.get())
+            }
         }
         
         if (bowModifyValue.get() && mc.thePlayer.isUsingItem && heldItem is ItemBow) {
-            
+            if ((bowTimingValue.equals("Pre") && event.eventState == EventState.PRE) || (bowTimingValue.equals("Post") && event.eventState == EventState.POST)) {
+                sendPacket2(bowPacketValue.get())
+            }
         }
 
         if (blockModifyValue.get() && (mc.thePlayer.isBlocking || killAura.blockingStatus) && heldItem is ItemSword) {
