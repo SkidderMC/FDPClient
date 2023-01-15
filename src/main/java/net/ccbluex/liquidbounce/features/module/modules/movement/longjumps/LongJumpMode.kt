@@ -22,8 +22,7 @@ abstract class LongJumpMode(val modeName: String) : MinecraftInstance() {
     fun sendLegacy() {
         if(!longjump.legacyWarningValue.get()) return
 
-        ClientUtils.displayChatMessage("§7[§bLongJump§7] §cThis bypass is a legacy bypass!")
-        LiquidBounce.hud.addNotification(Notification("LongJump", "This Bypass is a legacy bypass!", NotifyType.WARNING, 1000))
+        LiquidBounce.hud.addNotification(Notification("LongJump", "This bypass is for an outdated anti cheat version!", NotifyType.WARNING, 1000))
     }
 
     open fun onEnable() {}
