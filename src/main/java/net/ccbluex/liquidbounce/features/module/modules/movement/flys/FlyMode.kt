@@ -22,7 +22,7 @@ abstract class FlyMode(val modeName: String) : MinecraftInstance() {
     fun sendLegacy() {
         if(!fly.legacyWarningValue.get()) return
 
-        ClientUtils.displayChatMessage("§7[§bFly§7] §cThis bypass is only work in legacy anti cheat!")
+        ClientUtils.displayChatMessage("§7[§bFly§7] §cThis bypass is for an outdated anti cheat version!")
         LiquidBounce.hud.addNotification(Notification("Fly", "This Bypass is a legacy bypass!", NotifyType.WARNING, 1000))
     }
 
