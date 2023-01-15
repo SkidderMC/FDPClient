@@ -117,7 +117,7 @@ public class BowJump extends Module {
         case 3:
             if (hypixelBypassValue.get()) {
                 if (mc.thePlayer.hurtTime >= 9) {
-                    mc.thePlayer.jump()
+                    mc.thePlayer.jump();
                 }
                 if (mc.thePlayer.hurtTime == 8) {
                     MovementUtils.INSTANCE.strafe(0.67f);
