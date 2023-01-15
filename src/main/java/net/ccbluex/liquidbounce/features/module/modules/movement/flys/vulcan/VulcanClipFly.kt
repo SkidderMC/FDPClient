@@ -11,7 +11,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import kotlin.math.cos
 import kotlin.math.sin
 
-class VulcanFly : FlyMode("Vulcan") {
+class VulcanClipFly : FlyMode("VulcanClip") {
 
     private val canClipValue = BoolValue("CanClip", true)
 
