@@ -14,7 +14,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
 import kotlin.math.sqrt
 
-class VulcanFastFly : FlyMode("Vulcan2") {
+class VulcanFastFly : FlyMode("VulcanFast") {
 
     private val speedValue = FloatValue("${valuePrefix}Speed", 1f, 0.1f, 6f)
     private val verticalValue = BoolValue("${valuePrefix}Vertical", false)
