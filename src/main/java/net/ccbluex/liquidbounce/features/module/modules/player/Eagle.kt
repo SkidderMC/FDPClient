@@ -38,21 +38,15 @@ class Eagle : Module() {
             sneakValue = false
         }
 
-        mc.gameSettings.keyBindSneak.pressed = sneakValue
+        mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || sneakValue)
     }
     
-    override fun onDisable() {
-        sneakValue = false
+    override fun onEnable() {
+        sneakValue = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
         holdTimer.reset()
     }
 
     override fun onDisable() {
-        if (mc.thePlayer == null) {
-            return
-        }
-
-        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
-            mc.gameSettings.keyBindSneak.pressed = false
-        }
+        mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
     }
 }
