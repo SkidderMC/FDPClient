@@ -34,7 +34,7 @@ class Eagle : Module() {
         if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX + mc.thePlayer.motionX.toDouble() * motionPredictValue.get().toDouble(), mc.thePlayer.posY - 1.0, mc.thePlayer.posZ + mc.thePlayer.motionZ.toDouble() * motionPredictValue.get().toDouble())).block == Blocks.air) {
             sneakValue = true
             holdTimer.reset()
-        } else if (holdTimer.hasTimePassed(holdTime.get().toLong() && limitTimeValue.get()) {
+        } else if (holdTimer.hasTimePassed(holdTime.get().toLong()) && limitTimeValue.get()) {
             sneakValue = false
         }
 
