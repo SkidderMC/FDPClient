@@ -14,6 +14,11 @@ class SimpleVelocity : VelocityMode("Simple") {
             if (horizontal == 0F && vertical == 0F) {
                 event.cancelEvent()
             }
+            
+            if (horzontal == 0F) {
+                mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
+                event.cancelEvent()
+            }
 
             packet.motionX = (packet.getMotionX() * horizontal).toInt()
             packet.motionY = (packet.getMotionY() * vertical).toInt()
