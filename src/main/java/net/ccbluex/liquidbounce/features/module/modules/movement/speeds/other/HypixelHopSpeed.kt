@@ -26,7 +26,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private val yPort = BoolValue("${valuePrefix}OldHypixelYPort", false)
     private val yPort2 = BoolValue("${valuePrefix}BadNCPYPort", false)
     private val yPort3 = BoolValue("${valuePrefix}SemiHypixelYPort", true)
-    private val yPortY = BoolValue("${valuePrefix}MicroYPort", true)
+    private val yPort4 = BoolValue("${valuePrefix}MicroYPort", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", false)
     private val damageStrafe = BoolValue("${valuePrefix}StrafeOnDamage", true)
 
