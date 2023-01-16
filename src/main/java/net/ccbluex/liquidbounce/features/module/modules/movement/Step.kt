@@ -548,6 +548,7 @@ class Step : Module() {
                             rstepHeight <= 2.106 && rstepHeight > 1.773 -> {
                                 val stpPacket = arrayOf(0.41999998688698, 0.7531999805212, 1.17319996740818, 1.5063999610424)
                                 stpPacket.forEach {
+                                    fakeJump()
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
@@ -558,6 +559,7 @@ class Step : Module() {
                             rstepHeight <= 1.773 && rstepHeight > 1.353 -> {
                                 val stpPacket = arrayOf(0.41999998688698, 0.7531999805212, 1.17319996740818)
                                 stpPacket.forEach {
+                                    fakeJump()
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
@@ -568,6 +570,7 @@ class Step : Module() {
                             rstepHeight <= 1.353 && rstepHeight > 1.02 -> {
                                 val stpPacket = arrayOf(0.41999998688698, 0.7531999805212)
                                 stpPacket.forEach {
+                                    fakeJump()
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
@@ -578,6 +581,7 @@ class Step : Module() {
                             rstepHeight <= 1.02 && rstepHeight > 0.6 -> {
                                 val stpPacket = arrayOf(0.41999998688698)
                                 stpPacket.forEach {
+                                    fakeJump()
                                     mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                                         stepY + it, stepZ, false))
                                 }
