@@ -26,6 +26,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private val yPort = BoolValue("${valuePrefix}OldHypixelYPort", false)
     private val yPort2 = BoolValue("${valuePrefix}BadNCPYPort", false)
     private val yPort3 = BoolValue("${valuePrefix}SemiHypixelYPort", true)
+    private val yPortY = BoolValue("${valuePrefix}MicroYPort", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", false)
     private val damageStrafe = BoolValue("${valuePrefix}StrafeOnDamage", true)
 
@@ -69,6 +70,9 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98
             }
         }
+        if (yPort4.get()) {
+            mc.thePlayer.motionY - 0.0009
+        }
         
         
         if (damageBoost.get()) {
@@ -111,8 +115,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     
                 } else {
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        mc.thePlayer.motionX *= (1.005 + 0.007 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
-                        mc.thePlayer.motionZ *= (1.005 + 0.007 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionX *= (1.003 + 0.004 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionZ *= (1.003 + 0.004 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
                 }
             }
