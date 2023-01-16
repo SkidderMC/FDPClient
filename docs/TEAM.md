@@ -11,7 +11,7 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 ## FDP TEAM
 
-### Liulihaocai
+### Liulihaocai (inactive)
 OWNER | https://github.com/kotonemywaifu
 
  ### Zywl
@@ -20,13 +20,16 @@ OWNER | https://github.com/opZywl
 ### Co丶Dynamic 
 DEV | https://github.com/contionability
 
-### gatodepan
-HTML | ORG CONTRIBUTOR | https://github.com/gatooooooo
+### gatodepan (inactive (for now))
+Website | ORG CONTRIBUTOR | https://github.com/gatooooooo
+
+### DinoFeng
+ORG CONTRIBUTOR | https://github.com/DinoFengz
 
 ### Dg636
 ORG CONTRIBUTOR | https://github.com/C00LC0D35
 
-### WLENK 
+### WLENK / xiguahanhan
 ORG UNMC CONTRIBUTOR | https://github.com/Wlenk
 
 (please do not ask us to be added here)
