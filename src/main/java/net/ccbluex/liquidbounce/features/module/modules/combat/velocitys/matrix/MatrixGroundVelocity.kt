@@ -12,7 +12,6 @@ class MatrixGroundVelocity : VelocityMode("MatrixGround") {
     }
     override fun onVelocity(event: UpdateEvent) {
         isMatrixOnGround = mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown
-        if (isMatrixOnGround) mc.thePlayer.onGround = false
     }
 
     override fun onVelocityPacket(event: PacketEvent) {
@@ -24,6 +23,7 @@ class MatrixGroundVelocity : VelocityMode("MatrixGround") {
                 packet.motionY = (-628.7).toInt()
                 packet.motionX = (packet.getMotionX() * 0.6).toInt()
                 packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
+                mc.thePlayer.onGround = false
             }
         }
     }
