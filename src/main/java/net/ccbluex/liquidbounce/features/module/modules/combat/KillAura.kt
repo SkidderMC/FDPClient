@@ -1041,7 +1041,7 @@ class KillAura : Module() {
 
         // Start blocking after attack
         if (mc.thePlayer.isBlocking || (autoBlockValue.equals("Range") && canBlock) && 
-                !autoBlockPacketValue.equals("AfterTick")) &&
+                !autoBlockPacketValue.equals("AfterTick") &&
                 (blockRateValue.get() > 0 && Random().nextInt(100) <= blockRateValue.get())
         ) {
             startBlocking(entity, interactAutoBlockValue.get())
