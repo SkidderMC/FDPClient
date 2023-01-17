@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import net.ccbluex.liquidbounce.features.special.AntiForge;
+import net.ccbluex.liquidbounce.features.special.ClientSpoof;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.PacketBuffer;
@@ -13,30 +14,26 @@ import net.minecraft.network.handshake.client.C00Handshake;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(C00Handshake.class)
 public class MixinC00Handshake {
 
     @Shadow
-    private int protocolVersion;
-
-    @Shadow
     public int port;
-
-    @Shadow
-    private EnumConnectionState requestedState;
-
     @Shadow
     public String ip;
+    @Shadow
+    private int protocolVersion;
+    @Shadow
+    private EnumConnectionState requestedState;
 
     /**
      * @author CCBlueX
      */
-    @Overwrite
-    public void writePacketData(PacketBuffer buf) {
-        buf.writeVarIntToBuffer(this.protocolVersion);
-        buf.writeString(this.ip + (AntiForge.INSTANCE.getEnabled() && AntiForge.INSTANCE.getBlockFML() && !Minecraft.getMinecraft().isIntegratedServerRunning() ? "" : "\0FML\0"));
-        buf.writeShort(this.port);
-        buf.writeVarIntToBuffer(this.requestedState.getId());
+    @ModifyConstant(method = "writePacketData", constant = @Constant(stringValue = "\u0000FML\u0000"))
+    private String injectAntiForge(String constant) {
+        return ClientSpoof.enabled && !Minecraft.getMinecraft().isIntegratedServerRunning() ? "" : "\u0000FML\u0000";
     }
 }

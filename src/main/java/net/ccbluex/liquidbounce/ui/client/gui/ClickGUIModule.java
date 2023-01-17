@@ -32,7 +32,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Slight", "Bjur", "Glow", "Grey", "Null", "Slowly", "Black", "White"}, "Classic") {
+    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Slight", "Bjur", "Null", "Slowly", "Black", "White"}, "Black") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -47,7 +47,7 @@ public class ClickGUIModule extends Module {
     public static final ListValue colormode = new ListValue("Setting Accent", new String[]{"White", "Color"},"Color");
     public static final IntegerValue clickHeight = new IntegerValue("Tab Height", 250, 100, 500);
     public final FloatValue scaleValue = new FloatValue("Scale", 0.70F, 0.7F, 2F);
-    public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
+    public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 20, 1, 35);
     public final ListValue backgroundValue = new ListValue("Background", new String[] {"Default", "Gradient", "None"}, "None");
 
     public final ListValue animationValue = new ListValue("Animation", new String[] {"Bread", "Slide", "LiquidBounce", "Zoom", "Ziul", "None"}, "Ziul");
@@ -112,14 +112,8 @@ public class ClickGUIModule extends Module {
             case "tenacity5":
                 modernuiLaunchOption.clickGui.style = new TenacityStyle();
                 break;
-            case "glow":
-                modernuiLaunchOption.clickGui.style = new GlowStyle();
-                break;
             case "astolfo":
                 modernuiLaunchOption.clickGui.style = new AstolfoStyle();
-                break;
-            case "grey":
-                modernuiLaunchOption.clickGui.style = new GreyStyle();
                 break;
         }
     }

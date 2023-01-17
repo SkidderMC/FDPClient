@@ -58,7 +58,7 @@ object LiquidBounce {
 
     @JvmField
 
-    val CLIENT_VERSION = "v5.1.5"
+    val CLIENT_VERSION = "v5.2.0"
 
 
     @JvmField
@@ -133,6 +133,7 @@ object LiquidBounce {
         // Register listeners
         eventManager.registerListener(RotationUtils())
         eventManager.registerListener(AntiForge)
+        eventManager.registerListener(ClientSpoof())
         eventManager.registerListener(InventoryUtils)
         eventManager.registerListener(BungeeCordSpoof())
         eventManager.registerListener(ServerSpoof)

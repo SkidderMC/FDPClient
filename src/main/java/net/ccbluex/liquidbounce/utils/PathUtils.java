@@ -8,8 +8,10 @@ package net.ccbluex.liquidbounce.utils;
 import me.liuli.path.Cell;
 import me.liuli.path.Pathfinder;
 import net.ccbluex.liquidbounce.utils.block.MinecraftWorldProvider;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
+import javax.vecmath.Vector3d;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,4 +73,27 @@ public final class PathUtils extends MinecraftInstance {
 
         return finalPath;
     }
+
+    public static List<Vector3d> findPath(final double tpX, final double tpY, final double tpZ, final double offset) {
+        final List<Vector3d> positions = new ArrayList<>();
+        final double steps = Math.ceil(getDistance(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, tpX, tpY, tpZ) / offset);
+
+        final double dX = tpX - mc.thePlayer.posX;
+        final double dY = tpY - mc.thePlayer.posY;
+        final double dZ = tpZ - mc.thePlayer.posZ;
+
+        for (double d = 1D; d <= steps; ++d) {
+            positions.add(new Vector3d(mc.thePlayer.posX + (dX * d) / steps, mc.thePlayer.posY + (dY * d) / steps, mc.thePlayer.posZ + (dZ * d) / steps));
+        }
+
+        return positions;
+    }
+
+    private static double getDistance(final double x1, final double y1, final double z1, final double x2, final double y2, final double z2) {
+        final double xDiff = x1 - x2;
+        final double yDiff = y1 - y2;
+        final double zDiff = z1 - z2;
+        return MathHelper.sqrt_double(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
+    }
+
 }

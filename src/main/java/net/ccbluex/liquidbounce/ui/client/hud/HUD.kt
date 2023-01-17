@@ -38,12 +38,10 @@ open class HUD : MinecraftInstance() {
             text1.rectColorModeValue.set("Rainbow")
 
             return HUD()
-                .addElement(text1)
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())
                 .addElement(Armor())
                 .addElement(Notifications())
-                .addElement(Indicators())
                 .addElement(Targets())
         }
     }

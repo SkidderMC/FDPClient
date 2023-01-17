@@ -5,8 +5,9 @@
  */
 package net.ccbluex.liquidbounce.injection.transformers;
 
-import net.ccbluex.liquidbounce.features.special.AntiForge;
-import net.ccbluex.liquidbounce.utils.ASMUtils;
+import net.ccbluex.liquidbounce.features.special.ClientSpoof;
+import net.ccbluex.liquidbounce.script.remapper.injection.utils.ClassUtils;
+import net.ccbluex.liquidbounce.script.remapper.injection.utils.NodeUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.tree.*;
@@ -18,6 +19,10 @@ import static org.objectweb.asm.Opcodes.*;
  */
 public class ForgeNetworkTransformer implements IClassTransformer {
 
+    public static boolean returnMethod() {
+        return ClientSpoof.enabled && !Minecraft.getMinecraft().isIntegratedServerRunning();
+    }
+
     /**
      * Transform a class
      *
@@ -28,17 +33,14 @@ public class ForgeNetworkTransformer implements IClassTransformer {
      */
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if(System.getProperty("dev-mode")!=null)
-            return basicClass;
-
-        if(name.equals("net.minecraftforge.fml.common.network.handshake.NetworkDispatcher")) {
+        if (name.equals("net.minecraftforge.fml.common.network.handshake.NetworkDispatcher")) {
             try {
-                final ClassNode classNode = ASMUtils.INSTANCE.toClassNode(basicClass);
+                final ClassNode classNode = ClassUtils.INSTANCE.toClassNode(basicClass);
 
                 classNode.methods.stream().filter(methodNode -> methodNode.name.equals("handleVanilla")).forEach(methodNode -> {
                     final LabelNode labelNode = new LabelNode();
 
-                    methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), ASMUtils.INSTANCE.toNodes(
+                    methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), NodeUtils.INSTANCE.toNodes(
                             new MethodInsnNode(INVOKESTATIC, "net/ccbluex/liquidbounce/injection/transformers/ForgeNetworkTransformer", "returnMethod", "()Z", false),
                             new JumpInsnNode(IFEQ, labelNode),
                             new InsnNode(ICONST_0),
@@ -47,20 +49,20 @@ public class ForgeNetworkTransformer implements IClassTransformer {
                     ));
                 });
 
-                return ASMUtils.INSTANCE.toBytes(classNode);
-            }catch(final Throwable throwable) {
+                return ClassUtils.INSTANCE.toBytes(classNode);
+            } catch (final Throwable throwable) {
                 throwable.printStackTrace();
             }
         }
 
-        if(name.equals("net.minecraftforge.fml.common.network.handshake.HandshakeMessageHandler")) {
+        if (name.equals("net.minecraftforge.fml.common.network.handshake.HandshakeMessageHandler")) {
             try {
-                final ClassNode classNode = ASMUtils.INSTANCE.toClassNode(basicClass);
+                final ClassNode classNode = ClassUtils.INSTANCE.toClassNode(basicClass);
 
                 classNode.methods.stream().filter(method -> method.name.equals("channelRead0")).forEach(methodNode -> {
                     final LabelNode labelNode = new LabelNode();
 
-                    methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), ASMUtils.INSTANCE.toNodes(
+                    methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), NodeUtils.INSTANCE.toNodes(
                             new MethodInsnNode(INVOKESTATIC,
                                     "net/ccbluex/liquidbounce/injection/transformers/ForgeNetworkTransformer",
                                     "returnMethod", "()Z", false
@@ -71,16 +73,12 @@ public class ForgeNetworkTransformer implements IClassTransformer {
                     ));
                 });
 
-                return ASMUtils.INSTANCE.toBytes(classNode);
-            }catch(final Throwable throwable) {
+                return ClassUtils.INSTANCE.toBytes(classNode);
+            } catch (final Throwable throwable) {
                 throwable.printStackTrace();
             }
         }
 
         return basicClass;
-    }
-
-    public static boolean returnMethod() {
-        return AntiForge.INSTANCE.getEnabled() && AntiForge.INSTANCE.getBlockFML() && !Minecraft.getMinecraft().isIntegratedServerRunning();
     }
 }

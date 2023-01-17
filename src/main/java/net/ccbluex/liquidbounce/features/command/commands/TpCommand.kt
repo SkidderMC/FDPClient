@@ -1,14 +1,13 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
+import net.ccbluex.liquidbounce.utils.PathUtils
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import java.util.function.Consumer
+import javax.vecmath.Vector3d
 
-class TpCommand : Command("tp", emptyArray()) {
+class TeleportCommand : Command("tp", arrayOf("teleport")) {
 
     /**
      * Execute commands with provided [args]
@@ -19,35 +18,41 @@ class TpCommand : Command("tp", emptyArray()) {
 
             // Get target player data
             val targetPlayer = mc.theWorld.playerEntities
-                    .filter { !AntiBot.isBot(it) && it.name.equals(theName, true) }
-                    .firstOrNull()
+                .filter { !AntiBot.isBot(it) && it.name.equals(theName, true) }
+                .firstOrNull()
 
             // Attempt to teleport to player's position.
             if (targetPlayer != null) {
-                mc.thePlayer.setPositionAndUpdate(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ)
-                chat("Attempted to teleport you to §f${targetPlayer.name}§7.")
+                PathUtils.findPath(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ, 4.0)
+                    .forEach(Consumer { pos: Vector3d ->
+                        mc.netHandler
+                            .addToSendQueue(C04PacketPlayerPosition(pos.getX(), pos.getY(), pos.getZ(), true))
+                    })
+                mc.thePlayer.setPosition(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ)
+
                 return
             } else {
-                chat("§7We couldn't find any player in the current world with that name.")
                 return
             }
-        }
-        else if (args.size == 4) {
+        } else if (args.size == 4) {
             try {
                 val posX = if (args[1].equals("~", true)) mc.thePlayer.posX else args[1].toDouble()
                 val posY = if (args[2].equals("~", true)) mc.thePlayer.posY else args[2].toDouble()
                 val posZ = if (args[3].equals("~", true)) mc.thePlayer.posZ else args[3].toDouble()
 
-                mc.thePlayer.setPositionAndUpdate(posX, posY, posZ)
-                chat("Attempted to teleport you to §f$posX§7, §f$posY§7, §f$posZ§7.")
+                PathUtils.findPath(posX, posY, posZ, 4.0).forEach(Consumer { pos: Vector3d ->
+                    mc.netHandler
+                        .addToSendQueue(C04PacketPlayerPosition(pos.getX(), pos.getY(), pos.getZ(), true))
+                })
+                mc.thePlayer.setPosition(posX, posY, posZ)
                 return
             } catch (e: NumberFormatException) {
-                chat("§7Please check if you have typed the numbers correctly, and try again.")
+
                 return
             }
         }
 
-        chatSyntax("teleport/tp <player name/x y z>")
+        chatSyntax("tp <player name/x y z>")
     }
 
     override fun tabComplete(args: Array<String>): List<String> {
@@ -57,9 +62,10 @@ class TpCommand : Command("tp", emptyArray()) {
 
         return when (args.size) {
             1 -> mc.theWorld.playerEntities
-                    .filter { !AntiBot.isBot(it) && it.name.startsWith(pref, true) }
-                    .map { it.name }
-                    .toList()
+                .filter { !AntiBot.isBot(it) && it.name.startsWith(pref, true) }
+                .map { it.name }
+                .toList()
+
             else -> emptyList()
         }
     }
