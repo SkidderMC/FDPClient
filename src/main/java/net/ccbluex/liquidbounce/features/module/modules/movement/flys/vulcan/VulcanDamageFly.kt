@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.vulcan
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
+import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -14,50 +15,79 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import kotlin.math.sqrt
 
 class VulcanDamageFly : FlyMode("VulcanDamage") {
-    private var flag = false
+    private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
+    private val selfDamageValue = BoolValue("${valuePrefix}SelfDamage", true)
+    private var waitFlag = false
+    private var isStarted = false
     
-    private var lastSentX = 0.0
-    private var lastSentY = 0.0
-    private var lastSentZ = 0.0
-    private var started = false
+    var isDamaged = false
+    var dmgJumpCount = 0
+    var flyTicks = 0
+    
+    fun runSelfDamageCore(): Boolean {
+        mc.timer.timerSpeed = 1.0f
+        if (!onlyDamageValue.get() || !selfDamageValue.get()) {
+            if (onlyDamageValue.get()) {
+                if (mc.thePlayer.hurtTime > 0 || isDamaged) {
+                    isDamaged = true
+                    dmgJumpCount = 999
+                    return false
+                }else {
+                    return true
+                }
+            }
+            isDamaged = true
+            dmgJumpCount = 999
+            return false
+        }
+        if (isDamaged) {
+            dmgJumpCount = 999
+            return false
+        }
+        longjump.airTick = -1
+        mc.thePlayer.jumpMovementFactor = 0.0f
+        if (mc.thePlayer.onGround) {
+            if (dmgJumpCount >= 4) {
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+                isDamaged = true
+                dmgJumpCount = 999
+                return false
+            }
+            dmgJumpCount++
+            MovementUtils.resetMotion(true)
+            mc.thePlayer.jump()
+        }
+        MovementUtils.resetMotion(false)
+        return true
+    }
 
     override fun onEnable() {
-        flag = false
-        lastSentX = mc.thePlayer.posX
-        lastSentY = mc.thePlayer.posY
-        lastSentZ = mc.thePlayer.posZ
-        started = false
+        flyTicks = 0
+        waitFlag = false
+        isStarted = false
+        isDamaged = false
+        dmgJumpCount = 0
+        mc.timer.timerSpeed = 1.0f
+        runSelfDamageCore()
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if(mc.thePlayer.onGround && mc.thePlayer.hurtTime > 0 && !started) {
-            started = true
-            mc.timer.timerSpeed = 0.2f
-            PacketUtils.sendPacketNoEvent(
-                C04PacketPlayerPosition(
-                    mc.thePlayer.posX,
-                    mc.thePlayer.posY - 2 + Math.random() / 2,
-                    mc.thePlayer.posZ,
-                    false
-                )
-            )
+        if (runSelfDamageCore()) {
+            return
         }
-        if(started) {
-            mc.timer.timerSpeed = if(!flag) 0.2f else 1.0f
-            mc.gameSettings.keyBindJump.pressed = false
-            mc.gameSettings.keyBindSneak.pressed = false
-            fly.antiDesync = true
-            MovementUtils.strafe((0.96 + Math.random() / 50).toFloat())
-            if(GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
-                mc.thePlayer.motionY = 0.42
-            } else if(GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
-                mc.thePlayer.motionY = -0.42
-            } else {
-                mc.thePlayer.motionY = 0.0
+        mc.thePlayer.jumpMovementFactor = 0.00
+		MovementUtils.INSTANCE.resetMotion(true)
+        if (!isStarted && !waitFlag) {
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.0784, mc.thePlayer.posZ, false))
+            waitFlag = true
+        }
+        if (isStarted) {
+            mc.timer.timerSpeed = 0.05
+            flyTicks++
+            if (flyTicks > 4) {
+                flyTicks = 4
             }
-            if(!MovementUtils.isMoving()) {
-                MovementUtils.resetMotion(false)
-            }
+            MovementUtils.strafe(9.8f + flyTicks.toFloat() * 0.05f)
         }
     }
 
@@ -68,42 +98,14 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if(packet is C03PacketPlayer && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)) {
-            val deltaX = packet.x - lastSentX
-            val deltaY = packet.y - lastSentY
-            val deltaZ = packet.z - lastSentZ
-            
-            if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 9.5) {
-                lastSentX = packet.x
-                lastSentY = packet.y
-                lastSentZ = packet.z
-                return
-            }
-            event.cancelEvent()
-        }else if(packet is C03PacketPlayer) {
+        if (packet is C03PacketPlayer && waitFlag) {
             event.cancelEvent()
         }
-        if(packet is S08PacketPlayerPosLook) {
-            if (!flag) {
-                flag = true
-                val deltaX = packet.x - mc.thePlayer.posX
-                val deltaY = packet.y - mc.thePlayer.posY
-                val deltaZ = packet.z - mc.thePlayer.posZ
-
-                if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) < 10) {
-                    event.cancelEvent()
-                    PacketUtils.sendPacketNoEvent(
-                        C06PacketPlayerPosLook(
-                            packet.x,
-                            packet.y,
-                            packet.z,
-                            packet.getYaw(),
-                            packet.getPitch(),
-                            false
-                        )
-                    )
-                }
-            }
+        if (packet is S08PacketPlayerPosLook && waitFlag) {
+            isStarted = true
+            waitFlag = false
+            mc.timer.timerSpeed = 1.0
+            flyTicks = 0
         }
     }
 }
