@@ -44,8 +44,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             dmgJumpCount = 999
             return false
         }
-        longjump.airTick = -1
-        mc.thePlayer.jumpMovementFactor = 0.0f
+        mc.thePlayer.jumpMovementFactor = 0.00f
         if (mc.thePlayer.onGround) {
             if (dmgJumpCount >= 4) {
                 mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
@@ -75,14 +74,14 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         if (runSelfDamageCore()) {
             return
         }
-        mc.thePlayer.jumpMovementFactor = 0.00
+        mc.thePlayer.jumpMovementFactor = 0.00f
         MovementUtils.resetMotion(true)
         if (!isStarted && !waitFlag) {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.0784, mc.thePlayer.posZ, false))
             waitFlag = true
         }
         if (isStarted) {
-            mc.timer.timerSpeed = 0.05
+            mc.timer.timerSpeed = 0.05f
             flyTicks++
             if (flyTicks > 4) {
                 flyTicks = 4
@@ -104,7 +103,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         if (packet is S08PacketPlayerPosLook && waitFlag) {
             isStarted = true
             waitFlag = false
-            mc.timer.timerSpeed = 1.0
+            mc.timer.timerSpeed = 1.0f
             flyTicks = 0
         }
     }
