@@ -7,12 +7,16 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity
 
 class SpoofVelocity : VelocityMode("Spoof") {
     override fun onVelocityPacket(event: PacketEvent) {
+        private val modifyTimerValue = BoolValue("ModifyTimer", true)
+        private val mtimerValue = FloatValue("Timer", 0.6F, 0.1F, 1F).displayable { modifyTimerValue.get() }
         val packet = event.packet
         if(packet is S12PacketEntityVelocity) {
             event.cancelEvent()
             mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + packet.motionX / 8000.0, mc.thePlayer.posY + packet.motionY / 8000.0, mc.thePlayer.posZ + packet.motionZ / 8000.0, false))
-            mc.timer.timerSpeed = 0.6f
-            velocity.wasTimer = true
+            if(modifyTimerValue.get()) {
+                mc.timer.timerSpeed = mtimerValue.get()
+                velocity.wasTimer = true
+            }
         }
     }
 }
