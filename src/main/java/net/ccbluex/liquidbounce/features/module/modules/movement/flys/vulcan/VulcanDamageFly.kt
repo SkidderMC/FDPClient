@@ -11,6 +11,7 @@ import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
+import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import kotlin.math.sqrt
 
@@ -108,6 +109,13 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             waitFlag = false
             mc.timer.timerSpeed = 1.0f
             flyTicks = 0
+        }
+        if (packet is C0FPacketConfirmTransaction) { //Make sure it works with Vulcan Combat Disabler
+            val transUID = (packet.uid).toInt()
+            if (transUID >= -31767 && transUID <= -30769) {
+                event.cancelEvent()
+                PacketUtils.sendPacketNoEvent(packet)
+            }
         }
     }
 }
