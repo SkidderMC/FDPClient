@@ -8,9 +8,9 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 
 class SpoofVelocity : VelocityMode("Spoof") {
+    private val modifyTimerValue = BoolValue("ModifyTimer", true)
+    private val mtimerValue = FloatValue("Timer", 0.6F, 0.1F, 1F).displayable { modifyTimerValue.get() }
     override fun onVelocityPacket(event: PacketEvent) {
-        private val modifyTimerValue = BoolValue("ModifyTimer", true)
-        private val mtimerValue = FloatValue("Timer", 0.6F, 0.1F, 1F).displayable { modifyTimerValue.get() }
         val packet = event.packet
         if(packet is S12PacketEntityVelocity) {
             event.cancelEvent()
