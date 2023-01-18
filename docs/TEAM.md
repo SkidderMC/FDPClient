@@ -11,25 +11,25 @@ Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 ## FDP TEAM
 
-### Liulihaocai (inactive)
-OWNER | https://github.com/kotonemywaifu
+### Liulihaocai
+OWNER | https://github.com/hax0r31337
 
- ### Zywl
+### Zywl
 OWNER | https://github.com/opZywl
 
 ### Co丶Dynamic 
 DEV | https://github.com/contionability
 
-### gatodepan (inactive (for now))
-Website | ORG CONTRIBUTOR | https://github.com/gatooooooo
+### gatodepan
+CONTRIBUTOR | https://github.com/gatooooooo
 
 ### DinoFeng
-ORG CONTRIBUTOR | https://github.com/DinoFengz
+CONTRIBUTOR | https://github.com/DinoFengz
 
 ### Dg636
-ORG CONTRIBUTOR | https://github.com/C00LC0D35
+CONTRIBUTOR | https://github.com/C00LC0D35
 
-### WLENK / xiguahanhan
-ORG UNMC CONTRIBUTOR | https://github.com/Wlenk
+### XiGuaHanHan
+CONTRIBUTOR | https://github.com/Wlenk
 
 (please do not ask us to be added here)
