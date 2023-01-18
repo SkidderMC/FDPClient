@@ -100,6 +100,9 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         if (packet is C03PacketPlayer && waitFlag) {
             event.cancelEvent()
         }
+        if (packet is C03PacketPlayer && dmgJumpCount < 4) {
+            packet.onGround = false
+        }
         if (packet is S08PacketPlayerPosLook && waitFlag) {
             isStarted = true
             waitFlag = false
