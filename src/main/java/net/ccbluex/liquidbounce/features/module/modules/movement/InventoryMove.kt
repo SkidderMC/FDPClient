@@ -30,7 +30,7 @@ class InventoryMove : Module() {
 
     private val noDetectableValue = BoolValue("NoDetectable", false)
     private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "PacketInv", "None"), "None")
-    private val rotateValue = BoolValue("Rotate", true)
+    private val rotateValue = BoolValue("Rotate", false)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
     val noSprintValue = ListValue("NoSprint", arrayOf("Real", "PacketSpoof", "None"), "None")
 
