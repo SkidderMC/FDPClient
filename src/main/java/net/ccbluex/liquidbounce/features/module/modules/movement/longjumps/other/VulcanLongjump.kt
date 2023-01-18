@@ -8,8 +8,10 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.cos
@@ -97,6 +99,13 @@ class VulcanLongjump : LongJumpMode("Vulcan") {
         }
         if (packet is C03PacketPlayer && dmgJumpCount < 4) {
             packet.onGround = false
+        }
+        if (packet is C0FPacketConfirmTransaction) { //Make sure it works with Vulcan Combat Disabler
+            val transUID = (packet.uid).toInt()
+            if (transUID >= -31767 && transUID <= -30769) {
+                event.cancelEvent()
+                PacketUtils.sendPacketNoEvent(packet)
+            }
         }
     }
     
