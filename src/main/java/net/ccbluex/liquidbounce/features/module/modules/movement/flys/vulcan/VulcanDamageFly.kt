@@ -76,7 +76,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             return
         }
         mc.thePlayer.jumpMovementFactor = 0.00
-		MovementUtils.INSTANCE.resetMotion(true)
+        MovementUtils.resetMotion(true)
         if (!isStarted && !waitFlag) {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.0784, mc.thePlayer.posZ, false))
             waitFlag = true
