@@ -155,14 +155,17 @@ public abstract class MixinNetHandlerPlayClient {
         Explosion explosion = new Explosion(this.gameController.theWorld, null, packetIn.getX(), packetIn.getY(), packetIn.getZ(), packetIn.getStrength(), packetIn.getAffectedBlockPositions());
         explosion.doExplosionB(true);
         // convert it to velocity packet
-        S12PacketEntityVelocity packet = new S12PacketEntityVelocity(this.gameController.thePlayer.getEntityId(),
-                this.gameController.thePlayer.motionX + packetIn.func_149149_c(),
-                this.gameController.thePlayer.motionY + packetIn.func_149144_d(),
-                this.gameController.thePlayer.motionZ + packetIn.func_149147_e());
-        PacketEvent packetEvent = new PacketEvent(packet, PacketEvent.Type.RECEIVE);
-        LiquidBounce.eventManager.callEvent(packetEvent);
-        if (!packetEvent.isCancelled()) {
-            handleEntityVelocity(packet);
+        // ONLY when it's a valid explosion (in affected range)
+        if (!(Math.abs(packetIn.func_149149_c() * 8000.0) < 0.0001 && Math.abs(packetIn.func_149144_d() * 8000.0) < 0.0001 && Math.abs(packetIn.func_149147_e() * 8000.0) < 0.0001)) {
+            S12PacketEntityVelocity packet = new S12PacketEntityVelocity(this.gameController.thePlayer.getEntityId(),
+                (this.gameController.thePlayer.motionX + packetIn.func_149149_c()) * 8000.0,
+                (this.gameController.thePlayer.motionY + packetIn.func_149144_d()) * 8000.0,
+                (this.gameController.thePlayer.motionZ + packetIn.func_149147_e()) * 8000.0);
+            PacketEvent packetEvent = new PacketEvent(packet, PacketEvent.Type.RECEIVE);
+            LiquidBounce.eventManager.callEvent(packetEvent);
+            if (!packetEvent.isCancelled()) {
+                handleEntityVelocity(packet);
+            }
         }
     }
 
