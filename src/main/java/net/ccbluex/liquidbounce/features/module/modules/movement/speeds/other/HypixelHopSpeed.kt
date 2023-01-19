@@ -66,8 +66,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         }
         
         if (yPort3.get()) {
-            if (offGroundTicks == 5) {
-                mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98
+            if (mc.thePlayer.motionY == 0) {
+                mc.thePlayer.motionY = -0.0784
             }
         }
         if (yPort4.get()) {
