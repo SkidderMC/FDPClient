@@ -98,7 +98,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet is C03PacketPlayer && waitFlag) {
+        if (packet is C03PacketPlayer && waitFlag && isStarted) {
             event.cancelEvent()
         }
         if (packet is C03PacketPlayer && dmgJumpCount < 4) {
