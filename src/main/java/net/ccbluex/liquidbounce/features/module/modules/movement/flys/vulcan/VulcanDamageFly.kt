@@ -18,9 +18,13 @@ import kotlin.math.sqrt
 class VulcanDamageFly : FlyMode("VulcanDamage") {
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
     private val selfDamageValue = BoolValue("${valuePrefix}SelfDamage", true)
+    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f)
     private var waitFlag = false
     private var isStarted = false
+    //Tips: for some reason Vulcan detects InstantDamage(Motion C/D)
+    //If you want to fly with InstantDamage, bind Damage and Fly together
     
+    //注意：Vulcan会检测瞬间自伤（因为少了Jump Achievement，可能以后会考虑加上），所以要是想瞬间自伤直接飞的话，可以选择搭高或者把Fly和Damage绑一起，然后关闭SelfDamage选项
     var isDamaged = false
     var dmgJumpCount = 0
     var flyTicks = 0
@@ -82,7 +86,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             waitFlag = true
         }
         if (isStarted) {
-            mc.timer.timerSpeed = 0.05f
+            mc.timer.timerSpeed = flyTimerValue.get()
             flyTicks++
             if (flyTicks > 4) {
                 flyTicks = 4
@@ -98,7 +102,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet is C03PacketPlayer && waitFlag && isStarted) {
+        if (packet is C03PacketPlayer && waitFlag) { //Cancel C03 when waiting phase flag, make sure you can fly for 10s (10x C03)
             event.cancelEvent()
         }
         if (packet is C03PacketPlayer && dmgJumpCount < 4) {
