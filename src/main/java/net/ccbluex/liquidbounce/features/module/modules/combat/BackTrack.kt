@@ -33,6 +33,10 @@ class BackTrack : Module() {
     override fun onDisable() {
         removeFakePlayer()
     }
+    
+    override fun onEnable() {
+        pulseTimer.reset()
+    }
 
     private fun removeFakePlayer() {
         try {
