@@ -70,7 +70,7 @@ class VulcanFastFly : FlyMode("VulcanFast") {
                 if(mc.gameSettings.keyBindSneak.pressed) {
                     MovementUtils.strafe(0.45f)
                     if(verticalValue.get()) {
-                        mc.thePlayer.motionY = speedValue.get().toDouble()
+                        mc.thePlayer.motionY = 0.0 - speedValue.get().toDouble()
                     }
                 }
                 if(verticalValue.get()) {
