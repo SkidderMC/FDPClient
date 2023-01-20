@@ -45,6 +45,14 @@ class BuzzTestFly : FlyMode("BuzzTest") {
                     false
                 )
             )
+            PacketUtils.sendPacketNoEvent(
+                C04PacketPlayerPosition(
+                    mc.thePlayer.posX,
+                    mc.thePlayer.posY,
+                    mc.thePlayer.posZ,
+                    true
+                )
+            )
         }
     }
 
@@ -95,6 +103,7 @@ class BuzzTestFly : FlyMode("BuzzTest") {
                 lastSentZ = packet.z
                 flag = true
                 mc.timer.timerSpeed = 1.0f
+                event.cancelEvent()
             }
         }
     }
