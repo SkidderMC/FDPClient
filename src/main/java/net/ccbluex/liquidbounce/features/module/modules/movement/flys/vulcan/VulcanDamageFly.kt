@@ -4,6 +4,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -21,9 +22,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
     private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f)
     private var waitFlag = false
     private var isStarted = false
-    //Tips: for some reason Vulcan detects InstantDamage(Motion C/D)
-    //If you want to fly with InstantDamage, bind Damage and Fly together
-    
+    //Tips: for some reason Vulcan detects InstantDamage(Motion C/D). If you want to fly with InstantDamage, bind Damage and Fly together
     //注意：Vulcan会检测瞬间自伤（因为少了Jump Achievement，可能以后会考虑加上），所以要是想瞬间自伤直接飞的话，可以选择搭高或者把Fly和Damage绑一起，然后关闭SelfDamage选项
     var isDamaged = false
     var dmgJumpCount = 0
