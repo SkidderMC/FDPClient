@@ -36,6 +36,8 @@ class Eagle : Module() {
             holdTimer.reset()
         } else if (holdTimer.hasTimePassed(holdTime.get().toLong()) && limitTimeValue.get()) {
             sneakValue = false
+        } else if (!limitTimeValue.get()) {
+            sneakValue = false
         }
 
         mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || sneakValue)
