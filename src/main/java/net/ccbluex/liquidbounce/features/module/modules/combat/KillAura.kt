@@ -1208,11 +1208,11 @@ class KillAura : Module() {
             val boundingBox = interactEntity.entityBoundingBox.expand(expandSize, expandSize, expandSize)
 
             val (yaw, pitch) = RotationUtils.targetRotation ?: Rotation(mc.thePlayer!!.rotationYaw, mc.thePlayer!!.rotationPitch)
-            val yawCos = cos(-yaw * 0.017453292F - Math.PI.toFloat())
-            val yawSin = sin(-yaw * 0.017453292F - Math.PI.toFloat())
-            val pitchCos = -cos(-pitch * 0.017453292F)
-            val pitchSin = sin(-pitch * 0.017453292F)
-            val range = min(maxRange.toDouble(), mc.thePlayer!!.getDistanceToEntityBox(interactEntity)) + 1
+            val yawCos = cos(-yaw * 0.017453292F - Math.PI.toFloat()).toFloat()
+            val yawSin = sin(-yaw * 0.017453292F - Math.PI.toFloat()).toFloat()
+            val pitchCos = -cos(-pitch * 0.017453292F).toFloat()
+            val pitchSin = sin(-pitch * 0.017453292F).toFloat()
+            val range = (min(maxRange.toDouble(), mc.thePlayer!!.getDistanceToEntityBox(interactEntity)) + 1).toFloat()
             val lookAt = positionEye!!.addVector(yawSin * pitchCos * range, pitchSin * range, yawCos * pitchCos * range)
 
             val movingObject = boundingBox.calculateIntercept(positionEye, lookAt) ?: return
