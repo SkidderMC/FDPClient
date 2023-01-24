@@ -24,7 +24,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-@ModuleInfo(name = "Velocity", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "Interesting_Bypass", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.velocitys", VelocityMode::class.java)
         .map { it.newInstance() as VelocityMode }
