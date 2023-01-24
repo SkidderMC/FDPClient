@@ -1201,28 +1201,7 @@ class KillAura : Module() {
         }
 
         if (interact) {
-            //mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, interactEntity.positionVector))
-            val positionEye = mc.renderViewEntity?.getPositionEyes(1F)
-
-            val expandSize = interactEntity.collisionBorderSize.toDouble()
-            val boundingBox = interactEntity.entityBoundingBox.expand(expandSize, expandSize, expandSize)
-
-            val (yaw, pitch) = RotationUtils.targetRotation ?: Rotation(mc.thePlayer!!.rotationYaw, mc.thePlayer!!.rotationPitch)
-            val yawCos = cos(-yaw * 0.017453292F - Math.PI.toFloat()).toFloat()
-            val yawSin = sin(-yaw * 0.017453292F - Math.PI.toFloat()).toFloat()
-            val pitchCos = -cos(-pitch * 0.017453292F).toFloat()
-            val pitchSin = sin(-pitch * 0.017453292F).toFloat()
-            val range = (min(maxRange.toDouble(), mc.thePlayer!!.getDistanceToEntityBox(interactEntity)) + 1).toFloat()
-            val lookAt = positionEye!!.addVector(yawSin * pitchCos * range * 1f, pitchSin * range * 1f, yawCos * pitchCos * range * 1f)
-
-            val movingObject = boundingBox.calculateIntercept(positionEye, lookAt) ?: return
-            val hitVec = movingObject.hitVec
-
-            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, Vec3(
-                    hitVec.xCoord - interactEntity.posX,
-                    hitVec.yCoord - interactEntity.posY,
-                    hitVec.zCoord - interactEntity.posZ)
-            ))
+            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, interactEntity.positionVector))
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
         }
 
