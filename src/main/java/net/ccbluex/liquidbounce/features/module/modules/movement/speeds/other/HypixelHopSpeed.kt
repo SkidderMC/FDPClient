@@ -71,18 +71,18 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             }
         }
         if (yPort4.get()) {
-            mc.thePlayer.motionY - 0.0009
+            mc.thePlayer.motionY -= 0.0009
         }
         
         
         if (damageBoost.get()) {
-            if (mc.thePlayer.hurtTime > 0) {
+            if (mc.thePlayer.hurtTime > 9) {
                 mc.thePlayer.motionX *= 1.018 - Math.random() / 100
                 mc.thePlayer.motionZ *= 1.018 - Math.random() / 100
             }
         }
         if (damageStrafe.get()) {
-            if (mc.thePlayer.hurtTime > 0) {
+            if (mc.thePlayer.hurtTime > 3) {
                 MovementUtils.strafe(MovementUtils.getSpeed())
             }
         }
@@ -97,26 +97,20 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     mc.thePlayer.jump()
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                     
-                    oldMotionX = mc.thePlayer.motionX
-                    oldMotionZ = mc.thePlayer.motionZ
-                    MovementUtils.strafe(MovementUtils.getSpeed() * 1.01f)
-                    mc.thePlayer.motionX = (mc.thePlayer.motionX * 1 + oldMotionX * 2) / 3
-                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 1 + oldMotionZ * 2) / 3
-                    
-                    if (MovementUtils.getSpeed() < 0.47) {
-                        watchdogMultiplier = 0.47 / (MovementUtils.getSpeed().toDouble() + 0.001)
-                        mc.thePlayer.motionX *= watchdogMultiplier
-                        mc.thePlayer.motionZ *= watchdogMultiplier
+
+                    MovementUtils.strafe(MovementUtils.getSpeed() * 1.005f)
+                    if (MovementUtils.getSpeed() < 0.43f) {
+                        MovementUtils.strafe(0.43f)
                     }
+                    
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        mc.thePlayer.motionX *= (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
-                        mc.thePlayer.motionZ *= (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        MovementUtils.strafe(0.48f * mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier.toFloat() * 0.655)
                     }
                     
                 } else {
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        mc.thePlayer.motionX *= (1.003 + 0.004 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
-                        mc.thePlayer.motionZ *= (1.003 + 0.004 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionX *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionZ *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
                 }
             }
