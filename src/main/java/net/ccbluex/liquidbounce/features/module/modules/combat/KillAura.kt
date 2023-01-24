@@ -1213,7 +1213,7 @@ class KillAura : Module() {
             val pitchCos = -cos(-pitch * 0.017453292F).toFloat()
             val pitchSin = sin(-pitch * 0.017453292F).toFloat()
             val range = (min(maxRange.toDouble(), mc.thePlayer!!.getDistanceToEntityBox(interactEntity)) + 1).toFloat()
-            val lookAt = positionEye!!.addVector(yawSin * pitchCos * range, pitchSin * range, yawCos * pitchCos * range)
+            val lookAt = positionEye!!.addVector(yawSin * pitchCos * range * 1f, pitchSin * range * 1f, yawCos * pitchCos * range * 1f)
 
             val movingObject = boundingBox.calculateIntercept(positionEye, lookAt) ?: return
             val hitVec = movingObject.hitVec
