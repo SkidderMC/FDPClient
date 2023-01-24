@@ -104,7 +104,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     }
                     
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        MovementUtils.strafe(0.48f * mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier.toFloat() * 0.655)
+                        MovementUtils.strafe(0.48f * mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier.toFloat() * 0.655f)
                     }
                     
                 } else {
