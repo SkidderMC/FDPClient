@@ -30,7 +30,7 @@ class TargetStrafe : Module() {
     private val lineWidthValue = FloatValue("LineWidth", 1f, 1f, 10f). displayable{!renderModeValue.equals("None")}
     private val radiusModeValue = ListValue("RadiusMode", arrayOf("Normal", "Strict"), "Normal")
     private val radiusValue = FloatValue("Radius", 0.5f, 0.1f, 5.0f)
-    private val ongroundValue = BoolValue("OnlyOnGround",false)
+    private val onGroundValue = BoolValue("OnlyOnGround",false)
     private val holdSpaceValue = BoolValue("HoldSpace", false)
     private val onlySpeedValue = BoolValue("OnlySpeed", true)
     private var direction = -1.0
@@ -185,7 +185,7 @@ class TargetStrafe : Module() {
 
         @EventTarget
         fun onMove(event: MoveEvent) {
-            if(doStrafe && (!ongroundValue.get() || mc.thePlayer.onGround)) {
+            if(doStrafe && (!onGroundValue.get() || mc.thePlayer.onGround)) {
                 val _entity : EntityLivingBase = targetEntity?:return
                 if(!canStrafe(_entity)) {
                     isEnabled = false
@@ -201,7 +201,7 @@ class TargetStrafe : Module() {
                 if (radiusModeValue.get().equals("Strict", ignoreCase = true)) {
                     _1IlIll1 = 1
                 }
-                MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event, _1IlIll1.toInt())
+                MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event, _1IlIll1)
                 callBackYaw = RotationUtils.getRotationsEntity(_entity).yaw.toDouble()
                 isEnabled = true
                 if (!thirdPersonViewValue.get()) 
@@ -220,11 +220,11 @@ class TargetStrafe : Module() {
         }
 
     fun modifyStrafe(event: StrafeEvent):Boolean {
-        if(!isEnabled || event.isCancelled) {
-            return false
-        }else {
+        return if(!isEnabled || event.isCancelled) {
+            false
+        } else {
             MovementUtils.strafe()
-            return true
+            true
         }
     }
 
@@ -247,7 +247,7 @@ class TargetStrafe : Module() {
     fun doMove(event: MoveEvent):Boolean {
         if(!state)
             return false
-        if(doStrafe && (!ongroundValue.get() || mc.thePlayer.onGround)) {
+        if(doStrafe && (!onGroundValue.get() || mc.thePlayer.onGround)) {
             val _entity : EntityLivingBase = targetEntity?:return false
             MovementUtils.doTargetStrafe(_entity, direction.toFloat(), radiusValue.get(), event)
             callBackYaw = RotationUtils.getRotationsEntity(_entity).yaw.toDouble()

@@ -44,6 +44,7 @@ import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
+import scala.annotation.switch
 import java.awt.Color
 import java.util.*
 import kotlin.math.*
@@ -108,9 +109,9 @@ class KillAura : Module() {
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
 
     // Bypass
-    private val swingValue =            ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
-    private val attackTimingValue =     ListValue("AttackTiming", arrayOf("All", "Pre", "Post"), "All")
-    private val keepSprintValue =       BoolValue("KeepSprint", true)
+    private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
+    private val attackTimingValue = ListValue("AttackTiming", arrayOf("All", "Pre", "Post"), "All")
+    private val keepSprintValue = BoolValue("KeepSprint", true)
 
     private val noBadPacketsValue = BoolValue("NoBadPackets", false)
 
@@ -160,31 +161,31 @@ class KillAura : Module() {
         }
     }
 
-    private val rotationSmoothModeValue =   ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom")
-    private val rotationSmoothValue =       FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") }
+    private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom")
+    private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") }
     
-    // Random
-    private val randomCenterModeValue =     ListValue("RandomCenter", arrayOf("Off", "Cubic", "Horizonal", "Vertical"), "Off")
-    private val randomCenRangeValue =       FloatValue("RandomRange", 0.0f, 0.0f, 1.2f)
+    // Random Value
+    private val randomCenterModeValue = ListValue("RandomCenter", arrayOf("Off", "Cubic", "Horizonal", "Vertical"), "Off")
+    private val randomCenRangeValue = FloatValue("RandomRange", 0.0f, 0.0f, 1.2f)
     
-    // rotation keep
-    private val rotationRevValue =          BoolValue("RotationReverse", false).displayable { !rotationModeValue.equals("None") }
-    private val rotationRevTickValue =      IntegerValue("RotationReverseTick", 5, 1, 20).displayable { !rotationModeValue.equals("None") }
-    private val keepDirectionValue =        BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
-    private val keepDirectionTickValue =    IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
+    // Keep Rotate
+    private val rotationRevValue = BoolValue("RotationReverse", false).displayable { !rotationModeValue.equals("None") }
+    private val rotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable { !rotationModeValue.equals("None") }
+    private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
+    private val keepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
     
     // Strafe
-    private val silentRotationValue =       BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
-    private val rotationStrafeValue =       ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
-    private val strafeOnlyGroundValue =     BoolValue("StrafeOnlyGround", true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
+    private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
+    private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround", true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
     
     // Backtrace
-    private val backtraceValue =            BoolValue("Backtrace", false)
-    private val backtraceTickValue =        IntegerValue("BacktraceTick", 2, 1, 10).displayable { backtraceValue.get() }
+    private val backtraceValue = BoolValue("Backtrace", false)
+    private val backtraceTickValue = IntegerValue("BacktraceTick", 2, 1, 10).displayable { backtraceValue.get() }
     
-    
-    private val hitableValue =              BoolValue("AlwaysHitable", true).displayable { !rotationModeValue.equals("None") }
-    private val fovValue =                  FloatValue("FOV", 180f, 0f, 180f)
+    // Others
+    private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { !rotationModeValue.equals("None") }
+    private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
     private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
@@ -460,19 +461,15 @@ class KillAura : Module() {
         }
 
         LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
-        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
+//        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
     }
 
     /**
      * Update event
      */
     @EventTarget
-    fun onUpdate() {
-        if ((!strafeOnlyGroundValue.get() || mc.thePlayer.onGround) && !rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
-            strictStrafe = true
-        }else {
-            strictStrafe = false
-        }
+    fun onUpdate(e: UpdateEvent) {
+        strictStrafe = (!strafeOnlyGroundValue.get() || mc.thePlayer.onGround) && !rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding
         if (cancelRun) {
             target = null
             currentTarget = null
@@ -999,15 +996,12 @@ class KillAura : Module() {
      * @throws IllegalStateException when bad packets protection
      */
     private fun attackEntity(entity: EntityLivingBase) {
-        if (packetSent && noBadPacketsValue.get()) {
-            throw java.lang.IllegalStateException("Attack canceled because of bad packets protection")
-        }
+        if (packetSent && noBadPacketsValue.get()) return
+
         // Call attack event
         val event = AttackEvent(entity)
         LiquidBounce.eventManager.callEvent(event)
-        if (event.isCancelled) {
-            return
-        }
+        if (event.isCancelled) return
 
         // Stop blocking
         if (!autoBlockPacketValue.equals("Vanilla") && (mc.thePlayer.isBlocking || blockingStatus)) {
@@ -1145,7 +1139,7 @@ class KillAura : Module() {
      * Check if enemy is hitable with current rotations
      */
     private fun updateHitable() {
-        if (hitableValue.get()) {
+        if (hitAbleValue.get()) {
             hitable = true
             return
         }
