@@ -59,56 +59,58 @@ class PotionSpoof : Module() {
 
     @EventTarget(ignoreCondition = true)
     fun onUpdate(event: UpdateEvent?) {
-        if (state && speedValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.moveSpeed.id, 1337, 1))
-        }
-        if (state && hasteValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.digSpeed.id, 1337, 1))
-        }
-        if (state && moveSlowDownValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.moveSlowdown.id, 1337, 1))
-        }
-        if (state && blindnessValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.blindness.id, 1337, 1))
-        }
-        if (state && strengthValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.damageBoost.id, 1337, 1))
-        }
-        if (state && jumpBoostValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.jump.id, 1337, 1))
-        }
-        if (state && weaknessValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.weakness.id, 1337, 1))
-        }
-        if (state && regenerationValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.regeneration.id, 1337, 1))
-        }
-        if (state && fireResistanceValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.fireResistance.id, 1337, 1))
-        }
-        if (state && witherValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.wither.id, 1337, 1))
-        }
-        if (state && resistanceValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.resistance.id, 1337, 1))
-        }
-        if (state && absorptionValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.absorption.id, 1337, 1))
-        }
-        if (state && healthBoostValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.healthBoost.id, 1337, 1))
-        }
-        if (state && digSlowDownValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.digSlowdown.id, 1337, 1))
-        }
-        if (state && poisonValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.poison.id, 1337, 1))
-        }
-        if (state && saturationValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.saturation.id, 1337, 1))
-        }
-        if (state && waterBreathingValue.get()) {
-            mc.thePlayer.addPotionEffect(PotionEffect(Potion.waterBreathing.id, 1337, 1))
+        if(state) {
+            if (speedValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.moveSpeed.id, 1337, 1))
+            }
+            if (hasteValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.digSpeed.id, 1337, 1))
+            }
+            if (moveSlowDownValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.moveSlowdown.id, 1337, 1))
+            }
+            if (blindnessValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.blindness.id, 1337, 1))
+            }
+            if (strengthValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.damageBoost.id, 1337, 1))
+            }
+            if (jumpBoostValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.jump.id, 1337, 1))
+            }
+            if (weaknessValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.weakness.id, 1337, 1))
+            }
+            if (regenerationValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.regeneration.id, 1337, 1))
+            }
+            if (fireResistanceValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.fireResistance.id, 1337, 1))
+            }
+            if (witherValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.wither.id, 1337, 1))
+            }
+            if (resistanceValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.resistance.id, 1337, 1))
+            }
+            if (absorptionValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.absorption.id, 1337, 1))
+            }
+            if (healthBoostValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.healthBoost.id, 1337, 1))
+            }
+            if (digSlowDownValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.digSlowdown.id, 1337, 1))
+            }
+            if (poisonValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.poison.id, 1337, 1))
+            }
+            if (saturationValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.saturation.id, 1337, 1))
+            }
+            if (waterBreathingValue.get()) {
+                mc.thePlayer.addPotionEffect(PotionEffect(Potion.waterBreathing.id, 1337, 1))
+            }
         }
     }
 

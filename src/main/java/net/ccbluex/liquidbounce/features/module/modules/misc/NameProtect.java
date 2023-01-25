@@ -18,6 +18,8 @@ import net.ccbluex.liquidbounce.features.value.BoolValue;
 import net.ccbluex.liquidbounce.features.value.TextValue;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
+import java.util.Objects;
+
 @ModuleInfo(name = "NameProtect", category = ModuleCategory.CLIENT)
 public class NameProtect extends Module {
 
@@ -29,7 +31,7 @@ public class NameProtect extends Module {
 
     @EventTarget
     public void onText(final TextEvent event) {
-        if (mc.thePlayer == null || event.getText().contains("§8[§9§l" + LiquidBounce.CLIENT_NAME + "§8] §3") || event.getText().startsWith("/") || event.getText().startsWith(LiquidBounce.commandManager.getPrefix() + ""))
+        if (mc.thePlayer == null || Objects.requireNonNull(event.getText()).contains("§8[§9§l" + LiquidBounce.CLIENT_NAME + "§8] §3") || event.getText().startsWith("/") || event.getText().startsWith(LiquidBounce.commandManager.getPrefix() + ""))
             return;
 
         for (final FriendsConfig.Friend friend : LiquidBounce.fileManager.getFriendsConfig().getFriends())
