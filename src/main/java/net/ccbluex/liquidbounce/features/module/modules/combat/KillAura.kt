@@ -46,11 +46,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
 import java.util.*
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.min
+import kotlin.math.*
 
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
