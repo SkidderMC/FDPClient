@@ -103,7 +103,7 @@ class KillAura : Module() {
     private val blinkCheck = BoolValue("BlinkCheck", true)
     private val noScaffValue = BoolValue("NoScaffold", true)
     private val noFlyValue = BoolValue("NoFly", false)
-
+    
     // Modes
     private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor", "HurtTime", "RegenAmplifier"), "Armor")
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
@@ -160,7 +160,8 @@ class KillAura : Module() {
             if (v < newValue) set(v)
         }
     }
-
+    private val gcd = BoolValue("RotationsPatch", true)
+    private val gcdvalue = FloatValue("GCDRotaFix", mc.gameSettings.mouseSensitivity / 0.005f, 0.0f, 200f).displayable{gcd.get()}
     private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom")
     private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") }
     
@@ -502,7 +503,18 @@ class KillAura : Module() {
             runAttackLoop()
         }
     }
-
+    
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+        if (gcd.get() && packet is C03PacketPlayer && target != null){
+            m = 0.005 * gcdvalue.get();
+            f = m * 0.6 + 0.2;
+            gcdvv = m * m * m * 1.2;
+            packet.pitch -= packet.pitch % gcdvv;
+            packet.yaw -= packet.yaw % gcdvv;
+        }
+    }
     /**
      * Render event
      */
