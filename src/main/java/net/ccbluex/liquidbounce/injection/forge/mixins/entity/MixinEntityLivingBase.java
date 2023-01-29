@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
@@ -29,9 +30,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import java.io.IOException;
+import java.util.Objects;
 
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends MixinEntity {
@@ -113,6 +118,13 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
                 jesus.getModeValue().equals("Legit")) {
             this.updateAITick();
         }
+    }
+
+	@ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))
+    private double ViaVersion_MovementThreshold(double constant) {
+        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ViaVersionFix.class)).getState())
+            return 0.003D;
+        return 0.005D;
     }
 
     @Inject(method = "getLook", at = @At("HEAD"), cancellable = true)

@@ -29,7 +29,7 @@ import kotlin.math.sqrt
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5", "Matrix", "Vulcan","Medusa"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
     //Modify Slowdown / Packets
@@ -272,10 +272,15 @@ class NoSlow : Module() {
     fun onUpdate(event: UpdateEvent) {
         if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
-        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && (lastBlockingStat || isBlocking)) {
+        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
                 nextTemp = false
-                PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
+				if(modeValue.equals("GrimAC")) {
+					PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
+					PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+				} else {
+					PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
+				}
                 if(packetBuf.isNotEmpty()) {
                     var canAttack = false
                     for(packet in packetBuf) {
@@ -319,7 +324,7 @@ class NoSlow : Module() {
                 sendPacket = true
             }
         }
-        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan")) && nextTemp) {
+        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && nextTemp) {
             if((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlocking) {
                 event.cancelEvent()
             }else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
