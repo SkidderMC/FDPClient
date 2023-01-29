@@ -73,7 +73,7 @@ class Arraylist(
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
-    private val fontValue = FontValue("Font", Fonts.font40)
+    private val fontValue = FontValue("Font", Fonts.font35)
     private val fontAlphaValue = IntegerValue("TextAlpha", 255, 0, 255)
     private val shadowShaderValue = BoolValue("Shadow", true)
     private val shadowNoCutValue = BoolValue("Shadow-NoCut", false)

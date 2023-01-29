@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.value.ListValue;
+// Made By Zywl
 
 @ModuleInfo(name = "ClientSpoof",  category = ModuleCategory.CLIENT)
 public final class ClientSpoof extends Module {
@@ -20,4 +21,7 @@ public final class ClientSpoof extends Module {
             "CheatBreaker",
             "PvPLounge"
     }, "Vanilla");
+
+
+    // Made By Zywl
 }
