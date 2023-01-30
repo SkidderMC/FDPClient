@@ -273,7 +273,8 @@ public abstract class MixinMinecraft {
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setWindowIcon(CallbackInfo callbackInfo) throws IOException {
         if (Util.getOSType() != Util.EnumOS.OSX) {
-            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png"));
+            // 11 months icon bug fixed :skull:
+            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("assets/minecraft/fdpclient/misc/icon.png"));
             if (image.getWidth() != 32 || image.getHeight() != 32) {
                 image = ImageUtils.resizeImage(image, 32, 32);
             }
