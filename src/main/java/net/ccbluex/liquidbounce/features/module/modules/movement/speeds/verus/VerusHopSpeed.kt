@@ -66,7 +66,7 @@ class VerusHopSpeed : SpeedMode("VerusHop") {
                         if (modeValue.equals("LowHop")) {
                             mc.thePlayer.motionY = 0.38
                         } else {
-                            mc.thePlayer.motionY = 0.42
+                            mc.thePlayer.motionY = 0.41999998688698
                         }
                      } else if (modeValue.equals("VerusHard")) {
                          mc.thePlayer.jump()
@@ -83,7 +83,7 @@ class VerusHopSpeed : SpeedMode("VerusHop") {
                                 // MovementUtils.strafe(1.708f)
                                 verusHopStage = 1
                             } else if (verusHopStage == 1) {
-                                mc.thePlayer.posY += 0.42
+                                mc.thePlayer.posY += 0.41999998688698
                                 MovementUtils.strafe(0.61f)
                                 mc.timer.timerSpeed = 2.0f
                                 verusHopStage = 2
