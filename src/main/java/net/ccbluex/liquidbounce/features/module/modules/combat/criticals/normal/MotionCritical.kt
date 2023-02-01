@@ -17,7 +17,7 @@ class MotionCritical : CriticalMode("Motion") {
             "Jump")
     override fun onAttack(event: AttackEvent) {
         when (motionValue.get().lowercase()) {
-            "jump" -> mc.thePlayer.motionY = 0.42
+            "jump" -> mc.thePlayer.motionY = 0.41999998688698
             "lowjump" -> mc.thePlayer.motionY = 0.3425
             "redeskylowhop" -> mc.thePlayer.motionY = 0.35
             "hop" -> {
