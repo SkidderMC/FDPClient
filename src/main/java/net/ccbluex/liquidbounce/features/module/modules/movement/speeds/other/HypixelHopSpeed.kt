@@ -66,7 +66,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         }
         
         if (yPort3.get()) {
-            if (mc.thePlayer.motionY == 0.0) {
+            if (mc.thePlayer.motionY =< 0.001 && mc.thePlayer.motionY >= -0.001) {
                 mc.thePlayer.motionY = -0.0784
             }
         }
@@ -95,7 +95,6 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             "latest" -> {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    mc.thePlayer.motionY = yMotion.get().toDouble()
                     
 
                     MovementUtils.strafe(MovementUtils.getSpeed() * 1.005f)
