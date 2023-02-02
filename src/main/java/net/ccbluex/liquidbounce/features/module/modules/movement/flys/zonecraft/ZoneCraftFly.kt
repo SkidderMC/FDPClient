@@ -4,11 +4,13 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.ccbluex.liquidbounce.event.BlockBBEvent
 import net.minecraft.block.BlockAir
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
 
 class ZoneCraftFly : FlyMode("ZoneCraft") {
     private val timerBoostValue = BoolValue("${valuePrefix}TimerBoost", false)
