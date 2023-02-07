@@ -104,7 +104,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         if (packet is C03PacketPlayer && waitFlag) { //Cancel C03 when waiting phase flag, make sure you can fly for 10s (10x C03)
             event.cancelEvent()
         }
-        if (packet is C03PacketPlayer && dmgJumpCount < 4) {
+        if (packet is C03PacketPlayer && (dmgJumpCount < 4 && selfDamageValue.get())) {
             packet.onGround = false
         }
         if (packet is S08PacketPlayerPosLook && waitFlag) {
