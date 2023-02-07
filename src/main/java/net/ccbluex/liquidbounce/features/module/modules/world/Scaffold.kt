@@ -146,6 +146,7 @@ class Scaffold : Module() {
             "AAC3.6.4",
             "AAC4.4Constant",
             "AAC4Jump",
+            "Universocraft",
             "Matrix6.9.2",
             "Verus"
         ), "Jump"
@@ -664,6 +665,16 @@ class Scaffold : Module() {
                     fakeJump()
                     mc.thePlayer.motionY = 0.387565
                     mc.timer.timerSpeed = 1.05f
+                }
+            }
+            "universocraft" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    mc.thePlayer.motionY = 0.42
+                } else if (mc.thePlayer.motionY < 0.19) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
+                    mc.thePlayer.onGround = true
+                    mc.thePlayer.motionY = 0.42
                 }
             }
             "matrix6.9.2" -> {
