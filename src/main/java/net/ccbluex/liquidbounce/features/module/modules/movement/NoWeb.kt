@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.features.value.ListValue
 @ModuleInfo(name = "NoWeb", category = ModuleCategory.MOVEMENT)
 class NoWeb : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("None", "OldAAC", "LAAC", "Rewinside", "Horizon", "Spartan", "AAC4", "AAC5", "Matrix", "Test"), "None")
+    private val modeValue = ListValue("Mode", arrayOf("None","FastFall", "OldAAC", "LAAC", "Rewinside", "Horizon", "Spartan", "AAC4", "AAC5", "Matrix", "Test"), "None")
     private val horizonSpeed = FloatValue("HorizonSpeed", 0.1F, 0.01F, 0.8F)
 
     private var usedTimer = false
@@ -35,6 +35,13 @@ class NoWeb : Module() {
 
         when (modeValue.get().lowercase()) {
             "none" -> mc.thePlayer.isInWeb = false
+            "fastfall" -> {
+                //Bypass AAC(All) Vulcan Verus Matrix NCP3.17 HAWK Spartan
+                if (mc.thePlayer.onGround) mc.thePlayer.jump();
+                if (mc.thePlayer.motionY > 0f) {
+                    mc.thePlayer.motionY -= mc.thePlayer.motionY * 2
+                }
+            }
             "oldaac" -> {
                 mc.thePlayer.jumpMovementFactor = 0.59f
 
