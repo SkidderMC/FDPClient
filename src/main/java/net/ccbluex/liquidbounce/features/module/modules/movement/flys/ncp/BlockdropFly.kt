@@ -15,7 +15,8 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 class BlockdropFly : FlyMode("BlockDrop") {
-    private val speedValue = FloatValue("${valuePrefix}Speed", 1f, 0.1f, 5f)
+    private val hSpeedValue = FloatValue("${valuePrefix}HorizontalSpeed", 1f, 0.1f, 5f)
+    private val vSpeedValue = FloatValue("${valuePrefix}VerticalSpeed", 1f, 0.1f, 5f)
     private var startx = 0.0
     private var starty = 0.0
     private var startz = 0.0
@@ -32,9 +33,9 @@ class BlockdropFly : FlyMode("BlockDrop") {
         
 
     override fun onUpdate(event: UpdateEvent) {
-        if (mc.gameSettings.keyBindJump.isKeyDown) mc.thePlayer.motionY = speedValue.get().toDouble()
-        if (mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY -= speedValue.get().toDouble()
-        MovementUtils.strafe(speedValue.get())
+        if (mc.gameSettings.keyBindJump.isKeyDown) mc.thePlayer.motionY = vSpeedValue.get().toDouble()
+        if (mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY -= vSpeedValue.get().toDouble()
+        MovementUtils.strafe(hSpeedValue.get())
         
         repeat(3) {
             PacketUtils.sendPacketNoEvent(
