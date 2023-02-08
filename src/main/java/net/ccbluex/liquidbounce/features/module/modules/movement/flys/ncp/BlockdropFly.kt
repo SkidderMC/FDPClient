@@ -70,6 +70,9 @@ class BlockdropFly : FlyMode("BlockDrop") {
             startx = packet.x
             starty = packet.y
             startz = packet.z
+            startyaw = packet.getYaw()
+            startpitch = packet.getPitch()
+            event.cancelEvent()
         }
     }
 }
