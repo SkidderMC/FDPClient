@@ -432,6 +432,7 @@ class Scaffold : Module() {
         //Verus
         if (packet is C03PacketPlayer) {
             if (doSpoof) {
+                doSpoof = false
                 packet.onGround = true
             }
         }
@@ -515,6 +516,7 @@ class Scaffold : Module() {
     }
 
     private fun move() {
+        towerTimer.update()
         when (towerModeValue.get().lowercase()) {
             "none" -> {
                 if (mc.thePlayer.onGround) {
