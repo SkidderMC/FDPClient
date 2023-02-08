@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.features.value.ListValue
 @ModuleInfo(name = "NoWeb", category = ModuleCategory.MOVEMENT)
 class NoWeb : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("None","FastFall", "OldAAC", "LAAC", "Rewinside", "Horizon", "Spartan", "AAC4", "AAC5", "Matrix", "Test"), "None")
+    private val modeValue = ListValue("Mode", arrayOf("None", "FastFall", "OldAAC", "LAAC", "Rewinside", "Horizon", "Spartan", "AAC4", "AAC5", "Matrix", "Test"), "None")
     private val horizonSpeed = FloatValue("HorizonSpeed", 0.1F, 0.01F, 0.8F)
 
     private var usedTimer = false
