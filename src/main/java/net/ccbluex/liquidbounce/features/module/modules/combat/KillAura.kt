@@ -27,6 +27,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
@@ -523,7 +524,7 @@ class KillAura : Module() {
         }
         
         if (simulateCooldown.get() && CooldownHelper.getAttackCooldownProgress() < 1.0f) {
-            ClientUtils.displayChatMessage("Under cooldown until ${CooldownHelper.getAttackCooldownProgress()}")
+            
             return
         }
     }
