@@ -30,7 +30,7 @@ class Cooldown(x: Double = 0.0, y: Double = -14.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    override fun drawElement(): Border {
+    override fun drawElement(partialTicks: Float): Border {
         val progress = CooldownHelper.getAttackCooldownProgress()
 
         if (progress < 1.0) {
