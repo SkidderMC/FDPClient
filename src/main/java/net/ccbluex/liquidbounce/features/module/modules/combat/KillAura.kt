@@ -76,6 +76,7 @@ class KillAura : Module() {
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val combatDelayValue = BoolValue("1.9CombatDelay", false)
+    private val simulateCooldown = BoolValue("SimulateCooldown", false)
 
     // Range  
     val rangeValue = object : FloatValue("Range", 3.7f, 0f, 8f) {
@@ -500,6 +501,11 @@ class KillAura : Module() {
 
         if (attackTimingValue.equals("All")) {
             runAttackLoop()
+        }
+        
+        if (simulateCooldown.get() && CooldownHelper.getAttackCooldownProgress() < 1.0f) {
+            ClientUtils.displayChatMessage("Under cooldown until ${CooldownHelper.getAttackCooldownProgress()}")
+            return
         }
     }
 
@@ -1037,6 +1043,8 @@ class KillAura : Module() {
         ) {
             startBlocking(entity, interactAutoBlockValue.get())
         }
+        
+        CooldownHelper.resetLastAttackedTicks()
     }
 
     /**
