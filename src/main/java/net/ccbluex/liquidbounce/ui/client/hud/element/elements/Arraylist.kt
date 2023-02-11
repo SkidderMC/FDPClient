@@ -75,7 +75,7 @@ class Arraylist(
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
     private val fontValue = FontValue("Font", Fonts.font35)
     private val fontAlphaValue = IntegerValue("TextAlpha", 255, 0, 255)
-    private val shadowShaderValue = BoolValue("Shadow", true)
+    private val shadowShaderValue = BoolValue("Shadow", false)
     private val shadowNoCutValue = BoolValue("Shadow-NoCut", false)
     private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30)
     private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Background")
