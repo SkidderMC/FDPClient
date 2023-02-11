@@ -191,19 +191,36 @@ class KillAura : Module() {
     // Predict
     private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
 
-    private val maxPredictSizeValue: FloatValue = object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f) {
+    private val maxPredictSizeValue: FloatValue = object : FloatValue("MaxPredictSize", 1f, -2f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minPredictSizeValue.get()
             if (v > newValue) set(v)
         }
     }.displayable { predictValue.displayable && predictValue.get() } as FloatValue
 
-    private val minPredictSizeValue: FloatValue = object : FloatValue("MinPredictSize", 1f, 0.1f, 5f) {
+    private val minPredictSizeValue: FloatValue = object : FloatValue("MinPredictSize", 1f, -2f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxPredictSizeValue.get()
             if (v < newValue) set(v)
         }
     }.displayable { predictValue.displayable && predictValue.get() } as FloatValue
+    
+    
+    private val predictPlayerValue = BoolValue("PredictPlayer", true).displayable { !rotationModeValue.equals("None") }
+    
+    private val maxPredictPlayerSizeValue: FloatValue = object : FloatValue("MaxPredictPlayerSize", 1f, -1f, 3f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = minPredictPlayerSizeValue.get()
+            if (v > newValue) set(v)
+        }
+    }.displayable { predictPlayerValue.displayable && predictPlayerValue.get() } as FloatValue
+
+    private val minPredictPlayerSizeValue: FloatValue = object : FloatValue("MinPredictPlayerSize", 1f, -1f, 3f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = maxPredictPlayerSizeValue.get()
+            if (v < newValue) set(v)
+        }
+    }.displayable { predictPlayerValue.displayable && predictPlayerValue.get() } as FloatValue
 
     // Bypass
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f)
@@ -265,12 +282,19 @@ class KillAura : Module() {
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
 
     private var predictAmount = 1.0f
+    private var predictPlayerAmount = 1.0f
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
         var aabb = it.entityBoundingBox
-        aabb = if (backtraceValue.get()) LocationCache.getPreviousAABB(it.entityId, backtraceTickValue.get(), aabb) else aabb
-        aabb = if (predictValue.get()) aabb.offset((it.posX - it.lastTickPosX) * predictAmount, (it.posY - it.lastTickPosY) * predictAmount, (it.posZ - it.lastTickPosZ) * predictAmount) else aabb
-        aabb
+        if (backtraceValue.get()) {
+            aabb = LocationCache.getPreviousAABB(it.entityId, backtraceTickValue.get(), aabb)
+        else {
+            if (predictValue.get()) 
+                aabb = aabb.offset((it.posX - it.lastTickPosX) * predictAmount, (it.posY - it.lastTickPosY) * predictAmount, (it.posZ - it.lastTickPosZ) * predictAmount)
+                
+            if (predictPlayerValue.get()) 
+                aabb = aabb.offset(mc.thePlayer.motionX.toFloat() * predictPlayerAmount * -1f, mc.thePlayer.motionY * predictPlayerAmount * -1f, mc.thePlayer.motionZ * predictPlayerAmount * -1f)
+        }
     }
 
     /**
@@ -1057,6 +1081,9 @@ class KillAura : Module() {
 
         if (predictValue.get()) {
             predictAmount = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
+        }
+        if (predictPlayerValue.get()) {
+            predictPlayerAmount = RandomUtils.nextFloat(maxPredictPlayerSizeValue.get(), minPredictPlayerSizeValue.get())
         }
 
         val boundingBox = if (rotationModeValue.get() == "Test") entity.entityBoundingBox else getAABB(entity)
