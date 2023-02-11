@@ -288,7 +288,7 @@ class KillAura : Module() {
         var aabb = it.entityBoundingBox
         aabb = if (backtraceValue.get()) LocationCache.getPreviousAABB(it.entityId, backtraceTickValue.get(), aabb) else aabb
         aabb = if (predictValue.get()) aabb.offset((it.posX - it.lastTickPosX) * predictAmount, (it.posY - it.lastTickPosY) * predictAmount, (it.posZ - it.lastTickPosZ) * predictAmount) else aabb
-        aabb = if (predictPlayerValue.get()) aabb.offset(mc.thePlayer.motionX.toFloat() * predictPlayerAmount * -1f, mc.thePlayer.motionY * predictPlayerAmount * -1f, mc.thePlayer.motionZ * predictPlayerAmount * -1f) else aabb
+        aabb = if (predictPlayerValue.get()) aabb.offset(mc.thePlayer.motionX * predictPlayerAmount * -1f, mc.thePlayer.motionY * predictPlayerAmount * -1f, mc.thePlayer.motionZ * predictPlayerAmount * -1f) else aabb
         aabb
     }
 
