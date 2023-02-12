@@ -33,11 +33,12 @@ class BlockdropFly : FlyMode("BlockDrop") {
         
 
     override fun onUpdate(event: UpdateEvent) {
+        MovementUtils.resetMotion(true)
         if (mc.gameSettings.keyBindJump.isKeyDown) mc.thePlayer.motionY = vSpeedValue.get().toDouble()
         if (mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY -= vSpeedValue.get().toDouble()
         MovementUtils.strafe(hSpeedValue.get())
         
-        repeat(3) {
+        repeat(2) {
             PacketUtils.sendPacketNoEvent(
                 C03PacketPlayer.C06PacketPlayerPosLook(
                     startx,
@@ -45,20 +46,22 @@ class BlockdropFly : FlyMode("BlockDrop") {
                     startz,
                     startyaw,
                     startpitch,
+                    true
+                )
+            )
+        }
+        repeat(2) {
+            PacketUtils.sendPacketNoEvent(
+                C03PacketPlayer.C06PacketPlayerPosLook(
+                    mc.thePlayer.posX,
+                    mc.thePlayer.posY,
+                    mc.thePlayer.posZ,
+                    startyaw,
+                    startpitch,
                     false
                 )
             )
         }
-        PacketUtils.sendPacketNoEvent(
-            C03PacketPlayer.C06PacketPlayerPosLook(
-                mc.thePlayer.posX,
-                mc.thePlayer.posY,
-                mc.thePlayer.posZ,
-                startyaw,
-                startpitch,
-                false
-            )
-        )
     }
     
     override fun onPacket(event: PacketEvent) {
