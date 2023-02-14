@@ -33,8 +33,8 @@ class BuzzFly : FlyMode("Buzz") {
         started = false
         MovementUtils.resetMotion(true)
         mc.thePlayer.jumpMovementFactor = 0.00f
-        mc.thePlayer.onGround = false
         if(mc.thePlayer.onGround) {
+            mc.thePlayer.onGround = false
             started = true
             mc.timer.timerSpeed = 0.2f
             PacketUtils.sendPacketNoEvent(
