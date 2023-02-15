@@ -104,6 +104,7 @@ class Scaffold : Module() {
     // private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") }
+    private val rotationStrafeValue = BoolValue("RotationStrafe", false).displayable { !rotationsValue.equals("None") }
     private val minRotationSpeedValue: IntegerValue = object : IntegerValue("MinRotationSpeed", 180, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val v = maxRotationSpeedValue.get()
@@ -452,6 +453,13 @@ class Scaffold : Module() {
             packet.facingY = packet.facingY.coerceIn(-1.0000F, 1.0000F)
             packet.facingZ = packet.facingZ.coerceIn(-1.0000F, 1.0000F)
         }
+    }
+
+    @EventTarget
+    fun onStrafe(event: StrafeEvent) {
+        if (!rotationStrafeValue.get()) return
+        RotationUtils.serverRotation.applyStrafeToPlayer(event)
+        event.cancelEvent()
     }
 
     @EventTarget
