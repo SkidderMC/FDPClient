@@ -21,7 +21,10 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
     private void initGui(CallbackInfo callbackInfo) {
         if(!this.mc.isIntegratedServerRunning())
             this.buttonList.add(new GuiButton(1337, this.width / 2 - 100, this.height / 4 + 128, "%ui.reconnect%"));
-
+        this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128 + 24,"Switcher"));
+        } else {
+            this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128,"Switcher"));
+        }
     }
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
@@ -34,6 +37,9 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
         if(button.id == 1337) {
             mc.theWorld.sendQuittingDisconnectingPacket();
             ServerUtils.connectToLastServer();
+        }
+        if (button.id == 1068) {
+            mc.displayGuiScreen(new GuiMultiplayer((GuiScreen) (Object) this));
         }
     }
     
