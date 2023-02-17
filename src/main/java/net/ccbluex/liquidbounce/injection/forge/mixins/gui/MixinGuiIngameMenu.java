@@ -9,6 +9,8 @@ import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiIngameMenu;
+import net.minecraft.client.gui.GuiMultiplayer;
+import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,7 +23,7 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
     private void initGui(CallbackInfo callbackInfo) {
         if(!this.mc.isIntegratedServerRunning())
             this.buttonList.add(new GuiButton(1337, this.width / 2 - 100, this.height / 4 + 128, "%ui.reconnect%"));
-        this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128 + 24,"Switcher"));
+            this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128 + 24,"Switcher"));
         } else {
             this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128,"Switcher"));
         }
@@ -30,17 +32,6 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(int p_drawScreen_1_, int p_drawScreen_2_, float p_drawScreen_3_,CallbackInfo callbackInfo) {
 
-    }
-
-    @Inject(method = "actionPerformed", at = @At("HEAD"))
-    private void actionPerformed(GuiButton button, CallbackInfo callbackInfo) {
-        if(button.id == 1337) {
-            mc.theWorld.sendQuittingDisconnectingPacket();
-            ServerUtils.connectToLastServer();
-        }
-        if (button.id == 1068) {
-            mc.displayGuiScreen(new GuiMultiplayer((GuiScreen) (Object) this));
-        }
     }
     
     @Inject(method = "drawScreen", at = @At("RETURN"))
@@ -79,4 +70,14 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
         }
     }
     
+    @Inject(method = "actionPerformed", at = @At("HEAD"))
+    private void actionPerformed(GuiButton button, CallbackInfo callbackInfo) {
+        if(button.id == 1337) {
+            mc.theWorld.sendQuittingDisconnectingPacket();
+            ServerUtils.connectToLastServer();
+        }
+        if (button.id == 1068) {
+            mc.displayGuiScreen(new GuiMultiplayer((GuiScreen) (Object) this));
+        }
+    }
 }
