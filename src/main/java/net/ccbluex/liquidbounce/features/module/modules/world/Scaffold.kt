@@ -838,7 +838,8 @@ class Scaffold : Module() {
         lockRotation = null
         mc.timer.timerSpeed = 1f
         shouldGoDown = false
-        RotationUtils.reset()
+        val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)), 58)
+        RotationUtils.setTargetRotation(limitedRotation, 2)
         if (slot != mc.thePlayer.inventory.currentItem) mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
     }
 
