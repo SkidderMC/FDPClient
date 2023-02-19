@@ -7,17 +7,18 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
+import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.minecraft.potion.Potion
-import net.ccbluex.liquidbounce.features.value.*
 import kotlin.math.roundToInt
-
 
 
 class HypixelHopSpeed : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "OldSmooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom"), "Latest")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "OldSmooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom","Test"), "Latest")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val customStartSpeed = FloatValue("${valuePrefix}CustomStartSpeed", 1.3f, 1f, 1.6f).displayable {bypassMode.equals("Custom")}  
     private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}  
@@ -40,6 +41,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private var wasOnGround = false
     private var stage = 0;
     private var offGroundTicks = 0;
+    private var groundTick = 0
 
     override fun onUpdate() {
         if (!MovementUtils.isMoving()) {
@@ -249,6 +251,30 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 mc.thePlayer.motionX *= watchdogMultiplier
                 mc.thePlayer.motionZ *= watchdogMultiplier
 
+            }
+            "test" ->{
+                if (isMoving()) {
+                    mc.timer.timerSpeed = 1.2f
+                    if (mc.thePlayer.onGround) {
+                        if (groundTick >= 1) {
+                            mc.timer.timerSpeed = 1.5f
+                            strafe(0.43f)
+                            mc.thePlayer.motionY = MovementUtils.jumpMotion.toDouble()
+                            if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                                strafe(0.63f)
+                            }
+                        }
+                        groundTick++
+                    } else {
+                        groundTick = 0
+                    }
+                    if (mc.thePlayer.hurtTime > 0 || mc.thePlayer.fallDistance > 0.0) {
+                        strafe()
+                    }
+                    if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                        mc.thePlayer.jumpMovementFactor = 0.04F//if flag pls edit this
+                    }
+                }
             }
         }
         if (watchdogMultiplier > 1) {
