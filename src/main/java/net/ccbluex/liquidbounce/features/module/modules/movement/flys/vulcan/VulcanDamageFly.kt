@@ -19,7 +19,7 @@ import kotlin.math.sqrt
 class VulcanDamageFly : FlyMode("VulcanDamage") {
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
     private val selfDamageValue = BoolValue("${valuePrefix}SelfDamage", true)
-
+    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f)
     private var waitFlag = false
     private var isStarted = false
     //Tips: for some reason Vulcan detects InstantDamage(Motion C/D). If you want to fly with InstantDamage, bind Damage and Fly together
@@ -85,11 +85,12 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             waitFlag = true
         }
         if (isStarted) {
+            mc.timer.timerSpeed = flyTimerValue.get()
             flyTicks++
             if (flyTicks > 4) {
                 flyTicks = 4
             }
-            MovementUtils.strafe((0.96 + Math.random() / 50).toFloat())
+            MovementUtils.strafe(9.8f + flyTicks.toFloat() * 0.05f)
         }
     }
 
@@ -105,24 +106,6 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         }
         if (packet is C03PacketPlayer && (dmgJumpCount < 4 && selfDamageValue.get())) {
             packet.onGround = false
-        }
-        if (isStarted) {
-            if(packet is C03PacketPlayer && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)) {
-                val deltaX = packet.x - lastSentX
-                val deltaY = packet.y - lastSentY
-                val deltaZ = packet.z - lastSentZ
-
-                if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 9.5) {
-                    lastSentX = packet.x
-                    lastSentY = packet.y
-                    lastSentZ = packet.z
-                    flyTicks++
-                    return
-                }
-                event.cancelEvent()
-            }else if(packet is C03PacketPlayer) {
-                event.cancelEvent()
-            }
         }
         if (packet is S08PacketPlayerPosLook && waitFlag) {
             isStarted = true
