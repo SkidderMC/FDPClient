@@ -20,7 +20,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
     private val selfDamageValue = BoolValue("${valuePrefix}SelfDamage", true)
     private val vanillaValue = BoolValue("${valuePrefix}Vanilla", false)
-    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f).displayable{ vanillaValue.get() }
+    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f).displayable{ !vanillaValue.get() }
     private var waitFlag = false
     private var isStarted = false
     var isDamaged = false
