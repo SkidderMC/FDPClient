@@ -19,14 +19,21 @@ import kotlin.math.sqrt
 class VulcanDamageFly : FlyMode("VulcanDamage") {
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
     private val selfDamageValue = BoolValue("${valuePrefix}SelfDamage", true)
-    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f)
+    private val vanillaValue = BoolValue("${valuePrefix}Vanilla", false)
+    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f).displayable{ vanillaValue.get() }
     private var waitFlag = false
     private var isStarted = false
-    //Tips: for some reason Vulcan detects InstantDamage(Motion C/D). If you want to fly with InstantDamage, bind Damage and Fly together
-    //注意：Vulcan会检测瞬间自伤（因为少了Jump Achievement，可能以后会考虑加上），所以要是想瞬间自伤直接飞的话，可以选择搭高或者把Fly和Damage绑一起，然后关闭SelfDamage选项
     var isDamaged = false
     var dmgJumpCount = 0
     var flyTicks = 0
+    
+    private var lastSentX = 0.0
+    private var lastSentY = 0.0
+    private var lastSentZ = 0.0
+    
+    private var lastTickX = 0.0
+    private var lastTickY = 0.0
+    private var lastTickZ = 0.0
     
     fun runSelfDamageCore(): Boolean {
         mc.timer.timerSpeed = 1.0f
@@ -79,18 +86,27 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             return
         }
         mc.thePlayer.jumpMovementFactor = 0.00f
-        MovementUtils.resetMotion(true)
         if (!isStarted && !waitFlag) {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.0784, mc.thePlayer.posZ, false))
             waitFlag = true
         }
         if (isStarted) {
-            mc.timer.timerSpeed = flyTimerValue.get()
+            if (vanillaValue.get()) {
+                mc.timer.timerSpeed = 1.0f
+                if (!mc.gameSettings.keyBindSneak.isKeyDown) {
+                    MovementUtils.resetMotion(true)
+                    if (mc.gameSettings.keyBindJump.isKeyDown) {
+                        mc.thePlayer.motionY = 0.42
+                    }
+                }
+            } else {
+                mc.timer.timerSpeed = flyTimerValue.get()
+            }
             flyTicks++
             if (flyTicks > 4) {
                 flyTicks = 4
             }
-            MovementUtils.strafe(9.8f + flyTicks.toFloat() * 0.05f)
+            MovementUtils.strafe(if (vanillaValue.get()) { 0.99f } else { 9.8f + flyTicks.toFloat() * 0.05f })
         }
     }
 
@@ -101,17 +117,46 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet is C03PacketPlayer && waitFlag) { //Cancel C03 when waiting phase flag, make sure you can fly for 10s (10x C03)
+        if (packet is C03PacketPlayer && waitFlag) {
             event.cancelEvent()
         }
         if (packet is C03PacketPlayer && (dmgJumpCount < 4 && selfDamageValue.get())) {
             packet.onGround = false
         }
-        if (packet is S08PacketPlayerPosLook && waitFlag) {
+        if (isStarted && vanillaValue.get()) {
+            if(packet is C03PacketPlayer && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)) {
+                val deltaX = packet.x - lastSentX
+                val deltaY = packet.y - lastSentY
+                val deltaZ = packet.z - lastSentZ
+
+                if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 10.0) {
+                    PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(lastTickX, lastTickY, lastTickZ, false))
+                    lastSentX = lastTickX
+                    lastSentY = lastTickY
+                    lastSentZ = lastTickZ
+                }
+                lastTickX = packet.x
+                lastTickY = packet.y
+                lastTickZ = packet.z
+                event.cancelEvent()
+            }else if(packet is C03PacketPlayer) {
+                event.cancelEvent()
+            }
+        }
+        if (packet is S08PacketPlayerPosLook && waitFlag && !vanillaValue.get()) {
             isStarted = true
             waitFlag = false
             mc.timer.timerSpeed = 1.0f
             flyTicks = 0
+        }else if (packet is S08PacketPlayerPosLook && vanillaValue.get()) {
+            lastSentX = packet.x
+            lastSentY = packet.y
+            lastSentZ = packet.z
+            PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.yaw, packet.pitch, false))
+            mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
+            event.cancelEvent()
+            isStarted = true
+            waitFlag = false
         }
         if (packet is C0FPacketConfirmTransaction) { //Make sure it works with Vulcan Combat Disabler
             val transUID = (packet.uid).toInt()
