@@ -5,13 +5,17 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
+import net.ccbluex.liquidbounce.Liquidbounce
 import net.ccbluex.liquidbounce.event.MoveEvent
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.potion.Potion
 import kotlin.math.roundToInt
+import net.minecraft.network.play.server.S12PacketEntityVelocity
+import kotlin.math.sqrt
 
 
 class HypixelHopSpeed : SpeedMode("HypixelHop") {
@@ -37,9 +41,10 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private var pastZ = 0.0
     private var moveDist = 0.0
     private var wasOnGround = false
-    private var stage = 0;
-    private var offGroundTicks = 0;
+    private var stage = 0
+    private var offGroundTicks = 0
     private var groundTick = 0
+    private var damagedTicks = 0
 
     override fun onUpdate() {
         if (!MovementUtils.isMoving()) {
@@ -298,7 +303,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (packet is S12PacketEntityVelocity && veloBoostValue.get()) {
+        if (packet is S12PacketEntityVelocity) {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
                 return
             }
@@ -309,8 +314,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             if (packet.motionY / 8000.0 > 0.1) {
                 if (damageBoost.get()) {
                     event.cancelEvent()
-                    recX = packet.motionX / 8000.0
-                    recZ = packet.motionZ / 8000.0
+                    val recX = packet.motionX / 8000.0
+                    val recZ = packet.motionZ / 8000.0
                     if (sqrt(recX * recX + recZ * recZ) > MovementUtils.getSpeed()) {
                         MovementUtils.strafe(sqrt(recX * recX + recZ * recZ).toFloat() * 1.05f)
                         mc.thePlayer.motionY = packet.motionY / 8000.0
