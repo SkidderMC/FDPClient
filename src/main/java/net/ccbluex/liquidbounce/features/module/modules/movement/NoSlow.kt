@@ -21,6 +21,7 @@ import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import java.util.*
@@ -29,7 +30,7 @@ import kotlin.math.sqrt
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "HypixelNew", "NCP", "AAC", "AAC4", "AAC5", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
     //Modify Slowdown / Packets
@@ -315,6 +316,11 @@ class NoSlow : Module() {
         if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
         val packet = event.packet
+        
+        if (modeValue.equals("HypixelNew") && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
+            event.cancelEvent()
+        }
+        
         if (modeValue.equals("Medusa")) {
             if ((mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking) && sendPacket) {
                 PacketUtils.sendPacketNoEvent(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))
