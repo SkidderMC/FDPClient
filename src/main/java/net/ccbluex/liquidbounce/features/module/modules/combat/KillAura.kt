@@ -80,31 +80,31 @@ class KillAura : Module() {
     private val simulateCooldown = BoolValue("SimulateCooldown", false)
 
     // Range  
-    val rangeValue = object : FloatValue("Range", 3.7f, 0f, 8f) {
+    val rangeValue = object : FloatValue("Range", 3f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
         }
     }
-    private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 1.5f, 0f, 8f) {
+    private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 0f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = rangeValue.get()
             if (i < newValue) set(i)
         }
     }
     private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f)
-    private val swingRangeValue = object : FloatValue("SwingRange", 5f, 0f, 8f) {
+    private val swingRangeValue = object : FloatValue("SwingRange", 3f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
             if (maxRange > newValue) set(maxRange)
         }
     }
-    private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 8f)
+    private val discoverRangeValue = FloatValue("DiscoverRange", 3f, 0f, 8f)
 
     private val blinkCheck = BoolValue("BlinkCheck", true)
     private val noScaffValue = BoolValue("NoScaffold", true)
-    private val noFlyValue = BoolValue("NoFly", false)
+    private val noFlyValue = BoolValue("NoFly", true)
 
     // Modes
     private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor", "HurtTime", "RegenAmplifier"), "Armor")
@@ -121,7 +121,7 @@ class KillAura : Module() {
     val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Off")
 
     // vanilla will send block packet at pre
-    private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
+    private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 3f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
@@ -133,18 +133,18 @@ class KillAura : Module() {
     private val blockRateValue =            IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
 
     // Raycast
-    private val raycastValue = BoolValue("RayCast", true)
+    private val raycastValue = BoolValue("RayCast", false)
     private val raycastIgnoredValue = BoolValue("RayCastIgnored", false).displayable { raycastValue.get() }
-    private val livingRaycastValue = BoolValue("LivingRayCast", true).displayable { raycastValue.get() }
+    private val livingRaycastValue = BoolValue("LivingRayCast", false).displayable { raycastValue.get() }
 
     // Bypass
-    private val aacValue = BoolValue("AAC", true)
+    private val aacValue = BoolValue("AAC", false)
     // TODO: Divide AAC Opinion into three separated opinions
 
     // Rotations
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix"),
+        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView"),
         "LiquidBounce"
     )
     // TODO: RotationMode Bypass Intave
@@ -178,19 +178,19 @@ class KillAura : Module() {
     
     // Strafe
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
-    private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround", true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
+    private val rotationStrafeValue = ListValue("MoveFix", arrayOf("Off", "Strict", "Silent"), "Off").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
+    private val strafeOnlyGroundValue = BoolValue("MoveFixOnlyGround", true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
     
     // Backtrace
     private val backtraceValue = BoolValue("Backtrace", false)
     private val backtraceTickValue = IntegerValue("BacktraceTick", 2, 1, 10).displayable { backtraceValue.get() }
     
     // Others
-    private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { !rotationModeValue.equals("None") }
+    private val hitAbleValue = BoolValue("AlwaysHitAble", false).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
-    private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
+    private val predictValue = BoolValue("Predict", false).displayable { !rotationModeValue.equals("None") }
 
     private val maxPredictSizeValue: FloatValue = object : FloatValue("MaxPredictSize", 1f, -2f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -207,7 +207,7 @@ class KillAura : Module() {
     }.displayable { predictValue.displayable && predictValue.get() } as FloatValue
     
     
-    private val predictPlayerValue = BoolValue("PredictPlayer", true).displayable { !rotationModeValue.equals("None") }
+    private val predictPlayerValue = BoolValue("PredictPlayer", false).displayable { !rotationModeValue.equals("None") }
     
     private val maxPredictPlayerSizeValue: FloatValue = object : FloatValue("MaxPredictPlayerSize", 1f, -1f, 3f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -230,7 +230,7 @@ class KillAura : Module() {
 
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500)
     private val switchDelayValue = IntegerValue("SwitchDelay", 15, 1, 2000).displayable { targetModeValue.equals("Switch") }
-    private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
+    private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 1, 1, 50).displayable { targetModeValue.equals("Multi") }
 
     // Visuals
     private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Lies", "None"), "Jello")
@@ -277,7 +277,7 @@ class KillAura : Module() {
     private var espAnimation = 0.0
     private var isUp = true
 
-    var strictStrafe = false
+    var strictMoveFix = false
 
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
@@ -297,7 +297,7 @@ class KillAura : Module() {
      * Enable kill aura module
      */
     override fun onEnable() {
-        strictStrafe = false
+        strictMoveFix = false
         mc.thePlayer ?: return
         mc.theWorld ?: return
 
@@ -308,7 +308,7 @@ class KillAura : Module() {
      * Disable kill aura module
      */
     override fun onDisable() {
-        strictStrafe = false
+        strictMoveFix = false
         LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
         target = null
         currentTarget = null
@@ -399,20 +399,20 @@ class KillAura : Module() {
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
         if (cancelRun) return
-        strictStrafe = false
+        strictMoveFix = false
         if(!LiquidBounce.moduleManager[TargetStrafe::class.java]!!.modifyStrafe(event)) {
-            strictStrafe = true
+            strictMoveFix = true
         }
         if (rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
-            strictStrafe = false
+            strictMoveFix = false
             return
         }
 
         // if(event.eventState == EventState.PRE)
         update()
 
-        if (strafeOnlyGroundValue.get() && !mc.thePlayer.onGround) {
-            strictStrafe = false
+        if (MoveFixOnlyGroundValue.get() && !mc.thePlayer.onGround) {
+            strictMoveFix = false
             return
         }
 
@@ -421,8 +421,8 @@ class KillAura : Module() {
         if (discoveredTargets.isNotEmpty() && RotationUtils.targetRotation != null) {
             when (rotationStrafeValue.get().lowercase()) {
                 "strict" -> {
-                    if(strictStrafe) {
-                        strictStrafe = false
+                    if(strictMoveFix) {
+                        strictMoveFix = false
                         val (yaw) = RotationUtils.targetRotation ?: return
                         var strafe = event.strafe
                         var forward = event.forward
@@ -451,8 +451,8 @@ class KillAura : Module() {
                     }
                 }
                 "silent" -> {
-                    if(strictStrafe) {
-                        strictStrafe = false
+                    if(strictMoveFix) {
+                        strictMoveFix = false
                         RotationUtils.targetRotation.applyStrafeToPlayer(event)
                         event.cancelEvent()
                     }
@@ -490,7 +490,7 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onUpdate(e: UpdateEvent) {
-        strictStrafe = (!strafeOnlyGroundValue.get() || mc.thePlayer.onGround) && !rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding
+        strictStrafe = (!MoveFixOnlyGroundValue.get() || mc.thePlayer.onGround) && !rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding
         if (cancelRun) {
             target = null
             currentTarget = null
