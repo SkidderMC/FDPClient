@@ -75,17 +75,12 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         }
         
         
-        if (damageBoost.get()) {
-            if (mc.thePlayer.hurtTime > 9) {
-                mc.thePlayer.motionX *= 1.018 - Math.random() / 100
-                mc.thePlayer.motionZ *= 1.018 - Math.random() / 100
-            }
-        }
         if (damageStrafe.get()) {
-            if (mc.thePlayer.hurtTime > 3) {
-                MovementUtils.strafe(MovementUtils.getSpeed())
+            if (damagedTicks > 2) {
+                MovementUtils.strafe(MovementUtils.getSpeed() * 0.95f)
             }
         }
+        damagedTicks -= 1
         
 
         moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ)
@@ -103,7 +98,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     }
                     
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        MovementUtils.strafe(0.48f * (1f + mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier.toFloat() * 0.655f))
+                        MovementUtils.strafe(0.48f * (1f + mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier.toFloat() * 0.145f))
                     }
                     
                 } else {
@@ -297,6 +292,32 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
             "custom" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
             
+        }
+    }
+    
+    override fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+
+        if (packet is S12PacketEntityVelocity && veloBoostValue.get()) {
+            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
+                return
+            }
+            if (!LiquidBounce.combatManager.inCombat) {
+                return
+            }
+            
+            if (packet.motionY / 8000.0 > 0.1) {
+                if (damageBoost.get()) {
+                    event.cancelEvent()
+                    recX = packet.motionX / 8000.0
+                    recZ = packet.motionZ / 8000.0
+                    if (sqrt(recX * recX + recZ * recZ) > MovementUtils.getSpeed()) {
+                        MovementUtils.strafe(sqrt(recX * recX + recZ * recZ).toFloat() * 1.05f)
+                        mc.thePlayer.motionY = packet.motionY / 8000.0
+                    }
+                }
+                damagedTicks = 10
+            }
         }
     }
 }
