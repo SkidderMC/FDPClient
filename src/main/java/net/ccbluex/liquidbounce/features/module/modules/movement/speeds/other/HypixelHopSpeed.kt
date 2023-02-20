@@ -10,8 +10,6 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
-import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.minecraft.potion.Potion
 import kotlin.math.roundToInt
 
@@ -253,15 +251,14 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
 
             }
             "test" ->{
-                if (isMoving()) {
+                if (MovementUtils.isMoving()) {
                     mc.timer.timerSpeed = 1.2f
                     if (mc.thePlayer.onGround) {
                         if (groundTick >= 1) {
                             mc.timer.timerSpeed = 1.5f
-                            strafe(0.43f)
-                            mc.thePlayer.motionY = MovementUtils.jumpMotion.toDouble()
+                            MovementUtils.strafe(0.43f)
                             if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                                strafe(0.63f)
+                                MovementUtils.strafe(0.63f)
                             }
                         }
                         groundTick++
@@ -269,7 +266,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                         groundTick = 0
                     }
                     if (mc.thePlayer.hurtTime > 0 || mc.thePlayer.fallDistance > 0.0) {
-                        strafe()
+                        MovementUtils.strafe()
                     }
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                         mc.thePlayer.jumpMovementFactor = 0.04F//if flag pls edit this
