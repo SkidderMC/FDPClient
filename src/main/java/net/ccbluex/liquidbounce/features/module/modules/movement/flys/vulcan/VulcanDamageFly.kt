@@ -103,10 +103,10 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
                 mc.timer.timerSpeed = flyTimerValue.get()
             }
             flyTicks++
-            if (flyTicks > 4) {
-                flyTicks = 4
+            if (flyTicks > 8) {
+                fly.state = false
             }
-            MovementUtils.strafe(if (vanillaValue.get()) { 0.99f } else { 9.8f + flyTicks.toFloat() * 0.05f })
+            MovementUtils.strafe(if (vanillaValue.get()) { 0.96f } else { 9.8f + flyTicks.toFloat() * 0.05f })
         }
     }
 
@@ -129,7 +129,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
                 val deltaY = packet.y - lastSentY
                 val deltaZ = packet.z - lastSentZ
 
-                if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 10.0) {
+                if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 9.0) {
                     PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(lastTickX, lastTickY, lastTickZ, false))
                     lastSentX = lastTickX
                     lastSentY = lastTickY
