@@ -103,7 +103,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     }
                     
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        MovementUtils.strafe(0.48f * (1f + mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier.toFloat() * 0.145f))
+                        MovementUtils.strafe(0.48f * (1f + (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier.toFloat() + 1f) * 0.145f))
                     }
                     
                 } else {
@@ -260,6 +260,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                             if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                                 MovementUtils.strafe(0.63f)
                             }
+                            mc.thePlayer.jump()
                         }
                         groundTick++
                     } else {
