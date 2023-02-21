@@ -266,11 +266,11 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     } else {
                         groundTick = 0
                     }
-                    if (mc.thePlayer.hurtTime > 0 || mc.thePlayer.fallDistance > 0.0) {
+                    if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.fallDistance > 0.0) {
                         MovementUtils.strafe()
                     }
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        mc.thePlayer.jumpMovementFactor = 0.04F//if flag pls edit this
+                        mc.thePlayer.jumpMovementFactor = 0.024F//if flag pls edit this
                     }
                 }
             }
