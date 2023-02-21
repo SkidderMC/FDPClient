@@ -30,9 +30,21 @@ import kotlin.math.sqrt
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "HypixelNew", "NCP", "AAC", "AAC4", "AAC5", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
+    private val onlyS30Value = BoolValue("OnlyCancelS30", false).displayable { modeValue.contains("Watchdog") }
+    //AACv4
+    private val c07Value = BoolValue("AAC4-C07", true).displayable { modeValue.equals("AAC4") }
+    private val c08Value = BoolValue("AAC4-C08", true).displayable { modeValue.equals("AAC4") }
+    private val groundValue = BoolValue("AAC4-OnGround", true).displayable { modeValue.equals("AAC4") }
+    // Slowdown on teleport
+    private val teleportValue = BoolValue("Teleport", false)
+    private val teleportModeValue = ListValue("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla").displayable { teleportValue.get() }
+    private val teleportNoApplyValue = BoolValue("TeleportNoApply", false).displayable { teleportValue.get() }
+    private val teleportCustomSpeedValue = FloatValue("Teleport-CustomSpeed", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
+    private val teleportCustomYValue = BoolValue("Teleport-CustomY", false).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
+    private val teleportDecreasePercentValue = FloatValue("Teleport-DecreasePercent", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Decrease") }
     //Modify Slowdown / Packets
     private val blockModifyValue = BoolValue("Blocking", true)
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F).displayable { blockModifyValue.get() }
@@ -50,17 +62,6 @@ class NoSlow : Module() {
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
     public val soulSandValue = BoolValue("SoulSand", true)
-    //AACv4
-    private val c07Value = BoolValue("AAC4-C07", true).displayable { modeValue.equals("AAC4") }
-    private val c08Value = BoolValue("AAC4-C08", true).displayable { modeValue.equals("AAC4") }
-    private val groundValue = BoolValue("AAC4-OnGround", true).displayable { modeValue.equals("AAC4") }
-    // Slowdown on teleport
-    private val teleportValue = BoolValue("Teleport", false)
-    private val teleportModeValue = ListValue("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla").displayable { teleportValue.get() }
-    private val teleportNoApplyValue = BoolValue("TeleportNoApply", false).displayable { teleportValue.get() }
-    private val teleportCustomSpeedValue = FloatValue("Teleport-CustomSpeed", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
-    private val teleportCustomYValue = BoolValue("Teleport-CustomY", false).displayable { teleportValue.get() && teleportModeValue.equals("Custom") }
-    private val teleportDecreasePercentValue = FloatValue("Teleport-DecreasePercent", 0.13f, 0f, 1f).displayable { teleportValue.get() && teleportModeValue.equals("Decrease") }
 
     private var pendingFlagApplyPacket = false
     private var lastMotionX = 0.0
@@ -217,7 +218,7 @@ class NoSlow : Module() {
                     sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
                 }
 
-                "watchdog2" -> {
+                "watchdog2" -> if (!onlyS30Value.get()) {
                     if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
                     } else {
@@ -225,7 +226,7 @@ class NoSlow : Module() {
                     }
                 }
 
-                "watchdog" -> {
+                "watchdog" -> if (!onlyS30Value.get()) {
                     if (mc.thePlayer.ticksExisted % 2 == 0) {
                         sendPacket(event, true, sendC08 = false, delay = true, delayValue = 50, onGround = true)
                     } else {
@@ -317,7 +318,7 @@ class NoSlow : Module() {
             return
         val packet = event.packet
         
-        if (modeValue.equals("HypixelNew") && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
+        if (modeValue.contains("Watchdog") && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
             event.cancelEvent()
         }
         
