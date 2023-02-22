@@ -329,7 +329,7 @@ object MovementUtils : MinecraftInstance() {
     }
 
     @JvmStatic
-    fun getDirectioon(): Double {
+    fun getDirection(): Double {
         var rotationYaw = mc.thePlayer.rotationYaw
         if (mc.thePlayer.moveForward < 0f) rotationYaw += 180f
         var forward = 1f
