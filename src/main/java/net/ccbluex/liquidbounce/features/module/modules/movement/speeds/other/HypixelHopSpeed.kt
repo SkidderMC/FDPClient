@@ -13,9 +13,12 @@ import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.potion.Potion
+import net.minecraft.network.play.client.C07PacketPlayerDigging
 import kotlin.math.roundToInt
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.sqrt
+import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
 
 
 class HypixelHopSpeed : SpeedMode("HypixelHop") {
@@ -32,6 +35,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private val yPort4 = BoolValue("${valuePrefix}MicroYPort", true)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", false)
     private val damageStrafe = BoolValue("${valuePrefix}StrafeOnDamage", true)
+    private val sussyPacket = BoolValue("${valuePrefix}Rise6sussyPacket", true)
 
     private var watchdogMultiplier = 1.0
     private var minSpeed = 0.0
@@ -87,13 +91,17 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         }
         damagedTicks -= 1
         
+        
 
         moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ)
         
         when (bypassMode.get().lowercase()) {
             
             "latest" -> {
+                if (sussyPacket.get()) 
+                    PacketUtil.send(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(-1,-1,-1), EnumFacing.UP));
                 if (mc.thePlayer.onGround) {
+                    MovementUtils.strafe(MovementUtils.defaultSpeed().toFloat())
                     mc.thePlayer.jump()
                     
 
@@ -101,16 +109,26 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     if (MovementUtils.getSpeed() < 0.43f) {
                         MovementUtils.strafe(0.43f)
                     }
+                    MovementUtils.strafe(MovementUtils.getSpeed() * 0.99f)
                     
-                    if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        MovementUtils.strafe(0.48f * (1f + (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier.toFloat() + 1f) * 0.145f))
-                    }
                     
                 } else {
+                    if (damagedTicks < 0) {
+                        if (offGroundTicks == 1)
+                            mc.thePlayer.motionY -= 0.005
+                        if (offGroundTicks == 3)
+                            mc.thePlayer.motionY -= 0.001
+                    }
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                         mc.thePlayer.motionX *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                         mc.thePlayer.motionZ *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
+                    oldMotionX = mc.thePlayer.motionX
+                    oldMotionZ = mc.theplayer.motionZ
+                    
+                    MovementUtils.strafe(MovementUtils.getSpeed())
+                    mc.thePlayer.motionX = (mc.thePlayer.motionX + oldMotionX * 5) / 6
+                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ + oldMotionZ * 5) / 6
                 }
             }
             
@@ -322,7 +340,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionY = packet.motionY / 8000.0
                     }
                 }
-                damagedTicks = 10
+                damagedTicks = 15
             }
         }
     }
