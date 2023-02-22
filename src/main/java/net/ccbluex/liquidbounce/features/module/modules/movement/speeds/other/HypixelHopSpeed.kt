@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.minecraft.potion.Potion
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import kotlin.math.roundToInt
@@ -99,7 +100,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             
             "latest" -> {
                 if (sussyPacket.get()) 
-                    PacketUtil.send(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(-1,-1,-1), EnumFacing.UP));
+                    PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(-1,-1,-1), EnumFacing.UP));
                 if (mc.thePlayer.onGround) {
                     MovementUtils.strafe(MovementUtils.defaultSpeed().toFloat())
                     mc.thePlayer.jump()
@@ -124,7 +125,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionZ *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
                     oldMotionX = mc.thePlayer.motionX
-                    oldMotionZ = mc.theplayer.motionZ
+                    oldMotionZ = mc.thePlayer.motionZ
                     
                     MovementUtils.strafe(MovementUtils.getSpeed())
                     mc.thePlayer.motionX = (mc.thePlayer.motionX + oldMotionX * 5) / 6
