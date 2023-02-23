@@ -82,9 +82,9 @@ class Vulcan2Longjump : LongJumpMode("Vulcan2") {
     }
     
     override fun onAttemptDisable() {
-        if (!waitFlag && !isFlagged) {
-            longjump.state = false
-        }
+     //   if (!waitFlag && !isFlagged) {
+    //        longjump.state = false
+    //    }
     }
     
     override fun onAttemptJump() {
