@@ -21,7 +21,7 @@ class Vulcan2Longjump : LongJumpMode("Vulcan2") {
     private var ticks = 0
     private var cancelFlag = false
     private var jumped = false
-    //Vulcan LongJump Bypass - by Alan wood 69
+    //Vulcan LongJump Bypass - by FDP Team
     
     override fun onEnable() {
         longjump.noTimerModify = true
