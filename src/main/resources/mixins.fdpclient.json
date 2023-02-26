@@ -105,7 +105,6 @@
     "patcher.bugfixes.MixinSoundManager",
     "patcher.performance.MixinAnvilChunkLoader",
     "patcher.performance.MixinBlockPos",
-    "patcher.performance.MixinFluidRegistry",
     "patcher.performance.MixinGameRulesValue",
     "patcher.performance.MixinMinecraftServer",
     "patcher.performance.MixinNodeProcessor",
