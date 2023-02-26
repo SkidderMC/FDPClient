@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Listenable;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.TickEvent;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -474,13 +475,14 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     @EventTarget
     public void onTick(final TickEvent event) {
         if(targetRotation != null) {
+            //ClientUtils.INSTANCE.displayAlert(keepLength + " " + revTick);
             keepLength--;
 
             if (keepLength <= 0) {
-                if(revTick>0) {
+                if(revTick > 0) {
                     revTick--;
-                    reset();
-                }else reset();
+                }
+                reset();
             }
         }
 
@@ -525,26 +527,26 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      *
      * @param rotation your target rotation
      */
-    public static void setTargetRotation(final Rotation rotation, final int keepLength) {
+    public static void setTargetRotation(final Rotation rotation, int kl) {
         if(Double.isNaN(rotation.getYaw()) || Double.isNaN(rotation.getPitch())
                 || rotation.getPitch() > 90 || rotation.getPitch() < -90)
             return;
 
         rotation.fixedSensitivity(mc.gameSettings.mouseSensitivity);
         targetRotation = rotation;
-        RotationUtils.keepLength = keepLength;
-        RotationUtils.revTick = 0;
+        keepLength = kl;
+        revTick = 0;
     }
     
-    public static void setTargetRotationReverse(final Rotation rotation, final int keepLength, final int revTick) {
+    public static void setTargetRotationReverse(final Rotation rotation, int kl, int rt) {
         if(Double.isNaN(rotation.getYaw()) || Double.isNaN(rotation.getPitch())
                 || rotation.getPitch() > 90 || rotation.getPitch() < -90)
             return;
 
         rotation.fixedSensitivity(mc.gameSettings.mouseSensitivity);
         targetRotation = rotation;
-        RotationUtils.keepLength = keepLength;
-        RotationUtils.revTick = revTick+1;
+        keepLength = kl;
+        revTick = rt + 1;
     }
     
     /**
@@ -552,7 +554,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      */
     public static void reset() {
         keepLength = 0;
-        if(revTick>0) {
+        if(revTick > 0) {
             targetRotation = new Rotation(targetRotation.getYaw()-getAngleDifference(targetRotation.getYaw(), mc.thePlayer.rotationYaw)/revTick
                                         , targetRotation.getPitch()-getAngleDifference(targetRotation.getPitch(), mc.thePlayer.rotationPitch)/revTick);
         }else targetRotation = null;

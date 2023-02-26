@@ -14,9 +14,12 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.movement.InventoryMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
 import net.ccbluex.liquidbounce.utils.Rotation;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
+import net.ccbluex.liquidbounce.utils.MovementUtils;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -133,6 +136,9 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
     public void onUpdateWalkingPlayer(CallbackInfo ci) {
         try {
+            final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
+            strafeFix.updateOverwrite();
+            
             LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.PRE));
 
             boolean flag = this.isSprinting();
@@ -230,11 +236,37 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     /**
      * @author CCBlueX
+     * @author CoDynamic
+     * Modified by Co Dynamic
+     * Date: 2023/02/15
      */
     @Overwrite
     public void onLivingUpdate() {
-        LiquidBounce.eventManager.callEvent(new UpdateEvent());
-
+        
+        /**
+         * Update Sprint State - Pre
+         * - Run Sprint update before UpdateEvent
+         * - Update base sprint state (Vanilla)
+         * @param attemptToggle attempt to toggle sprint
+         * @param baseIsMoving is player moving with the "Sprint-able" direction
+         * @param baseSprintState whether can sprint or not (Vanilla)
+         * @param canToggleSprint whether can sprint by double-tapping MoveForward key
+         * @param isCurrentUsingItem is player using item
+         * @return
+         */
+         
+        boolean lastForwardToggleState = this.movementInput.moveForward > 0.05f;
+        boolean lastJumpToggleState = this.movementInput.jump;
+        
+        this.movementInput.updatePlayerMoveState();
+        
+        final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
+        final NoSlow noSlow = LiquidBounce.moduleManager.getModule(NoSlow.class);
+        final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
+        final InventoryMove inventoryMove = LiquidBounce.moduleManager.getModule(InventoryMove.class);
+        final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
+        final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
+        
         if (this.sprintingTicksLeft > 0) {
             --this.sprintingTicksLeft;
 
@@ -246,6 +278,51 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         if (this.sprintToggleTimer > 0) {
             --this.sprintToggleTimer;
         }
+        
+        boolean isSprintDirection = false;
+        boolean movingStat = Math.abs(this.movementInput.moveForward) > 0.05f || Math.abs(this.movementInput.moveStrafe) > 0.05f;
+        
+        boolean runStrictStrafe = strafeFix.getDoFix() && !strafeFix.getSilentFix();
+        boolean noStrafe = RotationUtils.targetRotation == null || !strafeFix.getDoFix();
+        
+        if (!movingStat || runStrictStrafe || noStrafe) {
+            isSprintDirection = this.movementInput.moveForward > 0.05f;
+        }else {
+            isSprintDirection = Math.abs(RotationUtils.getAngleDifference(MovementUtils.INSTANCE.getMovingYaw(), RotationUtils.targetRotation.getYaw())) < 67.0f;
+        }
+        
+        if (!movingStat) {
+            isSprintDirection = false;
+        }
+        
+        boolean attemptToggle = sprint.getState() || this.isSprinting() || this.mc.gameSettings.keyBindSprint.isKeyDown();
+        boolean baseIsMoving = (sprint.getState() && sprint.getAllDirectionsValue().get() && (Math.abs(this.movementInput.moveForward) > 0.05f || Math.abs(this.movementInput.moveStrafe) > 0.05f)) || isSprintDirection;
+        boolean baseSprintState = ((!sprint.getHungryValue().get() && sprint.getState()) || (float) this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying) && baseIsMoving && (!this.isCollidedHorizontally || sprint.getCollideValue().get()) && (!this.isSneaking() || sprint.getSneakValue().get()) && !this.isPotionActive(Potion.blindness);
+        boolean canToggleSprint = this.onGround && !this.movementInput.jump && !this.movementInput.sneak && !this.isPotionActive(Potion.blindness);
+        boolean isCurrentUsingItem = getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && killAura.getBlockingStatus())) && !this.isRiding();
+        boolean isCurrentUsingSword = getHeldItem() != null && getHeldItem().getItem() instanceof ItemSword && (killAura.getBlockingStatus() || this.isUsingItem());
+        
+        baseSprintState = baseSprintState && !(inventoryMove.getNoSprintValue().equals("Real") && inventoryMove.getInvOpen());
+        
+        if (!attemptToggle && !lastForwardToggleState && baseSprintState && !this.isSprinting() && canToggleSprint && !isCurrentUsingItem && !this.isPotionActive(Potion.blindness)) {
+            if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown()) {
+                this.sprintToggleTimer = 7;
+            } else {
+                attemptToggle = true;
+            }
+        }
+        
+        if (sprint.getForceSprint() || baseSprintState && (!isCurrentUsingItem || (sprint.getUseItemValue().get() && (!sprint.getUseItemSwordValue().get() || isCurrentUsingSword))) && attemptToggle) {
+            this.setSprinting(true);
+        } else {
+            this.setSprinting(false);
+        }
+        
+        //Run Sprint update before UpdateEvent
+        
+        LiquidBounce.eventManager.callEvent(new UpdateEvent());
+        
+        //Update Portal Effects state (Vanilla)
 
         this.prevTimeInPortal = this.timeInPortal;
 
@@ -282,54 +359,58 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             --this.timeUntilPortal;
         }
 
-        boolean flag = this.movementInput.jump;
-        boolean flag1 = this.movementInput.sneak;
-        float f = 0.8F;
-        boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
+        
+        /**
+         * Update Sprint State - Post
+         * Apply Item Slowdown
+         * Update sprint state for modules
+         * TODO: This part can be skipped if there's no rotation change
+         */
 
-        final NoSlow noSlow = LiquidBounce.moduleManager.getModule(NoSlow.class);
-        final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
+        movingStat = Math.abs(this.movementInput.moveForward) > 0.05f || Math.abs(this.movementInput.moveStrafe) > 0.05f;
+        runStrictStrafe = strafeFix.getDoFix() && !strafeFix.getSilentFix();
+        noStrafe = RotationUtils.targetRotation == null || !strafeFix.getDoFix();
+        
+        isCurrentUsingItem = getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && killAura.getBlockingStatus())) && !this.isRiding();
+        isCurrentUsingSword = getHeldItem() != null && getHeldItem().getItem() instanceof ItemSword && (killAura.getBlockingStatus() || this.isUsingItem());
 
-        if (getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && killAura.getBlockingStatus())) && !this.isRiding()) {
+        if (isCurrentUsingItem) {
             final SlowDownEvent slowDownEvent = new SlowDownEvent(0.2F, 0.2F);
             LiquidBounce.eventManager.callEvent(slowDownEvent);
             this.movementInput.moveStrafe *= slowDownEvent.getStrafe();
             this.movementInput.moveForward *= slowDownEvent.getForward();
-            this.sprintToggleTimer = 0;
         }
-
+        
         this.pushOutOfBlocks(this.posX - (double) this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double) this.width * 0.35D);
         this.pushOutOfBlocks(this.posX - (double) this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ - (double) this.width * 0.35D);
         this.pushOutOfBlocks(this.posX + (double) this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ - (double) this.width * 0.35D);
         this.pushOutOfBlocks(this.posX + (double) this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double) this.width * 0.35D);
-
-        final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
-
-        boolean flag3 = !sprint.getFoodValue().get() || (float) this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
-
-        if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= f && !this.isSprinting() && flag3 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness)) {
-            if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown()) {
-                this.sprintToggleTimer = 7;
-            } else {
-                this.setSprinting(true);
-            }
-        }
-
-        if (!this.isSprinting() && this.movementInput.moveForward >= f && flag3 && ((noSlow.getState() && sprint.getUseItemValue().get()) || !this.isUsingItem()) && !this.isPotionActive(Potion.blindness) && this.mc.gameSettings.keyBindSprint.isKeyDown()) {
-            this.setSprinting(true);
-        }
-
-        final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
-        if ((scaffold.getState() && !scaffold.getCanSprint()) || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.targetRotation != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30))
-            this.setSprinting(false);
-
-        if (this.isSprinting() && ((!(sprint.getState() && sprint.getAllDirectionsValue().get()) && this.movementInput.moveForward < f) || this.isCollidedHorizontally || !flag3))
-            this.setSprinting(false);
         
-        final InventoryMove inventoryMove = LiquidBounce.moduleManager.getModule(InventoryMove.class);
-        if(inventoryMove.getNoSprintValue().equals("Real") && inventoryMove.getInvOpen())
+        if (!movingStat || runStrictStrafe || noStrafe) {
+            isSprintDirection = this.movementInput.moveForward > 0.05f;
+        }else {
+            isSprintDirection = Math.abs(RotationUtils.getAngleDifference(MovementUtils.INSTANCE.getMovingYaw(), RotationUtils.targetRotation.getYaw())) < 67.0f;
+        }
+        
+        baseIsMoving = (sprint.getState() && sprint.getAllDirectionsValue().get() && (Math.abs(this.movementInput.moveForward) > 0.05f || Math.abs(this.movementInput.moveStrafe) > 0.05f)) || isSprintDirection;
+        baseSprintState = ((!sprint.getHungryValue().get() && sprint.getState()) || (float) this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying) && baseIsMoving && (!this.isCollidedHorizontally || sprint.getCollideValue().get()) && (!this.isSneaking() || sprint.getSneakValue().get()) && !this.isPotionActive(Potion.blindness);
+        
+        //Don't check current Sprint state cuz it's not updated in real time :bruh:
+        
+        if (sprint.getForceSprint() || baseSprintState && (!isCurrentUsingItem || (sprint.getUseItemValue().get() && (!sprint.getUseItemSwordValue().get() || isCurrentUsingSword))) && attemptToggle) {
+            this.setSprinting(true);
+        } else {
             this.setSprinting(false);
+        }
+        
+        //Overwrite: Scaffold
+        
+        if (scaffold.getState()) {
+            this.setSprinting(scaffold.getCanSprint());
+        }
+        
+        attemptToggle = false;
 
         //aac may check it :(
         if (this.capabilities.allowFlying) {
@@ -338,7 +419,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                     this.capabilities.isFlying = true;
                     this.sendPlayerAbilities();
                 }
-            } else if (!flag && this.movementInput.jump) {
+            } else if (!lastJumpToggleState && this.movementInput.jump) {
                 if (this.flyToggleTimer == 0) {
                     this.flyToggleTimer = 7;
                 } else {
@@ -368,13 +449,13 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 }
             }
 
-            if (flag && !this.movementInput.jump) {
+            if (lastJumpToggleState && !this.movementInput.jump) {
                 this.horseJumpPowerCounter = -10;
                 this.sendHorseJump();
-            } else if (!flag && this.movementInput.jump) {
+            } else if (!lastJumpToggleState && this.movementInput.jump) {
                 this.horseJumpPowerCounter = 0;
                 this.horseJumpPower = 0.0F;
-            } else if (flag) {
+            } else if (lastJumpToggleState) {
                 ++this.horseJumpPowerCounter;
 
                 if (this.horseJumpPowerCounter < 10) {

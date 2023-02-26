@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
@@ -76,8 +77,8 @@ class KillAura : Module() {
     }
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val combatDelayValue = BoolValue("1.9CombatDelay", false)
     private val simulateCooldown = BoolValue("SimulateCooldown", false)
+    private val cooldownNoDupAtk = BoolValue("NoDuplicateAttack", false).displayable { simulateCooldown.get() }
 
     // Range  
     val rangeValue = object : FloatValue("Range", 3.7f, 0f, 8f) {
@@ -134,12 +135,6 @@ class KillAura : Module() {
 
     // Raycast
     private val raycastValue = BoolValue("RayCast", true)
-    private val raycastIgnoredValue = BoolValue("RayCastIgnored", false).displayable { raycastValue.get() }
-    private val livingRaycastValue = BoolValue("LivingRayCast", true).displayable { raycastValue.get() }
-
-    // Bypass
-    private val aacValue = BoolValue("AAC", true)
-    // TODO: Divide AAC Opinion into three separated opinions
 
     // Rotations
     private val rotationModeValue = ListValue(
@@ -178,8 +173,7 @@ class KillAura : Module() {
     
     // Strafe
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") }
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
-    private val strafeOnlyGroundValue = BoolValue("StrafeOnlyGround", true).displayable { rotationStrafeValue.displayable && !rotationStrafeValue.equals("Off") }
+    val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
     
     // Backtrace
     private val backtraceValue = BoolValue("Backtrace", false)
@@ -268,16 +262,12 @@ class KillAura : Module() {
     private var containerOpen = -1L
 
     // Swing
-    private val swingTimer = MSTimer()
-    private var swingDelay = 0L
     private var canSwing = false
 
     // Fake block status
     var blockingStatus = false
     private var espAnimation = 0.0
     private var isUp = true
-
-    var strictStrafe = false
 
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
@@ -297,7 +287,6 @@ class KillAura : Module() {
      * Enable kill aura module
      */
     override fun onEnable() {
-        strictStrafe = false
         mc.thePlayer ?: return
         mc.theWorld ?: return
 
@@ -308,7 +297,6 @@ class KillAura : Module() {
      * Disable kill aura module
      */
     override fun onDisable() {
-        strictStrafe = false
         LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
         target = null
         currentTarget = null
@@ -320,7 +308,6 @@ class KillAura : Module() {
         attackTimer.reset()
         clicks = 0
         canSwing = false
-        swingTimer.reset()
 
         stopBlocking()
         RotationUtils.setTargetRotationReverse(RotationUtils.serverRotation, 0, 0)
@@ -387,78 +374,6 @@ class KillAura : Module() {
 
             return
         }
-
-        if (rotationStrafeValue.equals("Off")) {
-            update()
-        }
-    }
-
-    /**
-     * Strafe event
-     */
-    @EventTarget
-    fun onStrafe(event: StrafeEvent) {
-        if (cancelRun) return
-        strictStrafe = false
-        if(!LiquidBounce.moduleManager[TargetStrafe::class.java]!!.modifyStrafe(event)) {
-            strictStrafe = true
-        }
-        if (rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
-            strictStrafe = false
-            return
-        }
-
-        // if(event.eventState == EventState.PRE)
-        update()
-
-        if (strafeOnlyGroundValue.get() && !mc.thePlayer.onGround) {
-            strictStrafe = false
-            return
-        }
-
-        // TODO: Fix Rotation issue on Strafe POST Event
-
-        if (discoveredTargets.isNotEmpty() && RotationUtils.targetRotation != null) {
-            when (rotationStrafeValue.get().lowercase()) {
-                "strict" -> {
-                    if(strictStrafe) {
-                        strictStrafe = false
-                        val (yaw) = RotationUtils.targetRotation ?: return
-                        var strafe = event.strafe
-                        var forward = event.forward
-                        val friction = event.friction
-
-                        var f = strafe * strafe + forward * forward
-
-                        if (f >= 1.0E-4F) {
-                            f = MathHelper.sqrt_float(f)
-
-                            if (f < 1.0F) {
-                                f = 1.0F
-                            }
-
-                            f = friction / f
-                            strafe *= f
-                            forward *= f
-
-                            val yawSin = MathHelper.sin((yaw * Math.PI / 180F).toFloat())
-                            val yawCos = MathHelper.cos((yaw * Math.PI / 180F).toFloat())
-
-                            mc.thePlayer.motionX += strafe * yawCos - forward * yawSin
-                            mc.thePlayer.motionZ += forward * yawCos + strafe * yawSin
-                        }
-                        event.cancelEvent()
-                    }
-                }
-                "silent" -> {
-                    if(strictStrafe) {
-                        strictStrafe = false
-                        RotationUtils.targetRotation.applyStrafeToPlayer(event)
-                        event.cancelEvent()
-                    }
-                }
-            }
-        }
     }
 
     fun update() {
@@ -490,7 +405,6 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onUpdate(e: UpdateEvent) {
-        strictStrafe = (!strafeOnlyGroundValue.get() || mc.thePlayer.onGround) && !rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding
         if (cancelRun) {
             target = null
             currentTarget = null
@@ -511,21 +425,12 @@ class KillAura : Module() {
             return
         }
 
-        if (!rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
-            return
-        }
-
-        if (mc.thePlayer.isRiding) {
-            update()
-        }
+        update()
+        
+        LiquidBounce.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(rotationStrafeValue.equals("Silent"), !rotationStrafeValue.equals("Off") && !rotationModeValue.equals("None"))
 
         if (attackTimingValue.equals("All")) {
             runAttackLoop()
-        }
-        
-        if (simulateCooldown.get() && CooldownHelper.getAttackCooldownProgress() < 1.0f) {
-            
-            return
         }
     }
 
@@ -867,11 +772,12 @@ class KillAura : Module() {
     }
 
     private fun runAttackLoop() {
-        if (clicks <= 0 && canSwing && swingTimer.hasTimePassed(swingDelay)) {
-            swingTimer.reset()
-            swingDelay = getAttackDelay(minCpsValue.get(), maxCpsValue.get())
-            runSwing()
+        if (simulateCooldown.get() && CooldownHelper.getAttackCooldownProgress() < 1.0f) {
             return
+        }
+        
+        if (simulateCooldown.get() && cooldownNoDupAtk.get() && clicks > 0) {
+            clicks = 1
         }
 
         try {
@@ -905,7 +811,8 @@ class KillAura : Module() {
 
             // Attack
             if (!targetModeValue.equals("Multi")) {
-                attackEntity(currentTarget!!)
+                val raycastedEntity = RaycastUtils.raycastEntity(maxRange.toDouble()) { it is EntityLivingBase && it !is EntityArmorStand && EntityUtils.canRayCast(it) && !EntityUtils.isFriend(it) }
+                attackEntity(if (raycastValue.get()) { if (raycastedEntity != null) { raycastedEntity } else { currentTarget!! } as EntityLivingBase } else { currentTarget!! })
             } else {
                 inRangeDiscoveredTargets.forEachIndexed { index, entity ->
                     if (limitedMultiTargetsValue.get() == 0 || index < limitedMultiTargetsValue.get()) {
@@ -916,11 +823,11 @@ class KillAura : Module() {
 
             if (targetModeValue.equals("Switch")) {
                 if (switchTimer.hasTimePassed(switchDelayValue.get().toLong())) {
-                    prevTargetEntities.add(if (aacValue.get()) target!!.entityId else currentTarget!!.entityId)
+                    prevTargetEntities.add(currentTarget!!.entityId)
                     switchTimer.reset()
                 }
             } else {
-                prevTargetEntities.add(if (aacValue.get()) target!!.entityId else currentTarget!!.entityId)
+                prevTargetEntities.add(currentTarget!!.entityId)
             }
 
             if (target == currentTarget) {
@@ -931,7 +838,7 @@ class KillAura : Module() {
             if (openInventory) {
                 mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
             }
-        } else if (fakeSwingValue.get()) {
+        } else if (fakeSwingValue.get() || canSwing) {
             runSwing()
         }
     }
@@ -994,9 +901,9 @@ class KillAura : Module() {
             }
 
             // Set target to current entity
-            if (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange) {
+            if (mc.thePlayer.getDistanceToEntityBox(entity) < discoverRangeValue.get()) {
                 target = entity
-                canSwing = false
+                canSwing = (mc.thePlayer.getDistanceToEntityBox(entity) < swingRangeValue.get())
                 LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = target?:return
                 LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
                 return
@@ -1004,8 +911,8 @@ class KillAura : Module() {
         }
 
         target = null
+        canSwing = false
         LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
-        canSwing = discoveredTargets.find { mc.thePlayer.getDistanceToEntityBox(it) < swingRangeValue.get() } != null
     }
 
     private fun runSwing() {
@@ -1023,6 +930,7 @@ class KillAura : Module() {
      */
     private fun attackEntity(entity: EntityLivingBase) {
         if (packetSent && noBadPacketsValue.get()) return
+        if (entity == null) return
 
         // Call attack event
         val event = AttackEvent(entity)
@@ -1143,23 +1051,11 @@ class KillAura : Module() {
         }
 
         if (silentRotationValue.get()) {
-            if (rotationRevTickValue.get() > 0 && rotationRevValue.get()) {
-                if (keepDirectionValue.get()) {
-                    RotationUtils.setTargetRotationReverse(
-                        rotation,
-                        keepDirectionTickValue.get(),
-                        rotationRevTickValue.get()
-                    )
-                } else {
-                    RotationUtils.setTargetRotationReverse(rotation, 1, rotationRevTickValue.get())
-                }
-            } else {
-                if (keepDirectionValue.get()) {
-                    RotationUtils.setTargetRotation(rotation, keepDirectionTickValue.get())
-                } else {
-                    RotationUtils.setTargetRotation(rotation, 1)
-                }
-            }
+            RotationUtils.setTargetRotationReverse(
+                rotation,
+                if (keepDirectionValue.get()) { keepDirectionTickValue.get() } else { 1 },
+                if (rotationRevValue.get()) { rotationRevTickValue.get() } else { 0 }
+            )
         } else {
             rotation.toPlayer(mc.thePlayer)
         }
@@ -1171,7 +1067,7 @@ class KillAura : Module() {
      */
     private fun updateHitable() {
         if (hitAbleValue.get()) {
-            hitable = true
+            hitable = currentTarget != null && mc.thePlayer.getDistanceToEntityBox(currentTarget as Entity) < maxRange.toDouble()
             return
         }
         // Disable hitable check if turn speed is zero
@@ -1179,31 +1075,8 @@ class KillAura : Module() {
             hitable = true
             return
         }
-
-        val reach = maxRange.toDouble()
-
-        if (raycastValue.get()) {
-            val raycastedEntity = RaycastUtils.raycastEntity(reach) {
-                (!livingRaycastValue.get() || it is EntityLivingBase && it !is EntityArmorStand) &&
-                        (EntityUtils.isSelected(
-                            it,
-                            true
-                        ) || raycastIgnoredValue.get() || aacValue.get() && mc.theWorld.getEntitiesWithinAABBExcludingEntity(
-                            it,
-                            it.entityBoundingBox
-                        ).isNotEmpty())
-            }
-
-            if (raycastValue.get() && raycastedEntity is EntityLivingBase &&
-                !EntityUtils.isFriend(raycastedEntity)
-            ) {
-                currentTarget = raycastedEntity
-            }
-
-            hitable = if (!rotationModeValue.equals("None")) currentTarget == raycastedEntity else true
-        } else {
-            hitable = RotationUtils.isFaced(currentTarget, reach)
-        }
+        
+        hitable = RotationUtils.isFaced(currentTarget, maxRange.toDouble())
     }
 
     /**
@@ -1277,25 +1150,7 @@ class KillAura : Module() {
      * Attack Delay
      */
     private fun getAttackDelay(minCps: Int, maxCps: Int): Long {
-        var delay = TimeUtils.randomClickDelay(minCps.coerceAtMost(maxCps), minCps.coerceAtLeast(maxCps))
-        if (combatDelayValue.get()) {
-            var value = 4.0
-            if (mc.thePlayer.inventory.getCurrentItem() != null) {
-                when (mc.thePlayer.inventory.getCurrentItem().item) {
-                    is ItemSword -> {
-                        value -= 2.4
-                    }
-                    is ItemPickaxe -> {
-                        value -= 2.8
-                    }
-                    is ItemAxe -> {
-                        value -= 3
-                    }
-                }
-            }
-            delay = delay.coerceAtLeast((1000 / value).toLong())
-        }
-        return delay
+        return TimeUtils.randomClickDelay(minCps.coerceAtMost(maxCps), minCps.coerceAtLeast(maxCps))
     }
 
     /**
@@ -1311,8 +1166,7 @@ class KillAura : Module() {
     /**
      * Check if [entity] is alive
      */
-    private fun isAlive(entity: EntityLivingBase) = entity.isEntityAlive && entity.health > 0 ||
-            aacValue.get() && entity.hurtTime > 3
+    private fun isAlive(entity: EntityLivingBase) = entity.isEntityAlive && entity.health > 0
 
     /**
      * Check if player is able to block
@@ -1333,18 +1187,6 @@ class KillAura : Module() {
      * HUD Tag
      */
 
-        override val tag: String
-            get() = targetModeValue.get() + ", " + autoBlockValue.get() + ", " + rangeValue.get() + ", " + minCpsValue.get() + " - " + maxCpsValue.get()
-
-
-/*     private val simpleArrayList = BoolValue("SimpleArrayListTag", false)
-    init{ if (simpleArrayList.equals(true)) {
-            var tagVal = get() = "${targetModeValue.get()}, ${priorityValue.get()}, " + "${minCpsValue.get()}-${maxCpsValue.get()}, " + "$maxRange${ if (!autoBlockValue.equals("Off")) { "-${autoBlockRangeValue.get()}"} else {""}}-${discoverRangeValue.get()}"
-        } else {
-            var tagVal = get() = targetModeValue.get()
-        }
-    }
-        override val tag: String
-            get() = tagVal   
-*/            
+    override val tag: String
+        get() = targetModeValue.get() + ", " + autoBlockValue.get() + " Reach:" + rangeValue.get() + ", " + minCpsValue.get() + " - " + maxCpsValue.get()
 }

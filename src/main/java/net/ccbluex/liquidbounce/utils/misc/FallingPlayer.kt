@@ -35,9 +35,9 @@ class FallingPlayer(
     )
 
     private fun calculateForTick() {
-        strafe *= 0.98f
-        forward *= 0.98f
-        var v = strafe * strafe + forward * forward
+        var sr = strafe * 0.9800000190734863f
+        var fw = forward * 0.9800000190734863f
+        var v = sr * sr + fw * fw
         if (v >= 0.0001f) {
             v = MathHelper.sqrt_float(v)
             if (v < 1.0f) {
@@ -48,20 +48,20 @@ class FallingPlayer(
                 fixedJumpFactor = (fixedJumpFactor * 1.3).toFloat()
             }
             v = fixedJumpFactor / v
-            strafe *= v
-            forward *= v
+            sr *= v
+            fw *= v
             val f1 = MathHelper.sin(yaw * Math.PI.toFloat() / 180.0f)
             val f2 = MathHelper.cos(yaw * Math.PI.toFloat() / 180.0f)
-            motionX += (strafe * f2 - forward * f1).toDouble()
-            motionZ += (forward * f2 + strafe * f1).toDouble()
+            motionX += (sr * f2 - fw * f1).toDouble()
+            motionZ += (fw * f2 + sr * f1).toDouble()
         }
         motionY -= 0.08
-        motionX *= 0.91
         motionY *= 0.9800000190734863
-        motionZ *= 0.91
         x += motionX
         y += motionY
         z += motionZ
+        motionX *= 0.91
+        motionZ *= 0.91
     }
 
     fun findCollision(ticks: Int): BlockPos? {

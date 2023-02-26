@@ -33,9 +33,7 @@ public abstract class MixinGuiButtonExt extends MixinGuiButton {
             GuiUtils.drawContinuousTexturedBox(buttonTextures, this.xPosition, this.yPosition, 0, 46 + k * 20, this.width, this.height, 200, 20, 2, 3, 2, 2, this.zLevel);
             this.mouseDragged(mc, mouseX, mouseY);
             int color = 14737632;
-            if (this.packedFGColour != 0) {
-                color = this.packedFGColour;
-            } else if (!this.enabled) {
+			if (!this.enabled) {
                 color = 10526880;
             } else if (this.hovered) {
                 color = 16777120;

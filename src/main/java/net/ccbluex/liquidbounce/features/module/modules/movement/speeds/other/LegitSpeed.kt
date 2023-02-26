@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class LegitSpeed : SpeedMode("Legit") {
-    override fun onPreMotion() {
+    override fun onUpdate() {
         if (mc.thePlayer.isInWater) return
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) mc.thePlayer.jump()

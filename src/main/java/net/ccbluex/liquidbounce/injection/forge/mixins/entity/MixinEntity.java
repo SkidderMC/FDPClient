@@ -9,6 +9,8 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.minecraft.block.Block;
@@ -183,7 +185,11 @@ public abstract class MixinEntity {
             return;
 
         final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
+        final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
         LiquidBounce.eventManager.callEvent(strafeEvent);
+        if (strafeFix.getDoFix()) { //Run StrafeFix process on Post Strafe 2023/02/15
+            strafeFix.runStrafeFixLoop(strafeFix.getSilentFix(), strafeEvent);
+        }
 
         if (strafeEvent.isCancelled())
             callbackInfo.cancel();
@@ -192,9 +198,17 @@ public abstract class MixinEntity {
     @Inject(method = "getCollisionBorderSize", at = @At("HEAD"), cancellable = true)
     private void getCollisionBorderSize(final CallbackInfoReturnable<Float> callbackInfoReturnable) {
         final HitBox hitBox = LiquidBounce.moduleManager.getModule(HitBox.class);
+        final ViaVersionFix viaVersionFix = LiquidBounce.moduleManager.getModule(ViaVersionFix.class);
 
-        if (hitBox.getState() && EntityUtils.INSTANCE.isSelected(((Entity)((Object)this)),true))
-            callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());
+        if (hitBox.getState() && EntityUtils.INSTANCE.isSelected(((Entity)((Object)this)),true)) {
+            if (viaVersionFix.getState()) {
+                callbackInfoReturnable.setReturnValue(hitBox.getSizeValue().get());
+            } else {
+                callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());
+            }
+        } else if (viaVersionFix.getState()) {
+            callbackInfoReturnable.setReturnValue(0.0F);
+        }
     }
 
     @Inject(method="getBrightnessForRender", at=@At(value="HEAD"), cancellable=true)

@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.injection.forge.mixins.packets;
+package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;

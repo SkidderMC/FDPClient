@@ -64,6 +64,18 @@ object EntityUtils : MinecraftInstance() {
         }
         return false
     }
+    
+    fun canRayCast(entity: Entity): Boolean {
+        if (entity is EntityLivingBase) {
+            if (entity is EntityPlayer) {
+                val teams = LiquidBounce.moduleManager.getModule(Teams::class.java)
+                return !teams!!.state || !teams.isInYourTeam(entity)
+            } else {
+                return mobValue.get() && isMob(entity) || animalValue.get() && isAnimal(entity)
+            }
+        }
+        return false
+    }
 
     fun isFriend(entity: Entity): Boolean {
         return entity is EntityPlayer && entity.getName() != null && LiquidBounce.fileManager.friendsConfig.isFriend(stripColor(entity.getName()))
