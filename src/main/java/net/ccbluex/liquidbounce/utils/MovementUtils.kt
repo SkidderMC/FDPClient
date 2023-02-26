@@ -164,11 +164,11 @@ object MovementUtils : MinecraftInstance() {
     val direction: Double
         get() {
             var rotationYaw = mc.thePlayer.rotationYaw
-            if (mc.thePlayer.moveForward < 0f) rotationYaw += 180f
+            if (mc.thePlayer.movementInput.moveForward < 0f) rotationYaw += 180f
             var forward = 1f
-            if (mc.thePlayer.moveForward < 0f) forward = -0.5f else if (mc.thePlayer.moveForward > 0f) forward = 0.5f
-            if (mc.thePlayer.moveStrafing > 0f) rotationYaw -= 90f * forward
-            if (mc.thePlayer.moveStrafing < 0f) rotationYaw += 90f * forward
+            if (mc.thePlayer.movementInput.moveForward < 0f) forward = -0.5f else if (mc.thePlayer.movementInput.moveForward > 0f) forward = 0.5f
+            if (mc.thePlayer.movementInput.moveStrafe > 0f) rotationYaw -= 90f * forward
+            if (mc.thePlayer.movementInput.moveStrafe < 0f) rotationYaw += 90f * forward
             return Math.toRadians(rotationYaw.toDouble())
         }
 

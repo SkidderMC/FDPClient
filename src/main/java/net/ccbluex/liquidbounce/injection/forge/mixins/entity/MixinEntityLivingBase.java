@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
@@ -73,12 +74,22 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     /**
      * @author CCBlueX
+     * @author CoDynamic
+     * Modified by Co Dynamic
+     * Date: 2023/02/15
      */
     @Overwrite
     protected void jump() {
         if (!this.equals(Minecraft.getMinecraft().thePlayer)) {
             return;
         }
+        
+        /**
+         * Jump Process Fix
+         * use updateFixState to reset Jump Fix state
+         * @param fixedYaw  The yaw player should have (NOT RotationYaw)
+         * @param strafeFix StrafeFix Module
+         */
 
         final JumpEvent jumpEvent = new JumpEvent(MovementUtils.INSTANCE.getJumpMotion());
         LiquidBounce.eventManager.callEvent(jumpEvent);
@@ -87,12 +98,12 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
         this.motionY = jumpEvent.getMotion();
         final Sprint sprint = LiquidBounce.moduleManager.getModule(Sprint.class);
+        final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
 
         if (this.isSprinting()) {
             float fixedYaw = this.rotationYaw;
-            final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
-            if(killAura.getStrictStrafe() && RotationUtils.serverRotation != null && killAura.getState()) {
-                fixedYaw = RotationUtils.serverRotation.getYaw();
+            if(RotationUtils.targetRotation != null && strafeFix.getDoFix()) {
+                fixedYaw = RotationUtils.targetRotation.getYaw();
             }
             if(sprint.getState() && sprint.getJumpDirectionsValue().get()) {
                 fixedYaw += MovementUtils.INSTANCE.getMovingYaw() - this.rotationYaw;
@@ -120,7 +131,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         }
     }
 
-	@ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))
+    @ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))
     private double ViaVersion_MovementThreshold(double constant) {
         if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ViaVersionFix.class)).getState())
             return 0.003D;

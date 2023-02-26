@@ -101,12 +101,13 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
                 }
             } else {
                 mc.timer.timerSpeed = flyTimerValue.get()
+                MovementUtils.resetMotion(true)
             }
             flyTicks++
             if (flyTicks > 4) {
                 flyTicks = 4
             }
-            MovementUtils.strafe(if (vanillaValue.get()) { 0.99f } else { 9.8f + flyTicks.toFloat() * 0.05f })
+            MovementUtils.strafe(if (vanillaValue.get()) { 0.99f } else { 9.795f + flyTicks.toFloat() * 0.05f })
         }
     }
 

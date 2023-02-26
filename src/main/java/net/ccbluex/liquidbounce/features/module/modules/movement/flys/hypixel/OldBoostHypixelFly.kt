@@ -49,7 +49,7 @@ class OldBoostHypixelFly : FlyMode("OldBoostHypixel") {
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
 
         mc.thePlayer.jump()
-        mc.thePlayer.posY += 0.42 // Visual
+        mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ)
 
         boostState = 1
         moveSpeed = 0.1
