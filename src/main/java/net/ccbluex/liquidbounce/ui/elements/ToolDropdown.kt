@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.ui.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof
+import net.ccbluex.liquidbounce.features.special.ClientFixes
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -12,10 +12,12 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
+
 object ToolDropdown {
 
     private var fullHeight = 0F
     private var dropState = false
+
 
     private val expandIcon = ResourceLocation("fdpclient/misc/expand.png")
 
@@ -44,15 +46,17 @@ object ToolDropdown {
         glPushMatrix()
         glTranslatef(button.xPosition.toFloat(), button.yPosition.toFloat() + 20F - (100F - fullHeight), 0F)
         RenderUtils.newDrawRect(0F, 0F, bWidth, 100F, Color(24, 24, 24).rgb)
-        Fonts.font35.drawString("AntiForge", 4F, 7F, -1)
-        Fonts.font35.drawString("Block FML", 4F, 27F, if (AntiForge.enabled) -1 else gray)
-        Fonts.font35.drawString("Block FML Proxy Packets", 4F, 47F, if (AntiForge.enabled) -1 else gray)
-        Fonts.font35.drawString("Block Payload Packets", 4F, 67F, if (AntiForge.enabled) -1 else gray)
-        drawToggleSwitch(bWidth - 24F, 5F, 20F, 10F, AntiForge.enabled)
+        Fonts.font35.drawString("ClientFixes", 4F, 7F, -1)
+        Fonts.font35.drawString("Block FML", 4F, 27F, if (ClientFixes.enabled) -1 else gray)
+        Fonts.font35.drawString("Block FML Proxy Packets", 4F, 47F, if (ClientFixes.enabled) -1 else gray)
+        Fonts.font35.drawString("Block Payload Packets", 4F, 67F, if (ClientFixes.enabled) -1 else gray)
+        Fonts.font35.drawString("Brand", 4F, 57F, -1)
+        Fonts.font35.drawString("Block Resource Pack Exploit ", 4F, 57F, -1)
+        drawToggleSwitch(bWidth - 24F, 5F, 20F, 10F, ClientFixes.enabled)
         Fonts.font40.drawString("BungeeCord Spoof", 4F, 85F, -1)
-        drawCheckbox(bWidth - 14F, 25F, 10F, AntiForge.blockFML)
-        drawCheckbox(bWidth - 14F, 45F, 10F, AntiForge.blockProxyPacket)
-        drawCheckbox(bWidth - 14F, 65F, 10F, AntiForge.blockPayloadPackets)
+        drawCheckbox(bWidth - 14F, 25F, 10F, ClientFixes.blockFML)
+        drawCheckbox(bWidth - 14F, 45F, 10F, ClientFixes.blockProxyPacket)
+        drawCheckbox(bWidth - 14F, 65F, 10F, ClientFixes.blockPayloadPackets)
         drawToggleSwitch(bWidth - 20F, 86F, 16F, 8F, BungeeCordSpoof.enabled)
         glPopMatrix()
         glDisable(GL_SCISSOR_TEST)
@@ -66,11 +70,14 @@ object ToolDropdown {
         val bWidth = button.getButtonWidth().toFloat()
         if (dropState && isMouseOver(mouseX, mouseY, bX, bY + 20F, bWidth, fullHeight)) {
             when {
-                isMouseOver(mouseX, mouseY, bX, bY + 20F, bWidth, 20F) -> AntiForge.enabled = !AntiForge.enabled
-                isMouseOver(mouseX, mouseY, bX, bY + 40F, bWidth, 20F) -> AntiForge.blockFML = !AntiForge.blockFML
-                isMouseOver(mouseX, mouseY, bX, bY + 60F, bWidth, 20F) -> AntiForge.blockProxyPacket = !AntiForge.blockProxyPacket
-                isMouseOver(mouseX, mouseY, bX, bY + 80F, bWidth, 20F) -> AntiForge.blockPayloadPackets = !AntiForge.blockPayloadPackets
+                isMouseOver(mouseX, mouseY, bX, bY + 20F, bWidth, 20F) -> ClientFixes.enabled = !ClientFixes.enabled
+                isMouseOver(mouseX, mouseY, bX, bY + 40F, bWidth, 20F) -> ClientFixes.blockFML = !ClientFixes.blockFML
+                isMouseOver(mouseX, mouseY, bX, bY + 60F, bWidth, 20F) -> ClientFixes.blockProxyPacket = !ClientFixes.blockProxyPacket
+                isMouseOver(mouseX, mouseY, bX, bY + 80F, bWidth, 20F) -> ClientFixes.blockPayloadPackets = !ClientFixes.blockPayloadPackets
                 isMouseOver(mouseX, mouseY, bX, bY + 100F, bWidth, 20F) -> BungeeCordSpoof.enabled = !BungeeCordSpoof.enabled
+                isMouseOver(mouseX, mouseY, bX, bY + 120F, bWidth, 20F) -> ClientFixes.blockResourcePackExploit = !ClientFixes.blockResourcePackExploit
+
+
             }
             LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig)
             return true

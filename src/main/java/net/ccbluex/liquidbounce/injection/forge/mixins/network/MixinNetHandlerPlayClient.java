@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.event.EntityDamageEvent;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.PackSpoofer;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
-import net.ccbluex.liquidbounce.features.special.AntiForge;
+import net.ccbluex.liquidbounce.features.special.ClientFixes;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -80,12 +80,13 @@ public abstract class MixinNetHandlerPlayClient {
 
         final PackSpoofer ps = (PackSpoofer) LiquidBounce.moduleManager.getModule(PackSpoofer.class);
 
-        try {
-            final String scheme = new URI(url).getScheme();
-            final boolean isLevelProtocol = "level".equals(scheme);
+            if (ClientFixes.blockResourcePackExploit) {
+                try {
+                    final String scheme = new URI(url).getScheme();
+                    final boolean isLevelProtocol = "level".equals(scheme);
 
-            if(!"http".equals(scheme) && !"https".equals(scheme) && !isLevelProtocol)
-                throw new URISyntaxException(url, "Wrong protocol");
+                    if(!"http".equals(scheme) && !"https".equals(scheme) && !isLevelProtocol)
+                        throw new URISyntaxException(url, "Wrong protocol");
 
             if(isLevelProtocol && (url.contains("..") || !url.endsWith(".zip"))) {
                 String s2 = url.substring("level://".length());
@@ -93,7 +94,7 @@ public abstract class MixinNetHandlerPlayClient {
                 File file2 = new File(file1, s2);
 
                 if (file2.isFile() && !url.toLowerCase().contains("fdpclient")) {
-                    netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.ACCEPTED)); // perform like vanilla
+                    netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.ACCEPTED));
                     netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.SUCCESSFULLY_LOADED));
                 } else {
                     netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.FAILED_DOWNLOAD));
@@ -117,7 +118,9 @@ public abstract class MixinNetHandlerPlayClient {
             alert("Failed to handle resource pack");
             callbackInfo.cancel();
         }
+        }
     }
+
 
     @Inject(method = "handleEntityStatus", at = @At("HEAD"))
     public void handleDamagePacket(S19PacketEntityStatus packetIn, CallbackInfo callbackInfo) {
@@ -133,7 +136,7 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Inject(method = "handleJoinGame", at = @At("HEAD"), cancellable = true)
     private void handleJoinGameWithAntiForge(S01PacketJoinGame packetIn, final CallbackInfo callbackInfo) {
-        if (!AntiForge.INSTANCE.getEnabled() || !AntiForge.INSTANCE.getBlockFML() || Minecraft.getMinecraft().isIntegratedServerRunning())
+        if (!ClientFixes.INSTANCE.getEnabled() || !ClientFixes.INSTANCE.getBlockFML() || Minecraft.getMinecraft().isIntegratedServerRunning())
             return;
 
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, (NetHandlerPlayClient) (Object) this, this.gameController);

@@ -53,6 +53,8 @@
     "gui.MixinServerListEntryNormal",
     "gui.MixinGuiNewChat",
     "gui.MixinGuiScreen",
+    "gui.MixinGuiOptionSlider",
+    "gui.MixinGuiSlider",
     "gui.MixinGuiSpectator",
     "gui.MixinGuiTextField",
     "gui.MixinGuiGameOver",

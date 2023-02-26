@@ -19,10 +19,10 @@ class SpecialConfig(file: File) : FileConfig(file) {
 
         LiquidBounce.commandManager.prefix = '.'
         AutoReconnect.delay = 5000
-        AntiForge.enabled = true
-        AntiForge.blockFML = true
-        AntiForge.blockProxyPacket = true
-        AntiForge.blockPayloadPackets = true
+        ClientFixes.enabled = true
+        ClientFixes.blockFML = true
+        ClientFixes.blockProxyPacket = true
+        ClientFixes.blockPayloadPackets = true
         ServerSpoof.enable = false
         ServerSpoof.address = "redesky.com"
         GuiBackground.enabled = true
@@ -49,16 +49,22 @@ class SpecialConfig(file: File) : FileConfig(file) {
             val jsonValue = json.getAsJsonObject("anti-forge")
 
             if (jsonValue.has("enable")) {
-                AntiForge.enabled = jsonValue.get("enable").asBoolean
+                ClientFixes.enabled = jsonValue.get("enable").asBoolean
             }
             if (jsonValue.has("block-fml")) {
-                AntiForge.blockFML = jsonValue.get("block-fml").asBoolean
+                ClientFixes.blockFML = jsonValue.get("block-fml").asBoolean
             }
             if (jsonValue.has("block-proxy")) {
-                AntiForge.blockProxyPacket = jsonValue.get("block-proxy").asBoolean
+                ClientFixes.blockProxyPacket = jsonValue.get("block-proxy").asBoolean
             }
             if (jsonValue.has("block-payload")) {
-                AntiForge.blockPayloadPackets = jsonValue.get("block-payload").asBoolean
+                ClientFixes.blockPayloadPackets = jsonValue.get("block-payload").asBoolean
+            }
+            if (jsonValue.has("FixResourcePackExploit")) {
+                ClientFixes.blockResourcePackExploit = jsonValue.get("FixResourcePackExploit").asBoolean
+            }
+            if (jsonValue.has("ClientBrand")) {
+            ClientFixes.clientBrand = jsonValue.get("ClientBrand").getAsString();
             }
         }
         if (json.has("serverspoof")) {
@@ -116,10 +122,10 @@ class SpecialConfig(file: File) : FileConfig(file) {
         json.addProperty("use-glyph-fontrenderer", useGlyphFontRenderer)
 
         val antiForgeJson = JsonObject()
-        antiForgeJson.addProperty("enable", AntiForge.enabled)
-        antiForgeJson.addProperty("block-fml", AntiForge.blockFML)
-        antiForgeJson.addProperty("block-proxy", AntiForge.blockProxyPacket)
-        antiForgeJson.addProperty("block-payload", AntiForge.blockPayloadPackets)
+        antiForgeJson.addProperty("enable", ClientFixes.enabled)
+        antiForgeJson.addProperty("block-fml", ClientFixes.blockFML)
+        antiForgeJson.addProperty("block-proxy", ClientFixes.blockProxyPacket)
+        antiForgeJson.addProperty("block-payload", ClientFixes.blockPayloadPackets)
         json.add("anti-forge", antiForgeJson)
 
         val serverSpoofJson = JsonObject()
