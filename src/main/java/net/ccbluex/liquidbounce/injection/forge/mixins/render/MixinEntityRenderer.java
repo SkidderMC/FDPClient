@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.render.CameraClip;
 import net.ccbluex.liquidbounce.features.module.modules.render.Tracers;
 import net.ccbluex.liquidbounce.features.module.modules.render.PerspectiveMod;
+import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -35,6 +36,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import static org.objectweb.asm.Opcodes.GETFIELD;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
@@ -198,26 +200,35 @@ public abstract class MixinEntityRenderer {
 
             for (Entity entity1 : list) {
                 float f1 = entity1.getCollisionBorderSize();
-                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand((double) f1, (double) f1, (double) f1);
-                MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
-                if (axisalignedbb.isVecInside(vec3)) {
-                    if (d2 >= 0.0D) {
-                        this.pointedEntity = entity1;
-                        vec33 = movingobjectposition == null ? vec3 : movingobjectposition.hitVec;
-                        d2 = 0.0D;
-                    }
-                } else if (movingobjectposition != null) {
-                    double d3 = vec3.distanceTo(movingobjectposition.hitVec);
-                    if (d3 < d2 || d2 == 0.0D) {
-                        if (entity1 == entity.ridingEntity && !entity.canRiderInteract()) {
-                            if (d2 == 0.0D) {
+
+                final ArrayList<AxisAlignedBB> boxes = new ArrayList<>();
+                boxes.add(entity1.getEntityBoundingBox().expand(f1, f1, f1));
+                Backtrack.INSTANCE.loopThroughBacktrackData(entity1, () -> {
+                    boxes.add(entity1.getEntityBoundingBox().expand(f1, f1, f1));
+                    return false;
+                });
+
+                for (final AxisAlignedBB axisalignedbb : boxes) {
+                    MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
+                    if (axisalignedbb.isVecInside(vec3)) {
+                        if (d2 >= 0.0D) {
+                            this.pointedEntity = entity1;
+                            vec33 = movingobjectposition == null ? vec3 : movingobjectposition.hitVec;
+                            d2 = 0.0D;
+                        }
+                    } else if (movingobjectposition != null) {
+                        double d3 = vec3.distanceTo(movingobjectposition.hitVec);
+                        if (d3 < d2 || d2 == 0.0D) {
+                            if (entity1 == entity.ridingEntity && !entity.canRiderInteract()) {
+                                if (d2 == 0.0D) {
+                                    this.pointedEntity = entity1;
+                                    vec33 = movingobjectposition.hitVec;
+                                }
+                            } else {
                                 this.pointedEntity = entity1;
                                 vec33 = movingobjectposition.hitVec;
+                                d2 = d3;
                             }
-                        } else {
-                            this.pointedEntity = entity1;
-                            vec33 = movingobjectposition.hitVec;
-                            d2 = d3;
                         }
                     }
                 }
