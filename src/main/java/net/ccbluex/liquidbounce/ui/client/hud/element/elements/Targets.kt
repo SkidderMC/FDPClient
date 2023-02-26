@@ -41,7 +41,7 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "Bar", "Chill", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "Tenacity5", "TenacityNew", "WaterMelon", "SparklingWater"), "Chill")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "Bar", "Chill", "ChillLite", "Stitch", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "Tenacity5", "TenacityNew", "WaterMelon", "SparklingWater"), "Chill")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6").displayable { modeValue.equals("Rise") }
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -327,6 +327,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "tenacity5" -> drawTenacity5(prevTarget!!)
             "tenacitynew" -> drawTenacityNew(prevTarget!!)
             "chill" -> drawChill(prevTarget!! as EntityPlayer)
+            "chilllite" -> drawChillLite(prevTarget!! as EntityPlayer)
+            "stitch" -> drawStitch(prevTarget!!)
             "remix" -> drawRemix(prevTarget!! as EntityPlayer)
             "rice" -> drawRice(prevTarget!!)
             "slowly" -> drawSlowly(prevTarget!!)
@@ -1375,6 +1377,65 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glTranslated(renderX, renderY, 0.0)
     }
 
+    private fun drawChillLite(entity: EntityPlayer) {
+        updateAnim(entity.health)
+
+        val name = entity.name
+        val health = entity.health
+        val tWidth = (45F + Fonts.font40.getStringWidth(name).coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(health)))).coerceAtLeast(90F)
+        val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
+
+        // background
+        RenderUtils.drawRoundedRect(0F, 0F, tWidth, 38F, 7F, bgColor.rgb)
+        GlStateManager.resetColor()
+        GL11.glColor4f(1F, 1F, 1F, 1F)
+
+        // head
+        if (playerInfo != null) {
+            Stencil.write(false)
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            RenderUtils.fastRoundedRect(4F, 4F, 34F, 34F, 7F)
+            GL11.glDisable(GL11.GL_BLEND)
+            GL11.glEnable(GL11.GL_TEXTURE_2D)
+            Stencil.erase(true)
+            drawHead(playerInfo.locationSkin, 4, 4, 30, 30, 1F - getFadeProgress())
+            Stencil.dispose()
+        }
+
+        GlStateManager.resetColor()
+        GL11.glColor4f(1F, 1F, 1F, 1F)
+
+        // name + health
+        Fonts.font40.drawString(name, 38F, 6F, getColor(-1).rgb)
+        numberRenderer.renderChar(health, renderX.toFloat(), renderY.toFloat(), 38F, 17F, 0f,0f, false, chillFontSpeed.get(), getColor(-1).rgb)
+
+    }
+
+    private fun drawStitch(target: EntityLivingBase) {
+        val tWidth = (110F + Fonts.fontTenacityBold40.getStringWidth(target.name)).coerceAtLeast(120F)
+        // background
+        RenderUtils.drawRoundedRect(0F, 0F, tWidth, 65F, 7F, Color(255, 255, 255, 40).rgb)
+        // circle player avatar
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+        GL11.glPushMatrix()
+        mc.textureManager.bindTexture(target.skin)
+        RenderUtils.drawScaledCustomSizeModalCircle((tWidth.toInt()/2) - 15, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
+        RenderUtils.drawScaledCustomSizeModalCircle((tWidth.toInt()/2) - 15, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
+        GL11.glPopMatrix()
+        // name
+        Fonts.fontTenacityBold40.drawCenteredString(target.name, tWidth/2F, 39F, getColor(-1).rgb, false)
+
+        "${ndecimalFormat.format((easingHP / target.maxHealth) * 100)}%".also {
+            Fonts.font32.drawString(it, ((easingHP / target.maxHealth) * (tWidth - 5) - Fonts.font32.getStringWidth(it)).coerceAtLeast(40f), 60f - Fonts.font32.FONT_HEIGHT, Color.WHITE.rgb, false)
+        }
+
+        // hp bar
+        RenderUtils.drawRoundedCornerRect(5f, 58f, (tWidth - 5), 62f, 2.5f, Color(0, 0, 0, 150).rgb)
+        RenderUtils.drawRoundedCornerRect(5f, 58f, (easingHP / target.maxHealth) * (tWidth - 5), 62f, 2.5f, ColorUtils.rainbow().rgb)
+
+    }
 
     private fun drawRemix(entity: EntityPlayer) {
         updateAnim(entity.health)
@@ -1981,6 +2042,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "tenacity5" -> Border(-2F, 3F, 62F + mc.thePlayer.name.let(Fonts.font40::getStringWidth).coerceAtLeast(75).toFloat(), 50F)
             "tenacitynew" -> Border(0F, 5F, 125F, 45F)
             "chill" -> Border(0F, 0F, 120F, 48F)
+            "chilllite" -> Border(0F, 0F, 90F, 38F)
+            "stitch" -> Border(0F, 0F, 150F, 65F)
             "remix" -> Border(0F, 0F, 146F, 49F)
             "rice" -> Border(0F, 0F, 135F, 55F)
             "slowly" -> Border(0F, 0F, 102F, 36F)
