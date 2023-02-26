@@ -180,7 +180,7 @@ class KillAura : Module() {
     private val backtraceTickValue = IntegerValue("BacktraceTick", 2, 1, 10).displayable { backtraceValue.get() }
     
     // Others
-    private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { !rotationModeValue.equals("None") }
+    private val hitAbleValue = BoolValue("AlwaysHitAble", true)
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
