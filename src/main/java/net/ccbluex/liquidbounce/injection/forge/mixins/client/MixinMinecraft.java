@@ -196,7 +196,7 @@ public abstract class MixinMinecraft {
     private void clickMouse(CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
         if (LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
-            leftClickCounter = 0; // fix hit delay lol
+            leftClickCounter = 0;
     }
 
     @Inject(method = "middleClickMouse", at = @At("HEAD"))
@@ -271,16 +271,15 @@ public abstract class MixinMinecraft {
 
 
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
-    private void setWindowIcon(CallbackInfo callbackInfo) throws IOException {
-        if (Util.getOSType() != Util.EnumOS.OSX) {
-            // 11 months icon bug fixed :skull:
-            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png"));
-            if (image.getWidth() != 32 || image.getHeight() != 32) {
-                image = ImageUtils.resizeImage(image, 32, 32);
+    private void setWindowIcon(CallbackInfo callbackInfo) {
+        try {
+            if (Util.getOSType() != Util.EnumOS.OSX) {
+                BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png"));
+                Display.setIcon(new ByteBuffer[]{ ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16)), ImageUtils.readImageToBuffer(image) });
+                callbackInfo.cancel();
             }
-            Display.setIcon(new ByteBuffer[]{ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16)),
-                    ImageUtils.readImageToBuffer(image)});
-            callbackInfo.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
