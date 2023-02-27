@@ -135,6 +135,7 @@ class KillAura : Module() {
 
     // Raycast
     private val raycastValue = BoolValue("RayCast", true)
+    private val raycastTargetValue = BoolValue("RaycastOnlyTarget", false)
 
     // Rotations
     private val rotationModeValue = ListValue(
@@ -811,7 +812,7 @@ class KillAura : Module() {
 
             // Attack
             if (!targetModeValue.equals("Multi")) {
-                val raycastedEntity = RaycastUtils.raycastEntity(maxRange.toDouble()) { it is EntityLivingBase && it !is EntityArmorStand && EntityUtils.canRayCast(it) && !EntityUtils.isFriend(it) }
+                val raycastedEntity = RaycastUtils.raycastEntity(maxRange.toDouble()) { it is EntityLivingBase && it !is EntityArmorStand && (!raycastTargetValue.get() || EntityUtils.canRayCast(it)) && !EntityUtils.isFriend(it) }
                 attackEntity(if (raycastValue.get()) { if (raycastedEntity != null) { raycastedEntity } else { currentTarget!! } as EntityLivingBase } else { currentTarget!! })
             } else {
                 inRangeDiscoveredTargets.forEachIndexed { index, entity ->
