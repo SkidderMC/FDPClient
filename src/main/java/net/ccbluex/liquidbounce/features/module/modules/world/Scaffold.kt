@@ -86,7 +86,7 @@ class Scaffold : Module() {
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced", "Backwards"), "Backwards")
     private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
     private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove"), "MoveDirection").displayable { rotationsValue.equals("Advanced") }
     private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla"), "Static").displayable { rotationsValue.equals("Advanced") }
@@ -135,6 +135,7 @@ class Scaffold : Module() {
             "Jump",
             "Motion",
             "Motion2",
+            "Motion3"
             "ConstantMotion",
             "PlusMotion",
             "StableMotion",
@@ -534,7 +535,7 @@ class Scaffold : Module() {
             "motion" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = 0.41999998688698
                 } else if (mc.thePlayer.motionY < 0.1) {
                     mc.thePlayer.motionY = -0.3
                 }
@@ -542,15 +543,23 @@ class Scaffold : Module() {
             "motion2" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = 0.41999998688698
                 } else if (mc.thePlayer.motionY < 0.18) {
                     mc.thePlayer.motionY -= 0.02
+                }
+            }
+            "motion3" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    mc.thePlayer.motionY = 0.41999998688698
+                } else if (mc.thePlayer.motionY < 0.1) {
+                    mc.thePlayer.motionY = -0.15523200451
                 }
             }
             "motiontp" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = 0.41999998688698
                 } else if (mc.thePlayer.motionY < 0.23) {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
                 }
@@ -558,11 +567,11 @@ class Scaffold : Module() {
             "motiontp2" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = 0.41999998688698
                 } else if (mc.thePlayer.motionY < 0.23) {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
                     mc.thePlayer.onGround = true
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = 0.41999998688698
                 }
             }
             "packet" -> {
@@ -634,7 +643,7 @@ class Scaffold : Module() {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     jumpGround = mc.thePlayer.posY
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = 0.41999998688698
                 }
                 mc.thePlayer.motionX = 0.0
                 mc.thePlayer.motionZ = -0.00000001
@@ -672,17 +681,17 @@ class Scaffold : Module() {
             "universocraft" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = 0.41999998688698
                 } else if (mc.thePlayer.motionY < 0.19) {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
                     mc.thePlayer.onGround = true
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = 0.41999998688698
                 }
             }
             "matrix6.9.2" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = 0.41999998688698
                 } else if (mc.thePlayer.motionY < 0.19145141919180) {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
                     mc.thePlayer.onGround = true
@@ -1013,6 +1022,16 @@ class Scaffold : Module() {
                 }
                 "custom" -> {
                     Rotation(mc.thePlayer.rotationYaw + customtowerYawValue.get(), customtowerPitchValue.get().toFloat())
+                }
+                "backwards" -> {
+                    var caluyaw = (((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45).toFloat()
+                    var calupitch = 0f
+                    if (caluyaw % 90 == 0) {
+                        calupitch = 82f
+                    } else {
+                        calupitch = 78f
+                    }
+                    Rotation(caluyaw, calupitch)
                 }
                 "advanced" -> {
                     var advancedYaw = 0f
