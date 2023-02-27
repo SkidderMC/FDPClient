@@ -19,9 +19,9 @@ public class CFont {
     protected boolean fractionalMetrics;
     protected DynamicTexture tex;
     private final float imgSize = 512.0f;
-    protected CharData[] charData = new CharData[256];
+    protected final CharData[] charData = new CharData[256];
     protected int fontHeight = -1;
-    protected int charOffset = 0;
+    protected final int charOffset = 0;
 
     public CFont(Font font, boolean antiAlias, boolean fractionalMetrics) {
         this.font = font;
@@ -93,17 +93,17 @@ public class CFont {
         float renderSRCWidth = srcWidth / 512.0f;
         float renderSRCHeight = srcHeight / 512.0f;
         GL11.glTexCoord2f(renderSRCX + renderSRCWidth, renderSRCY);
-        GL11.glVertex2d((double) (x + width), (double) y);
+        GL11.glVertex2d(x + width, y);
         GL11.glTexCoord2f(renderSRCX, renderSRCY);
-        GL11.glVertex2d((double) x, (double) y);
+        GL11.glVertex2d(x, y);
         GL11.glTexCoord2f(renderSRCX, renderSRCY + renderSRCHeight);
-        GL11.glVertex2d((double) x, (double) (y + height));
+        GL11.glVertex2d(x, y + height);
         GL11.glTexCoord2f(renderSRCX, renderSRCY + renderSRCHeight);
-        GL11.glVertex2d((double) x, (double) (y + height));
+        GL11.glVertex2d(x, y + height);
         GL11.glTexCoord2f(renderSRCX + renderSRCWidth, renderSRCY + renderSRCHeight);
-        GL11.glVertex2d((double) (x + width), (double) (y + height));
+        GL11.glVertex2d(x + width, y + height);
         GL11.glTexCoord2f(renderSRCX + renderSRCWidth, renderSRCY);
-        GL11.glVertex2d((double) (x + width), (double) y);
+        GL11.glVertex2d(x + width, y);
     }
 
     public int getStringHeight(String text) {
@@ -118,7 +118,7 @@ public class CFont {
         int width = 0;
         char[] arrc = text.toCharArray();
         for (char c : arrc) {
-            if (c < this.charData.length && c >= 0) {
+            if (c < this.charData.length) {
                 width += (this.charData[c].width - 8) + this.charOffset;
             }
         }
@@ -157,7 +157,7 @@ public class CFont {
     }
 
     /* loaded from: LiquidBounce-b73.jar:net/ccbluex/liquidbounce/CFont$CharData.class */
-    protected class CharData {
+    protected static class CharData {
         public int width;
         public int height;
         public int storedX;

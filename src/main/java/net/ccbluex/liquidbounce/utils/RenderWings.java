@@ -15,9 +15,9 @@ import java.awt.*;
 public class RenderWings extends ModelBase {
     Minecraft mc = Minecraft.getMinecraft();
     private ResourceLocation location;
-    private ModelRenderer wing;
-    private ModelRenderer wingTip;
-    private boolean playerUsesFullHeight;
+    private final ModelRenderer wing;
+    private final ModelRenderer wingTip;
+    private final boolean playerUsesFullHeight;
     final Wings Wings = LiquidBounce.moduleManager.getModule(Wings.class);
     String WingMode = Wings.getWingStyle().get();
 
@@ -52,7 +52,7 @@ public class RenderWings extends ModelBase {
         if (mc.thePlayer.isSneaking()) {
             GL11.glTranslated( 0.0, 0.125 / scale, 0.0);
         }
-        if(Wings.getColourType().get().equals("Chroma")){ RenderUtils.glColor(ColorUtils.INSTANCE.rainbow(), 255F);} else if(Wings.getColourType().get().equals("Custom")){RenderUtils.glColor(new Color(Wings.getCR().get(), Wings.getCG().get(), Wings.getCB().get()), 255F);} else { GL11.glColor3f(1,1,1);}
+        if(Wings.getColourType().get().equals("Chroma")){ RenderUtils.glColor(ColorUtils.rainbow(), 255F);} else if(Wings.getColourType().get().equals("Custom")){RenderUtils.glColor(new Color(Wings.getCR().get(), Wings.getCG().get(), Wings.getCB().get()), 255F);} else { GL11.glColor3f(1,1,1);}
         this.mc.getTextureManager().bindTexture(this.location);
 
         for (int j = 0; j < 2; ++j) {

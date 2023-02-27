@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.special.GradientBackground;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.particles.ParticleUtils;
-import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -67,7 +66,7 @@ public abstract class MixinGuiScreen {
     @Shadow
     protected abstract void actionPerformed(GuiButton p_actionPerformed_1_);
 
-    @Inject(method = "drawWorldBackground", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "drawWorldBackground", at = @At("HEAD"))
     private void drawWorldBackground(final CallbackInfo callbackInfo) {
         try {
             final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
@@ -89,7 +88,7 @@ public abstract class MixinGuiScreen {
             e.printStackTrace();
         }
     }
-    @Inject(method = "drawWorldBackground", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "drawWorldBackground", at = @At("RETURN"))
     private void drawWorldBackground2(final CallbackInfo callbackInfo) {
         try {
             if(mc.thePlayer != null) {
@@ -107,7 +106,7 @@ public abstract class MixinGuiScreen {
         }
     }
 
-    @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "drawScreen", at = @At("HEAD"))
     private void drawScreen(int p_drawScreen_1_, int p_drawScreen_2_, float p_drawScreen_3_,final CallbackInfo callbackInfo) {
     }
 
@@ -129,7 +128,7 @@ public abstract class MixinGuiScreen {
     /**
      * @author CCBlueX
      */
-    @Inject(method = "drawBackground", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "drawBackground", at = @At("RETURN"))
     private void drawClientBackground(final CallbackInfo callbackInfo) {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();

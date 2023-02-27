@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils;
 
-import io.netty.util.concurrent.GenericFutureListener;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.network.INetHandler;
@@ -23,13 +22,13 @@ public class NetWorkHelper extends MinecraftInstance {
     public static void sendPacketNoEvent(Packet packet) {
         try {
             PacketUtils.sendPacketNoEvent(packet);
-        } catch (NullPointerException e) {
+        } catch (NullPointerException ignored) {
 
         }
     }
 
     public static void sendPacketSilent(Packet packet) {
-        mc.getNetHandler().getNetworkManager().sendPacket(packet, null, new GenericFutureListener[0]);
+        mc.getNetHandler().getNetworkManager().sendPacket(packet, null);
     }
 
     public static void sendPacketUnlogged(Packet<? extends INetHandler> packet) {

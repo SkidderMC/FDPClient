@@ -138,7 +138,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
 
-    protected static float zLevel = 0F;
+    protected static final float zLevel = 0F;
 
     /**
      * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height.
@@ -260,9 +260,8 @@ public final class RenderUtils extends MinecraftInstance {
     }
     
         public static int getRainbowOpaque(int seconds, float saturation, float brightness, int index) {
-        float hue = ((System.currentTimeMillis() + index) % (int) (seconds * 1000)) / (float) (seconds * 1000);
-        int color = Color.HSBtoRGB(hue, saturation, brightness);
-        return color;
+        float hue = ((System.currentTimeMillis() + index) % (seconds * 1000)) / (float) (seconds * 1000);
+            return Color.HSBtoRGB(hue, saturation, brightness);
     }
 
     public static float smoothAnimation(float ani, float finalState, float speed, float scale) {
@@ -409,15 +408,15 @@ public final class RenderUtils extends MinecraftInstance {
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             int thorn = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack);
             if (prot > 0) {
-                drawExhiOutlined(prot + "", drawExhiOutlined("P", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(prot), getMainColor(prot), true);
+                drawExhiOutlined(prot + "", drawExhiOutlined("P", x, y, darkBorder, -1), y, getBorderColor(prot), getMainColor(prot));
                 y += 4;
             }
             if (unb > 0) {
-                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(unb),getMainColor(unb), true);
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, darkBorder, -1), y, getBorderColor(unb),getMainColor(unb));
                 y += 4;
             }
             if (thorn > 0) {
-                drawExhiOutlined(thorn + "", drawExhiOutlined("T", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(thorn), getMainColor(thorn), true);
+                drawExhiOutlined(thorn + "", drawExhiOutlined("T", x, y, darkBorder, -1), y, getBorderColor(thorn), getMainColor(thorn));
                 y += 4;
             }
         }
@@ -427,19 +426,19 @@ public final class RenderUtils extends MinecraftInstance {
             int flame = EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, stack);
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             if (power > 0) {
-                drawExhiOutlined(power + "", drawExhiOutlined("Pow", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(power), getMainColor(power), true);
+                drawExhiOutlined(power + "", drawExhiOutlined("Pow", x, y, darkBorder, -1), y, getBorderColor(power), getMainColor(power));
                 y += 4;
             }
             if (punch > 0) {
-                drawExhiOutlined(punch + "", drawExhiOutlined("Pun", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(punch), getMainColor(punch), true);
+                drawExhiOutlined(punch + "", drawExhiOutlined("Pun", x, y, darkBorder, -1), y, getBorderColor(punch), getMainColor(punch));
                 y += 4;
             }
             if (flame > 0) {
-                drawExhiOutlined(flame + "", drawExhiOutlined("F", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(flame), getMainColor(flame), true);
+                drawExhiOutlined(flame + "", drawExhiOutlined("F", x, y, darkBorder, -1), y, getBorderColor(flame), getMainColor(flame));
                 y += 4;
             }
             if (unb > 0) {
-                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(unb), getMainColor(unb), true);
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, darkBorder, -1), y, getBorderColor(unb), getMainColor(unb));
                 y += 4;
             }
         }
@@ -449,32 +448,31 @@ public final class RenderUtils extends MinecraftInstance {
             int fire = EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId, stack);
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             if (sharp > 0) {
-                drawExhiOutlined(sharp + "", drawExhiOutlined("S", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(sharp), getMainColor(sharp), true);
+                drawExhiOutlined(sharp + "", drawExhiOutlined("S", x, y, darkBorder, -1), y, getBorderColor(sharp), getMainColor(sharp));
                 y += 4;
             }
             if (kb > 0) {
-                drawExhiOutlined(kb + "", drawExhiOutlined("K", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(kb), getMainColor(kb), true);
+                drawExhiOutlined(kb + "", drawExhiOutlined("K", x, y, darkBorder, -1), y, getBorderColor(kb), getMainColor(kb));
                 y += 4;
             }
             if (fire > 0) {
-                drawExhiOutlined(fire + "", drawExhiOutlined("F", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(fire), getMainColor(fire), true);
+                drawExhiOutlined(fire + "", drawExhiOutlined("F", x, y, darkBorder, -1), y, getBorderColor(fire), getMainColor(fire));
                 y += 4;
             }
             if (unb > 0) {
-                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(unb), getMainColor(unb), true);
-                y += 4;
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, darkBorder, -1), y, getBorderColor(unb), getMainColor(unb));
             }
         }
         GlStateManager.enableDepth();
         RenderHelper.enableGUIStandardItemLighting();
     }
 
-    private static float drawExhiOutlined(String text, float x, float y, float borderWidth, int borderColor, int mainColor, boolean drawText) {
-        Fonts.fontTahomaSmall.drawString(text, x, y - borderWidth, borderColor);
-        Fonts.fontTahomaSmall.drawString(text, x, y + borderWidth, borderColor);
-        Fonts.fontTahomaSmall.drawString(text, x - borderWidth, y, borderColor);
-        Fonts.fontTahomaSmall.drawString(text, x + borderWidth, y, borderColor);
-        if (drawText)
+    private static float drawExhiOutlined(String text, float x, float y, int borderColor, int mainColor) {
+        Fonts.fontTahomaSmall.drawString(text, x, y - (float) 0.35, borderColor);
+        Fonts.fontTahomaSmall.drawString(text, x, y + (float) 0.35, borderColor);
+        Fonts.fontTahomaSmall.drawString(text, x - (float) 0.35, y, borderColor);
+        Fonts.fontTahomaSmall.drawString(text, x + (float) 0.35, y, borderColor);
+        if (true)
             Fonts.fontTahomaSmall.drawString(text, x, y, mainColor);
         return x + Fonts.fontTahomaSmall.getWidth(text) - 2F;
     }
@@ -525,10 +523,10 @@ public final class RenderUtils extends MinecraftInstance {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        worldrenderer.pos((double)right, (double)top, 0.0).color(f1, f2, f3, f).endVertex();
-        worldrenderer.pos((double)left, (double)top, 0.0).color(f1, f2, f3, f).endVertex();
-        worldrenderer.pos((double)left, (double)bottom, 0.0).color(f5, f6, f7, f4).endVertex();
-        worldrenderer.pos((double)right, (double)bottom, 0.0).color(f5, f6, f7, f4).endVertex();
+        worldrenderer.pos(right, top, 0.0).color(f1, f2, f3, f).endVertex();
+        worldrenderer.pos(left, top, 0.0).color(f1, f2, f3, f).endVertex();
+        worldrenderer.pos(left, bottom, 0.0).color(f5, f6, f7, f4).endVertex();
+        worldrenderer.pos(right, bottom, 0.0).color(f5, f6, f7, f4).endVertex();
         tessellator.draw();
         GlStateManager.shadeModel(7424);
         GlStateManager.disableBlend();
@@ -846,7 +844,7 @@ public final class RenderUtils extends MinecraftInstance {
                                   final Color color) { //2
         GlStateManager.color(0.0f, 0.0f, 0.0f);
         GL11.glColor4f(0.0f, 0.0f, 0.0f, 0.0f);
-        float temp = 0.0f;
+        float temp;
         if (start > end) {
             temp = end;
             end = start;
@@ -883,7 +881,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void fastRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius) {
-        float z = 0;
+        float z;
         if (paramXStart > paramXEnd) {
             z = paramXStart;
             paramXStart = paramXEnd;
@@ -1449,7 +1447,7 @@ public final class RenderUtils extends MinecraftInstance {
 
     // Astolfo
     public static int Astolfo(int var2, float st, float bright) {
-        double currentColor = Math.ceil(System.currentTimeMillis() + (long) (var2 * 130)) / 6;
+        double currentColor = Math.ceil(System.currentTimeMillis() + (long) (var2 * 130L)) / 6;
         return Color.getHSBColor((double) ((float) ((currentColor %= 360.0) / 360.0)) < 0.5 ? -((float) (currentColor / 360.0)) : (float) (currentColor / 360.0), st, bright).getRGB();
     }
 
@@ -1632,7 +1630,7 @@ public final class RenderUtils extends MinecraftInstance {
         float green = (color >> 8 & 0xFF) / 255.0F;
         float blue = (color & 0xFF) / 255.0F;
 
-        float z = 0;
+        float z;
         if (paramXStart > paramXEnd) {
             z = paramXStart;
             paramXStart = paramXEnd;
@@ -1916,7 +1914,7 @@ public final class RenderUtils extends MinecraftInstance {
         worldrenderer.begin(polygon ? GL_POLYGON : 2, DefaultVertexFormats.POSITION);
         int ii = 0;
         while (ii < n) {
-            worldrenderer.pos(x + cx, (double)y + cy, 0.0D).endVertex();
+            worldrenderer.pos(x + cx, y + cy, 0.0D).endVertex();
             double t = x;
             x = p * x - s * y;
             y = s * t + p * y;
@@ -2183,9 +2181,9 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glGetInteger(2978, viewport);
         final boolean result = GLU.gluProject((float) x, (float) y, (float) z, modelView, projection, viewport,
                 screenCoords);
-        return (double[]) (result
+        return result
                 ? new double[] { screenCoords.get(0), Display.getHeight() - screenCoords.get(1), screenCoords.get(2) }
-                : null);
+                : null;
     }
 
     public static void rectangle(double left, double top, double right, double bottom, int color) {
@@ -2351,7 +2349,7 @@ public final class RenderUtils extends MinecraftInstance {
         float green = (color >> 8 & 0xFF) / 255.0F;
         float blue = (color & 0xFF) / 255.0F;
 
-        float z = 0;
+        float z;
         if (paramXStart > paramXEnd) {
             z = paramXStart;
             paramXStart = paramXEnd;
@@ -2861,10 +2859,10 @@ public final class RenderUtils extends MinecraftInstance {
         final Tessellator tessellator = Tessellator.getInstance();
         final WorldRenderer bufferbuilder = tessellator.getWorldRenderer();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        bufferbuilder.pos(e2, e, (double)RenderUtils.zLevel).color(f2, f3, f4, f).endVertex();
-        bufferbuilder.pos(d, e, (double)RenderUtils.zLevel).color(f2, f3, f4, f).endVertex();
-        bufferbuilder.pos(d, g, (double)RenderUtils.zLevel).color(f6, f7, f8, f5).endVertex();
-        bufferbuilder.pos(e2, g, (double)RenderUtils.zLevel).color(f6, f7, f8, f5).endVertex();
+        bufferbuilder.pos(e2, e, RenderUtils.zLevel).color(f2, f3, f4, f).endVertex();
+        bufferbuilder.pos(d, e, RenderUtils.zLevel).color(f2, f3, f4, f).endVertex();
+        bufferbuilder.pos(d, g, RenderUtils.zLevel).color(f6, f7, f8, f5).endVertex();
+        bufferbuilder.pos(e2, g, RenderUtils.zLevel).color(f6, f7, f8, f5).endVertex();
         tessellator.draw();
         GlStateManager.shadeModel(7424);
         GlStateManager.disableBlend();

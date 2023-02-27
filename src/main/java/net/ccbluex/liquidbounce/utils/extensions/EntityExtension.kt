@@ -45,10 +45,6 @@ fun getNearestPointBB(eye: Vec3, box: AxisAlignedBB): Vec3 {
     return Vec3(origin[0], origin[1], origin[2])
 }
 
-fun Entity.rayTrace(blockReachDistance: Double): MovingObjectPosition {
-    return this.rayTrace(blockReachDistance, 1f)
-}
-
 fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, yaw: Float, pitch: Float): MovingObjectPosition {
     val vec3 = this.getPositionEyes(1f)
     val vec31 = this.getVectorForRotation(pitch, yaw)
@@ -98,20 +94,6 @@ val Entity.renderBoundingBox: AxisAlignedBB
             .offset(-this.posX, -this.posY, -this.posZ)
             .offset(this.renderPos.x, this.renderPos.y, this.renderPos.z)
     }
-
-/**
- * Gets render distance to [entity]
- */
-fun Entity.renderDistanceTo(entity: Entity): Double {
-    val fromPos = this.renderPos
-    val toPos = entity.renderPos
-
-    val x = fromPos.x - toPos.x
-    val y = fromPos.y - toPos.y
-    val z = fromPos.z - toPos.z
-
-    return sqrt(x * x + y * y + z * z)
-}
 
 fun World.getEntitiesInRadius(entity: Entity, radius: Double = 16.0): List<Entity> {
     val box = entity.entityBoundingBox.expand(radius, radius, radius)

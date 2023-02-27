@@ -4,5 +4,5 @@ enum ScriptMenuType {
     Main,
     Local,
     Online,
-    Subscribes;
+    Subscribes
 }

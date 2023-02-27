@@ -53,12 +53,12 @@ final class SimpleFontRenderer implements FontRenderer {
         setupBoldItalicFonts();
     }
 
-    static FontRenderer create(Font font, boolean antiAlias, boolean fractionalMetrics) {
-        return new SimpleFontRenderer(font, antiAlias, fractionalMetrics);
+    static FontRenderer create(Font font, boolean antiAlias) {
+        return new SimpleFontRenderer(font, antiAlias, true);
     }
 
     public static FontRenderer create(Font font) {
-        return create(font, true, true);
+        return create(font, true);
     }
 
     private DynamicTexture setupTexture(Font font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
@@ -261,16 +261,16 @@ final class SimpleFontRenderer implements FontRenderer {
                     drawLine(x,
                             y + charData[character].height / 2.0F,
                             x + charData[character].width - 8.0D,
-                            y + charData[character].height / 2.0F,
-                            1.0F);
+                            y + charData[character].height / 2.0F
+                    );
                 }
 
                 if (underline) {
                     drawLine(x,
                             y + charData[character].height - 2.0D,
                             x + charData[character].width - 8.0D,
-                            y + charData[character].height - 2.0D,
-                            1.0F);
+                            y + charData[character].height - 2.0D
+                    );
                 }
 
                 x += charData[character].width - (character == ' ' ? 8 : 9);
@@ -444,9 +444,9 @@ final class SimpleFontRenderer implements FontRenderer {
         GL11.glVertex2d(x + width, y);
     }
 
-    private static void drawLine(double x, double y, double x1, double y1, float width) {
+    private static void drawLine(double x, double y, double x1, double y1) {
         GL11.glDisable(GL_TEXTURE_2D);
-        GL11.glLineWidth(width);
+        GL11.glLineWidth((float) 1.0);
         GL11.glBegin(1);
         GL11.glVertex2d(x, y);
         GL11.glVertex2d(x1, y1);

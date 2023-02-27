@@ -29,8 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class GuiScriptLoadMenu extends GuiScreen {
-    public MSTimer timer1 = new MSTimer();
-    public MSTimer timer2 = new MSTimer();
+    public final MSTimer timer1 = new MSTimer();
+    public final MSTimer timer2 = new MSTimer();
     public int x = 20;
     public int y = 20;
     public int dragX;

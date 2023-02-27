@@ -24,9 +24,9 @@ import java.util.HashMap;
 
 @ModuleInfo(name = "MurderDetector", category = ModuleCategory.MISC)
 public class MurderDetector extends Module {
-    public static Minecraft mc = Minecraft.getMinecraft();
-    public static int[] itemIds = {288, 396, 412, 398, 75, 50};
-    public static Item[] itemTypes = new Item[]{
+    public static final Minecraft mc = Minecraft.getMinecraft();
+    public static final int[] itemIds = {288, 396, 412, 398, 75, 50};
+    public static final Item[] itemTypes = new Item[]{
             Items.fishing_rod,
             Items.diamond_hoe,
             Items.golden_hoe,
@@ -56,7 +56,7 @@ public class MurderDetector extends Module {
             Items.wooden_shovel
     };
     private static boolean mode; // Are you Killer?
-    public static HashMap<EntityPlayer, KillerData> killerData = new HashMap<>();
+    public static final HashMap<EntityPlayer, KillerData> killerData = new HashMap<>();
 
     @EventTarget
     public static void onUpdate(UpdateEvent ignored) {

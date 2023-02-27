@@ -27,7 +27,7 @@ public class ColorManager {
 
     public static int getRainbow2(int speed, int offset) {
         float hue = (System.currentTimeMillis() + (long)offset) % (long)speed;
-        return Color.getHSBColor((float)(hue /= (float)speed), (float)0.8f, (float)0.8f).getRGB();
+        return Color.getHSBColor(hue / (float) speed, 0.8f, 0.8f).getRGB();
     }
 
     public static int fluxRainbow(int delay, long timeOffset,float sa) {
@@ -45,13 +45,13 @@ public class ColorManager {
 
     public static int getRainbow3(int tick) {
         double d = 0;
-        double delay = Math.ceil((double)((System.currentTimeMillis() + (long)(tick * 2)) / 5L));
-        float rainbow = (double)((float)(d / 360.0)) < 0.5 ? -((float)(delay / 360.0)) : (float)((delay %= 360.0) / 360.0);
+        double delay = Math.ceil((double)((System.currentTimeMillis() + (long)(tick * 2L)) / 5L));
+        float rainbow = (double)((float)(d / 360.0)) < 0.5 ? -((float)(delay / 360.0)) : (float)(delay % 360.0 / 360.0);
         return Color.getHSBColor(rainbow, 0.5f, 1.0f).getRGB();
     }
 
     public static int astolfoRainbow(int delay, int offset, int index) {
-        double rainbowDelay = Math.ceil(System.currentTimeMillis() + (long)(delay * index)) / offset;
+        double rainbowDelay = Math.ceil(System.currentTimeMillis() + (long)((long) delay * index)) / offset;
         return Color.getHSBColor((double)((float)((rainbowDelay %= 360.0) / 360.0)) < 0.5 ? -((float)(rainbowDelay / 360.0)) : (float)(rainbowDelay / 360.0), 0.5F, 1.0F).getRGB();
     }
 

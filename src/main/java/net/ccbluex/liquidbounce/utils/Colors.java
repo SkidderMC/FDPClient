@@ -72,7 +72,7 @@ public class Colors {
 
 
     public static Color astolfoRainbow(int delay,int offset, int index) {
-        double rainbowDelay = Math.ceil(System.currentTimeMillis() + (long)(delay * index)) / offset;
+        double rainbowDelay = Math.ceil(System.currentTimeMillis() + (long)((long) delay * index)) / offset;
         return Color.getHSBColor((double)((float)((rainbowDelay %= 360.0) / 360.0)) < 0.5 ? -((float)(rainbowDelay / 360.0)) : (float)(rainbowDelay / 360.0), 0.5F, 1.0F);
     }
 
@@ -99,6 +99,6 @@ public class Colors {
 
     public static int getRainbow(int speed, int offset) {
         float hue = (System.currentTimeMillis() + (long)offset) % (long)speed;
-        return Color.getHSBColor((float)(hue /= (float)speed), (float)0.4f, (float)1.0f).getRGB();
+        return Color.getHSBColor(hue / (float) speed, 0.4f, 1.0f).getRGB();
     }
 }

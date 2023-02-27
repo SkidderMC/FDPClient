@@ -22,14 +22,13 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.Vec3;
 import net.minecraft.util.*;
-import net.minecraft.world.World;
 
 import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 public class PlayerParticles {
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getMinecraft();
 
     public static float[] getRotations(Entity ent) {
         double x = ent.posX;
@@ -78,8 +77,6 @@ public class PlayerParticles {
         PotionEffect potioneffect = mc.thePlayer.getActivePotionEffect(Potion.jump);
         int f2 = potioneffect != null ? potioneffect.getAmplifier() + 1 : 0;
         return PlayerParticles.mc.thePlayer.getMaxFallHeight() + f2;
-        //  int f = potioneffect != null ? potioneffect.getAmplifier() + 1 : 0;
-        //return mc.thePlayer.getMaxFallHeight() + f;
     }
 
     public static float getDirection() {
@@ -123,8 +120,8 @@ public class PlayerParticles {
         double posX = tpX - mc.thePlayer.posX;
         double posY = tpY - (mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight() + 1.1);
         double posZ = tpZ - mc.thePlayer.posZ;
-        float yaw = (float)(Math.atan2((double)posZ, (double)posX) * 180.0 / 3.141592653589793 - 90.0);
-        float pitch = (float)((- Math.atan2((double)posY, (double)Math.sqrt((double)(posX * posX + posZ * posZ)))) * 180.0 / 3.141592653589793);
+        float yaw = (float)(Math.atan2(posZ, posX) * 180.0 / 3.141592653589793 - 90.0);
+        float pitch = (float)((- Math.atan2(posY, Math.sqrt(posX * posX + posZ * posZ))) * 180.0 / 3.141592653589793);
         double tmpX = mc.thePlayer.posX;
         double tmpY = mc.thePlayer.posY;
         double tmpZ = mc.thePlayer.posZ;
@@ -133,11 +130,11 @@ public class PlayerParticles {
             steps += 1.0;
         }
         for (d = speed; d < PlayerParticles.getDistance(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, tpX, tpY, tpZ); d += speed) {
-            tmpX = mc.thePlayer.posX - Math.sin((double)PlayerParticles.getDirection(yaw)) * d;
-            tmpZ = mc.thePlayer.posZ + Math.cos((double)PlayerParticles.getDirection(yaw)) * d;
-            positions.add((Object)new Vector3f((float)tmpX, (float)(tmpY -= (mc.thePlayer.posY - tpY) / steps), (float)tmpZ));
+            tmpX = mc.thePlayer.posX - Math.sin(PlayerParticles.getDirection(yaw)) * d;
+            tmpZ = mc.thePlayer.posZ + Math.cos(PlayerParticles.getDirection(yaw)) * d;
+            positions.add(new Vector3f((float)tmpX, (float)(tmpY -= (mc.thePlayer.posY - tpY) / steps), (float)tmpZ));
         }
-        positions.add((Object)new Vector3f((float)tpX, (float)tpY, (float)tpZ));
+        positions.add(new Vector3f((float)tpX, (float)tpY, (float)tpZ));
         return positions;
     }
 
@@ -164,13 +161,13 @@ public class PlayerParticles {
         double d0 = x1 - x2;
         double d2 = y1 - y2;
         double d3 = z1 - z2;
-        return MathHelper.sqrt_double((double)(d0 * d0 + d2 * d2 + d3 * d3));
+        return MathHelper.sqrt_double(d0 * d0 + d2 * d2 + d3 * d3);
     }
 
     public static void blockHit(Entity en, boolean value) {
         ItemStack stack = mc.thePlayer.getCurrentEquippedItem();
         if (mc.thePlayer.getCurrentEquippedItem() != null && en != null && value && stack.getItem() instanceof ItemSword && (double)mc.thePlayer.swingProgress > 0.2) {
-            mc.thePlayer.getCurrentEquippedItem().useItemRightClick((World)mc.theWorld, (EntityPlayer)mc.thePlayer);
+            mc.thePlayer.getCurrentEquippedItem().useItemRightClick(mc.theWorld, mc.thePlayer);
         }
     }
 
@@ -195,13 +192,12 @@ public class PlayerParticles {
         int firstSlot = 0;
         int bestWeapon = -1;
         int j = 1;
-        for (int i = 0; i < 9; i = (int)((byte)(i + 1))) {
+        for (int i = 0; i < 9; i = (byte)(i + 1)) {
             mc.thePlayer.inventory.currentItem = i;
             ItemStack itemStack = mc.thePlayer.getHeldItem();
             if (itemStack == null) continue;
-            int itemAtkDamage = (int)PlayerParticles.getItemAtkDamage(itemStack);
             //   if ((itemAtkDamage = (int)((float)itemAtkDamage + EnchantmentHelper.getEnchantedItem((ItemStack)itemStack, (EnumCreatureAttribute)EnumCreatureAttribute.UNDEFINED))) <= j) continue;
-            j = itemAtkDamage;
+            j = (int)PlayerParticles.getItemAtkDamage(itemStack);
             bestWeapon = i;
         }
         if (bestWeapon != -1) {
@@ -214,7 +210,7 @@ public class PlayerParticles {
         for (int i1 = 9; i1 < 37; ++i1) {
             ItemStack itemstack = PlayerParticles.mc.thePlayer.inventoryContainer.getSlot(i1).getStack();
             if (itemstack == null || itemstack.getItem() != i) continue;
-            PlayerParticles.mc.playerController.windowClick(0, i1, 0, 1, (EntityPlayer)PlayerParticles.mc.thePlayer);
+            PlayerParticles.mc.playerController.windowClick(0, i1, 0, 1, PlayerParticles.mc.thePlayer);
             break;
         }
     }
@@ -260,7 +256,6 @@ public class PlayerParticles {
         double distance = 0.0;
         double i2 = mc.thePlayer.posY;
         while (i2 > 0.0) {
-            if (i2 < 0.0) break;
             Block block = BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, i2, mc.thePlayer.posZ));
             if (block.getMaterial() != Material.air && block.isCollidable() && (block.isFullBlock() || block instanceof BlockSlab || block instanceof BlockBarrier || block instanceof BlockStairs || block instanceof BlockGlass || block instanceof BlockStainedGlass)) {
                 if (block instanceof BlockSlab) {

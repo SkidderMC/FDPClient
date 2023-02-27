@@ -21,13 +21,13 @@ import java.awt.*;
 @ElementInfo(name = "Indicators")
 public class Indicators extends Element {
 
-    public static IntegerValue rRed = new IntegerValue("Red", 0, 0, 255);
-    public static IntegerValue rGreen = new IntegerValue("Green", 0, 0, 255);
-    public static IntegerValue rBlue = new IntegerValue("Blue", 0, 0, 255);
+    public static final IntegerValue rRed = new IntegerValue("Red", 0, 0, 255);
+    public static final IntegerValue rGreen = new IntegerValue("Green", 0, 0, 255);
+    public static final IntegerValue rBlue = new IntegerValue("Blue", 0, 0, 255);
 
 
-    public IntegerValue indx = new IntegerValue("noting",120,0,1000);
-    public IntegerValue indy = new IntegerValue("noting2",80,0,1000);
+    public final IntegerValue indx = new IntegerValue("noting",120,0,1000);
+    public final IntegerValue indy = new IntegerValue("noting2",80,0,1000);
 
     public static Color mainColor() {
         return new Color(rRed.get(), rGreen.get(), rBlue.get());
@@ -41,11 +41,12 @@ public class Indicators extends Element {
 
     private double healthBarWidth;
 
-    public int x2 = indx.get(), y3 = indy.get();
+    public final int x2 = indx.get();
+    public final int y3 = indy.get();
 
-    TimerUtil timerHelper = new TimerUtil();
+    final TimerUtil timerHelper = new TimerUtil();
 
-    ScaledResolution sr = new ScaledResolution(mc);
+    final ScaledResolution sr = new ScaledResolution(mc);
     final float scaledWidth = sr.getScaledWidth();
     final float scaledHeight = sr.getScaledHeight();
 

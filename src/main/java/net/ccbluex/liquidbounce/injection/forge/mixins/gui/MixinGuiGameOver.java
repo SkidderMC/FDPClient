@@ -26,7 +26,7 @@ public abstract class MixinGuiGameOver extends MixinGuiScreen implements GuiYesN
                 if (this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled()) {
                     this.mc.displayGuiScreen(new GuiMainMenu());
                 } else {
-                    GuiYesNo lvt_2_1_ = new GuiYesNo(this, I18n.format("deathScreen.quit.confirm", new Object[0]), "", I18n.format("deathScreen.titleScreen", new Object[0]), I18n.format("deathScreen.respawn", new Object[0]), 0);
+                    GuiYesNo lvt_2_1_ = new GuiYesNo(this, I18n.format("deathScreen.quit.confirm"), "", I18n.format("deathScreen.titleScreen"), I18n.format("deathScreen.respawn"), 0);
                     this.mc.displayGuiScreen(lvt_2_1_);
                     lvt_2_1_.setButtonDelay(20);
                 }

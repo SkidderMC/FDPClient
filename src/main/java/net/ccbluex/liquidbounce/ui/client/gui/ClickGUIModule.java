@@ -32,7 +32,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    public ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Slight", "Bjur", "Null", "Slowly", "Black", "White"}, "Black") {
+    public final ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Slight", "Bjur", "Null", "Slowly", "Black", "White"}, "Black") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -56,11 +56,11 @@ public class ClickGUIModule extends Module {
     public static final IntegerValue colorGreenValue = (IntegerValue) new IntegerValue("G", 160, 0, 255).displayable(() -> !colorRainbow.get());
     public static final IntegerValue colorBlueValue = (IntegerValue) new IntegerValue("B", 255, 0, 255).displayable(() -> !colorRainbow.get());
     public static final BoolValue fastRenderValue = new BoolValue("FastRender", false);
-    public final BoolValue getClosePrevious = (BoolValue) new BoolValue("ClosePrevious",false);
+    public final BoolValue getClosePrevious = new BoolValue("ClosePrevious",false);
 
 
     public static Color generateColor() {
-        return colorRainbow.get() ? ColorUtils.INSTANCE.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
+        return colorRainbow.get() ? ColorUtils.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
     }
     @Override
     public void onEnable() {

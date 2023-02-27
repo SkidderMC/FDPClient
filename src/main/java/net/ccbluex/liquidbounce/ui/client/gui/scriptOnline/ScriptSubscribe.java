@@ -7,8 +7,8 @@ import java.io.File;
 import java.util.Objects;
 
 public class ScriptSubscribe {
-    public String url;
-    public String name;
+    public final String url;
+    public final String name;
     public boolean state = true;
 
     public ScriptSubscribe(String url, String name) {

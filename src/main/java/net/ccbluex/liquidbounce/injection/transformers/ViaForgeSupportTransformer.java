@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.TypeInsnNode;
 
 public class ViaForgeSupportTransformer implements IClassTransformer {
 
-    private byte[] target = null;
+    private final byte[] target = null;
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {

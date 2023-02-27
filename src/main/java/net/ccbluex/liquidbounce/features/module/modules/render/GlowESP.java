@@ -92,7 +92,7 @@ public class GlowESP extends Module {
         framebuffer.unbindFramebuffer();
         mc.getFramebuffer().bindFramebuffer(true);
         GlStateManager.disableLighting();
-    };
+    }
 
     @EventTarget
     public void onrender2D(final Render2DEvent event) {
@@ -141,7 +141,7 @@ public class GlowESP extends Module {
 
         }
 
-    };
+    }
 
 
     public void setupGlowUniforms(float dir1, float dir2) {
@@ -170,7 +170,7 @@ public class GlowESP extends Module {
     public void setupOutlineUniforms(float dir1, float dir2) {
         Color color = getColor();
         outlineShader.setUniformi("texture", 0);
-        outlineShader.setUniformf("radius", radius.get().floatValue() / 1.5f);
+        outlineShader.setUniformf("radius", radius.get() / 1.5f);
         outlineShader.setUniformf("texelSize", 1.0f / mc.displayWidth, 1.0f / mc.displayHeight);
         outlineShader.setUniformf("direction", dir1, dir2);
         outlineShader.setUniformf("color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
@@ -185,7 +185,7 @@ public class GlowESP extends Module {
     }
 
     private Color getColor() {
-        final HUD hudMod = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+        final HUD hudMod = LiquidBounce.moduleManager.getModule(HUD.class);
         Color[] colors = hudMod.getClientColors();
         if (hudMod.getMovingcolors().get()) {
             return colors[0];

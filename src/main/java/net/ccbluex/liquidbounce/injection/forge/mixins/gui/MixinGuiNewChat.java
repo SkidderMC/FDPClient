@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.font.CFontRenderer;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
@@ -192,7 +193,7 @@ public abstract class MixinGuiNewChat {
                                 GlStateManager.enableBlend();
                                 if(hud.getChatRectValue().get()) {
                                     if (canFont)
-                                        FontLoaders.C16.DisplayFont(chatline.getChatComponent().getFormattedText(), (float) i2, (float) (j2 - 8), new Color(255, 255, 255).getRGB(), FontLoaders.C16);
+                                        CFontRenderer.DisplayFont(chatline.getChatComponent().getFormattedText(), (float) i2, (float) (j2 - 8), new Color(255, 255, 255).getRGB(), FontLoaders.C16);
                                     else {
                                         this.mc.fontRendererObj.drawString(chatline.getChatComponent().getFormattedText(), (float) i2, (float) (j2 - 8), 16777215 + (l1 << 24), false);
                                     }

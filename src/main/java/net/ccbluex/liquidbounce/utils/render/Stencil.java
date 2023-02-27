@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Stencil {
 
-    static Minecraft mc = Minecraft.getMinecraft();
+    static final Minecraft mc = Minecraft.getMinecraft();
 
     public static void dispose() {
         glDisable(GL_STENCIL_TEST);

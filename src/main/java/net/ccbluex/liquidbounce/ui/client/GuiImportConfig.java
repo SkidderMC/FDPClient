@@ -31,9 +31,9 @@ public class GuiImportConfig extends GuiScreen
     public GuiButton loginButton;
     public GuiButton freeButton;
     public static boolean logined;
-    public static boolean Passed;
+    public static final boolean Passed;
     public static String message;
-    public double[] aaa={0,0,0,0,0,0};
+    public final double[] aaa={0,0,0,0,0,0};
     public GuiImportConfig() {
         super();
         message = "Waitting...";
@@ -81,7 +81,7 @@ public class GuiImportConfig extends GuiScreen
             case 3:
                 try {
                     copyText("");
-                }catch (Exception E){
+                }catch (Exception ignored){
 
                 }
                 break;
@@ -146,7 +146,6 @@ public class GuiImportConfig extends GuiScreen
         if (var1 == '\r') {
             this.actionPerformed(this.buttonList.get(0));
         }
-        if (var1 == '\u001b') {}
         username.textboxKeyTyped(var1, var2);
     }
 

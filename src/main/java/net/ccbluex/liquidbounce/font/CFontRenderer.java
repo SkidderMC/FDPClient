@@ -21,9 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CFontRenderer extends CFont {
-    protected CFont.CharData[] boldChars = new CFont.CharData[256];
-    protected CFont.CharData[] italicChars = new CFont.CharData[256];
-    protected CFont.CharData[] boldItalicChars = new CFont.CharData[256];
+    protected final CFont.CharData[] boldChars = new CFont.CharData[256];
+    protected final CFont.CharData[] italicChars = new CFont.CharData[256];
+    protected final CFont.CharData[] boldItalicChars = new CFont.CharData[256];
     private final int[] colorCode = new int[32];
     private final String colorcodeIdentifiers = "0123456789abcdefklmnor";
     protected DynamicTexture texBold;
@@ -43,7 +43,7 @@ public class CFontRenderer extends CFont {
     public float drawString(String text, float x, float y, int color) {
         GlStateManager.color(1.0f, 1.0f, 1.0f);
         RenderUtils.glColor(color);
-        return drawString(text, (double) x, (double) y, color, false);
+        return drawString(text, x, (double) y, color, false);
     }
 
     public float drawCenteredString(String text, double x, double y, int color) {
@@ -52,7 +52,7 @@ public class CFontRenderer extends CFont {
     }
 
     public float drawCenteredStringWithShadow(String text, float x, float y, int color) {
-        return drawStringWithShadow(text, (double) (x - ((float) (getStringWidth(text) / 2))), (double) y, color);
+        return drawStringWithShadow(text, x - ((float) (getStringWidth(text) / 2)), y, color);
     }
 
     public float drawCenteredStringWithShadow(String text, double x, double y, int color) {
@@ -60,11 +60,7 @@ public class CFontRenderer extends CFont {
     }
     public static boolean isChinese(char c) {
         String s = String.valueOf(c);
-        if(!"1234567890abcdefghijklmnopqrstuvwxyz!<>@#$%^&*()-_=+[]{}|\\/'\",.~`".contains(s.toLowerCase()))
-            return true;
-        else{
-            return false;
-        }
+        return "1234567890abcdefghijklmnopqrstuvwxyz!<>@#$%^&*()-_=+[]{}|\\/'\",.~`".contains(s.toLowerCase());
     }
 
     public static boolean isContainChinese(String str) {
@@ -95,7 +91,7 @@ public class CFontRenderer extends CFont {
             String s = String.valueOf(str.toCharArray()[iF]);
             if (s.contains("§") && iF + 1 <= str.length()) {
                 iF++;
-            } else if (!isChinese(s.charAt(0))) {
+            } else if (isChinese(s.charAt(0))) {
                 x += (float)font.getStringWidth(s);
             } else {
                 x += (float)Fonts.font35.getStringWidth(s);
@@ -114,7 +110,7 @@ public class CFontRenderer extends CFont {
             String s = String.valueOf(str.toCharArray()[iF]);
             if (s.contains("§") && iF + 1 <= str.length()) {
                 iF++;
-            } else if (!isChinese(s.charAt(0))) {
+            } else if (isChinese(s.charAt(0))) {
                 x += (float)font.getStringWidth(s);
             } else {
                 x += (float)Fonts.font35.getStringWidth(s);
@@ -123,17 +119,17 @@ public class CFontRenderer extends CFont {
         return x+5;
     }
 
-    public static float DisplayFont(CFontRenderer font,String str, float x, float y, int color) {
-        return DisplayFont(str,x,y,color,font);
+    public static void DisplayFont(CFontRenderer font, String str, float x, float y, int color) {
+        DisplayFont(str, x, y, color, font);
     }
 
-    public static float DisplayFonts(CFontRenderer font,String str, float x, float y, int color) {
-        return DisplayFont(str,x,y,color,font);
+    public static void DisplayFonts(CFontRenderer font, String str, float x, float y, int color) {
+        DisplayFont(str, x, y, color, font);
     }
 
     public float DisplayFont2(CFontRenderer font,String str, float x, float y, int color,boolean shadow) {
         if(shadow)
-            return DisplayFont(str,x,y,color,shadow,font);
+            return DisplayFont(str,x,y,color, true,font);
         else{
             return DisplayFont(str,x,y,color,font);
         }
@@ -147,7 +143,7 @@ public class CFontRenderer extends CFont {
             if (s.contains("§") && iF + 1 <= str.length()) {
                 color = getColor(String.valueOf(str.toCharArray()[iF + 1]));
                 iF++;
-            } else if (!isChinese(s.charAt(0))) {
+            } else if (isChinese(s.charAt(0))) {
                 font.drawString(s, x+0.5f, y+1.5f, new Color(0,0,0,100).getRGB());
                 font.drawString(s, x-0.5f, y+0.5f, color);
                 x += (float)font.getStringWidth(s);
@@ -169,7 +165,7 @@ public class CFontRenderer extends CFont {
             if (s.contains("§") && iF + 1 <= str.length()) {
                 color = getColor(String.valueOf(str.toCharArray()[iF + 1]));
                 iF++;
-            } else if (!isChinese(s.charAt(0))) {
+            } else if (isChinese(s.charAt(0))) {
                 font.drawString(s, x-0.5f, y+1, color);
                 x += (float)font.getStringWidth(s);
             } else{
@@ -188,7 +184,7 @@ public class CFontRenderer extends CFont {
             if (s.contains("§") && iF + 1 <= str.length()) {
                 color = getColor(String.valueOf(str.toCharArray()[iF + 1]));
                 iF++;
-            } else if (!isChinese(s.charAt(0))) {
+            } else if (isChinese(s.charAt(0))) {
                 font.drawString(s, x-0.5f, y+1, color);
                 x += (float)font.getStringWidth(s);
             } else{
@@ -288,7 +284,7 @@ public class CFontRenderer extends CFont {
     /* JADX WARN: Type inference failed for: r0v55, types: [double] */
 
     public float drawString(String text, float x, float y, int color, boolean shadow) {
-        return drawString(text,Double.valueOf(x),Double.valueOf(y),color,shadow);
+        return drawString(text, (double) x, (double) y,color,shadow);
     }
     public float drawString(String text, double x, double y, int color, boolean shadow) {
         GlStateManager.enableBlend();
@@ -314,92 +310,90 @@ public class CFontRenderer extends CFont {
         boolean underline = false;
         char c = (char) (x2 * 2.0d);
         double y2 = (y - 3.0d) * 2.0d;
-        if (1 != 0) {
-            GL11.glPushMatrix();
-            GlStateManager.scale(0.5d, 0.5d, 0.5d);
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(770, 771);
-            GlStateManager.color(((float) ((color >> 16) & 255)) / 255.0f, ((float) ((color >> 8) & 255)) / 255.0f, ((float) (color & 255)) / 255.0f, alpha);
-            int size = text.length();
-            GlStateManager.enableTexture2D();
-            GlStateManager.bindTexture(this.tex.getGlTextureId());
-            GL11.glBindTexture(3553, this.tex.getGlTextureId());
-            int i = 0;
-            while (i < size) {
-                char character = text.charAt(i);
-                if (character == '\u00a7' && i < size) {
-                    int colorIndex = 21;
-                    try {
-                        colorIndex = "0123456789abcdefklmnor".indexOf(text.charAt(i + 1));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        GL11.glPushMatrix();
+        GlStateManager.scale(0.5d, 0.5d, 0.5d);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(770, 771);
+        GlStateManager.color(((float) ((color >> 16) & 255)) / 255.0f, ((float) ((color >> 8) & 255)) / 255.0f, ((float) (color & 255)) / 255.0f, alpha);
+        int size = text.length();
+        GlStateManager.enableTexture2D();
+        GlStateManager.bindTexture(this.tex.getGlTextureId());
+        GL11.glBindTexture(3553, this.tex.getGlTextureId());
+        int i = 0;
+        while (i < size) {
+            char character = text.charAt(i);
+            if (character == '\u00a7') {
+                int colorIndex = 21;
+                try {
+                    colorIndex = "0123456789abcdefklmnor".indexOf(text.charAt(i + 1));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (colorIndex < 16) {
+                    bold = false;
+                    italic = false;
+                    underline = false;
+                    strikethrough = false;
+                    GlStateManager.bindTexture(this.tex.getGlTextureId());
+                    currentData = this.charData;
+                    if (colorIndex < 0) {
+                        colorIndex = 15;
                     }
-                    if (colorIndex < 16) {
+                    if (shadow) {
+                        colorIndex += 16;
+                    }
+                    int colorcode = this.colorCode[colorIndex];
+                    GlStateManager.color(((float) ((colorcode >> 16) & 255)) / 255.0f, ((float) ((colorcode >> 8) & 255)) / 255.0f, ((float) (colorcode & 255)) / 255.0f, alpha);
+                } else if (colorIndex != 16) {
+                    if (colorIndex == 17) {
+                        bold = true;
+                        if (italic) {
+                            GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
+                            currentData = this.boldItalicChars;
+                        } else {
+                            GlStateManager.bindTexture(this.texBold.getGlTextureId());
+                            currentData = this.boldChars;
+                        }
+                    } else if (colorIndex == 18) {
+                        strikethrough = true;
+                    } else if (colorIndex == 19) {
+                        underline = true;
+                    } else if (colorIndex == 20) {
+                        italic = true;
+                        if (bold) {
+                            GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
+                            currentData = this.boldItalicChars;
+                        } else {
+                            GlStateManager.bindTexture(this.texItalic.getGlTextureId());
+                            currentData = this.italicChars;
+                        }
+                    } else {
                         bold = false;
                         italic = false;
                         underline = false;
                         strikethrough = false;
+                        GlStateManager.color(((float) ((color >> 16) & 255)) / 255.0f, ((float) ((color >> 8) & 255)) / 255.0f, ((float) (color & 255)) / 255.0f, alpha);
                         GlStateManager.bindTexture(this.tex.getGlTextureId());
                         currentData = this.charData;
-                        if (colorIndex < 0 || colorIndex > 15) {
-                            colorIndex = 15;
-                        }
-                        if (shadow) {
-                            colorIndex += 16;
-                        }
-                        int colorcode = this.colorCode[colorIndex];
-                        GlStateManager.color(((float) ((colorcode >> 16) & 255)) / 255.0f, ((float) ((colorcode >> 8) & 255)) / 255.0f, ((float) (colorcode & 255)) / 255.0f, alpha);
-                    } else if (colorIndex != 16) {
-                        if (colorIndex == 17) {
-                            bold = true;
-                            if (italic) {
-                                GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
-                                currentData = this.boldItalicChars;
-                            } else {
-                                GlStateManager.bindTexture(this.texBold.getGlTextureId());
-                                currentData = this.boldChars;
-                            }
-                        } else if (colorIndex == 18) {
-                            strikethrough = true;
-                        } else if (colorIndex == 19) {
-                            underline = true;
-                        } else if (colorIndex == 20) {
-                            italic = true;
-                            if (bold) {
-                                GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
-                                currentData = this.boldItalicChars;
-                            } else {
-                                GlStateManager.bindTexture(this.texItalic.getGlTextureId());
-                                currentData = this.italicChars;
-                            }
-                        } else if (colorIndex == 21) {
-                            bold = false;
-                            italic = false;
-                            underline = false;
-                            strikethrough = false;
-                            GlStateManager.color(((float) ((color >> 16) & 255)) / 255.0f, ((float) ((color >> 8) & 255)) / 255.0f, ((float) (color & 255)) / 255.0f, alpha);
-                            GlStateManager.bindTexture(this.tex.getGlTextureId());
-                            currentData = this.charData;
-                        }
                     }
-                    i++;
-                } else if (character < currentData.length && character >= 0) {
-                    GL11.glBegin(4);
-                    drawChar(currentData, character, (float) c, (float) y2);
-                    GL11.glEnd();
-                    if (strikethrough) {
-                        drawLine(c, y2 + ((double) (currentData[character].height / 2)), (c + ((double) currentData[character].width)) - 8.0d, y2 + ((double) (currentData[character].height / 2)), 1.0f);
-                    }
-                    if (underline) {
-                        drawLine(c, (y2 + ((double) currentData[character].height)) - 2.0d, (c + ((double) currentData[character].width)) - 8.0d, (y2 + ((double) currentData[character].height)) - 2.0d, 1.0f);
-                    }
-                    c += (double) ((currentData[character].width - 8) + this.charOffset);
                 }
                 i++;
+            } else if (character < currentData.length) {
+                GL11.glBegin(4);
+                drawChar(currentData, character, (float) c, (float) y2);
+                GL11.glEnd();
+                if (strikethrough) {
+                    drawLine(c, y2 + ((double) (currentData[character].height / 2)), (c + ((double) currentData[character].width)) - 8.0d, y2 + ((double) (currentData[character].height / 2)));
+                }
+                if (underline) {
+                    drawLine(c, (y2 + ((double) currentData[character].height)) - 2.0d, (c + ((double) currentData[character].width)) - 8.0d, (y2 + ((double) currentData[character].height)) - 2.0d);
+                }
+                c += (double) ((currentData[character].width - 8) + this.charOffset);
             }
-            GL11.glHint(3155, 4352);
-            GL11.glPopMatrix();
+            i++;
         }
+        GL11.glHint(3155, 4352);
+        GL11.glPopMatrix();
         return ((float) c) / 2.0f;
     }
     public int drawStringi(String text, double x, double y, int color, boolean shadow) {
@@ -426,92 +420,90 @@ public class CFontRenderer extends CFont {
         boolean underline = false;
         char c = (char) (x2 * 2.0d);
         double y2 = (y - 3.0d) * 2.0d;
-        if (1 != 0) {
-            GL11.glPushMatrix();
-            GlStateManager.scale(0.5d, 0.5d, 0.5d);
-            GlStateManager.enableBlend();
-            GlStateManager.blendFunc(770, 771);
-            GlStateManager.color(((float) ((color >> 16) & 255)) / 255.0f, ((float) ((color >> 8) & 255)) / 255.0f, ((float) (color & 255)) / 255.0f, alpha);
-            int size = text.length();
-            GlStateManager.enableTexture2D();
-            GlStateManager.bindTexture(this.tex.getGlTextureId());
-            GL11.glBindTexture(3553, this.tex.getGlTextureId());
-            int i = 0;
-            while (i < size) {
-                char character = text.charAt(i);
-                if (character == '\u00a7' && i < size) {
-                    int colorIndex = 21;
-                    try {
-                        colorIndex = "0123456789abcdefklmnor".indexOf(text.charAt(i + 1));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        GL11.glPushMatrix();
+        GlStateManager.scale(0.5d, 0.5d, 0.5d);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(770, 771);
+        GlStateManager.color(((float) ((color >> 16) & 255)) / 255.0f, ((float) ((color >> 8) & 255)) / 255.0f, ((float) (color & 255)) / 255.0f, alpha);
+        int size = text.length();
+        GlStateManager.enableTexture2D();
+        GlStateManager.bindTexture(this.tex.getGlTextureId());
+        GL11.glBindTexture(3553, this.tex.getGlTextureId());
+        int i = 0;
+        while (i < size) {
+            char character = text.charAt(i);
+            if (character == '\u00a7') {
+                int colorIndex = 21;
+                try {
+                    colorIndex = "0123456789abcdefklmnor".indexOf(text.charAt(i + 1));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (colorIndex < 16) {
+                    bold = false;
+                    italic = false;
+                    underline = false;
+                    strikethrough = false;
+                    GlStateManager.bindTexture(this.tex.getGlTextureId());
+                    currentData = this.charData;
+                    if (colorIndex < 0) {
+                        colorIndex = 15;
                     }
-                    if (colorIndex < 16) {
+                    if (shadow) {
+                        colorIndex += 16;
+                    }
+                    int colorcode = this.colorCode[colorIndex];
+                    GlStateManager.color(((float) ((colorcode >> 16) & 255)) / 255.0f, ((float) ((colorcode >> 8) & 255)) / 255.0f, ((float) (colorcode & 255)) / 255.0f, alpha);
+                } else if (colorIndex != 16) {
+                    if (colorIndex == 17) {
+                        bold = true;
+                        if (italic) {
+                            GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
+                            currentData = this.boldItalicChars;
+                        } else {
+                            GlStateManager.bindTexture(this.texBold.getGlTextureId());
+                            currentData = this.boldChars;
+                        }
+                    } else if (colorIndex == 18) {
+                        strikethrough = true;
+                    } else if (colorIndex == 19) {
+                        underline = true;
+                    } else if (colorIndex == 20) {
+                        italic = true;
+                        if (bold) {
+                            GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
+                            currentData = this.boldItalicChars;
+                        } else {
+                            GlStateManager.bindTexture(this.texItalic.getGlTextureId());
+                            currentData = this.italicChars;
+                        }
+                    } else {
                         bold = false;
                         italic = false;
                         underline = false;
                         strikethrough = false;
+                        GlStateManager.color(((float) ((color >> 16) & 255)) / 255.0f, ((float) ((color >> 8) & 255)) / 255.0f, ((float) (color & 255)) / 255.0f, alpha);
                         GlStateManager.bindTexture(this.tex.getGlTextureId());
                         currentData = this.charData;
-                        if (colorIndex < 0 || colorIndex > 15) {
-                            colorIndex = 15;
-                        }
-                        if (shadow) {
-                            colorIndex += 16;
-                        }
-                        int colorcode = this.colorCode[colorIndex];
-                        GlStateManager.color(((float) ((colorcode >> 16) & 255)) / 255.0f, ((float) ((colorcode >> 8) & 255)) / 255.0f, ((float) (colorcode & 255)) / 255.0f, alpha);
-                    } else if (colorIndex != 16) {
-                        if (colorIndex == 17) {
-                            bold = true;
-                            if (italic) {
-                                GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
-                                currentData = this.boldItalicChars;
-                            } else {
-                                GlStateManager.bindTexture(this.texBold.getGlTextureId());
-                                currentData = this.boldChars;
-                            }
-                        } else if (colorIndex == 18) {
-                            strikethrough = true;
-                        } else if (colorIndex == 19) {
-                            underline = true;
-                        } else if (colorIndex == 20) {
-                            italic = true;
-                            if (bold) {
-                                GlStateManager.bindTexture(this.texItalicBold.getGlTextureId());
-                                currentData = this.boldItalicChars;
-                            } else {
-                                GlStateManager.bindTexture(this.texItalic.getGlTextureId());
-                                currentData = this.italicChars;
-                            }
-                        } else if (colorIndex == 21) {
-                            bold = false;
-                            italic = false;
-                            underline = false;
-                            strikethrough = false;
-                            GlStateManager.color(((float) ((color >> 16) & 255)) / 255.0f, ((float) ((color >> 8) & 255)) / 255.0f, ((float) (color & 255)) / 255.0f, alpha);
-                            GlStateManager.bindTexture(this.tex.getGlTextureId());
-                            currentData = this.charData;
-                        }
                     }
-                    i++;
-                } else if (character < currentData.length && character >= 0) {
-                    GL11.glBegin(4);
-                    drawChar(currentData, character, (float) c, (float) y2);
-                    GL11.glEnd();
-                    if (strikethrough) {
-                        drawLine(c, y2 + ((double) (currentData[character].height / 2)), (c + ((double) currentData[character].width)) - 8.0d, y2 + ((double) (currentData[character].height / 2)), 1.0f);
-                    }
-                    if (underline) {
-                        drawLine(c, (y2 + ((double) currentData[character].height)) - 2.0d, (c + ((double) currentData[character].width)) - 8.0d, (y2 + ((double) currentData[character].height)) - 2.0d, 1.0f);
-                    }
-                    c += (double) ((currentData[character].width - 8) + this.charOffset);
                 }
                 i++;
+            } else if (character < currentData.length) {
+                GL11.glBegin(4);
+                drawChar(currentData, character, (float) c, (float) y2);
+                GL11.glEnd();
+                if (strikethrough) {
+                    drawLine(c, y2 + ((double) (currentData[character].height / 2)), (c + ((double) currentData[character].width)) - 8.0d, y2 + ((double) (currentData[character].height / 2)));
+                }
+                if (underline) {
+                    drawLine(c, (y2 + ((double) currentData[character].height)) - 2.0d, (c + ((double) currentData[character].width)) - 8.0d, (y2 + ((double) currentData[character].height)) - 2.0d);
+                }
+                c += (double) ((currentData[character].width - 8) + this.charOffset);
             }
-            GL11.glHint(3155, 4352);
-            GL11.glPopMatrix();
+            i++;
         }
+        GL11.glHint(3155, 4352);
+        GL11.glPopMatrix();
         return ((int) c) / 2;
     }
 
@@ -528,24 +520,12 @@ public class CFontRenderer extends CFont {
         int i = 0;
         while (i < size) {
             char character = text.charAt(i);
-            if (character == '\u00a7' && i < size) {
+            if (character == '\u00a7') {
                 int colorIndex = "0123456789abcdefklmnor".indexOf(character);
-                if (colorIndex < 16) {
-                    bold = false;
-                    italic = false;
-                } else if (colorIndex == 17) {
-                    bold = true;
-                    currentData = italic ? this.boldItalicChars : this.boldChars;
-                } else if (colorIndex == 20) {
-                    italic = true;
-                    currentData = bold ? this.boldItalicChars : this.italicChars;
-                } else if (colorIndex == 21) {
-                    bold = false;
-                    italic = false;
-                    currentData = this.charData;
-                }
+                bold = false;
+                italic = false;
                 i++;
-            } else if (character < currentData.length && character >= 0) {
+            } else if (character < currentData.length) {
                 width += (currentData[character].width - 8) + this.charOffset;
             }
             i++;
@@ -572,13 +552,13 @@ public class CFontRenderer extends CFont {
     }
 
     private void setupBoldItalicIDs() {
-        this.texBold = setupTexture(this.font.deriveFont(1), this.antiAlias, this.fractionalMetrics, this.boldChars);
-        this.texItalic = setupTexture(this.font.deriveFont(2), this.antiAlias, this.fractionalMetrics, this.italicChars);
+        this.texBold = setupTexture(this.font.deriveFont(Font.BOLD), this.antiAlias, this.fractionalMetrics, this.boldChars);
+        this.texItalic = setupTexture(this.font.deriveFont(Font.ITALIC), this.antiAlias, this.fractionalMetrics, this.italicChars);
     }
 
-    private void drawLine(double x, double y, double x1, double y1, float width) {
+    private void drawLine(double x, double y, double x1, double y1) {
         GL11.glDisable(3553);
-        GL11.glLineWidth(width);
+        GL11.glLineWidth((float) 1.0);
         GL11.glBegin(1);
         GL11.glVertex2d(x, y);
         GL11.glVertex2d(x1, y1);
@@ -598,20 +578,18 @@ public class CFontRenderer extends CFont {
                         c = word.toCharArray()[i + 1];
                     }
                 }
-                if (((double) getStringWidth(String.valueOf(currentWord) + word + " ")) < width) {
-                    currentWord = String.valueOf(currentWord) + word + " ";
+                if (((double) getStringWidth(currentWord + word + " ")) < width) {
+                    currentWord = currentWord + word + " ";
                 } else {
                     finalWords.add(currentWord);
-                    currentWord = String.valueOf('\u00a7' + c) + word + " ";
+                    currentWord = '\u00a7' + c + word + " ";
                 }
             }
             if (currentWord.length() > 0) {
                 if (((double) getStringWidth(currentWord)) < width) {
-                    finalWords.add(String.valueOf('\u00a7' + c) + currentWord + " ");
+                    finalWords.add('\u00a7' + c + currentWord + " ");
                 } else {
-                    for (String s : formatString(currentWord, width)) {
-                        finalWords.add(s);
-                    }
+                    finalWords.addAll(formatString(currentWord, width));
                 }
             }
         } else {
@@ -630,11 +608,11 @@ public class CFontRenderer extends CFont {
             if (c == '\u00a7' && i < chars.length - 1) {
                 lastColorCode = chars[i + 1];
             }
-            if (((double) getStringWidth(String.valueOf(currentWord) + c)) < width) {
-                currentWord = String.valueOf(currentWord) + c;
+            if (((double) getStringWidth(currentWord + c)) < width) {
+                currentWord = currentWord + c;
             } else {
                 finalWords.add(currentWord);
-                currentWord = String.valueOf(167 + lastColorCode) + String.valueOf(c);
+                currentWord = String.valueOf(167 + lastColorCode) + c;
             }
         }
         if (currentWord.length() > 0) {
@@ -648,7 +626,7 @@ public class CFontRenderer extends CFont {
             int noClue = ((index >> 3) & 1) * 85;
             int red = (((index >> 2) & 1) * Opcodes.TABLESWITCH) + noClue;
             int green = (((index >> 1) & 1) * Opcodes.TABLESWITCH) + noClue;
-            int blue = (((index >> 0) & 1) * Opcodes.TABLESWITCH) + noClue;
+            int blue = (((index) & 1) * Opcodes.TABLESWITCH) + noClue;
             if (index == 6) {
                 red += 85;
             }

@@ -22,12 +22,6 @@ class BoatFly : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Motion", "Clip", "Velocity"), "Motion")
     private val speedValue = FloatValue("Speed", 0.3f, 0.0f, 1.0f)
 
-    override fun onEnable() {
-    }
-
-    override fun onDisable() {
-    }
-
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(!mc.thePlayer.isRiding) return

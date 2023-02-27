@@ -34,7 +34,6 @@ class PotionSpoof : Module() {
     private val poisonValue = BoolValue("Poison", false)
     private val saturationValue = BoolValue("Saturation", false)
     private val waterBreathingValue = BoolValue("WaterBreathing", false)
-    override fun onEnable() {}
     override fun onDisable() {
         if (mc.thePlayer != null) {
             mc.thePlayer.removePotionEffectClient(Potion.moveSpeed.id)

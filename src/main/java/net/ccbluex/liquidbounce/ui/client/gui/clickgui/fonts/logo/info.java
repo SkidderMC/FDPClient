@@ -20,15 +20,10 @@ public class info {
         return sideGui;
     }
     public static info getInstance() {
-        try {
-            if (INSTANCE == null) INSTANCE = new info();
-            return INSTANCE;
-        } catch (Throwable t) {
-            //    ClientUtils.getLogger().warn(t);
-            throw t;
-        }
+        if (INSTANCE == null) INSTANCE = new info();
+        return INSTANCE;
     }
-    public static FontManager fontManager = SimpleFontManager.create();
+    public static final FontManager fontManager = SimpleFontManager.create();
     public static FontManager getFontManager() {
         return fontManager;
     }

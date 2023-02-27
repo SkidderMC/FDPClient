@@ -63,9 +63,9 @@ public class ClickGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         float trueCguiScale;
-        if (LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Jello") {
+        if (LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Jello")) {
             trueCguiScale = 1;
-        } else if(LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Glow") {
+        } else if(LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Glow")) {
             trueCguiScale = 1;
         } else {
             trueCguiScale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
@@ -74,7 +74,7 @@ public class ClickGui extends GuiScreen {
         if (progress < 1) progress += 0.1 * (1 - partialTicks);
         else progress = 1;
 
-        switch (((ClickGUIModule) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class))).animationValue.get().toLowerCase()) {
+        switch (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).animationValue.get().toLowerCase()) {
             case "liquidbounce":
             case "ziul":
                 slide = EaseUtils.easeOutBack(progress);
@@ -116,7 +116,7 @@ public class ClickGui extends GuiScreen {
         int defaultHeight1 = (this.height);
         int defaultWidth1 = (this.width);
 
-        switch (((ClickGUIModule) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class))).animationValue.get().toLowerCase()) {
+        switch (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).animationValue.get().toLowerCase()) {
             case "bread":
                 GlStateManager.translate(0, (1.0 - slide) * height * 2.0, 0);
                 GlStateManager.scale(scale, scale + (1.0 - slide) * 2.0, scale);
@@ -172,7 +172,7 @@ public class ClickGui extends GuiScreen {
         GlStateManager.disableLighting();
         RenderHelper.disableStandardItemLighting();
 
-        switch (((ClickGUIModule) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class))).animationValue.get().toLowerCase()) {
+        switch (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).animationValue.get().toLowerCase()) {
             case "bread":
             case "slide":
             case "liquidbounce":
@@ -203,9 +203,9 @@ public class ClickGui extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         float trueCguiScale;
-        if (LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Jello") {
+        if (LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Jello")) {
             trueCguiScale = 1;
-        } else if(LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Glow") {
+        } else if(LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Glow")) {
             trueCguiScale = 1;
         } else {
             trueCguiScale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
@@ -239,9 +239,9 @@ public class ClickGui extends GuiScreen {
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         float trueCguiScale;
-        if (LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Jello") {
+        if (LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Jello")) {
             trueCguiScale = 1;
-        } else if(LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get() == "Glow") {
+        } else if(LiquidBounce.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Glow")) {
             trueCguiScale = 1;
         } else {
             trueCguiScale = LiquidBounce.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();

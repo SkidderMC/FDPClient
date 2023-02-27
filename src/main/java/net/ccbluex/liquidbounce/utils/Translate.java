@@ -37,10 +37,8 @@ public final class Translate {
     public Translate(float f, float f2) {
         float IIiiiiiiIiIii = 0;
         Translate IIiiiiiiIiIii2 = this;
-        Translate translate = IIiiiiiiIiIii2;
-        IIiiiiiiIiIii2.AckerRunCRACKED_f = false;
-        translate.AckerRunCRACKED_a = IIiiiiiiIiIii;
-        translate.AckerRunCRACKED_ALLATORIxDEMO = f2;
+        IIiiiiiiIiIii2.AckerRunCRACKED_a = IIiiiiiiIiIii;
+        IIiiiiiiIiIii2.AckerRunCRACKED_ALLATORIxDEMO = f2;
     }
 
     public float getY() {
@@ -51,23 +49,22 @@ public final class Translate {
     /*
      * WARNING - void declaration
      */
-    public final void interpolate2(float f, float f2, double d) {
+    public void interpolate2(float f, float f2, double d) {
         double IIiiiiiiIiIii = 0;
         Translate IIiiiiiiIiIii2 = this;
         this.AckerRunCRACKED_a = f;
-        IIiiiiiiIiIii2.AckerRunCRACKED_ALLATORIxDEMO = (float) AnimationUtil.animate(f2, IIiiiiiiIiIii2.AckerRunCRACKED_ALLATORIxDEMO, (double)IIiiiiiiIiIii);
+        IIiiiiiiIiIii2.AckerRunCRACKED_ALLATORIxDEMO = (float) AnimationUtil.animate(f2, IIiiiiiiIiIii2.AckerRunCRACKED_ALLATORIxDEMO, IIiiiiiiIiIii);
     }
 
-    public final void interpolate(float IIiiiiiiIiIii, float IIiiiiiiIiIii2, double IIiiiiiiIiIii3) {
+    public void interpolate(float IIiiiiiiIiIii, float IIiiiiiiIiIii2, double IIiiiiiiIiIii3) {
         Translate IIiiiiiiIiIii4 = this;
         if (IIiiiiiiIiIii4.AckerRunCRACKED_f) {
             IIiiiiiiIiIii4.AckerRunCRACKED_a = (float)AnimationUtil.animate(IIiiiiiiIiIii, IIiiiiiiIiIii4.AckerRunCRACKED_a, IIiiiiiiIiIii3);
             IIiiiiiiIiIii4.AckerRunCRACKED_ALLATORIxDEMO = (float)AnimationUtil.animate(IIiiiiiiIiIii2, IIiiiiiiIiIii4.AckerRunCRACKED_ALLATORIxDEMO, IIiiiiiiIiIii3);
             return;
         }
-        Translate translate = IIiiiiiiIiIii4;
-        translate.AckerRunCRACKED_a = IIiiiiiiIiIii;
-        translate.AckerRunCRACKED_ALLATORIxDEMO = IIiiiiiiIiIii2;
+        IIiiiiiiIiIii4.AckerRunCRACKED_a = IIiiiiiiIiIii;
+        IIiiiiiiIiIii4.AckerRunCRACKED_ALLATORIxDEMO = IIiiiiiiIiIii2;
         IIiiiiiiIiIii4.AckerRunCRACKED_f = true;
     }
 

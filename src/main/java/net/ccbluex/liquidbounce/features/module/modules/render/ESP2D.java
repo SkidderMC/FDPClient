@@ -154,7 +154,7 @@ public final class ESP2D extends Module {
         float partialTicks = event.getPartialTicks();
         ScaledResolution scaledResolution = new ScaledResolution(mc);
         int scaleFactor = scaledResolution.getScaleFactor();
-        double scaling = (double)scaleFactor / Math.pow((double)scaleFactor, 2.0D);
+        double scaling = (double)scaleFactor / Math.pow(scaleFactor, 2.0D);
         GL11.glScaled(scaling, scaling, scaling);
         int black = this.black;
         int background = this.backgroundColor;
@@ -172,9 +172,9 @@ public final class ESP2D extends Module {
             Entity entity = (Entity)collectedEntities.get(i);
             int color = getColor(entity).getRGB();
             if (RenderUtils.isInViewFrustrum(entity)) {
-                double x = RenderUtils.interpolate(entity.posX, entity.lastTickPosX, (double)partialTicks);
-                double y = RenderUtils.interpolate(entity.posY, entity.lastTickPosY, (double)partialTicks);
-                double z = RenderUtils.interpolate(entity.posZ, entity.lastTickPosZ, (double)partialTicks);
+                double x = RenderUtils.interpolate(entity.posX, entity.lastTickPosX, partialTicks);
+                double y = RenderUtils.interpolate(entity.posY, entity.lastTickPosY, partialTicks);
+                double z = RenderUtils.interpolate(entity.posZ, entity.lastTickPosZ, partialTicks);
                 double width = (double)entity.width / 1.5D;
                 double height = (double)entity.height + (entity.isSneaking() ? -0.3D : 0.2D);
                 AxisAlignedBB aabb = new AxisAlignedBB(x - width, y, z - width, x + width, y + height, z + width);
@@ -205,7 +205,7 @@ public final class ESP2D extends Module {
                     double endPosX = position.z;
                     double endPosY = position.w;
                     if (outline) {
-                        if (this.boxMode.get() == "Box") {
+                        if (this.boxMode.get().equals("Box")) {
                             RenderUtils.newDrawRect(posX - 1.0D, posY, posX + 0.5D, endPosY + 0.5D, black);
                             RenderUtils.newDrawRect(posX - 1.0D, posY - 0.5D, endPosX + 0.5D, posY + 0.5D + 0.5D, black);
                             RenderUtils.newDrawRect(endPosX - 0.5D - 0.5D, posY, endPosX + 0.5D, endPosY + 0.5D, black);
@@ -250,7 +250,7 @@ public final class ESP2D extends Module {
                             if (armorValue > itemDurability)
                                 armorValue = itemDurability;
 
-                            durabilityWidth = (double)(armorValue / itemDurability);
+                            durabilityWidth = armorValue / itemDurability;
                             textWidth = (endPosY - posY) * durabilityWidth;
                             String healthDisplay = dFormat.format(entityLivingBase.getHealth()) + " §c❤";
                             String healthPercent = ((int) ((entityLivingBase.getHealth() / itemDurability) * 100F)) + "%";
@@ -315,7 +315,7 @@ public final class ESP2D extends Module {
 
                     if (living && armorItems.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution))) {
                         entityLivingBase = (EntityLivingBase) entity;
-                        double yDist = (double)(endPosY - posY) / 4.0D;
+                        double yDist = (endPosY - posY) / 4.0D;
                         for (int j = 4; j > 0; j--) {
                             ItemStack armorStack = entityLivingBase.getEquipmentInSlot(j);
                             if (armorStack != null && armorStack.getItem() != null) {
@@ -422,6 +422,6 @@ public final class ESP2D extends Module {
         GL11.glGetFloat(2982, this.modelview);
         GL11.glGetFloat(2983, this.projection);
         GL11.glGetInteger(2978, this.viewport);
-        return GLU.gluProject((float)x, (float)y, (float)z, this.modelview, this.projection, this.viewport, this.vector) ? new Vector3d((double)(this.vector.get(0) / (float)scaleFactor), (double)(((float)Display.getHeight() - this.vector.get(1)) / (float)scaleFactor), (double)this.vector.get(2)) : null;
+        return GLU.gluProject((float)x, (float)y, (float)z, this.modelview, this.projection, this.viewport, this.vector) ? new Vector3d(this.vector.get(0) / (float)scaleFactor, ((float)Display.getHeight() - this.vector.get(1)) / (float)scaleFactor, this.vector.get(2)) : null;
     }
 }

@@ -81,8 +81,14 @@ public class JumpCircle extends Module {
     }
 
     static class Circle {
-        public double posX, posY, posZ, lastTickPosX, lastTickPosY, lastTickPosZ;
-        public float radius, width;
+        public final double posX;
+        public final double posY;
+        public final double posZ;
+        public final double lastTickPosX;
+        public final double lastTickPosY;
+        public final double lastTickPosZ;
+        public float radius;
+        public final float width;
         Circle(double posX, double posY, double posZ, double lastTickPosX, double lastTickPosY, double lastTickPosZ, float width) {
             this.posX = posX;
             this.posY = posY;

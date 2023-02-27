@@ -30,9 +30,9 @@ public enum Colors {
     MAGENTA(-18751),
     DARKMAGENTA(-2252579);
 
-    public int c;
+    public final int c;
 
-    private Colors(int co) {
+    Colors(int co) {
         this.c = co;
     }
 

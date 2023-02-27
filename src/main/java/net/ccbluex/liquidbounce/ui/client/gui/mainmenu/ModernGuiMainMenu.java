@@ -22,34 +22,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 public class ModernGuiMainMenu extends GuiScreen {
-    public ArrayList butt = new ArrayList();
+    public final ArrayList butt = new ArrayList();
     private float currentX;
     private float currentY;
     private ScaledResolution res;
 
     public void initGui() {
         this.butt.clear();
-        this.butt.add(new MainMenuButton(this, 0, "G", "SinglePlayer", () -> {
-            this.mc.displayGuiScreen(new GuiSelectWorld(this));
-        }));
-        this.butt.add(new MainMenuButton(this, 1, "H", "MultiPlayer", () -> {
-            this.mc.displayGuiScreen(new GuiMultiplayer(this));
-        }));
-        this.butt.add(new MainMenuButton(this, 2, "I", "AltManager", () -> {
-            this.mc.displayGuiScreen(new GuiAltManager(this));
-        }));
-        this.butt.add(new MainMenuButton(this, 3, "J", "Mods", () -> {
-            this.mc.displayGuiScreen(new GuiModList(this));
-        }, 0.5F));
-        this.butt.add(new MainMenuButton(this, 4, "K", "Options", () -> {
-            this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
-        }));
-        this.butt.add(new MainMenuButton(this, 5, "L", "Languages", () -> {
-            this.mc.displayGuiScreen(new GuiLanguage(this, this.mc.gameSettings, this.mc.getLanguageManager()));
-        }));
-        this.butt.add(new MainMenuButton(this, 6, "M", "Quit", () -> {
-            this.mc.shutdown();
-        }));
+        this.butt.add(new MainMenuButton(this, 0, "G", "SinglePlayer", () -> this.mc.displayGuiScreen(new GuiSelectWorld(this))));
+        this.butt.add(new MainMenuButton(this, 1, "H", "MultiPlayer", () -> this.mc.displayGuiScreen(new GuiMultiplayer(this))));
+        this.butt.add(new MainMenuButton(this, 2, "I", "AltManager", () -> this.mc.displayGuiScreen(new GuiAltManager(this))));
+        this.butt.add(new MainMenuButton(this, 3, "J", "Mods", () -> this.mc.displayGuiScreen(new GuiModList(this)), 0.5F));
+        this.butt.add(new MainMenuButton(this, 4, "K", "Options", () -> this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings))));
+        this.butt.add(new MainMenuButton(this, 5, "L", "Languages", () -> this.mc.displayGuiScreen(new GuiLanguage(this, this.mc.gameSettings, this.mc.getLanguageManager()))));
+        this.butt.add(new MainMenuButton(this, 6, "M", "Quit", () -> this.mc.shutdown()));
         this.res = new ScaledResolution(this.mc);
         super.initGui();
     }
@@ -81,7 +67,7 @@ public class ModernGuiMainMenu extends GuiScreen {
                 button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
             }
             FontLoaders.F40.drawCenteredString("FDPCLIENT",(float)this.width / 2.0F,(float)this.height / 2.0F - 70.0F,new Color(255,255,255).getRGB());
-            FontLoaders.F18.drawCenteredString(LiquidBounce.INSTANCE.CLIENT_VERSION,(float)this.width / 2.0F,(float)this.height / 2.0F - 30.0F,new Color(255,255,255).getRGB());
+            FontLoaders.F18.drawCenteredString(LiquidBounce.CLIENT_VERSION,(float)this.width / 2.0F,(float)this.height / 2.0F - 30.0F,new Color(255,255,255).getRGB());
             RenderUtils.drawRect((float)this.width / 2.0F - 30f,(float)this.height / 2.0F - 40.0F,(float)this.width / 2.0F + 30f,(float)this.height / 2.0F - 39.5F,new Color(255,255,255,100).getRGB());
             FontLoaders.F18.drawCenteredString("Made by SkidderMC with love.",(float)this.width / 2.0F,(float)this.height / 2.0F + 70.0F,new Color(255,255,255,100).getRGB());
 

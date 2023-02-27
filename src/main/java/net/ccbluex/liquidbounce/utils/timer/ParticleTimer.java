@@ -14,10 +14,7 @@ public class ParticleTimer {
     }
     private long prevTime;
     public boolean hasReached(double milliseconds) {
-        if ((double)(this.getCurrentMS() - this.lastMS) >= milliseconds) {
-            return true;
-        }
-        return false;
+        return (double) (this.getCurrentMS() - this.lastMS) >= milliseconds;
     }
     public void setTime(long time) {
         lastMS = time;
@@ -47,10 +44,7 @@ public class ParticleTimer {
     }
 
     public boolean delay(float milliSec) {
-        if ((float)(this.getTime() - this.lastMS) >= milliSec) {
-            return true;
-        }
-        return false;
+        return (float) (this.getTime() - this.lastMS) >= milliSec;
     }
 
     public long getTime() {
@@ -58,9 +52,7 @@ public class ParticleTimer {
     }
 
     public boolean isDelayComplete(long delay) {
-        if (System.currentTimeMillis() - this.lastMS > delay)
-            return true;
-        return false;
+        return System.currentTimeMillis() - this.lastMS > delay;
     }
 }
 

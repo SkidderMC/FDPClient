@@ -13,10 +13,6 @@ class NCPLatestSpeed : SpeedMode("NCPLatest") {
   
     private var wasSlow = false
 
-  
-    override fun onEnable() {
-        super.onEnable()
-    }
 
     override fun onDisable() {
         mc.thePlayer.jumpMovementFactor = 0.02f

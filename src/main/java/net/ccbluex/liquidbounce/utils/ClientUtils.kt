@@ -64,7 +64,7 @@ ClientUtils : MinecraftInstance() {
      */
     val mc = Minecraft.getMinecraft()!!
 
-    enum class EnumOSType(val friendlyName: String) {
-        WINDOWS("win"), LINUX("linux"), MACOS("mac"), UNKNOWN("unk");
+    enum class EnumOSType {
+        WINDOWS, LINUX, MACOS, UNKNOWN;
     }
 }

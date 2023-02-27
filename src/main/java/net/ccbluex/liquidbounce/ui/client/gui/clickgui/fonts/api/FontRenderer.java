@@ -20,9 +20,9 @@ public interface FontRenderer {
 	default float drawString(CharSequence text, float x, float y, int color) {
 		return drawString(text, x, y, color, false);
 	}
-	default float drawString(CharSequence text, int x, int y, int color) {
-		return drawString(text, x, y, color, false);
-	}
+	default void drawString(CharSequence text, int x, int y, int color) {
+        drawString(text, x, y, color, false);
+    }
 	default String trimStringToWidth(CharSequence text, int width) {
 		return trimStringToWidth(text, width, false);
 	}
@@ -34,7 +34,7 @@ public interface FontRenderer {
 		return boxHeight / 2f - getHeight() / 2f;
 	}
 
-	default float drawCenteredString(CharSequence text, float x, float y, int color) {
-		return drawCenteredString(text, x, y, color, false);
-	}
+	default void drawCenteredString(CharSequence text, float x, float y, int color) {
+        drawCenteredString(text, x, y, color, false);
+    }
 }

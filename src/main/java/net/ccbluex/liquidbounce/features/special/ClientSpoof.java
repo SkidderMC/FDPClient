@@ -13,7 +13,7 @@ import net.minecraft.network.play.client.C17PacketCustomPayload;
 
 public class ClientSpoof extends MinecraftInstance implements Listenable {
 
-    public static boolean enabled = true;
+    public static final boolean enabled = true;
 
     @EventTarget
     public void onPacket(PacketEvent event) {

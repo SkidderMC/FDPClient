@@ -61,9 +61,9 @@ public class SessionUtils extends MinecraftInstance implements Listenable {
         if (System.currentTimeMillis() - sessionTimer.getTime() < 0L) sessionTimer.reset();
 
         int realTime = (int) (System.currentTimeMillis() - sessionTimer.getTime()) / 1000;
-        int hours = (int) realTime / 3600;
+        int hours = realTime / 3600;
         int seconds = (realTime % 3600) % 60;
-        int minutes = (int) (realTime % 3600) / 60;
+        int minutes = (realTime % 3600) / 60;
 
         return hours + "h " + minutes + "m " + seconds + "s";
     }
@@ -72,9 +72,9 @@ public class SessionUtils extends MinecraftInstance implements Listenable {
         if (lastSessionTime < 0L) lastSessionTime = 0L;
 
         int realTime = (int) lastSessionTime / 1000;
-        int hours = (int) realTime / 3600;
+        int hours = realTime / 3600;
         int seconds = (realTime % 3600) % 60;
-        int minutes = (int) (realTime % 3600) / 60;
+        int minutes = (realTime % 3600) / 60;
 
         return hours + "h " + minutes + "m " + seconds + "s";
     }
@@ -83,9 +83,9 @@ public class SessionUtils extends MinecraftInstance implements Listenable {
         if (System.currentTimeMillis() - worldTimer.getTime() < 0L) worldTimer.reset();
 
         int realTime = (int) (System.currentTimeMillis() - worldTimer.getTime()) / 1000;
-        int hours = (int) realTime / 3600;
+        int hours = realTime / 3600;
         int seconds = (realTime % 3600) % 60;
-        int minutes = (int) (realTime % 3600) / 60;
+        int minutes = (realTime % 3600) / 60;
 
         return hours + "h " + minutes + "m " + seconds + "s";
     }

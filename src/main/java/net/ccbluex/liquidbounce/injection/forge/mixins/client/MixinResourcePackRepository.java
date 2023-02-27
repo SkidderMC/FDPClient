@@ -40,7 +40,7 @@ public class MixinResourcePackRepository {
     private void deleteOldServerResourcesPacks() {
         try {
             List<File> lvt_1_1_ = Lists.newArrayList(FileUtils.listFiles(this.dirServerResourcepacks, TrueFileFilter.TRUE, null));
-            Collections.sort(lvt_1_1_, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
+            lvt_1_1_.sort(LastModifiedFileComparator.LASTMODIFIED_REVERSE);
             int lvt_2_1_ = 0;
             Iterator lvt_3_1_ = lvt_1_1_.iterator();
 

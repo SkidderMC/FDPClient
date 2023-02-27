@@ -8,7 +8,7 @@ import java.util.List;
 public class Subscriptions {
     public static boolean loadingCloud = false;
     public static String tempJs = "";
-    public static List<ScriptSubscribe> subscribes = new ArrayList<>();
+    public static final List<ScriptSubscribe> subscribes = new ArrayList<>();
 
     public static void addSubscribes(ScriptSubscribe scriptSubscribe) {
         subscribes.add(scriptSubscribe);

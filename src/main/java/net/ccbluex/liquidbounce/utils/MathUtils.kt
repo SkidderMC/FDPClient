@@ -32,14 +32,6 @@ object MathUtils {
         return distanceSq(p, lerp(v, w, (((p[0] - v[0]) * (w[0] - v[0]) + (p[1] - v[1]) * (w[1] - v[1])) / l2).coerceAtMost(1.0).coerceAtLeast(0.0)))
     }
 
-    fun Float.inRange(base: Float, range: Float): Boolean {
-        return this in base - range..base + range
-    }
-
-    fun Int.inRange(base: Int, range: Int): Boolean {
-        return this in base - range..base + range
-    }
-
     fun Double.inRange(base: Double, range: Double): Boolean {
         return this in base - range..base + range
     }
@@ -71,11 +63,6 @@ object MathUtils {
      * Converts double to radians
      */
     fun Double.toRadians() = this * DEGREES_TO_RADIANS
-
-    /**
-     * Converts double to degrees
-     */
-    fun Double.toDegrees() = this * RADIANS_TO_DEGREES
 
     fun gaussian(x: Int, sigma: Float): Float {
         val s = sigma * sigma * 2

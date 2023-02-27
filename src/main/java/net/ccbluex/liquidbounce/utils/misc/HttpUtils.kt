@@ -67,16 +67,6 @@ object HttpUtils {
         return connection.inputStream.reader().readText()
     }
 
-    fun requestStream(
-        url: String,
-        method: String,
-        agent: String = DEFAULT_AGENT
-    ): InputStream? {
-        val connection = make(url, method, agent)
-
-        return connection.inputStream
-    }
-
     fun download(url: String, file: File) {
         ClientUtils.logWarn("Downloading $url to ${file.absolutePath}")
         FileOutputStream(file).use { ByteStreams.copy(make(url, "GET").inputStream, it) }

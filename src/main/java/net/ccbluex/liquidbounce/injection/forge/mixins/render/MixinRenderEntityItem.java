@@ -59,7 +59,7 @@ public abstract class MixinRenderEntityItem extends Render<EntityItem> {
     @Overwrite
     private int func_177077_a(EntityItem itemIn, double p_177077_2_, double p_177077_4_, double p_177077_6_, float p_177077_8_, IBakedModel p_177077_9_)
     {
-        final ItemPhysics itemPhysics = (ItemPhysics) LiquidBounce.moduleManager.getModule(ItemPhysics.class);
+        final ItemPhysics itemPhysics = LiquidBounce.moduleManager.getModule(ItemPhysics.class);
         ItemStack itemstack = itemIn.getEntityItem();
         Item item = itemstack.getItem();
 

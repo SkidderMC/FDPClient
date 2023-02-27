@@ -157,10 +157,7 @@ public class Fonts {
         fontTenacityBold40 = new GameFontRenderer(getFontcustom(40,"tenacity-bold"));
 
 
-
-
-        for(GameFontRenderer it : getCustomFonts()) {
-        }
+        getCustomFonts();
 
         initFonts();
 
@@ -227,11 +224,11 @@ public class Fonts {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
                     .getResource(new ResourceLocation("fdpclient/font/"+fontname+".ttf")).getInputStream();
             font = Font.createFont(0, is);
-            font = font.deriveFont(0, size);
+            font = font.deriveFont(Font.PLAIN, size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("default", 0, size);
+            font = new Font("default", Font.PLAIN, size);
         }
         return font;
     }
@@ -241,11 +238,11 @@ public class Fonts {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
                     .getResource(new ResourceLocation("fdpclient/font/icon.ttf")).getInputStream();
             font = Font.createFont(0, is);
-            font = font.deriveFont(0, size);
+            font = font.deriveFont(Font.PLAIN, size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("default", 0, size);
+            font = new Font("default", Font.PLAIN, size);
         }
         return font;
     }
@@ -255,11 +252,11 @@ public class Fonts {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
                     .getResource(new ResourceLocation("fdpclient/font/regular.ttf")).getInputStream();
             font = Font.createFont(0, is);
-            font = font.deriveFont(0, size);
+            font = font.deriveFont(Font.PLAIN, size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("defualt", 0, size);
+            font = new Font("defualt", Font.PLAIN, size);
         }
         return font;
     }
@@ -269,11 +266,11 @@ public class Fonts {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
                     .getResource(new ResourceLocation("fdpclient/font/SFBOLD.ttf")).getInputStream();
             font = Font.createFont(0, is);
-            font = font.deriveFont(0, size);
+            font = font.deriveFont(Font.PLAIN, size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("SFBold", 0, size);
+            font = new Font("SFBold", Font.PLAIN, size);
         }
         return font;
     }
@@ -283,11 +280,11 @@ public class Fonts {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
                     .getResource(new ResourceLocation("fdpclient/font/tenacity.ttf")).getInputStream();
             font = Font.createFont(0, is);
-            font = font.deriveFont(0, size);
+            font = font.deriveFont(Font.PLAIN, size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("SFBold", 0, size);
+            font = new Font("SFBold", Font.PLAIN, size);
         }
         return font;
     }
@@ -297,11 +294,11 @@ public class Fonts {
             InputStream is = Minecraft.getMinecraft().getResourceManager()
                     .getResource(new ResourceLocation("fdpclient/font/tenacity-bold.ttf")).getInputStream();
             font = Font.createFont(0, is);
-            font = font.deriveFont(0, size);
+            font = font.deriveFont(Font.PLAIN, size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("SFBold", 0, size);
+            font = new Font("SFBold", Font.PLAIN, size);
         }
         return font;
     }

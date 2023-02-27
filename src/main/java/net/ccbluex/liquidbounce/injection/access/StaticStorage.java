@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.injection.access;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;

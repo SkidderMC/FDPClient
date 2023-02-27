@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.files.normal.TimerUtil;
 
 public abstract class Animation {
 
-    public TimerUtil timerUtil = new TimerUtil();
+    public final TimerUtil timerUtil = new TimerUtil();
     protected int duration;
     protected double endPoint;
     protected Direction direction;

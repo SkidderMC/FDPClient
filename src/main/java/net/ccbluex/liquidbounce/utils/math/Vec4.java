@@ -7,7 +7,9 @@ package net.ccbluex.liquidbounce.utils.math;
 
 import net.minecraft.util.Vec3;
 public class Vec4 {
-    private double x, y, z;
+    private final double x;
+    private final double y;
+    private final double z;
 
     public Vec4(double x, double y, double z) {
         this.x = x;

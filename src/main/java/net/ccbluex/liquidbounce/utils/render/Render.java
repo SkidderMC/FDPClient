@@ -10,10 +10,10 @@ import java.awt.*;
 
 public class Render {
     public float alpha;
-    public Vec3 vec3;
-    public long time;
+    public final Vec3 vec3;
+    public final long time;
     public float d;
-    public Color color;
+    public final Color color;
     public Render(double x, double y, double z, long time, Color color){
         this.alpha=255f;
         this.vec3=new Vec3(x,y,z);
@@ -54,14 +54,9 @@ public class Render {
             }
         }
         double var14 = 0.0D;
-        if(var14 < 361.0D) {
-            var14 = var14 + 5;
-        }
+        var14 = var14 + 5;
         double var15 = 0.0D;
-        if(var15 < 255) {
-
-            var15 = var15 + 3;
-        }
+        var15 = var15 + 3;
         GL11.glEnd();
         GL11.glDepthMask(true);
         GlStateManager.enableDepth();
@@ -70,9 +65,9 @@ public class Render {
         GL11.glDisable(3042);
         GL11.glPopMatrix();
         if (d==1.5F) {
-            this.alpha = MathHelper.clamp_float(this.alpha = (float) ((double) this.alpha  - 1.0D * var15), 0.0F, 255.0F);
+            this.alpha = MathHelper.clamp_float((float) ((double) this.alpha  - var15), 0.0F, 255.0F);
         }
-        this.d = MathHelper.clamp_float(this.d = (float)((double)this.d + 0.005D * var14), 0.0F, 1.5F);
+        this.d = MathHelper.clamp_float((float)((double)this.d + 0.005D * var14), 0.0F, 1.5F);
     }
     public float alpha(){
         return alpha;

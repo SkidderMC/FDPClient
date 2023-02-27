@@ -15,7 +15,7 @@ import java.util.Map;
 public final class StringUtils {
 
     private static final Map<String,String> pinyinMap=new HashMap<>();
-    private static HashMap<String,String> airCache = new HashMap<>();
+    private static final HashMap<String,String> airCache = new HashMap<>();
 
     public static String toCompleteString(final String[] args) {
         return toCompleteString(args, 0);

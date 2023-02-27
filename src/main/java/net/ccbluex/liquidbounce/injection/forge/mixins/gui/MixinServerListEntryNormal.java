@@ -61,19 +61,17 @@ public abstract class MixinServerListEntryNormal {
             this.server.pingToServer = -2L;
             this.server.serverMOTD = "";
             this.server.populationInfo = "";
-            field_148302_b.submit(new Runnable() {
-                public void run() {
-                    try {
-                        owner.getOldServerPinger().ping(server);
-                    } catch (UnknownHostException var2) {
-                        server.pingToServer = -1L;
-                        server.serverMOTD = EnumChatFormatting.DARK_RED + "Can't resolve hostname";
-                    } catch (Exception var3) {
-                        server.pingToServer = -1L;
-                        server.serverMOTD = EnumChatFormatting.DARK_RED + "Can't connect to server.";
-                    }
-
+            field_148302_b.submit(() -> {
+                try {
+                    owner.getOldServerPinger().ping(server);
+                } catch (UnknownHostException var2) {
+                    server.pingToServer = -1L;
+                    server.serverMOTD = EnumChatFormatting.DARK_RED + "Can't resolve hostname";
+                } catch (Exception var3) {
+                    server.pingToServer = -1L;
+                    server.serverMOTD = EnumChatFormatting.DARK_RED + "Can't connect to server.";
                 }
+
             });
         }
 
@@ -84,7 +82,7 @@ public abstract class MixinServerListEntryNormal {
         List<String> list = this.mc.fontRendererObj.listFormattedStringToWidth(FMLClientHandler.instance().fixDescription(this.server.serverMOTD), p_drawEntry_4_ - 48 - 2);
 
         for (int i = 0; i < Math.min(list.size(), 2); ++i) {
-            this.mc.fontRendererObj.drawStringWithShadow((String) list.get(i), p_drawEntry_2_ + 32 + 3, p_drawEntry_3_ + 12 + this.mc.fontRendererObj.FONT_HEIGHT * i, 8421504);
+            this.mc.fontRendererObj.drawStringWithShadow(list.get(i), p_drawEntry_2_ + 32 + 3, p_drawEntry_3_ + 12 + this.mc.fontRendererObj.FONT_HEIGHT * i, 8421504);
         }
 
         String s2 = flag2 ? EnumChatFormatting.DARK_RED + this.server.gameVersion : this.server.populationInfo;
@@ -121,7 +119,7 @@ public abstract class MixinServerListEntryNormal {
             }
         } else {
             k = 1;
-            l = (int) (Minecraft.getSystemTime() / 100L + (long) (p_drawEntry_1_ * 2) & 7L);
+            l = (int) (Minecraft.getSystemTime() / 100L + (long) (p_drawEntry_1_ * 2L) & 7L);
             if (l > 4) {
                 l = 8 - l;
             }

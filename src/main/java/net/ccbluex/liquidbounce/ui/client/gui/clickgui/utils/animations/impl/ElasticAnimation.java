@@ -10,9 +10,9 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.animations.Directio
 
 public class ElasticAnimation extends Animation {
 
-    float easeAmount;
-    float smooth;
-    boolean reallyElastic;
+    final float easeAmount;
+    final float smooth;
+    final boolean reallyElastic;
 
     public ElasticAnimation(int ms, double endPoint, float elasticity, float smooth, boolean moreElasticity) {
         super(ms, endPoint);

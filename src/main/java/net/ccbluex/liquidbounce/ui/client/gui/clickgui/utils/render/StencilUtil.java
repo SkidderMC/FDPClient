@@ -13,7 +13,7 @@ import org.lwjgl.opengl.EXTPackedDepthStencil;
 import static org.lwjgl.opengl.GL11.*;
 
 public class StencilUtil {
-    static Minecraft mc = Minecraft.getMinecraft();
+    static final Minecraft mc = Minecraft.getMinecraft();
 
     public static void checkSetupFBO(Framebuffer framebuffer) {
         if (framebuffer != null) {

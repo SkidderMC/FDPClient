@@ -9,13 +9,11 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Listenable;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.TickEvent;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.network.play.server.S45PacketTitle;
 import net.minecraft.util.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +21,7 @@ import java.util.Random;
 
 public final class RotationUtils extends MinecraftInstance implements Listenable {
 
-    private static Random random = new Random();
+    private static final Random random = new Random();
 
     private static int keepLength;
     private static int revTick;
@@ -31,7 +29,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     public static Rotation targetRotation;
     public static Rotation serverRotation = new Rotation(0F, 0F);
 
-    public static boolean keepCurrentRotation = false;
+    public static final boolean keepCurrentRotation = false;
 
     private static double x = random.nextDouble();
     private static double y = random.nextDouble();
@@ -217,25 +215,20 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     }
     
     public static VecRotation calculateCenter(final String calMode, final String randMode, final double randomRange, final AxisAlignedBB bb, final boolean predict, final boolean throughWalls) {
-        
-        /*if(outborder) {
-            final Vec3 vec3 = new Vec3(bb.minX + (bb.maxX - bb.minX) * (x * 0.3 + 1.0), bb.minY + (bb.maxY - bb.minY) * (y * 0.3 + 1.0), bb.minZ + (bb.maxZ - bb.minZ) * (z * 0.3 + 1.0));
-            return new VecRotation(vec3, toRotation(vec3, predict));
-        }*/
 
         //final Rotation randomRotation = toRotation(randomVec, predict);
 
         VecRotation vecRotation = null;
         
-        double xMin = 0.0D;
-        double yMin = 0.0D;
-        double zMin = 0.0D;
-        double xMax = 0.0D;
-        double yMax = 0.0D;
-        double zMax = 0.0D;
-        double xDist = 0.0D;
-        double yDist = 0.0D;
-        double zDist = 0.0D;
+        double xMin;
+        double yMin;
+        double zMin;
+        double xMax;
+        double yMax;
+        double zMax;
+        double xDist;
+        double yDist;
+        double zDist;
         
         xMin = 0.15D; xMax = 0.85D; xDist = 0.1D;
         yMin = 0.15D; yMax = 1.00D; yDist = 0.1D;
@@ -245,24 +238,21 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         
         switch(calMode) {
             case "LiquidBounce":
-                xMin = 0.15D; xMax = 0.85D; xDist = 0.1D;
-                yMin = 0.15D; yMax = 1.00D; yDist = 0.1D;
-                zMin = 0.15D; zMax = 0.85D; zDist = 0.1D;
                 break;
             case "Full":
-                xMin = 0.00D; xMax = 1.00D; xDist = 0.1D;
-                yMin = 0.00D; yMax = 1.00D; yDist = 0.1D;
-                zMin = 0.00D; zMax = 1.00D; zDist = 0.1D;
+                xMin = 0.00D; xMax = 1.00D;
+                yMin = 0.00D;
+                zMin = 0.00D; zMax = 1.00D;
                 break;
             case "HalfUp":
-                xMin = 0.10D; xMax = 0.90D; xDist = 0.1D;
-                yMin = 0.50D; yMax = 0.90D; yDist = 0.1D;
-                zMin = 0.10D; zMax = 0.90D; zDist = 0.1D;
+                xMin = 0.10D; xMax = 0.90D;
+                yMin = 0.50D; yMax = 0.90D;
+                zMin = 0.10D; zMax = 0.90D;
                 break;
             case "HalfDown":
-                xMin = 0.10D; xMax = 0.90D; xDist = 0.1D;
-                yMin = 0.10D; yMax = 0.50D; yDist = 0.1D;
-                zMin = 0.10D; zMax = 0.90D; zDist = 0.1D;
+                xMin = 0.10D; xMax = 0.90D;
+                yMin = 0.10D; yMax = 0.50D;
+                zMin = 0.10D; zMax = 0.90D;
                 break;
             case "CenterSimple":
                 xMin = 0.45D; xMax = 0.55D; xDist = 0.0125D;
@@ -271,7 +261,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                 break;
             case "CenterLine":
                 xMin = 0.45D; xMax = 0.55D; xDist = 0.0125D;
-                yMin = 0.10D; yMax = 0.90D; yDist = 0.1D;
+                yMin = 0.10D; yMax = 0.90D;
                 zMin = 0.45D; zMax = 0.55D; zDist = 0.0125D;
                 break;
         }
@@ -294,7 +284,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
             }
         }
         
-        if(vecRotation == null || randMode == "Off")
+        if(vecRotation == null || randMode.equals("Off"))
             return vecRotation;
         
         double rand1 = random.nextDouble();
@@ -415,13 +405,6 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         ));
     }
 
-//    @NotNull
-//    public static Rotation limitAngleChangeHumanizing(final Rotation currentRotation, final Rotation targetRotation, final float turnSpeed) {
-//        float yawDiff = ((float) Rotations.INSTANCE.apply(1-(getAngleDifference(targetRotation.getYaw(), currentRotation.getYaw())/180d)))*180f;
-//        final float pitchDifference = getAngleDifference(targetRotation.getPitch(), currentRotation.getPitch());
-//
-//    }
-
     /**
      * Calculate difference between two angle points
      *
@@ -455,7 +438,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      * @return if crosshair is over target
      */
     public static boolean isFaced(final Entity targetEntity, double blockReachDistance) {
-        return RaycastUtils.raycastEntity(blockReachDistance, entity -> entity == targetEntity) != null;
+        return RaycastUtils.raycastEntity(blockReachDistance, entity -> entity == targetEntity) == null;
     }
 
     /**

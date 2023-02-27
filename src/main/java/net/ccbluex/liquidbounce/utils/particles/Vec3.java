@@ -44,7 +44,7 @@ public class Vec3 {
     }
 
     public Vec3(Vec3i p_i46377_1_) {
-        this((double) p_i46377_1_.getX(), (double) p_i46377_1_.getY(), (double) p_i46377_1_.getZ());
+        this(p_i46377_1_.getX(), p_i46377_1_.getY(), p_i46377_1_.getZ());
     }
 
     /**
@@ -58,7 +58,7 @@ public class Vec3 {
      * Normalizes the vector to a length of 1 (except if it is the zero vector)
      */
     public Vec3 normalize() {
-        double d0 = (double) MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
+        double d0 = MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
         return d0 < 1.0E-4D ? new Vec3(0.0D, 0.0D, 0.0D) : new Vec3(this.xCoord / d0, this.yCoord / d0, this.zCoord / d0);
     }
 
@@ -100,7 +100,7 @@ public class Vec3 {
         double d0 = vec.xCoord - this.xCoord;
         double d1 = vec.yCoord - this.yCoord;
         double d2 = vec.zCoord - this.zCoord;
-        return (double) MathHelper.sqrt_double(d0 * d0 + d1 * d1 + d2 * d2);
+        return MathHelper.sqrt_double(d0 * d0 + d1 * d1 + d2 * d2);
     }
 
     /**
@@ -117,7 +117,7 @@ public class Vec3 {
      * Returns the length of the vector.
      */
     public double lengthVector() {
-        return (double) MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
+        return MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
     }
 
     /**

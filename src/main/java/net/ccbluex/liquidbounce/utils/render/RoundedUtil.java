@@ -14,8 +14,8 @@ import java.awt.*;
 
 public class RoundedUtil {
 
-    public static ShaderUtil roundedShader = new ShaderUtil("roundedRect");
-    public static ShaderUtil roundedOutlineShader = new ShaderUtil("shaders/roundRectOutline.frag");
+    public static final ShaderUtil roundedShader = new ShaderUtil("roundedRect");
+    public static final ShaderUtil roundedOutlineShader = new ShaderUtil("shaders/roundRectOutline.frag");
     private static final ShaderUtil roundedTexturedShader = new ShaderUtil("shaders/roundRectTextured.frag");
     private static final ShaderUtil roundedGradientShader = new ShaderUtil("roundedRectGradient");
 

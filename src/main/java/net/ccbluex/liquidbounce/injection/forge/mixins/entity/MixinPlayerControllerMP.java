@@ -34,7 +34,7 @@ public class MixinPlayerControllerMP {
         CooldownHelper.INSTANCE.resetLastAttackedTicks();
     }
 
-    @Inject(method = "windowClick", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "windowClick", at = @At("HEAD"))
     private void windowClick(int windowId, int slotId, int mouseButtonClicked, int mode, EntityPlayer playerIn, CallbackInfoReturnable<ItemStack> callbackInfo) {
         final ClickWindowEvent event = new ClickWindowEvent(windowId, slotId, mouseButtonClicked, mode);
         LiquidBounce.eventManager.callEvent(event);

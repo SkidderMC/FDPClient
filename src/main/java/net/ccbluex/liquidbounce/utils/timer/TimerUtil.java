@@ -14,10 +14,7 @@ public class TimerUtil {
     }
     private long prevTime;
     public boolean hasReached(double milliseconds) {
-        if ((double)(this.getCurrentMS() - this.lastMS) >= milliseconds) {
-            return true;
-        }
-        return false;
+        return (double) (this.getCurrentMS() - this.lastMS) >= milliseconds;
     }
 
     public boolean hasReached(long delay) {
@@ -51,10 +48,7 @@ public class TimerUtil {
     }
 
     public boolean delay(float milliSec) {
-        if ((float)(this.getTime() - this.lastMS) >= milliSec) {
-            return true;
-        }
-        return false;
+        return (float) (this.getTime() - this.lastMS) >= milliSec;
     }
 
     public long getTime() {
@@ -62,9 +56,7 @@ public class TimerUtil {
     }
 
     public boolean isDelayComplete(long delay) {
-        if (System.currentTimeMillis() - this.lastMS > delay)
-            return true;
-        return false;
+        return System.currentTimeMillis() - this.lastMS > delay;
     }
 }
 
