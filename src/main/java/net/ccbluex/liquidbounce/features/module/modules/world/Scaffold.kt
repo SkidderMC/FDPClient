@@ -135,7 +135,7 @@ class Scaffold : Module() {
             "Jump",
             "Motion",
             "Motion2",
-            "Motion3"
+            "Motion3",
             "ConstantMotion",
             "PlusMotion",
             "StableMotion",
@@ -1024,14 +1024,14 @@ class Scaffold : Module() {
                     Rotation(mc.thePlayer.rotationYaw + customtowerYawValue.get(), customtowerPitchValue.get().toFloat())
                 }
                 "backwards" -> {
-                    var caluyaw = (((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45).toFloat()
-                    var calupitch = 0f
-                    if (caluyaw % 90 == 0) {
-                        calupitch = 82f
+                    var calcyaw = ((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45
+                    var calcpitch = 0f
+                    if (calcyaw % 90 == 0) {
+                        calcpitch = 82f
                     } else {
-                        calupitch = 78f
+                        calcpitch = 78f
                     }
-                    Rotation(caluyaw, calupitch)
+                    Rotation(calcyaw.toFloat(), calcpitch)
                 }
                 "advanced" -> {
                     var advancedYaw = 0f
