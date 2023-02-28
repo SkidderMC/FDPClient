@@ -40,7 +40,7 @@ class Arraylist(
     side: Side = Side(Horizontal.RIGHT, Vertical.UP)
 ) : Element(x, y, scale, side) {
 
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow", "Static"), "AnotherRainbow")
+    private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow", "Static"), "Slowly")
     private val colorRedValue = IntegerValue("Text-R", 255, 255, 255)
     private val colorGreenValue = IntegerValue("Text-G", 255, 255, 255)
     private val colorBlueValue = IntegerValue("Text-B", 255, 255, 255)
