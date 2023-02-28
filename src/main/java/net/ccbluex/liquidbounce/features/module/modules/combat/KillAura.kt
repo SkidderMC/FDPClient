@@ -12,23 +12,23 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
-import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
+import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
+import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.features.value.ListValue
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
-import net.ccbluex.liquidbounce.features.value.BoolValue
-import net.ccbluex.liquidbounce.features.value.FloatValue
-import net.ccbluex.liquidbounce.features.value.IntegerValue
-import net.ccbluex.liquidbounce.features.value.ListValue
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
@@ -36,8 +36,6 @@ import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.item.ItemAxe
-import net.minecraft.item.ItemPickaxe
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
@@ -46,7 +44,6 @@ import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
-import scala.annotation.switch
 import java.awt.Color
 import java.util.*
 import kotlin.math.*
@@ -245,7 +242,6 @@ class KillAura : Module() {
     var target: EntityLivingBase? = null
     private var currentTarget: EntityLivingBase? = null
     private var hitable = false
-    private var lastPacketSent = false
     private var packetSent = false
     private val prevTargetEntities = mutableListOf<Int>()
     private val discoveredTargets = mutableListOf<EntityLivingBase>()
@@ -405,7 +401,7 @@ class KillAura : Module() {
      * Update event
      */
     @EventTarget
-    fun onUpdate(e: UpdateEvent) {
+    fun onUpdate(IgnoredEvent: UpdateEvent) {
         if (cancelRun) {
             target = null
             currentTarget = null
@@ -849,7 +845,6 @@ class KillAura : Module() {
      */
     private fun updateTarget() {
         // Settings
-        val hurtTime = hurtTimeValue.get()
         val fov = fovValue.get()
         val switchMode = targetModeValue.equals("Switch")
 
@@ -876,7 +871,7 @@ class KillAura : Module() {
 
             val entityFov = RotationUtils.getRotationDifference(entity)
 
-            if (distance <= discoverRangeValue.get() && (fov == 180F || entityFov <= fov) && entity.hurtTime <= hurtTime) {
+            if (distance <= discoverRangeValue.get() && (fov == 180F || entityFov <= fov)) {
                 discoveredTargets.add(entity)
             }
         }
@@ -893,7 +888,7 @@ class KillAura : Module() {
         }
 
         inRangeDiscoveredTargets.clear()
-        inRangeDiscoveredTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < getRange(it) })
+        inRangeDiscoveredTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < (rangeValue.get() - if (mc.thePlayer.isSprinting) rangeSprintReducementValue.get() else 0F) })
 
         // Cleanup last targets when no targets found and try again
         if (inRangeDiscoveredTargets.isEmpty() && prevTargetEntities.isNotEmpty()) {
@@ -925,7 +920,6 @@ class KillAura : Module() {
             // Set target to current entity
             if (mc.thePlayer.getDistanceToEntityBox(entity) < discoverRangeValue.get()) {
                 target = entity
-                canSwing = (mc.thePlayer.getDistanceToEntityBox(entity) < swingRangeValue.get())
                 LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = target?:return
                 LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
                 return
@@ -933,7 +927,6 @@ class KillAura : Module() {
         }
 
         target = null
-        canSwing = false
         LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
     }
 
@@ -1029,7 +1022,7 @@ class KillAura : Module() {
                         (randomCenRangeValue.get()).toDouble(),
                         boundingBox,
                         predictValue.get() && rotationModeValue.get() != "Test",
-                        mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
+                        true
                 ) ?: return false
 
         if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = 89.9f
@@ -1088,8 +1081,10 @@ class KillAura : Module() {
      * Check if enemy is hitable with current rotations
      */
     private fun updateHitable() {
+        val entityDist = mc.thePlayer.getDistanceToEntityBox(currentTarget as Entity)
+        canSwing = entityDist < swingRangeValue.get() && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
         if (hitAbleValue.get()) {
-            hitable = currentTarget != null && mc.thePlayer.getDistanceToEntityBox(currentTarget as Entity) < maxRange.toDouble()
+            hitable = currentTarget != null && entityDist <= maxRange.toDouble()
             return
         }
         // Disable hitable check if turn speed is zero
@@ -1097,8 +1092,8 @@ class KillAura : Module() {
             hitable = true
             return
         }
-        
-        hitable = RotationUtils.isFaced(currentTarget, maxRange.toDouble())
+        val wallTrace = mc.thePlayer.rayTraceWithServerSideRotation(entityDist)
+        hitable = RotationUtils.isFaced(currentTarget, maxRange.toDouble()) && (entityDist < throughWallsRangeValue.get() || wallTrace.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
     }
 
     /**
@@ -1201,9 +1196,6 @@ class KillAura : Module() {
      */
     private val maxRange: Float
         get() = max(rangeValue.get(), throughWallsRangeValue.get())
-
-    private fun getRange(entity: Entity) =
-        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRangeValue.get()) rangeValue.get() else throughWallsRangeValue.get()) - if (mc.thePlayer.isSprinting) rangeSprintReducementValue.get() else 0F
 
     /**
      * HUD Tag

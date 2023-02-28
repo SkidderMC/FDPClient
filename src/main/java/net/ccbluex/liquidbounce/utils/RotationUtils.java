@@ -438,7 +438,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      * @return if crosshair is over target
      */
     public static boolean isFaced(final Entity targetEntity, double blockReachDistance) {
-        return RaycastUtils.raycastEntity(blockReachDistance, entity -> entity == targetEntity) == null;
+        return RaycastUtils.raycastEntity(blockReachDistance, entity -> entity == targetEntity) != null;
     }
 
     /**
