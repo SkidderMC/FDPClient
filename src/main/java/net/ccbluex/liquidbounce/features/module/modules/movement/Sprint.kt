@@ -32,6 +32,7 @@ class Sprint : Module() {
     val allDirectionsBypassValue = ListValue("AllDirectionsBypass", arrayOf("Rotate", "RotateSpoof", "Toggle", "Spoof", "SpamSprint", "NoStopSprint", "Minemora", "LimitSpeed", "None"), "None").displayable { allDirectionsValue.get() }
     private val allDirectionsLimitSpeedGround = BoolValue("AllDirectionsLimitSpeedOnlyGround", true)
     private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed", 0.7f, 0.5f, 1f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
+    private val noPacketValue = BoolValue("NoPackets", false)
     var switchStat = false
     var forceSprint = false
     
@@ -114,6 +115,11 @@ class Sprint : Module() {
                             event.cancelEvent()
                         }
                     }
+                }
+            }
+            if (noPacketValue.get() && !event.isCancelled) {
+                if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING || packet.action == C0BPacketEntityAction.Action.START_SPRINTING) {
+                    event.cancelEvent()
                 }
             }
         }
