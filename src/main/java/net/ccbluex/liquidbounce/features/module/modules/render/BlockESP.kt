@@ -5,23 +5,25 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.block.BlockUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.*
+import net.ccbluex.liquidbounce.utils.block.BlockUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.block.Block
+import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
-import net.minecraft.block.BlockLiquid
 import java.awt.Color
 
 @ModuleInfo(name = "BlockESP", category = ModuleCategory.RENDER)
@@ -121,7 +123,7 @@ class BlockESP : Module() {
                     waterPosList.clear()
                     waterPosList.addAll(blockList)
                 }
-            }, "SourceESP-WaterFinder")
+            }, "BlockESP-WaterFinder")
             waterThread!!.start()
         }
 
@@ -147,7 +149,7 @@ class BlockESP : Module() {
                     lavaPosList.clear()
                     lavaPosList.addAll(blockList)
                 }
-            }, "SourceESP-LavaFinder")
+            }, "BlockESP-LavaFinder")
             lavaThread!!.start()
         }
         
