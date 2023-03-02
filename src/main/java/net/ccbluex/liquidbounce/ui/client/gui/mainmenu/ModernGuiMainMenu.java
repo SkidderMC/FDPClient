@@ -29,13 +29,13 @@ public class ModernGuiMainMenu extends GuiScreen {
 
     public void initGui() {
         this.butt.clear();
-        this.butt.add(new MainMenuButton(this, 0, "G", "SinglePlayer", () -> this.mc.displayGuiScreen(new GuiSelectWorld(this))));
-        this.butt.add(new MainMenuButton(this, 1, "H", "MultiPlayer", () -> this.mc.displayGuiScreen(new GuiMultiplayer(this))));
-        this.butt.add(new MainMenuButton(this, 2, "I", "AltManager", () -> this.mc.displayGuiScreen(new GuiAltManager(this))));
-        this.butt.add(new MainMenuButton(this, 3, "J", "Mods", () -> this.mc.displayGuiScreen(new GuiModList(this)), 0.5F));
-        this.butt.add(new MainMenuButton(this, 4, "K", "Options", () -> this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings))));
-        this.butt.add(new MainMenuButton(this, 5, "L", "Languages", () -> this.mc.displayGuiScreen(new GuiLanguage(this, this.mc.gameSettings, this.mc.getLanguageManager()))));
-        this.butt.add(new MainMenuButton(this, 6, "M", "Quit", () -> this.mc.shutdown()));
+        this.butt.add(new MainMenuButton("G", "SinglePlayer", () -> this.mc.displayGuiScreen(new GuiSelectWorld(this))));
+        this.butt.add(new MainMenuButton("H", "MultiPlayer", () -> this.mc.displayGuiScreen(new GuiMultiplayer(this))));
+        this.butt.add(new MainMenuButton("I", "AltManager", () -> this.mc.displayGuiScreen(new GuiAltManager(this))));
+        this.butt.add(new MainMenuButton("J", "Mods", () -> this.mc.displayGuiScreen(new GuiModList(this)), 0.5F));
+        this.butt.add(new MainMenuButton("K", "Options", () -> this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings))));
+        this.butt.add(new MainMenuButton("L", "Languages", () -> this.mc.displayGuiScreen(new GuiLanguage(this, this.mc.gameSettings, this.mc.getLanguageManager()))));
+        this.butt.add(new MainMenuButton("M", "Quit", () -> this.mc.shutdown()));
         this.res = new ScaledResolution(this.mc);
         super.initGui();
     }

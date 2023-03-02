@@ -22,7 +22,6 @@ public final class ilegalItems extends MinecraftInstance {
         try {
             itemArguments = itemArguments.replace('&', '§');
             Item item = new Item();
-            Item itemInstance = item;
             String[] args = null;
             int i = 1;
             int j = 0;
@@ -60,37 +59,4 @@ public final class ilegalItems extends MinecraftInstance {
         }
     }
 
-    public static int getEnchantment(ItemStack itemStack, Enchantment enchantment) {
-        if (itemStack == null || itemStack.getEnchantmentTagList() == null || itemStack.getEnchantmentTagList().hasNoTags())
-            return 0;
-
-        for (int i = 0; i < itemStack.getEnchantmentTagList().tagCount(); i++) {
-            final NBTTagCompound tagCompound = itemStack.getEnchantmentTagList().getCompoundTagAt(i);
-
-            if ((tagCompound.hasKey("ench") && tagCompound.getShort("ench") == enchantment.effectId) || (tagCompound.hasKey("id") && tagCompound.getShort("id") == enchantment.effectId))
-                return tagCompound.getShort("lvl");
-        }
-
-        return 0;
-    }
-
-    public static int getEnchantmentCount(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getEnchantmentTagList() == null || itemStack.getEnchantmentTagList().hasNoTags())
-            return 0;
-
-        int c = 0;
-
-        for (int i = 0; i < itemStack.getEnchantmentTagList().tagCount(); i++) {
-            NBTTagCompound tagCompound = itemStack.getEnchantmentTagList().getCompoundTagAt(i);
-
-            if ((tagCompound.hasKey("ench") || tagCompound.hasKey("id")))
-                c++;
-        }
-
-        return c;
-    }
-
-    public static boolean isStackEmpty(ItemStack stack) {
-        return stack == null;
-    }
 }

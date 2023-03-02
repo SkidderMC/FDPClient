@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render;
 
 public class StringConversions {
-    public static Object castNumber(String newValueText, Object currentValue) {
+    public static Object castNumber(String newValueText) {
         if (newValueText.contains(".")) {
             if (newValueText.toLowerCase().contains("f")) {
                 return (float) Float.parseFloat((String) newValueText);

@@ -16,18 +16,10 @@ public final class EvictingList<T> extends LinkedList<T> {
         this.maxSize = maxSize;
     }
 
-    public EvictingList(final Collection<? extends T> c, final int maxSize) {
-        super(c);
-        this.maxSize = maxSize;
-    }
-
     @Override
     public boolean add(final T t) {
         if (size() >= maxSize) removeFirst();
         return super.add(t);
     }
 
-    public boolean isFull() {
-        return size() >= maxSize;
-    }
 }

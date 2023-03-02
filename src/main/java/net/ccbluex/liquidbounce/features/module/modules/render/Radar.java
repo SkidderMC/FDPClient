@@ -10,14 +10,12 @@ import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.render.Colors;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.StringConversions;
 import net.ccbluex.liquidbounce.features.value.FloatValue;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.input.Mouse;
@@ -51,8 +49,8 @@ public class Radar extends Module
             boolean bl = this.dragging = !this.dragging;
         }
         if (this.dragging && mc.currentScreen instanceof GuiChat) {
-            Object newValue = StringConversions.castNumber(Double.toString(mouseX - size1 / 2), 5);
-            Object newValueY = StringConversions.castNumber(Double.toString(mouseY - 2), 5);
+            Object newValue = StringConversions.castNumber(Double.toString(mouseX - size1 / 2));
+            Object newValueY = StringConversions.castNumber(Double.toString(mouseY - 2));
         } else {
             this.dragging = false;
         }

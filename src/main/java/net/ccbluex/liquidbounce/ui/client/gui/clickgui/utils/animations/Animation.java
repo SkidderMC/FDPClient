@@ -30,28 +30,8 @@ public abstract class Animation {
         return isDone() && this.direction.equals(direction);
     }
 
-    public double getLinearOutput() {
-        return 1 - ((timerUtil.getTime() / (double) duration) * endPoint);
-    }
-
-    public double getEndPoint() {
-        return endPoint;
-    }
-
-    public void setEndPoint(double endPoint) {
-        this.endPoint = endPoint;
-    }
-
-    public void reset() {
-        timerUtil.reset();
-    }
-
     public boolean isDone() {
         return timerUtil.hasTimeElapsed(duration);
-    }
-
-    public void changeDirection() {
-        setDirection(direction.opposite());
     }
 
     public Direction getDirection() {
@@ -63,10 +43,6 @@ public abstract class Animation {
             this.direction = direction;
             timerUtil.setTime(System.currentTimeMillis() - (duration - Math.min(duration, timerUtil.getTime())));
         }
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
     }
 
     protected boolean correctOutput() {

@@ -7,16 +7,13 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.api;
 
 public interface FontRenderer {
 	float drawString(CharSequence text, float x, float y, int color, boolean dropShadow);
-	float drawString(CharSequence text, double x, double y, int color, boolean dropShadow);
-	String trimStringToWidth(CharSequence text, int width, boolean reverse);
-	int stringWidth(CharSequence text);
-	float charWidth(char ch);
-	String getName();
-	int getHeight();
-	boolean isAntiAlias();
-	boolean isFractionalMetrics();
 
-	//region default methods
+    String trimStringToWidth(CharSequence text, int width, boolean reverse);
+	int stringWidth(CharSequence text);
+
+    int getHeight();
+
+    //region default methods
 	default float drawString(CharSequence text, float x, float y, int color) {
 		return drawString(text, x, y, color, false);
 	}

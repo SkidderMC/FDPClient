@@ -25,10 +25,6 @@ public class WorldToScreen {
     }
 
 
-    public static Vector2f worldToScreen(Vector3f pointInWorld, int screenWidth, int screenHeight) {
-        return worldToScreen(pointInWorld, getMatrix(GL11.GL_MODELVIEW_MATRIX), getMatrix(GL11.GL_PROJECTION_MATRIX), screenWidth, screenHeight);
-    }
-
     public static Vector2f worldToScreen(Vector3f pointInWorld, Matrix4f view, Matrix4f projection, int screenWidth, int screenHeight) {
         Vector4f clipSpacePos = multiply(multiply(new Vector4f(pointInWorld.x, pointInWorld.y, pointInWorld.z, 1.0f), view), projection);
 

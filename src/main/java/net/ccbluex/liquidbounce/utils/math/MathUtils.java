@@ -37,12 +37,7 @@ public final class MathUtils {
     public static double roundToHalf(double d) {
         return Math.round(d * 2) / 2.0;
     }
-    public static float clampValue(final float value, final float floor, final float cap) {
-        if (value < floor) {
-            return floor;
-        }
-        return Math.min(value, cap);
-    }
+
     public static Double interpolate(double oldValue, double newValue, double interpolationValue){
         return (oldValue + (newValue - oldValue) * interpolationValue);
     }
@@ -65,12 +60,4 @@ public final class MathUtils {
         return bd.doubleValue();
     }
 
-    public static float getRandomFloat(float max, float min) {
-        SecureRandom random = new SecureRandom();
-        return random.nextFloat() * (max - min) + min;
-    }
-
-    public static double randomNumber(double max, double min) {
-        return Math.random() * (max - min) + min;
-    }
 }

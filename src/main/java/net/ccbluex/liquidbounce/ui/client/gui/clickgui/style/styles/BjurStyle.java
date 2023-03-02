@@ -113,8 +113,7 @@ public class BjurStyle extends GuiScreen {
                     this.previousmouse = false;
                 if (isSettingsButtonHovered(startX + 100.0F, mY + 45.0F, startX + 200.0F, mY + 70.0F, mouseX, mouseY) && Mouse.isButtonDown(1)) {
                     for (int j = 0; j < currentModule.getValues().size(); j++) {
-                        Value value = currentModule.getValues().get(j);
-                      //  if (value instanceof BoolValue)
+                        //  if (value instanceof BoolValue)
                        //     ((BoolValue)value).setAnim(55.0F);
                     }
                     currentModule = module;
@@ -158,7 +157,6 @@ public class BjurStyle extends GuiScreen {
                         if (!this.previousmouse && Mouse.isButtonDown(0)) {
                             render = floatValue.getMinimum();
                             double max = floatValue.getMaximum();
-                            double inc = 1.0D;
                             double valAbs = mouseX - x + 1.0D;
                             double perc = valAbs / 68.0D;
                             perc = Math.min(Math.max(0.0D, perc), 1.0D);
@@ -186,7 +184,6 @@ public class BjurStyle extends GuiScreen {
                         if (!this.previousmouse && Mouse.isButtonDown(0)) {
                             render = floatValue2.getMinimum();
                             double max = floatValue2.getMaximum();
-                            double inc = 0.009999999776482582D;
                             double valAbs = mouseX - x + 1.0D;
                             double perc = valAbs / 68.0D;
                             perc = Math.min(Math.max(0.0D, perc), 1.0D);
@@ -203,8 +200,6 @@ public class BjurStyle extends GuiScreen {
                 if (value2 instanceof BoolValue) {
                     BoolValue boolValue = (BoolValue)value2;
                     float x = startX + 320.0F;
-                    int xx = 50;
-                    int x2x = 65;
                     Fonts.font40.drawString(boolValue.getName(), startX + 220.0F, mY + 50.0F, (new Color(175, 175, 175, alpha)).getRGB());
                     if (boolValue.getValue()) {
                         RenderUtils.drawRect(x + 50.0F, mY + 50.0F, x + 65.0F, mY + 59.0F, isCheckBoxHovered(x + 50.0F - 5.0F, mY + 50.0F, x + 65.0F + 6.0F, mY + 59.0F, mouseX, mouseY) ? (new Color(80, 80, 80, alpha)).getRGB() : (new Color(20, 20, 20, alpha)).getRGB());
@@ -284,15 +279,12 @@ public class BjurStyle extends GuiScreen {
         }
         RenderUtils.drawRect((sr.getScaledWidth() / 2F - 39), 0.0F, (sr.getScaledWidth() / 2F + 39), 19.0F, (new Color(0, 0, 0, alpha / 2)).getRGB());
         RenderUtils.drawRect((sr.getScaledWidth() / 2F - 40), 0.0F, (sr.getScaledWidth() / 2F + 40), 20.0F, (new Color(0, 0, 0, alpha / 2)).getRGB());
-        int l = 60;
-        int l2 = 45;
         float k2 = startY + 10.0F;
         float xx2 = startX + 5.0F;
         for (int i2 = 0; i2 < (ModuleCategory.values()).length; i2++) {
             ModuleCategory[] iterator = ModuleCategory.values();
             if (iterator[i2] == currentModuleType)
                 RenderUtils.drawRect(xx2 + 8.0F, k2 + 12.0F + 60.0F + (i2 * 45), xx2 + 30.0F, k2 + 13.0F + 60.0F + (i2 * 45), color39);
-            float y2 = k2 + 20.0F + 60.0F + (i2 * 45);
             Fonts.font40.drawString(iterator[i2].toString(), xx2 + (isCategoryHovered(xx2 + 8.0F, k2 - 10.0F + 60.0F + (i2 * 45), xx2 + 80.0F, k2 + 20.0F + 60.0F + (i2 * 45), mouseX, mouseY) ? 27 : 25), k2 + 56.0F + (45 * i2), (new Color(255, 255, 255, alpha)).getRGB());
             try {
                 if (isCategoryHovered(xx2 + 8.0F, k2 - 10.0F + 60.0F + (i2 * 45), xx2 + 80.0F, k2 + 20.0F + 60.0F + (i2 * 45), mouseX, mouseY) && Mouse.isButtonDown(0)) {
@@ -301,8 +293,7 @@ public class BjurStyle extends GuiScreen {
                     moduleStart = 0;
                     valueStart = 0;
                     for (int x3 = 0; x3 < currentModule.getValues().size(); x3++) {
-                        Value value3 = currentModule.getValues().get(x3);
-                       // if (value3 instanceof BoolValue)
+                        // if (value3 instanceof BoolValue)
                         //    ((BoolValue)value3).setAnim(55.0F);
                     }
                 }
@@ -314,8 +305,7 @@ public class BjurStyle extends GuiScreen {
 
     public void initGui() {
         for (int i = 0; i < currentModule.getValues().size(); i++) {
-            Value value = currentModule.getValues().get(i);
-           // if (value instanceof BoolValue)
+            // if (value instanceof BoolValue)
            //     ((BoolValue)value).setAnim(55.0F);
         }
         super.initGui();
@@ -336,7 +326,6 @@ public class BjurStyle extends GuiScreen {
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) throws IOException {
-        float x = startX + 220.0F;
         float mY = startY + 30.0F;
         for (int i = 0; i < currentModule.getValues().size() && mY <= startY + 350.0F; i++) {
             if (i >= valueStart) {

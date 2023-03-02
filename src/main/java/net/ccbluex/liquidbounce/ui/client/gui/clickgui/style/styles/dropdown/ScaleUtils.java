@@ -26,24 +26,6 @@ public class ScaleUtils {
         }
         return new int[]{x,y};
     }
-    public static double[] getScaledMouseCoordinates(Minecraft mc, double mouseX, double mouseY){
-        double x = mouseX;
-        double y = mouseY;
-        switch (mc.gameSettings.guiScale){
-            case 0:
-                x*=2;
-                y*=2;
-                break;
-            case 1:
-                x*=0.5;
-                y*=0.5;
-                break;
-            case 3:
-                x*=1.4999999999999999998;
-                y*=1.4999999999999999998;
-        }
-        return new double[]{x,y};
-    }
 
     public static void scale(Minecraft mc){
         switch (mc.gameSettings.guiScale){

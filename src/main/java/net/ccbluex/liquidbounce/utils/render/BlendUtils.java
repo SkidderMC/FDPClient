@@ -8,18 +8,9 @@ package net.ccbluex.liquidbounce.utils.render;
 import java.awt.*;
 
 public enum BlendUtils {
-    GREEN("§A"),
-    GOLD("§6"),
-    RED("§C");
+    ;
 
-    final String colorCode;
-
-    BlendUtils(String colorCode) {
-        this.colorCode = colorCode;
-    }
-
-    public static Color getColorWithOpacity(Color color, int alpha) {
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+    BlendUtils() {
     }
 
     public static Color getHealthColor(float health, float maxHealth) {

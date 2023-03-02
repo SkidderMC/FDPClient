@@ -131,15 +131,6 @@ final class SimpleFontRenderer implements FontRenderer {
     //endregion
 
     @Override
-    public float drawString(CharSequence text, double x, double y, int color, boolean dropShadow) {
-        if (dropShadow) {
-            float shadowWidth = drawStringInternal(text, x + 0.5, y + 0.5, color, true);
-            return Math.max(shadowWidth, drawStringInternal(text, x, y, color, false));
-        } else {
-            return drawStringInternal(text, x, y, color, false);
-        }
-    }
-    @Override
     public float drawString(CharSequence text, float x, float y, int color, boolean dropShadow) {
         if (dropShadow) {
             float shadowWidth = drawStringInternal(text, x + 0.5, y + 0.5, color, true);
@@ -371,11 +362,6 @@ final class SimpleFontRenderer implements FontRenderer {
         return width / 2;
     }
 
-    @Override
-    public float charWidth(char s){
-        return (charData[s].width - 8) / 2;
-    }
-
     public CharData[] getCharData() {
         return charData;
     }
@@ -454,26 +440,10 @@ final class SimpleFontRenderer implements FontRenderer {
         GL11.glEnable(GL_TEXTURE_2D);
     }
 
-    //endregion
-    //region lombok
-    @Override
-    public String getName() {
-        return awtFont.getFamily();
-    }
-
     @Override
     public int getHeight() {
         return (fontHeight - 8) / 2;
     }
 
-    @Override
-    public boolean isAntiAlias() {
-        return antiAlias;
-    }
-
-    @Override
-    public boolean isFractionalMetrics() {
-        return fractionalMetrics;
-    }
     //endregion
 }

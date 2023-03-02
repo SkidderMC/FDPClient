@@ -11,32 +11,23 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 
 import java.awt.*;
 public class MainMenuButton {
-    public ModernGuiMainMenu parent;
     public String icon;
     public String text;
     public Executor action;
-    public int buttonID;
     public float x;
     public float y;
-    public float textOffset;
     public float yAnimation = 0.0F;
 
-    public MainMenuButton(ModernGuiMainMenu parent, int id, String icon, String text, Executor action) {
-        this.parent = parent;
-        this.buttonID = id;
+    public MainMenuButton(String icon, String text, Executor action) {
         this.icon = icon;
         this.text = text;
         this.action = action;
-        this.textOffset = 0.0F;
     }
 
-    public MainMenuButton(ModernGuiMainMenu parent, int id, String icon, String text, Executor action, float yOffset) {
-        this.parent = parent;
-        this.buttonID = id;
+    public MainMenuButton(String icon, String text, Executor action, float yOffset) {
         this.icon = icon;
         this.text = text;
         this.action = action;
-        this.textOffset = yOffset;
     }
 
     public void draw(float x, float y, int mouseX, int mouseY) {

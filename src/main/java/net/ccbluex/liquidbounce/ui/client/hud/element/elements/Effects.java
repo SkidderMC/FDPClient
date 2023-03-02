@@ -40,7 +40,7 @@ public class Effects extends Element {
             if(potionMap.containsKey(potion) && potionMap.get(potion).level == potionEffect.getAmplifier())
                 potionData = potionMap.get(potion);
             else
-                potionMap.put(potion, (potionData = new PotionData(potion, new Translate(0, - 40F + y), potionEffect.getAmplifier())));
+                potionMap.put(potion, (potionData = new PotionData(new Translate(0, - 40F + y), potionEffect.getAmplifier())));
             boolean flag = true;
             for(final PotionEffect checkEffect : mc.thePlayer.getActivePotionEffects())
                 if (checkEffect.getAmplifier() == potionData.level) {

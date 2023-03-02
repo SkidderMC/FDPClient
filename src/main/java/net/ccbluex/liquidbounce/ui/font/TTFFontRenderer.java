@@ -77,10 +77,6 @@ public class TTFFontRenderer {
         this(font, characterCount, true);
     }
 
-    public TTFFontRenderer(Font font, boolean fractionalMetrics) {
-        this(font, 256, fractionalMetrics);
-    }
-
     public TTFFontRenderer(Font font, int characterCount, boolean fractionalMetrics) {
         this.font = font;
         this.fractionalMetrics = fractionalMetrics;
@@ -164,7 +160,7 @@ public class TTFFontRenderer {
             createTexture(textureId, characterImage);
 
             // Initiates the character data and stores it in the data array.
-            characterData[index] = new CharacterData(character, characterImage.getWidth(), characterImage.getHeight(), textureId);
+            characterData[index] = new CharacterData(characterImage.getWidth(), characterImage.getHeight(), textureId);
         }
 
         // Returns the filled character data array.
@@ -220,14 +216,6 @@ public class TTFFontRenderer {
     }
 
 
-    public void drawOutlineStringWithoutGL(String s, float x , float y, int color, FontRenderer fontRenderer) {
-        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 - 1), (int) (y * 2), Color.BLACK.getRGB());
-        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 + 1), (int) (y * 2), Color.BLACK.getRGB());
-        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 - 1), Color.BLACK.getRGB());
-        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 + 1), Color.BLACK.getRGB());
-        fontRenderer.drawString(s, (int) (x * 2), (int) (y * 2), color);
-    }
-
     /**
      * Renders the given string.
      *
@@ -237,21 +225,6 @@ public class TTFFontRenderer {
      * @param color The color of the text.
      */
     public void drawString(String text, float x, float y, int color) {
-        renderString(text, x, y, color, false);
-    }
-
-    /**
-     * Renders the given string.
-     *
-     * @param text  The text to be rendered.
-     * @param x     The x position of the text.
-     * @param y     The y position of the text.
-     * @param color The color of the text.
-     */
-    public void drawStringWithShadow(String text, float x, float y, int color) {
-        GL11.glTranslated(0.5, 0.5, 0);
-        renderString(text, x, y, color, true);
-        GL11.glTranslated(-0.5, -0.5, 0);
         renderString(text, x, y, color, false);
     }
 
@@ -465,65 +438,6 @@ public class TTFFontRenderer {
     }
 
     /**
-     * Gets the height of the given text.
-     *
-     * @param text The text to get the height of.
-     * @return The height of the given text.
-     */
-    public float getHeight(String text) {
-
-        // The height of the string.
-        float height = 0;
-
-        // The character texture set to be used. (Regular by default)
-        CharacterData[] characterData = regularData;
-
-        // The length of the text.
-        int length = text.length();
-
-        // Loops through the text.
-        for (int i = 0; i < length; i++) {
-            // The character at the index of 'i'.
-            char character = text.charAt(i);
-
-            // The previous character.
-            char previous = i > 0 ? text.charAt(i - 1) : '.';
-
-            // Continues if the previous color was the color invoker.
-            if (previous == COLOR_INVOKER) continue;
-
-            // Sets the color if the character is the color invoker and the character index is less than the length.
-            if (character == COLOR_INVOKER && i < length) {
-
-                // The color index of the character after the current character.
-                int index = "0123456789abcdefklmnor".indexOf(text.toLowerCase(Locale.ENGLISH).charAt(i + 1));
-
-                if (index == 17)
-                    // Sets the character data to the bold type.
-                    characterData = boldData;
-                else if (index == 20)
-                    // Sets the character data to the italics type.
-                    characterData = italicsData;
-                else if (index == 21)
-                    // Sets the character data to the regular type.
-                    characterData = regularData;
-            } else {
-                // Continues to not crash!
-                if (character > 255) continue;
-
-                // The character data for the given character.
-                CharacterData charData = characterData[character];
-
-                // Sets the height if its bigger.
-                height = Math.max(height, charData.height);
-            }
-        }
-
-        // Returns the height.
-        return height / 2 - MARGIN / 2;
-    }
-
-    /**
      * Draws the character.
      *
      * @param character     The character to be drawn.
@@ -624,19 +538,10 @@ public class TTFFontRenderer {
         }
     }
 
-    public Font getFont() {
-        return font;
-    }
-
     /**
      * Class that holds the data for each character.
      */
-    class CharacterData {
-
-        /**
-         * The character the data belongs to.
-         */
-        public char character;
+    static class CharacterData {
 
         /**
          * The width of the character.
@@ -653,8 +558,7 @@ public class TTFFontRenderer {
          */
         private int textureId;
 
-        public CharacterData(char character, float width, float height, int textureId) {
-            this.character = character;
+        public CharacterData(float width, float height, int textureId) {
             this.width = width;
             this.height = height;
             this.textureId = textureId;

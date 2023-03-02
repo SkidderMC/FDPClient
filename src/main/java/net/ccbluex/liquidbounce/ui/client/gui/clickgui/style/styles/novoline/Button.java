@@ -20,10 +20,8 @@ public class Button {
     public float y;
     public int index;
     public int remander;
-    public double opacity;
     public ArrayList<ValueButton> buttons = new ArrayList<>();
     public boolean expand;
-    boolean hover;
 
     public Button(Module cheat, int x, int y) {
         this.cheat = cheat;
@@ -44,7 +42,7 @@ public class Button {
     }
 
     public long rticks;
-    public void render(int mouseX, int mouseY, int x11,int y11,int x22,int y22) {
+    public void render(int mouseX, int mouseY) {
         final GameFontRenderer font = Fonts.font35;
         float y2 = y + 15;
         buttons.clear();
@@ -78,7 +76,6 @@ public class Button {
         GL11.glPushMatrix();
         //GL11.glEnable(3089);
         //limitation.cut();
-        hover = mouseX > x - 7 && mouseX < x + 85 && mouseY > y - 6 && mouseY < y + font.FONT_HEIGHT + 4;
         RenderUtils.drawRect(x - 5, y - 5, x + 85 + parent.allX, y + font.FONT_HEIGHT + 5, new Color(40, 40, 40).getRGB());
         RenderUtils.drawRect(x - 5, y - 5 - 1, x + 85 + parent.allX, y + font.FONT_HEIGHT + 3 + 1,
                 hudcolorwithalpha());//Button Font List

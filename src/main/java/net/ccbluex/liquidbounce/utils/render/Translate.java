@@ -27,33 +27,10 @@ public final class Translate {
             first = true;
         }
     }
-    public void translate(float targetX, float targetY) {
-        x = AnimationUtils.lstransition(x, targetX, 0.0);
-        y = AnimationUtils.lstransition(y, targetY, 0.0);
-    }
-    public void translate(float targetX, float targetY, double speed) {
-        x = AnimationUtils.lstransition(x, targetX, speed);
-        y = AnimationUtils.lstransition(y, targetY, speed);
-    }
-    public void interpolate2(float targetX, float targetY, double smoothing) {
-        this.x = targetX;
-        this.y = AnimationUtil.animate(targetY, this.y, smoothing);
-    }
-
-    public float getX() {
-        return this.x;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
 
     public float getY() {
         return this.y;
     }
 
-    public void setY(float y) {
-        this.y = y;
-    }
 }
 

@@ -24,12 +24,6 @@ public class Particle {
         this.removeTimer.reset();
     }
 
-    public Particle(final Vec3 position, final Vec3 velocity) {
-        this.position = position;
-        this.delta = new Vec3(velocity.xCoord * 0.01, velocity.yCoord * 0.01, velocity.zCoord * 0.01);
-        this.removeTimer.reset();
-    }
-
     public void update() {
         final Block block1 = PlayerParticles.getBlock(this.position.xCoord, this.position.yCoord, this.position.zCoord + this.delta.zCoord);
         if (!(block1 instanceof BlockAir || block1 instanceof BlockBush || block1 instanceof BlockLiquid))

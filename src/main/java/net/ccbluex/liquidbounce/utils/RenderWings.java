@@ -41,7 +41,6 @@ public class RenderWings extends ModelBase {
         this.wing.addChild(this.wingTip);
     }
     public void renderWings(float partialTicks) {
-        boolean per = mc.gameSettings.thirdPersonView == 0;
         double scale = 100 / 100.0D;
         double rotate = this.interpolate( mc.thePlayer.prevRenderYawOffset, mc.thePlayer.renderYawOffset, partialTicks);
         GL11.glPushMatrix();

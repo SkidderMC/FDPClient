@@ -417,64 +417,6 @@ object GLUtils {
         GlStateManager.color(red, green, blue, alpha)
     }
 
-    fun drawEntityBox(entity: Entity, color: Color, filled: Boolean, outlined: Boolean) {
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glDisable(GL_TEXTURE_2D)
-        glDisable(GL_DEPTH_TEST)
-        glDepthMask(false)
-
-        val bb = entity.renderBoundingBox
-
-        GlStateManager.resetColor()
-        glDisable(GL_BLEND)
-        glEnable(GL_TEXTURE_2D)
-        glEnable(GL_DEPTH_TEST)
-        glDepthMask(true)
-        glDisable(GL_LINE_SMOOTH)
-    }
-
-    @JvmStatic
-    fun drawBlockBox(blockPos: BlockPos, color: Color, filled: Boolean, outlined: Boolean) {
-        val block = blockPos.getBlock()
-
-        var x = blockPos.x - mc.renderManager.renderPosX
-        var y = blockPos.y - mc.renderManager.renderPosY
-        var z = blockPos.z - mc.renderManager.renderPosZ
-
-        var bb = AxisAlignedBB(x, y, z, x + 1.0, y + 1.0, z + 1.0)
-
-        if (block != null) {
-            x = interpolate(mc.thePlayer.lastTickPosX, mc.thePlayer.posX)
-            y = interpolate(mc.thePlayer.lastTickPosY, mc.thePlayer.posY)
-            z = interpolate(mc.thePlayer.lastTickPosZ, mc.thePlayer.posZ)
-
-            bb = block.getSelectedBoundingBox(mc.theWorld, blockPos)
-                .expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
-                .offset(-x, -y, -z)
-        }
-
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glDisable(GL_TEXTURE_2D)
-        glDisable(GL_DEPTH_TEST)
-        glDepthMask(false)
-
-        if (outlined) {
-            glLineWidth(1f)
-            glEnable(GL_LINE_SMOOTH)
-            glColor(color)
-            drawOutlinedBB(bb)
-        }
-
-        GlStateManager.resetColor()
-        glDisable(GL_BLEND)
-        glEnable(GL_TEXTURE_2D)
-        glEnable(GL_DEPTH_TEST)
-        glDepthMask(true)
-        glDisable(GL_LINE_SMOOTH)
-    }
-
     fun blur(radius: Int, f: () -> Unit) {
         StencilUtils.initStencil(mc.framebuffer)
         StencilUtils.writeToStencil()

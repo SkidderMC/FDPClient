@@ -14,16 +14,6 @@ public final class Timer {
         this.previousTime = -1L;
     }
 
-    /* methods */
-    public boolean sleep(long time) {
-        if (time() >= time) {
-            reset();
-            return true;
-        }
-
-        return false;
-    }
-
     public boolean check(float milliseconds) {
         return System.currentTimeMillis() - previousTime >= milliseconds;
     }
@@ -37,19 +27,8 @@ public final class Timer {
         this.lastMS = getCurrentMS();
     }
 
-    public long time() {
-        return System.nanoTime() / 1000000L - lastMS;
-    }
-
     public long getCurrentMS() {
         return System.nanoTime() / 1000000L;
     }
 
-    public double getLastDelay () {
-        return getCurrentMS() - getLastMS();
-    }
-
-    public long getLastMS() {
-        return lastMS;
-    }
 }

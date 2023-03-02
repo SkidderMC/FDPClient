@@ -376,13 +376,6 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun TwoRainbow(offset: Long, alpha: Float): Color {
-        val color = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 8.9999999E10F % 1, 0.75F, 0.8F))
-        return Color(color.red / 255.0F * 1.0F, color.green / 255.0F * 1.0F, color.blue / 255.0f * 1, color.alpha / 255.0f)
-    
-    }
-
-    @JvmStatic
     fun Astolfo(var2: Int, st: Float, bright: Float): Int {
         var currentColor = Math.ceil((System.currentTimeMillis() + (var2 * 130).toLong()).toDouble()) / 6
         return Color.getHSBColor(if ((360.0.also { currentColor %= it } / 360.0).toFloat()

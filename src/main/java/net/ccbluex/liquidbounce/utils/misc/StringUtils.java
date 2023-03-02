@@ -17,10 +17,6 @@ public final class StringUtils {
     private static final Map<String,String> pinyinMap=new HashMap<>();
     private static final HashMap<String,String> airCache = new HashMap<>();
 
-    public static String toCompleteString(final String[] args) {
-        return toCompleteString(args, 0);
-    }
-
     public static String toCompleteString(final String[] args, final int start) {
         return toCompleteString(args, start, " ");
     }

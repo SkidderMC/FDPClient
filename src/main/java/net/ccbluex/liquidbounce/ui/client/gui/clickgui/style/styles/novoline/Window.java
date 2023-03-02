@@ -30,7 +30,7 @@ public class Window {
     public int scroll;
     public int scrollTo;
     int allX;
-    final Translate translate = new Translate(0F, 0F);
+    final Translate translate = new Translate(0F);
 
     public Window(ModuleCategory category, int x, int y) {
         this.category = category;
@@ -165,7 +165,7 @@ public class Window {
 
         //Icons end
         if (expand > 0) {
-            buttons.forEach(b2 -> b2.render(mouseX, mouseY, x, y + 16, x + 90 + allX, (int) (y + expand)));
+            buttons.forEach(b2 -> b2.render(mouseX, mouseY));
         }
 
         //GL11.glDisable(GL11.GL_SCISSOR_TEST);

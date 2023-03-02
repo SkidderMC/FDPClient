@@ -21,13 +21,6 @@ public class RollingArrayLongBuffer {
     }
 
     /**
-     * @return The contents of the buffer
-     */
-    public long[] getContents() {
-        return contents;
-    }
-
-    /**
      * Adds an element to the buffer
      *
      * @param l The element to be added

@@ -543,13 +543,6 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         }else targetRotation = null;
     }
 
-    public static Rotation getRotations(Entity ent) {
-        double x = ent.posX;
-        double z = ent.posZ;
-        double y = ent.posY + (double)(ent.getEyeHeight() / 2.0f);
-        return RotationUtils.getRotationFromPosition(x, z, y);
-    }
-
 
     /**
      *
@@ -567,37 +560,6 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         float yaw = (float)(Math.atan2(z, x) * 180.0 / 3.141592653589793) - 90.0f;
         float pitch = (float)(-(Math.atan2(y, dist) * 180.0 / 3.141592653589793));
         return new Rotation(yaw,pitch);
-    }
-
-    public static Rotation getRotationFromPosition(double x, double z, double y) {
-        double xDiff = x - mc.thePlayer.posX;
-        double zDiff = z - mc.thePlayer.posZ;
-        double yDiff = y - mc.thePlayer.posY - 1.2;
-        double dist = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff);
-        float yaw = (float)(Math.atan2(zDiff, xDiff) * 180.0 / Math.PI) - 90.0f;
-        float pitch = (float)(- Math.atan2(yDiff, dist) * 180.0 / Math.PI);
-        return new Rotation(yaw,pitch);
-    }
-
-    /**
-     * skid from https://github.com/danielkrupinski/Osiris
-     */
-    public static Rotation rotationSmooth(Rotation currentRotation, Rotation targetRotation, float smooth) {
-        return new Rotation(currentRotation.getYaw()+((targetRotation.getYaw()-currentRotation.getYaw())/smooth),
-                currentRotation.getPitch()+((targetRotation.getPitch()-currentRotation.getPitch())/smooth));
-    }
-    public static Rotation getRotationFromEyeHasPrev(EntityLivingBase target) {
-        final double x = (target.prevPosX + (target.posX - target.prevPosX));
-        final double y = (target.prevPosY + (target.posY - target.prevPosY));
-        final double z = (target.prevPosZ + (target.posZ - target.prevPosZ));
-        return getRotationFromEyeHasPrev(x, y, z);
-    }
-    public static Rotation getRotationFromEyeHasPrev(double x, double y, double z) {
-        double xDiff = x - (mc.thePlayer.prevPosX + (mc.thePlayer.posX - mc.thePlayer.prevPosX));
-        double yDiff = y - ((mc.thePlayer.prevPosY + (mc.thePlayer.posY - mc.thePlayer.prevPosY)) + (mc.thePlayer.getEntityBoundingBox().maxY - mc.thePlayer.getEntityBoundingBox().minY));
-        double zDiff = z - (mc.thePlayer.prevPosZ + (mc.thePlayer.posZ - mc.thePlayer.prevPosZ));
-        final double dist = MathHelper.sqrt_double(xDiff * xDiff + zDiff * zDiff);
-        return new Rotation((float) (Math.atan2(zDiff, xDiff) * 180D / Math.PI) - 90F, (float) -(Math.atan2(yDiff, dist) * 180D / Math.PI));
     }
 
     /**

@@ -26,13 +26,4 @@ public class GLUtil {
         GlStateManager.disableBlend();
     }
 
-    public static void rotate(float x, float y, float rotate, Runnable f) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(x, y, 0);
-        GlStateManager.rotate(rotate, 0, 0, -1);
-        GlStateManager.translate(-x, -y, 0);
-        f.run();
-        GlStateManager.popMatrix();
-    }
-
 }

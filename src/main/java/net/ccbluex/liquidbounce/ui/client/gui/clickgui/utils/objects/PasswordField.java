@@ -80,30 +80,6 @@ public class PasswordField extends Gui {
         placeHolderTextX = (xPosition + width) / 2f;
     }
 
-    public PasswordField(String placeholder, int componentId, int x, int y, int par5Width, int par6Height, FontRenderer fr, int textColor) {
-        this.placeholder = placeholder;
-        this.id = componentId;
-        this.xPosition = x;
-        this.yPosition = y;
-        this.width = par5Width;
-        this.height = par6Height;
-        this.fontRenderer = fr;
-        this.textColor = textColor;
-        placeHolderTextX = (xPosition + width) / 2f;
-
-    }
-
-    public void func_175207_a(GuiPageButtonList.GuiResponder p_175207_1_) {
-        this.field_175210_x = p_175207_1_;
-    }
-
-    /**
-     * Increments the cursor counter
-     */
-    public void updateCursorCounter() {
-        ++this.cursorCounter;
-    }
-
     /**
      * Returns the contents of the textbox
      */
@@ -133,10 +109,6 @@ public class PasswordField extends Gui {
         int i = Math.min(this.cursorPosition, this.selectionEnd);
         int j = Math.max(this.cursorPosition, this.selectionEnd);
         return this.text.substring(i, j);
-    }
-
-    public void func_175205_a(Predicate<String> p_175205_1_) {
-        this.field_175209_y = p_175205_1_;
     }
 
     /**
@@ -194,10 +166,6 @@ public class PasswordField extends Gui {
         drawTextBox(text, false);
     }
 
-    public void drawPasswordBox() {
-        drawTextBox(text, true);
-    }
-
     /**
      * delete the selected text, otherwsie deletes characters from either side of the cursor. params: delete num
      */
@@ -232,10 +200,6 @@ public class PasswordField extends Gui {
                 }
             }
         }
-    }
-
-    public int getId() {
-        return this.id;
     }
 
     /**
@@ -549,14 +513,6 @@ public class PasswordField extends Gui {
         return this.maxStringLength;
     }
 
-    public void setMaxStringLength(int p_146203_1_) {
-        this.maxStringLength = p_146203_1_;
-
-        if (this.text.length() > p_146203_1_) {
-            this.text = this.text.substring(0, p_146203_1_);
-        }
-    }
-
 
     /**
      * returns the current position of the cursor
@@ -583,22 +539,6 @@ public class PasswordField extends Gui {
     }
 
     /**
-     * enable drawing background and outline
-     */
-    public void setEnableBackgroundDrawing(boolean p_146185_1_) {
-        this.enableBackgroundDrawing = p_146185_1_;
-    }
-
-    /**
-     * Sets the text colour for this textbox (disabled text will not use this colour)
-     */
-    public void setTextColor(int p_146193_1_) {
-    }
-
-    public void setDisabledTextColour(int p_146204_1_) {
-    }
-
-    /**
      * Getter for the focused field
      */
     public boolean isFocused() {
@@ -614,10 +554,6 @@ public class PasswordField extends Gui {
         }
 
         this.isFocused = p_146195_1_;
-    }
-
-    public void setEnabled(boolean p_146184_1_) {
-        this.isEnabled = p_146184_1_;
     }
 
     /**
@@ -674,23 +610,10 @@ public class PasswordField extends Gui {
     }
 
     /**
-     * if true the textbox can lose focus by clicking elsewhere on the screen
-     */
-    public void setCanLoseFocus(boolean p_146205_1_) {
-        this.canLoseFocus = p_146205_1_;
-    }
-
-    /**
      * returns true if this textbox is visible
      */
     public boolean getVisible() {
         return this.visible;
     }
 
-    /**
-     * Sets whether or not this textbox is visible
-     */
-    public void setVisible(boolean p_146189_1_) {
-        this.visible = p_146189_1_;
-    }
 }

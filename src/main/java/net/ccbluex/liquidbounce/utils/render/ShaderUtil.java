@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render;
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
-import net.ccbluex.liquidbounce.utils.misc.FileUtils;
+import net.ccbluex.liquidbounce.utils.FileUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 
@@ -173,7 +173,7 @@ public class ShaderUtil extends MinecraftInstance {
 
     private int createShader(InputStream inputStream, int shaderType) {
         int shader = glCreateShader(shaderType);
-        glShaderSource(shader, FileUtils.readInputStream(inputStream));
+        glShaderSource(shader, FileUtils.INSTANCE.readInputStream(inputStream));
         glCompileShader(shader);
 
 
