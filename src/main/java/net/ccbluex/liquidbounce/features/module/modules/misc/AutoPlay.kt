@@ -149,7 +149,7 @@ class AutoPlay : Module() {
                 "hycraft" -> {
                     component.siblings.forEach { sib ->
                         val clickEvent = sib.chatStyle.chatClickEvent
-                        if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.contains("playagain")) {
+                        if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.contains("play")) {
                             queueAutoPlay {
                                 mc.thePlayer.sendChatMessage(clickEvent.value)
                             }
