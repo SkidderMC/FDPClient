@@ -20,13 +20,13 @@ public abstract class MixinGuiButtonExt extends MixinGuiButton {
         }
         if(this.buttonRenderer != null) {
             this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
-            buttonRenderer.render(mouseX, mouseY);
+            buttonRenderer.render(mouseX, mouseY, mc);
 
             mc.getTextureManager().bindTexture(buttonTextures);
             mouseDragged(mc, mouseX, mouseY);
             GlStateManager.resetColor();
 
-            buttonRenderer.drawButtonText();
+            buttonRenderer.drawButtonText(mc);
         } else {
             this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
             int k = this.getHoverState(this.hovered);
