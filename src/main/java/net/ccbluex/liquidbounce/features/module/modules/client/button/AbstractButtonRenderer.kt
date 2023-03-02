@@ -11,9 +11,9 @@ import net.minecraft.client.gui.GuiButton
 import java.awt.Color
 
 abstract class AbstractButtonRenderer(protected val button: GuiButton) {
-    abstract fun render(mouseX: Int, mouseY: Int, mc: Minecraft)
+    abstract fun render(mouseX: Int, mouseY: Int)
 
-    open fun drawButtonText(mc: Minecraft) {
+    open fun drawButtonText() {
         FontLoaders.F18.DisplayFonts(
             button.displayString,
             button.xPosition + button.width / 2f - FontLoaders.F18.DisplayFontWidths(FontLoaders.F18,button.displayString) / 2f,

@@ -65,8 +65,8 @@ public abstract class MixinGuiButton extends Gui {
          }
          this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
          this.mouseDragged(mc, mouseX, mouseY);
-         buttonRenderer.render(mouseX, mouseY, mc);
-         buttonRenderer.drawButtonText(mc);
+         buttonRenderer.render(mouseX, mouseY);
+         buttonRenderer.drawButtonText();
          ci.cancel();
       }
    }
