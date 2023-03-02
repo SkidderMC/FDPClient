@@ -101,6 +101,7 @@ class Scaffold : Module() {
     private val customPitchValue = FloatValue("CustomPitch", 82.4f, -90f, 90f).displayable { rotationsValue.equals("Custom") }
     private val customtowerYawValue = IntegerValue("CustomTowerYaw", -145, -180, 180).displayable { towerrotationsValue.equals("Custom") }
     private val customtowerPitchValue = FloatValue("CustomTowerPitch", 79f, -90f, 90f).displayable { towerrotationsValue.equals("Custom") }
+    private val rotationStrafeValue = BoolValue("RotationStrafe", true)
     // private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") }
@@ -255,6 +256,14 @@ class Scaffold : Module() {
         delayTimer.reset()
         zitterTimer.reset()
         clickTimer.reset()
+    }
+    
+    @EventTarget
+    fun onStrafe(event: StrafeEvent) {
+        if (rotationStrafeValue.get() && lockRotation != null) {
+            lockRotation.applyStrafeToPlayer(event)
+            event.cancelEvent()
+        }
     }
 
     /**
