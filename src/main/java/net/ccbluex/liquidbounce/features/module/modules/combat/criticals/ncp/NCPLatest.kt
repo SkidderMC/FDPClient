@@ -9,9 +9,9 @@ class NCPLatestCritical : CriticalMode("NCPLatest") {
     override fun onAttack(event: AttackEvent) {
         attacked ++
         if (attacked >= 5) {
-            critical.sendCriticalPacket(yOffset = 0.00001058293536f, ground = false)
-            critical.sendCriticalPacket(yOffset = 0.00000916580235f, ground = false)
-            critical.sendCriticalPacket(yOffset = 0.00000010371854f, ground = false)
+            critical.sendCriticalPacket(yOffset = 0.00001058293536, ground = false)
+            critical.sendCriticalPacket(yOffset = 0.00000916580235, ground = false)
+            critical.sendCriticalPacket(yOffset = 0.00000010371854, ground = false)
             attacked = 0
         }
     }
