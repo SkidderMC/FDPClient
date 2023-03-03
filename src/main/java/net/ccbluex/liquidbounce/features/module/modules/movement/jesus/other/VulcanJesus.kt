@@ -12,9 +12,6 @@ import net.minecraft.util.BlockPos
 
 class VulcanJesus : JesusMode("Vulcan") {
     private var nextStep = 0
-
-    override fun onEnable() {}
-
     override fun onJesus(event: UpdateEvent, blockPos: BlockPos) {
         if (jesus.isLiquidBlock() && mc.thePlayer.isInsideOfMaterial(Material.air)) {
             mc.thePlayer.motionY = 0.08
@@ -43,20 +40,20 @@ class VulcanJesus : JesusMode("Vulcan") {
                         mc.thePlayer.entityBoundingBox.maxY,
                         mc.thePlayer.entityBoundingBox.maxZ,
                         mc.thePlayer.entityBoundingBox.minX,
-                        mc.thePlayer.entityBoundingBox.minY - 0.01
+                        mc.thePlayer.entityBoundingBox.minY - 0.01,
                         mc.thePlayer.entityBoundingBox.minZ
-                )
-            )) {
+                    ))
+                ) { 
                 nextStep++
                 event.packet.onGround = false //Jesus A
                 when (nextStep) {
-                    1 -> event.packet.y += 0.082326592364824014f
-                    2 -> event.packet.y += 0.139279999790191618f
-                    3 -> event.packet.y += 0.165423999942779505f
-                    4 -> event.packet.y += 0.114271360352935746f
-                    5 -> event.packet.y += 0.04194693730418576f
+                    1 -> event.packet.y += 0.08232659236482401
+                    2 -> event.packet.y += 0.13927999979019162
+                    3 -> event.packet.y += 0.16542399994277950
+                    4 -> event.packet.y += 0.11427136035293574
+                    5 -> event.packet.y += 0.04194693730418576
                     6 -> {
-                        event.packet.y += 0.01236341326161235f
+                        event.packet.y += 0.01236341326161235
                         nextStep = 0
                     }
                 }
