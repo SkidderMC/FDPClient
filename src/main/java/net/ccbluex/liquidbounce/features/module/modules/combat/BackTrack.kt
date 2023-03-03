@@ -36,6 +36,10 @@ object Backtrack : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
+        if(state) {
+            state = false
+            alert("Temporarily disabled BackTrack due to some critical errors")
+        }
         val packet = event.packet
 
         when (packet) {
