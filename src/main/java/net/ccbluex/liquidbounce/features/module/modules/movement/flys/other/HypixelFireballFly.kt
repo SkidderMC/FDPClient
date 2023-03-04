@@ -16,13 +16,11 @@ class HypixelFireballFly : FlyMode("HypixelFireball") {
 
 
     private val warn = BoolValue("${valuePrefix}DamageWarn",true)
-    private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f)
+    private val timerValue = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f)
 
     private var velocitypacket = false
     private var tick = 0
     private var mSpeed = 0f
-    private var yaw = 0.0
-
 
     override fun onEnable() {
         if (warn.get())
@@ -31,25 +29,24 @@ class HypixelFireballFly : FlyMode("HypixelFireball") {
         tick = 0
     }
 
-
     override fun onUpdate(event: UpdateEvent) {
         mSpeed = MovementUtils.getSpeed()
+        mc.timer.timerSpeed = 1.0f
 
         if(velocitypacket) {
-            tick++
+            mc.timer.timerSpeed = timerValue.get()
             if (tick == 0) {
-                yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
                 mc.thePlayer.motionY = 1.45
-                mc.thePlayer.motionX = (-sin(yaw) * 1.4)
-                mc.thePlayer.motionZ = (cos(yaw) * 1.4)
+                MovementUtils.strafe(1.4f)
             } else if (tick == 1) {
-                mc.thePlayer.motionX = (-sin(yaw) * 1.85)
-                mc.thePlayer.motionZ = (cos(yaw) * 1.85)
+                MovementUtils.strafe(1.85f)
             } else if (tick < 12) {
-                mc.thePlayer.motionX = (-sin(yaw) * mSpeed.toDouble() * 0.99)
-                mc.thePlayer.motionZ = (cos(yaw) * mSpeed.toDouble() * 0.99)
-
+                MovementUtils.strafe(mSpeed * 0.99f)
+            } else {
+                velocitypacket = false
+                fly.state = false
             }
+            tick++
         }
     }
 
