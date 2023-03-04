@@ -1,9 +1,14 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -30,10 +35,17 @@ class JumpCircle : Module() {
     val end = FloatValue("End", 0.3f, 0f,1f)
 
     val circles = mutableListOf<Circle>()
+    var lastOnGround = false
 
     @EventTarget
-    fun onJump(event: JumpEvent) {
-        circles.add(Circle(System.currentTimeMillis(), mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ))
+    fun onUpdate(event: UpdateEvent) {
+        if (!mc.thePlayer.onGround && lastOnGround) {
+            circles.add(Circle(System.currentTimeMillis(), mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ))
+            lastOnGround = false
+        }
+        if (mc.thePlayer.onGround) {
+            lastOnGround = true
+        }
     }
 
     @EventTarget
