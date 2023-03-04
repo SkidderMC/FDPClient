@@ -92,8 +92,8 @@ class NCPSlimeFly : FlyMode("NCPSlime") {
                 if(mc.thePlayer.posY >= fly.launchY + 0.8) {
                     if(mc.thePlayer.onGround) {
                         RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, 90f))
-                        val movingObjectPosition: MovingObjectPosition = mc.thePlayer.rayTraceWithCustomRotation(4.5, mc.thePlayer.rotationYaw, 90.0f)
-                        if (movingObjectPosition.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return
+                        val movingObjectPosition = mc.thePlayer.rayTraceWithCustomRotation(4.5, mc.thePlayer.rotationYaw, 90.0f)
+                        if (movingObjectPosition?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return
                         val blockPos = movingObjectPosition.blockPos
                         val enumFacing = movingObjectPosition.sideHit
                         if(mc.playerController.onPlayerDamageBlock(blockPos, enumFacing)) {
@@ -120,8 +120,8 @@ class NCPSlimeFly : FlyMode("NCPSlime") {
 
                         val oldSlot = mc.thePlayer.inventory.currentItem
                         mc.thePlayer.inventory.currentItem = slot
-                        val movingObjectPosition: MovingObjectPosition = mc.thePlayer.rayTraceWithCustomRotation(4.5, mc.thePlayer.rotationYaw, 90.0f)
-                        if (movingObjectPosition.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return
+                        val movingObjectPosition = mc.thePlayer.rayTraceWithCustomRotation(4.5, mc.thePlayer.rotationYaw, 90.0f)
+                        if (movingObjectPosition?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) return
                         val blockPos = movingObjectPosition.blockPos
                         val enumFacing = movingObjectPosition.sideHit
                         val hitVec: Vec3 = movingObjectPosition.hitVec

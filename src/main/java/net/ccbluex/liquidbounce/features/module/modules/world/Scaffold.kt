@@ -29,7 +29,6 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
-import net.ccbluex.liquidbounce.utils.render.SmoothRenderUtils
 import net.minecraft.block.BlockAir
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -324,7 +323,7 @@ class Scaffold : Module() {
                 }
                 "raytrace" -> {
                     val rayTraceInfo = mc.thePlayer.rayTraceWithServerSideRotation(5.0)
-                    if (BlockUtils.getBlock(rayTraceInfo.blockPos) != Blocks.air) {
+                    if (rayTraceInfo != null && BlockUtils.getBlock(rayTraceInfo.blockPos) != Blocks.air) {
                         val blockPos = rayTraceInfo.blockPos
                         val hitVec = rayTraceInfo.hitVec
                         val directionVec = rayTraceInfo.sideHit.directionVec
@@ -766,12 +765,12 @@ class Scaffold : Module() {
             val rayTraceInfo = mc.thePlayer.rayTraceWithServerSideRotation(5.0)
             when (hitableCheckValue.get().lowercase()) {
                 "simple" -> {
-                    if (!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)) {
+                    if (rayTraceInfo != null && !rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)) {
                         return
                     }
                 }
                 "strict" -> {
-                    if (!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos) || rayTraceInfo.sideHit != targetPlace!!.enumFacing) {
+                    if (rayTraceInfo != null && (!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos) || rayTraceInfo.sideHit != targetPlace!!.enumFacing)) {
                         return
                     }
                 }

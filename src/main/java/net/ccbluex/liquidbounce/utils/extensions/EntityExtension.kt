@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
+import net.ccbluex.liquidbounce.script.api.global.Chat.alert
 import net.ccbluex.liquidbounce.utils.ClientUtils.mc
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -20,6 +21,8 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 import net.minecraft.world.World
 import net.minecraft.world.chunk.Chunk
+import org.apache.commons.io.IOExceptionWithCause
+import java.io.IOException
 import javax.vecmath.Vector3d
 import kotlin.math.*
 
@@ -45,18 +48,18 @@ fun getNearestPointBB(eye: Vec3, box: AxisAlignedBB): Vec3 {
     return Vec3(origin[0], origin[1], origin[2])
 }
 
-fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, yaw: Float, pitch: Float): MovingObjectPosition {
+fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, yaw: Float, pitch: Float): MovingObjectPosition? {
     val vec3 = this.getPositionEyes(1f)
     val vec31 = this.getVectorForRotation(pitch, yaw)
     val vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance)
     return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true)
 }
 
-fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, rotation: Rotation): MovingObjectPosition {
+fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, rotation: Rotation): MovingObjectPosition? {
     return this.rayTraceWithCustomRotation(blockReachDistance, rotation.yaw, rotation.pitch)
 }
 
-fun Entity.rayTraceWithServerSideRotation(blockReachDistance: Double): MovingObjectPosition {
+fun Entity.rayTraceWithServerSideRotation(blockReachDistance: Double): MovingObjectPosition? {
     return this.rayTraceWithCustomRotation(blockReachDistance, RotationUtils.serverRotation)
 }
 

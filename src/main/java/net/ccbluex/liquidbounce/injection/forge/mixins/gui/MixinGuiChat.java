@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.misc.ChatEnhance;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -48,10 +49,11 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     private float yPosOfInputField;
     private float fade = 0;
 
+    private final ChatEnhance chatEnhance = LiquidBounce.moduleManager.getModule(ChatEnhance.class);
+
     /**
      * @author Liuli
-     * 这种客户端验证需要玩家点击一段.开头的100长度字符串，而客户端会自动填充.say来尝试绕过
-     * 但是自动填充的.say在需要按上箭头重新发送上一条消息的时候就会因为长度不够导致展示不全
+     * @reason 这种客户端验证需要玩家点击一段'.'开头的100长度字符串，而客户端会自动填充.say来尝试绕过，但是自动填充的.say在需要按上箭头重新发送上一条消息的时候就会因为长度不够导致展示不全
      */
     @Overwrite
     public void getSentHistory(int p_getSentHistory_1_) {
@@ -77,7 +79,11 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
         if(text.startsWith(String.valueOf(LiquidBounce.commandManager.getPrefix()))) {
             this.inputField.setMaxStringLength(114514);
         } else {
-            this.inputField.setMaxStringLength(100);
+            if(chatEnhance.getState() && chatEnhance.getChatLimitValue().get()) {
+                this.inputField.setMaxStringLength(114514);
+            } else {
+                this.inputField.setMaxStringLength(100);
+            }
         }
         this.inputField.setText(text);
     }
@@ -106,7 +112,11 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
                 LiquidBounce.commandManager.autoComplete(text);
             }
         } else {
-            this.inputField.setMaxStringLength(100);
+            if(chatEnhance.getState() && chatEnhance.getChatLimitValue().get()) {
+                this.inputField.setMaxStringLength(114514);
+            } else {
+                this.inputField.setMaxStringLength(100);
+            }
         }
     }
 

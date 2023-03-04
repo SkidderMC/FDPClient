@@ -45,6 +45,7 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
+import java.io.IOException
 import java.util.*
 import kotlin.math.*
 
@@ -363,7 +364,6 @@ class KillAura : Module() {
         }
 
         if (event.eventState == EventState.POST) {
-            target ?: return
             currentTarget ?: return
 
             // Update hitable
@@ -791,7 +791,6 @@ class KillAura : Module() {
      * Attack enemy
      */
     private fun runAttack() {
-        target ?: return
         currentTarget ?: return
 
         // Settings
@@ -1093,7 +1092,7 @@ class KillAura : Module() {
             return
         }
         val wallTrace = mc.thePlayer.rayTraceWithServerSideRotation(entityDist)
-        hitable = RotationUtils.isFaced(currentTarget, maxRange.toDouble()) && (entityDist < throughWallsRangeValue.get() || wallTrace.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
+        hitable = RotationUtils.isFaced(currentTarget, maxRange.toDouble()) && (entityDist < throughWallsRangeValue.get() || wallTrace?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
     }
 
     /**

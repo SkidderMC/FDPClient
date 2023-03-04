@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.misc.ChatEnhance;
 import net.ccbluex.liquidbounce.font.CFontRenderer;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
@@ -28,7 +29,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
@@ -73,32 +76,44 @@ public abstract class MixinGuiNewChat {
 
     private final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
 
+    private final ChatEnhance chatEnhance = LiquidBounce.moduleManager.getModule(ChatEnhance.class);
+
     /**
      * @author Liuli
+     * @reason ChatCombine
      */
     @Overwrite
     public void printChatMessage(IChatComponent chatComponent) {
-        if(!hud.getChatCombineValue().get()) {
+        if(!chatEnhance.getState() || !chatEnhance.getChatCombineValue().get()) {
             printChatMessageWithOptionalDeletion(chatComponent, 0);
-            return;
+        } else if(chatEnhance.getChatCombineValue().get()) {
+
+            String text = fixString(chatComponent.getFormattedText());
+
+            if (text.equals(this.lastMessage)) {
+                (Minecraft.getMinecraft()).ingameGUI.getChatGUI().deleteChatLine(this.line);
+                this.sameMessageAmount++;
+                chatComponent.appendText(ChatFormatting.WHITE + " [" + "x" + this.sameMessageAmount + "]");
+            } else {
+                this.sameMessageAmount = 1;
+            }
+
+            this.lastMessage = text;
+            this.line++;
+            if (this.line > 256)
+                this.line = 0;
+
+            printChatMessageWithOptionalDeletion(chatComponent, this.line);
         }
+    }
 
-        String text = fixString(chatComponent.getFormattedText());
-
-        if (text.equals(this.lastMessage)) {
-            (Minecraft.getMinecraft()).ingameGUI.getChatGUI().deleteChatLine(this.line);
-            this.sameMessageAmount++;
-            chatComponent.appendText(ChatFormatting.WHITE + " [" + "x" + this.sameMessageAmount + "]");
+    @ModifyConstant(method = "setChatLine", constant = @Constant(intValue = 100))
+    private int fixMsgLimit(int constant) {
+        if(chatEnhance.getState() && chatEnhance.getChatClearValue().get()) {
+            return 114514;
         } else {
-            this.sameMessageAmount = 1;
+            return 100;
         }
-
-        this.lastMessage = text;
-        this.line++;
-        if (this.line > 256)
-            this.line = 0;
-
-        printChatMessageWithOptionalDeletion(chatComponent, this.line);
     }
 
     private String fixString(String str){
@@ -119,6 +134,7 @@ public abstract class MixinGuiNewChat {
 
     /**
      * @author Liuli
+     * @reason Better chat
      */
     @Overwrite
     public void drawChat(int updateCounter) {
