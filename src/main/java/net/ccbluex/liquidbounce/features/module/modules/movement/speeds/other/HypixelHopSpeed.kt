@@ -81,7 +81,15 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             }
         }
         if (yPort4.get()) {
-            mc.thePlayer.motionY -= 0.0009
+    
+            if (damagedTicks < 0) {
+                if (offGroundTicks == 1)
+                    mc.thePlayer.motionY -= 0.005
+                else if (offGroundTicks == 3)
+                    mc.thePlayer.motionY -= 0.001
+                else 
+                    mc.thePlayer.motionY -= 0.0009
+            }
         }
         
         
@@ -114,12 +122,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     
                     
                 } else {
-                    if (damagedTicks < 0) {
-                        if (offGroundTicks == 1)
-                            mc.thePlayer.motionY -= 0.005
-                        if (offGroundTicks == 3)
-                            mc.thePlayer.motionY -= 0.001
-                    }
+                    
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                         mc.thePlayer.motionX *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                         mc.thePlayer.motionZ *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
