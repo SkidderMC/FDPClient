@@ -36,6 +36,7 @@ class HypixelFireballFly : FlyMode("HypixelFireball") {
         mSpeed = MovementUtils.getSpeed()
 
         if(velocitypacket) {
+            tick++
             if (tick == 0) {
                 yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
                 mc.thePlayer.motionY = 1.45
