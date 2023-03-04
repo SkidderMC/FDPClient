@@ -54,7 +54,6 @@ class HypixelFireballFly : FlyMode("HypixelFireball") {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1f
-        resetmotion()
     }
 
     override fun onPacket(event: PacketEvent) {
