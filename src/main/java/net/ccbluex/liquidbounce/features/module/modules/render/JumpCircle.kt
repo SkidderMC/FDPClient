@@ -35,16 +35,16 @@ class JumpCircle : Module() {
     val end = FloatValue("End", 0.3f, 0f,1f)
 
     val circles = mutableListOf<Circle>()
-    var jump = false
+    var lastOnGround = false
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (!mc.thePlayer.onGround && !jump) {
-            jump = true
-        }
-        if (mc.thePlayer.onGround && jump) {
+        if (!mc.thePlayer.onGround && lastOnGround) {
             circles.add(Circle(System.currentTimeMillis(), mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ))
-            jump = false
+            lastOnGround = false
+        }
+        if (mc.thePlayer.onGround) {
+            lastOnGround = true
         }
     }
 
