@@ -40,6 +40,8 @@ class Gapple : Module() {
     private val waitRegen = BoolValue("WaitRegen", true)
     private val invCheck = BoolValue("InvCheck", false)
     private val absorpCheck = BoolValue("NoAbsorption", true)
+    private val fastEatValue = BoolValue("FastEat", false).displayable { modeValue.equals("LegitAuto") || modeValue.equals("Legit") }
+    private val eatDelayValue = IntegerValue("FastEatDelay", 14, 0, 35).displayable { fastEatValue.get() }
     val timer = MSTimer()
     private var eating = -1
     var delay = 0
@@ -104,7 +106,10 @@ class Gapple : Module() {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(gappleInHotbar - 36))
                         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                         eating = 0
-                    } else if (eating > 35) {
+                    } else if (eating > 35 || (fastEatValue.get() && eating > eatDelayValue.get())) {
+	      		repeat(35 - eating) {
+                            mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                        }
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                         timer.reset()
                         tryHeal = false
@@ -124,7 +129,10 @@ class Gapple : Module() {
                         mc.thePlayer.inventory.currentItem = gappleInHotbar - 36
                         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                         eating = 0
-                    } else if (eating > 35) {
+                    } else if (eating > 35 || (fastEatValue.get() && eating > eatDelayValue.get())) {
+			repeat(35 - eating) {
+                            mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                        }
                         timer.reset()
                         tryHeal = false
                         delay = MathHelper.getRandomIntegerInRange(Random(), min.get(), max.get())
@@ -157,7 +165,8 @@ class Gapple : Module() {
                 return
             }
             mc.thePlayer.inventory.currentItem = prevSlot
-            prevSlot = -1;
+	    eating = -1
+            prevSlot = -1
             switchBack = false
         }
 
