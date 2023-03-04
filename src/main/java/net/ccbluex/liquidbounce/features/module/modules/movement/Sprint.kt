@@ -88,31 +88,33 @@ class Sprint : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if (packet is C0BPacketEntityAction) {
-            when(allDirectionsBypassValue.get()) {
-                "SpamSprint", "NoStopSprint" -> {
-                    if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING) {
-                        event.cancelEvent()
-                    }
-                }
-                "Toggle" -> {
-                    if (switchStat) {
+            if (allDirectionsValue.get()) {
+                when(allDirectionsBypassValue.get()) {
+                    "SpamSprint", "NoStopSprint" -> {
                         if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING) {
                             event.cancelEvent()
-                        } else {
-                            switchStat = !switchStat
-                        }
-                    } else {
-                        if (packet.action == C0BPacketEntityAction.Action.START_SPRINTING) {
-                            event.cancelEvent()
-                        } else {
-                            switchStat = !switchStat
                         }
                     }
-                }
-                "Spoof" -> {
-                    if (switchStat) {
-                        if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING || packet.action == C0BPacketEntityAction.Action.START_SPRINTING) {
-                            event.cancelEvent()
+                    "Toggle" -> {
+                        if (switchStat) {
+                            if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING) {
+                                event.cancelEvent()
+                            } else {
+                                switchStat = !switchStat
+                            }
+                        } else {
+                            if (packet.action == C0BPacketEntityAction.Action.START_SPRINTING) {
+                                event.cancelEvent()
+                            } else {
+                                switchStat = !switchStat
+                            }
+                        }
+                    }
+                    "Spoof" -> {
+                        if (switchStat) {
+                            if (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING || packet.action == C0BPacketEntityAction.Action.START_SPRINTING) {
+                                event.cancelEvent()
+                            }
                         }
                     }
                 }
