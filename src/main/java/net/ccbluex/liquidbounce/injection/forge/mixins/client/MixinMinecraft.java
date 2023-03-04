@@ -50,6 +50,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static org.objectweb.asm.Opcodes.PUTFIELD;
@@ -273,8 +274,13 @@ public abstract class MixinMinecraft {
         try {
             if (Util.getOSType() != Util.EnumOS.OSX) {
                 BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png"));
-                Display.setIcon(new ByteBuffer[]{ ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16)), ImageUtils.readImageToBuffer(image) });
-                callbackInfo.cancel();
+                ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16));
+                if (bytebuffer == null) {
+                    throw new Exception("Error when loading image.");
+                } else {
+                    Display.setIcon(new ByteBuffer[]{bytebuffer, ImageUtils.readImageToBuffer(image)});
+                    callbackInfo.cancel();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

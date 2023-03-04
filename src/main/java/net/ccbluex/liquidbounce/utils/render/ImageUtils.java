@@ -10,15 +10,19 @@ public class ImageUtils {
      * @author func16
      */
     public static ByteBuffer readImageToBuffer(BufferedImage bufferedImage){
-        int[] rgbArray = bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null, 0, bufferedImage.getWidth());
+        try {
+            int[] rgbArray = bufferedImage.getRGB(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null, 0, bufferedImage.getWidth());
 
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * rgbArray.length);
-        for(int rgb : rgbArray){
-            byteBuffer.putInt(rgb << 8 | rgb >> 24 & 255);
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * rgbArray.length);
+            for (int rgb : rgbArray) {
+                byteBuffer.putInt(rgb << 8 | rgb >> 24 & 255);
+            }
+            byteBuffer.flip();
+            return byteBuffer;
+        } catch(NoSuchMethodError e) {
+            e.printStackTrace();
+            return null;
         }
-        byteBuffer.flip();
-
-        return byteBuffer;
     }
 
     /**
