@@ -130,6 +130,11 @@ public abstract class MixinItemRenderer {
                         GlStateManager.rotate(animations.getRotateYValue().get(), 0.0F, 1.0F, 0.0F);
                         GlStateManager.rotate(animations.getRotateZValue().get(), 0.0F, 0.0F, 1.0F);
                         switch (animations.getBlockingModeValue().get()) {
+                            case "1.7": {
+                                transformFirstPersonItem(f, f1);
+                                doBlockTransformations();
+                                break;
+                            }
                             case "Akrien": {
                                 transformFirstPersonItem(f1, 0.0F);
                                 doBlockTransformations();

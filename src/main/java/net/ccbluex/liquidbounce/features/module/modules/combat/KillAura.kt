@@ -157,6 +157,10 @@ class KillAura : Module() {
         }
     }
 
+    // Rotation Delay
+    private val rotationDelayValue = BoolValue("RotationDelay", false).displayable { !rotationModeValue.equals("None") }
+    private val rotationDelayMSValue = IntegerValue("RotationDelayMS", 300, 0, 1000).displayable { !rotationModeValue.equals("None") }
+
     private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom")
     private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") }
     
@@ -253,6 +257,7 @@ class KillAura : Module() {
     // Attack delay
     private val attackTimer = MSTimer()
     private val switchTimer = MSTimer()
+    private val rotationTimer = MSTimer()
     private var attackDelay = 0L
     private var clicks = 0
 
@@ -261,6 +266,9 @@ class KillAura : Module() {
 
     // Swing
     private var canSwing = false
+
+    // Last Tick Can Be Seen
+    private var lastCanBeSeen = false
 
     // Fake block status
     var blockingStatus = false
@@ -287,6 +295,7 @@ class KillAura : Module() {
     override fun onEnable() {
         mc.thePlayer ?: return
         mc.theWorld ?: return
+        lastCanBeSeen = false
 
         updateTarget()
     }
@@ -987,6 +996,16 @@ class KillAura : Module() {
             return true
         }
 
+        // 视角差异
+        val entityFov = RotationUtils.getRotationDifference(entity)
+
+        // 可以被看见
+        if (entityFov <= mc.gameSettings.fovSetting) lastCanBeSeen = true
+        else if (lastCanBeSeen) { // 不可以被看见但是上一次tick可以看见
+            rotationTimer.reset() // 重置计时器
+            lastCanBeSeen = false
+        }
+
         if (predictValue.get()) {
             predictAmount = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
         }
@@ -1053,6 +1072,9 @@ class KillAura : Module() {
             )
             else -> return true
         }
+
+        // 如果现在看不见、时间没有过去
+        if (!lastCanBeSeen && rotationDelayValue.get() && !rotationTimer.hasTimePassed(rotationDelayMSValue.get().toLong())) return true
 
         if (silentRotationValue.get()) {
             RotationUtils.setTargetRotationReverse(
