@@ -319,10 +319,6 @@ class KillAura : Module() {
         if (event.eventState == EventState.POST) {
             packetSent = false
         }
-        if (mc.thePlayer.isRiding) {
-            return
-        }
-
         if (attackTimingValue.equals("All") ||
             (attackTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
             (attackTimingValue.equals("Post") && event.eventState == EventState.POST)
@@ -364,12 +360,7 @@ class KillAura : Module() {
         }
 
         if (event.eventState == EventState.POST) {
-            currentTarget ?: return
-
-            // Update hitable
             updateHitable()
-
-            return
         }
     }
 
@@ -944,7 +935,6 @@ class KillAura : Module() {
      */
     private fun attackEntity(entity: EntityLivingBase) {
         if (packetSent && noBadPacketsValue.get()) return
-        if (entity == null) return
 
         // Call attack event
         val event = AttackEvent(entity)
@@ -1080,6 +1070,11 @@ class KillAura : Module() {
      * Check if enemy is hitable with current rotations
      */
     private fun updateHitable() {
+        if (currentTarget == null) {
+            canSwing = false
+            hitable = false
+            return
+        }
         val entityDist = mc.thePlayer.getDistanceToEntityBox(currentTarget as Entity)
         canSwing = entityDist < swingRangeValue.get() && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
         if (hitAbleValue.get()) {
