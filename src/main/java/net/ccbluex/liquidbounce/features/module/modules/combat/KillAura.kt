@@ -244,8 +244,7 @@ class KillAura : Module() {
      */
 
     // Target
-    var target: EntityLivingBase? = null
-    private var currentTarget: EntityLivingBase? = null
+    var currentTarget: EntityLivingBase? = null
     private var hitable = false
     private var packetSent = false
     private val prevTargetEntities = mutableListOf<Int>()
@@ -283,7 +282,7 @@ class KillAura : Module() {
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
         var aabb = it.entityBoundingBox
-        aabb = if (backtraceValue.get()) LocationCache.getPreviousAABB(it.entityId, backtraceTickValue.get(), aabb) else aabb
+        //aabb = if (backtraceValue.get()) LocationCache.getPreviousAABB(it.entityId, backtraceTickValue.get(), aabb) else aabb
         aabb = if (predictValue.get()) aabb.offset((it.posX - it.lastTickPosX) * predictAmount, (it.posY - it.lastTickPosY) * predictAmount, (it.posZ - it.lastTickPosZ) * predictAmount) else aabb
         aabb = if (predictPlayerValue.get()) aabb.offset(mc.thePlayer.motionX * predictPlayerAmount * -1f, mc.thePlayer.motionY * predictPlayerAmount * -1f, mc.thePlayer.motionZ * predictPlayerAmount * -1f) else aabb
         aabb
@@ -305,7 +304,6 @@ class KillAura : Module() {
      */
     override fun onDisable() {
         LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
-        target = null
         currentTarget = null
         hitable = false
         packetSent = false
@@ -354,7 +352,7 @@ class KillAura : Module() {
             if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
                         || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock
             ) {
-                val target = this.target ?: discoveredTargets.first()
+                val target = this.currentTarget ?: discoveredTargets.first()
                 if (mc.thePlayer.getDistanceToEntityBox(target) <= autoBlockRangeValue.get()) {
                     startBlocking(
                         target,
@@ -386,15 +384,7 @@ class KillAura : Module() {
             return
         }
 
-        // Target
-        currentTarget = target
-
-        if (!targetModeValue.equals("Switch") && (currentTarget != null && EntityUtils.isSelected(currentTarget!!, true ))) {
-            target = currentTarget
-        }
-
         LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
-//        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
     }
 
     /**
@@ -403,7 +393,6 @@ class KillAura : Module() {
     @EventTarget
     fun onUpdate(IgnoredEvent: UpdateEvent) {
         if (cancelRun) {
-            target = null
             currentTarget = null
             hitable = false
             stopBlocking()
@@ -415,7 +404,6 @@ class KillAura : Module() {
         if (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer ||
                     System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())
         ) {
-            target = null
             currentTarget = null
             hitable = false
             if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
@@ -477,7 +465,6 @@ class KillAura : Module() {
         }
 
         if (cancelRun) {
-            target = null
             currentTarget = null
             hitable = false
             stopBlocking()
@@ -503,7 +490,7 @@ class KillAura : Module() {
                     it.entityBoundingBox = getAABB(it).expand(0.2, 0.2, 0.2)
                     RenderUtils.drawEntityBox(
                         it,
-                        if (it.hurtTime <= 0) if (it == target) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170),
+                        if (it.hurtTime <= 0) if (it == currentTarget) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170),
                         true,
                         true,
                         4f
@@ -698,7 +685,7 @@ class KillAura : Module() {
                     GL11.glPopMatrix()
                 }
                 "circle" -> {
-                    if (espAnimation > target!!.eyeHeight + 0.4 || espAnimation < 0) {
+                    if (espAnimation > currentTarget!!.eyeHeight + 0.4 || espAnimation < 0) {
                         isUp = !isUp
                     }
                     if (isUp) {
@@ -707,9 +694,9 @@ class KillAura : Module() {
                         espAnimation -= 0.05 * 60 / Minecraft.getDebugFPS()
                     }
                     if (isUp) {
-                        esp(target!!, event.partialTicks, circleRadiusValue.get())
+                        esp(currentTarget!!, event.partialTicks, circleRadiusValue.get())
                     } else {
-                        esp(target!!, event.partialTicks, circleRadiusValue.get())
+                        esp(currentTarget!!, event.partialTicks, circleRadiusValue.get())
                     }
                 }
                 "sims" -> {
@@ -826,10 +813,6 @@ class KillAura : Module() {
                 prevTargetEntities.add(currentTarget!!.entityId)
             }
 
-            if (target == currentTarget) {
-                target = null
-            }
-
             // Open inventory
             if (openInventory) {
                 mc.netHandler.addToSendQueue(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
@@ -918,14 +901,14 @@ class KillAura : Module() {
 
             // Set target to current entity
             if (mc.thePlayer.getDistanceToEntityBox(entity) < discoverRangeValue.get()) {
-                target = entity
-                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = target?:return
+                currentTarget = entity
+                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
                 LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
                 return
             }
         }
 
-        target = null
+        currentTarget = null
         LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
     }
 
@@ -1100,7 +1083,7 @@ class KillAura : Module() {
         val entityDist = mc.thePlayer.getDistanceToEntityBox(currentTarget as Entity)
         canSwing = entityDist < swingRangeValue.get() && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
         if (hitAbleValue.get()) {
-            hitable = currentTarget != null && entityDist <= maxRange.toDouble()
+            hitable = entityDist <= maxRange.toDouble()
             return
         }
         // Disable hitable check if turn speed is zero
