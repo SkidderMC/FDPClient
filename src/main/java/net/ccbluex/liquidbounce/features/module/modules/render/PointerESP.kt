@@ -42,7 +42,7 @@ class PointerESP : Module() {
     private val alphaValue : IntegerValue = object : IntegerValue("Alpha", 255, 0, 255) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             if (distanceAlphaValue.get() && newValue < distanceValue.get()) {
-                set(newValue.get())
+                set(newValue)
             }
         }
     }

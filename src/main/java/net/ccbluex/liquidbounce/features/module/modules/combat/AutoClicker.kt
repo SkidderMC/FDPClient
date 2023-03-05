@@ -37,7 +37,7 @@ class AutoClicker : Module() {
                 set(minCPS)
             }
         }
-    }.displayable { modeValue.equals("Normal") }
+    }.displayable { modeValue.equals("Normal") } as IntegerValue
     private val normalMinCPSValue: IntegerValue = object : IntegerValue("Normal-MinCPS", 5, 1, 40) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val maxCPS = normalMaxCPSValue.get()
@@ -45,7 +45,7 @@ class AutoClicker : Module() {
                 set(maxCPS)
             }
         }
-    }.displayable { modeValue.equals("Normal") }
+    }.displayable { modeValue.equals("Normal") } as IntegerValue
     private val normalLegitJitterValue = BoolValue("Normal-LegitJitterCPS", false).displayable { modeValue.equals("Normal") }
 
     private val normalRightValue = BoolValue("Normal-Right", true).displayable { modeValue.equals("Normal") }

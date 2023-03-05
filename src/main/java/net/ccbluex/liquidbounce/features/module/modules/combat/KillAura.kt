@@ -63,7 +63,7 @@ class KillAura : Module() {
 
             attackDelay = getAttackDelay(minCpsValue.get(), this.get())
         }
-    }.displayable {!simulateCooldown.get()}
+    }.displayable {!simulateCooldown.get()} as IntegerValue
 
     private val minCpsValue: IntegerValue = object : IntegerValue("MinCPS", 8, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -72,7 +72,7 @@ class KillAura : Module() {
 
             attackDelay = getAttackDelay(this.get(), maxCpsValue.get())
         }
-    }.displayable {!simulateCooldown.get()}
+    }.displayable {!simulateCooldown.get()} as IntegerValue
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val simulateCooldown = BoolValue("SimulateCooldown", false)
