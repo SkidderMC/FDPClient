@@ -315,7 +315,11 @@ class KillAura : Module() {
         canSwing = false
 
         stopBlocking()
-        RotationUtils.setTargetRotationReverse(RotationUtils.serverRotation, 0, 0)
+        RotationUtils.setTargetRotationReverse(
+            RotationUtils.serverRotation,
+            if (keepDirectionValue.get()) { keepDirectionTickValue.get() + 1 } else { 1 },
+            if (rotationRevValue.get()) { rotationRevTickValue.get() + 1 } else { 0 }
+        )
     }
 
     /**
