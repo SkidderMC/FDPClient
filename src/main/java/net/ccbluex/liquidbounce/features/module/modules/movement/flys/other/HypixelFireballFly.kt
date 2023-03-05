@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -7,10 +12,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
-import net.minecraft.network.play.server.S27PacketExplosion 
-import kotlin.math.cos
-import kotlin.math.sin
-
+import net.minecraft.network.play.server.S27PacketExplosion
 
 class HypixelFireballFly : FlyMode("HypixelFireball") {
 
