@@ -71,6 +71,10 @@ class Step : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (wasTimer) {
+            mc.timer.timerSpeed = 1.0F
+            wasTimer = false
+        }
         if (mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround && lastOnGround) {
             canStep = true
             if(modeValue.equals("AAC4.4.0") || modeValue.equals("NCPNew") || modeValue.equals("Matrix6.7.0")) {
