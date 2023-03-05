@@ -43,7 +43,7 @@ object HotbarSettings : Module() {
     val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
     val hotbarEaseValue = BoolValue("HotbarEase", true)
     private val BlurValue = BoolValue("Blur", false)
-    private val BlurAmount = FloatValue("BlurAmount", 10F, 1F, 100F)
+    private val BlurAmount = FloatValue("BlurAmount", 10F, 1F, 100F).displayable { BlurValue.get() }
     private val ItemCountValue = BoolValue("ItemColorCount", false)
     val ItemFontValue = ListValue("ItemFont", arrayOf("MiSans", "Minecraft"), "Minecraft")
     private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }

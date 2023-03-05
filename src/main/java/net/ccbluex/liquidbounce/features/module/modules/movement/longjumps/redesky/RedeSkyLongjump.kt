@@ -9,11 +9,11 @@ class RedeSkyLongjump : LongJumpMode("RedeSky") {
     private val jumpMovementValue = FloatValue("${valuePrefix}JumpMovement", 0.13F, 0.05F, 0.25F)
     private val motionYValue = FloatValue("${valuePrefix}MotionY", 0.81F, 0.05F, 1F)
     private val moveReducerValue = BoolValue("${valuePrefix}MovementReducer", true)
-    private val reduceMovementValue = FloatValue("${valuePrefix}ReduceMovement", 0.08F, 0.05F, 0.25F)
+    private val reduceMovementValue = FloatValue("${valuePrefix}ReduceMovement", 0.08F, 0.05F, 0.25F).displayable { moveReducerValue.get() }
     private val motYReducerValue = BoolValue("${valuePrefix}MotionYReducer", true)
-    private val reduceYMotionValue = FloatValue("${valuePrefix}ReduceYMotion", 0.15F, 0.01F, 0.20F)
+    private val reduceYMotionValue = FloatValue("${valuePrefix}ReduceYMotion", 0.15F, 0.01F, 0.20F).displayable { motYReducerValue.get() }
     private val useTimerValue = BoolValue("${valuePrefix}Timer", true)
-    private val timerValue = FloatValue("${valuePrefix}Timer", 0.30F, 0.1F, 1F)
+    private val timerValue = FloatValue("${valuePrefix}Timer", 0.30F, 0.1F, 1F).displayable { useTimerValue.get() }
 
     override fun onEnable() {
         sendLegacy()

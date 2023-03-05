@@ -33,13 +33,13 @@ import kotlin.math.roundToInt
 @ModuleInfo(name = "NameTags", category = ModuleCategory.RENDER)
 class NameTags : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello"), "Liquid")
-    private val healthValue = BoolValue("Health", true)
-    private val pingValue = BoolValue("Ping", true)
-    private val healthBarValue = BoolValue("Bar", true)
-    private val distanceValue = BoolValue("Distance", false)
-    private val armorValue = BoolValue("Armor", true)
-    private val enchantValue = BoolValue("Enchant", true)
-    private val potionValue = BoolValue("Potions", true)
+    private val healthValue = BoolValue("Health", true).displayable { modeValue.equals("Liquid") }
+    private val pingValue = BoolValue("Ping", true).displayable { modeValue.equals("Liquid") }
+    private val healthBarValue = BoolValue("Bar", true).displayable { modeValue.equals("Liquid") }
+    private val distanceValue = BoolValue("Distance", false).displayable { modeValue.equals("Liquid") }
+    private val armorValue = BoolValue("Armor", true).displayable { modeValue.equals("Liquid") }
+    private val enchantValue = BoolValue("Enchant", true).displayable { modeValue.equals("Liquid") }
+    private val potionValue = BoolValue("Potions", true).displayable { modeValue.equals("Liquid") }
     private val clearNamesValue = BoolValue("ClearNames", true)
     private val fontValue = FontValue("Font", Fonts.font40)
     private val borderValue = BoolValue("Border", true)
@@ -51,14 +51,14 @@ class NameTags : Module() {
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
     private val onlyTarget = BoolValue("OnlyTarget",false)
     private val translateY = FloatValue("TanslateY", 0.55F, -2F, 2F)
-    private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
-    private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
-    private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
+    private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255).displayable { backgroundColorAlphaValue.get() > 0 }
+    private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255).displayable { backgroundColorAlphaValue.get() > 0 }
+    private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255).displayable { backgroundColorAlphaValue.get() > 0 }
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 0, 0, 255)
-    private val borderColorRedValue = IntegerValue("Border-R", 0, 0, 255)
-    private val borderColorGreenValue = IntegerValue("Border-G", 0, 0, 255)
-    private val borderColorBlueValue = IntegerValue("Border-B", 0, 0, 255)
-    private val borderColorAlphaValue = IntegerValue("Border-Alpha", 0, 0, 255)
+    private val borderColorRedValue = IntegerValue("Border-R", 0, 0, 255).displayable { borderValue.get() }
+    private val borderColorGreenValue = IntegerValue("Border-G", 0, 0, 255).displayable { borderValue.get() }
+    private val borderColorBlueValue = IntegerValue("Border-B", 0, 0, 255).displayable { borderValue.get() }
+    private val borderColorAlphaValue = IntegerValue("Border-Alpha", 0, 0, 255).displayable { borderValue.get() }
 
     private var targetTicks = 0
     private var entityKeep = "yes zywl"

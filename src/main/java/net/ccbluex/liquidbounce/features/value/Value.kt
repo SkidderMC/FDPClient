@@ -26,6 +26,9 @@ abstract class Value<T>(val name: String, var value: T) {
     val displayable: Boolean
         get() = displayableFunc()
 
+    val displayableFunction: () -> Boolean
+        get() = displayableFunc
+
     fun set(newValue: T) {
         if (newValue == value) return
 

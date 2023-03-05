@@ -15,7 +15,7 @@ import kotlin.math.sin
 class MatrixBoostFly : FlyMode("MatrixBoost") {
     private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("New", "Stable", "Test", "Custom"), "New")
     private val speed = FloatValue("${valuePrefix}Speed", 2.0f, 1.0f, 3.0f)
-    private val customYMotion = FloatValue("${valuePrefix}CustomJumpMotion", 0.6f, 0.2f, 5f)
+    private val customYMotion = FloatValue("${valuePrefix}CustomJumpMotion", 0.6f, 0.2f, 5f).displayable { bypassMode.equals("Custom") }
     private val jumpTimer = FloatValue("${valuePrefix}JumpTimer", 0.1f, 0.1f, 2f)
     private val boostTimer = FloatValue("${valuePrefix}BoostTimer", 1f, 0.5f, 3f)
     private var boostMotion = 0

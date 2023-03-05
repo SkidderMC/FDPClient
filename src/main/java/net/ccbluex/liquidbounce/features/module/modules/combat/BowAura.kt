@@ -32,7 +32,7 @@ class BowAura : Module() {
     private val silentValue = BoolValue("Silent", true)
     private val predictValue = BoolValue("Predict", true)
     private val throughWallsValue = BoolValue("ThroughWalls", false)
-    private val predictSizeValue = FloatValue("PredictSize", 2F, 0.1F, 5F)
+    private val predictSizeValue = FloatValue("PredictSize", 2F, 0.1F, 5F).displayable { predictValue.get() }
     private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Direction"), "Direction")
     private val maxDistance = FloatValue("MaxDistance",100F,5F,200F)
     private val markValue = BoolValue("Mark", true)

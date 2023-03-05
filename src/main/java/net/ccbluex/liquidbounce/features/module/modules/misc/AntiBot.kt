@@ -57,7 +57,7 @@ object AntiBot : Module() {
     private val fastDamageValue = BoolValue("FastDamage", false)
     private val fastDamageTicksValue = IntegerValue("FastDamageTicks", 5, 1, 20).displayable { fastDamageValue.get() }
     private val removeFromWorld = BoolValue("RemoveFromWorld", false)
-    private val removeIntervalValue = IntegerValue("Remove-Interval", 20, 1, 100)
+    private val removeIntervalValue = IntegerValue("Remove-Interval", 20, 1, 100).displayable { removeFromWorld.get() }
     private val debugValue = BoolValue("Debug", false)
     private val alwaysInRadiusValue = BoolValue("AlwaysInRadius", false)
     private val alwaysRadiusValue = FloatValue("AlwaysInRadiusBlocks", 20f, 5f, 30f).displayable { alwaysInRadiusValue.get() }

@@ -22,7 +22,7 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val modeValue = ListValue("Mode", arrayOf("ExtraPacket", "WTap", "Packet"), "ExtraPacket")
-    private val WtapDelay = IntegerValue("WTapDelay", 6, 1, 10)
+    private val WtapDelay = IntegerValue("WTapDelay", 6, 1, 10).displayable { modeValue.equals("WTap") }
     private val onlyMoveValue = BoolValue("OnlyMove", false)
     private val onlyGroundValue = BoolValue("OnlyGround", false)
     private val delayValue = IntegerValue("Delay", 0, 0, 500)

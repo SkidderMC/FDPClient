@@ -36,7 +36,7 @@ class Breadcrumbs : Module() {
     private val fadeValue = BoolValue("Fade", true)
     private val drawThePlayerValue = BoolValue("DrawThePlayer", true)
     private val drawTargetsValue = BoolValue("DrawTargets", true)
-    private val fadeTimeValue = IntegerValue("FadeTime", 5, 1, 20)
+    private val fadeTimeValue = IntegerValue("FadeTime", 5, 1, 20).displayable { fadeValue.get() }
     private val precisionValue = IntegerValue("Precision", 4, 1, 20)
     private val lineWidthValue = IntegerValue("LineWidth", 1, 1, 10).displayable { typeValue.equals("Line") }
     private val sphereScaleValue = FloatValue("SphereScale", 0.6f, 0.1f, 2f).displayable { typeValue.equals("Sphere") || typeValue.equals("Rise")}

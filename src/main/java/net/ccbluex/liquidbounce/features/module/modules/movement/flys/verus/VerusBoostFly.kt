@@ -17,7 +17,7 @@ import kotlin.math.floor
 class VerusBoostFly : FlyMode("VerusBoost") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 1.5f, 0f, 10f)
     private val boostModeValue = ListValue("${valuePrefix}BoostMode", arrayOf("Boost1", "Boost2", "Boost3"), "Boost1")
-    private val reDamageValue = BoolValue("${valuePrefix}Boost3-ReDamage", true)
+    private val reDamageValue = BoolValue("${valuePrefix}Boost3-ReDamage", true).displayable { boostModeValue.equals("Boost3") }
 
     private var ticks = 0
     private var ticks2 = 0

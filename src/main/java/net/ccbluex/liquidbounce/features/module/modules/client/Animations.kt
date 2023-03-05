@@ -22,12 +22,12 @@ object Animations : Module() {
 
     val invModeValue = ListValue("InvMode", arrayOf("None", "Slide", "Zoom"), "Zoom")
     val invEaseModeValue = EaseUtils.getEnumEasingList("InvEase")
-    val invEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("InvEaseOrder")
+    val invEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("InvEaseOrder").displayable { !invEaseModeValue.equals("NONE") }
     val invTimeValue = IntegerValue("InvTime", 500, 0, 1000).displayable { !invModeValue.equals("None") }
     private val tabShowPlayerSkinValue = BoolValue("TabShowPlayerSkin", true)
     val tabModeValue = ListValue("TabMode", arrayOf("None", "UpSlide", "DownSlide", "Zoom"), "Zoom")
     val tabEaseModeValue = EaseUtils.getEnumEasingList("TabEase")
-    val tabEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("TabEaseOrder")
+    val tabEaseOrderModeValue = EaseUtils.getEnumEasingOrderList("TabEaseOrder").displayable { !tabEaseModeValue.equals("NONE") }
     val tabTimeValue = IntegerValue("TabTime", 500, 0, 1000).displayable { !tabModeValue.equals("None") }
     val translateXValue = FloatValue("TranslateX", 0.0f, 0.0f, 1.5f)
     val translateYValue = FloatValue("TranslateY", 0.0f, 0.0f, 0.5f)
