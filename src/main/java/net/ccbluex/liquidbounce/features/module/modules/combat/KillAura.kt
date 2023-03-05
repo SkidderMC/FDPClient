@@ -980,7 +980,7 @@ class KillAura : Module() {
         }
 
         // 视角差异
-        val entityFov = RotationUtils.getRotationDifference(entity)
+        val entityFov = RotationUtils.getRotationDifference(RotationUtils.toRotation(RotationUtils.getCenter(entity.entityBoundingBox), true), RotationUtils.serverRotation)
 
         // 可以被看见
         if (entityFov <= mc.gameSettings.fovSetting) lastCanBeSeen = true
