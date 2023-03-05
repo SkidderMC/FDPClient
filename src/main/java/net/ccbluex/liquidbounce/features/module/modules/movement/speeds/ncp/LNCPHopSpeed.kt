@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.potion.Potion
 
-class OldNCPHopSpeed : SpeedMode("OldNCPHop") {
+class LNCPHopSpeed : SpeedMode("LNCPHop") {
 
     private var mspeed = 0.0
     private var justJumped = false
@@ -29,26 +29,20 @@ class OldNCPHopSpeed : SpeedMode("OldNCPHop") {
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) {
                 mc.thePlayer.jump()
-                mc.thePlayer.motionY = 0.42
-
-                mspeed += 0.2
-                if (mspeed < 0.4873) {
-                    mspeed = 0.4873
-                }
-
-                if(mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                    mspeed += 0.02 + mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier() * 0.02
-                }
+                mspeed = MovementUtils.defaultSpeed().toDouble() * 1.73
 
                 justJumped = true
             } else {
                 if (justJumped) {
-                    mspeed *= 0.66
+                    mspeed *= 0.72150289018
                     justJumped = false
                 } else {
                     mspeed -= mspeed / 159
                 }
             }
+            if (mspeed < MovementUtils.defaultSpeed().toDouble()) 
+                mspeed = MovementUtils.defaultSpeed().toDouble()
+                
             MovementUtils.strafe(mspeed.toFloat())
         } else {
             mc.thePlayer.motionX = 0.0
