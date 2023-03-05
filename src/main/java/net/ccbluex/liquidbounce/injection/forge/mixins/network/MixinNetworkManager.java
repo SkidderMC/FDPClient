@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
 import net.ccbluex.liquidbounce.features.special.ProxyManager;
+import net.ccbluex.liquidbounce.utils.BlinkUtils;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.minecraft.network.EnumPacketDirection;
@@ -56,8 +57,9 @@ public abstract class MixinNetworkManager {
         final PacketEvent event = new PacketEvent(packet, PacketEvent.Type.RECEIVE);
         LiquidBounce.eventManager.callEvent(event);
 
-        if(event.isCancelled())
+        if(event.isCancelled()) {
             callback.cancel();
+        }
     }
 
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
@@ -69,7 +71,9 @@ public abstract class MixinNetworkManager {
             final PacketEvent event = new PacketEvent(packet, PacketEvent.Type.SEND);
             LiquidBounce.eventManager.callEvent(event);
 
-            if(event.isCancelled())
+            if(event.isCancelled()) {
+                callback.cancel();
+            } else if (BlinkUtils.INSTANCE.pushPacket(packet))
                 callback.cancel();
         }
     }

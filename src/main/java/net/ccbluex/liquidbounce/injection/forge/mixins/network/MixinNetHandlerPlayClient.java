@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.PackSpoofer;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
 import net.ccbluex.liquidbounce.features.special.ClientFixes;
+import net.ccbluex.liquidbounce.utils.BlinkUtils;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -156,6 +157,7 @@ public abstract class MixinNetHandlerPlayClient {
     /**
      * @author liulihaocai
      * Fixed by Co Dynamic
+     * @reason Convert Explosion to Velocity
      */
     @Overwrite
     public void handleExplosion(S27PacketExplosion packetIn) {
@@ -179,6 +181,7 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Inject(method = "onDisconnect", at = @At("HEAD"), cancellable = true)
     private void onDisconnect(IChatComponent reason, CallbackInfo callbackInfo) {
+        BlinkUtils.INSTANCE.setBlinkState();
         if(this.gameController.theWorld != null && this.gameController.thePlayer != null
                 && LiquidBounce.moduleManager.getModule(SilentDisconnect.class).getState()) {
             ClientUtils.INSTANCE.displayAlert(I18n.format("disconnect.lost") + ":");

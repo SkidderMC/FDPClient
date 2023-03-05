@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
@@ -32,19 +33,17 @@ import java.util.concurrent.LinkedBlockingQueue
 @ModuleInfo(name = "Blink", category = ModuleCategory.PLAYER)
 class Blink : Module() {
 
-    private val inboundValue = BoolValue("Inbound", false)
-    private val outboundValue = BoolValue("Outbound", true)
     private val pulseValue = BoolValue("Pulse", false)
     private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000).displayable { pulseValue.get() }
 
     private val pulseTimer = MSTimer()
-    private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
     private var fakePlayer: EntityOtherPlayerMP? = null
-    private var disableLogger = false
     private val positions = LinkedList<DoubleArray>()
 
     override fun onEnable() {
+        alert("ENABLE:" + BlinkUtils.bufferSize())
         if (mc.thePlayer == null) return
+        BlinkUtils.setBlinkState(all = true)
         if (!pulseValue.get()) {
             fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
             fakePlayer!!.clonePlayer(mc.thePlayer, true)
@@ -60,29 +59,15 @@ class Blink : Module() {
     }
 
     override fun onDisable() {
+        synchronized(positions) { positions.clear() }
+        alert("BEFORE:" + BlinkUtils.bufferSize())
         if (mc.thePlayer == null) return
-        blink()
+        BlinkUtils.setBlinkState(off = true, release = true)
+        alert("AFTER:" + BlinkUtils.bufferSize())
         if (fakePlayer != null) {
             mc.theWorld.removeEntityFromWorld(fakePlayer!!.entityId)
             fakePlayer = null
         }
-    }
-
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val packet = event.packet
-        if (mc.thePlayer == null || disableLogger) return
-        if (packet is C03PacketPlayer) { // Cancel all movement stuff
-            event.cancelEvent()
-        }
-        if (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook ||
-            packet is C08PacketPlayerBlockPlacement ||
-            packet is C0APacketAnimation ||
-            packet is C0BPacketEntityAction || packet is C02PacketUseEntity) {
-            event.cancelEvent()
-            packets.add(packet as Packet<INetHandlerPlayServer>)
-        }
-        if (packet is S08PacketPlayerPosLook && inboundValue.get()) event.cancelEvent()
     }
 
     @EventTarget
@@ -97,7 +82,8 @@ class Blink : Module() {
             )
         }
         if (pulseValue.get() && pulseTimer.hasTimePassed(pulseDelayValue.get().toLong())) {
-            blink()
+            synchronized(positions) { positions.clear() }
+            BlinkUtils.releasePacket()
             pulseTimer.reset()
         }
     }
@@ -131,18 +117,5 @@ class Blink : Module() {
     }
 
     override val tag: String
-        get() = packets.size.toString()
-
-    private fun blink() {
-        try {
-            disableLogger = true
-            while (!packets.isEmpty()) {
-                mc.netHandler.addToSendQueue(packets.take())
-            }
-            disableLogger = false
-        } finally {
-            disableLogger = false
-        }
-        synchronized(positions) { positions.clear() }
-    }
+        get() = "" + BlinkUtils.bufferSize()
 }
