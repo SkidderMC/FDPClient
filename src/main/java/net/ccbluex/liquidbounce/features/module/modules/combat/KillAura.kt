@@ -180,7 +180,6 @@ class KillAura : Module() {
     
     // Backtrace
     private val backtraceValue = BoolValue("Backtrace", false)
-    private val backtraceTickValue = IntegerValue("BacktraceTick", 2, 1, 10).displayable { backtraceValue.get() }
     
     // Others
     private val hitAbleValue = BoolValue("AlwaysHitAble", true)
