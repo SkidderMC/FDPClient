@@ -48,7 +48,7 @@ class Fly : Module() {
     private val markValue = ListValue("Mark", arrayOf("Up", "Down", "Off"), "Up")
     private val fakeDamageValue = BoolValue("FakeDamage", false)
     private val viewBobbingValue = BoolValue("ViewBobbing", false)
-    private val viewBobbingYawValue = FloatValue("ViewBobbingYaw", 0.1f, 0f, 0.5f)
+    private val viewBobbingYawValue = FloatValue("ViewBobbingYaw", 0.1f, 0f, 0.5f).displayable { viewBobbingValue.get() }
     val legacyWarningValue = BoolValue("LegacyWarn", false)
 
     var launchX = 0.0
@@ -158,5 +158,13 @@ class Fly : Module() {
      * 读取mode中的value并和本体中的value合并
      * 所有的value必须在这个之前初始化
      */
-    override val values = super.values.toMutableList().also { modes.map { mode -> mode.values.forEach { value -> it.add(value.displayable { modeValue.equals(mode.modeName) }) } } }
+    override val values = super.values.toMutableList().also {
+        modes.map {
+            mode -> mode.values.forEach { value ->
+                //it.add(value.displayable { modeValue.equals(mode.modeName) })
+                val displayableFunction = value.displayableFunction
+                it.add(value.displayable { displayableFunction.invoke() && modeValue.equals(mode.modeName) })
+            }
+        }
+    }
 }

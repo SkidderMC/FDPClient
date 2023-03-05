@@ -19,7 +19,7 @@ class SilentYPortJesus : JesusMode("SilentYPort") {
     private val yPortSpeedValue = FloatValue("${valuePrefix}SpeedModify", 1.0f, 0.0f, 1.5f)
     private val yPortGroundValue = BoolValue("${valuePrefix}SpoofGround", false)
     private val yPortConvertValue = BoolValue("${valuePrefix}ConvertGround", true)
-    private val yPortConvertDelayValue = IntegerValue("${valuePrefix}ConvertDelay", 1000, 0, 2000)
+    private val yPortConvertDelayValue = IntegerValue("${valuePrefix}ConvertDelay", 1000, 0, 2000).displayable { yPortConvertValue.get() }
 
     private var nextTick = false
     private val timer = MSTimer()

@@ -19,8 +19,8 @@ import java.util.concurrent.LinkedBlockingQueue
 class MatrixClipFly : FlyMode("MatrixClip") {
     private val clipMode = ListValue("${valuePrefix}BypassMode", arrayOf("Clip1","Clip2","Clip3","CustomClip"), "Clip2")
     private val clipSmart = BoolValue("${valuePrefix}Clip2-SmartClip", true).displayable { clipMode.equals("Clip2") }
-    private val customClip = IntegerValue("${valuePrefix}Custom-ClipDelay",736,500,1500)
-    private val customBlink = IntegerValue("${valuePrefix}Custom-BlinkDelay",909,500,1500)
+    private val customClip = IntegerValue("${valuePrefix}Custom-ClipDelay",736,500,1500).displayable { clipMode.equals("CustomClip") }
+    private val customBlink = IntegerValue("${valuePrefix}Custom-BlinkDelay",909,500,1500).displayable { clipMode.equals("CustomClip") }
     private val yclip = FloatValue("${valuePrefix}YClip", 10f, 5f, 20f)
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
     private val timer = MSTimer()

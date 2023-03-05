@@ -19,12 +19,12 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
 
     private val mode = ListValue("${valuePrefix}Mode", arrayOf("Stable","Test","Custom"), "Stable")
     private val warn = BoolValue("${valuePrefix}DamageWarn",true)
-    private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f)
-    private val speedBoost = FloatValue("${valuePrefix}Custom-BoostSpeed", 0.5f, 0f, 3f)
-    private val boostTicks = IntegerValue("${valuePrefix}Custom-BoostTicks", 27,10,40)
-    private val randomize = BoolValue("${valuePrefix}Custom-Randomize", true)
-    private val randomAmount = IntegerValue("${valuePrefix}Custom-RandomAmount", 1, 0, 30)
-    private val customstrafe = BoolValue("${valuePrefix}Custom-Strafe", true)
+    private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f).displayable { mode.equals("Custom") }
+    private val speedBoost = FloatValue("${valuePrefix}Custom-BoostSpeed", 0.5f, 0f, 3f).displayable { mode.equals("Custom") }
+    private val boostTicks = IntegerValue("${valuePrefix}Custom-BoostTicks", 27,10,40).displayable { mode.equals("Custom") }
+    private val randomize = BoolValue("${valuePrefix}Custom-Randomize", true).displayable { mode.equals("Custom") }
+    private val randomAmount = IntegerValue("${valuePrefix}Custom-RandomAmount", 1, 0, 30).displayable { mode.equals("Custom") }
+    private val customstrafe = BoolValue("${valuePrefix}Custom-Strafe", true).displayable { mode.equals("Custom") }
     private val motionreduceonend = BoolValue("${valuePrefix}MotionReduceOnEnd", true)
 
     private var velocitypacket = false

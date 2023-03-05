@@ -25,7 +25,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange
 class AutoWeapon : Module() {
     private val onlySwordValue = BoolValue("OnlySword", false)
     private val silentValue = BoolValue("SpoofItem", false)
-    private val ticksValue = IntegerValue("SpoofTicks", 10, 1, 20)
+    private val ticksValue = IntegerValue("SpoofTicks", 10, 1, 20).displayable { silentValue.get() }
 
     private var attackEnemy = false
     private var spoofedSlot = 0

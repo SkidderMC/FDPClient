@@ -39,7 +39,13 @@ class PointerESP : Module() {
     private val dmgGreenValue = IntegerValue("DamageGreen", 0, 0, 255).displayable { !dmgRainbowValue.get() && damageColorValue.get() }
     private val dmgBlueValue = IntegerValue("DamageBlue", 0, 0, 255).displayable { !dmgRainbowValue.get() && damageColorValue.get() }
     private val dmgRainbowValue = BoolValue("DamageRainbow", false).displayable { damageColorValue.get() }
-    private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
+    private val alphaValue : IntegerValue = object : IntegerValue("Alpha", 255, 0, 255) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            if (distanceAlphaValue.get() && newValue < distanceValue.get()) {
+                set(newValue)
+            }
+        }
+    }
     private val distanceAlphaValue = BoolValue("DistanceAlpha", true)
     private val distanceValue = IntegerValue("Distance", 70, 0, 128).displayable { distanceAlphaValue.get() }
     private val alphaMinValue = IntegerValue("AlphaMin", 100, 0, 255).displayable { distanceAlphaValue.get() }

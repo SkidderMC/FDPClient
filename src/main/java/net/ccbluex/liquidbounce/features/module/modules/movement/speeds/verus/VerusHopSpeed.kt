@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.features.value.*
 class VerusHopSpeed : SpeedMode("VerusHop") {
 
     private val modeValue = ListValue("VerusMode", arrayOf("Normal", "LowHop", "VerusHard", "FastHop", "Bhop", "Test", "Ground"), "Normal")
-    private val timerBoost = BoolValue("${valuePrefix}TimerBoost",true)
+    private val timerBoost = BoolValue("${valuePrefix}TimerBoost",true).displayable { !modeValue.equals("Ground") }
 
     private var jumps = 0
     private var firstHop = false

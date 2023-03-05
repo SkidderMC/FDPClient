@@ -21,8 +21,8 @@ import org.lwjgl.input.Keyboard
 @ModuleInfo(name = "Speed", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, keyBind = Keyboard.KEY_V)
 class Speed : Module() {
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.speeds", SpeedMode::class.java)
-        .map { it.newInstance() as SpeedMode }
-        .sortedBy { it.modeName }
+            .map { it.newInstance() as SpeedMode }
+            .sortedBy { it.modeName }
 
     private val mode: SpeedMode
         get() = modes.find { modeValue.equals(it.modeName) } ?: throw NullPointerException() // this should not happen
@@ -54,7 +54,7 @@ class Speed : Module() {
             alert("Speed: " + MovementUtils.getSpeed().toString())
             alert("YMotion: " + mc.thePlayer.motionY.toString())
         }
-        
+
         if (MovementUtils.isMoving() && forceSprint.get()) {
             mc.thePlayer.isSprinting = true
         }
@@ -86,7 +86,7 @@ class Speed : Module() {
 
         mode.onTick()
     }
-    
+
     @EventTarget
     fun onPacket(event: PacketEvent) {
         mode.onPacket(event)
@@ -113,6 +113,14 @@ class Speed : Module() {
     /**
      * 读取mode中的value并和本体中的value合并
      * 所有的value必须在这个之前初始化
-      */
-    override val values = super.values.toMutableList().also { modes.map { mode -> mode.values.forEach { value -> it.add(value.displayable { modeValue.equals(mode.modeName) }) } } }
+     */
+    override val values = super.values.toMutableList().also {
+        modes.map { mode ->
+            mode.values.forEach { value ->
+                //it.add(value.displayable { modeValue.equals(mode.modeName) })
+                val displayableFunction = value.displayableFunction
+                it.add(value.displayable { displayableFunction.invoke() && modeValue.equals(mode.modeName) })
+            }
+        }
+    }
 }
