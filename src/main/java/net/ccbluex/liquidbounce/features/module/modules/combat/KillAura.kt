@@ -45,7 +45,6 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
-import java.io.IOException
 import java.util.*
 import kotlin.math.*
 
@@ -179,7 +178,7 @@ class KillAura : Module() {
     val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") }
     
     // Backtrace
-    private val backtraceValue = BoolValue("Backtrace", false)
+    //private val backtraceValue = BoolValue("Backtrace", false)
     
     // Others
     private val hitAbleValue = BoolValue("AlwaysHitAble", true)
@@ -340,7 +339,7 @@ class KillAura : Module() {
              if (mc.thePlayer.swingProgressInt == 1) {
                 mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             } else if (mc.thePlayer.swingProgressInt == 2) {
-                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()))
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
             }
         }
 
@@ -394,7 +393,7 @@ class KillAura : Module() {
      * Update event
      */
     @EventTarget
-    fun onUpdate(IgnoredEvent: UpdateEvent) {
+    fun onUpdate(ignoredEvent: UpdateEvent) {
         if (cancelRun) {
             currentTarget = null
             hitable = false
@@ -797,8 +796,12 @@ class KillAura : Module() {
 
             // Attack
             if (!targetModeValue.equals("Multi")) {
-                val raycastedEntity = RaycastUtils.raycastEntity(maxRange.toDouble()) { it is EntityLivingBase && it !is EntityArmorStand && (!raycastTargetValue.get() || EntityUtils.canRayCast(it)) && !EntityUtils.isFriend(it) }
-                attackEntity(if (raycastValue.get()) { if (raycastedEntity != null) { raycastedEntity } else { currentTarget!! } as EntityLivingBase } else { currentTarget!! })
+                attackEntity(if (raycastValue.get()) {
+                    (RaycastUtils.raycastEntity(maxRange.toDouble()) {
+                        it is EntityLivingBase && it !is EntityArmorStand && (!raycastTargetValue.get() || EntityUtils.canRayCast(
+                            it
+                        )) && !EntityUtils.isFriend(it)
+                    } ?: currentTarget!!) as EntityLivingBase } else { currentTarget!! })
             } else {
                 inRangeDiscoveredTargets.forEachIndexed { index, entity ->
                     if (limitedMultiTargetsValue.get() == 0 || index < limitedMultiTargetsValue.get()) {
