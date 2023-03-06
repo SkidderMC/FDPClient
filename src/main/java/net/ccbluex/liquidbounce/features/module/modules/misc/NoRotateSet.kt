@@ -19,29 +19,6 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 @ModuleInfo(name = "NoRotateSet", category = ModuleCategory.MISC)
 class NoRotateSet : Module() {
-
-    private val noLoadingValue = BoolValue("NoLoading", true)
-    private val overwriteTeleportValue = BoolValue("SilentConfirm", true)
-
-    private var lastRotation: Rotation? = null
-
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val packet = event.packet
-
-        if (packet is S08PacketPlayerPosLook) {
-            lastRotation = null
-            if (noLoadingValue.get() && mc.netHandler?.doneLoadingTerrain == false) {
-                return
-            }
-
-            if(!overwriteTeleportValue.get()) {
-                lastRotation = Rotation(packet.yaw, packet.pitch)
-            }
-        } else if (lastRotation != null && packet is C03PacketPlayer && packet.rotating && overwriteTeleportValue.get()) {
-            packet.yaw = lastRotation!!.yaw
-            packet.pitch = lastRotation!!.pitch
-            lastRotation = null
-        }
-    }
+    val noLoadingValue = BoolValue("NoLoading", true)
+    val overwriteTeleportValue = BoolValue("SilentConfirm", true)
 }
