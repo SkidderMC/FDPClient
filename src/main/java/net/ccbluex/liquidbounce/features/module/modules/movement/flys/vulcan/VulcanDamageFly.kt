@@ -19,6 +19,7 @@ import kotlin.math.sqrt
 class VulcanDamageFly : FlyMode("VulcanDamage") {
     private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
     private val selfDamageValue = BoolValue("${valuePrefix}SelfDamage", true)
+    private val instantDmgValue = BoolValue("${valuePrefix}InstantDamage", true)
     private val vanillaValue = BoolValue("${valuePrefix}Vanilla", false)
     private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f).displayable{ !vanillaValue.get() }
     private var waitFlag = false
@@ -78,12 +79,40 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         isDamaged = false
         dmgJumpCount = 0
         mc.timer.timerSpeed = 1.0f
-        runSelfDamageCore()
+        if (instantDmgValue.get()) {
+            dmgJumpCount = 11451
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.0784, mc.thePlayer.posZ, false))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.41999998688697815, mc.thePlayer.posZ, false))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.7531999805212, mc.thePlayer.posZ, false))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.0, mc.thePlayer.posZ, true))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.4199999868869781, mc.thePlayer.posZ, false))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.7531999805212, mc.thePlayer.posZ, false))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 2.0, mc.thePlayer.posZ, true))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 2.419999986886978, mc.thePlayer.posZ, true))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 2.7531999805212, mc.thePlayer.posZ, true))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.00133597911214, mc.thePlayer.posZ, true))
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.00133597911214, mc.thePlayer.posZ)
+            waitFlag = true
+        } else {
+            runSelfDamageCore()
+        }
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if (runSelfDamageCore()) {
+        if (!instantDmgValue.get() && runSelfDamageCore()) {
             return
+        }
+        if (instantDmgValue.get() && dmgJumpCount == 11451) {
+            if (!isStarted) {
+                return
+            } else {
+                isStarted = false
+                waitFlag = false
+                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+                dmgJumpCount = 999
+            }
         }
         mc.thePlayer.jumpMovementFactor = 0.00f
         if (!isStarted && !waitFlag) {
@@ -147,17 +176,40 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         if (packet is S08PacketPlayerPosLook && waitFlag && !vanillaValue.get()) {
             isStarted = true
             waitFlag = false
+            if (instantDmgValue.get()) {
+                PacketUtils.sendPacketNoEvent(
+                    C06PacketPlayerPosLook(
+                        packet.x,
+                        packet.y,
+                        packet.z,
+                        packet.yaw,
+                        packet.pitch,
+                        false
+                    )
+                )
+            }
             mc.timer.timerSpeed = 1.0f
             flyTicks = 0
         }else if (packet is S08PacketPlayerPosLook && vanillaValue.get()) {
             lastSentX = packet.x
             lastSentY = packet.y
             lastSentZ = packet.z
-            PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.yaw, packet.pitch, false))
-            mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
-            event.cancelEvent()
-            isStarted = true
             waitFlag = false
+            if (!instantDmgValue.get()) {
+                event.cancelEvent()
+            }
+            PacketUtils.sendPacketNoEvent(
+                C06PacketPlayerPosLook(
+                    packet.x,
+                    packet.y,
+                    packet.z,
+                    packet.yaw,
+                    packet.pitch,
+                    false
+                )
+            )
+            mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
+            isStarted = true
         }
         if (packet is C0FPacketConfirmTransaction) { //Make sure it works with Vulcan Combat Disabler
             val transUID = (packet.uid).toInt()
