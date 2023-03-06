@@ -312,7 +312,11 @@ public abstract class MixinNetHandlerPlayClient {
             }
         }
         if (flag) {
-            entityplayer.setPosition(d0, d1, d2);
+            if (noRotateSet.getRotateValue().get()) {
+                entityplayer.setPositionAndRotation(d0, d1, d2, entityplayer.rotationYaw, entityplayer.rotationPitch);
+            } else {
+                entityplayer.setPosition(d0, d1, d2);
+            }
         } else {
             entityplayer.setPositionAndRotation(d0, d1, d2, f, f1);
         }

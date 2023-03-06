@@ -21,4 +21,5 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 class NoRotateSet : Module() {
     val noLoadingValue = BoolValue("NoLoading", true)
     val overwriteTeleportValue = BoolValue("SilentConfirm", true)
+    val rotateValue = BoolValue("SilentConfirmSetRotation", true).displayable { overwriteTeleportValue.get() }
 }
