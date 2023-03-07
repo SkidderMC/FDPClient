@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.minecraft.client.settings.GameSettings
 
 class VulcanLowHopSpeed : SpeedMode("VulcanLowHop") {
     private var ticks = 0
