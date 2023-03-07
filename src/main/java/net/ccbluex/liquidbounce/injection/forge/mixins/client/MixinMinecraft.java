@@ -100,6 +100,8 @@ public abstract class MixinMinecraft {
     @Shadow
     private boolean fullscreen;
 
+    private float prevYaw = 0.0f;
+
 
     @Inject(method = "run", at = @At("HEAD"))
     private void init(CallbackInfo callbackInfo) {
@@ -225,10 +227,15 @@ public abstract class MixinMinecraft {
             final float yaw = RotationUtils.targetRotation.getYaw();
             if (rotations.getHeadValue().get()) {
                 thePlayer.rotationYawHead = yaw;
+                thePlayer.prevRotationYawHead = prevYaw;
             }
             if (rotations.getBodyValue().get()) {
                 thePlayer.renderYawOffset = yaw;
+                thePlayer.prevRenderYawOffset = prevYaw;
             }
+            prevYaw = yaw;
+        } else if (thePlayer != null){
+            prevYaw = thePlayer.renderYawOffset;
         }
     }
 

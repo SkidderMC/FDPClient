@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
 import net.ccbluex.liquidbounce.features.special.ClientFixes;
 import net.ccbluex.liquidbounce.utils.BlinkUtils;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.TransferUtils;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -72,6 +73,8 @@ public abstract class MixinNetHandlerPlayClient {
     
     @Shadow
     private boolean doneLoadingTerrain;
+
+    public boolean silentConfirm = false;
 
     @Inject(method = "handleResourcePack", at = @At("HEAD"), cancellable = true)
     private void handleResourcePack(final S48PacketResourcePackSend p_handleResourcePack_1_, final CallbackInfo callbackInfo) {
@@ -274,20 +277,28 @@ public abstract class MixinNetHandlerPlayClient {
         if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.X)) {
             d0 += entityplayer.posX;
         } else {
-            entityplayer.motionX = 0.0D;
+            if (!TransferUtils.INSTANCE.getNoMotionSet()) {
+                entityplayer.motionX = 0.0D;
+            }
         }
 
         if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.Y)) {
             d1 += entityplayer.posY;
         } else {
-            entityplayer.motionY = 0.0D;
+            if (!TransferUtils.INSTANCE.getNoMotionSet()) {
+                entityplayer.motionY = 0.0D;
+            }
         }
 
         if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.Z)) {
             d2 += entityplayer.posZ;
         } else {
-            entityplayer.motionZ = 0.0D;
+            if (!TransferUtils.INSTANCE.getNoMotionSet()) {
+                entityplayer.motionZ = 0.0D;
+            }
         }
+
+        TransferUtils.INSTANCE.setNoMotionSet(false);
 
         if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.X_ROT)) {
             f1 += entityplayer.rotationPitch;
@@ -302,25 +313,30 @@ public abstract class MixinNetHandlerPlayClient {
 
         boolean flag = false;
 
-        if (noRotateSet.getState()) {
-            if (!noRotateSet.getNoLoadingValue().get() || this.doneLoadingTerrain) {
-                flag = true;
-                if (!noRotateSet.getOverwriteTeleportValue().get()) {
-                    overwriteYaw = entityplayer.rotationYaw;
-                    overwritePitch = entityplayer.rotationPitch;
+        if (TransferUtils.INSTANCE.getSilentConfirm()) {
+            this.netManager.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(d0, d1, d2, f, f1, false));
+            TransferUtils.INSTANCE.setSilentConfirm(false);
+        } else {
+            if (noRotateSet.getState()) {
+                if (!noRotateSet.getNoLoadingValue().get() || this.doneLoadingTerrain) {
+                    flag = true;
+                    if (!noRotateSet.getOverwriteTeleportValue().get()) {
+                        overwriteYaw = entityplayer.rotationYaw;
+                        overwritePitch = entityplayer.rotationPitch;
+                    }
                 }
             }
-        }
-        if (flag) {
-            if (noRotateSet.getRotateValue().get()) {
-                entityplayer.setPositionAndRotation(d0, d1, d2, entityplayer.rotationYaw, entityplayer.rotationPitch);
+            if (flag) {
+                if (noRotateSet.getRotateValue().get()) {
+                    entityplayer.setPositionAndRotation(d0, d1, d2, entityplayer.rotationYaw, entityplayer.rotationPitch);
+                } else {
+                    entityplayer.setPosition(d0, d1, d2);
+                }
             } else {
-                entityplayer.setPosition(d0, d1, d2);
+                entityplayer.setPositionAndRotation(d0, d1, d2, f, f1);
             }
-        } else {
-            entityplayer.setPositionAndRotation(d0, d1, d2, f, f1);
+            this.netManager.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(entityplayer.posX, entityplayer.getEntityBoundingBox().minY, entityplayer.posZ, overwriteYaw, overwritePitch, false));
         }
-        this.netManager.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(entityplayer.posX, entityplayer.getEntityBoundingBox().minY, entityplayer.posZ, overwriteYaw, overwritePitch, false));
 
         if (!this.doneLoadingTerrain)
         {

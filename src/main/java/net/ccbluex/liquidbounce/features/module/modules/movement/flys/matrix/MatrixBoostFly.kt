@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.utils.TransferUtils
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import kotlin.math.cos
@@ -86,12 +87,10 @@ class MatrixBoostFly : FlyMode("MatrixBoost") {
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if(mc.currentScreen == null && packet is S08PacketPlayerPosLook) {
-            mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
-            mc.netHandler.addToSendQueue(C03PacketPlayer.C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.yaw, packet.pitch, false))
+            TransferUtils.noMotionSet = true
             if (boostMotion == 1) {
                 boostMotion = 2
             }
-            event.cancelEvent()
         }
     }
 }

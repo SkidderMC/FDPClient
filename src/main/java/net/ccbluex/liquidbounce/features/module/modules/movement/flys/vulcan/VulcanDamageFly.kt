@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.TransferUtils
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -198,6 +199,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             if (!instantDmgValue.get()) {
                 event.cancelEvent()
             }
+            TransferUtils.noMotionSet = true
             PacketUtils.sendPacketNoEvent(
                 C06PacketPlayerPosLook(
                     packet.x,
@@ -208,7 +210,6 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
                     false
                 )
             )
-            mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
             isStarted = true
         }
         if (packet is C0FPacketConfirmTransaction) { //Make sure it works with Vulcan Combat Disabler
