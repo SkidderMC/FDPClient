@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.features.value.ListValue;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
@@ -33,6 +34,8 @@ import java.awt.*;
 public class BowJump extends Module {
 
     private final BoolValue hypixelBypassValue = new BoolValue("hypixelBypass", true);
+    private final ListValue modeValue = new ListValue("BoostMode", new String[] {"Strafe","SpeedInAir"}, "Strafe");
+    private final FloatValue speedInAirBoostValue = new FloatValue("SpeedInAir", 0.5F, 0.02F, 1F);
     private final FloatValue boostValue = new FloatValue("Boost", 4.25F, 0F, 10F);
     private final FloatValue heightValue = new FloatValue("Height", 0.42F, 0F, 10F);
     private final FloatValue timerValue = new FloatValue("Timer", 1F, 0.1F, 10F);
@@ -135,7 +138,16 @@ public class BowJump extends Module {
                 if (mc.thePlayer.onGround && mc.thePlayer.ticksExisted - lastPlayerTick >= 1)
                     bowState = 5;
             } else {
-                MovementUtils.INSTANCE.strafe(boostValue.get());
+                switch (modeValue.get()) {
+                    case "Strafe": {
+                        MovementUtils.INSTANCE.strafe(boostValue.get());
+                        break;
+                    }
+                    case "SpeedInAir":{
+                        mc.thePlayer.speedInAir = speedInAirBoostValue.getValue();
+                        mc.thePlayer.jump();
+                    }
+                }
                 mc.thePlayer.motionY = heightValue.get();
                 bowState = 4;
                 lastPlayerTick = mc.thePlayer.ticksExisted;
