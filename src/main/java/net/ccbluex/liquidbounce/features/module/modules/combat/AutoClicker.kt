@@ -71,7 +71,7 @@ class AutoClicker : Module() {
     @EventTarget
     fun onRender(event: Render3DEvent) {
         // Left click
-        if ((mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && mc.playerController.curBlockDamageMP == 0F) || (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && RightValue.get() &&
+        if ((mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && mc.playerController.curBlockDamageMP == 0F) || (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() &&
                     System.currentTimeMillis() - rightLastSwing >= rightDelay &&
                     (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && rightValue.get())
         ) {
