@@ -74,6 +74,7 @@ class AutoClicker : Module() {
             || (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() && System.currentTimeMillis() - rightLastSwing >= rightDelay && (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && rightValue.get())
         ) {
             leftLastSwing = System.currentTimeMillis()
+            rightLastSwing = System.currentTimeMillis()
             
             when (modeValue.get().lowercase()) {
                 "normal" -> {
