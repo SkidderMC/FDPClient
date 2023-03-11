@@ -69,14 +69,11 @@ class AutoClicker : Module() {
 
 
     @EventTarget
-    fun onRender(event: Render3DEvent) {
-        // Left click
-        if ((mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && mc.playerController.curBlockDamageMP == 0F) || (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() &&
-                    System.currentTimeMillis() - rightLastSwing >= rightDelay &&
-                    (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && rightValue.get())
+        if ((mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && mc.playerController.curBlockDamageMP == 0F) 
+            || (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() && System.currentTimeMillis() - rightLastSwing >= rightDelay && (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && rightValue.get())
         ) {
-            KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
             leftLastSwing = System.currentTimeMillis()
+            
             when (modeValue.get().lowercase()) {
                 "normal" -> {
                     cDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
@@ -212,9 +209,11 @@ class AutoClicker : Module() {
                 }
 
             }
-            if (mc.gameSettings.keyBindUseItem.isKeyDown) {
-                rightDelay = cDelay.toLong()
-            } else {
+            if (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() && System.currentTimeMillis() - rightLastSwing >= rightDelay && (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && rightValue.get()) {
+                KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+                rightDelay = cDelay.toLong() - 1L
+            if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && mc.playerController.curBlockDamageMP == 0F)
+                KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
                 leftDelay = cDelay.toLong()
             }
         }
@@ -229,7 +228,7 @@ class AutoClicker : Module() {
             if (Random.nextBoolean()) {
                 mc.thePlayer.rotationPitch += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
 
-                // Make sure pitch does not go in to blatent values
+                // Make sure pitch does not go in to blatant values
                 if (mc.thePlayer.rotationPitch > 90)
                     mc.thePlayer.rotationPitch = 90F
                 else if (mc.thePlayer.rotationPitch < -90)
