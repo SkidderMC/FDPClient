@@ -10,6 +10,7 @@ class CancelVelocity : VelocityMode("Cancel") {
     
     override fun onVelocityPacket(event: PacketEvent) {
         event.cancelEvent()
+        val packet = event.packet
         if (!cancelVertical) mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
         if (!cancelHorizontal) {
             mc.thePlayer.motionX = packet.getMotionX().toDouble() / 8000.0
