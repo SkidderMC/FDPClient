@@ -278,7 +278,7 @@ class KillAura : Module() {
     
     // hit select
     private var canHitselect = false
-    private val hitselectTimer - MSTimer()
+    private val hitselectTimer = MSTimer()
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
         var aabb = it.entityBoundingBox
