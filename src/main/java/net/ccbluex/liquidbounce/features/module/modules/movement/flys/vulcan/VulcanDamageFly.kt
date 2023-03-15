@@ -3,25 +3,27 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.vulcan
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
-import net.ccbluex.liquidbounce.features.value.BoolValue
-import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.TransferUtils
 import net.minecraft.client.settings.GameSettings
+
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+
 import kotlin.math.sqrt
+import kotlin.math.cos
+import kotlin.math.sin
 
 class VulcanDamageFly : FlyMode("VulcanDamage") {
-    private val onlyDamageValue = BoolValue("${valuePrefix}OnlyDamage", true)
-    private val selfDamageValue = BoolValue("${valuePrefix}SelfDamage", true)
-    private val instantDmgValue = BoolValue("${valuePrefix}InstantDamage", true)
-    private val vanillaValue = BoolValue("${valuePrefix}Vanilla", false)
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Damage", "SelfDamage", "InstantDamage", "Flag"), "InstantDamage")
+    private val flyMode = ListValue("${valuePrefix}FlyMode", arrayOf("Timer", "CancelMove", "Clip"), "CancelMove")
+    private val autoDisableValue = BoolValue("${valuePrefix}AutoDisable", true)
     private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f).displayable{ !vanillaValue.get() }
     private var waitFlag = false
     private var isStarted = false
@@ -39,8 +41,8 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
     
     fun runSelfDamageCore(): Boolean {
         mc.timer.timerSpeed = 1.0f
-        if (!onlyDamageValue.get() || !selfDamageValue.get()) {
-            if (onlyDamageValue.get()) {
+        if (!bypassMode.equals("Flag") || !( bypassMode.equals("SelfDamage") || bypassMode.equals("InstantDamage") )) {
+            if (!bypassMode.equals("Flag")) {
                 if (mc.thePlayer.hurtTime > 0 || isDamaged) {
                     isDamaged = true
                     dmgJumpCount = 999
@@ -80,7 +82,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         isDamaged = false
         dmgJumpCount = 0
         mc.timer.timerSpeed = 1.0f
-        if (instantDmgValue.get()) {
+        if (bypassMode.equals("InstantDamage") {
             dmgJumpCount = 11451
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.0784, mc.thePlayer.posZ, false))
@@ -96,16 +98,22 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.00133597911214, mc.thePlayer.posZ, false))
             mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.00133597911214, mc.thePlayer.posZ)
             waitFlag = true
+        } else if (bypassMode.equals("Flag")) {
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 2, mc.thePlayer.posZ, true))
+            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
         } else {
             runSelfDamageCore()
         }
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if (!instantDmgValue.get() && runSelfDamageCore()) {
+        if (flyTicks > 8 && autoDisableValue.get()) fly.state = false
+        
+        if (!bypassMode.equals("InstantDamage") && runSelfDamageCore()) {
             return
         }
-        if (instantDmgValue.get() && dmgJumpCount == 11451) {
+        if (bypassMode.equals("InstantDamage") && dmgJumpCount == 11451) {
             if (!isStarted) {
                 return
             } else {
@@ -121,23 +129,39 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             waitFlag = true
         }
         if (isStarted) {
-            if (vanillaValue.get()) {
-                mc.timer.timerSpeed = 1.0f
-                if (!mc.gameSettings.keyBindSneak.isKeyDown) {
+            when (flyMode.get().lowercase()) {
+                "cancelmove" -> {
+                    mc.timer.timerSpeed = 1.0f
+                    mc.thePlayer.motionY = -0.0000001
+                    if (!mc.gameSettings.keyBindSneak.isKeyDown) {
+                        MovementUtils.resetMotion(true)
+                        if (mc.gameSettings.keyBindJump.isKeyDown) {
+                            mc.thePlayer.motionY = 1.0
+                        }
+                    }
+                    
+                    MovementUtils.strafe(1f)
+                }
+                "timer" -> {
+                    flyTicks++
+                    mc.timer.timerSpeed = flyTimerValue.get()
                     MovementUtils.resetMotion(true)
-                    if (mc.gameSettings.keyBindJump.isKeyDown) {
-                        mc.thePlayer.motionY = 0.42
+                    if (flyTicks > 4) {
+                        MovementUtils.strafe(10.045f)
+                    } else {
+                        MovementUtils.strafe(9.795f + flyTicks.toFloat() * 0.05f )
                     }
                 }
-            } else {
-                mc.timer.timerSpeed = flyTimerValue.get()
-                MovementUtils.resetMotion(true)
+                "clip" -> {
+                    MovementUtils.resetMotion(true)
+                    if (mc.thePlayer.ticksExisted % 10 == 0) {
+                        flyTicks++
+                        val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
+                        mc.thePlayer.setPosition(mc.thePlayer.posX + (-sin(yaw) * 9.98f), mc.thePlayer.posY - 0.42, mc.thePlayer.posZ + (cos(yaw) * 9.98f))
+                        PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
+                    }
+                }
             }
-            flyTicks++
-            if (flyTicks > 4) {
-                flyTicks = 4
-            }
-            MovementUtils.strafe(if (vanillaValue.get()) { 0.99f } else { 9.795f + flyTicks.toFloat() * 0.05f })
         }
     }
 
@@ -151,16 +175,17 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         if (packet is C03PacketPlayer && waitFlag) {
             event.cancelEvent()
         }
-        if (packet is C03PacketPlayer && (dmgJumpCount < 4 && selfDamageValue.get())) {
+        if (packet is C03PacketPlayer && (dmgJumpCount < 4 && ( bypassMode.equals("SelfDamage") || bypassMode.equals("InstantDamage") ) )) {
             packet.onGround = false
         }
-        if (isStarted && vanillaValue.get()) {
+        if (isStarted && flyMode.equals("cancelmove")) {
             if(packet is C03PacketPlayer && (packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook)) {
                 val deltaX = packet.x - lastSentX
                 val deltaY = packet.y - lastSentY
                 val deltaZ = packet.z - lastSentZ
 
-                if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 10.0) {
+                if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 8.9) {
+                    flyTicks++
                     PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(lastTickX, lastTickY, lastTickZ, false))
                     lastSentX = lastTickX
                     lastSentY = lastTickY
@@ -174,45 +199,33 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
                 event.cancelEvent()
             }
         }
-        if (packet is S08PacketPlayerPosLook && waitFlag && !vanillaValue.get()) {
+        
+        if (packet is C03PacketPlayer && flyMode.equals("clip")) {
+            event.cancelEvent()
+        }
+        
+        if (packet is S08PacketPlayerPosLook) {
             isStarted = true
             waitFlag = false
-            if (instantDmgValue.get()) {
-                PacketUtils.sendPacketNoEvent(
-                    C06PacketPlayerPosLook(
-                        packet.x,
-                        packet.y,
-                        packet.z,
-                        packet.yaw,
-                        packet.pitch,
-                        false
-                    )
-                )
-            }
+        }
+        
+        if (packet is S08PacketPlayerPosLook && waitFlag && !flyMode.equals("cancelmove")) {
+            if (bypassMode.equals("InstantDamage")) PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.yaw, packet.pitch, false))
             mc.timer.timerSpeed = 1.0f
             flyTicks = 0
-        }else if (packet is S08PacketPlayerPosLook && vanillaValue.get()) {
+            
+        } else if (packet is S08PacketPlayerPosLook && flyMode.equals("cancelmove")) {
             lastSentX = packet.x
             lastSentY = packet.y
             lastSentZ = packet.z
-            waitFlag = false
-            if (!instantDmgValue.get()) {
-                event.cancelEvent()
-            }
+            
+            if (!bypassMode.equals("InstantDamage")) event.cancelEvent()
+            
             TransferUtils.noMotionSet = true
-            PacketUtils.sendPacketNoEvent(
-                C06PacketPlayerPosLook(
-                    packet.x,
-                    packet.y,
-                    packet.z,
-                    packet.yaw,
-                    packet.pitch,
-                    false
-                )
-            )
-            isStarted = true
+            PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.yaw, packet.pitch, false))
         }
-        if (packet is C0FPacketConfirmTransaction) { //Make sure it works with Vulcan Combat Disabler
+        
+        if (packet is C0FPacketConfirmTransaction) { //Make sure it works with Vulcan Velocity
             val transUID = (packet.uid).toInt()
             if (transUID >= -31767 && transUID <= -30769) {
                 event.cancelEvent()
