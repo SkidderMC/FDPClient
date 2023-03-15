@@ -38,10 +38,10 @@ class HypixelFireballFly : FlyMode("HypixelFireball") {
         if(velocitypacket) {
             mc.timer.timerSpeed = timerValue.get()
             if (tick == 0) {
-                mc.thePlayer.motionY = 1.45
+                mc.thePlayer.motionY = 1.5
                 MovementUtils.strafe(1.4f)
             } else if (tick == 1) {
-                MovementUtils.strafe(1.85f)
+                MovementUtils.strafe(1.4f)
             } else if (tick < 12) {
                 MovementUtils.strafe(mSpeed * 0.99f)
             } else {
