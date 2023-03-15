@@ -135,11 +135,11 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             when (flyMode.get().lowercase()) {
                 "cancelmove" -> {
                     mc.timer.timerSpeed = 1.0f
-                    mc.thePlayer.motionY = -0.0000001
+                    MovementUtils.resetMotion(false)
                     if (!mc.gameSettings.keyBindSneak.isKeyDown) {
                         MovementUtils.resetMotion(true)
                         if (mc.gameSettings.keyBindJump.isKeyDown) {
-                            mc.thePlayer.motionY = flyVSpeedValue.get()
+                            mc.thePlayer.motionY = flyVSpeedValue.get().toDouble()
                         }
                     }
                     
