@@ -278,6 +278,7 @@ class KillAura : Module() {
     
     // hit select
     private var canHitselect = false
+    private val hitselectTimer - MSTimer()
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
         var aabb = it.entityBoundingBox
@@ -765,10 +766,13 @@ class KillAura : Module() {
         
         if (hitselectValue.get()) {
             if (canHitselect) {
-                if (inRangeDiscoveredTargets.isEmpty()) canHitselect = false
+                if (inRangeDiscoveredTargets.isEmpty() && hitselectTimer.hasTimePassed(600L)) canHitselect = false
             } else {
-                if (mc.thePlayer.hurtTime > 7) canHitselect = true
-                inRangeDiscoveredTargets.forEachIndexed { index, entity -> if ( mc.thePlayer.getDistanceToEntityBox(entity) < hitselectRangeValue.get() ) canHitselect = true }
+                if (mc.thePlayer.hurtTime > 7) {
+                    canHitselect = true
+                    hitselectTimer.reset()
+                }
+                inRangeDiscoveredTargets.forEachIndexed { index, entity -> if ( mc.thePlayer.getDistanceToEntityBox(entity) < hitselectRangeValue.get() ) canHitselect = true; hitselectTimer.reset() }
             }
         }
         
