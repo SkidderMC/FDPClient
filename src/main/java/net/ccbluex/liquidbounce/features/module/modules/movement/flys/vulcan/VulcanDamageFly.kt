@@ -24,7 +24,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
     private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Damage", "SelfDamage", "InstantDamage", "Flag"), "InstantDamage")
     private val flyMode = ListValue("${valuePrefix}FlyMode", arrayOf("Timer", "CancelMove", "Clip"), "CancelMove")
     private val autoDisableValue = BoolValue("${valuePrefix}AutoDisable", true)
-    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f).displayable{ !vanillaValue.get() }
+    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f).displayable{ flyMode.equals("Timer") }
     private var waitFlag = false
     private var isStarted = false
     var isDamaged = false
@@ -82,7 +82,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
         isDamaged = false
         dmgJumpCount = 0
         mc.timer.timerSpeed = 1.0f
-        if (bypassMode.equals("InstantDamage") {
+        if (bypassMode.equals("InstantDamage")) {
             dmgJumpCount = 11451
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.0784, mc.thePlayer.posZ, false))
