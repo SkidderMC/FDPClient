@@ -41,7 +41,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
     
     fun runSelfDamageCore(): Boolean {
         mc.timer.timerSpeed = 1.0f
-        if (!bypassMode.equals("Flag") || !( bypassMode.equals("SelfDamage") || bypassMode.equals("InstantDamage") )) {
+        if (bypassMode.equals("Damage") || bypassMode.equals("Flag")) {
             if (!bypassMode.equals("Flag")) {
                 if (mc.thePlayer.hurtTime > 0 || isDamaged) {
                     isDamaged = true
