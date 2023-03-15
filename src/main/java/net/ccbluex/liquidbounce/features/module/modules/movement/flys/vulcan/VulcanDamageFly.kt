@@ -23,8 +23,11 @@ import kotlin.math.sin
 class VulcanDamageFly : FlyMode("VulcanDamage") {
     private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Damage", "SelfDamage", "InstantDamage", "Flag"), "InstantDamage")
     private val flyMode = ListValue("${valuePrefix}FlyMode", arrayOf("Timer", "CancelMove", "Clip"), "CancelMove")
+    private val flyHSpeedValue = FloatValue("${valuePrefix}Horizontal", 1.0f, 0.5f, 2.5f).displayable{ flyMode.equals("CancelMove") }
+    private val flyVSpeedValue = FloatValue("${valuePrefix}Vertical", 0.42f, 0.42f, 2.5f).displayable{ flyMode.equals("CancelMove") }
+    private val flyDistanceValue = FloatValue("${valuePrefix}Distance", 10.0f, 6.0f, 10.0f)
     private val autoDisableValue = BoolValue("${valuePrefix}AutoDisable", true)
-    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.02f, 0.15f).displayable{ flyMode.equals("Timer") }
+    private val flyTimerValue = FloatValue("${valuePrefix}Timer", 0.05f, 0.05f, 0.25f).displayable{ flyMode.equals("Timer") }
     private var waitFlag = false
     private var isStarted = false
     var isDamaged = false
@@ -136,20 +139,20 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
                     if (!mc.gameSettings.keyBindSneak.isKeyDown) {
                         MovementUtils.resetMotion(true)
                         if (mc.gameSettings.keyBindJump.isKeyDown) {
-                            mc.thePlayer.motionY = 1.0
+                            mc.thePlayer.motionY = flyVSpeedValue.get()
                         }
                     }
                     
-                    MovementUtils.strafe(1f)
+                    MovementUtils.strafe(flyHSpeedValue.get())
                 }
                 "timer" -> {
                     flyTicks++
                     mc.timer.timerSpeed = flyTimerValue.get()
                     MovementUtils.resetMotion(true)
                     if (flyTicks > 4) {
-                        MovementUtils.strafe(10.045f)
+                        MovementUtils.strafe(flyDistanceValue.get() - 0.005f)
                     } else {
-                        MovementUtils.strafe(9.795f + flyTicks.toFloat() * 0.05f )
+                        MovementUtils.strafe(flyDistanceValue.get() - 0.205f + flyTicks.toFloat() * 0.05f)
                     }
                 }
                 "clip" -> {
@@ -157,7 +160,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
                     if (mc.thePlayer.ticksExisted % 10 == 0) {
                         flyTicks++
                         val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
-                        mc.thePlayer.setPosition(mc.thePlayer.posX + (-sin(yaw) * 9.98f), mc.thePlayer.posY - 0.42, mc.thePlayer.posZ + (cos(yaw) * 9.98f))
+                        mc.thePlayer.setPosition(mc.thePlayer.posX + (-sin(yaw) * flyDistanceValue.get()), mc.thePlayer.posY - 0.42, mc.thePlayer.posZ + (cos(yaw) * flyDistanceValue.get()))
                         PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
                     }
                 }
@@ -184,7 +187,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
                 val deltaY = packet.y - lastSentY
                 val deltaZ = packet.z - lastSentZ
 
-                if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > 8.9) {
+                if (sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) > flyDistanceValue.get()) {
                     flyTicks++
                     PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(lastTickX, lastTickY, lastTickZ, false))
                     lastSentX = lastTickX
@@ -200,7 +203,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
             }
         }
         
-        if (packet is C03PacketPlayer && flyMode.equals("clip")) {
+        if (packet is C03PacketPlayer && flyMode.equals("clip") && isStarted) {
             event.cancelEvent()
         }
         
