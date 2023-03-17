@@ -111,7 +111,10 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if (flyTicks > 8 && autoDisableValue.get()) fly.state = false
+        if (flyTicks > 7 && autoDisableValue.get()) {
+            MovementUtils.resetMotion(true)
+            fly.state = false
+        }
         
         if (!bypassMode.equals("InstantDamage") && runSelfDamageCore()) {
             return
