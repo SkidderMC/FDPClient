@@ -137,7 +137,7 @@ class KillAura : Module() {
     // Rotations
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix"),
+        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView"),
         "LiquidBounce"
     )
     // TODO: RotationMode Bypass Intave
@@ -1038,7 +1038,6 @@ class KillAura : Module() {
                         true
                 ) ?: return false
 
-        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = 89.9f
 
         var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
         if (diffAngle < 0) diffAngle = -diffAngle
@@ -1067,7 +1066,7 @@ class KillAura : Module() {
                 directRotation,
                 (180.0).toFloat()
             )
-            "SmoothCenter", "SmoothLiquid", "OldMatrix" -> RotationUtils.limitAngleChange(
+            "SmoothCenter", "SmoothLiquid" -> RotationUtils.limitAngleChange(
                 RotationUtils.serverRotation,
                 directRotation,
                 (calculateSpeed).toFloat()
