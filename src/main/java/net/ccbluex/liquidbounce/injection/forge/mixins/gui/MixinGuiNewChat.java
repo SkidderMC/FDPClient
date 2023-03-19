@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
-import net.ccbluex.liquidbounce.features.module.modules.misc.ChatEnhance;
+import net.ccbluex.liquidbounce.features.module.modules.client.ChatEnhance;
 import net.ccbluex.liquidbounce.font.CFontRenderer;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
@@ -138,7 +138,7 @@ public abstract class MixinGuiNewChat {
      */
     @Overwrite
     public void drawChat(int updateCounter) {
-        boolean canFont = hud.getState() && hud.getFontChatValue().get();
+        boolean canFont = chatEnhance.getState() && chatEnhance.getFontChatValue().get();
 
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
             
@@ -188,7 +188,7 @@ public abstract class MixinGuiNewChat {
                                 int i2 = 0;
                                 int j2 = -i1 * 9;
 
-                                if(hud.getChatAnimValue().get()&&!flag) {
+                                if(chatEnhance.getChatAnimValue().get()&&!flag) {
                                     if (j1 <= 20) {
                                         GL11.glTranslatef((float) (-(l + 4) * EaseUtils.INSTANCE.easeInQuart(1 - ((j1+mc.timer.renderPartialTicks) / 20.0))), 0F, 0F);
                                     }
@@ -197,7 +197,7 @@ public abstract class MixinGuiNewChat {
                                     }
                                 }
 
-                                if(hud.getChatRectValue().get()) {
+                                if(chatEnhance.getChatRectValue().get()) {
                                     RenderUtils.drawRect(i2 - 2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
                                     if (j2 - 9 < minH) {
                                         minH = j2 - 9;
@@ -207,7 +207,7 @@ public abstract class MixinGuiNewChat {
                                     }
                                 }
                                 GlStateManager.enableBlend();
-                                if(hud.getChatRectValue().get()) {
+                                if(chatEnhance.getChatRectValue().get()) {
                                     if (canFont)
                                         CFontRenderer.DisplayFont(chatline.getChatComponent().getFormattedText(), (float) i2, (float) (j2 - 8), new Color(255, 255, 255).getRGB(), FontLoaders.C16);
                                     else {
@@ -229,7 +229,7 @@ public abstract class MixinGuiNewChat {
                     }
                 }
                 
-                if (hud.getBetterChatRectValue().get()) {
+                if (chatEnhance.getBetterChatRectValue().get()) {
                     if (minH < 900) {
                         RenderUtils.drawShadow(-2f, minH, MathHelper.ceiling_float_int((float)this.getChatWidth() / f1) + 4, maxH - minH);
                     }
@@ -257,7 +257,7 @@ public abstract class MixinGuiNewChat {
 
     @Inject(method = "getChatComponent", at = @At("HEAD"), cancellable = true)
     private void getChatComponent(int p_getChatComponent_1_, int p_getChatComponent_2_, final CallbackInfoReturnable<IChatComponent> callbackInfo) {
-        if(hud.getState() && hud.getFontChatValue().get()) {
+        if(chatEnhance.getState() && chatEnhance.getFontChatValue().get()) {
             if(!this.getChatOpen()) {
                 callbackInfo.setReturnValue(null);
             }else{

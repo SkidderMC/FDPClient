@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.misc.ChatEnhance;
+import net.ccbluex.liquidbounce.features.module.modules.client.ChatEnhance;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
