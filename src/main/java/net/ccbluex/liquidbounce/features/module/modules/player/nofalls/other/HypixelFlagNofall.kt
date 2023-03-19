@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMod
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.minecraft.network.play.client.C03PacketPlayer
+import kotlin.math.abs
 
 class HypixelFlagNofall : NoFallMode("HypixelFlag") {
     
@@ -18,7 +19,7 @@ class HypixelFlagNofall : NoFallMode("HypixelFlag") {
     }
 
     override fun onPacket(event: PacketEvent) {
-        if (packet is C03PacketPlayer) {
+        if (event.packet is C03PacketPlayer) {
             val fallingPlayer = FallingPlayer(mc.thePlayer)
             val collLoc = fallingPlayer.findCollision(60) // null -> too far to calc or fall pos in void
             if (abs((collLoc?.y ?: 0) - mc.thePlayer.posY) < 3 && mc.thePlayer.fallDistance > 4 && !sendPacket) {
