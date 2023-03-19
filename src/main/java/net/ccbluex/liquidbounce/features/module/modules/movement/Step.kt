@@ -33,7 +33,7 @@ class Step : Module() {
 
     val modeValue = ListValue("Mode", arrayOf("Vanilla", "Jump", "Matrix6.7.0",
                                                       "NCP", "NCPNew", "OldNCP",
-                                                      "OldAAC",
+                                                      "OldAAC", "AAC4.4.0",
                                                       "Spartan", "Rewinside", "Vulcan", "Verus", "BlocksMC"), "NCP")
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
     private val jumpHeightValue = FloatValue("JumpMotion", 0.42F, 0.37F, 0.42F).displayable { modeValue.equals("Jump") || modeValue.equals("TimerJump") }
@@ -162,6 +162,65 @@ class Step : Module() {
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                             stepY + 0.7531999805212, stepZ, false))
                         timer.reset()
+                    }
+
+                    mode.equals("AAC4.4.0", ignoreCase = true) -> {
+                        val rstepHeight = mc.thePlayer.entityBoundingBox.minY - stepY
+                        fakeJump()
+                        timer.reset()
+                        when {
+                            rstepHeight >= 1.0 - 0.015625 && rstepHeight < 1.5 - 0.015625 -> {
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 0.4, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 0.7, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 0.9, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.0, stepZ, true))
+                            }
+                            rstepHeight >= 1.5 - 0.015625 && rstepHeight < 2.0 - 0.015625 -> {
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 0.42, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 0.7718, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.0556, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.2714, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.412, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.50, stepZ, true))
+                            }
+                            rstepHeight >= 2.0 - 0.015625 -> {
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 0.45, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 0.84375, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.18125, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.4625, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.6875, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.85625, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + 1.96875, stepZ, false))
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX + mc.thePlayer.motionX * 0.5,
+                                    stepY + 2.0000, stepZ + mc.thePlayer.motionZ * 0.5, true))
+                            }
+                        }
+                        /*
+                            AAC4 Step Code By Co丶Dynamic
+                            NO SKIDDER PLEASE
+                        */
+
+                        /*
+                            BRUH it's useful
+                            don't remove it
+                         */
                     }
                     
                     mode.equals("NCPNew", ignoreCase = true) -> {

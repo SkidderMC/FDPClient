@@ -49,6 +49,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
+import static net.ccbluex.liquidbounce.script.api.global.Chat.alert;
+
 @Mixin(EntityPlayerSP.class)
 public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
@@ -127,6 +129,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     @Shadow
     protected abstract boolean isCurrentViewEntity();
+    private boolean debug_AttemptSprint = false;
 
     /**
      * @author CCBlueX, liulihaocai
@@ -142,6 +145,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.PRE));
 
             boolean flag = this.isSprinting();
+            //alert("Attempt: " + debug_AttemptSprint + " Actual: " + this.isSprinting() + " Server: " + this.serverSprintState);
             if (flag != this.serverSprintState) {
                 if (flag) {
                     this.sendQueue.addToSendQueue(new C0BPacketEntityAction((EntityPlayerSP) (Object) this, C0BPacketEntityAction.Action.START_SPRINTING));
@@ -239,6 +243,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
      * @author CoDynamic
      * Modified by Co Dynamic
      * Date: 2023/02/15
+     * @reason Fix Sprint / UpdateEvent
      */
     @Overwrite
     public void onLivingUpdate() {
@@ -249,8 +254,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
          * - Update base sprint state (Vanilla)
          * @param attemptToggle attempt to toggle sprint
          * @param baseIsMoving is player moving with the "Sprint-able" direction
-         * @param baseSprintState whether can sprint or not (Vanilla)
-         * @param canToggleSprint whether can sprint by double-tapping MoveForward key
+         * @param baseSprintState whether you can sprint or not (Vanilla)
+         * @param canToggleSprint whether you can sprint by double-tapping MoveForward key
          * @param isCurrentUsingItem is player using item
          * @return
          */
@@ -409,6 +414,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         if (scaffold.getState()) {
             this.setSprinting(scaffold.getCanSprint());
         }
+
+        debug_AttemptSprint = this.isSprinting();
         
         attemptToggle = false;
 

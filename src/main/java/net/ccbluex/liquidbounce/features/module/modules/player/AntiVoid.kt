@@ -20,14 +20,16 @@ import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
+import kotlin.math.roundToInt
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft", "Packet", "Watchdog"), "Blink")
+    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft", "Packet", "Watchdog", "Vulcan"), "Blink")
     private val maxFallDistValue = FloatValue("MaxFallDistance", 10F, 5F, 20F)
     private val resetMotionValue = BoolValue("ResetMotion", false).displayable { modeValue.equals("Blink") }
     private val startFallDistValue = FloatValue("BlinkStartFallDistance", 2F, 0F, 5F).displayable { modeValue.equals("Blink") }
@@ -83,6 +85,25 @@ class AntiVoid : Module() {
             "groundspoof" -> {
                 if (!voidOnlyValue.get() || checkVoid()) {
                     canSpoof = mc.thePlayer.fallDistance > maxFallDistValue.get()
+                }
+            }
+
+            "vulcan" -> {
+                if (mc.thePlayer.onGround && BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)) !is BlockAir) {
+                    posX = mc.thePlayer.prevPosX
+                    posY = mc.thePlayer.prevPosY
+                    posZ = mc.thePlayer.prevPosZ
+                }
+                if (!voidOnlyValue.get() || checkVoid()) {
+                    if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !tried) {
+                        mc.thePlayer.setPosition(mc.thePlayer.posX, posY, mc.thePlayer.posZ)
+                        mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
+                        mc.thePlayer.setPosition(posX, posY, posZ)
+                        mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+                        mc.thePlayer.fallDistance = 0F
+                        MovementUtils.resetMotion(true)
+                        tried = true
+                    }
                 }
             }
 

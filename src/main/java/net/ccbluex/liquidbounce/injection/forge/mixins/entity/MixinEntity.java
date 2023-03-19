@@ -32,6 +32,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Random;
 import java.util.UUID;
 
+import static net.ccbluex.liquidbounce.script.api.global.Chat.alert;
+
 @Mixin(Entity.class)
 public abstract class MixinEntity {
 
@@ -186,6 +188,7 @@ public abstract class MixinEntity {
 
         final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
         final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
+        //alert("Strafe: " + strafe + " Forward: " + forward + " Factor: " + friction + " DoFix: " + strafeFix.getDoFix());
         LiquidBounce.eventManager.callEvent(strafeEvent);
         if (strafeFix.getDoFix()) { //Run StrafeFix process on Post Strafe 2023/02/15
             strafeFix.runStrafeFixLoop(strafeFix.getSilentFix(), strafeEvent);
