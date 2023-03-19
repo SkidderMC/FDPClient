@@ -16,7 +16,7 @@ import net.minecraft.block.BlockLadder
 import net.minecraft.block.BlockVine
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "AirLadder", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "FastLadder", category = ModuleCategory.MOVEMENT)
 class AirLadder : Module() {
     private val yMotionValue = FloatValue("YMotion", 0.15f, 0.1f, 0.2f)
     @EventTarget
