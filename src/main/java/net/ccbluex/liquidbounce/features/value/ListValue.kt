@@ -10,39 +10,25 @@ import java.util.*
 open class ListValue(name: String, val values: Array<String>, value: String) : Value<String>(name, value) {
     @JvmField
     var openList = false
+
+    @JvmField
+    var isShown = false
+
+    var anim=0;
+    @JvmField
+    var open=true;
+
+    init {
+        this.value = value
+    }
+
+    fun listtoggle(){
+        openList=!openList;
+    }
+
     fun getModeListNumber(mode: String) = values.indexOf(mode)
     init {
         this.value = value
-    }
-
-    init {
-        this.value = value
-    }
-
-    open fun getModes(): List<String?>? {
-        return values.toList()
-    }
-    init {
-        this.value = value
-    }
-
-    open fun getModeGet(i: Int): String? {
-        return values[i]
-    }
-
-    operator fun contains(string: String?): Boolean {
-        return Arrays.stream(values).anyMatch { s: String -> s.equals(string, ignoreCase = true) }
-    }
-
-    fun indexOf(mode: String): Int {
-        for (i in values.indices) {
-            if (values[i].equals(mode, true)) return i
-        }
-        return 0
-    }
-
-    fun isMode(string: String): Boolean {
-        return this.value.equals(string, ignoreCase = true)
     }
 
     fun containsValue(string: String): Boolean {
@@ -56,6 +42,25 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
                 break
             }
         }
+    }
+
+    open fun getModes() : List<String> {
+        return this.values.toList()
+    }
+
+    open fun getModeGet(i: Int): String {
+        return values[i]
+    }
+
+    fun isMode(string: String): Boolean {
+        return this.value.equals(string, ignoreCase = true)
+    }
+
+    fun indexOf(mode: String): Int {
+        for (i in values.indices) {
+            if (values[i].equals(mode, true)) return i
+        }
+        return 0
     }
 
     override fun toJson() = JsonPrimitive(value)
