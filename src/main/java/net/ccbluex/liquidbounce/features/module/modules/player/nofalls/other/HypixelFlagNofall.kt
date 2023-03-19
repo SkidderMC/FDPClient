@@ -18,15 +18,17 @@ class HypixelFlagNofall : NoFallMode("HypixelFlag") {
     }
 
     override fun onPacket(event: PacketEvent) {
-        val fallingPlayer = FallingPlayer(mc.thePlayer)
-        val collLoc = fallingPlayer.findCollision(60) // null -> too far to calc or fall pos in void
-        if (abs((collLoc?.y ?: 0) - mc.thePlayer.posY) < 3 && mc.thePlayer.fallDistance > 4 && !sendPacket) {
-            event.cancelEvent()
-            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(event.packet.x, event.packet.y, event.packet.z, false))
-            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(event.packet.x, event.packet.y, event.packet.z - 23, true))
-            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(event.packet.x, event.packet.y, event.packet.z, false))
-            
-            sendPacket = true
-        }
+        if (packet is C03PacketPlayer) {
+            val fallingPlayer = FallingPlayer(mc.thePlayer)
+            val collLoc = fallingPlayer.findCollision(60) // null -> too far to calc or fall pos in void
+            if (abs((collLoc?.y ?: 0) - mc.thePlayer.posY) < 3 && mc.thePlayer.fallDistance > 4 && !sendPacket) {
+                event.cancelEvent()
+                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(event.packet.x, event.packet.y, event.packet.z, false))
+                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(event.packet.x, event.packet.y, event.packet.z - 23, true))
+                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(event.packet.x, event.packet.y, event.packet.z, false))
+
+                sendPacket = true
+            }
+            }
     }
 }
