@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.*;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.Slight.SlightUI;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown.DropdownGUI;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.light.LightClickGUI;
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.OtcClickGUi;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.tenacity.TenacityClickGUI;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.NewUi;
@@ -32,7 +33,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    public final ListValue styleValue = new ListValue("Style", new String[]{"Classic", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Slight", "Bjur", "Null", "Slowly", "Black", "White"}, "Black") {
+    public final ListValue styleValue = new ListValue("Style", new String[]{"Classic", "OneTap", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Slight", "Bjur", "Null", "Slowly", "Black", "White"}, "Black") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -58,6 +59,8 @@ public class ClickGUIModule extends Module {
     public static final BoolValue fastRenderValue = new BoolValue("FastRender", false);
     public final BoolValue getClosePrevious = new BoolValue("ClosePrevious",false);
 
+    public final BoolValue disp = new BoolValue("DisplayValue", true);
+
 
     public static Color generateColor() {
         return colorRainbow.get() ? ColorUtils.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
@@ -67,6 +70,9 @@ public class ClickGUIModule extends Module {
 
         if (styleValue.get().contains("Novoline")) {
             mc.displayGuiScreen(new ClickyUI());
+            this.setState(false);
+        } else if (styleValue.get().contains("OneTap")) {
+            mc.displayGuiScreen(new OtcClickGUi());
             this.setState(false);
         } else if (styleValue.get().contains("Light")) {
             mc.displayGuiScreen(new LightClickGUI());

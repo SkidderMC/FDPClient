@@ -15,6 +15,36 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
         this.value = value
     }
 
+    init {
+        this.value = value
+    }
+
+    open fun getModes(): List<String?>? {
+        return values.toList()
+    }
+    init {
+        this.value = value
+    }
+
+    open fun getModeGet(i: Int): String? {
+        return values[i]
+    }
+
+    operator fun contains(string: String?): Boolean {
+        return Arrays.stream(values).anyMatch { s: String -> s.equals(string, ignoreCase = true) }
+    }
+
+    fun indexOf(mode: String): Int {
+        for (i in values.indices) {
+            if (values[i].equals(mode, true)) return i
+        }
+        return 0
+    }
+
+    fun isMode(string: String): Boolean {
+        return this.value.equals(string, ignoreCase = true)
+    }
+
     fun containsValue(string: String): Boolean {
         return Arrays.stream(values).anyMatch { it.equals(string, ignoreCase = true) }
     }

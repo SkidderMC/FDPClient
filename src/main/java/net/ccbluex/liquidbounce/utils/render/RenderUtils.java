@@ -9,8 +9,10 @@ import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
+import net.ccbluex.liquidbounce.utils.misc.Animation;
 import net.ccbluex.liquidbounce.utils.particles.Particle;
 import net.ccbluex.liquidbounce.utils.particles.Vec3;
+import net.ccbluex.liquidbounce.utils.render.shader.Shader;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -205,10 +207,16 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static float smoothAnimation(float ani, float finalState, float speed, float scale) {
-        return getAnimationState(ani, finalState, Math.max(10.0F, Math.abs(ani - finalState) * speed) * scale);
+        return (float) getAnimationState(ani, finalState, Math.max(10.0F, Math.abs(ani - finalState) * speed) * scale);
     }
     public static boolean isHovering(int mouseX, int mouseY, float xLeft, float yUp, float xRight, float yBottom) {
         return (float)mouseX > xLeft && (float)mouseX < xRight && (float)mouseY > yUp && (float)mouseY < yBottom;
+    }
+
+    public static void scissor(final double x, final double y, final double width, final double height) {
+        int scaleFactor;
+        for (scaleFactor = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor(); scaleFactor < 2 && Minecraft.getMinecraft().displayWidth / (scaleFactor + 1) >= 320 && Minecraft.getMinecraft().displayHeight / (scaleFactor + 1) >= 240; ++scaleFactor) {}
+        GL11.glScissor((int)(x * scaleFactor), (int)(Minecraft.getMinecraft().displayHeight - (y + height) * scaleFactor), (int)(width * scaleFactor), (int)(height * scaleFactor));
     }
     
     public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius, int color) {
@@ -226,6 +234,101 @@ public final class RenderUtils extends MinecraftInstance {
         setGlState(GL_CULL_FACE, hasCull);
     }
 
+    public static void drawGradientRect(final double left, final double top, final double right, final double bottom, final boolean sideways, final int startColor, final int endColor) {
+        GL11.glDisable(3553);
+        GL11.glEnable(3042);
+        GL11.glBlendFunc(770, 771);
+        GL11.glShadeModel(7425);
+        GL11.glBegin(7);
+        color(startColor);
+        if (sideways) {
+            GL11.glVertex2d(left, top);
+            GL11.glVertex2d(left, bottom);
+            color(endColor);
+            GL11.glVertex2d(right, bottom);
+            GL11.glVertex2d(right, top);
+        }
+        else {
+            GL11.glVertex2d(left, top);
+            color(endColor);
+            GL11.glVertex2d(left, bottom);
+            GL11.glVertex2d(right, bottom);
+            color(startColor);
+            GL11.glVertex2d(right, top);
+        }
+        GL11.glEnd();
+        GL11.glDisable(3042);
+        GL11.glShadeModel(7424);
+        GL11.glEnable(3553);
+    }
+
+    public static void drawGradientRect(final float left, final float top, final float right, final float bottom, final int startColor, final int endColor) {
+        final float f = (startColor >> 24 & 0xFF) / 255.0f;
+        final float f2 = (startColor >> 16 & 0xFF) / 255.0f;
+        final float f3 = (startColor >> 8 & 0xFF) / 255.0f;
+        final float f4 = (startColor & 0xFF) / 255.0f;
+        final float f5 = (endColor >> 24 & 0xFF) / 255.0f;
+        final float f6 = (endColor >> 16 & 0xFF) / 255.0f;
+        final float f7 = (endColor >> 8 & 0xFF) / 255.0f;
+        final float f8 = (endColor & 0xFF) / 255.0f;
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.disableAlpha();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.shadeModel(7425);
+        final Tessellator tessellator = Tessellator.getInstance();
+        final WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        worldrenderer.pos(right, top, 0.0).color(f2, f3, f4, f).endVertex();
+        worldrenderer.pos(left, top, 0.0).color(f2, f3, f4, f).endVertex();
+        worldrenderer.pos(left, bottom, 0.0).color(f6, f7, f8, f5).endVertex();
+        worldrenderer.pos(right, bottom, 0.0).color(f6, f7, f8, f5).endVertex();
+        tessellator.draw();
+        GlStateManager.shadeModel(7424);
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableTexture2D();
+    }
+
+    public static double getAnimationState(double animation, double finalState, double speed) {
+        float add = (float) (0.01D * speed);
+
+        animation = animation < finalState ? (animation +  add < finalState ? animation +  add : finalState) : (animation -  add > finalState ? animation -  add : finalState);
+        return animation;
+    }
+
+    public static void drawClickGuiArrow(final float x, final float y, final float size, final Animation animation, final int color) {
+        GL11.glTranslatef(x, y, 0.0f);
+        final double[] interpolation = new double[1];
+        setup2DRendering(() -> render(5, () -> {
+            color(color);
+            interpolation[0] = interpolate(0.0, size / 2.0, animation.getOutput());
+            if (animation.getOutput() >= 0.48) {
+                GL11.glVertex2d((size / 2.0f), interpolate(size / 2.0, 0.0, animation.getOutput()));
+            }
+            GL11.glVertex2d(0.0, interpolation[0]);
+            if (animation.getOutput() < 0.48) {
+                GL11.glVertex2d((size / 2.0f), interpolate(size / 2.0, 0.0, animation.getOutput()));
+            }
+            GL11.glVertex2d(size, interpolation[0]);
+        }));
+        GL11.glTranslatef(-x, -y, 0.0f);
+    }
+
+    public static void render(final int mode, final Runnable render) {
+        GL11.glBegin(mode);
+        render.run();
+        GL11.glEnd();
+    }
+
+    public static void setup2DRendering(final Runnable f) {
+        GL11.glEnable(3042);
+        GL11.glBlendFunc(770, 771);
+        GL11.glDisable(3553);
+        f.run();
+        GL11.glEnable(3553);
+        GlStateManager.disableBlend();
+    }
     public static void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor) {
         float f = (float)(startColor >> 24 & 255) / 255.0F;
         float f1 = (float)(startColor >> 16 & 255) / 255.0F;
@@ -255,6 +358,27 @@ public final class RenderUtils extends MinecraftInstance {
         enableTexture2D();
         GlStateManager.popMatrix();
     }
+
+    public static void drawRDRect(final float left, final float top, final float width, final float height, final int color) {
+        final float f3 = (color >> 24 & 0xFF) / 255.0f;
+        final float f4 = (color >> 16 & 0xFF) / 255.0f;
+        final float f5 = (color >> 8 & 0xFF) / 255.0f;
+        final float f6 = (color & 0xFF) / 255.0f;
+        final Tessellator tessellator = Tessellator.getInstance();
+        final WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(f4, f5, f6, f3);
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldrenderer.pos(left, (top + height), 0.0).endVertex();
+        worldrenderer.pos((left + width), (top + height), 0.0).endVertex();
+        worldrenderer.pos((left + width), top, 0.0).endVertex();
+        worldrenderer.pos(left, top, 0.0).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
     public static void drawGradientRoundedRect(int left, int top, int right, int bottom, int radius, int startColor, int endColor) {
             Stencil.write(false);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -268,6 +392,283 @@ public final class RenderUtils extends MinecraftInstance {
             Stencil.dispose();
     }
 
+    public static void drawRoundedRect(float x, float y, float x1, float y1, int borderC, int insideC) {
+        drawRect(x + 0.5F, y, x1 - 0.5F, y + 0.5F, insideC);
+        drawRect(x + 0.5F, y1 - 0.5F, x1 - 0.5F, y1, insideC);
+        drawRect(x, y + 0.5F, x1, y1 - 0.5F, insideC);
+    }
+
+    public static void drawRoundedRect3(float x, float y, float x2, float y2, final float round, final int color,final int mode) {
+        final float rectX = x,rectY = y, rectX2 = x2, rectY2 = y2;
+        x += (float) (round / 2.0f + 0.5);
+        y += (float) (round / 2.0f + 0.5);
+        x2 -= (float) (round / 2.0f + 0.5);
+        y2 -= (float) (round / 2.0f + 0.5);
+        if(mode == 1)
+            drawRect(x , rectY, rectX2, rectY2, color);
+        else
+            drawRect(rectX, rectY, x2, rectY2, color);
+        circle(x2 - round / 2.0f, y + round / 2.0f, round, color);
+        circle(x + round / 2.0f, y2 - round / 2.0f, round, color);
+        circle(x + round / 2.0f, y + round / 2.0f, round, color);
+        circle(x2 - round / 2.0f, y2 - round / 2.0f, round, color);
+        drawRect((int) (x - round / 2.0f - 0.5f), (int) (y + round / 2.0f), (int) x2, (int) (y2 - round / 2.0f),
+                color);
+        drawRect((int) x, (int) (y + round / 2.0f), (int) (x2 + round / 2.0f + 0.5f), (int) (y2 - round / 2.0f),
+                color);
+        drawRect((int) (x + round / 2.0f), (int) (y - round / 2.0f - 0.5f), (int) (x2 - round / 2.0f),
+                (int) (y2 - round / 2.0f), color);
+        drawRect((int) (x + round / 2.0f), (int) y, (int) (x2 - round / 2.0f), (int) (y2 + round / 2.0f + 0.5f),
+                color);
+    }
+
+    public static void enableRender2D() {
+        GL11.glEnable(3042);
+        GL11.glDisable(2884);
+        GL11.glDisable(3553);
+        GL11.glEnable(2848);
+        GL11.glBlendFunc(770, 771);
+        GL11.glLineWidth(1.0f);
+    }
+
+    public static void color(final int color, final float alpha) {
+        final float r = (color >> 16 & 0xFF) / 255.0f;
+        final float g = (color >> 8 & 0xFF) / 255.0f;
+        final float b = (color & 0xFF) / 255.0f;
+        GlStateManager.color(r, g, b, alpha);
+    }
+
+    public static void color(final int color) {
+        color(color, (color >> 24 & 0xFF) / 255.0f);
+    }
+
+    public static void drawRoundedRect(final float x, final float y, final float width, final float height, float edgeRadius, int color, final float borderWidth, int borderColor) {
+        if (color == 16777215) {
+            color = -65794;
+        }
+        if (borderColor == 16777215) {
+            borderColor = -65794;
+        }
+        if (edgeRadius < 0.0f) {
+            edgeRadius = 0.0f;
+        }
+        if (edgeRadius > width / 2.0f) {
+            edgeRadius = width / 2.0f;
+        }
+        if (edgeRadius > height / 2.0f) {
+            edgeRadius = height / 2.0f;
+        }
+        drawRDRect(x + edgeRadius, y + edgeRadius, width - edgeRadius * 2.0f, height - edgeRadius * 2.0f, color);
+        drawRDRect(x + edgeRadius, y, width - edgeRadius * 2.0f, edgeRadius, color);
+        drawRDRect(x + edgeRadius, y + height - edgeRadius, width - edgeRadius * 2.0f, edgeRadius, color);
+        drawRDRect(x, y + edgeRadius, edgeRadius, height - edgeRadius * 2.0f, color);
+        drawRDRect(x + width - edgeRadius, y + edgeRadius, edgeRadius, height - edgeRadius * 2.0f, color);
+        enableRender2D();
+        color(color);
+        GL11.glBegin(6);
+        float centerX = x + edgeRadius;
+        float centerY = y + edgeRadius;
+        GL11.glVertex2d(centerX, centerY);
+        for (int vertices = (int)Math.min(Math.max(edgeRadius, 10.0f), 90.0f), i = 0; i < vertices + 1; ++i) {
+            final double angleRadians = 6.283185307179586 * (i + 180) / (vertices * 4);
+            GL11.glVertex2d(centerX + Math.sin(angleRadians) * edgeRadius, centerY + Math.cos(angleRadians) * edgeRadius);
+        }
+        GL11.glEnd();
+        GL11.glBegin(6);
+        centerX = x + width - edgeRadius;
+        centerY = y + edgeRadius;
+        GL11.glVertex2d(centerX, centerY);
+        for (int vertices = (int)Math.min(Math.max(edgeRadius, 10.0f), 90.0f), i = 0; i < vertices + 1; ++i) {
+            final double angleRadians = 6.283185307179586 * (i + 90) / (vertices * 4);
+            GL11.glVertex2d(centerX + Math.sin(angleRadians) * edgeRadius, centerY + Math.cos(angleRadians) * edgeRadius);
+        }
+        GL11.glEnd();
+        GL11.glBegin(6);
+        centerX = x + edgeRadius;
+        centerY = y + height - edgeRadius;
+        GL11.glVertex2d(centerX, centerY);
+        for (int vertices = (int)Math.min(Math.max(edgeRadius, 10.0f), 90.0f), i = 0; i < vertices + 1; ++i) {
+            final double angleRadians = 6.283185307179586 * (i + 270) / (vertices * 4);
+            GL11.glVertex2d(centerX + Math.sin(angleRadians) * edgeRadius, centerY + Math.cos(angleRadians) * edgeRadius);
+        }
+        GL11.glEnd();
+        GL11.glBegin(6);
+        centerX = x + width - edgeRadius;
+        centerY = y + height - edgeRadius;
+        GL11.glVertex2d(centerX, centerY);
+        for (int vertices = (int)Math.min(Math.max(edgeRadius, 10.0f), 90.0f), i = 0; i < vertices + 1; ++i) {
+            final double angleRadians = 6.283185307179586 * i / (vertices * 4);
+            GL11.glVertex2d(centerX + Math.sin(angleRadians) * edgeRadius, centerY + Math.cos(angleRadians) * edgeRadius);
+        }
+        GL11.glEnd();
+        color(borderColor);
+        GL11.glLineWidth(borderWidth);
+        GL11.glBegin(3);
+        centerX = x + edgeRadius;
+        centerY = y + edgeRadius;
+        int vertices;
+        int i;
+        for (vertices = (i = (int)Math.min(Math.max(edgeRadius, 10.0f), 90.0f)); i >= 0; --i) {
+            final double angleRadians = 6.283185307179586 * (i + 180) / (vertices * 4);
+            GL11.glVertex2d(centerX + Math.sin(angleRadians) * edgeRadius, centerY + Math.cos(angleRadians) * edgeRadius);
+        }
+        GL11.glVertex2d((x + edgeRadius), y);
+        GL11.glVertex2d((x + width - edgeRadius), y);
+        centerX = x + width - edgeRadius;
+        centerY = y + edgeRadius;
+        for (i = vertices; i >= 0; --i) {
+            final double angleRadians = 6.283185307179586 * (i + 90) / (vertices * 4);
+            GL11.glVertex2d(centerX + Math.sin(angleRadians) * edgeRadius, centerY + Math.cos(angleRadians) * edgeRadius);
+        }
+        GL11.glVertex2d((x + width), (y + edgeRadius));
+        GL11.glVertex2d((x + width), (y + height - edgeRadius));
+        centerX = x + width - edgeRadius;
+        centerY = y + height - edgeRadius;
+        for (i = vertices; i >= 0; --i) {
+            final double angleRadians = 6.283185307179586 * i / (vertices * 4);
+            GL11.glVertex2d(centerX + Math.sin(angleRadians) * edgeRadius, centerY + Math.cos(angleRadians) * edgeRadius);
+        }
+        GL11.glVertex2d((x + width - edgeRadius), (y + height));
+        GL11.glVertex2d((x + edgeRadius), (y + height));
+        centerX = x + edgeRadius;
+        centerY = y + height - edgeRadius;
+        for (i = vertices; i >= 0; --i) {
+            final double angleRadians = 6.283185307179586 * (i + 270) / (vertices * 4);
+            GL11.glVertex2d(centerX + Math.sin(angleRadians) * edgeRadius, centerY + Math.cos(angleRadians) * edgeRadius);
+        }
+        GL11.glVertex2d(x, (y + height - edgeRadius));
+        GL11.glVertex2d(x, (y + edgeRadius));
+        GL11.glEnd();
+        disableRender2D();
+    }
+
+    public static void disableRender2D() {
+        GL11.glDisable(3042);
+        GL11.glEnable(2884);
+        GL11.glEnable(3553);
+        GL11.glDisable(2848);
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        GlStateManager.shadeModel(7424);
+        GlStateManager.disableBlend();
+        GlStateManager.enableTexture2D();
+    }
+
+    public static int darker(int hexColor, int factor) {
+        float alpha = (float) (hexColor >> 24 & 255);
+        float red = Math.max((float) (hexColor >> 16 & 255) - (float) (hexColor >> 16 & 255) / (100.0F / (float) factor), 0.0F);
+        float green = Math.max((float) (hexColor >> 8 & 255) - (float) (hexColor >> 8 & 255) / (100.0F / (float) factor), 0.0F);
+        float blue = Math.max((float) (hexColor & 255) - (float) (hexColor & 255) / (100.0F / (float) factor), 0.0F);
+        return (int) ((float) (((int) alpha << 24) + ((int) red << 16) + ((int) green << 8)) + blue);
+    }
+
+    public static int darker(final int color, final float factor) {
+        final int r = (int)((color >> 16 & 0xFF) * factor);
+        final int g = (int)((color >> 8 & 0xFF) * factor);
+        final int b = (int)((color & 0xFF) * factor);
+        final int a = color >> 24 & 0xFF;
+        return (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF) | (a & 0xFF) << 24;
+    }
+
+    public static void drawCheckeredBackground(final float x, float y, final float x2, final float y2) {
+        drawRect(x, y, x2, y2, getColor(16777215));
+        boolean offset = false;
+        while (y < y2) {
+            for (float x3 = x + ((offset = !offset) ? 1 : 0); x3 < x2; x3 += 2.0f) {
+                if (x3 <= x2 - 1.0f) {
+                    drawRect(x3, y, x3 + 1.0f, y + 1.0f, getColor(8421504));
+                }
+            }
+            ++y;
+        }
+    }
+
+    public static int getColor(final int color) {
+        final int r = color >> 16 & 0xFF;
+        final int g = color >> 8 & 0xFF;
+        final int b = color & 0xFF;
+        final int a = 255;
+        return (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF) | (a & 0xFF) << 24;
+    }
+
+    public static void resetColor() {
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
+    public static void drawGradientRound(final float x, final float y, final float width, final float height, final float radius, final Color bottomLeft, final Color topLeft, final Color bottomRight, final Color topRight) {
+        RenderUtils.resetColor();
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(770, 771);
+        Shader.drawQuads(x - 1.0f, y - 1.0f, width + 2.0f, height + 2.0f);
+        GlStateManager.disableBlend();
+    }
+    public static void customRounded(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float rTL, float rTR, float rBR, float rBL, int color) {
+        float alpha = (color >> 24 & 0xFF) / 255.0F;
+        float red = (color >> 16 & 0xFF) / 255.0F;
+        float green = (color >> 8 & 0xFF) / 255.0F;
+        float blue = (color & 0xFF) / 255.0F;
+
+        float z = 0;
+        if (paramXStart > paramXEnd) {
+            z = paramXStart;
+            paramXStart = paramXEnd;
+            paramXEnd = z;
+        }
+
+        if (paramYStart > paramYEnd) {
+            z = paramYStart;
+            paramYStart = paramYEnd;
+            paramYEnd = z;
+        }
+
+        double xTL = paramXStart + rTL;
+        double yTL = paramYStart + rTL;
+
+        double xTR = paramXEnd - rTR;
+        double yTR = paramYStart + rTR;
+
+        double xBR = paramXEnd - rBR;
+        double yBR = paramYEnd - rBR;
+
+        double xBL = paramXStart + rBL;
+        double yBL = paramYEnd - rBL;
+
+        glPushMatrix();
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(1);
+
+        glColor4f(red, green, blue, alpha);
+        glBegin(GL_POLYGON);
+
+        double degree = Math.PI / 180;
+        if (rBR <= 0)
+            glVertex2d(xBR, yBR);
+        else for (double i = 0; i <= 90; i += 1)
+            glVertex2d(xBR + Math.sin(i * degree) * rBR, yBR + Math.cos(i * degree) * rBR);
+
+        if (rTR <= 0)
+            glVertex2d(xTR, yTR);
+        else for (double i = 90; i <= 180; i += 1)
+            glVertex2d(xTR + Math.sin(i * degree) * rTR, yTR + Math.cos(i * degree) * rTR);
+
+        if (rTL <= 0)
+            glVertex2d(xTL, yTL);
+        else for (double i = 180; i <= 270; i += 1)
+            glVertex2d(xTL + Math.sin(i * degree) * rTL, yTL + Math.cos(i * degree) * rTL);
+
+        if (rBL <= 0)
+            glVertex2d(xBL, yBL);
+        else for (double i = 270; i <= 360; i += 1)
+            glVertex2d(xBL + Math.sin(i * degree) * rBL, yBL + Math.cos(i * degree) * rBL);
+        glEnd();
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glPopMatrix();
+    }
     public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
         float f = (float) (col1 >> 24 & 255) / 255.0f;
         float f1 = (float) (col1 >> 16 & 255) / 255.0f;
@@ -463,64 +864,6 @@ public final class RenderUtils extends MinecraftInstance {
             return 0x70FFAA00;
         return 0x70FFFFFF;
     }
-    public static void customRounded(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float rTL, float rTR, float rBR, float rBL, int color) {
-        float alpha = (color >> 24 & 0xFF) / 255.0F;
-        float red = (color >> 16 & 0xFF) / 255.0F;
-        float green = (color >> 8 & 0xFF) / 255.0F;
-        float blue = (color & 0xFF) / 255.0F;
-
-        float z;
-        if (paramXStart > paramXEnd) {
-            z = paramXStart;
-            paramXStart = paramXEnd;
-            paramXEnd = z;
-        }
-
-        if (paramYStart > paramYEnd) {
-            z = paramYStart;
-            paramYStart = paramYEnd;
-            paramYEnd = z;
-        }
-
-        double xTL = paramXStart + rTL;
-        double yTL = paramYStart + rTL;
-
-        double xTR = paramXEnd - rTR;
-        double yTR = paramYStart + rTR;
-
-        double xBR = paramXEnd - rBR;
-        double yBR = paramYEnd - rBR;
-
-        double xBL = paramXStart + rBL;
-        double yBL = paramYEnd - rBL;
-
-        glPushMatrix();
-        glEnable(GL_BLEND);
-        glDisable(GL_TEXTURE_2D);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_LINE_SMOOTH);
-        glLineWidth(1);
-
-        glColor4f(red, green, blue, alpha);
-        glBegin(GL_POLYGON);
-
-        double degree = Math.PI / 180;
-        for (double i = 0; i <= 90; i += 0.25)
-            glVertex2d(xBR + Math.sin(i * degree) * rBR, yBR + Math.cos(i * degree) * rBR);
-        for (double i = 90; i <= 180; i += 0.25)
-            glVertex2d(xTR + Math.sin(i * degree) * rTR, yTR + Math.cos(i * degree) * rTR);
-        for (double i = 180; i <= 270; i += 0.25)
-            glVertex2d(xTL + Math.sin(i * degree) * rTL, yTL + Math.cos(i * degree) * rTL);
-        for (double i = 270; i <= 360; i += 0.25)
-            glVertex2d(xBL + Math.sin(i * degree) * rBL, yBL + Math.cos(i * degree) * rBL);
-        glEnd();
-
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-        glPopMatrix();
-    }
-
     public static void drawRoundedCornerRect(float x, float y, float x1, float y1, float radius) {
         glBegin(GL_POLYGON);
 

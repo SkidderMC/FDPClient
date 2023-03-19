@@ -68,4 +68,8 @@ public class RoundedUtil {
         roundedTexturedShader.setUniformf("radius", radius * sr.getScaleFactor());
     }
 
+    public static void drawGradientHorizontal(float x, float y, float width, float height, float radius, Color left, Color right) {
+        drawGradientRound(x, y, width, height, radius, left, left, right, right);
+    }
+
 }
