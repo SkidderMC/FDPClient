@@ -590,12 +590,12 @@ public final class RenderUtils extends MinecraftInstance {
         return (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF) | (a & 0xFF) << 24;
     }
 
-    public static void resetColor() {
+    public static void resettColor() {
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     public static void drawGradientRound(final float x, final float y, final float width, final float height, final float radius, final Color bottomLeft, final Color topLeft, final Color bottomRight, final Color topRight) {
-        RenderUtils.resetColor();
+        RenderUtils.resettColor();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(770, 771);
         Shader.drawQuads(x - 1.0f, y - 1.0f, width + 2.0f, height + 2.0f);
