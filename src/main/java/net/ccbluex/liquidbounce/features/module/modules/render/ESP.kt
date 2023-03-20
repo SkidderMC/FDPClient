@@ -55,6 +55,11 @@ class ESP : Module() {
     private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
     private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
     private val colorRainbowValue = BoolValue("Rainbow", false).displayable { colorModeValue.get() == "OFF" }
+    private val damageColorValue = BoolValue("ColorOnDamage", true)
+    private val damageRedValue = IntegerValue("DamageR", 255, 0, 255).displayable { damageColorValue.get() }
+    private val damageGreenValue = IntegerValue("DamageG", 0, 0, 255).displayable { damageColorValue.get() }
+    private val damageBlueValue = IntegerValue("DamageB", 0, 0, 255).displayable { damageColorValue.get() }
+    
 
     private val decimalFormat = DecimalFormat("0.0")
 
@@ -324,7 +329,7 @@ class ESP : Module() {
 
     fun getColor(entity: Entity): Color {
         if (entity is EntityLivingBase) {
-            if (entity.hurtTime > 0) return Color.RED
+            if (entity.hurtTime > 0 && damageColorValue.get()) return Color(damageRedValue.get(), damageGreenValue.get(), damageBlueValue.get())
             if (EntityUtils.isFriend(entity)) return Color.BLUE
             if (colorModeValue.get() == "Name") {
                 val chars = entity.displayName.formattedText.toCharArray()
