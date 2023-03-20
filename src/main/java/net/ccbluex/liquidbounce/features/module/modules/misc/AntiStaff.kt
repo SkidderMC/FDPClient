@@ -26,21 +26,21 @@ class AntiStaff : Module() {
 
     private val serversText = TextValue("Servers", "")
     
-    private val blocksMCValue = BoolValue("BlocksMC")
-    private val jartexValue = BoolValue("Jartex")
-    private val pikaValue = BoolValue("Pika")
-    private val mineboxValue = BoolValue("Minebox")
-    private val hycraftValue = BoolValue("Hycraft")
-    private val librecraftValue = BoolValue("Librecraft")
-    private val universocraftValue = BoolValue("Universocraft")
-    private val customValue = BoolValue("Custom")
+    private val blocksMCValue = BoolValue("BlocksMC", true)
+    private val jartexValue = BoolValue("Jartex", false)
+    private val pikaValue = BoolValue("Pika", true)
+    private val mineboxValue = BoolValue("Minebox", false)
+    private val hycraftValue = BoolValue("Hycraft", true)
+    private val librecraftValue = BoolValue("Librecraft", false)
+    private val universocraftValue = BoolValue("Universocraft", true)
+    private val customValue = BoolValue("Custom", false)
     
     private val optionsText = TextValue("Options", "")
     
     private val notifyValue = BoolValue("Notification",true)
     private val chatValue = BoolValue("SendChatMessage",false)
     private val messageValue = TextValue("Message", "%staff% was detected as a staff member!").displayable { chatValue.get() }
-    private val customURLValue = TextValue("CustomURL", "https://raw.githubusercontent.com/fdpweb/fdpweb.github.io/main/test").displayable { serverValue.equals("Custom") }
+    private val customURLValue = TextValue("CustomURL", "https://raw.githubusercontent.com/fdpweb/fdpweb.github.io/main/test").displayable { customValue.get() }
 
     private val leaveValue = BoolValue("Leave",true)
     private val leaveMessageValue = TextValue("LeaveCommand","/hub").displayable { leaveValue.get() }
@@ -69,15 +69,16 @@ class AntiStaff : Module() {
         if (hycraftValue.get()) staffs = staffs + " " + hycraftStaff
         if (librecraftValue.get()) staffs = staffs + " " + librecraftStaff
         if (universocraftValue.get()) staffs = staffs + " " + universocraftStaff
-        if (customValue.get()) staffs = staffs + " " + customStaff
+        if (customValue.get()) {
         
-        try {
-            staffs = staffs + " " + HttpUtils.get(customURLValue.get())
+            try {
+                staffs = staffs + " " + HttpUtils.get(customURLValue.get())
 
-            LiquidBounce.hud.addNotification(Notification("AntiStaff", "SuccessFully Loaded URL", NotifyType.SUCCESS, 1000))
-        } catch (err: Throwable) {
-            LiquidBounce.hud.addNotification(Notification("AntiStaff", "Error when loading URL", NotifyType.ERROR, 1000))
-            println(err)
+                LiquidBounce.hud.addNotification(Notification("AntiStaff", "SuccessFully Loaded URL", NotifyType.SUCCESS, 1000))
+            } catch (err: Throwable) {
+                LiquidBounce.hud.addNotification(Notification("AntiStaff", "Error when loading URL", NotifyType.ERROR, 1000))
+                println(err)
+            }
         }
             
         detected = false
