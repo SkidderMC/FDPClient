@@ -122,7 +122,7 @@ class KillAura : Module() {
         }
     }.displayable { !autoBlockValue.equals("Off") }
     private val blockTimingValue =          ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Pre").displayable { autoBlockValue.equals("Range") }
-    private val autoBlockPacketValue =      ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Hypixel"), "Vanilla").displayable { autoBlockValue.equals("Range") }
+    private val autoBlockPacketValue =      ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Hypixel", "ReBlock"), "Vanilla").displayable { autoBlockValue.equals("Range") }
     private val interactAutoBlockValue =    BoolValue("InteractAutoBlock", false).displayable { autoBlockValue.equals("Range") }
     private val blockRateValue =            IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
 
@@ -763,6 +763,8 @@ class KillAura : Module() {
         if (simulateCooldown.get() && CooldownHelper.getAttackCooldownProgress() < 1.0f) {
             return
         }
+        
+        
         
         if (hitselectValue.get()) {
             if (canHitselect) {
