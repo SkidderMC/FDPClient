@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
-import net.ccbluex.liquidbounce.features.value.ListValue
 import net.ccbluex.liquidbounce.features.value.TextValue
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S1DPacketEntityEffect
@@ -25,7 +24,19 @@ import net.minecraft.network.play.server.S1DPacketEntityEffect
 @ModuleInfo(name = "AntiStaff", category = ModuleCategory.MISC)
 class AntiStaff : Module() {
 
-    private val serverValue = ListValue("Server", arrayOf("BlocksMC", "Jartex", "Pika", "Minebox", "Minemora", "Zonecraft", "Hycraft", "Librecraft","Custom"),"BlocksMC")
+    private val serversText = TextValue("Servers", "")
+    
+    private val blocksMCValue = BoolValue("BlocksMC")
+    private val jartexValue = BoolValue("Jartex")
+    private val pikaValue = BoolValue("Pika")
+    private val mineboxValue = BoolValue("Minebox")
+    private val hycraftValue = BoolValue("Hycraft")
+    private val librecraftValue = BoolValue("Librecraft")
+    private val universocraftValue = BoolValue("Universocraft")
+    private val customValue = BoolValue("Custom")
+    
+    private val optionsText = TextValue("Options", "")
+    
     private val notifyValue = BoolValue("Notification",true)
     private val chatValue = BoolValue("SendChatMessage",false)
     private val messageValue = TextValue("Message", "%staff% was detected as a staff member!").displayable { chatValue.get() }
@@ -41,7 +52,7 @@ class AntiStaff : Module() {
     private var zonecraftStaff : String = "002Aren asiessoydecono donerreMC elMagnificPvP ErCris fernxndx gourd Gudaa ImAle ImMarvolo ismq nicoxrm pacorro rapheos MrBara MrMonkey57 uploadedhh trifeyy 002Aren Agu5 augusmaster BetTD d411 dunshbey85 ElMaGnific Pv ErCris Eugene FelmaxMC Gudaa ¡Enux ImMarvolo sleepless ismq ItzOmar16 joescam LuisPoMC Nicoxrm pacorro "
     private var hycraftStaff : String = "Alexander245 arqui Blandih Chony_15 jac0mc Ragen06 TheBryaan TMT_131 Yapecito MartynaGamer830 archeriam"
     private var librecraftStaff : String = "Kudos  H0DKIER  Iker_XD9  acreate  iJeanSC  acreate  Janet  Rosse_RM  aldoum23neko_  DERGO  MJKINGPAND"
-    private var minemoraStaff : String = "Ruficraft MariSG iSebaas MaxyMC LuhGleh Esmorall SrLucchel_ ninjagod98 DarkFumado iDrecs CuencaDeDiamante PainSex"
+    private var universocraftStaff : String = "0edx_ 0_Lily 1Kao denila  fxrchus  haaaaaaaaaaax_ iBlackSoulz iMxon_ JuliCarles kvvwro Tauchet wSilv6r _JuPo_"
     
     
     private var detected = false
@@ -50,33 +61,23 @@ class AntiStaff : Module() {
     
     @EventTarget
     fun onWorld(event: WorldEvent) {
-        when (serverValue.get().lowercase()) {
-            "blocksmc" -> staffs = bmcStaff
+        staffs = ""
+        if (blocksMCValue.get()) staffs = staffs + " " + bmcStaff
+        if (jartexValue.get()) staffs = staffs + " " + jartexStaff
+        if (pikaValue.get()) staffs = staffs + " " + pikaStaff
+        if (mineboxValue.get()) staffs = staffs + " " + mineboxStaff
+        if (hycraftValue.get()) staffs = staffs + " " + hycraftStaff
+        if (librecraftValue.get()) staffs = staffs + " " + librecraftStaff
+        if (universocraftValue.get()) staffs = staffs + " " + universocraftStaff
+        if (customValue.get()) staffs = staffs + " " + customStaff
+        
+        try {
+            staffs = staffs + " " + HttpUtils.get(customURLValue.get())
 
-            "jartex" -> staffs = jartexStaff
-
-            "pika" -> staffs = pikaStaff
-
-            "minebox" -> staffs = mineboxStaff
-
-            "minemora" -> staffs = minemoraStaff
-            
-            "zonecraft" -> staffs = zonecraftStaff
-            
-            "hycraft" -> staffs = hycraftStaff
-            
-            "librecraft" -> staffs = librecraftStaff
-
-            "custom" -> {
-                try {
-                    staffs = HttpUtils.get(customURLValue.get())
-
-                    LiquidBounce.hud.addNotification(Notification("AntiStaff", "SuccessFully Loaded URL", NotifyType.SUCCESS, 1000))
-                } catch (err: Throwable) {
-                    LiquidBounce.hud.addNotification(Notification("AntiStaff", "Error when loading URL", NotifyType.ERROR, 1000))
-                    println(err)
-                }
-            }
+            LiquidBounce.hud.addNotification(Notification("AntiStaff", "SuccessFully Loaded URL", NotifyType.SUCCESS, 1000))
+        } catch (err: Throwable) {
+            LiquidBounce.hud.addNotification(Notification("AntiStaff", "Error when loading URL", NotifyType.ERROR, 1000))
+            println(err)
         }
             
         detected = false
