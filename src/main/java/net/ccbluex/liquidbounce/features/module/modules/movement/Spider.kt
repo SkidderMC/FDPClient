@@ -5,69 +5,94 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.event.BlockBBEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
+import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 import kotlin.math.cos
+import kotlin.math.floor
 import kotlin.math.sin
+
 
 @ModuleInfo(name = "Spider", category = ModuleCategory.MOVEMENT)
 class Spider : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Collide", "Motion", "AAC4"), "Collide")
-    private val heightValue = IntegerValue("Height", 2, 0, 10)
-    private val motionValue = FloatValue("Motion", 0.42F, 0.1F, 1F).displayable { modeValue.equals("Motion") }
+    private val modeValue = ListValue("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker"), "Collide")
+    private val motionValue = FloatValue("Motion", 0.42F, 0.1F, 1F)
 
-    private var startHeight = 0.0
     private var groundHeight = 0.0
-    private var modifyBB = false
     private var glitch = false
     private var wasTimer = false
+    private var ticks = 0
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(wasTimer) {
             mc.timer.timerSpeed = 1.0f
         }
-        if (!mc.thePlayer.isCollidedHorizontally || !mc.gameSettings.keyBindForward.pressed || (mc.thePlayer.posY - heightValue.get()> startHeight && heightValue.get()> 0)) {
-            if (mc.thePlayer.onGround) {
-                startHeight = mc.thePlayer.posY
-                groundHeight = mc.thePlayer.posY
-            }
-            modifyBB = false
-            return
+
+        if (!mc.thePlayer.isCollidedHorizontally || !MovementUtils.isMoving()) {
+            if (!collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block: Block? -> block !is BlockAir })
+                return
         }
-        if(modeValue.get()=="AAC4" && (mc.thePlayer.motionY < 0.0 || mc.thePlayer.onGround)) {
+
+        if(modeValue.get() == "AAC4" && (mc.thePlayer.motionY < 0.0 || mc.thePlayer.onGround)) {
             glitch = true
         }
 
-        modifyBB = true
+        if (mc.thePlayer.onGround) {
+            groundHeight = mc.thePlayer.posY
+        }
 
         when (modeValue.get().lowercase()) {
-            "collide","aac4" -> {
+            "collide", "aac4" -> {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    groundHeight = mc.thePlayer.posY
-                    if(modeValue.get()=="AAC4") {
+                    if(modeValue.get() == "AAC4") {
                         wasTimer = true
                         mc.timer.timerSpeed = 0.4f
+                    }
+                }
+            }
+            "aac3.3.12" -> {
+                if (mc.thePlayer.onGround) {
+                    ticks = 0
+                }
+                ticks++
+                when (ticks) {
+                    1, 12, 23 -> mc.thePlayer.motionY = 0.43
+                    29 -> mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.5, mc.thePlayer.posZ)
+                    else -> if (ticks >= 30) {
+                        ticks = 0
                     }
                 }
             }
             "motion" -> {
                 mc.thePlayer.motionY = motionValue.get().toDouble()
             }
+            "checker" -> {
+                if (mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                }
+            }
+        }
+    }
+    @EventTarget
+    fun onMove(event: MoveEvent) {
+        val isInsideBlock = collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block: Block? -> block !is BlockAir }
+        if (isInsideBlock && modeValue.get() == "Checker" && mc.thePlayer.movementInput.moveForward > 0.0) {
+            event.x = 0.0
+            event.z = 0.0
+            event.y = motionValue.get().toDouble()
         }
     }
     
@@ -89,21 +114,25 @@ class Spider : Module() {
 
     @EventTarget
     fun onBlockBB(event: BlockBBEvent) {
-        if (!mc.thePlayer.isCollidedHorizontally || !mc.gameSettings.keyBindForward.pressed || (mc.thePlayer.posY - heightValue.get() > startHeight && heightValue.get() > 0)) {
+        if (modeValue.get() == "Checker" && (collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block: Block? -> block !is BlockAir } || mc.thePlayer.isCollidedHorizontally)) {
+            if(event.y > mc.thePlayer.posY)
+                event.boundingBox = AxisAlignedBB.fromBounds(0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0)
+        }
+
+        if (!mc.thePlayer.isCollidedHorizontally || !MovementUtils.isMoving()) {
             return
         }
-        if (!modifyBB || mc.thePlayer.motionY > 0.0) return
+
+        if (mc.thePlayer.motionY > 0.0) return
 
         when (modeValue.get().lowercase()) {
-            "collide","aac4" -> {
-                if (event.block is BlockAir && event.y <= mc.thePlayer.posY && event.y > groundHeight - 0.0625 && event.y < groundHeight + 0.0625) {
-                    event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(),
-                        event.x + 1.0, event.y + 1.0, event.z + 1.0)
-                }
+            "collide", "aac4" -> {
+                event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(),
+                    event.x + 1.0, floor(mc.thePlayer.posY), event.z + 1.0)
             }
         }
     }
     override val tag: String
         get() = modeValue.get()
-
 }

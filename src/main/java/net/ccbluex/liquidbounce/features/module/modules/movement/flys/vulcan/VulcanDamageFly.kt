@@ -112,8 +112,9 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
 
     override fun onUpdate(event: UpdateEvent) {
         if (flyTicks > 7 && autoDisableValue.get()) {
-            MovementUtils.resetMotion(true)
             fly.state = false
+            fly.onDisable()
+            return
         }
         
         if (!bypassMode.equals("InstantDamage") && runSelfDamageCore()) {
@@ -163,7 +164,7 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
                     if (mc.thePlayer.ticksExisted % 10 == 0) {
                         flyTicks++
                         val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
-                        mc.thePlayer.setPosition(mc.thePlayer.posX + (-sin(yaw) * flyDistanceValue.get()), mc.thePlayer.posY - 0.42, mc.thePlayer.posZ + (cos(yaw) * flyDistanceValue.get()))
+                        mc.thePlayer.setPosition(mc.thePlayer.posX + (-sin(yaw) * flyDistanceValue.get()), mc.thePlayer.posY + 0.42, mc.thePlayer.posZ + (cos(yaw) * flyDistanceValue.get()))
                         PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
                     }
                 }
@@ -173,7 +174,6 @@ class VulcanDamageFly : FlyMode("VulcanDamage") {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1.0f
-        MovementUtils.resetMotion(true)
     }
 
     override fun onPacket(event: PacketEvent) {

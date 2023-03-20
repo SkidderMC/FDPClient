@@ -121,8 +121,8 @@ class KillAura : Module() {
             if (i < newValue) set(i)
         }
     }.displayable { !autoBlockValue.equals("Off") }
-    private val blockTimingValue =          ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Pre").displayable { autoBlockValue.equals("Range") }
-    private val autoBlockPacketValue =      ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Hypixel", "ReBlock"), "Vanilla").displayable { autoBlockValue.equals("Range") }
+    //private val blockTimingValue =          ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Pre").displayable { autoBlockValue.equals("Range") }
+    private val autoBlockPacketValue =      ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Legit", "Vanilla"), "Vanilla").displayable { autoBlockValue.equals("Range") }
     private val interactAutoBlockValue =    BoolValue("InteractAutoBlock", false).displayable { autoBlockValue.equals("Range") }
     private val blockRateValue =            IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
 
@@ -269,6 +269,10 @@ class KillAura : Module() {
     var blockingStatus = false
     private var espAnimation = 0.0
     private var isUp = true
+    var ignoreBlock = 0
+    var attemptBlock = false
+    var waitStop = false
+    var nextAttack = false
 
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
@@ -336,39 +340,6 @@ class KillAura : Module() {
         ) {
             runAttackLoop()
         }
-        
-        if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && autoBlockPacketValue.equals("Hypixel")) {
-             if (mc.thePlayer.swingProgressInt == 1) {
-                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
-            } else if (mc.thePlayer.swingProgressInt == 2) {
-                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
-            }
-        }
-
-        if (blockTimingValue.equals("Both") ||
-            (blockTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
-            (blockTimingValue.equals("Post") && event.eventState == EventState.POST)
-        ) {
-            if (packetSent && noBadPacketsValue.get()) {
-                return
-            }
-            // AutoBlock
-            if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
-                        || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock
-            ) {
-                val target = this.currentTarget ?: discoveredTargets.first()
-                if (mc.thePlayer.getDistanceToEntityBox(target) <= autoBlockRangeValue.get()) {
-                    startBlocking(
-                        target,
-                        interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange)
-                    )
-                } else {
-                    if (!mc.thePlayer.isBlocking) {
-                        stopBlocking()
-                    }
-                }
-            }
-        }
 
         if (event.eventState == EventState.POST) {
             updateHitable()
@@ -382,6 +353,8 @@ class KillAura : Module() {
 
         // Update target
         updateTarget()
+
+        attemptBlock = false
 
         if (discoveredTargets.isEmpty()) {
             stopBlocking()
@@ -415,6 +388,37 @@ class KillAura : Module() {
         }
 
         update()
+
+        if (nextAttack) {
+            nextAttack = false
+            waitStop = false
+            clicks++
+            attemptBlock = true
+        }
+
+        if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && canBlock) {
+            if (ignoreBlock > 0) {
+                ignoreBlock--
+            } else if (autoBlockPacketValue.equals("Legit") && waitStop) {
+                stopBlocking()
+                waitStop = false
+                nextAttack = true
+            } else {
+                val target = this.currentTarget ?: discoveredTargets.first()
+                if (mc.thePlayer.getDistanceToEntityBox(target) <= autoBlockRangeValue.get()) {
+                    if (!autoBlockPacketValue.equals("Legit")) {
+                        startBlocking(
+                            target,
+                            interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange)
+                        )
+                    }
+                } else {
+                    if (!mc.thePlayer.isBlocking) {
+                        stopBlocking()
+                    }
+                }
+            }
+        }
         
         LiquidBounce.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(rotationStrafeValue.equals("Silent"), !rotationStrafeValue.equals("Off") && !rotationModeValue.equals("None"))
 
@@ -475,7 +479,12 @@ class KillAura : Module() {
             discoveredTargets.clear()
             inRangeDiscoveredTargets.clear()
         }
-        if (currentTarget != null && attackTimer.hasTimePassed(attackDelay) && currentTarget!!.hurtTime <= hurtTimeValue.get()) {
+        if (!waitStop && !nextAttack && currentTarget != null && attackTimer.hasTimePassed(attackDelay - if (autoBlockPacketValue.equals("Legit")) 25 else 0) && currentTarget!!.hurtTime <= hurtTimeValue.get()) {
+            if (autoBlockPacketValue.equals("Legit") && !waitStop) {
+                waitStop = true
+                nextAttack = false
+                clicks--
+            }
             clicks++
             attackTimer.reset()
             attackDelay = getAttackDelay(minCpsValue.get(), maxCpsValue.get())
@@ -958,12 +967,10 @@ class KillAura : Module() {
         if (event.isCancelled) return
 
         // Stop blocking
-        if (!autoBlockPacketValue.equals("Vanilla") && (mc.thePlayer.isBlocking || blockingStatus)) {
-            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
-            
-            blockingStatus = false
-            if (noBadPacketsValue.get()) {
-                packetSent = true
+        if ((autoBlockPacketValue.equals("AfterAttack") || autoBlockPacketValue.equals("AfterTick")) && (mc.thePlayer.isBlocking || blockingStatus)) {
+            stopBlocking()
+            if (autoBlockPacketValue.equals("AfterTick")) {
+                ignoreBlock = 1
             }
         }
 
@@ -985,12 +992,15 @@ class KillAura : Module() {
         }
 
         // Start blocking after attack
-        if (mc.thePlayer.isBlocking || (autoBlockValue.equals("Range") && canBlock) && 
-                !autoBlockPacketValue.equals("AfterTick") &&
-                (blockRateValue.get() > 0 && Random().nextInt(100) <= blockRateValue.get())
+        if (!autoBlockPacketValue.equals("AfterTick") &&
+            ((mc.thePlayer.isBlocking || attemptBlock) ||
+            (autoBlockValue.equals("Range") && canBlock) &&
+                (blockRateValue.get() > 0 && Random().nextInt(100) <= blockRateValue.get()))
         ) {
             startBlocking(entity, interactAutoBlockValue.get())
         }
+
+        attemptBlock = false
         
         CooldownHelper.resetLastAttackedTicks()
     }
@@ -1176,7 +1186,7 @@ class KillAura : Module() {
             mc.netHandler.addToSendQueue(
                 C07PacketPlayerDigging(
                     C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
-                    if (MovementUtils.isMoving()) BlockPos(-1, -1, -1) else BlockPos.ORIGIN,
+                    BlockPos.ORIGIN,
                     EnumFacing.DOWN
                 )
             )
