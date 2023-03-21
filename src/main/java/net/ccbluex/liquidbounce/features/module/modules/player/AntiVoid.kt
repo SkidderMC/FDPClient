@@ -268,6 +268,7 @@ class AntiVoid : Module() {
                         for (packet in packetCache) {
                             mc.netHandler.addToSendQueue(packet)
                         }
+                        packetCache.clear()
                     } else {
                         event.cancelEvent()
                         packetCache.add(packet)
