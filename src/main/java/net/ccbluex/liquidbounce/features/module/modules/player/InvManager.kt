@@ -198,8 +198,7 @@ class InvManager : Module() {
 		
 		if(swingValue.get()) mc.thePlayer.swingItem()
 
-                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 0, 0, mc.thePlayer)
-                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, -999, 0, 0, mc.thePlayer)
+                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 1, 4, mc.thePlayer)
 
                 delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
 
