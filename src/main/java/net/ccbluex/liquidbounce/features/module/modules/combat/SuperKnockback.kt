@@ -95,6 +95,7 @@ class SuperKnockback : Module() {
                 ticks = 0
             }
         }
+    }
                 
     override val tag: String
         get() = modeValue.get()
