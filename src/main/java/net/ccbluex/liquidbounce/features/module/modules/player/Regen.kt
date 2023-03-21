@@ -40,16 +40,23 @@ class Regen : Module() {
     fun onUpdate(event: UpdateEvent) {
         if (resetTimer) {
             mc.timer.timerSpeed = 1F
+            resetTimer = false
         }
-        resetTimer = false
 
-        if ((!noAirValue.get() || mc.thePlayer.onGround) && !mc.thePlayer.capabilities.isCreativeMode &&
-            mc.thePlayer.foodStats.foodLevel > foodValue.get() && mc.thePlayer.isEntityAlive && mc.thePlayer.health < healthValue.get()) {
+        if ((!noAirValue.get() || mc.thePlayer.onGround) &&
+            !mc.thePlayer.capabilities.isCreativeMode &&
+            mc.thePlayer.foodStats.foodLevel > foodValue.get() &&
+            mc.thePlayer.isEntityAlive &&
+            mc.thePlayer.health < healthValue.get()
+            ) {
             if (potionEffectValue.get() && !mc.thePlayer.isPotionActive(Potion.regeneration)) {
                 return
             }
 
-            if(!(timer.hasTimePassed(delayValue.get().toLong()))) return
+            if(!(timer.hasTimePassed(delayValue.get().toLong()))) {
+                return
+            }
+
             when (modeValue.get().lowercase()) {
                 "vanilla" -> {
                     repeat(speedValue.get()) {

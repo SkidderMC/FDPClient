@@ -26,7 +26,7 @@ import kotlin.math.sin
 @ModuleInfo(name = "Spider", category = ModuleCategory.MOVEMENT)
 class Spider : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker"), "Collide")
+    private val modeValue = ListValue("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan"), "Collide")
     private val motionValue = FloatValue("Motion", 0.42F, 0.1F, 1F)
 
     private var groundHeight = 0.0
@@ -41,8 +41,10 @@ class Spider : Module() {
         }
 
         if (!mc.thePlayer.isCollidedHorizontally || !MovementUtils.isMoving()) {
-            if (!collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block: Block? -> block !is BlockAir })
+            if (!collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block: Block? -> block !is BlockAir } || !MovementUtils.isMoving()) {
+                ticks = 0
                 return
+            }
         }
 
         if(modeValue.get() == "AAC4" && (mc.thePlayer.motionY < 0.0 || mc.thePlayer.onGround)) {
@@ -54,15 +56,20 @@ class Spider : Module() {
         }
 
         when (modeValue.get().lowercase()) {
-            "collide", "aac4" -> {
+            "collide"-> {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    if(modeValue.get() == "AAC4") {
-                        wasTimer = true
-                        mc.timer.timerSpeed = 0.4f
-                    }
                 }
             }
+
+            "aac4" -> {
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                    wasTimer = true
+                    mc.timer.timerSpeed = 0.4f
+                }
+            }
+
             "aac3.3.12" -> {
                 if (mc.thePlayer.onGround) {
                     ticks = 0
@@ -76,12 +83,31 @@ class Spider : Module() {
                     }
                 }
             }
+
             "motion" -> {
                 mc.thePlayer.motionY = motionValue.get().toDouble()
             }
+
             "checker" -> {
                 if (mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
+                }
+            }
+
+            "vulcan" -> {
+                if (mc.thePlayer.onGround) {
+                    ticks = 0
+                    mc.thePlayer.jump()
+                }
+                if (ticks >= 3) {
+                    ticks = 0
+                }
+                ticks++
+                when (ticks) {
+                    2, 3 -> {
+                        mc.thePlayer.jump()
+                        MovementUtils.resetMotion(false)
+                    }
                 }
             }
         }
@@ -104,6 +130,21 @@ class Spider : Module() {
             val yaw = MovementUtils.direction.toFloat()
             packet.x = packet.x - sin(yaw) * 0.00000001
             packet.z = packet.z + cos(yaw) * 0.00000001
+        }
+        if (packet is C03PacketPlayer && modeValue.get() == "Vulcan") {
+            when (ticks) {
+                3 -> {
+                    val yaw = MovementUtils.direction.toFloat()
+                    val randomModulo = Math.random() * 0.03 + 0.22
+                    packet.y -= 0.1
+                    packet.x += sin(yaw) * randomModulo
+                    packet.z -= cos(yaw) * randomModulo
+                }
+
+                2 -> {
+                    packet.onGround = true
+                }
+            }
         }
     }
     
