@@ -247,7 +247,7 @@ class KillAura : Module() {
     private val discoveredTargets = mutableListOf<EntityLivingBase>()
     private val inRangeDiscoveredTargets = mutableListOf<EntityLivingBase>()
     val canFakeBlock: Boolean
-        get() = inRangeDiscoveredTargets.isNotEmpty()
+        get() = discoveredTargets.isNotEmpty()
 
     // Attack delay
     private val attackTimer = MSTimer()
@@ -286,9 +286,9 @@ class KillAura : Module() {
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
         var aabb = it.entityBoundingBox
-        //aabb = if (backtraceValue.get()) LocationCache.getPreviousAABB(it.entityId, backtraceTickValue.get(), aabb) else aabb
         aabb = if (predictValue.get()) aabb.offset((it.posX - it.lastTickPosX) * predictAmount, (it.posY - it.lastTickPosY) * predictAmount, (it.posZ - it.lastTickPosZ) * predictAmount) else aabb
         aabb = if (predictPlayerValue.get()) aabb.offset(mc.thePlayer.motionX * predictPlayerAmount * -1f, mc.thePlayer.motionY * predictPlayerAmount * -1f, mc.thePlayer.motionZ * predictPlayerAmount * -1f) else aabb
+        aabb.expand(it.collisionBorderSize.toDouble(), it.collisionBorderSize.toDouble(), it.collisionBorderSize.toDouble())
         aabb
     }
 
@@ -479,7 +479,7 @@ class KillAura : Module() {
             discoveredTargets.clear()
             inRangeDiscoveredTargets.clear()
         }
-        if (!waitStop && !nextAttack && currentTarget != null && attackTimer.hasTimePassed(attackDelay - if (autoBlockPacketValue.equals("Legit")) 25 else 0) && currentTarget!!.hurtTime <= hurtTimeValue.get()) {
+        if (!waitStop && !nextAttack && currentTarget != null && attackTimer.hasTimePassed(attackDelay) && currentTarget!!.hurtTime <= hurtTimeValue.get()) {
             if (autoBlockPacketValue.equals("Legit") && !waitStop) {
                 waitStop = true
                 nextAttack = false
@@ -499,8 +499,8 @@ class KillAura : Module() {
                     )
                 }
                 "block" -> {
-                    val bb = it.entityBoundingBox
-                    it.entityBoundingBox = getAABB(it).expand(0.2, 0.2, 0.2)
+                    val bb = getAABB(it)
+                    it.entityBoundingBox = getAABB(it).expand(0.1, 0.1, 0.1)
                     RenderUtils.drawEntityBox(
                         it,
                         if (it.hurtTime <= 0) if (it == currentTarget) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170),
@@ -1030,8 +1030,6 @@ class KillAura : Module() {
             predictPlayerAmount = RandomUtils.nextFloat(maxPredictPlayerSizeValue.get(), minPredictPlayerSizeValue.get())
         }
 
-        val boundingBox = if (rotationModeValue.get() == "Test") entity.entityBoundingBox else getAABB(entity)
-
         val rModes = when (rotationModeValue.get()) {
             "LiquidBounce", "SmoothLiquid", "Derp" -> "LiquidBounce"
             "ForceCenter", "SmoothCenter", "OldMatrix", "Spin", "FastSpin" -> "CenterLine"
@@ -1045,7 +1043,7 @@ class KillAura : Module() {
                         rModes,
                         randomCenterModeValue.get(),
                         (randomCenRangeValue.get()).toDouble(),
-                        boundingBox,
+                        getAABB(entity),
                         predictValue.get() && rotationModeValue.get() != "Test",
                         true
                 ) ?: return false
@@ -1059,10 +1057,8 @@ class KillAura : Module() {
         val calculateSpeed = when (rotationSmoothModeValue.get()) {
             "Custom" -> diffAngle / rotationSmoothValue.get()
             "Line" -> (diffAngle / 360) * maxTurnSpeedValue.get() + (1 - diffAngle / 360) * minTurnSpeedValue.get()
-            //"Quad" -> Math.pow((diffAngle / 180.0), 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow((diffAngle / 180.0), 2.0)) * minTurnSpeedValue.get()
             "Quad" -> (diffAngle / 360.0).pow(2.0) * maxTurnSpeedValue.get() + (1 - (diffAngle / 360.0).pow(2.0)) * minTurnSpeedValue.get()
             "Sine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeedValue.get() + (cos(diffAngle / 360 * Math.PI) * 0.5 + 0.5) * minTurnSpeedValue.get()
-            //"QuadSine" -> Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0)) * minTurnSpeedValue.get()
             "QuadSine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0) * maxTurnSpeedValue.get() + (1 - (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0)) * minTurnSpeedValue.get()
             else -> 360.0
         }
@@ -1148,8 +1144,7 @@ class KillAura : Module() {
             //mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, interactEntity.positionVector))
             val positionEye = mc.renderViewEntity?.getPositionEyes(1F)
 
-            val expandSize = interactEntity.collisionBorderSize.toDouble()
-            val boundingBox = interactEntity.entityBoundingBox.expand(expandSize, expandSize, expandSize)
+            val boundingBox = getAABB(interactEntity)
 
             val (yaw, pitch) = RotationUtils.targetRotation ?: Rotation(mc.thePlayer!!.rotationYaw, mc.thePlayer!!.rotationPitch)
             val yawCos = cos(-yaw * 0.017453292F - Math.PI.toFloat())
