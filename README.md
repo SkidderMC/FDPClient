@@ -5,10 +5,6 @@ Website: <a href="https://fdpinfo.github.io">fdpinfo.github.io</a><br>
 Latest build: <a href="https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush">beta-version</a><br>
 Discord: <a href="https://dsc.gg/fdpdiscord">dsc.gg/fdpdiscord</a><br>
 </div>
-[![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/SkidderMC/FDPClient)
-![GitHub lines of code](https://tokei.rs/b1/github/SkidderMC/FDPClient)
-![Minecraft](https://img.shields.io/badge/game-Minecraft-brightgreen)  
 
 ## How Do I Install FDP?
 [Click for instructions](docs/INSTALLING.md)
