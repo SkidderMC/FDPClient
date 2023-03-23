@@ -299,6 +299,7 @@ class KillAura : Module() {
         mc.thePlayer ?: return
         mc.theWorld ?: return
         lastCanBeSeen = false
+        ignoreBlock = 0
 
         updateTarget()
     }
