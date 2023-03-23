@@ -76,7 +76,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         }
         
         if (yPort3.get()) {
-            if (mc.thePlayer.motionY <= 0.001 && mc.thePlayer.motionY >= -0.001) {
+            if (mc.thePlayer.motionY <= 0.003 && mc.thePlayer.motionY >= -0.003) {
                 mc.thePlayer.motionY = -0.0784
             }
         }
@@ -95,8 +95,11 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         
         if (damageStrafe.get()) {
             if (damagedTicks > 2) {
-                MovementUtils.strafe(MovementUtils.getSpeed() * 0.95f)
+                MovementUtils.strafe(MovementUtils.getSpeed() * 0.99f)
             }
+        }
+        if (mc.thePlayer.onGround) {
+            damagedTicks = 0
         }
         damagedTicks -= 1
         
@@ -127,6 +130,9 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionX *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                         mc.thePlayer.motionZ *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
+                    
+                    mc.thePlayer.speedInAir = 0.02 + 0.001f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
+                    
                     oldMotionX = mc.thePlayer.motionX
                     oldMotionZ = mc.thePlayer.motionZ
                     
