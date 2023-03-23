@@ -131,7 +131,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                         mc.thePlayer.motionZ *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
                     
-                    mc.thePlayer.speedInAir = 0.02 + 0.001f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
+                    mc.thePlayer.speedInAir = 0.02f + 0.001f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
                     
                     oldMotionX = mc.thePlayer.motionX
                     oldMotionZ = mc.thePlayer.motionZ
