@@ -70,8 +70,8 @@ class AutoClicker : Module() {
 
     @EventTarget
     fun onRender(event: Render3DEvent) {
-        if (mc.gameSettings.keyBindAttack.isKeyDown && normalLeftValue.get() &&
-            System.currentTimeMillis() - normalLeftLastSwing >= normalLeftDelay && (!normalLeftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && mc.playerController.curBlockDamageMP == 0F) {
+        if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() &&
+            System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && mc.playerController.curBlockDamageMP == 0F) {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
 
            leftLastSwing = System.currentTimeMillis()
@@ -83,7 +83,7 @@ class AutoClicker : Module() {
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
             
             rightLastSwing = System.currentTimeMillis()
-            rightDelay = updateClicks.toLong() - 1L
+            rightDelay = updateClicks().toLong() - 1L
         }
             
     }
