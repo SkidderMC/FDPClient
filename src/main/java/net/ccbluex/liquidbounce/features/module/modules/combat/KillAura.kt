@@ -402,7 +402,7 @@ class KillAura : Module() {
         
         if (nextBlock && autoBlockValue.equals("Delayed")) {
             startBlocking(
-                target,
+                this.currentTarget ?: discoveredTargets.first(),
                 interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange)
             )
             nextBlock = false
