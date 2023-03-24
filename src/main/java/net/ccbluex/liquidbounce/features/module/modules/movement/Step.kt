@@ -522,6 +522,8 @@ class Step : Module() {
                     mode.equals("BlocksMC", ignoreCase = true) -> {
                         fakeJump()
                         
+                        val pos = mc.thePlayer.position.add(0.0, -1.5, 0.0)
+                        
                         mc.netHandler.addToSendQueue(
                             C08PacketPlayerBlockPlacement(pos, 1,
                             ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
