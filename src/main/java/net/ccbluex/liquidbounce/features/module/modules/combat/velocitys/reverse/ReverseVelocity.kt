@@ -18,7 +18,8 @@ class ReverseVelocity : VelocityMode("Reverse") {
         }
         if (velocity.velocityTimer.hasTimePassed(reverseDelayValue.get().toLong())) {
             MovementUtils.strafe(MovementUtils.getSpeed() * reverseStrengthValue.get())
-        } else if (velocity.velocityTimer.hasTimePassed(reverseTimeValue.get().toLong())) {
+        }
+        if (velocity.velocityTimer.hasTimePassed(reverseTimeValue.get().toLong())) {
             velocity.velocityInput = false
         }
     }
