@@ -19,6 +19,9 @@ import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.stats.StatList
 import net.minecraft.util.MathHelper
+import net.minecraft.init.Blocks
+import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.sin
@@ -518,6 +521,11 @@ class Step : Module() {
                     }
                     mode.equals("BlocksMC", ignoreCase = true) -> {
                         fakeJump()
+                        
+                        mc.netHandler.addToSendQueue(
+                            C08PacketPlayerBlockPlacement(pos, 1,
+                            ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
+                            )
 
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                             stepY + 0.41999998688698, stepZ, false))
