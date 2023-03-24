@@ -122,7 +122,7 @@ class KillAura : Module() {
         }
     }.displayable { !autoBlockValue.equals("Off") }
     //private val blockTimingValue =          ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Pre").displayable { autoBlockValue.equals("Range") }
-    private val autoBlockPacketValue =      ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Legit", "Vanilla"), "Vanilla").displayable { autoBlockValue.equals("Range") }
+    private val autoBlockPacketValue =      ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Legit", "Vanilla", "Delayed"), "Vanilla").displayable { autoBlockValue.equals("Range") }
     private val interactAutoBlockValue =    BoolValue("InteractAutoBlock", false).displayable { autoBlockValue.equals("Range") }
     private val blockRateValue =            IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
 
@@ -273,6 +273,8 @@ class KillAura : Module() {
     var attemptBlock = false
     var waitStop = false
     var nextAttack = false
+    
+    var nextBlock = false
 
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
@@ -300,7 +302,8 @@ class KillAura : Module() {
         mc.theWorld ?: return
         lastCanBeSeen = false
         ignoreBlock = 0
-
+        nextBlock = false
+        
         updateTarget()
     }
 
@@ -395,6 +398,14 @@ class KillAura : Module() {
             waitStop = false
             clicks++
             attemptBlock = true
+        }
+        
+        if (nextBlock && autoBlockValue.equals("Delayed")) {
+            startBlocking(
+                target,
+                interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange)
+            )
+            nextBlock = false
         }
 
         if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && canBlock) {
@@ -968,7 +979,7 @@ class KillAura : Module() {
         if (event.isCancelled) return
 
         // Stop blocking
-        if ((autoBlockPacketValue.equals("AfterAttack") || autoBlockPacketValue.equals("AfterTick")) && (mc.thePlayer.isBlocking || blockingStatus)) {
+        if ((autoBlockPacketValue.equals("Delayed") || autoBlockPacketValue.equals("AfterAttack") || autoBlockPacketValue.equals("AfterTick")) && (mc.thePlayer.isBlocking || blockingStatus)) {
             stopBlocking()
             if (autoBlockPacketValue.equals("AfterTick")) {
                 ignoreBlock = 1
@@ -991,6 +1002,8 @@ class KillAura : Module() {
                 mc.thePlayer.attackTargetEntityWithCurrentItem(entity)
             }
         }
+        
+        nextBlock = true
 
         // Start blocking after attack
         if (!autoBlockPacketValue.equals("AfterTick") &&
