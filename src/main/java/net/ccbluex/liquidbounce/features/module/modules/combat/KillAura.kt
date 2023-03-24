@@ -303,6 +303,8 @@ class KillAura : Module() {
         lastCanBeSeen = false
         ignoreBlock = 0
         nextBlock = false
+        waitStop = false
+        nextAttack = false
         
         updateTarget()
     }
@@ -401,7 +403,7 @@ class KillAura : Module() {
         }
         
         val delayedTarget = this.currentTarget ?: discoveredTargets.first()
-        if (nextBlock && autoBlockValue.equals("Delayed")) {
+        if (nextBlock && autoBlockPacketValue.equals("Delayed")) {
             startBlocking(
                 delayedTarget,
                 interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(delayedTarget) < maxRange)
@@ -492,8 +494,8 @@ class KillAura : Module() {
             discoveredTargets.clear()
             inRangeDiscoveredTargets.clear()
         }
-        if (!waitStop && !nextAttack && currentTarget != null && attackTimer.hasTimePassed(attackDelay) && currentTarget!!.hurtTime <= hurtTimeValue.get()) {
-            if (autoBlockPacketValue.equals("Legit") && !waitStop) {
+        if (((!waitStop && !nextAttack) || (!autoBlockPacketValue.equals("Legit") || !autoBlockValue.equals("Range")))  && currentTarget != null && attackTimer.hasTimePassed(attackDelay) && currentTarget!!.hurtTime <= hurtTimeValue.get()) {
+            if (autoBlockPacketValue.equals("Legit") && !waitStop && autoBlockValue.equals("Range")) {
                 waitStop = true
                 nextAttack = false
                 clicks--
