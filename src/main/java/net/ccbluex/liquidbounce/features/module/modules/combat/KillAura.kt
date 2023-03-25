@@ -690,21 +690,8 @@ class KillAura : Module() {
         if (event.isCancelled) return
 
         preSwing()
-        runSwing(entity)
-        postSwing()
 
-        CooldownHelper.resetLastAttackedTicks()
-    }
-
-    private fun runSwing(entity: EntityLivingBase) {
-
-        // swing
-        when (swingValue.get().lowercase()) {
-            "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
-            "normal" -> mc.thePlayer.swingItem()
-            else -> null
-        }
-
+        runSwing()
         // attack packet
         mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
@@ -721,6 +708,20 @@ class KillAura : Module() {
 
         nextBlock = true
         packetSent = true
+
+        postSwing()
+
+        CooldownHelper.resetLastAttackedTicks()
+    }
+
+    private fun runSwing() {
+
+        // swing
+        when (swingValue.get().lowercase()) {
+            "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
+            "normal" -> mc.thePlayer.swingItem()
+            else -> null
+        }
     }
 
     private fun preSwing() {
@@ -896,7 +897,7 @@ class KillAura : Module() {
         hitable = RotationUtils.isFaced(
             currentTarget,
             maxRange.toDouble()
-        ) && (entityDist < throughWallsRangeValue.get() || wallTrace.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
+        ) && (entityDist < throughWallsRangeValue.get() || wallTrace.typeOfHit != ?.MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
     }
 
     /**
@@ -1315,7 +1316,7 @@ class KillAura : Module() {
                     GL11.glEnable(GL11.GL_TEXTURE_2D)
                     GL11.glPopMatrix()
                 }
-                
+
 
                 "sims" -> {
                     val radius = 0.15f
