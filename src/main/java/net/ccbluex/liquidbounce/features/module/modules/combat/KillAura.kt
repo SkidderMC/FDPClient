@@ -403,7 +403,7 @@ class KillAura : Module() {
         }
         
         val delayedTarget = this.currentTarget ?: discoveredTargets.first()
-        if (nextBlock && autoBlockPacketValue.equals("Delayed")) {
+        if (nextBlock && autoBlockPacketValue.equals("Delayed") && discoveredTargets.isNotEmpty() && canBlock) {
             startBlocking(
                 delayedTarget,
                 interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(delayedTarget) < maxRange)
