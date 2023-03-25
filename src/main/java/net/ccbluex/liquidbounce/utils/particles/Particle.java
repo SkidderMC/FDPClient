@@ -20,7 +20,7 @@ public class Particle {
 
     public Particle(final Vec3 position) {
         this.position = position;
-        this.delta = new Vec3((Math.random() * 2.5 - 1.25) * 0.01, (Math.random() * 0.5 - 0.2) * 0.01, (Math.random() * 2.5 - 1.25) * 0.01);
+        this.delta = new Vec3((Math.random() * 2.5 - 1.25) * 0.04, (Math.random() * 0.5 - 0.2) * 0.04, (Math.random() * 2.5 - 1.25) * 0.04);
         this.removeTimer.reset();
     }
 
@@ -31,10 +31,10 @@ public class Particle {
 
         final Block block2 = PlayerParticles.getBlock(this.position.xCoord, this.position.yCoord + this.delta.yCoord, this.position.zCoord);
         if (!(block2 instanceof BlockAir || block2 instanceof BlockBush || block2 instanceof BlockLiquid)) {
-            this.delta.xCoord *= 0.999F;
-            this.delta.zCoord *= 0.999F;
+            this.delta.xCoord *= 0.99F;
+            this.delta.zCoord *= 0.99F;
 
-            this.delta.yCoord *= -0.6;
+            this.delta.yCoord *= -0.5;
         }
 
         final Block block3 = PlayerParticles.getBlock(this.position.xCoord + this.delta.xCoord, this.position.yCoord, this.position.zCoord);
@@ -48,8 +48,8 @@ public class Particle {
         this.position.xCoord += this.delta.xCoord;
         this.position.yCoord += this.delta.yCoord;
         this.position.zCoord += this.delta.zCoord;
-        this.delta.xCoord /= 0.999997F;
-        this.delta.yCoord -= 0.0000017;
-        this.delta.zCoord /= 0.999997F;
+        this.delta.xCoord *= 0.999F;
+        this.delta.yCoord -= 0.000026;
+        this.delta.zCoord *= 0.999F;
     }
 }
