@@ -115,7 +115,7 @@ class KillAura : Module() {
     // Bypass
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { attackDisplayValue.get() }
     private val attackTimingValue = ListValue("AttackTiming", arrayOf("All", "Pre", "Post"), "All").displayable { attackDisplayValue.get() }
-    
+
     private val noBadPacketsValue = BoolValue("NoBadPackets", false).displayable { attackDisplayValue.get() }
 
     private val blinkCheck = BoolValue("BlinkCheck", true).displayable { attackDisplayValue.get() }
@@ -130,7 +130,7 @@ class KillAura : Module() {
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch").displayable { attackDisplayValue.get() }
     private val switchDelayValue = IntegerValue("SwitchDelay", 15, 1, 2000).displayable { targetModeValue.equals("Switch") && attackDisplayValue.get() }
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") && attackDisplayValue.get() }
-    
+
     private val priorityValue = ListValue(
         "Priority",
         arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor", "HurtTime", "RegenAmplifier"),
@@ -145,7 +145,7 @@ class KillAura : Module() {
         IntegerValue("NoInvDelay", 200, 0, 500).displayable { !noInventoryAttackValue.equals("Off") }
 
     // AutoBlock
-    
+
     val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Range")
 
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 5f, 0f, 8f) {
@@ -160,8 +160,8 @@ class KillAura : Module() {
     private val interactAutoBlockValue =
         BoolValue("InteractAutoBlock", false).displayable { autoBlockValue.equals("Range") }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
-    
-    
+
+
 
 
     // Rotations
@@ -169,7 +169,7 @@ class KillAura : Module() {
     private val rotationsDisplayValue = BoolValue("Rotation Options", true)
 
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f).displayable { rotationsDisplayValue.get() }
-    
+
     private val rotationModeValue = ListValue(
         "RotationMode",
         arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix"),
@@ -182,14 +182,14 @@ class KillAura : Module() {
             val v = minTurnSpeedValue.get()
             if (v > newValue) set(v)
         }
-    }.displayable { rotationsDisplayValue.get() }
+    }.displayable { rotationsDisplayValue.get() } as FloatValue
 
     private val minTurnSpeedValue: FloatValue = object : FloatValue("MinTurnSpeed", 360f, 1f, 360f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxTurnSpeedValue.get()
             if (v < newValue) set(v)
         }
-    }.displayable { rotationsDisplayValue.get() }
+    }.displayable { rotationsDisplayValue.get() } as FloatValue
 
     private val rotationSmoothModeValue =
         ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom").displayable { rotationsDisplayValue.get() }
@@ -261,7 +261,7 @@ class KillAura : Module() {
 
     // Backtrace
     //private val backtraceValue = BoolValue("Backtrace", false)
-    
+
     // Visuals
     private val markValue =
         ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Lies", "None"), "Jello")
@@ -690,13 +690,13 @@ class KillAura : Module() {
         if (event.isCancelled) return
 
         preSwing()
-        runSwing()
+        runSwing(entity)
         postSwing()
 
         CooldownHelper.resetLastAttackedTicks()
     }
 
-    private fun runSwing() {
+    private fun runSwing(entity: EntityLivingBase) {
 
         // swing
         when (swingValue.get().lowercase()) {
@@ -1315,22 +1315,7 @@ class KillAura : Module() {
                     GL11.glEnable(GL11.GL_TEXTURE_2D)
                     GL11.glPopMatrix()
                 }
-
-                "circle" -> {
-                    if (espAnimation > currentTarget!!.eyeHeight + 0.4 || espAnimation < 0) {
-                        isUp = !isUp
-                    }
-                    if (isUp) {
-                        espAnimation += 0.05 * 60 / Minecraft.getDebugFPS()
-                    } else {
-                        espAnimation -= 0.05 * 60 / Minecraft.getDebugFPS()
-                    }
-                    if (isUp) {
-                        esp(currentTarget!!, event.partialTicks, circleRadiusValue.get())
-                    } else {
-                        esp(currentTarget!!, event.partialTicks, circleRadiusValue.get())
-                    }
-                }
+                
 
                 "sims" -> {
                     val radius = 0.15f
