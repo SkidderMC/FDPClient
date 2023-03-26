@@ -1350,7 +1350,7 @@ class KillAura : Module() {
                     RenderUtils.startDrawing()
                     GL11.glDisable(2929)
                     GL11.glDepthMask(false)
-                    GL11.glLineWidth(2.0)
+                    GL11.glLineWidth(2.0f)
                     GL11.glBegin(3)
                     val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
                     val y = it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY - 1.2
