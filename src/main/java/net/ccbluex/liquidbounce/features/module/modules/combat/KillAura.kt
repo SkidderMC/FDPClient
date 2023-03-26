@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.minecraft.client.Minecraft
@@ -264,7 +265,7 @@ class KillAura : Module() {
 
     // Visuals
     private val markValue =
-        ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Lies", "None"), "Jello")
+        ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "OtherBlock", "Jello", "Sims", "Lies", "Polygon", "None"), "Jello")
     private val circleValue = BoolValue("Circle", true)
     private val circleRedValue = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
     private val circleGreenValue = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
@@ -709,7 +710,7 @@ class KillAura : Module() {
         nextBlock = true
         packetSent = true
 
-        postSwing()
+        postSwing(entity)
 
         CooldownHelper.resetLastAttackedTicks()
     }
@@ -742,7 +743,7 @@ class KillAura : Module() {
         }
     }
 
-    private fun postSwing() {
+    private fun postSwing(entity: EntityLivingBase) {
         // blockrate
         if (blockRateValue.get() > 0 && Random().nextInt(100) <= blockRateValue.get()) {
             // can block
@@ -1089,7 +1090,7 @@ class KillAura : Module() {
                     )
                 }
 
-                "block" -> {
+                "block", "otherblock -> {
                     val bb = getAABB(it)
                     it.entityBoundingBox = getAABB(it).expand(0.1, 0.1, 0.1)
                     RenderUtils.drawEntityBox(
@@ -1100,7 +1101,7 @@ class KillAura : Module() {
                             0,
                             170
                         ) else Color(255, 0, 0, 170),
-                        true,
+                        markValue.equals("Block"),
                         true,
                         4f
                     )
@@ -1339,6 +1340,35 @@ class KillAura : Module() {
                     GL11.glTranslated(0.0, 0.0, 0.3)
                     c.draw(radius, 0F, 0.3f, side, 1)
                     RenderUtils.disableSmoothLine()
+                    GL11.glPopMatrix()
+                }
+                
+                "polygon" -> {
+                    val rad = radiusValue.get()
+                    GL11.glPushMatrix()
+                    GL11.glDisable(3553)
+                    RenderUtils.startDrawing()
+                    GL11.glDisable(2929)
+                    GL11.glDepthMask(false)
+                    GL11.glLineWidth(lineWidthValue.get())
+                    GL11.glBegin(3)
+                    val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                    val y = it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY - 1.2
+                    val z = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    for (i in 0..10) {
+                        val rainbow = ColorUtils.rainbow()
+                        GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
+                        GL11.glVertex3d(
+                            x + rad * cos(i * 6.283185307179586 / 5.0),
+                            y,
+                            z + rad * sin(i * 6.283185307179586 / 5.0)
+                        )
+                    }
+                    GL11.glEnd()
+                    GL11.glDepthMask(true)
+                    GL11.glEnable(2929)
+                    RenderUtils.stopDrawing()
+                    GL11.glEnable(3553)
                     GL11.glPopMatrix()
                 }
             }
