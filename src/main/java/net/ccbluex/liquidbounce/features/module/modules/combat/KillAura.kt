@@ -1090,7 +1090,7 @@ class KillAura : Module() {
                     )
                 }
 
-                "block", "otherblock -> {
+                "block", "otherblock" -> {
                     val bb = getAABB(it)
                     it.entityBoundingBox = getAABB(it).expand(0.1, 0.1, 0.1)
                     RenderUtils.drawEntityBox(
