@@ -197,7 +197,7 @@ public class ClickGui extends GuiScreen {
             return;
 		
         for(final Panel panel : panels)
-	        panel.setY(panel.getY() + wheel);
+	        panel.setY(panel.getY() + (wheel * 0.2).toInt());
     }
 
     @Override
@@ -292,6 +292,8 @@ public class ClickGui extends GuiScreen {
     @Override
     public void onGuiClosed() {
         LiquidBounce.fileManager.saveConfig(modernuiLaunchOption.getClickGuiConfig());
+        slide = 0;
+	progress = 0;
     }
 
     @Override
