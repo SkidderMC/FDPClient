@@ -197,7 +197,7 @@ public class ClickGui extends GuiScreen {
             return;
 		
         for(final Panel panel : panels)
-	        panel.setY(panel.getY() + (wheel * 0.2).toInt());
+	        panel.setY(panel.getY() + wheel);
     }
 
     @Override
