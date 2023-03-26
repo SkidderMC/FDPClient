@@ -894,11 +894,7 @@ class KillAura : Module() {
         }
 
         val wallTrace = mc.thePlayer.rayTraceWithServerSideRotation(entityDist)
-        hitable = RotationUtils.isFaced(
-            currentTarget,
-            maxRange.toDouble()
-        ) && (entityDist < throughWallsRangeValue.get() || wallTrace.typeOfHit != ?.MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
-    }
+        hitable = RotationUtils.isFaced(currentTarget, maxRange.toDouble()) && (entityDist < throughWallsRangeValue.get() || wallTrace?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()    }
 
     /**
      * Start blocking
