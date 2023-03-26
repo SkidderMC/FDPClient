@@ -104,6 +104,7 @@ class KillAura : Module() {
     // Attack
     private val attackDisplaySpace = TextValue("  ", "")
     private val attackDisplayValue = BoolValue("Attack Options", true)
+    private val attackValuesSpace = TextValue("    ", "").displayable { attackDisplayValue.get() }
 
     private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { attackDisplayValue.get() }
 
@@ -168,7 +169,8 @@ class KillAura : Module() {
     // Rotations
     private val rotationsDisplaySpace = TextValue("   ", "")
     private val rotationsDisplayValue = BoolValue("Rotation Options", true)
-
+    private val rotationsValuesSpace = TextValue("        ", "").displayable { rotationsDisplayValue.get() }
+    
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f).displayable { rotationsDisplayValue.get() }
 
     private val rotationModeValue = ListValue(
