@@ -55,7 +55,7 @@ class SuperKnockback : Module() {
                     mc.thePlayer.isSprinting = false
                 }
                 
-                "delaypacket" -> {
+                "silent" -> {
                     ticks = 1
                 }
 
@@ -94,7 +94,7 @@ class SuperKnockback : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if ((packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook) && modeValue.equals("DelayPacket")) {
+        if ((packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook) && modeValue.equals("Silent")) {
             if (ticks == 1) {
                 mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
                 ticks = 2
