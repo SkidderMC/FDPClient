@@ -104,20 +104,20 @@ class Scaffold : Module() {
     // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") }
     private val smoothRotationValue = BoolValue("SmoothRotation", false).displayable { !rotationsValue.equals("None") }
-    private val smoothRotationSpeedValue = FloatValue("SmoothRotationSpeed", 1.7f, 1f, 4f).displayable { !rotationsValue.equals("None") && smoothRotation.get() }
+    private val smoothRotationSpeedValue = FloatValue("SmoothRotationSpeed", 1.7f, 1f, 4f).displayable { !rotationsValue.equals("None") && smoothRotationValue.get() }
     private val minRotationSpeedValue: IntegerValue = object : IntegerValue("MinRotationSpeed", 180, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val v = maxRotationSpeedValue.get()
             if (v < newValue) set(v)
         }
-    }.displayable { !rotationsValue.equals("None") && !smoothRotation.get() } as IntegerValue
+    }.displayable { !rotationsValue.equals("None") && !smoothRotationValue.get() } as IntegerValue
     private val maxRotationSpeedValue: IntegerValue = object : IntegerValue("MaxRotationSpeed", 180, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val v = minRotationSpeedValue.get()
             if (v > newValue) set(v)
         }
-    }.displayable { !rotationsValue.equals("None") && !smoothRotation.get()} as IntegerValue
-    private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20).displayable { !rotationsValue.equals("None") && !smoothRotation.get()}
+    }.displayable { !rotationsValue.equals("None") && !smoothRotationValue.get()} as IntegerValue
+    private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20).displayable { !rotationsValue.equals("None") }
 
     // Zitter
     private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
@@ -1057,13 +1057,13 @@ class Scaffold : Module() {
             }
             if (silentRotationValue.get()) {
                 if (smoothRotationValue.get()) {
-                    var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+                    var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, lockRotation!!)
                     if (diffAngle < 0) diffAngle = -diffAngle
                     if (diffAngle > 180.0) diffAngle = 180.0
                     
                     diffAngle /= smoothRotationSpeedValue.get().toDouble()
                     
-                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, diffAngle)
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, diffAngle.toFloat())
                     RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
                 } else {
                     
@@ -1131,13 +1131,13 @@ class Scaffold : Module() {
             }
             if (silentRotationValue.get()) {
                 if (smoothRotationValue.get()) {
-                    var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+                    var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, lockRotation!!)
                     if (diffAngle < 0) diffAngle = -diffAngle
                     if (diffAngle > 180.0) diffAngle = 180.0
                     
                     diffAngle /= smoothRotationSpeedValue.get().toDouble()
                     
-                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, diffAngle)
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, diffAngle.toFloat())
                     RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
                 } else {
                     
