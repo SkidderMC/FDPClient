@@ -740,8 +740,8 @@ class Scaffold : Module() {
                 }
             }
         } else if (searchValue.get()) {
-            for (x in -2..2) {
-                for (z in -2..2) {
+            for (x in -1..1) {
+                for (z in -1..1) {
                     if (search(blockPosition.add(x, 0, z), !shouldGoDown)) {
                         return
                     }
