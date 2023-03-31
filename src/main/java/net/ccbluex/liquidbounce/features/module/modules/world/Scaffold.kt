@@ -957,12 +957,12 @@ class Scaffold : Module() {
             val neighbor = blockPosition.offset(side)
             if (!BlockUtils.canBeClicked(neighbor)) continue
             val dirVec = Vec3(side.directionVec)
-            var xSearch = 0.0
-            while (xSearch <= 1.0) {
-                var ySearch = 0.0
-                while (ySearch <= 1.0) {
-                    var zSearch = 0.0
-                    while (zSearch<= 1.0) {
+            var xSearch = 0.1
+            while (xSearch <= 0.9) {
+                var ySearch = 0.1
+                while (ySearch < 0.9) {
+                    var zSearch = 0.1
+                    while (zSearch<= 0.9) {
                         val posVec = Vec3(blockPosition).addVector(xSearch, ySearch, zSearch)
                         val distanceSqPosVec = eyesPos.squareDistanceTo(posVec)
                         val hitVec = posVec.add(Vec3(dirVec.xCoord * 0.5, dirVec.yCoord * 0.5, dirVec.zCoord * 0.5))
