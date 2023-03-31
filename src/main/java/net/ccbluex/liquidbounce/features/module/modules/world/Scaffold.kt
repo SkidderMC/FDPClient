@@ -480,7 +480,7 @@ class Scaffold : Module() {
                 }
             }
         }
-        if (towerStatus) move()
+        if (event.eventState == EventState.PRE && towerStatus) move()
 
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepLengthValue.get()> 0 && lockRotation != null && silentRotationValue.get()) {
@@ -489,7 +489,7 @@ class Scaffold : Module() {
         }
 
         // Update and search for new block
-        if (event.eventState == EventState.PRE) update()
+        if (event.eventState == EventState.POST) update()
 
         // Place block
         if (placeModeValue.equals(eventState.stateName)) place()
