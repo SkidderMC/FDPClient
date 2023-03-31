@@ -103,19 +103,21 @@ class Scaffold : Module() {
     // private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") }
+    private val smoothRotationValue = BoolValue("SmoothRotation", false).displayable { !rotationsValue.equals("None") }
+    private val smoothRotationSpeedValue = FloatValue("SmoothRotationSpeed", 1.7f, 1f, 4f).displayable { !rotationsValue.equals("None") && smoothRotation.get() }
     private val minRotationSpeedValue: IntegerValue = object : IntegerValue("MinRotationSpeed", 180, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val v = maxRotationSpeedValue.get()
             if (v < newValue) set(v)
         }
-    }.displayable { !rotationsValue.equals("None") } as IntegerValue
+    }.displayable { !rotationsValue.equals("None") && !smoothRotation.get() } as IntegerValue
     private val maxRotationSpeedValue: IntegerValue = object : IntegerValue("MaxRotationSpeed", 180, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val v = minRotationSpeedValue.get()
             if (v > newValue) set(v)
         }
-    }.displayable { !rotationsValue.equals("None") } as IntegerValue
-    private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20).displayable { !rotationsValue.equals("None") }
+    }.displayable { !rotationsValue.equals("None") && !smoothRotation.get()} as IntegerValue
+    private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20).displayable { !rotationsValue.equals("None") && !smoothRotation.get()}
 
     // Zitter
     private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
@@ -955,12 +957,12 @@ class Scaffold : Module() {
             val neighbor = blockPosition.offset(side)
             if (!BlockUtils.canBeClicked(neighbor)) continue
             val dirVec = Vec3(side.directionVec)
-            var xSearch = 0.1
-            while (xSearch < 0.9) {
-                var ySearch = 0.1
-                while (ySearch < 0.9) {
-                    var zSearch = 0.1
-                    while (zSearch < 0.9) {
+            var xSearch = 0.0
+            while (xSearch <= 1.0) {
+                var ySearch = 0.0
+                while (ySearch <= 1.0) {
+                    var zSearch = 0.0
+                    while (zSearch<= 1.0) {
                         val posVec = Vec3(blockPosition).addVector(xSearch, ySearch, zSearch)
                         val distanceSqPosVec = eyesPos.squareDistanceTo(posVec)
                         val hitVec = posVec.add(Vec3(dirVec.xCoord * 0.5, dirVec.yCoord * 0.5, dirVec.zCoord * 0.5))
@@ -1054,9 +1056,20 @@ class Scaffold : Module() {
                 else -> return false // this should not happen
             }
             if (silentRotationValue.get()) {
-                val limitedRotation =
-                    RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
-                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                if (smoothRotationValue.get()) {
+                    var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+                    if (diffAngle < 0) diffAngle = -diffAngle
+                    if (diffAngle > 180.0) diffAngle = 180.0
+                    
+                    diffAngle /= smoothRotationSpeedValue.get().toDouble()
+                    
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, diffAngle)
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                } else {
+                    
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                }
             } else {
                 mc.thePlayer.rotationYaw = lockRotation!!.yaw
                 mc.thePlayer.rotationPitch = lockRotation!!.pitch
@@ -1117,9 +1130,20 @@ class Scaffold : Module() {
                 else -> return false // this should not happen
             }
             if (silentRotationValue.get()) {
-                val limitedRotation =
-                    RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
-                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                if (smoothRotationValue.get()) {
+                    var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+                    if (diffAngle < 0) diffAngle = -diffAngle
+                    if (diffAngle > 180.0) diffAngle = 180.0
+                    
+                    diffAngle /= smoothRotationSpeedValue.get().toDouble()
+                    
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, diffAngle)
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                } else {
+                    
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                }
             } else {
                 mc.thePlayer.rotationYaw = lockRotation!!.yaw
                 mc.thePlayer.rotationPitch = lockRotation!!.pitch
