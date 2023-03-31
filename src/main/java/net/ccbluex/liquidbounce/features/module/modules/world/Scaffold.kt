@@ -66,14 +66,14 @@ class Scaffold : Module() {
     }.displayable { !placeableDelayValue.equals("OFF") } as IntegerValue
 
     // AutoBlock
-    private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "LiteSpoof")
+    private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "Spoof")
 
     // Basic stuff
-    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Hypixel", "OFF"), "Always")
+    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Hypixel", "Vulcan", "OFF"), "OFF")
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val searchValue = BoolValue("Search", true)
-    private val downValue = BoolValue("Down", true)
-    private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Post")
+    private val downValue = BoolValue("Down", false)
+    private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Pre")
 
     // Eagle
     private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Off"), "Off")
@@ -86,7 +86,7 @@ class Scaffold : Module() {
 
     // Rotations
     private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards"), "Backwards")
-    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom"), "AAC")
+    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Backwards", "Custom"), "AAC")
     private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove"), "MoveDirection").displayable { rotationsValue.equals("Advanced") }
     private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla"), "Static").displayable { rotationsValue.equals("Advanced") }
     private val advancedYawOffsetValue = IntegerValue("AdvancedOffsetYaw", -15, -180, 180).displayable { rotationsValue.equals("Advanced") && advancedYawModeValue.equals("Offset") }
@@ -103,19 +103,21 @@ class Scaffold : Module() {
     // private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") }
+    private val smoothRotationValue = BoolValue("SmoothRotation", false).displayable { !rotationsValue.equals("None") }
+    private val smoothRotationSpeedValue = FloatValue("SmoothRotationSpeed", 1.7f, 1f, 4f).displayable { !rotationsValue.equals("None") && smoothRotation.get() }
     private val minRotationSpeedValue: IntegerValue = object : IntegerValue("MinRotationSpeed", 180, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val v = maxRotationSpeedValue.get()
             if (v < newValue) set(v)
         }
-    }.displayable { !rotationsValue.equals("None") } as IntegerValue
+    }.displayable { !rotationsValue.equals("None") && !smoothRotation.get() } as IntegerValue
     private val maxRotationSpeedValue: IntegerValue = object : IntegerValue("MaxRotationSpeed", 180, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val v = minRotationSpeedValue.get()
             if (v > newValue) set(v)
         }
-    }.displayable { !rotationsValue.equals("None") } as IntegerValue
-    private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20).displayable { !rotationsValue.equals("None") }
+    }.displayable { !rotationsValue.equals("None") && !smoothRotation.get()} as IntegerValue
+    private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20).displayable { !rotationsValue.equals("None") && !smoothRotation.get()}
 
     // Zitter
     private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
@@ -125,7 +127,7 @@ class Scaffold : Module() {
     // Game
     private val timerValue = FloatValue("Timer", 1f, 0.1f, 5f)
     private val motionSpeedEnabledValue = BoolValue("MotionSpeedSet", false)
-    private val motionSpeedValue = FloatValue("MotionSpeed", 0.1f, 0.05f, 1f).displayable { motionSpeedEnabledValue.get() }
+    private val motionSpeedValue = FloatValue("MotionSpeed", 0.15f, 0.05f, 0.5f).displayable { motionSpeedEnabledValue.get() }
     private val speedModifierValue = FloatValue("SpeedModifier", 1f, 0f, 2f)
 
     // Tower
@@ -149,7 +151,7 @@ class Scaffold : Module() {
             "Universocraft",
             "Matrix6.9.2",
             "Verus"
-        ), "Jump"
+        ), "MotionTP2"
     )
     private val stopWhenBlockAboveValue = BoolValue("StopTowerWhenBlockAbove", true)
     private val towerFakeJumpValue = BoolValue("TowerFakeJump", true)
@@ -342,8 +344,11 @@ class Scaffold : Module() {
 
         mc.thePlayer.isSprinting = canSprint
         if (sprintValue.equals("Hypixel")) {
-            mc.thePlayer.motionX *= 1.19
-            mc.thePlayer.motionZ *= 1.19
+            mc.thePlayer.motionX *= 0.82
+            mc.thePlayer.motionZ *= 0.82
+        } else if (sprintValue.equals("Vulcan")) {
+            mc.thePlayer.motionX *= 1.22
+            mc.thePlayer.motionZ *= 1.22
         }
 
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && blocksAmount > 1
@@ -480,7 +485,7 @@ class Scaffold : Module() {
                 }
             }
         }
-        if (towerStatus) move()
+        if (event.eventState == EventState.PRE && towerStatus) move()
 
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepLengthValue.get()> 0 && lockRotation != null && silentRotationValue.get()) {
@@ -489,7 +494,7 @@ class Scaffold : Module() {
         }
 
         // Update and search for new block
-        if (event.eventState == EventState.PRE) update()
+        if (event.eventState == EventState.POST) update()
 
         // Place block
         if (placeModeValue.equals(eventState.stateName)) place()
@@ -735,8 +740,8 @@ class Scaffold : Module() {
                 }
             }
         } else if (searchValue.get()) {
-            for (x in -1..1) {
-                for (z in -1..1) {
+            for (x in -2..2) {
+                for (z in -2..2) {
                     if (search(blockPosition.add(x, 0, z), !shouldGoDown)) {
                         return
                     }
@@ -952,12 +957,12 @@ class Scaffold : Module() {
             val neighbor = blockPosition.offset(side)
             if (!BlockUtils.canBeClicked(neighbor)) continue
             val dirVec = Vec3(side.directionVec)
-            var xSearch = 0.1
-            while (xSearch < 0.9) {
-                var ySearch = 0.1
-                while (ySearch < 0.9) {
-                    var zSearch = 0.1
-                    while (zSearch < 0.9) {
+            var xSearch = 0.0
+            while (xSearch <= 1.0) {
+                var ySearch = 0.0
+                while (ySearch <= 1.0) {
+                    var zSearch = 0.0
+                    while (zSearch<= 1.0) {
                         val posVec = Vec3(blockPosition).addVector(xSearch, ySearch, zSearch)
                         val distanceSqPosVec = eyesPos.squareDistanceTo(posVec)
                         val hitVec = posVec.add(Vec3(dirVec.xCoord * 0.5, dirVec.yCoord * 0.5, dirVec.zCoord * 0.5))
@@ -1024,12 +1029,7 @@ class Scaffold : Module() {
                 }
                 "backwards" -> {
                     var calcyaw = ((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45
-                    var calcpitch = 0f
-                    if (calcyaw % 90 == 0) {
-                        calcpitch = 82f
-                    } else {
-                        calcpitch = 78f
-                    }
+                    var calcpitch = 90f
                     Rotation(calcyaw.toFloat(), calcpitch)
                 }
                 "advanced" -> {
@@ -1056,9 +1056,20 @@ class Scaffold : Module() {
                 else -> return false // this should not happen
             }
             if (silentRotationValue.get()) {
-                val limitedRotation =
-                    RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
-                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                if (smoothRotationValue.get()) {
+                    var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+                    if (diffAngle < 0) diffAngle = -diffAngle
+                    if (diffAngle > 180.0) diffAngle = 180.0
+                    
+                    diffAngle /= smoothRotationSpeedValue.get().toDouble()
+                    
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, diffAngle)
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                } else {
+                    
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                }
             } else {
                 mc.thePlayer.rotationYaw = lockRotation!!.yaw
                 mc.thePlayer.rotationPitch = lockRotation!!.pitch
@@ -1119,9 +1130,20 @@ class Scaffold : Module() {
                 else -> return false // this should not happen
             }
             if (silentRotationValue.get()) {
-                val limitedRotation =
-                    RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
-                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                if (smoothRotationValue.get()) {
+                    var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+                    if (diffAngle < 0) diffAngle = -diffAngle
+                    if (diffAngle > 180.0) diffAngle = 180.0
+                    
+                    diffAngle /= smoothRotationSpeedValue.get().toDouble()
+                    
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, diffAngle)
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                } else {
+                    
+                    val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                }
             } else {
                 mc.thePlayer.rotationYaw = lockRotation!!.yaw
                 mc.thePlayer.rotationPitch = lockRotation!!.pitch
@@ -1161,7 +1183,7 @@ class Scaffold : Module() {
             "always", "dynamic" -> true
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround
-            "hypixel" -> mc.thePlayer.onGround
+            "hypixel", "vulcan" -> false
             else -> false
         }
 

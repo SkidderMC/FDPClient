@@ -40,6 +40,8 @@ class InventoryMove : Module() {
         private set
     var invOpen = false
         private set
+    
+    private var isInv = false
 
     private fun updateKeyState() {
         if (mc.currentScreen != null && mc.currentScreen !is GuiChat && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)) {
@@ -120,12 +122,15 @@ class InventoryMove : Module() {
             "packetinv" -> {
                 if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
                     event.cancelEvent()
+                    isInv = true
                 }
                 if (packet is C0DPacketCloseWindow) {
                     event.cancelEvent()
+                    isInv = false
                 }
 
                 if (packet is C0EPacketClickWindow) {
+                    if (isInv) return
                     packetListYes.clear()
                     packetListYes.add(packet)
                     
