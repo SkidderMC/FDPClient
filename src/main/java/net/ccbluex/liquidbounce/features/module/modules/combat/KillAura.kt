@@ -663,7 +663,7 @@ class KillAura : Module() {
         
         swingKeepSprint(entity)
 
-        postAttack()
+        postAttack(entity)
         
         CooldownHelper.resetLastAttackedTicks()
     }
@@ -684,11 +684,11 @@ class KillAura : Module() {
         }
     }
     
-    private fun postAttack() {
+    private fun postAttack(entity: EntityLivingBase) {
         if (mc.thePlayer.isBlocking || (autoBlockValue.equals("Range") && canBlock)) {
             if (blockRateValue.get() > 0 && Random().nextInt(100) <= blockRateValue.get()) {
                 when (autoBlockPacketValue.get().lowercase()) {
-                    "vanilla", "afterattack", "oldintave" -> startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+                    "vanilla", "afterattack", "oldintave" -> startBlocking(entity, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange))
                     "aftertick", "oldhypixel", "legit" -> null
                     "delayed" -> delayBlock = true
                     else -> null
