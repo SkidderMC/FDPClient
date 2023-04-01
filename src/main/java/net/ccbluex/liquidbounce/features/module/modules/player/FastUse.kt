@@ -91,7 +91,7 @@ class FastUse : Module() {
                 }
                 "fast" -> {
                     if (mc.thePlayer.itemInUseDuration < 25) {
-                        mc.timer.timerSpeed = 0.3f
+                        mc.timer.timerSpeed = 0.15f
                         usedTimer = true
                         send(5)
                     }
