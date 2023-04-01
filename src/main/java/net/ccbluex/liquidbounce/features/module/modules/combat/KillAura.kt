@@ -594,7 +594,7 @@ class KillAura : Module() {
         // Cleanup last targets when no targets found and try again
         if (inRangeDiscoveredTargets.isEmpty() && prevTargetEntities.isNotEmpty()) {
             prevTargetEntities.clear()
-            updateTarget()
+            //updateTarget()
             return
         }
 
