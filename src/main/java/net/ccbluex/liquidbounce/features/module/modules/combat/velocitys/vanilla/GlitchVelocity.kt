@@ -9,7 +9,7 @@ class GlitchVelocity : VelocityMode("Glitch") {
         mc.thePlayer.noClip = velocity.velocityInput
 
         if (mc.thePlayer.hurtTime == 7) {
-            mc.thePlayer.motionY = 0.4
+            mc.thePlayer.motionY = 0.41999998688698
         }
 
         velocity.velocityInput = false
