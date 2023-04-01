@@ -53,7 +53,7 @@ class KillAura : Module() {
 
     private val attackDisplay = BoolValue("Attack Options:", true)
     // CPS
-    private val maxCpsValue: IntegerValue = object : IntegerValue("MaxCPS", 12, 1, 20) {
+    private val maxCpsValue: IntegerValue = object : IntegerValue("MaxCPS", 10, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minCpsValue.get()
             if (i > newValue) set(i)
@@ -62,7 +62,7 @@ class KillAura : Module() {
         }
     }.displayable {!simulateCooldown.get() && attackDisplay.get()} as IntegerValue
 
-    private val minCpsValue: IntegerValue = object : IntegerValue("MinCPS", 8, 1, 20) {
+    private val minCpsValue: IntegerValue = object : IntegerValue("MinCPS", 10, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = maxCpsValue.get()
             if (i < newValue) set(i)
@@ -77,20 +77,20 @@ class KillAura : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10).displayable { attackDisplay.get() }
 
     // Range  
-    val rangeValue = object : FloatValue("Range", 3.7f, 0f, 8f) {
+    val rangeValue = object : FloatValue("Range", 3f, 0f, 6f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
         }
     }.displayable { attackDisplay.get() } as FloatValue
-    private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 1.5f, 0f, 8f) {
+    private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 1.5f, 0f, 6f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = rangeValue.get()
             if (i < newValue) set(i)
         }
     }.displayable { attackDisplay.get() } as FloatValue
     private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f)
-    private val swingRangeValue = object : FloatValue("SwingRange", 5f, 0f, 8f) {
+    private val swingRangeValue = object : FloatValue("SwingRange", 3.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
@@ -101,21 +101,22 @@ class KillAura : Module() {
    
     private val hitselectValue = BoolValue("Hitselect", false).displayable { attackDisplay.get() }
     private val hitselectRangeValue = FloatValue("HitselectRange", 2.7f, 2f, 4f).displayable { attackDisplay.get() }
-    
+
+    // Checks
     private val blinkCheck = BoolValue("BlinkCheck", true).displayable { attackDisplay.get() }
     private val noScaffValue = BoolValue("NoScaffold", true).displayable { attackDisplay.get() }
-    private val noFlyValue = BoolValue("NoFly", false).displayable { attackDisplay.get() }
+    private val noFlyValue = BoolValue("NoFly", true).displayable { attackDisplay.get() }
 
     // Bypass
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { attackDisplay.get() }
     private val attackTimingValue = ListValue("AttackTiming", arrayOf("All", "Pre", "Post"), "All").displayable { attackDisplay.get() }
-    private val keepSprintValue = BoolValue("KeepSprint", true).displayable { attackDisplay.get() }
+    private val keepSprintValue = BoolValue("KeepSprint", false).displayable { attackDisplay.get() }
     
 
     private val noBadPacketsValue = BoolValue("NoBadPackets", false).displayable { attackDisplay.get() }
 
     // AutoBlock
-    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Range").displayable { attackDisplay.get() }
+    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Off").displayable { attackDisplay.get() }
 
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -135,9 +136,9 @@ class KillAura : Module() {
     
     private val rotationDisplay = BoolValue("Rotation Options:", true)
     // Modes
-    private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor", "HurtTime", "RegenAmplifier"), "Fov").displayable { rotationDisplay.get() }
-    private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch").displayable { rotationDisplay.get() }
-    private val switchDelayValue = IntegerValue("SwitchDelay", 15, 1, 2000).displayable { targetModeValue.equals("Switch") && rotationDisplay.get() }
+    private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Armor", "Fov", "HurtTime"), "Health").displayable { rotationDisplay.get() }
+    private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Single").displayable { rotationDisplay.get() }
+    private val switchDelayValue = IntegerValue("SwitchDelay", 100, 1, 500).displayable { targetModeValue.equals("Switch") && rotationDisplay.get() }
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") && rotationDisplay.get()}
 
     // Rotations
@@ -150,7 +151,7 @@ class KillAura : Module() {
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
     
     // Others
-    private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { rotationDisplay.get() }
+    private val hitAbleValue = BoolValue("AlwaysHitAble", false).displayable { rotationDisplay.get() }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f).displayable { rotationDisplay.get() }
 
     private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 360f, 1f, 360f) {
@@ -168,35 +169,31 @@ class KillAura : Module() {
     }.displayable { rotationDisplay.get() } as FloatValue
 
     private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom").displayable { rotationDisplay.get() }
-    private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") && rotationDisplay.get()}
+    private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 5f).displayable { rotationSmoothModeValue.equals("Custom") && rotationDisplay.get()}
     
     // Random Value
     private val randomCenterModeValue = ListValue("RandomCenter", arrayOf("Off", "Cubic", "Horizonal", "Vertical"), "Off").displayable { rotationDisplay.get() }
-    private val randomCenRangeValue = FloatValue("RandomRange", 0.0f, 0.0f, 1.2f).displayable { !randomCenterModeValue.equals("Off") && rotationDisplay.get()}
+    private val randomCenRangeValue = FloatValue("RandomRange", 0.0f, 0.0f, 1f).displayable { !randomCenterModeValue.equals("Off") && rotationDisplay.get()}
     
     // Keep Rotate
     private val rotationRevValue = BoolValue("RotationReverse", false).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
     private val rotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable {  rotationRevValue.get() && rotationRevValue.displayable }
-    private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
+    private val keepDirectionValue = BoolValue("KeepDirection", false).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
     private val keepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { keepDirectionValue.get() && keepDirectionValue.displayable }
     private val rotationDelayValue = BoolValue("RotationDelay", false).displayable { !rotationModeValue.equals("None") && rotationDisplay.get() }
-    private val rotationDelayMSValue = IntegerValue("RotationDelayMS", 300, 0, 1000).displayable { rotationDelayValue.get() && rotationDelayValue.displayable }
-      
-    // Backtrace
-    //private val backtraceValue = BoolValue("Backtrace", false)
-   
+    private val rotationDelayMSValue = IntegerValue("RotationDelayMS", 300, 0, 500).displayable { rotationDelayValue.get() && rotationDelayValue.displayable }
 
     // Predict
-    private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
+    private val predictValue = BoolValue("Predict", false).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
 
-    private val maxPredictSizeValue: FloatValue = object : FloatValue("MaxPredictSize", 1f, -2f, 5f) {
+    private val maxPredictSizeValue: FloatValue = object : FloatValue("MaxPredictSize", 1f, -1f, 3f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minPredictSizeValue.get()
             if (v > newValue) set(v)
         }
     }.displayable { predictValue.displayable && predictValue.get() } as FloatValue
 
-    private val minPredictSizeValue: FloatValue = object : FloatValue("MinPredictSize", 1f, -2f, 5f) {
+    private val minPredictSizeValue: FloatValue = object : FloatValue("MinPredictSize", 1f, -1f, 3f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxPredictSizeValue.get()
             if (v < newValue) set(v)
@@ -204,7 +201,7 @@ class KillAura : Module() {
     }.displayable { predictValue.displayable && predictValue.get() } as FloatValue
     
     
-    private val predictPlayerValue = BoolValue("PredictPlayer", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
+    private val predictPlayerValue = BoolValue("PredictPlayer", false).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
     
     private val maxPredictPlayerSizeValue: FloatValue = object : FloatValue("MaxPredictPlayerSize", 1f, -1f, 3f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -581,11 +578,9 @@ class KillAura : Module() {
         when (priorityValue.get().lowercase()) {
             "distance" -> discoveredTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) } // Sort by distance
             "health" -> discoveredTargets.sortBy { it.health + it.absorptionAmount } // Sort by health
-            "fov" -> discoveredTargets.sortBy { RotationUtils.getRotationDifference(it) } // Sort by FOV
-            "livingtime" -> discoveredTargets.sortBy { -it.ticksExisted } // Sort by existence
             "armor" -> discoveredTargets.sortBy { it.totalArmorValue } // Sort by armor
+            "fov" -> discoveredTargets.sortBy { RotationUtils.getRotationDifference(it) } // Sort by FOV
             "hurtresistanttime" -> discoveredTargets.sortBy { it.hurtResistantTime } // hurt resistant time
-            "regenamplifier" -> discoveredTargets.sortBy { if (it.isPotionActive(Potion.regeneration)) it.getActivePotionEffect(Potion.regeneration).amplifier else -1 }
         }
 
         inRangeDiscoveredTargets.clear()
@@ -965,7 +960,7 @@ class KillAura : Module() {
                 }
                 "block", "otherblock" -> {
                     val bb = it.entityBoundingBox
-                    it.entityBoundingBox = getAABB(it).expand(0.2, 0.2, 0.2)
+                    it.entityBoundingBox = getAABB(it).expand(0.1, 0.1, 0.1)
                     RenderUtils.drawEntityBox(
                         it,
                         if (it.hurtTime <= 0) if (it == currentTarget) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170),
