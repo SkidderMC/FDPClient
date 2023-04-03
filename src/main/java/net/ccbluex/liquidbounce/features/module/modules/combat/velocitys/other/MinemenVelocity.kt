@@ -5,7 +5,6 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.BlinkUtils
 
 class MinemenVelocity : VelocityMode("Minemen") {
 
@@ -21,15 +20,11 @@ class MinemenVelocity : VelocityMode("Minemen") {
             canCancel = true
         }
         if (ticks >= 2 && ticks <= 4 && !lastCancel) {
-            mc.thePlayer.motionX *= 0.98
-            mc.thePlayer.motionZ *= 0.98
+            mc.thePlayer.motionX *= 0.99
+            mc.thePlayer.motionZ *= 0.99
         } else if (ticks == 5 && !lastCancel) {
             MovementUtils.strafe()
-        } else if (lastCancel && ticks == 3) {
-            BlinkUtils.setBlinkState(packetTransaction = true, packetKeepAlive = true)
-            BlinkUtils.releasePacket(onlySelected = true)
-            BlinkUtils.setBlinkState(off = true)
-          }
+        }
     }
     
     override fun onPacket(event: PacketEvent) {
@@ -41,10 +36,7 @@ class MinemenVelocity : VelocityMode("Minemen") {
                 event.cancelEvent()
                 lastCancel = true
                 canCancel = false
-                BlinkUtils.setBlinkState(all = true)
             } else {
-                packet.motionX = (packet.getMotionX() * 0.98f).toInt()
-                packet.motionZ = (packet.getMotionZ() * 0.98f).toInt()
                 mc.thePlayer.jump()
                 lastCancel = false
             }
