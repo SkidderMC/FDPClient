@@ -356,7 +356,7 @@ class KillAura : Module() {
         updateHitable()
         val target = this.currentTarget ?: discoveredTargets.first()
         
-        if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && autoBlockPacketValue.equals("Hypixel")) {
+        if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && autoBlockPacketValue.equals("OldHypixel")) {
              if (mc.thePlayer.swingProgressInt == 1) {
                 stopBlocking()
             } else if (mc.thePlayer.swingProgressInt == 2) {
@@ -454,7 +454,7 @@ class KillAura : Module() {
         
         // legit auto block, block if about to get damage, else, dont block
         if (autoBlockPacketValue.equals("Legit")) {
-            if (mc.thePlayer.hurtTime == 2) {
+            if (mc.thePlayer.hurtTime == 1) {
                 legitBlocking = 3
             } else if (legitBlocking > 0) {
                 legitBlocking--
