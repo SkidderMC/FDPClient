@@ -51,8 +51,7 @@ class SuperKnockback : Module() {
             when (modeValue.get().lowercase()) {
                 
                 "legit" -> {
-                    ticks = 1
-                    mc.thePlayer.isSprinting = false
+                    ticks = 2
                 }
                 
                 "silent" -> {
@@ -85,10 +84,15 @@ class SuperKnockback : Module() {
     
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (ticks == 1 && modeValue.equals("Legit")) {
-            ticks = 0
-            mc.thePlayer.isSprinting = true
-           }    
+        if (modeValue.equals("Legit")) {
+            if (ticks == 2) {
+                mc.thePlayer.isSprinting = false
+                ticks = 1
+            } else if (ticks == 1) {
+                mc.thePlayer.isSprinting = true
+                ticks = 0
+            }
+        }
     }
     
     @EventTarget
