@@ -20,8 +20,8 @@ import net.minecraft.util.MathHelper;
 
 import java.io.IOException;
 
-@ModuleInfo(name = "Tickbase", category = ModuleCategory.COMBAT)
-public final class Tickbase extends Module {
+@ModuleInfo(name = "TickBase", category = ModuleCategory.COMBAT)
+public final class TickBase extends Module {
     private final FloatValue rangeValue = new FloatValue("Range", 3.0f, 1, 8);
     private int skippedTick, preTick;
     private boolean flag;
