@@ -39,7 +39,7 @@ public final class Tickbase extends Module {
 
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
-        if (!MovementUtils.isMoving() || killAura.getCurrentTarget() == null) {
+        if (!MovementUtils.INSTANCE.isMoving() || killAura.getCurrentTarget() == null) {
             mc.timer.timerSpeed = 1.0f;
         }
     }
