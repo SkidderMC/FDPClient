@@ -20,12 +20,6 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
-import net.minecraft.network.Packet
-import net.minecraft.network.play.INetHandlerPlayServer
-import net.minecraft.network.play.client.*
-import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
-import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
-import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import org.lwjgl.opengl.GL11
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
