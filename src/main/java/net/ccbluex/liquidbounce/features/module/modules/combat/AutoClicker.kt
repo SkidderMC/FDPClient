@@ -47,11 +47,12 @@ class AutoClicker : Module() {
         }
     }
     private val rightValue = BoolValue("RightClick", true)
-    private val rightBlockOnlyValue = BoolValue("RightBlockOnly", false)
+    private val rightBlockOnlyValue = BoolValue("RightBlockOnly", false).displayable { rightValue.get() }
     private val leftValue = BoolValue("LeftClick", true)
-    private val leftSwordOnlyValue = BoolValue("LeftSwordOnly", false)
+    private val leftSwordOnlyValue = BoolValue("LeftSwordOnly", false).displayable { leftValue.get() }
+    private val blockValue = BoolValue("AutoBlock", false). displayable { leftValue.get() }
     private val jitterValue = BoolValue("Jitter", false)
-    private val blockValue = BoolValue("AutoBlock", false)
+    
 
     // Gaussian
     private val gaussianCpsValue = IntegerValue("Gaussian-CPS", 5, 1, 40).displayable { modeValue.equals("Gaussian") }
