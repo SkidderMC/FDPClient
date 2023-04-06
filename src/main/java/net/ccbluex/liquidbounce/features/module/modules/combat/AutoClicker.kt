@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
+import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.math.MathUtils
 import net.minecraft.client.settings.KeyBinding
@@ -50,6 +51,7 @@ class AutoClicker : Module() {
     private val leftValue = BoolValue("LeftClick", true)
     private val leftSwordOnlyValue = BoolValue("LeftSwordOnly", false)
     private val jitterValue = BoolValue("Jitter", false)
+    private val blockValue = BoolValue("AutoBlock", false)
 
     // Gaussian
     private val gaussianCpsValue = IntegerValue("Gaussian-CPS", 5, 1, 40).displayable { modeValue.equals("Gaussian") }
@@ -65,6 +67,7 @@ class AutoClicker : Module() {
 
     private var delayNum = 0
     private var cDelay = 0
+    private val timer = TickTimer()
 
 
 
@@ -103,6 +106,9 @@ class AutoClicker : Module() {
                 else if (mc.thePlayer.rotationPitch < -90)
                     mc.thePlayer.rotationPitch = -90F
             }
+         }
+        if (blockValue.get() && timer.hasTimePassed(1) && mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get()) {
+            KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
         }
     }
 
@@ -110,6 +116,11 @@ class AutoClicker : Module() {
         if(modeValue.equals("Gaussian")) {
             gaussianUpdateDelay()
         }
+         timer.update()
+    }
+    
+    override fun onDisable() {
+       timer.reset()
     }
 
     private fun gaussianUpdateDelay(): Float {
