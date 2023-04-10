@@ -64,7 +64,7 @@ object CooldownHelper {
 
     fun getAttackCooldownProgressPerTick() = 1.0 / genericAttackSpeed * 20.0
 
-    fun getAttackCooldownProgress() = MathHelper.clamp_double(this.lastAttackedTicks / getAttackCooldownProgressPerTick(), 0.0, 1.0)
+    fun getAttackCooldownProgress() = MathHelper.clamp_double((lastAttackedTicks + mc.timer.renderPartialTicks) / getAttackCooldownProgressPerTick(), 0.0, 1.0)
 
     fun resetLastAttackedTicks() {
         this.lastAttackedTicks = 0
