@@ -75,6 +75,7 @@ class KillAura : Module() {
     private val cooldownNoDupAtk = BoolValue("NoDuplicateAttack", false).displayable { simulateCooldown.get() && attackDisplay.get() }
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10).displayable { attackDisplay.get() }
+    private val clickOnly = BoolValue("ClickOnly", false).displayable { attackDisplay.get() }
 
     // Range  
     val rangeValue = object : FloatValue("Range", 3.7f, 0f, 8f) {
@@ -400,6 +401,8 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onUpdate(ignoredEvent: UpdateEvent) {
+        if (clickOnly.get() && !mc.gameSettings.keyBindAttack.isKeyDown) return
+        
         if (cancelRun) {
             currentTarget = null
             hitable = false
