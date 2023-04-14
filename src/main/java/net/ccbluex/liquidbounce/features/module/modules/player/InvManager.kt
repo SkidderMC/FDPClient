@@ -124,6 +124,17 @@ class InvManager : Module() {
         return !simDelayTimer.hasTimePassed(simulateDelayValue.get().toLong())
     }
 
+    private fun getToolType(item: ItemTool) : String {
+        var typeStr = item.toString()
+        return if (typeStr.contains("Pickaxe")) {
+            "Pickaxe"
+        } else if (typeStr.contains("Axe")) {
+            "Axe"
+        } else {
+            "Others"
+        }
+    }
+
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (noMoveValue.get() && MovementUtils.isMoving() ||
@@ -225,23 +236,30 @@ class InvManager : Module() {
             if (item is ItemTool && keepToolsValue.get()) {
                 val harvestLevel = item.toolMaterial.harvestLevel
                 items(0, 45).none { (sslot, stack) ->
-                    if (stack.javaClass != itemStack.javaClass || sslot == slot) {
-                        false
-                    }
-                    val sitem = stack.item
-                    if (sitem is ItemTool) {
-                        ClientUtils.logInfo("Compare $slot with $sslot")
-                        if (harvestLevel == sitem.toolMaterial.harvestLevel) {
-                            val currDamage = item.getDamage(itemStack)
-                            if (currDamage == sitem.getDamage(stack)) {
-                                sslot < slot
+                    if (stack.javaClass == itemStack.javaClass && itemStack != stack) {
+                        val sitem = stack.item
+                        ClientUtils.logInfo("Compare $item with $sitem")
+                        if (sitem is ItemTool) {
+                            if (getToolType(item) == getToolType(sitem)) {
+                                if (harvestLevel == sitem.toolMaterial.harvestLevel) {
+                                    val currDamage = item.getDamage(itemStack)
+                                    if (currDamage == sitem.getDamage(stack)) {
+                                        sslot < slot
+                                    }
+                                    else {
+                                        currDamage >= sitem.getDamage(stack)
+                                    }
+                                }
+                                else {
+                                    harvestLevel < sitem.toolMaterial.harvestLevel
+                                }
                             }
                             else {
-                                currDamage >= sitem.getDamage(stack)
+                                false
                             }
                         }
                         else {
-                            harvestLevel < sitem.toolMaterial.harvestLevel
+                            false
                         }
                     }
                     else {
