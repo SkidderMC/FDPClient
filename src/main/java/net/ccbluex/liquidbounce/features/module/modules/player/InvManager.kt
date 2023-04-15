@@ -226,19 +226,19 @@ class InvManager : Module() {
                 val harvestLevel = item.toolMaterial.harvestLevel
 
                 items().none { (_, stack) ->
-				    val currItem = stack.item
+		val currItem = stack.item
 
                     if (itemStack != stack && currItem is ItemTool && item.javaClass == currItem.javaClass) {
                         if (harvestLevel == currItem.toolMaterial.harvestLevel) {
-							val efficiencyLevel = ItemUtils.getEnchantment(stack, Enchantment.efficiency)
+			    val efficiencyLevel = ItemUtils.getEnchantment(stack, Enchantment.efficiency)
                             val currEfficiencyLevel = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency)
 
                             if (efficiencyLevel == currEfficiencyLevel) {
-								ItemUtils.getItemDurability(itemStack) <= ItemUtils.getItemDurability(stack)
+				ItemUtils.getItemDurability(itemStack) <= ItemUtils.getItemDurability(stack)
                             } else {
-								currEfficiencyLevel < efficiencyLevel
+				currEfficiencyLevel < efficiencyLevel
                             }
-						}
+			}
                         else {
                             harvestLevel < currItem.toolMaterial.harvestLevel
                         }
