@@ -26,6 +26,7 @@ import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.enchantment.Enchantment
+import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.init.Blocks
 import net.minecraft.item.*
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -125,7 +126,7 @@ class InvManager : Module() {
     }
 
     private fun getToolType(item: ItemTool) : String {
-        var typeStr = item.toString()
+        val typeStr = item.toString()
         return if (typeStr.contains("Pickaxe")) {
             "Pickaxe"
         } else if (typeStr.contains("Axe")) {
@@ -238,16 +239,21 @@ class InvManager : Module() {
                 items(0, 45).none { (sslot, stack) ->
                     if (stack.javaClass == itemStack.javaClass && itemStack != stack) {
                         val sitem = stack.item
-                        ClientUtils.logInfo("Compare $item with $sitem")
                         if (sitem is ItemTool) {
                             if (getToolType(item) == getToolType(sitem)) {
                                 if (harvestLevel == sitem.toolMaterial.harvestLevel) {
-                                    val currDamage = item.getDamage(itemStack)
-                                    if (currDamage == sitem.getDamage(stack)) {
-                                        sslot < slot
+                                    val ench1 = EnchantmentHelper.getEnchantmentLevel(Enchantment.efficiency.effectId, itemStack)
+                                    val ench2 = EnchantmentHelper.getEnchantmentLevel(Enchantment.efficiency.effectId, stack)
+                                    if (ench1 != ench2) {
+                                        ench2 > ench1
                                     }
                                     else {
-                                        currDamage >= sitem.getDamage(stack)
+                                        val currDamage = item.getDamage(itemStack)
+                                        if (currDamage == sitem.getDamage(stack)) {
+                                            sslot < slot
+                                        } else {
+                                            currDamage >= sitem.getDamage(stack)
+                                        }
                                     }
                                 }
                                 else {
