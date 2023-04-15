@@ -26,7 +26,6 @@ import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.enchantment.Enchantment
-import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.init.Blocks
 import net.minecraft.item.*
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -123,17 +122,6 @@ class InvManager : Module() {
             return true
         }
         return !simDelayTimer.hasTimePassed(simulateDelayValue.get().toLong())
-    }
-
-    private fun getToolType(item: ItemTool) : String {
-        val typeStr = item.toString()
-        return if (typeStr.contains("Pickaxe")) {
-            "Pickaxe"
-        } else if (typeStr.contains("Axe")) {
-            "Axe"
-        } else {
-            "Others"
-        }
     }
 
     @EventTarget
@@ -236,41 +224,25 @@ class InvManager : Module() {
 
             if (item is ItemTool && keepToolsValue.get()) {
                 val harvestLevel = item.toolMaterial.harvestLevel
-                items(0, 45).none { (sslot, stack) ->
-                    if (stack.javaClass == itemStack.javaClass && itemStack != stack) {
-                        val sitem = stack.item
-                        if (sitem is ItemTool) {
-                            if (getToolType(item) == getToolType(sitem)) {
-                                if (harvestLevel == sitem.toolMaterial.harvestLevel) {
-                                    val ench1 = EnchantmentHelper.getEnchantmentLevel(Enchantment.efficiency.effectId, itemStack)
-                                    val ench2 = EnchantmentHelper.getEnchantmentLevel(Enchantment.efficiency.effectId, stack)
-                                    if (ench1 != ench2) {
-                                        ench2 > ench1
-                                    }
-                                    else {
-                                        val currDamage = item.getDamage(itemStack)
-                                        if (currDamage == sitem.getDamage(stack)) {
-                                            sslot < slot
-                                        } else {
-                                            currDamage >= sitem.getDamage(stack)
-                                        }
-                                    }
-                                }
-                                else {
-                                    harvestLevel < sitem.toolMaterial.harvestLevel
-                                }
+
+                items().none { (_, stack) ->
+				    val currItem = stack.item
+
+                    if (itemStack != stack && currItem is ItemTool && item.javaClass == currItem.javaClass) {
+                        if (harvestLevel == currItem.toolMaterial.harvestLevel) {
+							val efficiencyLevel = ItemUtils.getEnchantment(stack, Enchantment.efficiency)
+                            val currEfficiencyLevel = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency)
+
+                            if (efficiencyLevel == currEfficiencyLevel) {
+								ItemUtils.getItemDurability(itemStack) <= ItemUtils.getItemDurability(stack)
+                            } else {
+								currEfficiencyLevel < efficiencyLevel
                             }
-                            else {
-                                false
-                            }
-                        }
+						}
                         else {
-                            false
+                            harvestLevel < currItem.toolMaterial.harvestLevel
                         }
-                    }
-                    else {
-                        false
-                    }
+                    } else {false}
                 }
             }
             else if (item is ItemSword || (item is ItemTool && !onlySwordDamage.get())) {
