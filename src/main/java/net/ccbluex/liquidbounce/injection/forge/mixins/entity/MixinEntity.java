@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.ccbluex.liquidbounce.injection.access.IWorld;
@@ -196,6 +197,20 @@ public abstract class MixinEntity {
 
         if (strafeEvent.isCancelled())
             callbackInfo.cancel();
+    }
+
+    @Inject(method = "isInWater", at = @At("HEAD"), cancellable = true)
+    private void isInWater(final CallbackInfoReturnable<Boolean> cir) {
+        if (NoFluid.INSTANCE.getState() && NoFluid.INSTANCE.getWaterValue().get()) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "isInLava", at = @At("HEAD"), cancellable = true)
+    private void isInLava(final CallbackInfoReturnable<Boolean> cir) {
+        if (NoFluid.INSTANCE.getState() && NoFluid.INSTANCE.getLavaValue().get()) {
+            cir.setReturnValue(false);
+        }
     }
 
     @Inject(method = "getCollisionBorderSize", at = @At("HEAD"), cancellable = true)
