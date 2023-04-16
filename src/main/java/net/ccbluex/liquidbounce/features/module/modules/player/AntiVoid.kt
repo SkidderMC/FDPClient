@@ -29,7 +29,7 @@ import kotlin.math.roundToInt
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 class AntiVoid : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft", "Packet", "Watchdog", "Vulcan"), "Blink")
+    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft", "Packet", "Vulcan"), "Blink")
     private val maxFallDistValue = FloatValue("MaxFallDistance", 10F, 5F, 20F)
     private val resetMotionValue = BoolValue("ResetMotion", false).displayable { modeValue.equals("Blink") }
     private val startFallDistValue = FloatValue("BlinkStartFallDistance", 2F, 0F, 5F).displayable { modeValue.equals("Blink") }
@@ -259,25 +259,6 @@ class AntiVoid : Module() {
         val packet = event.packet
 
         when (modeValue.get().lowercase()) {
-            "watchdog" -> {
-                if (packet is C03PacketPlayer) {
-                    if (mc.thePlayer.onGround) {
-                        posX = mc.thePlayer.posX
-                        posY = mc.thePlayer.posY
-                        posZ = mc.thePlayer.posZ
-                        for (packet in packetCache) {
-                            mc.netHandler.addToSendQueue(packet)
-                        }
-                        packetCache.clear()
-                    } else {
-                        event.cancelEvent()
-                        packetCache.add(packet)
-                        if (mc.thePlayer.fallDistance > maxFallDistValue.get()) {
-                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(posX, posY + 0.1, posZ, false))
-                        }
-                    }
-                }
-            }
             "blink" -> {
                 if (blink && (packet is C03PacketPlayer)) {
                     packetCache.add(packet)
