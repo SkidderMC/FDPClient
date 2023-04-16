@@ -41,9 +41,9 @@ class Arraylist(
 ) : Element(x, y, scale, side) {
 
     private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow", "Static"), "Slowly")
-    private val colorRedValue = IntegerValue("Text-R", 255, 255, 255)
-    private val colorGreenValue = IntegerValue("Text-G", 255, 255, 255)
-    private val colorBlueValue = IntegerValue("Text-B", 255, 255, 255)
+    private val colorRedValue = IntegerValue("Text-R", 255, 0, 255)
+    private val colorGreenValue = IntegerValue("Text-G", 255, 0, 255)
+    private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255)
     private val tagColorModeValue = ListValue("Tag-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow", "Static"), "Custom")
     private val tagColorRedValue = IntegerValue("Tag-R", 195, 0, 255)
     private val tagColorGreenValue = IntegerValue("Tag-G", 195, 0, 255)
