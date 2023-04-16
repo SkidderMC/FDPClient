@@ -355,7 +355,7 @@ class KillAura : Module() {
         }
         
         updateHitable()
-        val target = this.currentTarget ?: discoveredTargets.first()
+        val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
         
         if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && autoBlockPacketValue.equals("OldHypixel")) {
              if (mc.thePlayer.swingProgressInt == 1) {
