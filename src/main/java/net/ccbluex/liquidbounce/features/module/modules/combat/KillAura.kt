@@ -230,15 +230,17 @@ class KillAura : Module() {
     
     private val noInventoryAttackValue = ListValue("NoInvAttack", arrayOf("Spoof", "CancelRun", "Off"), "Off").displayable { bypassDisplay.get() }
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500).displayable { !noInventoryAttackValue.equals("Off") && noInventoryAttackValue.displayable }
-
+    
     // Visuals
-    private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "OtherBlock", "Jello", "Sims", "Lies", "None"), "Jello")
-    private val circleValue = BoolValue("Circle", true)
-    private val circleRedValue = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
-    private val circleGreenValue = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
-    private val circleBlueValue = IntegerValue("CircleBlue", 255, 0, 255).displayable { circleValue.get() }
-    private val circleAlphaValue = IntegerValue("CircleAlpha", 255, 0, 255).displayable { circleValue.get() }
-    private val circleThicknessValue = FloatValue("CircleThickness", 2F, 1F, 5F).displayable { circleValue.get() }
+    private val visualDisplay = BoolValue("Visual Options: ", false)
+    
+    private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "OtherBlock", "Jello", "Sims", "Lies", "None"), "Jello").displayable { visualDisplay.get() }
+    private val circleValue = BoolValue("Circle", true).displayable { visualDisplay.get() }
+    private val circleRedValue = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() && circleValue.displayable }
+    private val circleGreenValue = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() && circleValue.displayable }
+    private val circleBlueValue = IntegerValue("CircleBlue", 255, 0, 255).displayable { circleValue.get() && circleValue.displayable }
+    private val circleAlphaValue = IntegerValue("CircleAlpha", 255, 0, 255).displayable { circleValue.get() && circleValue.displayable }
+    private val circleThicknessValue = FloatValue("CircleThickness", 2F, 1F, 5F).displayable { circleValue.get() && circleValue.displayable }
 
     /**
      * MODULE
@@ -968,7 +970,7 @@ class KillAura : Module() {
                 }
                 "block", "otherblock" -> {
                     val bb = it.entityBoundingBox
-                    it.entityBoundingBox = getAABB(it).expand(0.2, 0.2, 0.2)
+                    it.entityBoundingBox = it.entityBoundingBox.expand(0.2, 0.2, 0.2)
                     RenderUtils.drawEntityBox(
                         it,
                         if (it.hurtTime <= 0) if (it == currentTarget) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170),
