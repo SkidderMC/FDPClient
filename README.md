@@ -1,12 +1,11 @@
 <div align="center">
-<h1>FDPCLIENT</h1>
-<h3>A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.</h3>
-Website: <a href="https://fdpinfo.github.io">fdpinfo.github.io</a><br>
-Latest build: <a href="https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush">beta-version</a><br>
-Discord: <a href="https://dsc.gg/fdpdiscord">dsc.gg/fdpdiscord</a><br>
+<h1>MesClient</h1>
+<h3>A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on FDPClient.</h3>
+Website: <a href="https://mesflit.github.io">mesflit.github.io</a><br>
+Latest build: <a href="https://github.com/mesflit/MesClient/actions/workflows/build.yml?query=event%3Apush">beta-version</a><br><br>
 </div>
 
-## How Do I Install FDP?
+## How Do I Install MesClient?
 [Click for instructions](docs/INSTALLING.md)
 
 ## The Staff
