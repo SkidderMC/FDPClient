@@ -193,7 +193,7 @@ class AntiVoid : Module() {
 
             "blink" -> {
                 if (!blink) {
-                    val collide = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, 0.0, 0.0, 0.0, 0F, 0F, 0F, 0F).findCollision(60)
+                    val collide = FallingPlayer(mc.thePlayer).findCollision(60)
                     if (canBlink && (collide == null || (mc.thePlayer.posY - collide.y)> startFallDistValue.get())) {
                         posX = mc.thePlayer.posX
                         posY = mc.thePlayer.posY
@@ -210,7 +210,7 @@ class AntiVoid : Module() {
                         canBlink = true
                     }
                 } else {
-                    if (mc.thePlayer.fallDistance> maxFallDistValue.get()) {
+                    if (mc.thePlayer.fallDistance > maxFallDistValue.get()) {
                         mc.thePlayer.setPositionAndUpdate(posX, posY, posZ)
                         if (resetMotionValue.get()) {
                             mc.thePlayer.motionX = 0.0
@@ -244,14 +244,7 @@ class AntiVoid : Module() {
     }
 
     private fun checkVoid(): Boolean {
-        var i = (-(mc.thePlayer.posY-1.4857625)).toInt()
-        var dangerous = true
-        while (i <= 0) {
-            dangerous = mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX * 0.5, i.toDouble(), mc.thePlayer.motionZ * 0.5)).isEmpty()
-            i++
-            if (!dangerous) break
-        }
-        return dangerous
+        return (FallingPlayer(mc.thePlayer).findCollision(60) == null)
     }
 
     @EventTarget
