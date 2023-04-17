@@ -25,7 +25,7 @@ import kotlin.random.Random
 class Aimbot : Module() {
 
     private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)
-    private val turnSpeedValue = FloatValue("TurnSpeed", 2F, 1F, 180F)
+    private val turnSpeedValue = FloatValue("TurnSpeed", 2F, 1F, 360F)
     private val randomTurnValue = FloatValue("TurnSpeedRandomRate", 1.0F, 0F, 15F)
     private val smoothValue = BoolValue("Smooth", false)
     private val smoothAngleValue = IntegerValue("SmoothMinAngle", 30, 1, 180).displayable { smoothValue.get() }
