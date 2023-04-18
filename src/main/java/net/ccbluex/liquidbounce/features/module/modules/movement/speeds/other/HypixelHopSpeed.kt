@@ -114,8 +114,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
                     
-                    val minSpeed = 0.43f + 0.07f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
-                    MovementUtils.strafe(MovementUtils.getSpeed() * (1.005 + 0.008 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)).toFloat())
+                    val minSpeed = 0.43f + 0.04f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
+                    MovementUtils.strafe(MovementUtils.getSpeed() * (1.005 + 0.008 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)).toFloat())
                     if (MovementUtils.getSpeed() < minSpeed) {
                         MovementUtils.strafe(minSpeed)
                     }
@@ -125,8 +125,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 } else {
                     
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        mc.thePlayer.motionX *= (1.0003 + 0.0018 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
-                        mc.thePlayer.motionZ *= (1.0003 + 0.0018 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionX *= (1.0003 + 0.0008 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionZ *= (1.0003 + 0.0008 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
                     
                     mc.thePlayer.speedInAir = 0.02f + 0.001f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
