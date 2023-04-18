@@ -111,7 +111,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 if (sussyPacket.get()) 
                     PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(-1,-1,-1), EnumFacing.UP));
                 if (mc.thePlayer.onGround) {
-                    val minSpeed = 0.43f + 0.07f * customSpeedBoost.get().toFloat() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
+                    val minSpeed = 0.43f + 0.07f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
                     mc.thePlayer.jump()
                     
 
