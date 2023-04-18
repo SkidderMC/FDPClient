@@ -24,7 +24,7 @@ import net.minecraft.util.EnumFacing
 
 class HypixelHopSpeed : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "OldSmooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom","Test"), "Latest")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "OldSmooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom", "Test"), "Latest")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val customStartSpeed = FloatValue("${valuePrefix}CustomStartSpeed", 1.3f, 1f, 1.6f).displayable {bypassMode.equals("Custom")}  
     private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}  
@@ -98,9 +98,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 MovementUtils.strafe(MovementUtils.getSpeed() * 0.99f)
             }
         }
-        if (mc.thePlayer.onGround) {
-            damagedTicks = 0
-        }
+
         damagedTicks -= 1
         
         
@@ -113,13 +111,13 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 if (sussyPacket.get()) 
                     PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(-1,-1,-1), EnumFacing.UP));
                 if (mc.thePlayer.onGround) {
-                    MovementUtils.strafe(MovementUtils.defaultSpeed().toFloat())
+                    val minSpeed = 0.43f + 0.07f * customSpeedBoost.get().toFloat() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
                     mc.thePlayer.jump()
                     
 
-                    MovementUtils.strafe(MovementUtils.getSpeed() * 1.005f)
-                    if (MovementUtils.getSpeed() < 0.43f) {
-                        MovementUtils.strafe(0.43f)
+                    MovementUtils.strafe(MovementUtils.getSpeed() * (1.005 + 0.008 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)))
+                    if (MovementUtils.getSpeed() < minSpeed) {
+                        MovementUtils.strafe(minSpeed)
                     }
                     MovementUtils.strafe(MovementUtils.getSpeed() * 0.99f)
                     
@@ -127,18 +125,12 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 } else {
                     
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        mc.thePlayer.motionX *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
-                        mc.thePlayer.motionZ *= (1.0003 + 0.0015 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionX *= (1.0003 + 0.0018 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionZ *= (1.0003 + 0.0018 * customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
                     
                     mc.thePlayer.speedInAir = 0.02f + 0.001f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
                     
-                    oldMotionX = mc.thePlayer.motionX
-                    oldMotionZ = mc.thePlayer.motionZ
-                    
-                    MovementUtils.strafe(MovementUtils.getSpeed())
-                    mc.thePlayer.motionX = (mc.thePlayer.motionX + oldMotionX * 5) / 6
-                    mc.thePlayer.motionZ = (mc.thePlayer.motionZ + oldMotionZ * 5) / 6
                 }
             }
             
