@@ -200,7 +200,7 @@ class AutoPlay : Module() {
                 "hypixel" -> {
                     fun process(component: IChatComponent) {
                         val value = component.chatStyle.chatClickEvent?.value
-                        if (value != null && value.startsWith("/play", true)) {
+                        if (value != null && value.startsWith("/play again", true)) {
                             queueAutoPlay {
                                 mc.thePlayer.sendChatMessage(value)
                             }
