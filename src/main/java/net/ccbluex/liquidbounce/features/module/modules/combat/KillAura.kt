@@ -90,7 +90,8 @@ class KillAura : Module() {
             if (i < newValue) set(i)
         }
     }.displayable { attackDisplay.get() } as FloatValue
-    private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f)
+    private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f).displayable { attackDisplay.get() }
+    
     private val swingRangeValue = object : FloatValue("SwingRange", 5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
@@ -437,6 +438,11 @@ class KillAura : Module() {
         if (attackTimingValue.equals("All")) {
             runAttackLoop()
         }
+        
+        if (legitBlocking < 1 && autoBlockPacketValue.equals("Legit")) {
+            if (blockingStatus) stopBlocking()
+            blockingStatus = false
+        }
     }
 
  
@@ -459,19 +465,25 @@ class KillAura : Module() {
         
         // legit auto block, block if about to get damage, else, dont block
         if (autoBlockPacketValue.equals("Legit")) {
-            if (mc.thePlayer.hurtTime == 1) {
-                legitBlocking = 3
-            } else if (legitBlocking > 0) {
-                legitBlocking--
-                if (!discoveredTargets.isEmpty() && !blockingStatus) {
-                    val target = this.currentTarget ?: discoveredTargets.first()
-                    startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-                    blockingStatus = true
-                }
-                return
-            } else {
+            if (mc.thePlayer.hurtTime > 8) {
+                legitBlocking = 0
                 if (blockingStatus) stopBlocking()
                 blockingStatus = false
+            } else {
+                if (mc.thePlayer.hurtTime == 1) {
+                    legitBlocking = 4
+                } else if (legitBlocking > 0) {
+                    legitBlocking--
+                    if (!discoveredTargets.isEmpty() && !blockingStatus) {
+                        val target = this.currentTarget ?: discoveredTargets.first()
+                        startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+                        blockingStatus = true
+                    }
+                    return
+                } else {
+                    if (blockingStatus) stopBlocking()
+                    blockingStatus = false
+                }
             }
         }
         
