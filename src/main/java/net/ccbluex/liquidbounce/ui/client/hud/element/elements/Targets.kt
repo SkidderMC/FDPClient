@@ -962,6 +962,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
     
     private fun drawFDP2(target: EntityLivingBase) {
+        val font = fontValue.get()
         val additionalWidth = ((font.getStringWidth(target.name) * 1.2).toInt().coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
         val healthBarWidth = additionalWidth - (font.getStringWidth("20") * 1.15).roundToInt() - 16
         
