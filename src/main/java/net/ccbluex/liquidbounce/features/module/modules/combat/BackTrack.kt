@@ -36,10 +36,6 @@ object Backtrack : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if(state) {
-            state = false
-            alert("Temporarily disabled BackTrack due to some critical errors")
-        }
         val packet = event.packet
 
         when (packet) {
@@ -170,7 +166,7 @@ object Backtrack : Module() {
 
         val backtrackDataArray = getBacktrackData(entity.uniqueID) ?: return
         val entityPosition = entity.positionVector
-        val prevPositon = Triple(entity.prevPosX, entity.prevPosY, entity.prevPosZ)
+        val prevPosition = Triple(entity.prevPosX, entity.prevPosY, entity.prevPosZ)
 
         // This will loop through the backtrack data. We are using reversed() to loop through the data from the newest to the oldest.
         for (backtrackData in backtrackDataArray.reversed()) {
@@ -184,7 +180,7 @@ object Backtrack : Module() {
         }
 
         // Reset position
-        val (prevX, prevY, prevZ) = prevPositon
+        val (prevX, prevY, prevZ) = prevPosition
         entity.prevPosX = prevX
         entity.prevPosY = prevY
         entity.prevPosZ = prevZ

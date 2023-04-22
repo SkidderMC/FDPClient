@@ -20,7 +20,7 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import javax.imageio.ImageIO
 
-class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
+class GuiBackground(private val prevGui: GuiScreen) : GuiScreen() {
 
     companion object {
         var enabled = true
