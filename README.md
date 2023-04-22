@@ -1,5 +1,5 @@
 <div align="center">
-<h1>FDPCLIENT</h1>
+<h1>FDPClient</h1>
 <h3>A free mixin-based injection hacked-client for Minecraft using Minecraft Forge based on LiquidBounce.</h3>
 Website: <a href="https://fdpinfo.github.io">fdpinfo.github.io</a><br>
 Latest build: <a href="https://github.com/SkidderMC/FDPClient/actions/workflows/build.yml?query=event%3Apush">beta-version</a><br>
@@ -39,4 +39,4 @@ Do the above and share your source code with everyone; just like we do!
 Click [here](docs/WORKSPACE.md) for instructions to setup a workspace for FDPClient.
 
 ## Contributing
-Click [here] for information about contributing to FDPClient(docs/NOTECONTRIBUTIONS.md).
+Click [here](docs/NOTECONTRIBUTIONS.md) for information about contributing to FDPClient.
