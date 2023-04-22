@@ -6,14 +6,14 @@ Latest build: <a href="https://github.com/SkidderMC/FDPClient/actions/workflows/
 Discord: <a href="https://dsc.gg/fdpdiscord">dsc.gg/fdpdiscord</a><br>
 </div>
 
-## How Do I Install FDP?
-[Click for instructions](docs/INSTALLING.md)
+## Installing FDPClient
+Click [here](docs/INSTALLING.md) for instructions on how to install FDPClient
 
-## The Staff
-[Click here to find out about the team](docs/TEAM.md)
+## The staff team
+Click [here](docs/TEAM.md) to find learn about FDPClient's team
 
 ## Issues
-Found bugs or a missing features? You can let us know by opening an issue [here](https://github.com/SkidderMC/FDPClient/issues)!
+Found a bug or have an idea for a new feature? You can let us know by clicking [here](https://github.com/SkidderMC/FDPClient/issues) to open an issue.
 
 ## Facts
 [Fun Facts](docs/MinecraftAnticheatBeLike.md)
@@ -28,7 +28,7 @@ You are allowed to:
 - share
 - modify
 
-this project entirely or partially for free and even commercially. However, please consider the following:
+This project entirely or partially for free and even commercially. However, please consider the following:
 
 - **You must disclose the source code of your modified work and the source code you took from this project. This means you are not allowed to use code from this project (even partially) in a closed-source (or even obfuscated) application.**
 - **Your modified application must also be licensed under the GPL.**
@@ -36,7 +36,7 @@ this project entirely or partially for free and even commercially. However, plea
 Do the above and share your source code with everyone; just like we do!
 
 ## Setting up a Workspace
-[Click for intructions](docs/WORKSPACE.md)
+Click [here](docs/WORKSPACE.md) for instructions to setup a workspace for FDPClient.
 
 ## Contributing
-[Click for information about Contributing to fdp](docs/NOTECONTRUBTIONS.md)
+Click [here] for information about contributing to FDPClient(docs/NOTECONTRIBUTIONS.md).
