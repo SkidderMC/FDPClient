@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.utils.misc;
 
-import net.ccbluex.liquidbounce.utils.misc.Direction;
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 
 public abstract class Animation  {

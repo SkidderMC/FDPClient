@@ -103,7 +103,7 @@ class KillAura : Module() {
    
     private val hitselectValue = BoolValue("Hitselect", false).displayable { attackDisplay.get() }
     private val hitselectRangeValue = FloatValue("HitselectRange", 2.7f, 2f, 4f).displayable { attackDisplay.get() }
-    
+
     private val blinkCheck = BoolValue("BlinkCheck", true).displayable { attackDisplay.get() }
     private val noScaffValue = BoolValue("NoScaffold", true).displayable { attackDisplay.get() }
     private val noFlyValue = BoolValue("NoFly", false).displayable { attackDisplay.get() }
@@ -112,12 +112,10 @@ class KillAura : Module() {
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { attackDisplay.get() }
     private val attackTimingValue = ListValue("AttackTiming", arrayOf("All", "Pre", "Post"), "All").displayable { attackDisplay.get() }
     private val keepSprintValue = BoolValue("KeepSprint", true).displayable { attackDisplay.get() }
-    
-
     private val noBadPacketsValue = BoolValue("NoBadPackets", false).displayable { attackDisplay.get() }
 
     // AutoBlock
-    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Range").displayable { attackDisplay.get() }
+    private val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Range").displayable { attackDisplay.get() }
 
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -125,11 +123,10 @@ class KillAura : Module() {
             if (i < newValue) set(i)
         }
     }.displayable { !autoBlockValue.equals("Off") && autoBlockValue.displayable }
-    private val blockTimingValue =          ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Pre").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
-    private val autoBlockPacketValue =      ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Legit", "OldIntave", "OldHypixel"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
-    private val interactAutoBlockValue =    BoolValue("InteractAutoBlock", false).displayable { autoBlockPacketValue.displayable }
-    private val blockRateValue =            IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
-    private val alwaysBlockDisplayValue =   BoolValue("AlwaysRenderBlocking", true).displayable { autoBlockValue.displayable && autoBlockValue.equals("Range") }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Legit", "OldIntave", "OldHypixel"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
+    private val interactAutoBlockValue = BoolValue("InteractAutoBlock", false).displayable { autoBlockPacketValue.displayable }
+    private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
+    private val alwaysBlockDisplayValue = BoolValue("AlwaysRenderBlocking", true).displayable { autoBlockValue.displayable && autoBlockValue.equals("Range") }
     
     // Raycast
     private val raycastValue = BoolValue("RayCast", true).displayable { attackDisplay.get() }
@@ -224,7 +221,7 @@ class KillAura : Module() {
     
     private val bypassDisplay = BoolValue("Bypass Options:", true)
     // Bypass
-    val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") && bypassDisplay.get() }
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") && bypassDisplay.get() }
 
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f).displayable { bypassDisplay.get() }
     private val fakeSwingValue = BoolValue("FakeSwing", true).displayable { failRateValue.get() != 0f && failRateValue.displayable }
@@ -254,7 +251,7 @@ class KillAura : Module() {
     private val prevTargetEntities = mutableListOf<Int>()
     private val discoveredTargets = mutableListOf<EntityLivingBase>()
     private val inRangeDiscoveredTargets = mutableListOf<EntityLivingBase>()
-    val canFakeBlock: Boolean
+    private val canFakeBlock: Boolean
         get() = inRangeDiscoveredTargets.isNotEmpty()
 
     // Attack delay
@@ -374,7 +371,7 @@ class KillAura : Module() {
         }
             
         
-        if ((attackTimingValue.equals("Pre") && !(event.eventState == EventState.PRE)) || (attackTimingValue.equals("Post") && !(event.eventState == EventState.POST)) || attackTimingValue.equals("All"))
+        if ((attackTimingValue.equals("Pre") && event.eventState != EventState.PRE) || (attackTimingValue.equals("Post") && !(event.eventState == EventState.POST)) || attackTimingValue.equals("All"))
             return
         
         runAttackLoop()
@@ -474,7 +471,7 @@ class KillAura : Module() {
                     legitBlocking = 4
                 } else if (legitBlocking > 0) {
                     legitBlocking--
-                    if (!discoveredTargets.isEmpty() && !blockingStatus) {
+                    if (discoveredTargets.isNotEmpty() && !blockingStatus) {
                         val target = this.currentTarget ?: discoveredTargets.first()
                         startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
                         blockingStatus = true
@@ -1209,31 +1206,6 @@ class KillAura : Module() {
                 }
             }
         }
-    }
-
-
-    private fun esp(entity : EntityLivingBase, partialTicks : Float, radius : Float) {
-        GL11.glPushMatrix()
-        GL11.glDisable(3553)
-        RenderUtils.startSmooth()
-        GL11.glDisable(2929)
-        GL11.glDepthMask(false)
-        GL11.glLineWidth(1.0F)
-        GL11.glBegin(3)
-        val x: Double = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - mc.renderManager.viewerPosX
-        val y: Double = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - mc.renderManager.viewerPosY
-        val z: Double = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - mc.renderManager.viewerPosZ
-        for (i in 0..360) {
-            val rainbow = Color(Color.HSBtoRGB((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)).toFloat() % 1.0f, 0.7f, 1.0f))
-            GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
-            GL11.glVertex3d(x + radius * cos(i * 6.283185307179586 / 45.0), y + espAnimation, z + radius * sin(i * 6.283185307179586 / 45.0))
-        }
-        GL11.glEnd()
-        GL11.glDepthMask(true)
-        GL11.glEnable(2929)
-        RenderUtils.endSmooth()
-        GL11.glEnable(3553)
-        GL11.glPopMatrix()
     }
 
     /**

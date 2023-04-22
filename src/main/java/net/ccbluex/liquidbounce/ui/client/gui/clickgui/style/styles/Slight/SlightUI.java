@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.features.value.*;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.Colors;
-import net.ccbluex.liquidbounce.utils.timer.TimerUtil;
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -45,7 +45,7 @@ public class SlightUI extends GuiScreen implements GuiYesNoCallback {
     private Color buttonColor = new Color(0, 0, 0);
     public GameFontRenderer LogoFont;
     boolean bind;
-    TimerUtil AnimationTimer;
+    TimerUtils AnimationTimer;
     private boolean isDraging;
     private boolean clickNotDraging;
     float animationDWheel;
@@ -61,7 +61,7 @@ public class SlightUI extends GuiScreen implements GuiYesNoCallback {
     public SlightUI() {
         this.LogoFont = Fonts.fontSFUI35;
         this.bind = false;
-        this.AnimationTimer = new TimerUtil();
+        this.AnimationTimer = new TimerUtils();
         this.animheight = 0.0F;
         this.modBooleanValue = new ArrayList();
         this.modModeValue = new ArrayList();
