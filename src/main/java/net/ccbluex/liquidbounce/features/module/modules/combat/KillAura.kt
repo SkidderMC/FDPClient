@@ -467,8 +467,8 @@ class KillAura : Module() {
                 if (blockingStatus) stopBlocking()
                 blockingStatus = false
             } else {
-                if (mc.thePlayer.hurtTime == 1) {
-                    legitBlocking = 4
+                if (mc.thePlayer.hurtTime == 2) {
+                    legitBlocking = 5
                 } else if (legitBlocking > 0) {
                     legitBlocking--
                     if (discoveredTargets.isNotEmpty() && !blockingStatus) {
