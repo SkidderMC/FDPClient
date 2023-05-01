@@ -17,3 +17,4 @@ object Rotations : Module() {
     val fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
     val nanValue = BoolValue("NaNCheck", true)
 }
+

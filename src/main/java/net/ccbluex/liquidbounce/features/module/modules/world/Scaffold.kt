@@ -48,7 +48,7 @@ import java.awt.Color
 import kotlin.math.*
 
 @ModuleInfo(name = "Scaffold", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_G)
-class Scaffold : Module() {
+class   Scaffold : Module() {
 
     // Delay
     private val placeableDelayValue = ListValue("PlaceableDelay", arrayOf("Normal", "Smart", "OFF"), "Normal")
