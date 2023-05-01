@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
-import java.lang.RuntimeException
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.function.Consumer
@@ -28,14 +27,7 @@ object MiscUtils : MinecraftInstance() {
 
     fun showURL(url: String) {
         try {
-            // Changed: Use firefox browser first.
-            val firefoxFile = File("C:\\Program Files\\Mozilla Firefox\\firefox.exe")
-            if (firefoxFile.exists()) {
-                Runtime.getRuntime().exec("\"C:\\Program Files\\Mozilla Firefox\\firefox.exe\" $url")
-            }
-            else {
-                Desktop.getDesktop().browse(URI(url))
-            }
+            Desktop.getDesktop().browse(URI(url))
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: URISyntaxException) {

@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
-import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import org.lwjgl.input.Keyboard
 
@@ -41,15 +40,10 @@ class Speed : Module() {
     private val noWater = BoolValue("NoWater", true)
     private val debug = BoolValue("Debug", false)
     private val forceSprint = BoolValue("alwaysSprint", true)
-    private val hurtOnly = BoolValue("HurtOnly", false)
-    private val hurtTurnTime = IntegerValue("HurtTurnTime", 30, 1, 60)
-    private var optTime = 0;
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) return
-        if (mc.thePlayer.hurtTime > 0) optTime = hurtTurnTime.get();
-        if (optTime == 0 && hurtOnly.get()) return
         if (MovementUtils.isMoving() && forceSprint.get()) mc.thePlayer.isSprinting = true
         mode.onUpdate()
     }
@@ -86,10 +80,10 @@ class Speed : Module() {
 
     @EventTarget
     fun onTick(event: TickEvent) {
-        if (optTime != 0) --optTime
         if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) {
             return
         }
+
         mode.onTick()
     }
 
