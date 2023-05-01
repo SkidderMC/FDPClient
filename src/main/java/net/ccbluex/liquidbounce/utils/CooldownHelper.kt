@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Listenable
 import net.minecraft.item.Item
 import net.minecraft.item.ItemAxe
 import net.minecraft.item.ItemHoe

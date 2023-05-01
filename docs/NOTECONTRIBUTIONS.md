@@ -10,8 +10,7 @@ Latest [github-actions](https://github.com/SkidderMC/FDPClient/actions/workflows
 Discord: [dsc.gg/fdpdiscord](https://dsc.gg/fdpdiscord)
 
 
-# Below is Information useful for contributing to fdp
-
+# Below is all the information you'll need to contribute to FDPClient
 ## Setting up a Workspace
 [Click for intructions](WORKSPACE.md)
 
@@ -26,10 +25,10 @@ You can make a pull request [here](https://github.com/SkidderMC/FDPClient/issues
 
 ### Language and Code Quality
 Your code needs to be able to be built, also please ensure your code has little to no bugs.
-You also need to use kotlin features to make coding easier and faster, so please use kotlin and make sure you pass the [Detekt](https://github.com/detekt/detekt) code quality check, if you can, make sure to use kotlin features, because we will never merge "shit-code".
+You also need to use kotlin features to make coding easier and faster, so please use kotlin and make sure you pass the [Detekt](https://github.com/detekt/detekt) code quality check; If you can, make sure to use kotlin features, because we will never merge "shit-code".
 
 #### Kotlin Features
-If applicable please use kotlin since it is more human readable, we have provided an example below of kotlin:
+If applicable please use kotlin since it is more readable, we have provided an example below of kotlin:
 
 Using kotlin features:
 ~~~kotlin
@@ -50,5 +49,5 @@ Timer().schedule(object : TimerTask() {
 Please use original code if you can and do not directly steal code, however we welcome skidding with a packet logger or anything similar in order to skid from a closed source client, and making the cheating community more open!
 
 ### Useless Features
-Useless features are features only you think are useful, and/or features that can be added with a config change.  
+Useless features are features only you think are useful, and/or features that can be added with a value change.  
 Like the "Timer" option to InfiniteAura, this feature can be added by binding Timer to the same key as the one in InfiniteAura, or by using the macro system in FDPClient.
