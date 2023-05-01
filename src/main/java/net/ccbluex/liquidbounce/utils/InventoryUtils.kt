@@ -120,9 +120,5 @@ object InventoryUtils : MinecraftInstance(), Listenable {
         return 1f
     }
 
-    fun swap(slot: Int, hotBarNumber: Int) {
-        mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotBarNumber, 2, mc.thePlayer)
-    }
-
     override fun handleEvents() = true
 }

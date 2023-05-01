@@ -35,7 +35,7 @@ public final class MathUtils {
         return interpolate(oldValue, newValue, (float) interpolationValue).floatValue();
     }
     public static double roundToHalf(double d) {
-        return Math.round(d * 2.0) / 2.0;
+        return Math.round(d * 2) / 2.0;
     }
 
     public static Double interpolate(double oldValue, double newValue, double interpolationValue){

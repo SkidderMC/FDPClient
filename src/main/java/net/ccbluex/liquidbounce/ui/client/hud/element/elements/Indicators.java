@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.AnimationHelper;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
+import net.ccbluex.liquidbounce.utils.timer.TimerUtil;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;
 
@@ -44,7 +44,7 @@ public class Indicators extends Element {
     public final int x2 = indx.get();
     public final int y3 = indy.get();
 
-    final TimerUtils timerHelper = new TimerUtils();
+    final TimerUtil timerHelper = new TimerUtil();
 
     final ScaledResolution sr = new ScaledResolution(mc);
     final float scaledWidth = sr.getScaledWidth();

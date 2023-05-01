@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.Utils.Position;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.ccbluex.liquidbounce.utils.math.MathUtils;
+import net.ccbluex.liquidbounce.utils.math.MathUtil;
 import net.ccbluex.liquidbounce.utils.misc.Direction;
 import net.ccbluex.liquidbounce.utils.misc.SmoothStepAnimation;
 import net.ccbluex.liquidbounce.utils.misc.Animation;
@@ -95,7 +95,7 @@ public class CategoryScreen
             if (this.selected) {
                 final double scrolll = this.getScroll();
                 for (final ModuleRender module2 : this.moduleList) {
-                    module2.scrollY = (int) MathUtils.roundToHalf(scrolll);
+                    module2.scrollY = (int) MathUtil.roundToHalf(scrolll);
                 }
                 this.onScroll(30);
                 this.maxScroll = Math.max(0.0f, this.moduleList.get(this.moduleList.size() - 1).getY() + this.moduleList.get(this.moduleList.size() - 1).height * 2 + 2500.0f);

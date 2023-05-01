@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
-import net.ccbluex.liquidbounce.features.value.IntegerValue;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.files.animations.Animation;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.files.animations.impl.DecelerateAnimation;
 import net.ccbluex.liquidbounce.utils.math.MathUtils;
@@ -47,10 +46,6 @@ public class GlowESP extends Module {
     public final FloatValue radius = new FloatValue("Radius", 2, 1F, 30F);
     public final FloatValue exposure = new FloatValue("Exposure", 2.2F, 1F, 3.5F);
     public final BoolValue seperate = new BoolValue("Seperate Texture", false);
-
-    private final IntegerValue colorRedValue = new IntegerValue("Color-Red", 255, 0, 255);
-    private final IntegerValue colorGreenValue = new IntegerValue("Color-Green", 255, 0, 255);
-    private final IntegerValue colorBlueValue = new IntegerValue("Color-Blue", 255, 0, 255);
     public final BoolValue Players = new BoolValue("Players", false);
     public final BoolValue Animals = new BoolValue("Animals", false);
     public final BoolValue Mobs = new BoolValue("Mobs", false);
@@ -62,6 +57,7 @@ public class GlowESP extends Module {
     public Framebuffer framebuffer;
     public Framebuffer outlineFrameBuffer;
     public Framebuffer glowFrameBuffer;
+    private final Frustum frustum = new Frustum();
     private final Frustum frustum2 = new Frustum();
 
     private final List<Entity> entities = new ArrayList<>();
@@ -157,7 +153,7 @@ public class GlowESP extends Module {
         glowShader.setUniformf("radius", radius.get());
         glowShader.setUniformf("texelSize", 1.0f / mc.displayWidth, 1.0f / mc.displayHeight);
         glowShader.setUniformf("direction", dir1, dir2);
-        glowShader.setUniformf("color", colorRedValue.get(),  colorGreenValue.get(),  colorBlueValue.get());
+        glowShader.setUniformf("color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
         glowShader.setUniformf("exposure", (float) (exposure.get() * fadeIn.getOutput()));
         glowShader.setUniformi("avoidTexture", seperate.get() ? 1 : 0);
 
@@ -177,7 +173,7 @@ public class GlowESP extends Module {
         outlineShader.setUniformf("radius", radius.get() / 1.5f);
         outlineShader.setUniformf("texelSize", 1.0f / mc.displayWidth, 1.0f / mc.displayHeight);
         outlineShader.setUniformf("direction", dir1, dir2);
-        outlineShader.setUniformf("color", colorRedValue.get(),  colorGreenValue.get(),  colorBlueValue.get());
+        outlineShader.setUniformf("color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
     }
 
     public void renderEntities(float ticks) {
