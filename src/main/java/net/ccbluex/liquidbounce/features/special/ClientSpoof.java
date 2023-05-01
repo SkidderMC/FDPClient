@@ -24,7 +24,7 @@ public class ClientSpoof extends MinecraftInstance implements Listenable {
             try {
                 if (packet instanceof C17PacketCustomPayload) {
                     final C17PacketCustomPayload customPayload = (C17PacketCustomPayload) packet;
-                    customPayload.data = (new PacketBuffer(Unpooled.buffer()).writeString("Vanilla"));
+                    customPayload.data = (new PacketBuffer(Unpooled.buffer()).writeString("vanilla"));
                 }
             } catch (final Exception e) {
                 e.printStackTrace();
@@ -57,7 +57,7 @@ public class ClientSpoof extends MinecraftInstance implements Listenable {
             try {
                 if (packet instanceof C17PacketCustomPayload) {
                     final C17PacketCustomPayload customPayload = (C17PacketCustomPayload) packet;
-                    customPayload.data = (new PacketBuffer(Unpooled.buffer()).writeString("LunarClient;1.8.9;VAUYSDF7AS63DSJK1"));
+                    customPayload.data = (new PacketBuffer(Unpooled.buffer()).writeString("Lunar-Client"));
                 }
             } catch (final Exception e) {
                 e.printStackTrace();
