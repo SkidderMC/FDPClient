@@ -2436,7 +2436,7 @@ public final class RenderUtils extends MinecraftInstance {
     public static void drawRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color) {
         drawRoundedRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true);
     }
-    public static void drawEntityOnScreen(final int posX, final int posY, final int scale, final EntityLivingBase entity) {
+    public static void drawEntityOnScreen(final double posX, final double posY, final float scale, final EntityLivingBase entity) {
         GlStateManager.pushMatrix();
         GlStateManager.enableColorMaterial();
 
@@ -2448,30 +2448,11 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.rotate(-135F, 0F, 1F, 0F);
         GlStateManager.translate(0.0, 0.0, 0.0);
 
-        float renderYawOffset = entity.renderYawOffset;
-        float rotationYaw = entity.rotationYaw;
-        float rotationPitch = entity.rotationPitch;
-        float prevRotationYawHead = entity.prevRotationYawHead;
-        float rotationYawHead = entity.rotationYawHead;
-
-
-        entity.renderYawOffset = 0;
-        entity.rotationYaw = 0;
-        entity.rotationPitch = 90;
-        entity.rotationYawHead = entity.rotationYaw;
-        entity.prevRotationYawHead = entity.rotationYaw;
-
         RenderManager rendermanager = mc.getRenderManager();
         rendermanager.setPlayerViewY(180F);
         rendermanager.setRenderShadow(false);
         rendermanager.renderEntityWithPosYaw(entity, 0.0, 0.0, 0.0, 0F, 1F);
         rendermanager.setRenderShadow(true);
-
-        entity.renderYawOffset = renderYawOffset;
-        entity.rotationYaw = rotationYaw;
-        entity.rotationPitch = rotationPitch;
-        entity.prevRotationYawHead = prevRotationYawHead;
-        entity.rotationYawHead = rotationYawHead;
 
         GlStateManager.popMatrix();
         RenderHelper.disableStandardItemLighting();
@@ -2479,6 +2460,10 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
         GlStateManager.disableTexture2D();
         GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+    }
+
+    public static void drawEntityOnScreen(final int posX, final int posY, final int scale, final EntityLivingBase entity) {
+        drawEntityOnScreen(posX, posY, (float) scale, entity);
     }
 
     public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight) {

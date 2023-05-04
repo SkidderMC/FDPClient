@@ -41,7 +41,7 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "FDP2", "Bar", "Chill", "ChillLite", "Stitch", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "Tenacity5", "WaterMelon", "SparklingWater"), "FDP2")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "FDP2", "Bar", "Chill", "ChillLite", "Stitch", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Astolfo2", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "Tenacity5", "WaterMelon", "SparklingWater"), "FDP2")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6").displayable { modeValue.equals("Rise") }
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -311,6 +311,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "novoline" -> drawNovo(prevTarget!!)
             "novoline2" -> drawNovo2(prevTarget!!)
             "astolfo" -> drawAstolfo(prevTarget!!)
+            "astolfo2" -> drawAstolfo2(prevTarget!! as EntityPlayer)
             "liquid" -> drawLiquid(prevTarget!!)
             "flux" -> drawFlux(prevTarget!!)
             "rise" -> {
@@ -387,7 +388,26 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             GL11.glTranslated(renderX, renderY, 0.0)
         }
     }
+    private fun drawAstolfo2(entity: EntityPlayer) {
+        easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - fadeSpeed.get())) * RenderUtils.deltaTime
 
+        RenderUtils.drawRect(0F, 0F, 160F, 60F, bgColor.rgb)
+
+        GlStateManager.resetColor()
+        GL11.glColor4f(1F, 1F, 1F, 1F)
+        RenderUtils.drawEntityOnScreen(16, 55, 25, entity)
+
+        Fonts.minecraftFont.drawString(entity.name, 32F, 5F, -1, true)
+        GL11.glPushMatrix()
+        GL11.glTranslatef(32F, 20F, 32F)
+        GL11.glScalef(2F, 2F, 2F)
+        Fonts.minecraftFont.drawString("${decimalFormat3.format(entity.health)} ❤", 0, 0, barColor.rgb);
+        GL11.glPopMatrix()
+
+        RenderUtils.drawRect(32F, 48F, 32F + 122F, 55F, barColor.darker().rgb)
+        RenderUtils.drawRect(32F, 48F, 32F + (easingHealth / entity.maxHealth).toFloat() * 122F, 55F, barColor.rgb)
+
+    }
     private fun drawNovo(target: EntityLivingBase) {
         val font = fontValue.get()
         val color = ColorUtils.healthColor(getHealth(target), target.maxHealth)
@@ -2024,6 +2044,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "novoline" -> Border(0F, 0F, 140F, 40F)
             "novoline2" -> Border(0F, 0F, 140F, 40F)
             "astolfo" -> Border(0F, 0F, 140F, 60F)
+            "astolfo2" -> Border(0F, 0F, 160F, 60F)
             "liquid" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(), 36F)
             "fdp" -> Border(0F, 0F, 150F, 47F)
             "flux" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))

@@ -42,8 +42,8 @@ class Velocity : Module() {
             if (state) onEnable()
         }
     }
-    val horizontalValue = FloatValue("Horizontal", 0F, -2F, 2F).displayable { modeValue.equals("Simple") || modeValue.equals("Tick") }
-    val verticalValue = FloatValue("Vertical", 0F, -2F, 2F).displayable { modeValue.equals("Simple") || modeValue.equals("Tick") }
+    val horizontalValue = IntegerValue("Horizontal", 0, -100, 100).displayable { modeValue.equals("Simple") || modeValue.equals("Tick") }
+    val verticalValue = IntegerValue("Vertical", 0, -100, 100).displayable { modeValue.equals("Simple") || modeValue.equals("Tick") }
     val chanceValue = IntegerValue("Chance", 100, 0, 100).displayable { modeValue.equals("Simple") }
     val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
     val onlyGroundValue = BoolValue("OnlyGround", false)
@@ -177,7 +177,7 @@ class Velocity : Module() {
     }
     override val tag: String
         get() = if (modeValue.get() == "Simple")
-            "${horizontalValue.get() * 100.0f}% ${verticalValue.get() * 100.0f}% ${chanceValue.get()}%"
+            "${horizontalValue.get()}% ${verticalValue.get()}% ${chanceValue.get()}%"
         else
             modeValue.get()
 

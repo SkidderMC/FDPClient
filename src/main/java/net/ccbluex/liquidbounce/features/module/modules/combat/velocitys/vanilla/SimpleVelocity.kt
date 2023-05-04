@@ -13,20 +13,20 @@ class SimpleVelocity : VelocityMode("Simple") {
                 val horizontal = velocity.horizontalValue.get()
                 val vertical = velocity.verticalValue.get()
 
-                if (horizontal == 0F && vertical == 0F) {
+                if (horizontal == 0 && vertical == 0) {
                     event.cancelEvent()
                     return
                 }
 
-                if (horizontal == 0F) {
+                if (horizontal == 0) {
                     mc.thePlayer.motionY = packet.getMotionY().toDouble() * vertical / 8000.0
                     event.cancelEvent()
                     return
                 }
 
-                packet.motionX = (packet.getMotionX() * horizontal).toInt()
-                packet.motionY = (packet.getMotionY() * vertical).toInt()
-                packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
+                packet.motionX = (packet.getMotionX() * horizontal / 100)
+                packet.motionY = (packet.getMotionY() * vertical / 100)
+                packet.motionZ = (packet.getMotionZ() * horizontal / 100)
             }
         }
     }

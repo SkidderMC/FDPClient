@@ -227,15 +227,10 @@ public abstract class MixinMinecraft {
             final float yaw = RotationUtils.targetRotation.getYaw();
             if (rotations.getHeadValue().get()) {
                 thePlayer.rotationYawHead = yaw;
-                thePlayer.prevRotationYawHead = prevYaw;
             }
             if (rotations.getBodyValue().get()) {
                 thePlayer.renderYawOffset = yaw;
-                thePlayer.prevRenderYawOffset = prevYaw;
             }
-            prevYaw = yaw;
-        } else if (thePlayer != null){
-            prevYaw = thePlayer.renderYawOffset;
         }
     }
 

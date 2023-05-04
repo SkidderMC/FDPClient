@@ -30,7 +30,9 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.block.BlockAir
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.settings.GameSettings
@@ -150,7 +152,8 @@ class Scaffold : Module() {
             "AAC4Jump",
             "Universocraft",
             "Matrix6.9.2",
-            "Verus"
+            "Verus",
+            "NCP"
         ), "Jump"
     )
     private val stopWhenBlockAboveValue = BoolValue("StopTowerWhenBlockAbove", true)
@@ -198,12 +201,17 @@ class Scaffold : Module() {
     private val teleportNoMotionValue = BoolValue("TowerTeleportNoMotion", false).displayable { towerModeValue.equals("Teleport") }
 
     // Visuals
-    private val counterDisplayValue = BoolValue("Counter", true)
+    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Simple"), "FDP")
     private val markValue = BoolValue("Mark", false)
 
     /**
      * MODULE
      */
+
+    private var progress = 0f
+    private var lastMS = 0L
+
+
     // Target block
     private var targetPlace: PlaceInfo? = null
 
@@ -243,6 +251,8 @@ class Scaffold : Module() {
     //Other
     private var doSpoof = false
 
+    //NCP
+    private var offGroundTicks: Int = 0
     /**
      * Enable module
      */
@@ -347,6 +357,10 @@ class Scaffold : Module() {
             mc.thePlayer.motionX *= 0.8
             mc.thePlayer.motionZ *= 0.8
         }
+
+        if (mc.thePlayer.onGround) {
+            offGroundTicks = 0
+        } else offGroundTicks++
 
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && blocksAmount > 1
         if (shouldGoDown) mc.gameSettings.keyBindSneak.pressed = false
@@ -557,6 +571,22 @@ class Scaffold : Module() {
                     mc.thePlayer.motionY = 0.41999998688698
                 } else if (mc.thePlayer.motionY < 0.1) {
                     mc.thePlayer.motionY = -0.15523200451
+                }
+            }
+            "ncp" -> {
+                if (mc.thePlayer.posY % 1 <= 0.00153598) {
+                    mc.thePlayer.setPosition(
+                        mc.thePlayer.posX,
+                        Math.floor(mc.thePlayer.posY),
+                        mc.thePlayer.posZ
+                    )
+                    mc.thePlayer.motionY = 0.41998
+                } else if (mc.thePlayer.posY % 1 < 0.1 && offGroundTicks != 0) {
+                    mc.thePlayer.setPosition(
+                        mc.thePlayer.posX,
+                        Math.floor(mc.thePlayer.posY),
+                        mc.thePlayer.posZ
+                    )
                 }
             }
             "motiontp" -> {
@@ -875,7 +905,11 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
-        if (counterDisplayValue.get()) {
+        progress = (System.currentTimeMillis() - lastMS).toFloat() / 100f
+        if (progress >= 1) progress = 1f
+        val scaledResolution = ScaledResolution(mc)
+        val info = blocksAmount.toString() + " Blocks"
+        if (counterDisplayValue.equals("FDP")) {
             GlStateManager.pushMatrix()
             val info = LanguageManager.getAndFormat("ui.scaffold.blocks", blocksAmount)
             val slot = InventoryUtils.findAutoBlockBlock()
@@ -912,6 +946,15 @@ class Scaffold : Module() {
             RenderHelper.disableStandardItemLighting()
             mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
             GlStateManager.popMatrix()
+        }
+        if (counterDisplayValue.equals("Simple")) {
+            Fonts.minecraftFont.drawString(
+                blocksAmount.toString() + " Blocks",
+                scaledResolution.scaledWidth / 1.95f,
+                (scaledResolution.scaledHeight / 2 + 20).toFloat(),
+                -1,
+                true
+            )
         }
     }
 
