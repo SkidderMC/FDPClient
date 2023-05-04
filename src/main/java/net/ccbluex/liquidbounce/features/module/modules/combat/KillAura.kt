@@ -445,21 +445,7 @@ class KillAura : Module() {
  
 
     private fun runAttackLoop() { 
-        
-        // hit select (take damage to get yvelo to crit, for legit killaura)
-        if (hitselectValue.get()) {
-            if (canHitselect) {
-                if (inRangeDiscoveredTargets.isEmpty() && hitselectTimer.hasTimePassed(600L)) canHitselect = false
-            } else {
-                if (mc.thePlayer.hurtTime > 7) {
-                    canHitselect = true
-                    hitselectTimer.reset()
-                }
-                inRangeDiscoveredTargets.forEachIndexed { index, entity -> if ( mc.thePlayer.getDistanceToEntityBox(entity) < hitselectRangeValue.get() ) canHitselect = true; hitselectTimer.reset() }
-            }
-            if (!canHitselect) return
-        }
-        
+    
         // legit auto block, block if about to get damage, else, dont block
         if (autoBlockPacketValue.equals("Legit")) {
             if (mc.thePlayer.hurtTime > 8) {
@@ -469,8 +455,10 @@ class KillAura : Module() {
             } else {
                 if (mc.thePlayer.hurtTime == 2) {
                     legitBlocking = 5
+                    // extra tick to make it work if u have high ping
                 } else if (legitBlocking > 0) {
                     legitBlocking--
+                    // this code is correct u idiots
                     if (discoveredTargets.isNotEmpty() && !blockingStatus) {
                         val target = this.currentTarget ?: discoveredTargets.first()
                         startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
@@ -478,10 +466,29 @@ class KillAura : Module() {
                     }
                     return
                 } else {
-                    if (blockingStatus) stopBlocking()
-                    blockingStatus = false
+                    if (!canHitselect && hitselectValue.get()) {
+                        legitBlocking = 3 
+                    } else {
+                        if (blockingStatus) stopBlocking()
+                        blockingStatus = false
+                    }
                 }
             }
+        }
+        
+        
+        // hit select (take damage to get yvelo to crit, for legit killaura)
+        if (hitselectValue.get()) {
+            if (canHitselect) {
+                if (inRangeDiscoveredTargets.isEmpty() && hitselectTimer.hasTimePassed(900L)) canHitselect = false
+            } else {
+                if (mc.thePlayer.hurtTime > 7) {
+                    canHitselect = true
+                    hitselectTimer.reset()
+                }
+                inRangeDiscoveredTargets.forEachIndexed { index, entity -> if ( mc.thePlayer.getDistanceToEntityBox(entity) < hitselectRangeValue.get() ) canHitselect = true; hitselectTimer.reset() }
+            }
+            if (!canHitselect) return
         }
         
         
