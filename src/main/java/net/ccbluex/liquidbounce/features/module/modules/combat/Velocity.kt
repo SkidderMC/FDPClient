@@ -177,7 +177,7 @@ class Velocity : Module() {
     }
     override val tag: String
         get() = if (modeValue.get() == "Simple")
-            "${horizontalValue.get() * 100.0f}% ${verticalValue.get() * 100.0f}% ${chanceValue.get() * 100.0f}%"
+            "${horizontalValue.get() * 100.0f}% ${verticalValue.get() * 100.0f}% ${chanceValue.get()}%"
         else
             modeValue.get()
 
