@@ -7,7 +7,7 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 
 class GrimVelocity : VelocityMode("Grim") {
-    var cancelPacket = 3
+    var cancelPacket = 6
     var resetPersec = 8
     var grimTCancel = 0
     var updates = 0
