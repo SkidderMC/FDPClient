@@ -42,8 +42,8 @@ class Velocity : Module() {
             if (state) onEnable()
         }
     }
-    val horizontalValue = IntegerValue("Horizontal", 0, -100, 100).displayable { modeValue.equals("Simple") || modeValue.equals("Tick") }
-    val verticalValue = IntegerValue("Vertical", 0, -100, 100).displayable { modeValue.equals("Simple") || modeValue.equals("Tick") }
+    val horizontalValue = FloatValue("Horizontal", 0f, -2f, 2f).displayable { modeValue.equals("Simple") || modeValue.equals("Tick") }
+    val verticalValue = FloatValue("Vertical", 0f, -2f, 2f).displayable { modeValue.equals("Simple") || modeValue.equals("Tick") }
     val chanceValue = IntegerValue("Chance", 100, 0, 100).displayable { modeValue.equals("Simple") }
     val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
     val onlyGroundValue = BoolValue("OnlyGround", false)
