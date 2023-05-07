@@ -34,13 +34,13 @@ class TickVelocity : VelocityMode("Tick") {
             val horizontal = velocity.horizontalValue.get()
             val vertical = velocity.verticalValue.get()
 
-            if (horizontal == 0 && vertical == 0) {
+            if (horizontal == 0F && vertical == 0F) {
                 event.cancelEvent()
             }
 
-            packet.motionX = (packet.getMotionX() * horizontal / 100)
-            packet.motionY = (packet.getMotionY() * vertical / 100)
-            packet.motionZ = (packet.getMotionZ() * horizontal / 100)
+            packet.motionX = (packet.getMotionX() * horizontal).toInt()
+            packet.motionY = (packet.getMotionY() * vertical).toInt()
+            packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
         }
     }
 }
