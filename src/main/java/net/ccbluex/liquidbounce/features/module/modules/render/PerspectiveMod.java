@@ -45,7 +45,7 @@ public final class PerspectiveMod extends Module {
             float f4 = (float) mc.mouseHelper.deltaY * f2;
 
             cameraYaw += f3 * 0.15F;
-            cameraPitch += f4 * 0.15F;
+            cameraPitch -= f4 * 0.15F;
 
             if (cameraPitch > 90) cameraPitch = 90;
             if (cameraPitch < -90) cameraPitch = -90;
