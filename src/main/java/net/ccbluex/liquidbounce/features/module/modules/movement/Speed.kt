@@ -27,7 +27,7 @@ class Speed : Module() {
     private val mode: SpeedMode
         get() = modes.find { modeValue.equals(it.modeName) } ?: throw NullPointerException() // this should not happen
 
-    private val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "NCPBhop") {
+    private val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "VulcanHop") {
         override fun onChange(oldValue: String, newValue: String) {
             if (state) onDisable()
         }
@@ -38,7 +38,6 @@ class Speed : Module() {
     }
 
     private val noWater = BoolValue("NoWater", true)
-    private val debug = BoolValue("Debug", false)
     private val forceSprint = BoolValue("alwaysSprint", true)
 
     @EventTarget
@@ -50,10 +49,6 @@ class Speed : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (debug.get()) {
-            alert("Speed: " + MovementUtils.getSpeed().toString())
-            alert("YMotion: " + mc.thePlayer.motionY.toString())
-        }
 
         if (MovementUtils.isMoving() && forceSprint.get()) {
             mc.thePlayer.isSprinting = true

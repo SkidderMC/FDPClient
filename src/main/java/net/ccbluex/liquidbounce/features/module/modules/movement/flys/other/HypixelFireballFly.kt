@@ -32,7 +32,6 @@ class HypixelFireballFly : FlyMode("HypixelFireball") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        mSpeed = MovementUtils.getSpeed()
         mc.timer.timerSpeed = 1.0f
 
         if(velocitypacket) {
@@ -42,8 +41,10 @@ class HypixelFireballFly : FlyMode("HypixelFireball") {
                 MovementUtils.strafe(1.4f)
             } else if (tick == 1) {
                 MovementUtils.strafe(1.4f)
+                mSpeed = 1.4f
             } else if (tick < 12) {
                 MovementUtils.strafe(mSpeed * 0.99f)
+                mSpeed = mSpeed * 0.99f
             } else {
                 velocitypacket = false
                 fly.state = false
