@@ -26,7 +26,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.*
 @ModuleInfo(name = "SuperKnockback", category = ModuleCategory.COMBAT)
 class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val modeValue = ListValue("Mode", arrayOf("Legit", "Silent", "Packet", "SneakPacket"), "Silent")
+    private val modeValue = ListValue("Mode", arrayOf("Legit", "Silent", "SprintReset" "SneakPacket"), "Silent")
     private val onlyMoveValue = BoolValue("OnlyMove", true)
     private val onlyMoveForwardValue = BoolValue("OnlyMoveForward", true). displayable { onlyMoveValue.get() }
     private val onlyGroundValue = BoolValue("OnlyGround", false)
@@ -58,13 +58,12 @@ class SuperKnockback : Module() {
                     ticks = 1
                 }
 
-                "packet" -> {
+                  "SprintReset" -> {
                     if (mc.thePlayer.isSprinting) {
-                        mc.thePlayer.isSprinting = true
+                        mc.thePlayer.isSprinting = false
                     }
-                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
-                    mc.thePlayer.serverSprintState = true
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
                 }
                 
                 "sneakpacket" -> {
