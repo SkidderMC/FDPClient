@@ -58,7 +58,7 @@ class SuperKnockback : Module() {
                     ticks = 1
                 }
 
-                  "SprintReset" -> {
+                  "sprintreset" -> {
                     if (mc.thePlayer.isSprinting) {
                         mc.thePlayer.isSprinting = false
                     }
