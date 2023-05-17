@@ -65,28 +65,37 @@ public class ClickGUIModule extends Module {
     public static Color generateColor() {
         return colorRainbow.get() ? ColorUtils.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
     }
+    
+    public LightClickGUI lightClickGUI = new LightClickGUI();
+    public OtcClickGUi otcGui = new OtcClickGUi();
+    public ClickyUI novoline = new ClickyUI();
+    public SlightUI slight = new SlightUI();
+    public DropdownGUI dropdown = new DropdownGUI();
+    public TenacityClickGUI tena = new TenacityClickGUI();
+    public BjurStyle bjur = new BjurStyle();
+    
     @Override
     public void onEnable() {
 
         if (styleValue.get().contains("Novoline")) {
-            mc.displayGuiScreen(new ClickyUI());
+            mc.displayGuiScreen(novoline);
             this.setState(false);
         } else if (styleValue.get().contains("OneTap")) {
-            mc.displayGuiScreen(new OtcClickGUi());
+            mc.displayGuiScreen(otcGui);
             this.setState(false);
         } else if (styleValue.get().contains("Light")) {
-            mc.displayGuiScreen(new LightClickGUI());
+            mc.displayGuiScreen(lightClickGUI);
             this.setState(false);
         } else if (styleValue.get().equalsIgnoreCase("Classic")){
-            mc.displayGuiScreen(new DropdownGUI());
+            mc.displayGuiScreen(dropdown);
         } else if (styleValue.get().equalsIgnoreCase("Tenacity")){
-            mc.displayGuiScreen(new TenacityClickGUI());
+            mc.displayGuiScreen(tena);
         }  else if (styleValue.get().equalsIgnoreCase("LB+")){
             mc.displayGuiScreen(NewUi.getInstance());
         } else if (styleValue.get().equalsIgnoreCase("Bjur")){
-            mc.displayGuiScreen(new BjurStyle());
+            mc.displayGuiScreen(bjur);
         } else if (styleValue.get().contains("Slight")) {
-                mc.displayGuiScreen(new SlightUI());
+            mc.displayGuiScreen(slight);
             this.setState(false);
         } else {
             updateStyle();
