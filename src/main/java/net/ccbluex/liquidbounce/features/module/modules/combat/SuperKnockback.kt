@@ -26,7 +26,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.*
 @ModuleInfo(name = "SuperKnockback", category = ModuleCategory.COMBAT)
 class SuperKnockback : Module() {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val modeValue = ListValue("Mode", arrayOf("Legit", "Silent", "SprintReset" "SneakPacket"), "Silent")
+    private val modeValue = ListValue("Mode", arrayOf("Legit", "Silent", "SprintReset", "SneakPacket"), "Silent")
     private val onlyMoveValue = BoolValue("OnlyMove", true)
     private val onlyMoveForwardValue = BoolValue("OnlyMoveForward", true). displayable { onlyMoveValue.get() }
     private val onlyGroundValue = BoolValue("OnlyGround", false)
