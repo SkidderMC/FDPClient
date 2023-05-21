@@ -39,13 +39,10 @@ class JumpCircle : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (!mc.thePlayer.onGround && lastOnGround) {
+        if (mc.thePlayer.onGround && !lastOnGround) {
             circles.add(Circle(System.currentTimeMillis(), mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ))
-            lastOnGround = false
         }
-        if (mc.thePlayer.onGround) {
-            lastOnGround = true
-        }
+        lastOnGround = mc.thePlayer.onGround
     }
 
     @EventTarget
