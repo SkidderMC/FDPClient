@@ -42,7 +42,7 @@ class LNCPHopSpeed : SpeedMode("LNCPHop") {
             }
             if (mspeed < MovementUtils.defaultSpeed().toDouble()) 
                 mspeed = MovementUtils.defaultSpeed().toDouble()
-                
+
             MovementUtils.strafe(mspeed.toFloat())
         } else {
             mc.thePlayer.motionX = 0.0
