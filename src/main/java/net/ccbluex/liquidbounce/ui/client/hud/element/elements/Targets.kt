@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.value.*
+import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -14,21 +16,22 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Particle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.ShapeType
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.utils.AnimationUtils
 import net.ccbluex.liquidbounce.utils.PlayerUtils
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.*
-import net.ccbluex.liquidbounce.features.value.*
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.interpolateColorC
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.Entity
+import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -38,10 +41,11 @@ import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
+
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("FDP", "FDP2", "Bar", "Chill", "ChillLite", "Stitch", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Astolfo2", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "Tenacity5", "WaterMelon", "SparklingWater"), "FDP2")
+    val modeValue = ListValue("Mode", arrayOf("FDP", "FDP2", "Bar", "Chill", "ChillLite", "Vape", "Stitch", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Astolfo2", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "Tenacity5", "WaterMelon", "SparklingWater"), "FDP2")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6").displayable { modeValue.equals("Rise") }
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -332,6 +336,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "stitch" -> drawStitch(prevTarget!!)
             "remix" -> drawRemix(prevTarget!! as EntityPlayer)
             "rice" -> drawRice(prevTarget!!)
+            "vape" -> drawVape(prevTarget!!)
             "slowly" -> drawSlowly(prevTarget!!)
             "watermelon" -> drawWaterMelon(prevTarget!!)
             "sparklingwater" -> drawSparklingWater(prevTarget!!)
@@ -342,6 +347,70 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         return getTBorder()
 
+    }
+
+    private fun drawVape(target: EntityLivingBase) {
+        RoundedUtil.drawRound(0F, 0F, 110f, 40f, 1f, Color(30, 30, 30, 240))
+
+        GL11.glPushMatrix()
+        GL11.glTranslated(19.0, 33.0, 0.0)
+        GlStateManager.disableBlend()
+        GL11.glEnable(GL11.GL_SCISSOR_TEST)
+        GLUtils.makeScissorBox(3F, 4F, 31F, 31F)
+        val pitch: Float = target.rotationPitch
+        target.rotationPitch = 0F
+        GuiInventory.drawEntityOnScreen(0, 0, 14, -100.0f, 0f, target)
+        target.rotationPitch = pitch
+        GL11.glDisable(GL11.GL_SCISSOR_TEST)
+        GlStateManager.enableBlend()
+        GL11.glPopMatrix()
+
+        Fonts.fontTenacityBold35.drawString(target.name, 36.5f, 12.6f / 2f - Fonts.fontTenacityBold35.height / 2f, -1)
+
+        val targetHealth = target.health
+        val targetMaxHealth = target.maxHealth
+        val targetAbsorptionAmount = target.absorptionAmount
+        val targetHealthDWithAbs = targetHealth / (targetMaxHealth + targetAbsorptionAmount).coerceAtLeast(1.0f)
+        val targetHealthD = targetHealth / targetMaxHealth.coerceAtLeast(1.0f)
+        val color: Color? = interpolateColorC(Color.RED, Color(5, 134, 105), targetHealthD)
+
+        RoundedUtil.drawRound(37f, 12.6f, 68f, 2.9f, 1f, Color(43, 42, 43))
+        RoundedUtil.drawRound(37f, 12.6f, 68f * targetHealthDWithAbs, 2.9f, 1f, color)
+        if (targetAbsorptionAmount > 0) {
+            val absLength = 49f * (targetAbsorptionAmount / (targetMaxHealth + targetAbsorptionAmount))
+            RoundedUtil.drawRound(37f + 68f * targetHealthDWithAbs,
+                12.6f,
+                absLength,
+                2.9f,
+                1f,
+                Color(0xFFAA00))
+        }
+
+        val hp = (targetHealth + targetAbsorptionAmount).toString() + " hp"
+        Fonts.fontTenacityBold35.drawString(hp,
+            105f - Fonts.fontTenacityBold35.getStringWidth(hp),
+            (12.6f - Fonts.fontTenacityBold35.height) / 2f,
+            -1)
+
+        if (target is EntityPlayer) {
+            val arrayList: MutableList<ItemStack> = target.inventory.armorInventory.toMutableList()
+            if (target.inventory.getCurrentItem() != null) arrayList.add(target.inventory.getCurrentItem())
+            if (arrayList.isEmpty()) return
+            var n = 0f
+            arrayList.reverse()
+            GL11.glPushMatrix()
+            GL11.glTranslatef((x + 36.5f).toFloat(), (y + 18.5f).toFloat(), 0f)
+            GL11.glScaled(0.8, 0.8, 0.8)
+            for (item in arrayList) {
+                RoundedUtil.drawRound(n, 0f, 16f, 16f, 0.5f, Color(26, 25, 26))
+                RenderHelper.enableGUIStandardItemLighting()
+                mc.renderItem.renderItemAndEffectIntoGUI(item, n.toInt(), 0)
+                RenderHelper.disableStandardItemLighting()
+                n += 17
+            }
+            GL11.glScalef(1f, 1f, 1f)
+            GL11.glPopMatrix()
+        }
     }
 
     private fun drawAstolfo(target: EntityLivingBase) {
@@ -988,7 +1057,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         
         
         RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 7f, Color(0, 0, 0, 170).rgb)
-        
+
         if (shadowValue.get()) {
             GL11.glTranslated(-renderX, -renderY, 0.0)
             GL11.glPushMatrix()
@@ -2045,6 +2114,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "novoline2" -> Border(0F, 0F, 140F, 40F)
             "astolfo" -> Border(0F, 0F, 140F, 60F)
             "astolfo2" -> Border(0F, 0F, 160F, 60F)
+            "vape" -> Border(0F, 0F, 110F, 40F)
             "liquid" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(), 36F)
             "fdp" -> Border(0F, 0F, 150F, 47F)
             "flux" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
