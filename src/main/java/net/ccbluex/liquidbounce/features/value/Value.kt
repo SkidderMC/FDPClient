@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.value
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.awt.Color
 import kotlin.jvm.internal.Intrinsics
@@ -38,7 +38,7 @@ abstract class Value<T>(val name: String, var value: T) {
             onChange(oldValue, newValue)
             changeValue(newValue)
             onChanged(oldValue, newValue)
-            LiquidBounce.configManager.smartSave()
+            FDPClient.configManager.smartSave()
         } catch (e: Exception) {
             ClientUtils.logError("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
         }

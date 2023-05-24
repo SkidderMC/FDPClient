@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.utils.ClassUtils
@@ -8,13 +8,12 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.features.value.Value
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.utils.ClientUtils
 
 abstract class FlyMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"
 
     protected val fly: Fly
-        get() = LiquidBounce.moduleManager[Fly::class.java]!!
+        get() = FDPClient.moduleManager[Fly::class.java]!!
 
     open val values: List<Value<*>>
         get() = ClassUtils.getValues(this.javaClass, this)
@@ -22,7 +21,7 @@ abstract class FlyMode(val modeName: String) : MinecraftInstance() {
     fun sendLegacy() {
         if(!fly.legacyWarningValue.get()) return
 
-        LiquidBounce.hud.addNotification(Notification("Fly", "This bypass is for an outdated anti cheat version!", NotifyType.WARNING, 1000))
+        FDPClient.hud.addNotification(Notification("Fly", "This bypass is for an outdated anti cheat version!", NotifyType.WARNING, 1000))
     }
 
     open fun onEnable() {}

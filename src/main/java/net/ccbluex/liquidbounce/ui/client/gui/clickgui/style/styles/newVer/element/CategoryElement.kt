@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui.newVer.element
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.ModuleElement
@@ -26,7 +26,7 @@ class CategoryElement(val category: ModuleCategory): MinecraftInstance() {
     val moduleElements = mutableListOf<ModuleElement>()
 
     init {
-        LiquidBounce.moduleManager.modules.filter { it.category == category }.forEach { moduleElements.add(ModuleElement(it)) }
+        FDPClient.moduleManager.modules.filter { it.category == category }.forEach { moduleElements.add(ModuleElement(it)) }
     }
 
     fun drawLabel(mouseX: Int, mouseY: Int, x: Float, y: Float, width: Float, height: Float) {

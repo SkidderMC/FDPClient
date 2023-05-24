@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
@@ -139,7 +139,7 @@ public final class ESP2D extends Module {
     }
 
     public static boolean shouldCancelNameTag(EntityLivingBase entity) {
-        return LiquidBounce.moduleManager.getModule(ESP2D.class) != null && LiquidBounce.moduleManager.getModule(ESP2D.class).getState() && LiquidBounce.moduleManager.getModule(ESP2D.class).tagsValue.get() && collectedEntities.contains(entity);
+        return FDPClient.moduleManager.getModule(ESP2D.class) != null && FDPClient.moduleManager.getModule(ESP2D.class).getState() && FDPClient.moduleManager.getModule(ESP2D.class).tagsValue.get() && collectedEntities.contains(entity);
     }
 
     @Override

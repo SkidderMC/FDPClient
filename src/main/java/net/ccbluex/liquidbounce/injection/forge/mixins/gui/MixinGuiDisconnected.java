@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import me.liuli.elixir.account.MinecraftAccount;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.special.ClientFixes;
 import net.ccbluex.liquidbounce.features.special.AutoReconnect;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
@@ -80,7 +80,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 ServerUtils.connectToLastServer();
                 break;
             case 3:
-                final List<MinecraftAccount> accounts = LiquidBounce.fileManager.getAccountsConfig().getAltManagerMinecraftAccounts();
+                final List<MinecraftAccount> accounts = FDPClient.fileManager.getAccountsConfig().getAltManagerMinecraftAccounts();
                 if (accounts.isEmpty()) break;
 
                 final MinecraftAccount minecraftAccount = accounts.get(new Random().nextInt(accounts.size()));
@@ -94,7 +94,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
             case 5:
                 ClientFixes.INSTANCE.setEnabled(!ClientFixes.INSTANCE.getEnabled());
                 forgeBypassButton.displayString = "%ui.antiForge%: " + (ClientFixes.INSTANCE.getEnabled() ? "%ui.on%" : "%ui.off%");
-                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.getSpecialConfig());
+                FDPClient.fileManager.saveConfig(FDPClient.fileManager.getSpecialConfig());
                 break;
         }
     }

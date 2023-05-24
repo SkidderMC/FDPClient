@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -70,7 +70,7 @@ class NameTags : Module() {
         for (entity in mc.theWorld.loadedEntityList) {
             if (EntityUtils.isSelected(entity, false)) {
                 renderNameTag(entity as EntityLivingBase,
-                    if (hackerValue.get() && LiquidBounce.moduleManager[HackerDetector::class.java]!!.isHacker(entity)) { "§c" } else { "" } + if (!modeValue.equals("Liquid") && AntiBot.isBot(entity)) { "§e" } else { "" } +
+                    if (hackerValue.get() && FDPClient.moduleManager[HackerDetector::class.java]!!.isHacker(entity)) { "§c" } else { "" } + if (!modeValue.equals("Liquid") && AntiBot.isBot(entity)) { "§e" } else { "" } +
                             if (clearNamesValue.get()) { entity.name } else { entity.getDisplayName().unformattedText })
             }
         }
@@ -79,8 +79,8 @@ class NameTags : Module() {
     private fun getPlayerName(entity: EntityLivingBase): String {
         val name = entity.displayName.formattedText
         var pre = ""
-        val teams = LiquidBounce.moduleManager[Teams::class.java]!!
-        if (LiquidBounce.fileManager.friendsConfig.isFriend(entity.name)) {
+        val teams = FDPClient.moduleManager[Teams::class.java]!!
+        if (FDPClient.fileManager.friendsConfig.isFriend(entity.name)) {
             pre = "$pre§b[Friend] "
         }
         if (teams.isInYourTeam(entity)) {
@@ -90,7 +90,7 @@ class NameTags : Module() {
             pre = "$pre§e[BOT] "
         }
         if (!AntiBot.isBot(entity) && !teams.isInYourTeam(entity)) {
-            pre = if (LiquidBounce.fileManager.friendsConfig.isFriend(entity.name)) {
+            pre = if (FDPClient.fileManager.friendsConfig.isFriend(entity.name)) {
                 "§b[Friend] §c"
             } else {
                 "§c"
@@ -100,15 +100,15 @@ class NameTags : Module() {
     }
 
     private fun renderNameTag(entity: EntityLivingBase, tag: String) {
-        if (onlyTarget.get() && entity != LiquidBounce.combatManager.target && entity.getName() != entityKeep) {
+        if (onlyTarget.get() && entity != FDPClient.combatManager.target && entity.getName() != entityKeep) {
             return
-        } else if (onlyTarget.get() && entity == LiquidBounce.combatManager.target) {
+        } else if (onlyTarget.get() && entity == FDPClient.combatManager.target) {
             entityKeep = entity.getName()
             targetTicks++
             if (targetTicks >= 5) {
                 targetTicks = 4
             }
-        } else if (onlyTarget.get() && LiquidBounce.combatManager.target == null) {
+        } else if (onlyTarget.get() && FDPClient.combatManager.target == null) {
             targetTicks--
             if (targetTicks <= -1) {
                 targetTicks = 0

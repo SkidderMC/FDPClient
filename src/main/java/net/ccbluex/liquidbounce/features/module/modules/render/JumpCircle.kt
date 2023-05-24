@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -74,7 +74,7 @@ class JumpCircle : Module() {
     }
 
     class Circle(val time: Long, val x: Double, val y: Double, val z: Double){
-        val jumpModule = LiquidBounce.moduleManager.getModule(JumpCircle::class.java) as JumpCircle
+        val jumpModule = FDPClient.moduleManager.getModule(JumpCircle::class.java) as JumpCircle
 
         fun draw() {
 

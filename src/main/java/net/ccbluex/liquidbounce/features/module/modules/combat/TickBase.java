@@ -6,13 +6,12 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat;
 
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.TickEvent;
 import net.ccbluex.liquidbounce.event.UpdateEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.features.value.FloatValue;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,7 +24,7 @@ public final class TickBase extends Module {
     private final FloatValue rangeValue = new FloatValue("Range", 3.0f, 1, 8);
     private int skippedTick, preTick;
     private boolean flag;
-    private KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
+    private KillAura killAura = FDPClient.moduleManager.getModule(KillAura.class);
 
     @Override
     public void onDisable() {

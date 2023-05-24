@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.ncp
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -36,7 +36,7 @@ class NCPDamageLongjump : LongJumpMode("NCPDamage") {
             balance = 114514
         } else {
             balance = 0
-            LiquidBounce.hud.addNotification(Notification(longjump.name, "Wait for damage...", NotifyType.SUCCESS, jumpYPosArr.size * 4 * 50))
+            FDPClient.hud.addNotification(Notification(longjump.name, "Wait for damage...", NotifyType.SUCCESS, jumpYPosArr.size * 4 * 50))
         }
         x = mc.thePlayer.posX
         y = mc.thePlayer.posY

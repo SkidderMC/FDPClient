@@ -6,7 +6,7 @@
 
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.light;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.light.LightSettings.InputBox;
@@ -32,7 +32,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     // light style by dg636 & opzywl
 
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
-    private Module currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+    private Module currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
     private float startX = 50, startY = 25;
     private int moduleStart = 0;
     private int valueStart = 0;
@@ -118,7 +118,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 
         // set up bool animations?
         if(!firstSetAnimation) {
-            for (Module i : LiquidBounce.moduleManager.getModules()) {
+            for (Module i : FDPClient.moduleManager.getModules()) {
                 i.getAnimation().animationX = i.getState() ? 5 : -5;
                 for(Value<?> j : i.getValues()) {
                     if(j instanceof BoolValue) {
@@ -210,7 +210,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         // smth
         if(searchBox.getText().isEmpty()) {
             if (this.isCategoryHovered(startX + 60, startY + 40, startX + 200, startY + 280, mouseX, mouseY)) {
-                if (m < 0 && moduleStart < LiquidBounce.moduleManager.getModuleInCategory(currentCategory).size() - 8) {
+                if (m < 0 && moduleStart < FDPClient.moduleManager.getModuleInCategory(currentCategory).size() - 8) {
                     moduleStart++;
                 }
                 if (m > 0 && moduleStart > 0) {
@@ -241,7 +241,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 
         if(!searchBox.getText().isEmpty()) {
             if (this.isCategoryHovered(startX + 60, startY + 40, startX + 200, startY + 280, mouseX, mouseY)) {
-                if (m < 0 && moduleStart < LiquidBounce.moduleManager.getModuleInCategory(currentCategory).size() - 8) {
+                if (m < 0 && moduleStart < FDPClient.moduleManager.getModuleInCategory(currentCategory).size() - 8) {
                     moduleStart++;
                 }
                 if (m > 0 && moduleStart > 0) {
@@ -260,8 +260,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             // draw categories search box
             float mY = startY + 30;
 
-            for(int i = 0; i < LiquidBounce.moduleManager.getModulesByName(searchBox.getText()).size(); i++) {
-                Module module = LiquidBounce.moduleManager.getModulesByName(searchBox.getText()).get(i);
+            for(int i = 0; i < FDPClient.moduleManager.getModulesByName(searchBox.getText()).size(); i++) {
+                Module module = FDPClient.moduleManager.getModulesByName(searchBox.getText()).get(i);
                 if (mY > startY + 280)
                     break;
                 if (i < moduleStart) {
@@ -325,8 +325,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     new Color(100, 100, 100,valueAnim.getAlpha()).getRGB());
             float mY = startY + 30;
             if(searchBox.getText().isEmpty()) {
-                for (int i = 0; i < LiquidBounce.moduleManager.getModuleInCategory(currentCategory).size(); i++) {
-                    Module module = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(i);
+                for (int i = 0; i < FDPClient.moduleManager.getModuleInCategory(currentCategory).size(); i++) {
+                    Module module = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(i);
                     if (mY > startY + 280)
                         break;
                     if (i < moduleStart)
@@ -488,7 +488,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
                         alphaAnim.resetAlpha();
                         valueAnim.resetAlpha();
                     }
@@ -503,7 +503,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
                         alphaAnim.resetAlpha();
                         valueAnim.resetAlpha();
                     }
@@ -518,7 +518,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
                         alphaAnim.resetAlpha();
                         valueAnim.resetAlpha();
                     }
@@ -533,7 +533,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
                         alphaAnim.resetAlpha();
                         valueAnim.resetAlpha();
                     }
@@ -548,7 +548,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
                         alphaAnim.resetAlpha();
                         valueAnim.resetAlpha();
                     }
@@ -563,7 +563,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
                         alphaAnim.resetAlpha();
                         valueAnim.resetAlpha();
                     }
@@ -578,7 +578,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
                         alphaAnim.resetAlpha();
                         valueAnim.resetAlpha();
                     }
@@ -593,7 +593,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
-                        currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentCategory).get(0);
+                        currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
                         alphaAnim.resetAlpha();
                         valueAnim.resetAlpha();
                     }

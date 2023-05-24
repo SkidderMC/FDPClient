@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -318,7 +318,7 @@ object AntiBot : Module() {
                 }
             }
         } else if (packet is S0CPacketSpawnPlayer) {
-            if(LiquidBounce.combatManager.inCombat && !hasRemovedEntities.contains(packet.entityID)) {
+            if(FDPClient.combatManager.inCombat && !hasRemovedEntities.contains(packet.entityID)) {
                 spawnInCombat.add(packet.entityID)
             }
         } else if (packet is S13PacketDestroyEntities) {

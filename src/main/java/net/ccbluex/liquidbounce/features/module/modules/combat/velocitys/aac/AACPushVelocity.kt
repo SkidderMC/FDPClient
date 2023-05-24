@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.aac
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
@@ -29,7 +29,7 @@ class AACPushVelocity : VelocityMode("AACPush") {
 
             // Reduce Y
             if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get() &&
-                !LiquidBounce.moduleManager[Speed::class.java]!!.state) {
+                !FDPClient.moduleManager[Speed::class.java]!!.state) {
                 mc.thePlayer.motionY -= 0.014999993
             }
         }
@@ -48,7 +48,7 @@ class AACPushVelocity : VelocityMode("AACPush") {
             return
         }
 
-        if ((velocity.onlyGroundValue.get() && !mc.thePlayer.onGround) || (velocity.onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat)) {
+        if ((velocity.onlyGroundValue.get() && !mc.thePlayer.onGround) || (velocity.onlyCombatValue.get() && !FDPClient.combatManager.inCombat)) {
             return
         }
 

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.tenacity;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
@@ -49,7 +49,7 @@ public class MainScreen implements Screen {
     public void initGui() {
         if (moduleRects == null) {
             moduleRects = new ArrayList<>();
-            for (Module module : Main.getModulesInCategory(category,LiquidBounce.moduleManager).stream().sorted(Comparator.comparing(Module::getName)).collect(Collectors.toList())) {
+            for (Module module : Main.getModulesInCategory(category, FDPClient.moduleManager).stream().sorted(Comparator.comparing(Module::getName)).collect(Collectors.toList())) {
                 ModuleRect moduleRect = new ModuleRect(module);
                 moduleRects.add(moduleRect);
                 moduleAnimMap.put(moduleRect, new DecelerateAnimation(250, 1));

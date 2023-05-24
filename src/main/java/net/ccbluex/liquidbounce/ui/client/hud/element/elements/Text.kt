@@ -5,8 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.font.FontLoaders
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -106,7 +105,7 @@ class Text(
                 "health" -> return DECIMAL_FORMAT.format(mc.thePlayer.health)
                 "yaw" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationYaw)
                 "pitch" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationPitch)
-                "attackDist" -> return if (LiquidBounce.combatManager.target != null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
+                "attackDist" -> return if (FDPClient.combatManager.target != null) mc.thePlayer.getDistanceToEntity(FDPClient.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
             }
         }
 
@@ -121,9 +120,9 @@ class Text(
             "kills" -> StatisticsUtils.getKills().toString()
             "deaths" -> StatisticsUtils.getDeaths().toString()
             "username" -> mc.getSession().username
-            "clientName" -> LiquidBounce.CLIENT_NAME
-            "clientVersion" -> LiquidBounce.CLIENT_VERSION
-            "clientCreator" -> LiquidBounce.CLIENT_CREATOR
+            "clientName" -> FDPClient.CLIENT_NAME
+            "clientVersion" -> FDPClient.CLIENT_VERSION
+            "clientCreator" -> FDPClient.CLIENT_CREATOR
             "fps" -> Minecraft.getDebugFPS().toString()
             "date" -> DATE_FORMAT.format(System.currentTimeMillis())
             "time" -> HOUR_FORMAT.format(System.currentTimeMillis())

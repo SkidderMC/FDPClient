@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.Settings;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.Downward;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.ModuleRender;
@@ -47,7 +47,7 @@ public class FloatSetting extends Downward<FloatValue> {
             final double set = MathUtils.incValue(newValue, 0.1);
             ((FloatValue)this.setting).set(set);
         }
-        final ClickGUIModule cg = (ClickGUIModule)LiquidBounce.moduleManager.getModule(ClickGUIModule.class);
+        final ClickGUIModule cg = (ClickGUIModule) FDPClient.moduleManager.getModule(ClickGUIModule.class);
         if (this.iloveyou || this.isHovered(mouseX, mouseY) || cg.disp.get()) {
             RoundedUtil.drawRound(this.modulex + 5.0f + this.pos.x + 55.0f + 61.0f * this.percent, this.moduley + 17.0f + this.numbery + 8.0f + 6.0f, (float)(Fonts.fontTahoma.getStringWidth(((Value<?>)this.setting).get() + "") + 2), 6.0f, 1.0f, new Color(32, 34, 39));
             Fonts.fontTahoma.drawString(((Value<?>)this.setting).get() + "", this.modulex + 5.0f + this.pos.x + 55.0f + 62.0f * this.percent, this.moduley + 17.0f + this.numbery + 8.0f + 8.0f, new Color(250, 250, 250).getRGB());

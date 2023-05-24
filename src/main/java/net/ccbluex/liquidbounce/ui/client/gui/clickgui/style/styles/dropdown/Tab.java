@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -27,7 +27,7 @@ public class Tab {
         this.enumModuleType = enumModuleType;
         this.posX = posX;
         this.posY = posY;
-        for (net.ccbluex.liquidbounce.features.module.Module abstractModule : LiquidBounce.moduleManager.getModuleInCategory(enumModuleType)) {
+        for (net.ccbluex.liquidbounce.features.module.Module abstractModule : FDPClient.moduleManager.getModuleInCategory(enumModuleType)) {
             modules.add(new Module(abstractModule, this));
         }
     }

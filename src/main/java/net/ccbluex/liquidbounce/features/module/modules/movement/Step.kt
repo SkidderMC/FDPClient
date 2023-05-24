@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -18,7 +17,6 @@ import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.stats.StatList
-import net.minecraft.util.MathHelper
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement

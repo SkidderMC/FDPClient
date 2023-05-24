@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.KeyEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
@@ -59,14 +59,14 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button.id == 114514)
-            LiquidBounce.moduleManager.getModule(KillAura.class).setState(false);
+            FDPClient.moduleManager.getModule(KillAura.class).setState(false);
         if (button.id == 1919810)
-            LiquidBounce.moduleManager.getModule(Stealer.class).setState(false);
+            FDPClient.moduleManager.getModule(Stealer.class).setState(false);
     }
 
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     private void drawScreenHead(CallbackInfo callbackInfo) {
-        Stealer stealer = LiquidBounce.moduleManager.getModule(Stealer.class);
+        Stealer stealer = FDPClient.moduleManager.getModule(Stealer.class);
         Minecraft mc = Minecraft.getMinecraft();
         GuiScreen guiScreen = mc.currentScreen;
         if (stealer.getState() && stealer.getSilentValue().get() && guiScreen instanceof GuiChest) {
@@ -142,10 +142,10 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
     @Inject(method = "keyTyped", at = @At("HEAD"))
     private void keyTyped(char typedChar, int keyCode, CallbackInfo ci) {
-        Stealer stealer = LiquidBounce.moduleManager.getModule(Stealer.class);
+        Stealer stealer = FDPClient.moduleManager.getModule(Stealer.class);
         try {
             if (stealer.getState() && stealer.getSilentTitleValue().get() && mc.currentScreen instanceof GuiChest)
-                LiquidBounce.eventManager.callEvent(new KeyEvent(keyCode == 0 ? typedChar + 256 : keyCode));
+                FDPClient.eventManager.callEvent(new KeyEvent(keyCode == 0 ? typedChar + 256 : keyCode));
         }catch (Exception e){
 
         }

@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.elements
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof
 import net.ccbluex.liquidbounce.features.special.ClientFixes
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -79,7 +79,7 @@ object ToolDropdown {
 
 
             }
-            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig)
+            FDPClient.fileManager.saveConfig(FDPClient.fileManager.specialConfig)
             return true
         }
         return false

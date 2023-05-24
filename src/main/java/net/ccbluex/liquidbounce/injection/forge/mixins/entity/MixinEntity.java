@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
@@ -32,8 +32,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Random;
 import java.util.UUID;
-
-import static net.ccbluex.liquidbounce.script.api.global.Chat.alert;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity {
@@ -188,9 +186,9 @@ public abstract class MixinEntity {
             return;
 
         final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
-        final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
+        final StrafeFix strafeFix = FDPClient.moduleManager.getModule(StrafeFix.class);
         //alert("Strafe: " + strafe + " Forward: " + forward + " Factor: " + friction + " DoFix: " + strafeFix.getDoFix());
-        LiquidBounce.eventManager.callEvent(strafeEvent);
+        FDPClient.eventManager.callEvent(strafeEvent);
         if (strafeFix.getDoFix()) { //Run StrafeFix process on Post Strafe 2023/02/15
             strafeFix.runStrafeFixLoop(strafeFix.getSilentFix(), strafeEvent);
         }
@@ -215,8 +213,8 @@ public abstract class MixinEntity {
 
     @Inject(method = "getCollisionBorderSize", at = @At("HEAD"), cancellable = true)
     private void getCollisionBorderSize(final CallbackInfoReturnable<Float> callbackInfoReturnable) {
-        final HitBox hitBox = LiquidBounce.moduleManager.getModule(HitBox.class);
-        final ViaVersionFix viaVersionFix = LiquidBounce.moduleManager.getModule(ViaVersionFix.class);
+        final HitBox hitBox = FDPClient.moduleManager.getModule(HitBox.class);
+        final ViaVersionFix viaVersionFix = FDPClient.moduleManager.getModule(ViaVersionFix.class);
 
         if (hitBox.getState() && EntityUtils.INSTANCE.isSelected(((Entity)((Object)this)),true)) {
             if (viaVersionFix.getState()) {

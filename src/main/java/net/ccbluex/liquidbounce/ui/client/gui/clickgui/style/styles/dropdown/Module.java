@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
@@ -81,7 +81,7 @@ public class Module {
             }
         }
 
-        HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+        HUD hud = (HUD) FDPClient.moduleManager.getModule(HUD.class);
         Color colorHUD = ClickGUIModule.generateColor();
         Color white = new Color(0xFFFFFF);
 
@@ -169,7 +169,7 @@ public class Module {
                     break;
                 case 1:
                     if (!module.getValues().isEmpty()) {
-                        final ClickGUIModule clickGUI = (ClickGUIModule) LiquidBounce.moduleManager.getModule(ClickGUIModule.class);
+                        final ClickGUIModule clickGUI = (ClickGUIModule) FDPClient.moduleManager.getModule(ClickGUIModule.class);
                         if (!opened && clickGUI.getClosePrevious.get())
                             tab.modules.forEach(module -> {
                                 if (module.opened)

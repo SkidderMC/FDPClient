@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
@@ -189,7 +189,7 @@ public class GlowESP extends Module {
     }
 
     private Color getColor() {
-        final HUD hudMod = LiquidBounce.moduleManager.getModule(HUD.class);
+        final HUD hudMod = FDPClient.moduleManager.getModule(HUD.class);
         Color[] colors = hudMod.getClientColors();
         if (hudMod.getMovingcolors().get()) {
             return colors[0];

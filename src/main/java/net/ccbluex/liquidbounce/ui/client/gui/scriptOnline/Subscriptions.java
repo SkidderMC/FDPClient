@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui.scriptOnline;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,6 @@ public class Subscriptions {
 
     public static void addSubscribes(ScriptSubscribe scriptSubscribe) {
         subscribes.add(scriptSubscribe);
-        LiquidBounce.fileManager.getSubscriptsConfig().addSubscripts(scriptSubscribe.url, scriptSubscribe.name);
+        FDPClient.fileManager.getSubscriptsConfig().addSubscripts(scriptSubscribe.url, scriptSubscribe.name);
     }
 }

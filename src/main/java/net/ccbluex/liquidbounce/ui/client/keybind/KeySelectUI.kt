@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.other.PopUI
@@ -18,7 +18,7 @@ import java.awt.Color
  */
 class KeySelectUI(val info: KeyInfo) : PopUI(LanguageManager.get("ui.keybind.select")) {
     private var str = ""
-    private var modules = LiquidBounce.moduleManager.modules.toList()
+    private var modules = FDPClient.moduleManager.modules.toList()
     private val singleHeight = 4F + Fonts.font35.height
     private var stroll = 0
     private var maxStroll = modules.size * singleHeight
@@ -62,8 +62,8 @@ class KeySelectUI(val info: KeyInfo) : PopUI(LanguageManager.get("ui.keybind.sel
             return
         } else if (keyCode == Keyboard.KEY_RETURN) {
             if (str.startsWith(".")) {
-                LiquidBounce.macroManager.macros.add(Macro(info.key, str))
-                LiquidBounce.keyBindManager.updateAllKeys()
+                FDPClient.macroManager.macros.add(Macro(info.key, str))
+                FDPClient.keyBindManager.updateAllKeys()
                 close()
             } else if (modules.isNotEmpty()) {
                 apply(modules[0])
@@ -101,19 +101,19 @@ class KeySelectUI(val info: KeyInfo) : PopUI(LanguageManager.get("ui.keybind.sel
 
     private fun apply(module: Module) {
         module.keyBind = info.key
-        LiquidBounce.keyBindManager.updateAllKeys()
+        FDPClient.keyBindManager.updateAllKeys()
         close()
     }
 
     override fun close() {
-        LiquidBounce.keyBindManager.popUI = null
+        FDPClient.keyBindManager.popUI = null
     }
 
     private fun update() {
         modules = if (str.isNotEmpty()) {
-            LiquidBounce.moduleManager.modules.filter { it.name.startsWith(str, ignoreCase = true) }
+            FDPClient.moduleManager.modules.filter { it.name.startsWith(str, ignoreCase = true) }
         } else {
-            LiquidBounce.moduleManager.modules.toList()
+            FDPClient.moduleManager.modules.toList()
         }
         maxStroll = modules.size * singleHeight
         stroll = 0

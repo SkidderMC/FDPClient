@@ -6,13 +6,12 @@
 package net.ccbluex.liquidbounce.ui.client.altmanager
 
 import me.liuli.elixir.account.MinecraftAccount
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.SessionEvent
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiAdd
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiDirectLogin
 import net.ccbluex.liquidbounce.ui.client.altmanager.sub.GuiMicrosoftLoginPending
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.login.LoginUtils
 import net.minecraft.client.Minecraft
@@ -21,7 +20,6 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiSlot
 import net.minecraft.client.gui.GuiTextField
 import net.minecraft.util.Session
-import org.apache.commons.codec.language.bm.Lang
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
@@ -54,7 +52,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         drawBackground(0)
         altsList.drawScreen(mouseX, mouseY, partialTicks)
         mc.fontRendererObj.drawCenteredString(LanguageManager.getAndFormat("ui.altmanager"), (width / 2).toFloat(), 6f, 0xffffff)
-        mc.fontRendererObj.drawCenteredString(LanguageManager.getAndFormat("ui.alt.alts", LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size), (width / 2).toFloat(), 18f, 0xffffff)
+        mc.fontRendererObj.drawCenteredString(LanguageManager.getAndFormat("ui.alt.alts", FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts.size), (width / 2).toFloat(), 18f, 0xffffff)
         mc.fontRendererObj.drawCenteredString(status, (width / 2).toFloat(), 32f, 0xffffff)
         mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.username", mc.getSession().username), 6f, 6f, 0xffffff)
         mc.fontRendererObj.drawStringWithShadow(LanguageManager.getAndFormat("ui.alt.type", if (mc.getSession().token.length >= 32) "%ui.alt.type.premium%" else "%ui.alt.type.cracked%"), 6f, 15f, 0xffffff)
@@ -71,15 +69,15 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             0 -> mc.displayGuiScreen(prevGui)
             1 -> mc.displayGuiScreen(GuiAdd(this))
             2 -> status = if (altsList.selectedSlot != -1 && altsList.selectedSlot < altsList.size) {
-                LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.removeAt(altsList.selectedSlot)
-                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.accountsConfig)
+                FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts.removeAt(altsList.selectedSlot)
+                FDPClient.fileManager.saveConfig(FDPClient.fileManager.accountsConfig)
                 "§a${LanguageManager.getAndFormat("ui.alt.removed")}"
             } else {
                 "§c${LanguageManager.getAndFormat("ui.alt.needSelect")}"
             }
             3 -> if (altsList.selectedSlot != -1 && altsList.selectedSlot < altsList.size) {
                 Thread {
-                    val minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts[altsList.selectedSlot]
+                    val minecraftAccount = FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts[altsList.selectedSlot]
                     status = "§a${LanguageManager.getAndFormat("ui.alt.loggingIn")}"
                     status = login(minecraftAccount)
                 }.start()
@@ -87,15 +85,15 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 status = "§c${LanguageManager.getAndFormat("ui.alt.needSelect")}"
             }
             4 -> {
-                if (LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size <= 0) {
+                if (FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts.size <= 0) {
                     status = "§c${LanguageManager.getAndFormat("ui.alt.emptyList")}"
                     return
                 }
-                val randomInteger = Random().nextInt(LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size)
+                val randomInteger = Random().nextInt(FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts.size)
                 if (randomInteger < altsList.size) altsList.selectedSlot = randomInteger
                 Thread {
                     val minecraftAccount =
-                        LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts[randomInteger]
+                        FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts[randomInteger]
                     status = "§a${LanguageManager.getAndFormat("ui.alt.loggingIn")}"
                     status = login(minecraftAccount)
                 }.start()
@@ -119,7 +117,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         when (keyCode) {
             Keyboard.KEY_ESCAPE -> {
-                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.specialConfig)
+                FDPClient.fileManager.saveConfig(FDPClient.fileManager.specialConfig)
                 mc.displayGuiScreen(prevGui)
                 return
             }
@@ -158,7 +156,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
         var selectedSlot = 0
             get() {
-                if (field > LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size)
+                if (field > FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts.size)
                     field = -1
                 return field
             }
@@ -168,7 +166,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         }
 
         public override fun getSize(): Int {
-            return LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts.size
+            return FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts.size
         }
 
         public override fun elementClicked(var1: Int, doubleClick: Boolean, var3: Int, var4: Int) {
@@ -176,7 +174,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             if (doubleClick) {
                 if (altsList.selectedSlot != -1 && altsList.selectedSlot < altsList.size) {
                     Thread {
-                        val minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts[altsList.selectedSlot]
+                        val minecraftAccount = FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts[altsList.selectedSlot]
                         status = "§a${LanguageManager.getAndFormat("ui.alt.loggingIn")}"
                         status = "§c" + login(minecraftAccount)
                     }.start()
@@ -187,7 +185,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         }
 
         override fun drawSlot(id: Int, x: Int, y: Int, var4: Int, var5: Int, var6: Int) {
-            val minecraftAccount = LiquidBounce.fileManager.accountsConfig.altManagerMinecraftAccounts[id]
+            val minecraftAccount = FDPClient.fileManager.accountsConfig.altManagerMinecraftAccounts[id]
             mc.fontRendererObj.drawCenteredString(minecraftAccount.name, width / 2f, y + 2f, Color.WHITE.rgb, true)
             mc.fontRendererObj.drawCenteredString(minecraftAccount.type, width / 2f, y + 15f, Color.LIGHT_GRAY.rgb, true)
         }
@@ -207,7 +205,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             return try {
                 val mc = Minecraft.getMinecraft()
                 mc.session = account.session.let { Session(it.username, it.uuid, it.token, it.type) }
-                LiquidBounce.eventManager.callEvent(SessionEvent())
+                FDPClient.eventManager.callEvent(SessionEvent())
                 LanguageManager.getAndFormat("ui.alt.nameChanged", mc.session.username)
             } catch (e: Exception) {
                 e.printStackTrace()

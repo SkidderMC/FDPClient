@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.button.FlatButtonRenderer;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.gui.modernui.GuiScriptLoadMenu;
@@ -50,15 +50,15 @@ public class GuiImportConfig extends GuiScreen
                         try {
                             Subscriptions.addSubscribes(new ScriptSubscribe(url, name));
                             long startTime = System.currentTimeMillis();
-                            LiquidBounce.hud.addNotification(new Notification("Script Manager", "Reloading Scripts...", NotifyType.INFO, 1500, 500));
-                            LiquidBounce.scriptManager.disableScripts();
-                            LiquidBounce.scriptManager.unloadScripts();
+                            FDPClient.hud.addNotification(new Notification("Script Manager", "Reloading Scripts...", NotifyType.INFO, 1500, 500));
+                            FDPClient.scriptManager.disableScripts();
+                            FDPClient.scriptManager.unloadScripts();
                             for (ScriptSubscribe scriptSubscribe : Subscriptions.subscribes) {
                                 scriptSubscribe.load();
                             }
-                            LiquidBounce.scriptManager.loadScripts();
-                            LiquidBounce.scriptManager.enableScripts();
-                            LiquidBounce.hud.addNotification(new Notification("Script Manager", "Added Subscribe: " + name + " | " + url + " (" + (System.currentTimeMillis() - startTime) + "ms)", NotifyType.SUCCESS, 1500, 500));
+                            FDPClient.scriptManager.loadScripts();
+                            FDPClient.scriptManager.enableScripts();
+                            FDPClient.hud.addNotification(new Notification("Script Manager", "Added Subscribe: " + name + " | " + url + " (" + (System.currentTimeMillis() - startTime) + "ms)", NotifyType.SUCCESS, 1500, 500));
                             message = "Done!";
                             ClientUtils.INSTANCE.setTitle();
                             mc.displayGuiScreen(new GuiScriptLoadMenu());
@@ -91,7 +91,7 @@ public class GuiImportConfig extends GuiScreen
     @Override
     public void drawScreen(int mouseX, int mouseY, float delta) {
         aaa[0]=Math.pow(aaa[0]+1,0.96)-1;
-        FontLoaders.F18.drawString(LiquidBounce.CLIENT_NAME,10,10,new Color(255,255,255).getRGB());
+        FontLoaders.F18.drawString(FDPClient.CLIENT_NAME,10,10,new Color(255,255,255).getRGB());
         final int h;
         final int Height = h = new ScaledResolution(this.mc).getScaledHeight();
         final int w;

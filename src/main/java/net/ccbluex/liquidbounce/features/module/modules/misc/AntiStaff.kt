@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -74,9 +74,9 @@ class AntiStaff : Module() {
             try {
                 staffs = staffs + " " + HttpUtils.get(customURLValue.get())
 
-                LiquidBounce.hud.addNotification(Notification("AntiStaff", "SuccessFully Loaded URL", NotifyType.SUCCESS, 1000))
+                FDPClient.hud.addNotification(Notification("AntiStaff", "SuccessFully Loaded URL", NotifyType.SUCCESS, 1000))
             } catch (err: Throwable) {
-                LiquidBounce.hud.addNotification(Notification("AntiStaff", "Error when loading URL", NotifyType.ERROR, 1000))
+                FDPClient.hud.addNotification(Notification("AntiStaff", "Error when loading URL", NotifyType.ERROR, 1000))
                 println(err)
             }
         }
@@ -94,7 +94,7 @@ class AntiStaff : Module() {
             if (entity != null && (staffs.contains(entity.name) || staffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
                     if (notifyValue.get()){
-                        LiquidBounce.hud.addNotification(Notification(name, "Detected staff members with invis. You should quit ASAP.", NotifyType.WARNING, 8000))
+                        FDPClient.hud.addNotification(Notification(name, "Detected staff members with invis. You should quit ASAP.", NotifyType.WARNING, 8000))
                     }
                     
                     if (chatValue.get()) {
@@ -114,7 +114,7 @@ class AntiStaff : Module() {
             if (entity != null && (staffs.contains(entity.name) || staffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
                     if (notifyValue.get()){
-                    LiquidBounce.hud.addNotification(Notification(name, "Detected staff members. You should quit ASAP.", NotifyType.WARNING,8000))
+                    FDPClient.hud.addNotification(Notification(name, "Detected staff members. You should quit ASAP.", NotifyType.WARNING,8000))
                     }
                     
                     if (chatValue.get()) {

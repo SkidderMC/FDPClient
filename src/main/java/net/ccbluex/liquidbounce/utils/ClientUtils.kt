@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils
 
 import com.google.gson.JsonObject
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.minecraft.client.Minecraft
 import net.minecraft.util.IChatComponent
 import org.apache.logging.log4j.LogManager
@@ -39,14 +39,14 @@ ClientUtils : MinecraftInstance() {
     }
 
     fun setTitle() {
-        Display.setTitle("${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION} (${LiquidBounce.CLIENT_BRANCH}) | ${LiquidBounce.CLIENT_WEBSITE}")
+        Display.setTitle("${FDPClient.CLIENT_NAME} ${FDPClient.CLIENT_VERSION} (${FDPClient.CLIENT_BRANCH}) | ${FDPClient.CLIENT_WEBSITE}")
     }
     fun setTitle(stats:String) {
-        Display.setTitle("${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION} (${LiquidBounce.CLIENT_BRANCH}) | ${LiquidBounce.CLIENT_WEBSITE} - " + stats)
+        Display.setTitle("${FDPClient.CLIENT_NAME} ${FDPClient.CLIENT_VERSION} (${FDPClient.CLIENT_BRANCH}) | ${FDPClient.CLIENT_WEBSITE} - " + stats)
     }
 
     fun displayAlert(message: String) {
-        displayChatMessage(LiquidBounce.COLORED_NAME + message)
+        displayChatMessage(FDPClient.COLORED_NAME + message)
     }
 
     fun displayChatMessage(message: String) {

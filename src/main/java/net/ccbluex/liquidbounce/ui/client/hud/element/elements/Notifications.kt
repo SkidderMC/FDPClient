@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.font.CFontRenderer
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
@@ -49,19 +49,19 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
      */
     override fun drawElement(partialTicks: Float): Border? {
         // bypass java.util.ConcurrentModificationException
-        LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
+        FDPClient.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
             if (notify.drawNotification(index, FontLoaders.C16, backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale,contentShadow.get(),titleShadow.get(),motionBlur.get(),whiteText.get(),modeColored.get(), Companion)) {
-                LiquidBounce.hud.notifications.remove(notify)
+                FDPClient.hud.notifications.remove(notify)
             }
 
             GL11.glPopMatrix()
         }
 
         if (mc.currentScreen is GuiHudDesigner) {
-            if (!LiquidBounce.hud.notifications.contains(exampleNotification)) {
-                LiquidBounce.hud.addNotification(exampleNotification)
+            if (!FDPClient.hud.notifications.contains(exampleNotification)) {
+                FDPClient.hud.addNotification(exampleNotification)
             }
 
             exampleNotification.fadeState = FadeState.STAY

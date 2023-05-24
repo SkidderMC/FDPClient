@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofalls
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall
 import net.ccbluex.liquidbounce.utils.ClassUtils
@@ -11,7 +11,7 @@ abstract class NoFallMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"
 
     protected val nofall: NoFall
-        get() = LiquidBounce.moduleManager[NoFall::class.java]!!
+        get() = FDPClient.moduleManager[NoFall::class.java]!!
 
     open val values: List<Value<*>>
         get() = ClassUtils.getValues(this.javaClass, this)

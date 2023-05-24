@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles;
 
 import java.awt.Color;
 import java.io.IOException;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.value.*;
@@ -71,7 +71,7 @@ public class BjurStyle extends GuiScreen {
         Fonts.font35.drawString("", startX + 15.0F, startY + 330.0F, (new Color(180, 180, 180, alpha)).getRGB());
         int dWheel = Mouse.getDWheel();
         if (isCategoryHovered(startX + 100.0F, startY + 40.0F, startX + 200.0F, startY + 315.0F, mouseX, mouseY)) {
-            if (dWheel < 0 && moduleStart < LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).size() - 1)
+            if (dWheel < 0 && moduleStart < FDPClient.moduleManager.getModuleInCategory(currentModuleType).size() - 1)
                 moduleStart++;
             if (dWheel > 0 && moduleStart > 0)
                 moduleStart--;
@@ -83,8 +83,8 @@ public class BjurStyle extends GuiScreen {
                 valueStart--;
         }
         float mY = startY + 12.0F;
-        for (int i = 0; i < LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).size(); i++) {
-            Module module = LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).get(i);
+        for (int i = 0; i < FDPClient.moduleManager.getModuleInCategory(currentModuleType).size(); i++) {
+            Module module = FDPClient.moduleManager.getModuleInCategory(currentModuleType).get(i);
             if (mY > startY + 250.0F)
                 break;
             if (i >= moduleStart) {
@@ -289,7 +289,7 @@ public class BjurStyle extends GuiScreen {
             try {
                 if (isCategoryHovered(xx2 + 8.0F, k2 - 10.0F + 60.0F + (i2 * 45), xx2 + 80.0F, k2 + 20.0F + 60.0F + (i2 * 45), mouseX, mouseY) && Mouse.isButtonDown(0)) {
                     currentModuleType = iterator[i2];
-                    currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).get(0);
+                    currentModule = FDPClient.moduleManager.getModuleInCategory(currentModuleType).get(0);
                     moduleStart = 0;
                     valueStart = 0;
                     for (int x3 = 0; x3 < currentModule.getValues().size(); x3++) {
@@ -319,7 +319,7 @@ public class BjurStyle extends GuiScreen {
             this.bind = false;
         } else if (keyCode == 1) {
             this.mc.displayGuiScreen((GuiScreen)null);
-            ((ClickGUIModule)LiquidBounce.moduleManager.getModule(ClickGUIModule.class)).setState(false);
+            ((ClickGUIModule) FDPClient.moduleManager.getModule(ClickGUIModule.class)).setState(false);
             if (this.mc.currentScreen == null)
                 this.mc.setIngameFocus();
         }
@@ -377,7 +377,7 @@ public class BjurStyle extends GuiScreen {
 
     public static ModuleCategory currentModuleType = ModuleCategory.COMBAT;
 
-    public static Module currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).get(0);
+    public static Module currentModule = FDPClient.moduleManager.getModuleInCategory(currentModuleType).get(0);
 
     public static float startX = (sr.getScaledWidth() / 2F - 225);
 

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.impl.Fonts;
@@ -42,7 +42,7 @@ public class Setting {
 
     public void drawScreen(int mouseX, int mouseY) {
         int y = getY();
-        HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+        HUD hud = (HUD) FDPClient.moduleManager.getModule(HUD.class);
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         boolean scissor = scaledResolution.getScaleFactor() != 1;
         double clamp = MathHelper.clamp_double(Minecraft.getMinecraft().getDebugFPS() / 30, 1, 9999);

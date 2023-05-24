@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
@@ -17,7 +17,7 @@ class MacroCommand : Command("macro", arrayOf("m")) {
                         if (key != Keyboard.KEY_NONE) {
                             var comm = StringUtils.toCompleteString(args, 3)
                             if (!comm.startsWith(".")) comm = ".$comm"
-                            LiquidBounce.macroManager.macros.add(Macro(key, comm))
+                            FDPClient.macroManager.macros.add(Macro(key, comm))
                             alert("Bound macro $comm to key ${Keyboard.getKeyName(key)}.")
                         } else {
                             alert("Unknown key to bind macro.")
@@ -31,12 +31,12 @@ class MacroCommand : Command("macro", arrayOf("m")) {
                 "remove" -> {
                     if (args.size > 2) {
                         if (args[2].startsWith(".")) {
-                            LiquidBounce.macroManager.macros.filter { it.command == StringUtils.toCompleteString(args, 2) }
+                            FDPClient.macroManager.macros.filter { it.command == StringUtils.toCompleteString(args, 2) }
                         } else {
                             val key = Keyboard.getKeyIndex(args[2].uppercase())
-                            LiquidBounce.macroManager.macros.filter { it.key == key }
+                            FDPClient.macroManager.macros.filter { it.key == key }
                         }.forEach {
-                            LiquidBounce.macroManager.macros.remove(it)
+                            FDPClient.macroManager.macros.remove(it)
                             alert("Remove macro ${it.command}.")
                         }
                         save()
@@ -47,7 +47,7 @@ class MacroCommand : Command("macro", arrayOf("m")) {
 
                 "list" -> {
                     alert("Macros:")
-                    LiquidBounce.macroManager.macros.forEach {
+                    FDPClient.macroManager.macros.forEach {
                         alert("key=${Keyboard.getKeyName(it.key)}, command=${it.command}")
                     }
                 }
@@ -60,7 +60,7 @@ class MacroCommand : Command("macro", arrayOf("m")) {
     }
 
     private fun save() {
-        LiquidBounce.configManager.smartSave()
+        FDPClient.configManager.smartSave()
         playEdit()
     }
 }

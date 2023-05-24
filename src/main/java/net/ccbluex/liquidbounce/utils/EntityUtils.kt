@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.animalValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.deadValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisibleValue
@@ -49,11 +49,11 @@ object EntityUtils : MinecraftInstance() {
                             return false
                         }
 
-                        if (!LiquidBounce.combatManager.isFocusEntity(entity)) {
+                        if (!FDPClient.combatManager.isFocusEntity(entity)) {
                             return false
                         }
 
-                        val teams = LiquidBounce.moduleManager.getModule(Teams::class.java)
+                        val teams = FDPClient.moduleManager.getModule(Teams::class.java)
                         return !teams!!.state || !teams.isInYourTeam(entity)
                     }
 
@@ -68,7 +68,7 @@ object EntityUtils : MinecraftInstance() {
     fun canRayCast(entity: Entity): Boolean {
         if (entity is EntityLivingBase) {
             if (entity is EntityPlayer) {
-                val teams = LiquidBounce.moduleManager.getModule(Teams::class.java)
+                val teams = FDPClient.moduleManager.getModule(Teams::class.java)
                 return !teams!!.state || !teams.isInYourTeam(entity)
             } else {
                 return mobValue.get() && isMob(entity) || animalValue.get() && isAnimal(entity)
@@ -78,11 +78,11 @@ object EntityUtils : MinecraftInstance() {
     }
 
     fun isFriend(entity: Entity): Boolean {
-        return entity is EntityPlayer && entity.getName() != null && LiquidBounce.fileManager.friendsConfig.isFriend(stripColor(entity.getName()))
+        return entity is EntityPlayer && entity.getName() != null && FDPClient.fileManager.friendsConfig.isFriend(stripColor(entity.getName()))
     }
 
     fun isFriend(entity: String): Boolean {
-        return LiquidBounce.fileManager.friendsConfig.isFriend(entity)
+        return FDPClient.fileManager.friendsConfig.isFriend(entity)
     }
 
     fun isAnimal(entity: Entity): Boolean {

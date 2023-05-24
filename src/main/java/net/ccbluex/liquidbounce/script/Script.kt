@@ -4,7 +4,7 @@ import jdk.internal.dynalink.beans.StaticClass
 import jdk.nashorn.api.scripting.JSObject
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import jdk.nashorn.api.scripting.ScriptUtils
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.gui.scriptOnline.Subscriptions
@@ -53,9 +53,9 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
 
         // Global instances
         scriptEngine.put("mc", mc)
-        scriptEngine.put("moduleManager", LiquidBounce.moduleManager)
-        scriptEngine.put("commandManager", LiquidBounce.commandManager)
-        scriptEngine.put("scriptManager", LiquidBounce.scriptManager)
+        scriptEngine.put("moduleManager", FDPClient.moduleManager)
+        scriptEngine.put("commandManager", FDPClient.commandManager)
+        scriptEngine.put("scriptManager", FDPClient.scriptManager)
 
         // Utils
         scriptEngine.put("MovementUtils", MovementUtils)
@@ -101,7 +101,7 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
     @Suppress("unused")
     fun registerModule(moduleObject: JSObject, callback: JSObject) {
         val module = ScriptModule(moduleObject)
-        LiquidBounce.moduleManager.registerModule(module)
+        FDPClient.moduleManager.registerModule(module)
         registeredModules += module
         callback.call(moduleObject, module)
     }
@@ -115,21 +115,21 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
     @Suppress("unused")
     fun registerCommand(commandObject: JSObject, callback: JSObject) {
         val command = ScriptCommand(commandObject)
-        LiquidBounce.commandManager.registerCommand(command)
+        FDPClient.commandManager.registerCommand(command)
         registeredCommands += command
         callback.call(commandObject, command)
     }
 
     fun regAnyThing() {
-        registeredModules.forEach { LiquidBounce.moduleManager.registerModule(it) }
-        registeredCommands.forEach { LiquidBounce.commandManager.registerCommand(it) }
+        registeredModules.forEach { FDPClient.moduleManager.registerModule(it) }
+        registeredCommands.forEach { FDPClient.commandManager.registerCommand(it) }
     }
 
     fun supportLegacyScripts() {
         if (!scriptText.lines().first().contains("api_version=2")) {
             ClientUtils.logWarn("[FDPScriptAPI] Running script '${scriptFile.name}' with legacy support.")
             val legacyScript =
-                LiquidBounce::class.java.getResource("/assets/minecraft/fdpclient/scriptapi/legacy.js")?.readText()
+                FDPClient::class.java.getResource("/assets/minecraft/fdpclient/scriptapi/legacy.js")?.readText()
             scriptEngine.eval(legacyScript)
         }
     }
@@ -160,8 +160,8 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
     fun onDisable() {
         if (!state) return
 
-        registeredModules.forEach { LiquidBounce.moduleManager.unregisterModule(it) }
-        registeredCommands.forEach { LiquidBounce.commandManager.unregisterCommand(it) }
+        registeredModules.forEach { FDPClient.moduleManager.unregisterModule(it) }
+        registeredCommands.forEach { FDPClient.commandManager.unregisterCommand(it) }
 
         callEvent("disable")
         state = false
@@ -172,7 +172,7 @@ class Script(private val scriptFile: File) : MinecraftInstance() {
      * @param scriptFile Path to the file to be imported.
      */
     fun import(scriptFile: String) {
-        scriptEngine.eval(File(LiquidBounce.scriptManager.scriptsFolder, scriptFile).readText())
+        scriptEngine.eval(File(FDPClient.scriptManager.scriptsFolder, scriptFile).readText())
     }
 
     /**

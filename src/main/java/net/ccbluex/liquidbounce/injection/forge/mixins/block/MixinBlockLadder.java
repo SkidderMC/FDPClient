@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.minecraft.block.BlockLadder;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +18,7 @@ import java.util.Objects;
 public class MixinBlockLadder {
     @ModifyConstant(method = "setBlockBoundsBasedOnState", constant = @Constant(floatValue = 0.125F))
     private float ViaVersion_LadderBB(float constant) {
-        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ViaVersionFix.class)).getState())
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(ViaVersionFix.class)).getState())
             return 0.1875F;
         return 0.125F;
     }

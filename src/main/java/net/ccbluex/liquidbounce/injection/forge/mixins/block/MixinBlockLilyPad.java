@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockLilyPad;
@@ -22,7 +22,7 @@ import java.util.Objects;
 public abstract class MixinBlockLilyPad extends BlockBush {
     @Overwrite
     public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state) {
-        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ViaVersionFix.class)).getState())
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(ViaVersionFix.class)).getState())
             return new AxisAlignedBB((double)pos.getX() + 0.0625D, (double)pos.getY() + 0.0D, (double)pos.getZ() + 0.0625D, (double)pos.getX() + 0.9375D, (double)pos.getY() + 0.09375D, (double)pos.getZ() + 0.9375D);
         return new AxisAlignedBB((double)pos.getX() + 0.0D, (double)pos.getY() + 0.0D, (double)pos.getZ() + 0.0D, (double)pos.getX() + 1.0D, (double)pos.getY() + 0.015625D, (double)pos.getZ() + 1.0D);
     }

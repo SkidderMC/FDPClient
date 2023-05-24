@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.tenacity.impl;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.impl.Fonts;
@@ -131,7 +131,7 @@ public class SettingComponents extends Component {
 
 
     public void handle(int mouseX, int mouseY, int button, GuiEvents type) {
-        HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+        HUD hud = (HUD) FDPClient.moduleManager.getModule(HUD.class);
         //Setting up the colors
         Color textColor = new Color(255, 255, 255, alphaAnimation);
         Color darkRectColor = new Color(48, 50, 55, alphaAnimation);

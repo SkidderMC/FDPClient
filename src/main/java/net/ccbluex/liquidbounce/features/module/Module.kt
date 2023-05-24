@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule
@@ -42,16 +42,16 @@ open class Module : MinecraftInstance(), Listenable {
         set(keyBind) {
             field = keyBind
 
-            if (!LiquidBounce.isStarting) {
-                LiquidBounce.configManager.smartSave()
+            if (!FDPClient.isStarting) {
+                FDPClient.configManager.smartSave()
             }
         }
     var array = true
         set(array) {
             field = array
 
-            if (!LiquidBounce.isStarting) {
-                LiquidBounce.configManager.smartSave()
+            if (!FDPClient.isStarting) {
+                FDPClient.configManager.smartSave()
             }
         }
     val canEnable: Boolean
@@ -110,13 +110,13 @@ open class Module : MinecraftInstance(), Listenable {
             onToggle(value)
 
             // Play sound and add notification
-            if (!LiquidBounce.isStarting) {
+            if (!FDPClient.isStarting) {
                 if (value) {
                     SoundModule.playSound(true)
-                    LiquidBounce.hud.addNotification(Notification(LanguageManager.getAndFormat("notify.module.title"), LanguageManager.getAndFormat("notify.module.enable", localizedName), NotifyType.SUCCESS))
+                    FDPClient.hud.addNotification(Notification(LanguageManager.getAndFormat("notify.module.title"), LanguageManager.getAndFormat("notify.module.enable", localizedName), NotifyType.SUCCESS))
                 } else {
                     SoundModule.playSound(false)
-                    LiquidBounce.hud.addNotification(Notification(LanguageManager.getAndFormat("notify.module.title"), LanguageManager.getAndFormat("notify.module.disable", localizedName), NotifyType.ERROR))
+                    FDPClient.hud.addNotification(Notification(LanguageManager.getAndFormat("notify.module.title"), LanguageManager.getAndFormat("notify.module.disable", localizedName), NotifyType.ERROR))
                 }
             }
 
@@ -133,7 +133,7 @@ open class Module : MinecraftInstance(), Listenable {
             }
 
             // Save module state
-            LiquidBounce.configManager.smartSave()
+            FDPClient.configManager.smartSave()
         }
 
     // HUD

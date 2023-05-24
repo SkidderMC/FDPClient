@@ -1,14 +1,13 @@
 
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils 
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -22,7 +21,6 @@ import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S09PacketHeldItemChange
-import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import java.util.*
@@ -152,7 +150,7 @@ class NoSlow : Module() {
             return
         }
         
-        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
+        val killAura = FDPClient.moduleManager[KillAura::class.java]!!
         val heldItem = mc.thePlayer.heldItem?.item
         if (consumeModifyValue.get() && mc.thePlayer.isUsingItem && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk)) {
             if ((consumeTimingValue.equals("Pre") && event.eventState == EventState.PRE) || (consumeTimingValue.equals("Post") && event.eventState == EventState.POST)) {
@@ -315,7 +313,7 @@ class NoSlow : Module() {
     }
 
     private val isBlocking: Boolean
-        get() = (mc.thePlayer.isUsingItem || LiquidBounce.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
+        get() = (mc.thePlayer.isUsingItem || FDPClient.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
 
     @EventTarget
     fun onPacket(event: PacketEvent) {

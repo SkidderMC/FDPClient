@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.Utils.Position;
@@ -70,7 +70,7 @@ public class CategoryScreen
         int count = 0;
         int leftAdd = 0;
         int rightAdd = 0;
-        for (final Module module : LiquidBounce.moduleManager.getModuleInCategory(this.category)) {
+        for (final Module module : FDPClient.moduleManager.getModuleInCategory(this.category)) {
             final float posWidth = 0.0f;
             final float posX = this.pos.x + ((count % 2 == 0) ? 0 : 145);
             final float posY = this.pos.y + ((count % 2 == 0) ? leftAdd : rightAdd);

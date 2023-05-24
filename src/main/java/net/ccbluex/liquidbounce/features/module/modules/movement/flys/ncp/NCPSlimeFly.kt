@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.ncp
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
@@ -114,7 +114,7 @@ class NCPSlimeFly : FlyMode("NCPSlime") {
 
                         if(slot == -1) {
                             fly.state = false
-                            LiquidBounce.hud.addNotification(Notification("NCPSlimeFly", "U need a slime blocks to use this fly", NotifyType.ERROR, 1000))
+                            FDPClient.hud.addNotification(Notification("NCPSlimeFly", "U need a slime blocks to use this fly", NotifyType.ERROR, 1000))
                             return
                         }
 

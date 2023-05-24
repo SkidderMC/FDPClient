@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.utils.ClassUtils
@@ -11,7 +11,7 @@ abstract class VelocityMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"
 
     protected val velocity: Velocity
-        get() = LiquidBounce.moduleManager[Velocity::class.java]!!
+        get() = FDPClient.moduleManager[Velocity::class.java]!!
 
     open val values: List<Value<*>>
         get() = ClassUtils.getValues(this.javaClass, this)

@@ -1,11 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap;
 
-import kotlin.jvm.JvmStatic;
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
-import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.Utils.OtcScroll;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;

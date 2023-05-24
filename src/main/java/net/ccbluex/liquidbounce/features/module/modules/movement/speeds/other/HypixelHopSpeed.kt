@@ -5,17 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.MoveEvent
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.features.value.*
-import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.minecraft.potion.Potion
 import net.minecraft.network.play.client.C07PacketPlayerDigging
-import kotlin.math.roundToInt
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.sqrt
 import net.minecraft.util.BlockPos
@@ -139,7 +136,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
                 return
             }
-            if (!LiquidBounce.combatManager.inCombat) {
+            if (!FDPClient.combatManager.inCombat) {
                 return
             }
             

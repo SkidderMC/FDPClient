@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import java.awt.Desktop
 import java.io.File
@@ -12,9 +12,9 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
             when (args[1].lowercase()) {
                 "create" -> {
                     if (args.size > 2) {
-                        val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
+                        val file = File(FDPClient.fileManager.configsDir, "${args[2]}.json")
                         if (!file.exists()) {
-                            LiquidBounce.configManager.load(args[2], true)
+                            FDPClient.configManager.load(args[2], true)
                             alert("Created config ${args[2]}")
                         } else {
                             alert("Config ${args[2]} already exists")
@@ -26,9 +26,9 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
 
                 "load", "forceload" -> {
                     if (args.size > 2) {
-                        val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
+                        val file = File(FDPClient.fileManager.configsDir, "${args[2]}.json")
                         if (file.exists()) {
-                            LiquidBounce.configManager.load(args[2], args[1].equals("load", true))
+                            FDPClient.configManager.load(args[2], args[1].equals("load", true))
                             alert("Loaded config ${args[2]}")
                         } else {
                             alert("Config ${args[2]} does not exist")
@@ -40,7 +40,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
 
                 "delete" -> {
                     if (args.size > 2) {
-                        val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
+                        val file = File(FDPClient.fileManager.configsDir, "${args[2]}.json")
                         if (file.exists()) {
                             file.delete()
                             alert("Successfully deleted config ${args[2]}")
@@ -53,11 +53,11 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 }
 
                 "openfolder" -> {
-                    Desktop.getDesktop().open(LiquidBounce.fileManager.configsDir)
+                    Desktop.getDesktop().open(FDPClient.fileManager.configsDir)
                 }
 
                 "list" -> {
-                    val list = (LiquidBounce.fileManager.configsDir.listFiles() ?: return)
+                    val list = (FDPClient.fileManager.configsDir.listFiles() ?: return)
                         .filter { it.isFile }
                         .map {
                             val name = it.name
@@ -71,7 +71,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                     alert("Configs(${list.size}):")
 
                     for (file in list) {
-                        if (file.equals(LiquidBounce.configManager.nowConfig)) {
+                        if (file.equals(FDPClient.configManager.nowConfig)) {
                             alert("-> §a§l$file")
                         } else {
                             alert("> $file")
@@ -80,19 +80,19 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 }
 
                 "save" -> {
-                    LiquidBounce.configManager.save(true, true)
-                    alert("Saved config ${LiquidBounce.configManager.nowConfig}")
+                    FDPClient.configManager.save(true, true)
+                    alert("Saved config ${FDPClient.configManager.nowConfig}")
                 }
 
                 "reload" -> {
-                    LiquidBounce.configManager.load(LiquidBounce.configManager.nowConfig, false)
-                    alert("Reloaded config ${LiquidBounce.configManager.nowConfig}")
+                    FDPClient.configManager.load(FDPClient.configManager.nowConfig, false)
+                    alert("Reloaded config ${FDPClient.configManager.nowConfig}")
                 }
 
                 "rename" -> {
                     if (args.size > 3) {
-                        val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
-                        val newFile = File(LiquidBounce.fileManager.configsDir, "${args[3]}.json")
+                        val file = File(FDPClient.fileManager.configsDir, "${args[2]}.json")
+                        val newFile = File(FDPClient.fileManager.configsDir, "${args[3]}.json")
                         if (file.exists() && !newFile.exists()) {
                             file.renameTo(newFile)
                             alert("Renamed config ${args[2]} to ${args[3]}")
@@ -101,9 +101,9 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                         } else if (newFile.exists()) {
                             alert("Config ${args[3]} already exists")
                         }
-                        if (LiquidBounce.configManager.nowConfig.equals(args[2], true)) {
-                            LiquidBounce.configManager.load(args[3], false)
-                            LiquidBounce.configManager.saveConfigSet()
+                        if (FDPClient.configManager.nowConfig.equals(args[2], true)) {
+                            FDPClient.configManager.load(args[3], false)
+                            FDPClient.configManager.saveConfigSet()
                         }
                     } else {
                         chatSyntax("${args[1]} <configName> <newName>")
@@ -111,13 +111,13 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 }
 
                 "current" -> {
-                    alert("Current config is ${LiquidBounce.configManager.nowConfig}")
+                    alert("Current config is ${FDPClient.configManager.nowConfig}")
                 }
 
                 "copy" -> {
                     if (args.size > 3) {
-                        val file = File(LiquidBounce.fileManager.configsDir, "${args[2]}.json")
-                        val newFile = File(LiquidBounce.fileManager.configsDir, "${args[3]}.json")
+                        val file = File(FDPClient.fileManager.configsDir, "${args[2]}.json")
+                        val newFile = File(FDPClient.fileManager.configsDir, "${args[3]}.json")
                         if (file.exists() && !newFile.exists()) {
                             Files.copy(file.toPath(), newFile.toPath())
                             alert("Copied config ${args[2]} to ${args[3]}")
@@ -164,7 +164,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 "save").filter { it.startsWith(args[0], true) }
             2 -> when (args[0].lowercase()) {
                 "delete", "load", "forceload", "rename", "copy" -> {
-                    (LiquidBounce.fileManager.configsDir.listFiles() ?: return emptyList())
+                    (FDPClient.fileManager.configsDir.listFiles() ?: return emptyList())
                         .filter { it.isFile }
                         .map {
                             val name = it.name

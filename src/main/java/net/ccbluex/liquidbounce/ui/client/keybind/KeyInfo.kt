@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.keybind
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.font.FontLoaders
@@ -122,15 +122,15 @@ class KeyInfo(
     }
 
     fun update() {
-        modules = LiquidBounce.moduleManager.getKeyBind(key) as ArrayList<Module>
-        macros = LiquidBounce.macroManager.macros.filter { it.key == key } as ArrayList<Macro>
+        modules = FDPClient.moduleManager.getKeyBind(key) as ArrayList<Module>
+        macros = FDPClient.macroManager.macros.filter { it.key == key } as ArrayList<Macro>
         hasKeyBind = (modules.size + macros.size)> 0
         stroll = 0
         maxStroll = modules.size * 30 + macros.size * 30
     }
 
     fun click(mouseX: Float, mouseY: Float) {
-        val keyBindMgr = LiquidBounce.keyBindManager
+        val keyBindMgr = FDPClient.keyBindManager
 
         if (keyBindMgr.nowDisplayKey == null) {
             keyBindMgr.nowDisplayKey = this
@@ -159,7 +159,7 @@ class KeyInfo(
                     }
                     for (macro in macros) {
                         if (scaledMouseY> (yOffset + 5) && scaledMouseY <(yOffset + 15)) {
-                            LiquidBounce.macroManager.macros.remove(macro)
+                            FDPClient.macroManager.macros.remove(macro)
                             update()
                             break
                         }

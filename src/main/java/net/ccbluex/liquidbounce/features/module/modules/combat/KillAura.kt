@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -26,7 +26,6 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.enchantment.EnchantmentHelper
@@ -326,7 +325,7 @@ class KillAura : Module() {
      * Disable kill aura module
      */
     override fun onDisable() {
-        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
+        FDPClient.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
         currentTarget = null
         hitable = false
         packetSent = false
@@ -428,9 +427,9 @@ class KillAura : Module() {
             return
         }
 
-        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
+        FDPClient.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
         
-        LiquidBounce.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(rotationStrafeValue.equals("Silent"), !rotationStrafeValue.equals("Off") && !rotationModeValue.equals("None"))
+        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(rotationStrafeValue.equals("Silent"), !rotationStrafeValue.equals("Off") && !rotationModeValue.equals("None"))
 
         if (attackTimingValue.equals("All")) {
             runAttackLoop()
@@ -642,14 +641,14 @@ class KillAura : Module() {
             // Set target to current entity
             if (mc.thePlayer.getDistanceToEntityBox(entity) < discoverRangeValue.get()) {
                 currentTarget = entity
-                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
-                LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = LiquidBounce.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
+                FDPClient.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
+                FDPClient.moduleManager[TargetStrafe::class.java]!!.doStrafe = FDPClient.moduleManager[TargetStrafe::class.java]!!.toggleStrafe()
                 return
             }
         }
 
         currentTarget = null
-        LiquidBounce.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
+        FDPClient.moduleManager[TargetStrafe::class.java]!!.doStrafe = false
     }
 
     private fun runSwing() {
@@ -670,7 +669,7 @@ class KillAura : Module() {
 
         // Call attack event
         val event = AttackEvent(entity)
-        LiquidBounce.eventManager.callEvent(event)
+        FDPClient.eventManager.callEvent(event)
         if (event.isCancelled) return
 
         // Stop blocking
@@ -1227,8 +1226,8 @@ class KillAura : Module() {
      */
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
-                || (blinkCheck.get() && LiquidBounce.moduleManager[Blink::class.java]!!.state) || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
-                (noScaffValue.get() && LiquidBounce.moduleManager[Scaffold::class.java]!!.state) || (noFlyValue.get() && LiquidBounce.moduleManager[Fly::class.java]!!.state) || (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer ||
+                || (blinkCheck.get() && FDPClient.moduleManager[Blink::class.java]!!.state) || FDPClient.moduleManager[FreeCam::class.java]!!.state ||
+                (noScaffValue.get() && FDPClient.moduleManager[Scaffold::class.java]!!.state) || (noFlyValue.get() && FDPClient.moduleManager[Fly::class.java]!!.state) || (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer ||
                     System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get()))
         
 

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
@@ -38,7 +38,7 @@ class ComboOneHit : Module() {
                 "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
             }
         }
-        if (onlyAuraValue.get() && !LiquidBounce.moduleManager[KillAura::class.java]!!.state && !LiquidBounce.moduleManager[InfiniteAura::class.java]!!.state) return
+        if (onlyAuraValue.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state && !FDPClient.moduleManager[InfiniteAura::class.java]!!.state) return
 
         repeat (amountValue.get()) {
             swingPacket()

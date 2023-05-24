@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui.options
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption
@@ -20,20 +20,20 @@ object modernuiLaunchOption : LaunchOption() {
     lateinit var clickGuiConfig: ClickGuiConfig
 
     override fun start() {
-        LiquidBounce.mainMenu = GuiMainMenu()
-        LiquidBounce.moduleManager.registerModule(ClickGUIModule())
+        FDPClient.mainMenu = GuiMainMenu()
+        FDPClient.moduleManager.registerModule(ClickGUIModule())
 
         clickGui = ClickGui()
         clickGuiConfig = ClickGuiConfig(
             File(
-                LiquidBounce.fileManager.dir,
+                FDPClient.fileManager.dir,
                 "clickgui.json"
             )
         )
-        LiquidBounce.fileManager.loadConfig(clickGuiConfig)
+        FDPClient.fileManager.loadConfig(clickGuiConfig)
     }
 
     override fun stop() {
-        LiquidBounce.fileManager.saveConfig(clickGuiConfig)
+        FDPClient.fileManager.saveConfig(clickGuiConfig)
     }
 }

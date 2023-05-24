@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
@@ -10,7 +10,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 class FlagFly : FlyMode("Flag") {
     override fun onEnable() {
         if(mc.isSingleplayer) {
-            LiquidBounce.hud.addNotification(Notification("FlagFly", "Using FlagFly in SinglePlayer will crash your client while saving world!", NotifyType.ERROR))
+            FDPClient.hud.addNotification(Notification("FlagFly", "Using FlagFly in SinglePlayer will crash your client while saving world!", NotifyType.ERROR))
             fly.state = false
         }
     }

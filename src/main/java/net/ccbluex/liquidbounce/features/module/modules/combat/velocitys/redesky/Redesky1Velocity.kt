@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.redesky
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
@@ -32,7 +32,7 @@ class Redesky1Velocity : VelocityMode("Redesky1") {
                 }
             }
 
-            val target = LiquidBounce.combatManager.getNearByEntity(LiquidBounce.moduleManager[KillAura::class.java]!!.rangeValue.get()) ?: return
+            val target = FDPClient.combatManager.getNearByEntity(FDPClient.moduleManager[KillAura::class.java]!!.rangeValue.get()) ?: return
             if (rspAlwaysValue.get()) {
                 mc.thePlayer.motionX = 0.0
                 mc.thePlayer.motionZ = 0.0

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.script.api.global
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 
@@ -24,6 +24,6 @@ object Notifications {
 
             "warning" -> notifytype = NotifyType.WARNING
         }
-        LiquidBounce.hud.addNotification(Notification(name ?: "ScriptAPI", content ?: "Notification register failed", notifytype, time ?: 1000))
+        FDPClient.hud.addNotification(Notification(name ?: "ScriptAPI", content ?: "Notification register failed", notifytype, time ?: 1000))
     }
 }

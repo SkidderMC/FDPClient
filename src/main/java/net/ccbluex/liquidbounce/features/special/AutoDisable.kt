@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.special
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -16,32 +16,32 @@ object AutoDisable : Listenable {
 
     @EventTarget
     fun onWorld(event: WorldEvent) {
-        LiquidBounce.moduleManager.modules
+        FDPClient.moduleManager.modules
             .filter { it.state && it.autoDisable == EnumAutoDisableType.RESPAWN && it.triggerType == EnumTriggerType.TOGGLE }
             .forEach { module ->
                 module.state = false
-                LiquidBounce.hud.addNotification(Notification(this.name, "Disabled ${module.name} due world Changed.", NotifyType.WARNING, 2000))
+                FDPClient.hud.addNotification(Notification(this.name, "Disabled ${module.name} due world Changed.", NotifyType.WARNING, 2000))
             }
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
         if (event.packet is S08PacketPlayerPosLook) {
-            LiquidBounce.moduleManager.modules
+            FDPClient.moduleManager.modules
                 .filter { it.state && it.autoDisable == EnumAutoDisableType.FLAG && it.triggerType == EnumTriggerType.TOGGLE }
                 .forEach { module ->
                     module.state = false
-                    LiquidBounce.hud.addNotification(Notification(this.name, "Disabled ${module.name} due flags.", NotifyType.WARNING, 2000))
+                    FDPClient.hud.addNotification(Notification(this.name, "Disabled ${module.name} due flags.", NotifyType.WARNING, 2000))
                 }
         }
     }
 
     fun handleGameEnd() {
-        LiquidBounce.moduleManager.modules
+        FDPClient.moduleManager.modules
             .filter { it.state && it.autoDisable == EnumAutoDisableType.GAME_END }
             .forEach { module ->
                 module.state = false
-                LiquidBounce.hud.addNotification(Notification(this.name, "Disabled ${module.name} due to game end.", NotifyType.WARNING, 2000))
+                FDPClient.hud.addNotification(Notification(this.name, "Disabled ${module.name} due to game end.", NotifyType.WARNING, 2000))
             }
     }
 

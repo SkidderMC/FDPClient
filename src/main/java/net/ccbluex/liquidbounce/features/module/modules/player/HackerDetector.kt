@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -268,12 +268,12 @@ class HackerDetector : Module() {
             use = use.substring(0, use.length - 1)
             alert("§f${this.player.name} §eusing hack §a$use")
             if (notifyValue.get()) {
-                LiquidBounce.hud.addNotification(Notification(name, "${this.player.name} might use hack ($use)", NotifyType.WARNING))
+                FDPClient.hud.addNotification(Notification(name, "${this.player.name} might use hack ($use)", NotifyType.WARNING))
             }
             this.vl = -vlValue.get()
 
             if (reportValue.get()) {
-                LiquidBounce.moduleManager[AutoReport::class.java]!!.doReport(this.player)
+                FDPClient.moduleManager[AutoReport::class.java]!!.doReport(this.player)
             }
         }
     }

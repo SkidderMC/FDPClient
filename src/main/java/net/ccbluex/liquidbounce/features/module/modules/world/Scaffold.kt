@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -301,7 +301,7 @@ class Scaffold : Module() {
                     }
                 }
                 "whenspeed" -> {
-                    canSameY = LiquidBounce.moduleManager[Speed::class.java]!!.state
+                    canSameY = FDPClient.moduleManager[Speed::class.java]!!.state
                 }
                 else -> {
                     canSameY = false
@@ -521,7 +521,7 @@ class Scaffold : Module() {
             }
         }
         
-        LiquidBounce.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(!rotationsValue.equals("None"), moveFixValue.get())
+        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(!rotationsValue.equals("None"), moveFixValue.get())
     }
 
     private fun fakeJump() {

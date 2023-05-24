@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import java.awt.Color
@@ -8,15 +8,15 @@ import java.awt.Color
 class GuiLaunchOptionSelectMenu : GuiScreen() {
     override fun initGui() {
 
-        LiquidBounce.launchFilters.addAll(when (0) {
+        FDPClient.launchFilters.addAll(when (0) {
             0 -> arrayListOf(EnumLaunchFilter.MODERN_UI)
             else -> emptyList()
         })
 
-        LiquidBounce.startClient()
+        FDPClient.startClient()
 
         if(mc.currentScreen is GuiLaunchOptionSelectMenu)
-            mc.displayGuiScreen(LiquidBounce.mainMenu)
+            mc.displayGuiScreen(FDPClient.mainMenu)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, pTicks: Float) {

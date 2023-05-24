@@ -6,7 +6,7 @@
 
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.Config
@@ -23,19 +23,19 @@ class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
             when {
                 args[1].equals("load", ignoreCase = true) -> {
                     if (args.size > 2) {
-                        val themeFile = File(LiquidBounce.fileManager.themesDir, args[2])
+                        val themeFile = File(FDPClient.fileManager.themesDir, args[2])
 
                         if (themeFile.exists()) {
                             try {
                                 chat("§9Loading theme...")
                                 val theme = themeFile.readText()
                                 chat("§9Set theme settings...")
-                                LiquidBounce.isStarting = true
-                                LiquidBounce.hud.clearElements()
-                                LiquidBounce.hud = Config(theme).toHUD()
-                                LiquidBounce.isStarting = false
+                                FDPClient.isStarting = true
+                                FDPClient.hud.clearElements()
+                                FDPClient.hud = Config(theme).toHUD()
+                                FDPClient.isStarting = false
                                 chat("§6Theme applied successfully.")
-                                LiquidBounce.hud.addNotification(Notification("theme", "Updated HUD Theme.", NotifyType.SUCCESS))
+                                FDPClient.hud.addNotification(Notification("theme", "Updated HUD Theme.", NotifyType.SUCCESS))
                                 playEdit()
                             } catch (e: IOException) {
                                 e.printStackTrace()
@@ -54,7 +54,7 @@ class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
 
                 args[1].equals("save", ignoreCase = true) -> {
                     if (args.size > 2) {
-                        val themeFile = File(LiquidBounce.fileManager.themesDir, args[2])
+                        val themeFile = File(FDPClient.fileManager.themesDir, args[2])
 
                         try {
                             if (themeFile.exists())
@@ -62,7 +62,7 @@ class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
                             themeFile.createNewFile()
 
                             chat("§9Creating theme settings...")
-                            val settingsTheme = Config(LiquidBounce.hud).toJson()
+                            val settingsTheme = Config(FDPClient.hud).toJson()
                             chat("§9Saving theme...")
                             themeFile.writeText(settingsTheme)
                             chat("§6Theme saved successfully.")
@@ -79,7 +79,7 @@ class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
 
                 args[1].equals("delete", ignoreCase = true) -> {
                     if (args.size > 2) {
-                        val themeFile = File(LiquidBounce.fileManager.themesDir, args[2])
+                        val themeFile = File(FDPClient.fileManager.themesDir, args[2])
 
                         if (themeFile.exists()) {
                             themeFile.delete()
@@ -130,5 +130,5 @@ class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
         }
     }
 
-    private fun getLocalThemes(): Array<File>? = LiquidBounce.fileManager.themesDir.listFiles()
+    private fun getLocalThemes(): Array<File>? = FDPClient.fileManager.themesDir.listFiles()
 }

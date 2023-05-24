@@ -1,8 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.Settings;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.*;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.misc.Direction;

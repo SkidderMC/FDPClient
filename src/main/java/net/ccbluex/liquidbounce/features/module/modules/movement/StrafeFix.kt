@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -15,9 +14,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.util.MathHelper
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 @ModuleInfo(name = "StrafeFix", category = ModuleCategory.MOVEMENT)
 class StrafeFix : Module() {

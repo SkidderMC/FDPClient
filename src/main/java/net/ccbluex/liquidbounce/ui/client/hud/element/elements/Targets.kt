@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
@@ -201,7 +201,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     override fun drawElement(partialTicks: Float): Border? {
-        var target = LiquidBounce.combatManager.target
+        var target = FDPClient.combatManager.target
         val time = System.currentTimeMillis()
         val pct = (time - lastUpdate) / (switchAnimSpeedValue.get() * 50f)
         lastUpdate = System.currentTimeMillis()

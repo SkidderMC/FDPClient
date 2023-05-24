@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.Slight;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.value.*;
@@ -26,7 +26,7 @@ import java.util.Map;
 public class SlightUI extends GuiScreen implements GuiYesNoCallback {
 
     public static ModuleCategory currentModuleType = ModuleCategory.COMBAT;
-    public static Module currentModule = (Module) LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).get(0);
+    public static Module currentModule = (Module) FDPClient.moduleManager.getModuleInCategory(currentModuleType).get(0);
     public static float startX = 100.0F;
     public static float startY = 85.0F;
     public float moduleStart = 0.0F;
@@ -129,7 +129,7 @@ public class SlightUI extends GuiScreen implements GuiYesNoCallback {
             try {
                 if (this.isCategoryHovered(startX - 40.0F, startY + 20.0F + (float) (m * 30), startX + 60.0F, startY + 45.0F + (float) (m * 40), mouseX, mouseY) && Mouse.isButtonDown(0) && !this.MIND) {
                     currentModuleType = mY[m];
-                    currentModule = LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).size() != 0 ? (Module) LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).get(0) : null;
+                    currentModule = FDPClient.moduleManager.getModuleInCategory(currentModuleType).size() != 0 ? (Module) FDPClient.moduleManager.getModuleInCategory(currentModuleType).get(0) : null;
                     this.moduleStart = 0.0F;
                 }
             } catch (Exception exception) {
@@ -139,7 +139,7 @@ public class SlightUI extends GuiScreen implements GuiYesNoCallback {
 
         m = Mouse.getDWheel();
         if (this.isCategoryHovered(startX + 60.0F, startY, startX + 200.0F, startY + 235.0F, mouseX, mouseY) && !this.MIND) {
-            if (m < 0 && this.moduleStart < (float) (LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).size() - 1)) {
+            if (m < 0 && this.moduleStart < (float) (FDPClient.moduleManager.getModuleInCategory(currentModuleType).size() - 1)) {
                 ++this.moduleStart;
                 this.animationDWheel = (float) RenderUtil.getAnimationState((double) this.animationDWheel, 1.0D, 50.0D);
                 Minecraft.getMinecraft().thePlayer.playSound("random.click", 0.2F, 2.0F);
@@ -173,8 +173,8 @@ public class SlightUI extends GuiScreen implements GuiYesNoCallback {
 
             int font;
 
-            for (font = 0; font < LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).size(); ++font) {
-                Module value = (Module) LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).get(font);
+            for (font = 0; font < FDPClient.moduleManager.getModuleInCategory(currentModuleType).size(); ++font) {
+                Module value = (Module) FDPClient.moduleManager.getModuleInCategory(currentModuleType).get(font);
 
                 if (f > startY + 220.0F) {
                     break;

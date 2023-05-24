@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.vanilla
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
@@ -25,7 +25,7 @@ class LegitVelocity : VelocityMode("Legit") {
     }
 
     override fun onStrafe(event: StrafeEvent) {
-        if ((velocity.onlyGroundValue.get() && !mc.thePlayer.onGround) || (velocity.onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat)) {
+        if ((velocity.onlyGroundValue.get() && !mc.thePlayer.onGround) || (velocity.onlyCombatValue.get() && !FDPClient.combatManager.inCombat)) {
             return
         }
         if (pos == null || mc.thePlayer.hurtTime <= 0) {

@@ -1,6 +1,6 @@
 /*
  * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by FDPClient.
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce
@@ -35,44 +35,37 @@ import net.minecraft.util.ResourceLocation
 import java.util.*
 import kotlin.concurrent.thread
 
-object LiquidBounce {
+object FDPClient {
 
     // Client information
-
     const val CLIENT_NAME = "FDPClient"
-
-    var Darkmode = true
     const val COLORED_NAME = "§7[§b§lFDPClient§7] "
     const val CLIENT_CREATOR = "CCBlueX, Zywl & SkidderMC TEAM"
     const val CLIENT_WEBSITE = "fdpinfo.github.io"
-    
+    const val CLIENT_VERSION = "v5.3.5"
+
+    // Flags
+    var isStarting = true
+    var isLoadingConfig = true
+    private var latest = ""
+
     @JvmField
     val gitInfo = Properties().also {
-        val inputStream = LiquidBounce::class.java.classLoader.getResourceAsStream("git.properties")
+        val inputStream = FDPClient::class.java.classLoader.getResourceAsStream("git.properties")
         if (inputStream != null) {
             it.load(inputStream)
         } else {
-            it["git.branch"] = "Main" 
+            it["git.branch"] = "Main"
         }
     }
-
-    @JvmField
-
-    val CLIENT_VERSION = "v5.3.5"
-
 
     @JvmField
     val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "unknown").let {
         if (it == "main") "Main" else it
     }
 
-    var isStarting = true
-    var isLoadingConfig = true
-    private var latest = ""
-
     // Managers
     lateinit var moduleManager: ModuleManager
-
     lateinit var commandManager: CommandManager
     lateinit var eventManager: EventManager
     private lateinit var subscriptions: Subscriptions
@@ -116,16 +109,22 @@ object LiquidBounce {
      * Execute if client will be started
      */
     fun initClient() {
-        ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION, by $CLIENT_CREATOR")
-        ClientUtils.logInfo("Initialzing...")
+        ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION")
+        ClientUtils.logInfo("Initializing...")
         val startTime = System.currentTimeMillis()
-        // Create file manager
+
+        // Initialize managers
         fileManager = FileManager()
         configManager = ConfigManager()
         subscriptions = Subscriptions()
-
-        // Create event manager
         eventManager = EventManager()
+        commandManager = CommandManager()
+        macroManager = MacroManager()
+        moduleManager = ModuleManager()
+        scriptManager = ScriptManager()
+        keyBindManager = KeyBindManager()
+        combatManager = CombatManager()
+        tipSoundManager = TipSoundManager()
 
         // Load language
         LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
@@ -140,29 +139,27 @@ object LiquidBounce {
         eventManager.registerListener(SessionUtils())
         eventManager.registerListener(StatisticsUtils())
         eventManager.registerListener(LocationCache())
+        eventManager.registerListener(macroManager)
+        eventManager.registerListener(combatManager)
 
-        // Create command manager
-        commandManager = CommandManager()
-
+        // Load configs
         fileManager.loadConfigs(
             fileManager.accountsConfig,
             fileManager.friendsConfig,
             fileManager.specialConfig,
-            fileManager.subscriptsConfig
+            fileManager.subscriptsConfig,
+            fileManager.hudConfig,
+            fileManager.xrayConfig
         )
+
         // Load client fonts
         Fonts.loadFonts()
 
-        macroManager = MacroManager()
-        eventManager.registerListener(macroManager)
-
-        // Setup module manager and register modules
-        moduleManager = ModuleManager()
+        // Setup modules
         moduleManager.registerModules()
 
+        // Load and enable scripts
         try {
-            // ScriptManager, Remapper will be lazy loaded when scripts are enabled
-            scriptManager = ScriptManager()
             scriptManager.loadScripts()
             scriptManager.enableScripts()
         } catch (throwable: Throwable) {
@@ -172,39 +169,33 @@ object LiquidBounce {
         // Register commands
         commandManager.registerCommands()
 
-        tipSoundManager = TipSoundManager()
-
-        // KeyBindManager
-        keyBindManager = KeyBindManager()
-
-        combatManager = CombatManager()
-        eventManager.registerListener(combatManager)
-
+        // Load GUI
         GuiCapeManager.load()
-
         mainMenu = GuiLaunchOptionSelectMenu()
-
-        // Set HUD
         hud = HUD.createDefault()
 
-        fileManager.loadConfigs(fileManager.hudConfig, fileManager.xrayConfig)
-
-        // run update checker
+        // Run update checker
         if (CLIENT_VERSION != "unknown") {
             thread(block = this::checkUpdate)
         }
+
+        // Load script subscripts
         ClientUtils.logInfo("Loading Script Subscripts...")
-        for (subscript in fileManager.subscriptsConfig.subscripts) {
+        fileManager.subscriptsConfig.subscripts.forEach { subscript ->
             Subscriptions.addSubscribes(ScriptSubscribe(subscript.url, subscript.name))
-            scriptManager.disableScripts()
-            scriptManager.unloadScripts()
-            for (scriptSubscribe in Subscriptions.subscribes) {
-                scriptSubscribe.load()
-            }
-            scriptManager.loadScripts()
-            scriptManager.enableScripts()
         }
+        scriptManager.disableScripts()
+        scriptManager.unloadScripts()
+        Subscriptions.subscribes.forEach { scriptSubscribe ->
+            scriptSubscribe.load()
+        }
+        scriptManager.loadScripts()
+        scriptManager.enableScripts()
+
+        // Set title
         ClientUtils.setTitle()
+
+        // Log success
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
     }
 
@@ -230,6 +221,7 @@ object LiquidBounce {
     /**
      * Execute if client ui type is selected
      */
+    // Start dynamic launch options
     fun startClient() {
         dynamicLaunchOptions.forEach {
             it.start()
@@ -250,21 +242,24 @@ object LiquidBounce {
      * Execute if client will be stopped
      */
     fun stopClient() {
+        // Check if client is not starting or loading configurations
         if (!isStarting && !isLoadingConfig) {
             ClientUtils.logInfo("Shutting down $CLIENT_NAME $CLIENT_VERSION!")
 
             // Call client shutdown
             eventManager.callEvent(ClientShutdownEvent())
 
-            // Save all available configs
-            GuiCapeManager.save()
-            configManager.save(true, forceSave = true)
-            fileManager.saveAllConfigs()
+            // Save configurations
+            GuiCapeManager.save() // Save capes
+            configManager.save(true, forceSave = true) // Save configs
+            fileManager.saveAllConfigs() // Save file manager configs
 
+            // Stop dynamic launch options
             dynamicLaunchOptions.forEach {
                 it.stop()
             }
         }
+        // Stop Discord RPC
         try {
             DiscordRPC.stop()
         } catch (e: Throwable) {

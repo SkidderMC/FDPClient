@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline;
 
 
 import com.google.common.collect.Lists;
-import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
@@ -38,7 +38,7 @@ public class Window {
         this.y = y;
         max = 120;
         int y2 = y + 22;
-        for (Module c : LiquidBounce.moduleManager.getModules()) {
+        for (Module c : FDPClient.moduleManager.getModules()) {
             if (c.getCategory() != category)
                 continue;
             buttons.add(new Button(c, x + 5, y2));

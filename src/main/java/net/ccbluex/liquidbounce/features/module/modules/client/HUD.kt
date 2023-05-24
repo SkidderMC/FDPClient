@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -55,7 +55,7 @@ object HUD : Module() {
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
-        LiquidBounce.hud.render(false, event.partialTicks)
+        FDPClient.hud.render(false, event.partialTicks)
         if(waterMark.get()) renderWatermark()
         if (HealthValue.get()) mc.fontRendererObj.drawStringWithShadow(
             MathHelper.ceiling_float_int(mc.thePlayer.health).toString(),
@@ -82,7 +82,7 @@ object HUD : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        LiquidBounce.hud.update()
+        FDPClient.hud.update()
         if (mc.currentScreen == null && lastFontEpsilon != fontEpsilonValue.get()) {
             lastFontEpsilon = fontEpsilonValue.get()
             alert("You need to reload FDPClient to apply changes!")
@@ -109,7 +109,7 @@ object HUD : Module() {
 
     @EventTarget
     fun onKey(event: KeyEvent) {
-        LiquidBounce.hud.handleKey('a', event.key)
+        FDPClient.hud.handleKey('a', event.key)
     }
     fun getClientColors(): Array<Color>? {
         val firstColor: Color
