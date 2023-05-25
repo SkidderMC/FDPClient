@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -28,8 +27,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.MathHelper
 import java.util.*
 
-@ModuleInfo(name = "Gapple", category = ModuleCategory.PLAYER)
-class Gapple : Module() {
+class Gapple : Module(name = "Gapple", category = ModuleCategory.PLAYER) {
 
     private val modeValue = ListValue("Mode", arrayOf("Auto", "LegitAuto", "Legit", "Head"), "Auto")
     private val percent = FloatValue("HealthPercent", 75.0f, 1.0f, 100.0f)

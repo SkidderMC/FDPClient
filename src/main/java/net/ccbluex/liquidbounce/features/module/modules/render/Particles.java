@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.event.MotionEvent;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.particles.EvictingList;
 import net.ccbluex.liquidbounce.utils.particles.Particle;
 import net.ccbluex.liquidbounce.utils.particles.Vec3;
@@ -23,9 +22,12 @@ import net.minecraft.entity.EntityLivingBase;
 
 import java.util.List;
 
-@ModuleInfo(name = "Particles", category = ModuleCategory.RENDER)
 public final class Particles extends Module {
+    private static ModuleCategory category = ModuleCategory.RENDER;
 
+    public Particles() {
+        super("Particles", category = ModuleCategory.RENDER);
+    }
     private final IntegerValue amount = new IntegerValue("Amount", 10, 1, 20);
 
     private final BoolValue physics = new BoolValue("Physics", true);

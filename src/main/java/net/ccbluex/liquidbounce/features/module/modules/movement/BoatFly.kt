@@ -9,16 +9,13 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "BoatFly", category = ModuleCategory.MOVEMENT)
-class BoatFly : Module() {
+class BoatFly : Module(name = "BoatFly", category = ModuleCategory.MOVEMENT) {
     private val modeValue = ListValue("Mode", arrayOf("Motion", "Clip", "Velocity"), "Motion")
     private val speedValue = FloatValue("Speed", 0.3f, 0.0f, 1.0f)
 

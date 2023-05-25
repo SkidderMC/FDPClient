@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.render.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -22,8 +21,7 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 import org.lwjgl.opengl.GL11
 import java.util.*
 
-@ModuleInfo(name = "Blink", category = ModuleCategory.PLAYER)
-class Blink : Module() {
+class Blink : Module(name = "Blink", category = ModuleCategory.PLAYER) {
 
     private val pulseValue = BoolValue("Pulse", false)
     private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 500, 5000).displayable { pulseValue.get() }

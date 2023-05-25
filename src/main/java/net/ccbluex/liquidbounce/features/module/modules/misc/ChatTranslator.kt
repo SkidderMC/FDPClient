@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.server.S02PacketChat
@@ -18,8 +17,7 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 
-@ModuleInfo(name = "ChatTranslator", category = ModuleCategory.MISC)
-class ChatTranslator : Module() {
+class ChatTranslator : Module(name = "ChatTranslator", category = ModuleCategory.MISC) {
 
     private val languageValue = ListValue("Language", arrayOf("Chinese", "English"), "Chinese")
     private val apiValue = ListValue("API", arrayOf("Google", "Bing", "YouDao"), "Bing")

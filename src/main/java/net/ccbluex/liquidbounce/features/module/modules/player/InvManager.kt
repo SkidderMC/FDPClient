@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.injection.access.IItemStack
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
@@ -33,8 +32,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
-@ModuleInfo(name = "InvManager", category = ModuleCategory.PLAYER)
-class InvManager : Module() {
+class InvManager : Module(name = "InvManager", category = ModuleCategory.PLAYER) {
 
     /**
      * OPTIONS

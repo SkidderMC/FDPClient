@@ -5,7 +5,6 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
@@ -26,8 +25,7 @@ import net.minecraft.util.EnumFacing
 import java.util.*
 import kotlin.math.sqrt
 
-@ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
-class NoSlow : Module() {
+class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
     //Basic settings
     private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
     private val antiSwitchItem = BoolValue("AntiSwitchItem", false)

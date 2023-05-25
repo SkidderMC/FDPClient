@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat;
 
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.TickEvent;
@@ -19,8 +18,12 @@ import net.minecraft.util.MathHelper;
 
 import java.io.IOException;
 
-@ModuleInfo(name = "TickBase", category = ModuleCategory.COMBAT)
 public final class TickBase extends Module {
+
+    private static ModuleCategory category = ModuleCategory.COMBAT;
+    public TickBase() {
+        super("TickBase", category = ModuleCategory.COMBAT);
+    }
     private final FloatValue rangeValue = new FloatValue("Range", 3.0f, 1, 8);
     private int skippedTick, preTick;
     private boolean flag;

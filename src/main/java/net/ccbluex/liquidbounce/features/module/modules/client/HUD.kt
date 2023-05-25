@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.button.*
 import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule.*
@@ -26,8 +25,7 @@ import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.util.*
 
-@ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
-object HUD : Module() {
+object HUD : Module("HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true) {
     val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Autumn")
     val clolormode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")
     val hueInterpolation = BoolValue("hueInterpolation", false)
@@ -52,6 +50,9 @@ object HUD : Module() {
 
     private var lastFontEpsilon = 0f
 
+    /**
+     * Renders the HUD.
+     */
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
@@ -63,6 +64,9 @@ object HUD : Module() {
         GlStateManager.resetColor()
     }
 
+    /**
+     * Renders the watermark.
+     */
     private fun renderWatermark() {
         var width = 3
         mc.fontRendererObj.drawStringWithShadow(

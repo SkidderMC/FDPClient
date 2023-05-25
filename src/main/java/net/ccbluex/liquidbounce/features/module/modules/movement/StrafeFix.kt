@@ -10,13 +10,11 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.util.MathHelper
 
-@ModuleInfo(name = "StrafeFix", category = ModuleCategory.MOVEMENT)
-class StrafeFix : Module() {
+class StrafeFix : Module(name = "StrafeFix", category = ModuleCategory.MOVEMENT) {
 
     val silentFixVaule = BoolValue("Silent", true)
     

@@ -7,14 +7,12 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 
-@ModuleInfo(name = "Chams", category = ModuleCategory.RENDER)
-class Chams : Module() {
+class Chams : Module(name = "Chams", category = ModuleCategory.RENDER) {
     val targetsValue = BoolValue("Targets", true)
     val chestsValue = BoolValue("Chests", true)
     val itemsValue = BoolValue("Items", true)

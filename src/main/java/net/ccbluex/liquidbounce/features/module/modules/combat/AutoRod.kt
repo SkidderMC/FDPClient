@@ -5,7 +5,6 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
@@ -16,8 +15,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
-@ModuleInfo(name = "AutoRod", category = ModuleCategory.COMBAT)
-class AutoRod: Module() {
+class AutoRod: Module(name = "AutoRod", category = ModuleCategory.COMBAT) {
     private val t1 = MSTimer()
     private val t2 = MSTimer()
 

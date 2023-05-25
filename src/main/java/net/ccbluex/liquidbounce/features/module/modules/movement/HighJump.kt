@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -26,8 +25,7 @@ import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "HighJump", category = ModuleCategory.MOVEMENT)
-class HighJump : Module() {
+class HighJump : Module(name = "HighJump", category = ModuleCategory.MOVEMENT) {
     private val heightValue = FloatValue("Height", 2f, 1.1f, 7f)
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "StableMotion", "Damage", "AACv3", "DAC", "Mineplex", "Matrix", "MatrixWater"), "Vanilla")
     private val glassValue = BoolValue("OnlyGlassPane", false)

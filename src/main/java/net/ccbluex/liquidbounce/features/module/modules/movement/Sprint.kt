@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -18,10 +17,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.client.C0BPacketEntityAction
-import net.minecraft.potion.Potion
-
-@ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
-class Sprint : Module() {
+class Sprint : Module(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true) {
     val useItemValue = BoolValue("UseItem", false)
     val useItemSwordValue = BoolValue("UseItemOnlySword", false).displayable{ useItemValue.get() }
     val hungryValue = BoolValue("Hungry", true)

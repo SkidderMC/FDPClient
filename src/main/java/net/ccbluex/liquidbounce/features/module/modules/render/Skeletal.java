@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.event.UpdateModelEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.value.BoolValue;
 import net.ccbluex.liquidbounce.features.value.IntegerValue;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -22,8 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-@ModuleInfo(name = "Skeletal", category = ModuleCategory.RENDER)
 public class Skeletal extends Module {
+
+    private static ModuleCategory category = ModuleCategory.RENDER;
+
+    public Skeletal() {
+        super("Skeletal", category = ModuleCategory.RENDER);
+    }
 
     private final Map playerRotationMap = new WeakHashMap();
 

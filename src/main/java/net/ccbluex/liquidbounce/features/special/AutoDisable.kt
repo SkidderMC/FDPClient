@@ -5,8 +5,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
-import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
-import net.ccbluex.liquidbounce.features.module.EnumTriggerType
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -17,7 +16,7 @@ object AutoDisable : Listenable {
     @EventTarget
     fun onWorld(event: WorldEvent) {
         FDPClient.moduleManager.modules
-            .filter { it.state && it.autoDisable == EnumAutoDisableType.RESPAWN && it.triggerType == EnumTriggerType.TOGGLE }
+            .filter { it.state && it.autoDisable == Module.EnumAutoDisableType.RESPAWN && it.triggerType == Module.EnumTriggerType.TOGGLE }
             .forEach { module ->
                 module.state = false
                 FDPClient.hud.addNotification(Notification(this.name, "Disabled ${module.name} due world Changed.", NotifyType.WARNING, 2000))
@@ -28,7 +27,7 @@ object AutoDisable : Listenable {
     fun onPacket(event: PacketEvent) {
         if (event.packet is S08PacketPlayerPosLook) {
             FDPClient.moduleManager.modules
-                .filter { it.state && it.autoDisable == EnumAutoDisableType.FLAG && it.triggerType == EnumTriggerType.TOGGLE }
+                .filter { it.state && it.autoDisable == Module.EnumAutoDisableType.FLAG && it.triggerType == Module.EnumTriggerType.TOGGLE }
                 .forEach { module ->
                     module.state = false
                     FDPClient.hud.addNotification(Notification(this.name, "Disabled ${module.name} due flags.", NotifyType.WARNING, 2000))
@@ -38,7 +37,7 @@ object AutoDisable : Listenable {
 
     fun handleGameEnd() {
         FDPClient.moduleManager.modules
-            .filter { it.state && it.autoDisable == EnumAutoDisableType.GAME_END }
+            .filter { it.state && it.autoDisable == Module.EnumAutoDisableType.GAME_END }
             .forEach { module ->
                 module.state = false
                 FDPClient.hud.addNotification(Notification(this.name, "Disabled ${module.name} due to game end.", NotifyType.WARNING, 2000))

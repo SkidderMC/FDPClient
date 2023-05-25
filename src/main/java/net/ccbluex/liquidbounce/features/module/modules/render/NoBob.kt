@@ -9,10 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-
-@ModuleInfo(name = "NoBob", category = ModuleCategory.RENDER)
-class NoBob : Module() {
+class NoBob : Module(name = "NoBob", category = ModuleCategory.RENDER) {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {

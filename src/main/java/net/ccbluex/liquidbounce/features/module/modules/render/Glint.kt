@@ -7,14 +7,12 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import java.awt.Color
 
-@ModuleInfo(name = "Glint", category = ModuleCategory.RENDER)
-class Glint : Module() {
+class Glint : Module(name = "Glint", category = ModuleCategory.RENDER) {
 
     private val modeValue = ListValue("Mode", arrayOf("Rainbow", "AnotherRainbow", "Custom"), "Custom")
     private val redValue = IntegerValue("Red", 255, 0, 255).displayable { modeValue.equals("Custom") }

@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.special.AutoDisable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
@@ -27,8 +26,7 @@ import net.minecraft.util.IChatComponent
 import java.util.*
 import kotlin.concurrent.schedule
 
-@ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
-class AutoPlay : Module() {
+class AutoPlay : Module(name = "AutoPlay", category = ModuleCategory.MISC) {
 
     private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "Pika", "Hydracraft", "HyCraft", "MineFC/HeroMC_Bedwars", "Supercraft"), "BlocksMC")
 

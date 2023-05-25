@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.*;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.Slight.SlightUI;
@@ -27,12 +26,15 @@ import net.ccbluex.liquidbounce.features.value.IntegerValue;
 import net.ccbluex.liquidbounce.features.value.ListValue;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S2EPacketCloseWindow;
-import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
-@ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
+
+    private static ModuleCategory category = ModuleCategory.CLIENT;
+    public ClickGUIModule() {
+        super("ClickGUI", category = ModuleCategory.CLIENT);
+    }
     public final ListValue styleValue = new ListValue("Style", new String[]{"Classic", "OneTap", "Light", "Novoline", "Astolfo", "LB+", "Jello", "LiquidBounce", "Tenacity5", "Slight", "Bjur", "Null", "Slowly", "Black", "White"}, "Black") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {

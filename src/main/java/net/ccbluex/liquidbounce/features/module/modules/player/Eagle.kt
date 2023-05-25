@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
@@ -18,8 +17,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 
-@ModuleInfo(name = "Eagle", category = ModuleCategory.PLAYER)
-class Eagle : Module() {
+class Eagle : Module(name = "Eagle", category = ModuleCategory.PLAYER) {
     
     private val motionPredictValue = FloatValue("MotionPredictAmount", 0.2f, 0.0f, 2.0f)
     private val limitTimeValue = BoolValue("SneakTimeLimit", false)

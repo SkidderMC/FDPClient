@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.TextValue
@@ -19,8 +18,7 @@ import net.minecraft.network.play.server.S45PacketTitle
 import java.util.*
 import kotlin.concurrent.schedule
 
-@ModuleInfo(name = "AutoLogin", category = ModuleCategory.MISC)
-class AutoLogin : Module() {
+class AutoLogin : Module(name = "AutoLogin", category = ModuleCategory.MISC) {
     private val registerCommandValue = TextValue("Register", "/register %p %p")
     private val loginCommandValue = TextValue("Login", "/login %p")
     private val passwordValue = TextValue("Password", "password")

@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -24,8 +23,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.*
 
-@ModuleInfo(name = "PointerESP", category = ModuleCategory.RENDER)
-class PointerESP : Module() {
+class PointerESP : Module(name = "PointerESP", category = ModuleCategory.RENDER) {
     private val dimensionValue = ListValue("Dimension", arrayOf("2d", "3d"), "2d")
     private val modeValue = ListValue("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
     private val lineWidthValue = FloatValue("LineWidth", 4f, 1f, 10f).displayable { modeValue.get().contains("Line") }

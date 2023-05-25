@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.IntegerValue
@@ -20,8 +19,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "FastBow", category = ModuleCategory.COMBAT)
-class FastBow : Module() {
+class FastBow : Module(name = "FastBow", category = ModuleCategory.COMBAT) {
 
     private val packetsValue = IntegerValue("Packets", 20, 3, 20)
     private val delay = IntegerValue("Delay", 0, 0, 500)

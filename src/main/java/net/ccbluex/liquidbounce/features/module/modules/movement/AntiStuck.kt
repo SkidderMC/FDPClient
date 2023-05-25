@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -20,8 +19,7 @@ import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-@ModuleInfo(name = "AntiStuck", category = ModuleCategory.MOVEMENT)
-class AntiStuck : Module() {
+class AntiStuck : Module(name = "AntiStuck", category = ModuleCategory.MOVEMENT) {
     private val flagsValue = IntegerValue("Flags", 5, 1, 10)
 
     private val timer = MSTimer()

@@ -9,15 +9,13 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.minecraft.block.BlockLadder
 import net.minecraft.block.BlockVine
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "FastLadder", category = ModuleCategory.MOVEMENT)
-class AirLadder : Module() {
+class AirLadder : Module(name = "FastLadder", category = ModuleCategory.MOVEMENT) {
     private val yMotionValue = FloatValue("YMotion", 0.15f, 0.1f, 0.2f)
     @EventTarget
     fun onUpdate(event: UpdateEvent) {

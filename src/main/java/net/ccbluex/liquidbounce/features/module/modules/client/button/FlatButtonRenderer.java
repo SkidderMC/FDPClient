@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.client.button;
 
 import net.ccbluex.liquidbounce.font.CFontRenderer;
@@ -14,8 +19,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-public class FlatButtonRenderer extends GuiButton
-{
+public class FlatButtonRenderer extends GuiButton {
     private MSTimer time;
     public String displayString;
     public int id;

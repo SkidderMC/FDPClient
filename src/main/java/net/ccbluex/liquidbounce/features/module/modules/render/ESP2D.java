@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.value.*;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
@@ -48,8 +47,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
-@ModuleInfo(name = "ESP2D", category = ModuleCategory.RENDER)
 public final class ESP2D extends Module {
+
     public final BoolValue outline = new BoolValue("Outline", true);
     public final ListValue boxMode = new ListValue("Mode", new String[]{"Box", "Corners"}, "Box");
     public final BoolValue healthBar = new BoolValue("Health-bar", true);
@@ -89,7 +88,9 @@ public final class ESP2D extends Module {
 
     private final DecimalFormat dFormat = new DecimalFormat("0.0");
 
+    private static ModuleCategory category = ModuleCategory.RENDER;
     public ESP2D() {
+        super("ESP2D", category = ModuleCategory.RENDER);
         this.viewport = GLAllocation.createDirectIntBuffer(16);
         this.modelview = GLAllocation.createDirectFloatBuffer(16);
         this.projection = GLAllocation.createDirectFloatBuffer(16);
