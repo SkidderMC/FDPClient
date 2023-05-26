@@ -18,7 +18,6 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline.Cli
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.OtcClickGUi
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.tenacity.TenacityClickGUI
 import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
@@ -73,7 +72,6 @@ object ClickGUIModule : Module(name = "ClickGUI", category = ModuleCategory.CLIE
     val getClosePrevious = BoolValue("ClosePrevious", false)
 
     val disp = BoolValue("DisplayValue", true)
-
 
     fun generateColor(): Color? {
         return if (colorRainbow.get()) rainbow() else Color(

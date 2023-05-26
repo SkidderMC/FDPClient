@@ -32,36 +32,40 @@ open class Module @JvmOverloads constructor(
     val canEnable: Boolean = true,
     var autoDisable: EnumAutoDisableType = EnumAutoDisableType.NONE,
     val moduleCommand: Boolean = true,
-    val defaultOn: Boolean = false,
+    val defaultOn: Boolean = true,
     val forceNoSound: Boolean = false,
     var triggerType: EnumTriggerType = EnumTriggerType.TOGGLE
 ) : MinecraftInstance(), Listenable, Annotation {
-    enum class EnumAutoDisableType {
-        NONE,
-        RESPAWN,
-        FLAG,
-        GAME_END
-    }
 
-    enum class EnumTriggerType {
-        TOGGLE,
-        PRESS
-    }
+    var tKeyBind = Keyboard.CHAR_NONE
+    set(keyBind) {
+        field = keyBind
 
-        val translate = Translate(0F,0F)
-        val animation: AnimationHelper
-            get() {
-                TODO()
+        if (!FDPClient.isStarting) {
+            FDPClient.configManager.smartSave()
+        }
+    }
+    var tArray = array
+        set(array) {
+            field = array
+
+            if (!FDPClient.isStarting) {
+                FDPClient.configManager.smartSave()
             }
-    val tab = Translate(0f , 0f)
-        var expanded: Boolean = false
-        private var suffix: String? = null
-        private val properties: List<Value<*>> = ArrayList<Value<*>>()
-        var toggled = false
-    val module = javaClass.getAnnotation(Module::class.java)!!
-        var localizedName = ""
-            get() = field.ifEmpty { name }
+        }
 
+    val translate = Translate(0F,0F)
+    val animation: AnimationHelper
+        get() {
+            TODO()
+        }
+    val tab = Translate(0f , 0f)
+    var expanded: Boolean = false
+    private var suffix: String? = null
+    private val properties: List<Value<*>> = ArrayList<Value<*>>()
+    var toggled = false
+    var localizedName = ""
+        get() = field.ifEmpty { name }
     var splicedName = ""
         get() {
             if (field.isEmpty()) {
@@ -78,15 +82,6 @@ open class Module @JvmOverloads constructor(
             }
             return field
         }
-
-        set(array) {
-            field = array
-
-            if (!FDPClient.isStarting) {
-                FDPClient.configManager.smartSave()
-            }
-        }
-
 
     open fun onLoad() {
         localizedName = if(LanguageManager.getAndFormat("module.$name.name") == "module.$name.name") {
@@ -257,6 +252,16 @@ open class Module @JvmOverloads constructor(
      */
     override fun handleEvents() = state
 
+    enum class EnumAutoDisableType {
+        NONE,
+        RESPAWN,
+        FLAG,
+        GAME_END
     }
 
+    enum class EnumTriggerType {
+        TOGGLE,
+        PRESS
+    }
 
+}
