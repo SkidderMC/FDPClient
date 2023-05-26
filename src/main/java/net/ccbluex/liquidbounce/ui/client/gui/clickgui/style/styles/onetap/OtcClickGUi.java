@@ -65,7 +65,7 @@ public class OtcClickGUi extends GuiScreen  {
     }
     
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        int guiColor = ClickGUIModule.generateColor().getRGB();
+        int guiColor = ClickGUIModule.INSTANCE.generateColor().getRGB();
         try {
             if (this.dragging) {
                 this.mainx = (float)(this.x2 + mouseX);

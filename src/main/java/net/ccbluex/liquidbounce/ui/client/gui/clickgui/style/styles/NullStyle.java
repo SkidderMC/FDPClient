@@ -36,7 +36,7 @@ public class NullStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.drawGradientSidewaysH((float) panel.getX() - 3, (float) panel.getY(), (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 19, ClickGUIModule.generateColor().getRGB(), ColorUtils.INSTANCE.reAlpha(ClickGUIModule.generateColor(),50).getRGB());
+        RenderUtils.drawGradientSidewaysH((float) panel.getX() - 3, (float) panel.getY(), (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 19, ClickGUIModule.INSTANCE.generateColor().getRGB(), ColorUtils.INSTANCE.reAlpha(ClickGUIModule.INSTANCE.generateColor(),50).getRGB());
         if(panel.getFade() > 0)
             RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() + 19, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), 1, Integer.MIN_VALUE, Integer.MIN_VALUE);
         GlStateManager.resetColor();
@@ -48,7 +48,7 @@ public class NullStyle extends Style {
     public void drawDescription(int mouseX, int mouseY, String text) {
         int textWidth = Fonts.minecraftFont.getStringWidth(LanguageManager.INSTANCE.get(text.replaceAll("%","")));
 
-        RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.minecraftFont.FONT_HEIGHT + 3, ClickGUIModule.generateColor().getRGB());
+        RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.minecraftFont.FONT_HEIGHT + 3, ClickGUIModule.INSTANCE.generateColor().getRGB());
         GlStateManager.resetColor();
         Fonts.minecraftFont.drawString(LanguageManager.INSTANCE.get(text.replaceAll("%","")), mouseX + 12, mouseY + (Fonts.minecraftFont.FONT_HEIGHT / 2), Integer.MAX_VALUE);
     }
@@ -61,7 +61,7 @@ public class NullStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-        final int guiColor = ClickGUIModule.generateColor().getRGB();
+        final int guiColor = ClickGUIModule.INSTANCE.generateColor().getRGB();
         GlStateManager.resetColor();
         Fonts.minecraftFont.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX()+3), moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 

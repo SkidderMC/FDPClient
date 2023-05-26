@@ -63,18 +63,18 @@ public class ClickGui extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         float trueCguiScale;
-        if (FDPClient.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Jello")) {
+        if (FDPClient.moduleManager.getModule(ClickGUIModule.class).INSTANCE.getStyleValue().get().equals("Jello")) {
             trueCguiScale = 1;
-        } else if(FDPClient.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Glow")) {
+        } else if(FDPClient.moduleManager.getModule(ClickGUIModule.class).INSTANCE.getStyleValue().get().equals("Glow")) {
             trueCguiScale = 1;
         } else {
-            trueCguiScale = FDPClient.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+            trueCguiScale = FDPClient.moduleManager.getModule(ClickGUIModule.class).INSTANCE.getScaleValue().get();
         }
         final double scale = trueCguiScale;
         if (progress < 1) progress += 0.1 * (1 - partialTicks);
         else progress = 1;
 
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).animationValue.get().toLowerCase()) {
+        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).INSTANCE.getAnimationValue().get().toLowerCase()) {
             case "liquidbounce":
             case "ziul":
                 slide = EaseUtils.easeOutBack(progress);
@@ -92,7 +92,6 @@ public class ClickGui extends GuiScreen {
         if (Mouse.isButtonDown(0) && mouseX >= 5 && mouseX <= 50 && mouseY <= height - 5 && mouseY >= height - 50)
             mc.displayGuiScreen(new GuiHudDesigner());
 
-        // Enable DisplayList optimization
         AWTFontRenderer.Companion.setAssumeNonVolatile(true);
 
         mouseX /= scale;
@@ -101,12 +100,12 @@ public class ClickGui extends GuiScreen {
         this.mouseX = mouseX;
         this.mouseY = mouseY;
 
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).backgroundValue.get()) {
+        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).INSTANCE.getBackgroundValue().get()) {
             case "Default":
                 drawDefaultBackground();
                 break;
             case "Gradient":
-                drawGradientRect(0, 0, width, height, ColorUtils.reAlpha(ClickGUIModule.generateColor(), 40).getRGB(), ClickGUIModule.generateColor().getRGB());
+                drawGradientRect(0, 0, width, height, ColorUtils.reAlpha(ClickGUIModule.INSTANCE.generateColor(), 40).getRGB(), ClickGUIModule.INSTANCE.generateColor().getRGB());
                 break;
             default:
                 break;
@@ -116,7 +115,7 @@ public class ClickGui extends GuiScreen {
         int defaultHeight1 = (this.height);
         int defaultWidth1 = (this.width);
 
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).animationValue.get().toLowerCase()) {
+        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).INSTANCE.getAnimationValue().get().toLowerCase()) {
             case "bread":
                 GlStateManager.translate(0, (1.0 - slide) * height * 2.0, 0);
                 GlStateManager.scale(scale, scale + (1.0 - slide) * 2.0, scale);
@@ -172,7 +171,7 @@ public class ClickGui extends GuiScreen {
         GlStateManager.disableLighting();
         RenderHelper.disableStandardItemLighting();
 
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).animationValue.get().toLowerCase()) {
+        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getAnimationValue().get().toLowerCase()) {
             case "bread":
             case "slide":
             case "liquidbounce":
@@ -203,12 +202,12 @@ public class ClickGui extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         float trueCguiScale;
-        if (FDPClient.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Jello")) {
+        if (FDPClient.moduleManager.getModule(ClickGUIModule.class).getStyleValue().get().equals("Jello")) {
             trueCguiScale = 1;
-        } else if(FDPClient.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Glow")) {
+        } else if(FDPClient.moduleManager.getModule(ClickGUIModule.class).getStyleValue().get().equals("Glow")) {
             trueCguiScale = 1;
         } else {
-            trueCguiScale = FDPClient.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+            trueCguiScale = FDPClient.moduleManager.getModule(ClickGUIModule.class).getScaleValue().get();
         }
         final double scale = trueCguiScale;
 
@@ -239,12 +238,12 @@ public class ClickGui extends GuiScreen {
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         float trueCguiScale;
-        if (FDPClient.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Jello")) {
+        if (FDPClient.moduleManager.getModule(ClickGUIModule.class).getStyleValue().get().equals("Jello")) {
             trueCguiScale = 1;
-        } else if(FDPClient.moduleManager.getModule(ClickGUIModule.class).styleValue.get().equals("Glow")) {
+        } else if(FDPClient.moduleManager.getModule(ClickGUIModule.class).getStyleValue().get().equals("Glow")) {
             trueCguiScale = 1;
         } else {
-            trueCguiScale = FDPClient.moduleManager.getModule(ClickGUIModule.class).scaleValue.get();
+            trueCguiScale = FDPClient.moduleManager.getModule(ClickGUIModule.class).getScaleValue().get();
         }
         final double scale = trueCguiScale;
 

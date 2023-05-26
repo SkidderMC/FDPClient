@@ -42,7 +42,7 @@ public class LiquidBounceStyle extends Style {
 
         if(panel.getScrollbar() && panel.getFade() > 0) {
             RenderUtils.drawRect(panel.getX() - 2, panel.getY() + 21, panel.getX(), panel.getY() + 16 + panel.getFade(), Integer.MAX_VALUE);
-            RenderUtils.drawRect(panel.getX() - 2, panel.getY() + 30 + (panel.getFade() - 24F) / (panel.getElements().size() - FDPClient.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get()) * panel.getDragged() - 10.0f, panel.getX(), panel.getY() + 40 + (panel.getFade() - 24.0f) / (panel.getElements().size() - FDPClient.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get()) * panel.getDragged(), Integer.MIN_VALUE);
+            RenderUtils.drawRect(panel.getX() - 2, panel.getY() + 30 + (panel.getFade() - 24F) / (panel.getElements().size() - FDPClient.moduleManager.getModule(ClickGUIModule.class).getMaxElementsValue().get()) * panel.getDragged() - 10.0f, panel.getX(), panel.getY() + 40 + (panel.getFade() - 24.0f) / (panel.getElements().size() - FDPClient.moduleManager.getModule(ClickGUIModule.class).getMaxElementsValue().get()) * panel.getDragged(), Integer.MIN_VALUE);
         }
     }
 
@@ -63,7 +63,7 @@ public class LiquidBounceStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-        int guiColor = ClickGUIModule.generateColor().getRGB();
+        int guiColor = ClickGUIModule.INSTANCE.generateColor().getRGB();
         GlStateManager.resetColor();
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 

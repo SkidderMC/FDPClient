@@ -55,7 +55,7 @@ public class AstolfoStyle extends Style {
         if (categoryName.equals("misc")) {
             return new Color(244, 157, 19, 175);
         }
-        return ClickGUIModule.generateColor();
+        return ClickGUIModule.INSTANCE.generateColor();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class AstolfoStyle extends Style {
     public void drawButtonElement(int mouseX, int mouseY, ButtonElement buttonElement) {
         Gui.drawRect(buttonElement.getX() - 1, buttonElement.getY() + 1, buttonElement.getX() + buttonElement.getWidth() + 1,
                 buttonElement.getY() + buttonElement.getHeight() + 2, hoverColor(buttonElement.getColor() != Integer.MAX_VALUE
-                        ? ClickGUIModule.generateColor() : new Color(26, 26, 26), buttonElement.hoverTime).getRGB());
+                        ? ClickGUIModule.INSTANCE.generateColor() : new Color(26, 26, 26), buttonElement.hoverTime).getRGB());
 
         GlStateManager.resetColor();
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(buttonElement.getDisplayName().replaceAll("%","")), buttonElement.getX() + 3,
@@ -99,7 +99,7 @@ public class AstolfoStyle extends Style {
                 + moduleElement.getWidth() - 1, moduleElement.getY() + moduleElement.getHeight() + 2, hoverColor(
                 new Color(getCategoryColor(moduleElement.getModule().getCategory().name()).getRed(), getCategoryColor(moduleElement.getModule().getCategory().name()).getGreen(), getCategoryColor(moduleElement.getModule().getCategory().name()).getBlue(), moduleElement.slowlyFade), moduleElement.hoverTime).getRGB());
 
-        final int guiColor = ClickGUIModule.generateColor().getRGB();
+        final int guiColor = ClickGUIModule.INSTANCE.generateColor().getRGB();
 
         GlStateManager.resetColor();
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 3,

@@ -138,12 +138,10 @@ public class SettingComponents extends Component {
         Color darkRectColorDisabled = new Color(52, 52, 52, alphaAnimation);
         Color darkRectHover = DrRenderUtils.brighter(darkRectColor, .8f);
 
-
-        // HudMod hudMod = (HudMod) Tenacity.INSTANCE.getModuleCollection().get(HudMod.class);
         Color[] colors = new Color[2];
-        boolean accent = ClickGUIModule.colormode.get().equalsIgnoreCase("Color");
+        boolean accent = ClickGUIModule.INSTANCE.getColormode().get().equalsIgnoreCase("Color");
 
-        Color color2 = new Color(ClickGUIModule.generateColor().getRGB());
+        Color color2 = new Color(ClickGUIModule.INSTANCE.generateColor().getRGB());
         colors = new Color[]{color2,color2};
 
         Color accentedColor = DrRenderUtils.applyOpacity(colors[0], alphaAnimation / 255f);

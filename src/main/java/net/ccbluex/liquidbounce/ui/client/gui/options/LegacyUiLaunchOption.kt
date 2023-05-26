@@ -21,7 +21,7 @@ object modernuiLaunchOption : LaunchOption() {
 
     override fun start() {
         FDPClient.mainMenu = GuiMainMenu()
-        FDPClient.moduleManager.registerModule(ClickGUIModule())
+        FDPClient.moduleManager.registerModule(ClickGUIModule)
 
         clickGui = ClickGui()
         clickGuiConfig = ClickGuiConfig(

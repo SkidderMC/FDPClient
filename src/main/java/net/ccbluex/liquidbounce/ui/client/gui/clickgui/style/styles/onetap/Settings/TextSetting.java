@@ -23,7 +23,7 @@ public class TextSetting extends Downward<TextValue>  {
     
     @Override
     public void draw(final int mouseX, final int mouseY) {
-        int guiColor = ClickGUIModule.generateColor().getRGB();
+        int guiColor = ClickGUIModule.INSTANCE.generateColor().getRGB();
         this.modulex = OtcClickGUi.getMainx();
         this.moduley = OtcClickGUi.getMainy();
         this.texty = this.pos.y + this.getScrollY();

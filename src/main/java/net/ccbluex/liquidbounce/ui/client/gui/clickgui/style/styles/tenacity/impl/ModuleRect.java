@@ -55,11 +55,9 @@ public class ModuleRect extends Component {
     public void drawScreen(int mouseX, int mouseY) {
         Color rectColor = new Color(43, 45, 50, alphaAnimation);
         Color textColor = new Color(255, 255, 255, alphaAnimation);
-        Color debcolor = new Color(ClickGUIModule.generateColor().getRGB());
+        Color debcolor = new Color(ClickGUIModule.INSTANCE.generateColor().getRGB());
 
         Color clickModColor = DrRenderUtils.applyOpacity(debcolor, alphaAnimation / 255f);
-        //    Color clickModColor2 = DrRenderUtils.applyOpacity(ClickDrRenderUtilsMod.color2.getColor(), alphaAnimation / 255f);
-        // HudMod hudMod = (HudMod) Tenacity.INSTANCE.getModuleCollection().get(HudMod.class);
         float alpha = alphaAnimation / 255f;
 
         boolean hoveringModule = DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY);
@@ -94,7 +92,7 @@ public class ModuleRect extends Component {
             boolean hoveringSettingsOrModule = DrRenderUtils.isHovering(x, y, width, (float) (height + (settingHeight * height)), mouseX, mouseY);
 
 
-            if (ClickGUIModule.backback.get()) {
+            if (ClickGUIModule.INSTANCE.getBackback().get()) {
 
                 DrRenderUtils.resetColor();
 

@@ -61,7 +61,7 @@ public abstract class Panel extends MinecraftInstance {
         if(!visible)
             return;
 
-        final int maxElements = FDPClient.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get();
+        final int maxElements = FDPClient.moduleManager.getModule(ClickGUIModule.class).getMaxElementsValue().get();
 
         // Drag
         if(drag) {
@@ -126,7 +126,7 @@ public abstract class Panel extends MinecraftInstance {
     }
 
     public boolean handleScroll(int mouseX, int mouseY, int wheel) {
-        final int maxElements = FDPClient.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get();
+        final int maxElements = FDPClient.moduleManager.getModule(ClickGUIModule.class).getMaxElementsValue().get();
 
         if(mouseX >= getX() && mouseX <= getX() + 100 && mouseY >= getY() && mouseY <= getY() + 19 + elementsHeight) {
             if(wheel < 0 && scroll < elements.size() - maxElements) {
@@ -229,7 +229,7 @@ public abstract class Panel extends MinecraftInstance {
         int height = 0;
         int count = 0;
         for(final Element element : elements) {
-            if (count >= FDPClient.moduleManager.getModule(ClickGUIModule.class).maxElementsValue.get())
+            if (count >= FDPClient.moduleManager.getModule(ClickGUIModule.class).getMaxElementsValue().get())
                 continue;
             height += element.getHeight() + 1;
             ++count;

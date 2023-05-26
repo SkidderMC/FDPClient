@@ -16,7 +16,6 @@ public final class ClientSpoof extends Module {
         super("ClientSpoof", category = ModuleCategory.CLIENT);
     }
 
-
     public final ListValue modeValue = new ListValue("Mode", new String[]{
             "Vanilla",
             "Forge",

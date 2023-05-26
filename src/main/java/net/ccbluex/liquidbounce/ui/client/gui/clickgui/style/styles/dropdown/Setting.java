@@ -62,7 +62,7 @@ public class Setting {
 
             percent = Math.max(0, Math.min(1, (float) (percent + (Math.max(0, Math.min(percentBar, 1)) - percent) * (0.2 / clamp))));
             RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 99, y + 14, new Color(0, 0, 0, 50).getRGB());
-            RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.generateColor());
+            RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.INSTANCE.generateColor());
             Fonts.SF.SF_18.SF_18.drawString(numberValue.getName() + " " + rounded, module.tab.getPosX() + 4, y + 5.5f, 0xffffffff, true);
 
             if (this.dragging) {
@@ -95,7 +95,7 @@ public class Setting {
 
             percent = Math.max(0, Math.min(1, (float) (percent + (Math.max(0, Math.min(percentBar, 1)) - percent) * (0.2 / clamp))));
             RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 99, y + 14, new Color(0, 0, 0, 50).getRGB());
-            RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.generateColor());
+            RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.INSTANCE.generateColor());
             Fonts.SF.SF_18.SF_18.drawString(integerValue.getName() + " " + rounded, module.tab.getPosX() + 4, y + 5.5f, 0xffffffff, true);
 
             if (this.dragging2) {
@@ -118,7 +118,7 @@ public class Setting {
             final BoolValue boolValue = (BoolValue) setting;
             RenderUtils.drawRect(module.tab.getPosX() + 89, y + 4, module.tab.getPosX() + 99, y + 14, new Color(0, 0, 0, 50).getRGB());
             if (boolValue.get()) {
-                RenderUtils.drawCheck(module.tab.getPosX() + 91, y + 8.5f, 2, ClickGUIModule.generateColor().brighter().getRGB());
+                RenderUtils.drawCheck(module.tab.getPosX() + 91, y + 8.5f, 2, ClickGUIModule.INSTANCE.generateColor().brighter().getRGB());
             }
 
             Fonts.SF.SF_18.SF_18.drawString(boolValue.getName(), module.tab.getPosX() + 4, y + 5.5f,

@@ -52,7 +52,7 @@ public class BjurStyle extends GuiScreen {
         int color36 = color33.getRGB();
         int color37 = color34.getRGB();
         int color38 = color35.getRGB();
-        int color39 = (new Color(ClickGUIModule.colorRedValue.get(), ClickGUIModule.colorGreenValue.get(), ClickGUIModule.colorBlueValue.get(), alpha)).getRGB();
+        int color39 = (new Color(ClickGUIModule.INSTANCE.getColorRedValue().get(), ClickGUIModule.INSTANCE.getColorGreenValue().get(), ClickGUIModule.INSTANCE.getColorBlueValue().get(), alpha)).getRGB();
         this.hue += 0.1F;
         RenderUtils.rectangleBordered(startX, startY, (startX + 450.0F), (startY + 350.0F), 0.01D, Colors.getColor(90, alpha), Colors.getColor(0, alpha));
         RenderUtils.rectangleBordered((startX + 1.0F), (startY + 1.0F), (startX + 450.0F - 1.0F), (startY + 350.0F - 1.0F), 1.0D, Colors.getColor(90, alpha), Colors.getColor(61, alpha));

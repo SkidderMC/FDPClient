@@ -82,7 +82,7 @@ public class Module {
         }
 
         HUD hud = (HUD) FDPClient.moduleManager.getModule(HUD.class);
-        Color colorHUD = ClickGUIModule.generateColor();
+        Color colorHUD = ClickGUIModule.INSTANCE.generateColor();
         Color white = new Color(0xFFFFFF);
 
         if (colorHUD.getRed() > 220 && colorHUD.getBlue() > 220 && colorHUD.getGreen() > 220) {
@@ -170,7 +170,7 @@ public class Module {
                 case 1:
                     if (!module.getValues().isEmpty()) {
                         final ClickGUIModule clickGUI = (ClickGUIModule) FDPClient.moduleManager.getModule(ClickGUIModule.class);
-                        if (!opened && clickGUI.getClosePrevious.get())
+                        if (!opened && clickGUI.INSTANCE.getGetClosePrevious().get())
                             tab.modules.forEach(module -> {
                                 if (module.opened)
                                     module.opened = false;

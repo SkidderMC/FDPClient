@@ -66,7 +66,7 @@ public class ModuleRender  {
     }
     
     public void drawScreen(final int mouseX, final int mouseY) {
-        int guiColor = ClickGUIModule.generateColor().getRGB();
+        int guiColor = ClickGUIModule.INSTANCE.generateColor().getRGB();
         try {
             this.modulex = OtcClickGUi.getMainx();
             this.moduley = OtcClickGUi.getMainy();
