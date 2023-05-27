@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
@@ -287,7 +288,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
     
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
-        var aabb = it.entityBoundingBox
+        var aabb = it.hitBox
         aabb = if (predictValue.get()) aabb.offset(
             (it.posX - it.lastTickPosX) * predictAmount,
             (it.posY - it.lastTickPosY) * predictAmount,
@@ -737,7 +738,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
         }
 
         // 视角差异
-        val entityFov = RotationUtils.getRotationDifference(RotationUtils.toRotation(RotationUtils.getCenter(entity.entityBoundingBox), true), RotationUtils.serverRotation)
+        val entityFov = RotationUtils.getRotationDifference(RotationUtils.toRotation(RotationUtils.getCenter(entity.hitBox), true), RotationUtils.serverRotation)
 
         // 可以被看见
         if (entityFov <= mc.gameSettings.fovSetting) lastCanBeSeen = true
@@ -753,7 +754,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             predictPlayerAmount = RandomUtils.nextFloat(maxPredictPlayerSizeValue.get(), minPredictPlayerSizeValue.get())
         }
 
-        val boundingBox = if (rotationModeValue.get() == "Test") entity.entityBoundingBox else getAABB(entity)
+        val boundingBox = if (rotationModeValue.get() == "Test") entity.hitBox else getAABB(entity)
 
         val rModes = when (rotationModeValue.get()) {
             "LiquidBounce", "SmoothLiquid", "Derp" -> "LiquidBounce"
@@ -869,7 +870,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             val positionEye = mc.renderViewEntity?.getPositionEyes(1F)
 
             val expandSize = interactEntity.collisionBorderSize.toDouble()
-            val boundingBox = interactEntity.entityBoundingBox.expand(expandSize, expandSize, expandSize)
+            val boundingBox = interactEntity.hitBox
 
             val (yaw, pitch) = RotationUtils.targetRotation ?: Rotation(mc.thePlayer!!.rotationYaw, mc.thePlayer!!.rotationPitch)
             val yawCos = cos(-yaw * 0.017453292F - Math.PI.toFloat())
@@ -982,8 +983,8 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                     )
                 }
                 "block", "otherblock" -> {
-                    val bb = it.entityBoundingBox
-                    it.entityBoundingBox = it.entityBoundingBox.expand(0.2, 0.2, 0.2)
+                    val bb = it.hitBox
+                    it.entityBoundingBox = it.hitBox.expand(0.2, 0.2, 0.2)
                     RenderUtils.drawEntityBox(
                         it,
                         if (it.hurtTime <= 0) if (it == currentTarget) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170),
@@ -1012,7 +1013,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                     GL11.glEnable(GL11.GL_BLEND)
                     GL11.glDisable(GL11.GL_DEPTH_TEST)
 
-                    val bb = it.entityBoundingBox
+                    val bb = it.hitBox
                     val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
                     val height = bb.maxY - bb.minY
                     val x =
@@ -1056,7 +1057,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                     }
                     drawPercent=EaseUtils.easeInOutQuad(drawPercent)
                     val points = mutableListOf<Vec3>()
-                    val bb=it.entityBoundingBox
+                    val bb=it.hitBox
                     val radius=bb.maxX-bb.minX
                     val height=bb.maxY-bb.minY
                     val posX = it.lastTickPosX + (it.posX - it.lastTickPosX) * mc.timer.renderPartialTicks
@@ -1131,7 +1132,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                     GL11.glShadeModel(7425)
                     mc.entityRenderer.disableLightmap()
 
-                    val bb = it.entityBoundingBox
+                    val bb = it.hitBox
                     val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
                     val height = bb.maxY - bb.minY
                     val x =

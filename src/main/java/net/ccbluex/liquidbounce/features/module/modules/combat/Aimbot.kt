@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import kotlin.random.Random
 
 class Aimbot : Module(name = "Aimbot", category = ModuleCategory.COMBAT) {
@@ -66,9 +67,9 @@ class Aimbot : Module(name = "Aimbot", category = ModuleCategory.COMBAT) {
         val rotation = RotationUtils.limitAngleChange(
             Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
             if (centerValue.get()) {
-                RotationUtils.toRotation(RotationUtils.getCenter(entity.entityBoundingBox), true)
+                RotationUtils.toRotation(RotationUtils.getCenter(entity.hitBox), true)
             } else {
-                RotationUtils.searchCenter(entity.entityBoundingBox, false, false, true,
+                RotationUtils.searchCenter(entity.hitBox, false, false, true,
                     false).rotation
             },
             (calcBaseSpeed * calcPrecent).toFloat()

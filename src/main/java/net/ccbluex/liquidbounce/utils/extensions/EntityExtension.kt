@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
-import net.ccbluex.liquidbounce.script.api.global.Chat.alert
 import net.ccbluex.liquidbounce.utils.ClientUtils.mc
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -21,8 +20,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 import net.minecraft.world.World
 import net.minecraft.world.chunk.Chunk
-import org.apache.commons.io.IOExceptionWithCause
-import java.io.IOException
 import javax.vecmath.Vector3d
 import kotlin.math.*
 
@@ -31,11 +28,8 @@ import kotlin.math.*
  */
 fun Entity.getDistanceToEntityBox(entity: Entity): Double {
     val eyes = this.getPositionEyes(0f)
-    val pos = getNearestPointBB(eyes, entity.entityBoundingBox.expand(entity.collisionBorderSize.toDouble(), entity.collisionBorderSize.toDouble(), entity.collisionBorderSize.toDouble()))
-    val xDist = abs(pos.xCoord - eyes.xCoord)
-    val yDist = abs(pos.yCoord - eyes.yCoord)
-    val zDist = abs(pos.zCoord - eyes.zCoord)
-    return sqrt(xDist.pow(2) + yDist.pow(2) + zDist.pow(2))
+    val pos = getNearestPointBB(eyes, entity.hitBox)
+    return eyes.distanceTo(pos)
 }
 
 fun getNearestPointBB(eye: Vec3, box: AxisAlignedBB): Vec3 {
@@ -96,6 +90,12 @@ val Entity.renderBoundingBox: AxisAlignedBB
         return this.entityBoundingBox
             .offset(-this.posX, -this.posY, -this.posZ)
             .offset(this.renderPos.x, this.renderPos.y, this.renderPos.z)
+    }
+
+val Entity.hitBox: AxisAlignedBB
+    get() {
+        val borderSize = collisionBorderSize.toDouble()
+        return entityBoundingBox.expand(borderSize, borderSize, borderSize)
     }
 
 fun World.getEntitiesInRadius(entity: Entity, radius: Double = 16.0): List<Entity> {
