@@ -211,8 +211,6 @@ object HotbarSettings : Module("Hotbar", category = ModuleCategory.CLIENT, array
         GlStateManager.disableBlend()
     }
 
-
-    // Mojang ©2009-2022
     fun HotbarItems(index: Int, xPos: Int, yPos: Int) {
         val entityplayer = mc.renderViewEntity as EntityPlayer
         val itemstack = entityplayer.inventory.mainInventory[index]
@@ -243,7 +241,6 @@ object HotbarSettings : Module("Hotbar", category = ModuleCategory.CLIENT, array
             HotbarTextOverlay(xPos, yPos, null as String?, index)
         }
     }
-
     fun HotbarDurabilityOverlay(stack: ItemStack?, xPosition: Int, yPosition: Int) {
         if (stack != null) {
             if (stack.item.showDurabilityBar(stack)) {
@@ -257,7 +254,6 @@ object HotbarSettings : Module("Hotbar", category = ModuleCategory.CLIENT, array
             }
         }
     }
-
     fun HotbarTextOverlay(xPosition: Int, yPosition: Int, text: String?, index: Int) {
         val entityplayer = mc.renderViewEntity as EntityPlayer
         val stack = entityplayer.inventory.mainInventory[index]
@@ -326,12 +322,9 @@ object HotbarSettings : Module("Hotbar", category = ModuleCategory.CLIENT, array
                 ).start()
             }
         }
-
     fun getHotbarEasePos(x: Int): Int {
         if (!hotbarEaseValue.get()) return x
         easingValue = x
         return easingValue
-
-
     }
 }

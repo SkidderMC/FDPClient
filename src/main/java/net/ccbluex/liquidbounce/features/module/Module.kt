@@ -37,7 +37,7 @@ open class Module @JvmOverloads constructor(
     var triggerType: EnumTriggerType = EnumTriggerType.TOGGLE
 ) : MinecraftInstance(), Listenable, Annotation {
 
-    var tKeyBind = Keyboard.CHAR_NONE
+    var tKeyBind = keyBind
     set(keyBind) {
         field = keyBind
 
