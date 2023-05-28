@@ -1287,8 +1287,11 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
      * HUD Tag
      */
 
+
     override val tag: String
-        get() = if (displayMode.equals("Complicated")) "M:" + targetModeValue.get() + ", AB:" + autoBlockValue.get() + ", R:" + rangeValue.get() + ", CPS:" + minCpsValue.get() + " - " + maxCpsValue.get() else 
-                    if (displayMode.equals("LessSimple")) rangeValue.get() + " " + targetModeValue.get() + " " + autoBlockValue.get() else
-                    if  (displayMode.equals("Simple")) targetModeValue.get() + ""
+        get() = return when (displayMode.get().lowercase()) {
+                             "simple" -> targetModeValue.get() + ""
+                             "lesssimple" -> rangeValue.get() + " " + targetModeValue.get() + " " + autoBlockValue.get()
+                             "complicated" -> "M:" + targetModeValue.get() + ", AB:" + autoBlockValue.get() + ", R:" + rangeValue.get() + ", CPS:" + minCpsValue.get() + " - " + maxCpsValue.get() 
+                        }
 }
