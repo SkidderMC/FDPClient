@@ -21,7 +21,7 @@ import net.minecraft.util.EnumFacing
 
 class HypixelHopSpeed : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "Legit"), "Latest")
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "Legit", "GroundStrafe"), "Latest")
     private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotJumpModifier", 0.1f, 0f, 0.4f)
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
     private val yPort = BoolValue("${valuePrefix}OldHypixelYPort", false)
@@ -122,6 +122,12 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             "legit" -> {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
+                }
+            }
+            "groundstrafe" -> {
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                    MovementUtils.strafe(MovementUtils.getSpeed())
                 }
             }
         }
