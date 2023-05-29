@@ -86,7 +86,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards"), "Backwards")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards", "Snap", "BackSnap"), "Backwards")
     private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom"), "AAC")
     private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove"), "MoveDirection").displayable { rotationsValue.equals("Advanced") }
     private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla"), "Static").displayable { rotationsValue.equals("Advanced") }
@@ -1114,7 +1114,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
                 "aac" -> {
                     Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
                 }
-                "vanilla" -> {
+                "vanilla", "snap", "backsnap" -> {
                     placeRotation.rotation
                 }
                 "static1" -> {
@@ -1166,7 +1166,11 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
             if (silentRotationValue.get()) {
                 val limitedRotation =
                     RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
-                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                if (rotationsValue.equals("Snap") || rotationsValue.equals("BackSnap")) {
+                    RotationUtils.setTargetRotation(limitedRotation, 0)
+                } else {
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                }
             } else {
                 mc.thePlayer.rotationYaw = lockRotation!!.yaw
                 mc.thePlayer.rotationPitch = lockRotation!!.pitch
