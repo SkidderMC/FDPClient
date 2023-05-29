@@ -104,6 +104,11 @@ class Velocity : Module(name = "Velocity", category = ModuleCategory.COMBAT) {
     fun onMotion(event: MotionEvent) {
         mode.onMotion(event)
     }
+    
+    @EventTarget
+    fun onAttack(event: AttackEvent) {
+        mode.onAttack(event)
+    }
 
     @EventTarget
     fun onStrafe(event: StrafeEvent){
