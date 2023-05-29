@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import com.mojang.authlib.GameProfile;
+import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.features.module.modules.combat.KeepSprint;
 import net.ccbluex.liquidbounce.utils.CooldownHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -73,5 +75,13 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
             cooldownStackSlot = inventory.currentItem;
         }
     }
-
+    @Inject(method = "attackTargetEntityWithCurrentItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;setSprinting(Z)V", shift = At.Shift.AFTER))
+    public void onAttackTargetEntityWithCurrentItem(CallbackInfo callbackInfo) {
+        final KeepSprint ks = FDPClient.moduleManager.getModule(KeepSprint.class);
+        if (ks.getState()) {
+            this.motionX = this.motionX / 0.6 * 1.0f;
+            this.motionZ = this.motionZ / 0.6 * 1.0f;
+            this.setSprinting(ks.getAws().getValue());
+        }
+    }
 }
