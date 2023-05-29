@@ -12,7 +12,7 @@ import net.minecraft.util.MathHelper
 import kotlin.math.cos
 import kotlin.math.sin
 
-class LegitVelocity : VelocityMode("Legit") {
+class SideStrafeVelocity : VelocityMode("SideStrafe") {
     private val legitStrafeValue = BoolValue("${valuePrefix}Strafe", false)
     private val legitFaceValue = BoolValue("${valuePrefix}Face", true)
     private var pos: BlockPos? = null
