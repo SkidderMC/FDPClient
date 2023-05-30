@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.client.ChatEnhance;
+import net.ccbluex.liquidbounce.features.module.modules.client.ChatControl;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -49,7 +49,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     private float yPosOfInputField;
     private float fade = 0;
 
-    private final ChatEnhance chatEnhance = FDPClient.moduleManager.getModule(ChatEnhance.class);
+    private final ChatControl chatEnhance = FDPClient.moduleManager.getModule(ChatControl.class);
 
     /**
      * @author Liuli

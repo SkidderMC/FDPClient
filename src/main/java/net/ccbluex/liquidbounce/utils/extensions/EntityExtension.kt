@@ -13,6 +13,15 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.boss.EntityDragon
+import net.minecraft.entity.monster.EntityGhast
+import net.minecraft.entity.monster.EntityGolem
+import net.minecraft.entity.monster.EntityMob
+import net.minecraft.entity.monster.EntitySlime
+import net.minecraft.entity.passive.EntityAnimal
+import net.minecraft.entity.passive.EntityBat
+import net.minecraft.entity.passive.EntitySquid
+import net.minecraft.entity.passive.EntityVillager
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MovingObjectPosition
@@ -26,11 +35,8 @@ import kotlin.math.*
 /**
  * Allows to get the distance between the current entity and [entity] from the nearest corner of the bounding box
  */
-fun Entity.getDistanceToEntityBox(entity: Entity): Double {
-    val eyes = this.getPositionEyes(0f)
-    val pos = getNearestPointBB(eyes, entity.hitBox)
-    return eyes.distanceTo(pos)
-}
+
+fun Entity.getDistanceToEntityBox(entity: Entity) = eyes.distanceTo(getNearestPointBB(eyes, entity.hitBox))
 
 fun getNearestPointBB(eye: Vec3, box: AxisAlignedBB): Vec3 {
     val origin = doubleArrayOf(eye.xCoord, eye.yCoord, eye.zCoord)
@@ -92,11 +98,27 @@ val Entity.renderBoundingBox: AxisAlignedBB
             .offset(this.renderPos.x, this.renderPos.y, this.renderPos.z)
     }
 
+fun Entity.isAnimal() =
+    this is EntityAnimal
+            || this is EntitySquid
+            || this is EntityGolem
+            || this is EntityBat
+
+fun Entity.isMob() =
+    this is EntityMob
+            || this is EntityVillager
+            || this is EntitySlime
+            || this is EntityGhast
+            || this is EntityDragon
+
 val Entity.hitBox: AxisAlignedBB
     get() {
         val borderSize = collisionBorderSize.toDouble()
         return entityBoundingBox.expand(borderSize, borderSize, borderSize)
     }
+
+val Entity.eyes: Vec3
+    get() = getPositionEyes(1f)
 
 fun World.getEntitiesInRadius(entity: Entity, radius: Double = 16.0): List<Entity> {
     val box = entity.entityBoundingBox.expand(radius, radius, radius)

@@ -17,11 +17,11 @@ import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S0CPacketSpawnPlayer
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.util.*
 
-object Backtrack : Module(name = "BackTrack", category = ModuleCategory.COMBAT) {
+object Backtrack : Module("Backtrack", category = ModuleCategory.COMBAT) {
 
     // This will be used as maximum possible delay. (In milliseconds)
     private val maximumDelay = IntegerValue("MaxDelay", 250, 0, 1000)
@@ -77,16 +77,16 @@ object Backtrack : Module(name = "BackTrack", category = ModuleCategory.COMBAT) 
 
         for (entity in mc.theWorld.loadedEntityList) {
             if (entity is EntityPlayer) {
-                GL11.glPushMatrix()
-                GL11.glDisable(GL11.GL_TEXTURE_2D)
-                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-                GL11.glEnable(GL11.GL_LINE_SMOOTH)
-                GL11.glEnable(GL11.GL_BLEND)
-                GL11.glDisable(GL11.GL_DEPTH_TEST)
+                glPushMatrix()
+                glDisable(GL_TEXTURE_2D)
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+                glEnable(GL_LINE_SMOOTH)
+                glEnable(GL_BLEND)
+                glDisable(GL_DEPTH_TEST)
 
                 mc.entityRenderer.disableLightmap()
 
-                GL11.glBegin(GL11.GL_LINE_STRIP)
+                glBegin(GL_LINE_STRIP)
                 RenderUtils.glColor(color)
 
                 val renderPosX = mc.renderManager.viewerPosX
@@ -94,17 +94,17 @@ object Backtrack : Module(name = "BackTrack", category = ModuleCategory.COMBAT) 
                 val renderPosZ = mc.renderManager.viewerPosZ
 
                 loopThroughBacktrackData(entity) {
-                    GL11.glVertex3d(entity.posX - renderPosX, entity.posY - renderPosY, entity.posZ - renderPosZ)
+                    glVertex3d(entity.posX - renderPosX, entity.posY - renderPosY, entity.posZ - renderPosZ)
                     false
                 }
 
-                GL11.glColor4d(1.0, 1.0, 1.0, 1.0)
-                GL11.glEnd()
-                GL11.glEnable(GL11.GL_DEPTH_TEST)
-                GL11.glDisable(GL11.GL_LINE_SMOOTH)
-                GL11.glDisable(GL11.GL_BLEND)
-                GL11.glEnable(GL11.GL_TEXTURE_2D)
-                GL11.glPopMatrix()
+                glColor4d(1.0, 1.0, 1.0, 1.0)
+                glEnd()
+                glEnable(GL_DEPTH_TEST)
+                glDisable(GL_LINE_SMOOTH)
+                glDisable(GL_BLEND)
+                glEnable(GL_TEXTURE_2D)
+                glPopMatrix()
             }
         }
     }
