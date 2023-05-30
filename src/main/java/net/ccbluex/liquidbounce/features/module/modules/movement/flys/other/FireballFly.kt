@@ -12,12 +12,18 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.minecraft.network.play.server.S27PacketExplosion
 
-class HypixelFireballFly : FlyMode("HypixelFireball") {
+class FireballFly : FlyMode("Fireball") {
 
 
     private val warn = BoolValue("${valuePrefix}DamageWarn",true)
+    private val boostValue = FloatValue("${valuePrefix}BoostAmount", 1.4f, 0f, 2f)
+    private val frictionValue = FloatValue("${valuePrefix}Friction", 0.99f, 0.9f, 1f)
+    private val frictionDurationValue = IntegerValue("${valuePrefix}FrictionDuration", 12, 3, 20)
+    private val modifyYmotionValue = BoolValue("${valuePrefix}ModifyYmotion", true)
+    private val yMotionValue = FloatValue("${valuePrefix}Ymotion", 1.4f, 0.42f, 3f)
     private val timerValue = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f)
 
     private var velocitypacket = false
@@ -26,7 +32,7 @@ class HypixelFireballFly : FlyMode("HypixelFireball") {
 
     override fun onEnable() {
         if (warn.get())
-            ClientUtils.displayChatMessage("§8[§c§lHypixel-Fireball-Fly§8] §aGetting exlposion from a fireball or tnt is required to bypass.")
+            ClientUtils.displayChatMessage("§8[§c§lFireball-Fly§8] §aGetting exlposion from a fireball or tnt is required to bypass.")
         velocitypacket = false
         tick = 0
     }
@@ -37,14 +43,17 @@ class HypixelFireballFly : FlyMode("HypixelFireball") {
         if(velocitypacket) {
             mc.timer.timerSpeed = timerValue.get()
             if (tick == 0) {
-                mc.thePlayer.motionY = 1.5
-                MovementUtils.strafe(1.4f)
-            } else if (tick == 1) {
-                MovementUtils.strafe(1.4f)
-                mSpeed = 1.4f
-            } else if (tick < 12) {
-                MovementUtils.strafe(mSpeed * 0.99f)
-                mSpeed = mSpeed * 0.99f
+                if (modifyYmotionValue.get()) {
+                    mc.thePlayer.motionY = yMotionValue.get().toDouble()
+                } else {
+                    mc.thePlayer.jump()
+                }
+                    
+                MovementUtils.strafe(boostValue.get())
+                mSpeed = boostValue.get()
+            } else if (tick < frictionDurationValue.get()) {
+                mSpeed *= frictionValue.get()
+                MovementUtils.strafe(mSpeed)
             } else {
                 velocitypacket = false
                 fly.state = false
