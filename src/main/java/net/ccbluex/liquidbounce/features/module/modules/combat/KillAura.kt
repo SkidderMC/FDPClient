@@ -170,8 +170,8 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
         }
     }.displayable { rotationDisplay.get() && !rotationModeValue.equals("LockView")} as FloatValue
 
-    private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom").displayable { rotationDisplay.get() && !rotationModeValue.equals("LiquidBounce") && !rotationModeValue.equals("ForceCenter") && !rotationModeValue.equals("LockView") && !rotationModeValue.equals("Test")}
-    private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") && rotationDisplay.get()}
+    private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom").displayable { rotationDisplay.get() && !rotationModeValue.equals("LiquidBounce") && !rotationModeValue.equals("ForceCenter") && !rotationModeValue.equals("LockView")}
+    private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") && rotationSmoothModeValue.displayable }
     
     // Random Value
     private val randomCenterModeValue = ListValue("RandomCenter", arrayOf("Off", "Cubic", "Horizonal", "Vertical"), "Off").displayable { rotationDisplay.get() }
@@ -373,7 +373,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             }
         }
         
-        if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && autoBlockPacketValue.equals("Delayed2")) {
+        if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && ( autoBlockPacketValue.equals("Delayed2") || autoBlockPacketValue.equals("Test"))) {
              if (mc.thePlayer.swingProgressInt == 1) {
                  startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
             }
@@ -393,6 +393,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
         if (packetSent && noBadPacketsValue.get()) {
             return
         }
+        return 
         // AutoBlock
         if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
                     || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock
@@ -740,8 +741,8 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                     return
                 }
                 when (autoBlockPacketValue.get().lowercase()) {
-                    "vanilla", "afterattack", "oldintave", "test" -> startBlocking(entity, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange))
-                    "aftertick", "oldhypixel", "legit", "delayed2" -> null
+                    "vanilla", "afterattack", "oldintave" -> startBlocking(entity, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange))
+                    "aftertick", "oldhypixel", "legit", "delayed2", "test" -> null
                     "delayed" -> delayBlock = true
                     else -> null
                 }
@@ -790,10 +791,9 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
         val boundingBox = if (rotationModeValue.get() == "Test") entity.hitBox else getAABB(entity)
 
         val rModes = when (rotationModeValue.get()) {
-            "LiquidBounce", "SmoothLiquid", "Derp" -> "LiquidBounce"
-            "ForceCenter", "SmoothCenter", "OldMatrix", "Spin", "FastSpin" -> "CenterLine"
+            "LiquidBounce", "SmoothLiquid" -> "LiquidBounce"
+            "ForceCenter", "SmoothCenter", "OldMatrix", -> "CenterLine"
             "LockView" -> "CenterSimple"
-            "Test" -> "HalfUp"
             "SmoothCustom" -> customRotationValue.get()
             else -> "LiquidBounce"
         }
@@ -804,7 +804,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                         randomCenterModeValue.get(),
                         (randomCenRangeValue.get()).toDouble(),
                         boundingBox,
-                        predictValue.get() && rotationModeValue.get() != "Test",
+                        predictValue.get(),
                         true
                 ) ?: return false
 
@@ -836,11 +836,6 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                 (180.0).toFloat()
             )
             "SmoothCenter", "SmoothLiquid", "SmoothCustom", "OldMatrix" -> RotationUtils.limitAngleChange(
-                RotationUtils.serverRotation,
-                directRotation,
-                (calculateSpeed).toFloat()
-            )
-            "Test" -> RotationUtils.limitAngleChange(
                 RotationUtils.serverRotation,
                 directRotation,
                 (calculateSpeed).toFloat()
@@ -1017,8 +1012,8 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                     )
                 }
                 "block", "otherblock" -> {
-                    val bb = it.hitBox
-                    it.entityBoundingBox = it.hitBox.expand(blockMarkExpandValue.get().toDouble(),
+                    val bb = it.entityBoundingBox
+                    it.entityBoundingBox = it.entityBoundingBox.expand(blockMarkExpandValue.get().toDouble(),
                                                             blockMarkExpandValue.get().toDouble(),
                                                             blockMarkExpandValue.get().toDouble())
                     RenderUtils.drawEntityBox(
