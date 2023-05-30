@@ -67,14 +67,14 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
     }.displayable { !placeableDelayValue.equals("OFF") } as IntegerValue
 
     // AutoBlock
-    private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "LiteSpoof")
+    private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "Spoof")
 
     // Basic stuff
     private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Hypixel", "OFF"), "Always")
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val searchValue = BoolValue("Search", true)
-    private val downValue = BoolValue("Down", true)
-    private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Post")
+    private val downValue = BoolValue("Down", false)
+    private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Pre")
 
     // Eagle
     private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Off"), "Off")
@@ -86,7 +86,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards"), "Backwards")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards", "Snap", "BackSnap"), "Backwards")
     private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom"), "AAC")
     private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove"), "MoveDirection").displayable { rotationsValue.equals("Advanced") }
     private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla"), "Static").displayable { rotationsValue.equals("Advanced") }
@@ -104,19 +104,19 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
     // private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
     // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") }
-    private val minRotationSpeedValue: IntegerValue = object : IntegerValue("MinRotationSpeed", 180, 0, 180) {
+    private val minRotationSpeedValue: IntegerValue = object : IntegerValue("MinRotationSpeed", 80, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val v = maxRotationSpeedValue.get()
             if (v < newValue) set(v)
         }
     }.displayable { !rotationsValue.equals("None") } as IntegerValue
-    private val maxRotationSpeedValue: IntegerValue = object : IntegerValue("MaxRotationSpeed", 180, 0, 180) {
+    private val maxRotationSpeedValue: IntegerValue = object : IntegerValue("MaxRotationSpeed", 100, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val v = minRotationSpeedValue.get()
             if (v > newValue) set(v)
         }
     }.displayable { !rotationsValue.equals("None") } as IntegerValue
-    private val keepLengthValue = IntegerValue("KeepRotationTick", 0, 0, 20).displayable { !rotationsValue.equals("None") }
+    private val keepLengthValue = IntegerValue("KeepRotationTick", 1, 0, 20).displayable { !rotationsValue.equals("None") }
 
     // Zitter
     private val zitterModeValue = ListValue("ZitterMode", arrayOf("Teleport", "Smooth", "OFF"), "OFF")
@@ -126,7 +126,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
     // Game
     private val timerValue = FloatValue("Timer", 1f, 0.1f, 5f)
     private val motionSpeedEnabledValue = BoolValue("MotionSpeedSet", false)
-    private val motionSpeedValue = FloatValue("MotionSpeed", 0.1f, 0.05f, 1f).displayable { motionSpeedEnabledValue.get() }
+    private val motionSpeedValue = FloatValue("MotionSpeed", 0.15f, 0.05f, 0.5f).displayable { motionSpeedEnabledValue.get() }
     private val speedModifierValue = FloatValue("SpeedModifier", 1f, 0f, 2f)
     private val moveFixValue = BoolValue("StrafeFix", false)
 
@@ -161,7 +161,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
 
     // Safety
     private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "JumpUpY", "OFF"), "WhenSpeed")
-    private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "OFF")
+    private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "Ground")
     private val hitableCheckValue = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple")
 
     // Extra click
@@ -1114,7 +1114,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
                 "aac" -> {
                     Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
                 }
-                "vanilla" -> {
+                "vanilla", "snap", "backsnap" -> {
                     placeRotation.rotation
                 }
                 "static1" -> {
@@ -1166,7 +1166,11 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
             if (silentRotationValue.get()) {
                 val limitedRotation =
                     RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
-                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                if (rotationsValue.equals("Snap") || rotationsValue.equals("BackSnap")) {
+                    RotationUtils.setTargetRotation(limitedRotation, 0)
+                } else {
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                }
             } else {
                 mc.thePlayer.rotationYaw = lockRotation!!.yaw
                 mc.thePlayer.rotationPitch = lockRotation!!.pitch
