@@ -79,7 +79,6 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
     @Inject(method = "attackTargetEntityWithCurrentItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;setSprinting(Z)V", shift = At.Shift.AFTER))
     public void onAttackTargetEntityWithCurrentItem(CallbackInfo callbackInfo) {
         final KeepSprint ks = FDPClient.moduleManager.getModule(KeepSprint.class);
-        if (!ks.getOw().get() || Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemSword){
             if (ks.getState()) {
                 final float s = 0.6f + 0.4f * ks.getS().getValue();
                 this.motionX = this.motionX / 0.6 * s;
@@ -88,6 +87,5 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
                     this.setSprinting(ks.getAws().getValue());
                 }
             }
-        }
     }
 }
