@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.client;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.value.ListValue;
-// Made By Zywl
 
 public final class ClientSpoof extends Module {
     private static ModuleCategory category = ModuleCategory.CLIENT;

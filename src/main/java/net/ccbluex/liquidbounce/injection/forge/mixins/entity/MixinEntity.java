@@ -123,7 +123,8 @@ public abstract class MixinEntity {
 
     @Shadow
     public float width;
-
+    @Shadow
+    public abstract void setSprinting(boolean sprinting);
     @Shadow
     public abstract boolean isRiding();
 

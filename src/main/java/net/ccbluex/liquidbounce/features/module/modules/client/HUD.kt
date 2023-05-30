@@ -28,14 +28,14 @@ import java.awt.Color
 import java.util.*
 
 object HUD : Module("HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true) {
-    val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Autumn")
+    val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Default")
     val clolormode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")
     val hueInterpolation = BoolValue("hueInterpolation", false)
     val movingcolors = BoolValue("MovingColors", false)
     val inventoryParticle = BoolValue("InventoryParticle", false)
     private val blurValue = BoolValue("Blur", false)
     val HealthValue = BoolValue("Health", true)
-    val waterMark = BoolValue("Watermark", true)
+    private val waterMark = BoolValue("Watermark", true)
     val rainbowStartValue = FloatValue("RainbowStart", 0.55f, 0f, 1f)
     val rainbowStopValue = FloatValue("RainbowStop", 0.85f, 0f, 1f)
     val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.45f, 0f, 1f)
@@ -59,7 +59,7 @@ object HUD : Module("HUD", category = ModuleCategory.CLIENT, array = false, defa
     fun onRender2D(event: Render2DEvent) {
         if (mc.currentScreen is GuiHudDesigner) return
         FDPClient.hud.render(false, event.partialTicks)
-        if(waterMark.get()) renderWatermark()
+        if (waterMark.get()) renderWatermark()
         if (HealthValue.get()) mc.fontRendererObj.drawStringWithShadow(
             MathHelper.ceiling_float_int(mc.thePlayer.health).toString(),
             (width / 2 - 4).toFloat(), (height / 2 - 13).toFloat(), if (mc.thePlayer.health <= 15) Color(255, 0, 0).rgb else Color(0, 255, 0).rgb)
@@ -71,18 +71,19 @@ object HUD : Module("HUD", category = ModuleCategory.CLIENT, array = false, defa
      */
     private fun renderWatermark() {
         var width = 3
+        val colors = getClientColors()
         mc.fontRendererObj.drawStringWithShadow(
             "FDP",
             3.0f,
             3.0f,
-            rainbow().rgb
+            colors?.get(0)?.rgb ?: rainbow().rgb
         )
         width += mc.fontRendererObj.getStringWidth("FDP")
         mc.fontRendererObj.drawStringWithShadow(
             "CLIENT",
             width.toFloat(),
             3.0f,
-            -1
+            colors?.get(1)?.rgb ?: rainbow().rgb
         )
     }
 
@@ -117,11 +118,11 @@ object HUD : Module("HUD", category = ModuleCategory.CLIENT, array = false, defa
     fun onKey(event: KeyEvent) {
         FDPClient.hud.handleKey('a', event.key)
     }
+
     fun getClientColors(): Array<Color>? {
         val firstColor: Color
         val secondColor: Color
-        when (clolormode.get()
-            .lowercase(Locale.getDefault())) {
+        when (clolormode.get().lowercase(Locale.getDefault())) {
             "light rainbow" -> {
                 firstColor = ColorUtils.rainbowc(15, 1, .6f, 1F, 1F)!!
                 secondColor = ColorUtils.rainbowc(15, 40, .6f, 1F, 1F)!!

@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -18,7 +23,6 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline.Cli
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.OtcClickGUi
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.tenacity.TenacityClickGUI
 import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
@@ -54,34 +58,20 @@ object ClickGUIModule : Module(name = "ClickGUI", category = ModuleCategory.CLIE
     }
 
     val backback = BoolValue("Background Accent", true)
-
     val scrollMode = ListValue("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")
-
     val colormode = ListValue("Setting Accent", arrayOf("White", "Color"), "Color")
     val clickHeight = IntegerValue("Tab Height", 250, 100, 500)
     val scaleValue = FloatValue("Scale", 0.70f, 0.7f, 2f)
     val maxElementsValue = IntegerValue("MaxElements", 20, 1, 35)
     val backgroundValue = ListValue("Background", arrayOf("Default", "Gradient", "None"), "None")
-
-    val animationValue =
-        ListValue("Animation", arrayOf("Bread", "Slide", "LiquidBounce", "Zoom", "Ziul", "None"), "Ziul")
+    val animationValue = ListValue("Animation", arrayOf("Bread", "Slide", "LiquidBounce", "Zoom", "Ziul", "None"), "Ziul")
     val colorRainbow = BoolValue("Rainbow", false)
     val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val fastRenderValue = BoolValue("FastRender", false)
     val getClosePrevious = BoolValue("ClosePrevious", false)
-
     val disp = BoolValue("DisplayValue", true)
-
-
-    fun generateColor(): Color? {
-        return if (colorRainbow.get()) rainbow() else Color(
-            colorRedValue.get(),
-            colorGreenValue.get(),
-            colorBlueValue.get()
-        )
-    }
 
     private var lightClickGUI = LightClickGUI()
     private var otcGui = OtcClickGUi()
@@ -92,41 +82,39 @@ object ClickGUIModule : Module(name = "ClickGUI", category = ModuleCategory.CLIE
     private var bjur = BjurStyle()
 
     override fun onEnable() {
-        if (styleValue.get().contains("Novoline")) {
-            mc.displayGuiScreen(novoline)
-            this.state = false
-        } else if (styleValue.get().contains("OneTap")) {
-            mc.displayGuiScreen(otcGui)
-            this.state = false
-        } else if (styleValue.get().contains("Light")) {
-            mc.displayGuiScreen(lightClickGUI)
-            this.state = false
-        } else if (styleValue.get().equals("Classic", ignoreCase = true)) {
-            mc.displayGuiScreen(dropdown)
-        } else if (styleValue.get().equals("Tenacity", ignoreCase = true)) {
-            mc.displayGuiScreen(tena)
-        } else if (styleValue.get().equals("LB+", ignoreCase = true)) {
-            mc.displayGuiScreen(NewUi.getInstance())
-        } else if (styleValue.get().equals("Bjur", ignoreCase = true)) {
-            mc.displayGuiScreen(bjur)
-        } else if (styleValue.get().contains("Slight")) {
-            mc.displayGuiScreen(slight)
-            this.state = false
-        } else {
-            updateStyle()
-            mc.displayGuiScreen(modernuiLaunchOption.clickGui)
+        when {
+            styleValue.get().contains("Novoline") -> mc.displayGuiScreen(novoline)
+            styleValue.get().contains("OneTap") -> mc.displayGuiScreen(otcGui)
+            styleValue.get().contains("Light") -> mc.displayGuiScreen(lightClickGUI)
+            styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(dropdown)
+            styleValue.get().equals("Tenacity", ignoreCase = true) -> mc.displayGuiScreen(tena)
+            styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())
+            styleValue.get().equals("Bjur", ignoreCase = true) -> mc.displayGuiScreen(bjur)
+            styleValue.get().contains("Slight") -> mc.displayGuiScreen(slight)
+            else -> {
+                updateStyle()
+                mc.displayGuiScreen(modernuiLaunchOption.clickGui)
+            }
         }
+        this.state = false
     }
     private fun updateStyle() {
         when (styleValue.get().lowercase(Locale.getDefault())) {
             "liquidbounce" -> modernuiLaunchOption.clickGui.style = LiquidBounceStyle()
             "null" -> modernuiLaunchOption.clickGui.style = NullStyle()
             "slowly" -> modernuiLaunchOption.clickGui.style = SlowlyStyle()
-            "black" -> modernuiLaunchOption.clickGui.style = BlackStyle()
-            "white" -> modernuiLaunchOption.clickGui.style = WhiteStyle()
+            "black", "white" -> modernuiLaunchOption.clickGui.style = if (styleValue.get() == "White") WhiteStyle() else BlackStyle()
             "jello" -> modernuiLaunchOption.clickGui.style = JelloStyle()
             "tenacity5" -> modernuiLaunchOption.clickGui.style = TenacityStyle()
             "astolfo" -> modernuiLaunchOption.clickGui.style = AstolfoStyle()
+        }
+    }
+
+    fun generateColor(): Color {
+        return if (colorRainbow.get()) {
+            rainbow()
+        } else {
+            Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
         }
     }
 
