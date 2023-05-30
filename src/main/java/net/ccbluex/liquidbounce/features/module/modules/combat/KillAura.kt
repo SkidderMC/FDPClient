@@ -736,7 +736,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
     private fun postAttack(entity: EntityLivingBase) {
         if (mc.thePlayer.isBlocking || (autoBlockValue.equals("Range") && canBlock)) {
             if (blockRateValue.get() > 0 && Random().nextInt(100) <= blockRateValue.get()) {
-                if (smartAutoBlockValue.get() && clicks != 1) {
+                if (smartAutoBlockValue.get() && clicks != 1 && mc.thePlayer.hurtTime < 4 && mc.thePlayer.getDistanceToEntityBox(entity) < 4) {
                     return
                 }
                 when (autoBlockPacketValue.get().lowercase()) {
