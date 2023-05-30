@@ -22,7 +22,7 @@ class JumpVelocity : VelocityMode("Jump") {
     private var skipVeloc = false
     
     override fun onVelocity(event: UpdateEvent) {
-        if ((failJump || mc.thePlayer.hurtTime > 6)) {
+        if ((failJump || mc.thePlayer.hurtTime > 6) && mc.thePlayer.onGround) {
             if (failJump) {
                 failJump = false
             }
@@ -46,11 +46,11 @@ class JumpVelocity : VelocityMode("Jump") {
                 return
             }
             when(modeValue.get().lowercase()) {
-                "motion" -> if (mc.thePlayer.onGround) mc.thePlayer.motionY = motionValue.get().toDouble()
+                "motion" -> mc.thePlayer.motionY = motionValue.get().toDouble()
                 "jump" -> mc.thePlayer.jump()
                 "both" -> {
                     mc.thePlayer.jump()
-                    if (mc.thePlayer.onGround) mc.thePlayer.motionY = motionValue.get().toDouble()
+                    mc.thePlayer.motionY = motionValue.get().toDouble()
                 }
             }
         }
