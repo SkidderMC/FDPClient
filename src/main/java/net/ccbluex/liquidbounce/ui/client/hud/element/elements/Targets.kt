@@ -313,9 +313,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         when (modeValue.get().lowercase()) {
             "fdp" -> drawFDP(prevTarget!!)
-            "fdp2" -> drawFDP2(prevTarget!!)
-            "novoline" -> drawNovo(prevTarget!!)
-            "novoline2" -> drawNovo2(prevTarget!!)
             "astolfo" -> drawAstolfo(prevTarget!!)
             "astolfo2" -> drawAstolfo2(prevTarget!! as EntityPlayer)
             "liquid" -> drawLiquid(prevTarget!!)
@@ -352,20 +349,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     private fun drawVape(target: EntityLivingBase) {
-        RoundedUtil.drawRound(0F, 0F, 110f, 40f, 1f, Color(30, 30, 30, 240))
 
-        GL11.glPushMatrix()
-        GL11.glTranslated(19.0, 33.0, 0.0)
-        GlStateManager.disableBlend()
-        GL11.glEnable(GL11.GL_SCISSOR_TEST)
-        GLUtils.makeScissorBox(3F, 4F, 31F, 31F)
-        val pitch: Float = target.rotationPitch
-        target.rotationPitch = 0F
-        GuiInventory.drawEntityOnScreen(0, 0, 14, -100.0f, 0f, target)
-        target.rotationPitch = pitch
-        GL11.glDisable(GL11.GL_SCISSOR_TEST)
-        GlStateManager.enableBlend()
-        GL11.glPopMatrix()
+        RenderUtils.drawEntityOnScreen(16, 55, 25, target)
 
         Fonts.fontTenacityBold35.drawString(target.name, 36.5f, 12.6f / 2f - Fonts.fontTenacityBold35.height / 2f, -1)
 
@@ -388,31 +373,11 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                 Color(0xFFAA00))
         }
 
-        val hp = (targetHealth + targetAbsorptionAmount).toString() + " hp"
+        val hp = (targetHealth + targetAbsorptionAmount).toString() + "  HP"
         Fonts.fontTenacityBold35.drawString(hp,
             105f - Fonts.fontTenacityBold35.getStringWidth(hp),
             (12.6f - Fonts.fontTenacityBold35.height) / 2f,
             -1)
-
-        if (target is EntityPlayer) {
-            val arrayList: MutableList<ItemStack> = target.inventory.armorInventory.toMutableList()
-            if (target.inventory.getCurrentItem() != null) arrayList.add(target.inventory.getCurrentItem())
-            if (arrayList.isEmpty()) return
-            var n = 0f
-            arrayList.reverse()
-            GL11.glPushMatrix()
-            GL11.glTranslatef((x + 36.5f).toFloat(), (y + 18.5f).toFloat(), 0f)
-            GL11.glScaled(0.8, 0.8, 0.8)
-            for (item in arrayList) {
-                RoundedUtil.drawRound(n, 0f, 16f, 16f, 0.5f, Color(26, 25, 26))
-                RenderHelper.enableGUIStandardItemLighting()
-                mc.renderItem.renderItemAndEffectIntoGUI(item, n.toInt(), 0)
-                RenderHelper.disableStandardItemLighting()
-                n += 17
-            }
-            GL11.glScalef(1f, 1f, 1f)
-            GL11.glPopMatrix()
-        }
     }
 
     private fun drawAstolfo(target: EntityLivingBase) {
@@ -466,7 +431,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GlStateManager.resetColor()
         GL11.glColor4f(1F, 1F, 1F, 1F)
-        RenderUtils.drawEntityOnScreen(16, 55, 25, entity)
+
 
         Fonts.minecraftFont.drawString(entity.name, 32F, 5F, -1, true)
         GL11.glPushMatrix()
@@ -479,60 +444,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRect(32F, 48F, 32F + (easingHealth / entity.maxHealth).toFloat() * 122F, 55F, barColor.rgb)
 
     }
-    private fun drawNovo(target: EntityLivingBase) {
-        val font = fontValue.get()
-        val color = ColorUtils.healthColor(getHealth(target), target.maxHealth)
-        val darkColor = ColorUtils.darker(color, 0.6F)
-        val hpPos = 33F + ((easingHP / target.maxHealth * 10000).roundToInt() / 100)
-
-        RenderUtils.drawRect(0F, 0F, 140F, 40F, Color(40, 40, 40).rgb)
-        font.drawString(target.name, 33, 5, Color.WHITE.rgb)
-        RenderUtils.drawEntityOnScreen(20, 35, 15, target)
-        RenderUtils.drawRect(hpPos, 18F, 33F + ((easingHP / target.maxHealth * 10000).roundToInt() / 100), 25F, darkColor)
-        RenderUtils.drawRect(33F, 18F, hpPos, 25F, color)
-        font.drawString("❤", 33, 30, Color.RED.rgb)
-        font.drawString(decimalFormat.format(getHealth(target)), 43, 30, Color.WHITE.rgb)
-        if (shadowValue.get()) {
-            GL11.glTranslated(-renderX, -renderY, 0.0)
-            GL11.glPushMatrix()
-            ShadowUtils.shadow(shadowStrength.get(), {
-                GL11.glPushMatrix()
-                GL11.glTranslated(renderX, renderY, 0.0)
-                if (fadeValue.get()) {
-                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-                }
-                RenderUtils.drawRect(0F, 0F, 140F, 40F, Color(40, 40, 40).rgb)
-                GL11.glPopMatrix()
-            }, {
-                GL11.glPushMatrix()
-                GL11.glTranslated(renderX, renderY, 0.0)
-                if (fadeValue.get()) {
-                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-                }
-                RenderUtils.drawRect(0F, 0F, 140F, 40F, Color(40, 40, 40).rgb)
-                GL11.glPopMatrix()
-            })
-            GL11.glPopMatrix()
-            GL11.glTranslated(renderX, renderY, 0.0)
-        }
-    }
-
-    private fun drawNovo2(target: EntityLivingBase) {
-        val font = fontValue.get()
-        val color = ColorUtils.healthColor(getHealth(target), target.maxHealth)
-        val darkColor = ColorUtils.darker(color, 0.6F)
-
-        RenderUtils.drawRect(0F, 0F, 140F, 40F, Color(40, 40, 40).rgb)
-        font.drawString(target.name, 35, 5, Color.WHITE.rgb)
-        RenderUtils.drawHead(target.skin, 2, 2, 30, 30)
-        RenderUtils.drawRect(35F, 17F, ((getHealth(target) / target.maxHealth) * 100) + 35F,
-            35F, Color(252, 96, 66).rgb)
-
-        font.drawString((decimalFormat.format((easingHP / target.maxHealth) * 100)) + "%", 40, 20, Color.WHITE.rgb)
-    }
-
     private fun drawLiquid(target: EntityLivingBase) {
         val width = (38 + target.name.let(Fonts.font40::getStringWidth))
             .coerceAtLeast(118)
@@ -1049,68 +960,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         font.drawString(target.name, 39, 8, Color.WHITE.rgb)
         GL11.glPopMatrix()
         font.drawString("Health ${getHealth(target).roundToInt()}", 56, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
-
-    }
-    
-    private fun drawFDP2(target: EntityLivingBase) {
-        val font = fontValue.get()
-        val additionalWidth = ((font.getStringWidth(target.name) * 1.2).toInt().coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
-        val healthBarWidth = additionalWidth - (font.getStringWidth("20") * 1.15).roundToInt() - 16
-        
-        
-        RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 7f, Color(0, 0, 0, 170).rgb)
-
-        if (shadowValue.get()) {
-            GL11.glTranslated(-renderX, -renderY, 0.0)
-            GL11.glPushMatrix()
-            ShadowUtils.shadow(shadowStrength.get(), {
-                GL11.glPushMatrix()
-                GL11.glTranslated(renderX, renderY, 0.0)
-                if (fadeValue.get()) {
-                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-                }
-                RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 7f, Color(0, 0, 0, 170).rgb)
-                GL11.glPopMatrix()
-            }, {
-                GL11.glPushMatrix()
-                GL11.glTranslated(renderX, renderY, 0.0)
-                if (fadeValue.get()) {
-                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
-                }
-                RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 7f, Color(0, 0, 0, 170).rgb)
-                GL11.glPopMatrix()
-            })
-            GL11.glPopMatrix()
-            GL11.glTranslated(renderX, renderY, 0.0)
-        }
-
-        //draw head
-        GL11.glPushMatrix()
-
-        Stencil.write(false)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        RenderUtils.fastRoundedRect(5F, 4F, 47F, 46F, 5F)
-        GL11.glDisable(GL11.GL_BLEND)
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        Stencil.erase(true)
-        drawHead(target.skin, 5, 4, 47, 46, 1F)
-        Stencil.dispose()
-        GL11.glPopMatrix()
-
-        // draw name
-        GL11.glPushMatrix()
-        GL11.glScalef(1.2f, 1.2f, 1.2f)
-        font.drawString("Name: ${target.name}", 43, 10, Color.WHITE.rgb)
-        GL11.glPopMatrix()
-        font.drawString("Hp: ${getHealth(target).roundToInt()}", 45, 20, Color.WHITE.rgb)
-
-        // draw health
-        RenderUtils.drawRoundedCornerRect(50f, 31f, 50f + healthBarWidth , 39f, 3f, Color(20, 20, 20, 255).rgb)
-        RenderUtils.drawRoundedCornerRect(50f, 31f, 50f + (healthBarWidth * (easingHP / target.maxHealth)) , 39f, 4f, Color(122, 214, 255, 255).rgb)
 
     }
 
@@ -2112,8 +1961,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     fun getTBorder(): Border? {
         return when (modeValue.get().lowercase()) {
-            "novoline" -> Border(0F, 0F, 140F, 40F)
-            "novoline2" -> Border(0F, 0F, 140F, 40F)
             "astolfo" -> Border(0F, 0F, 140F, 60F)
             "astolfo2" -> Border(0F, 0F, 160F, 60F)
             "vape" -> Border(0F, 0F, 110F, 40F)
