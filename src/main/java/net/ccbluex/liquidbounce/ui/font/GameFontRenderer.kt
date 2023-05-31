@@ -22,7 +22,8 @@ import org.lwjgl.opengl.GL20
 import java.awt.Color
 import java.awt.Font
 
-class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameSettings,
+class
+GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameSettings,
     ResourceLocation("textures/font/ascii.png"), Minecraft.getMinecraft().textureManager, false) {
 
     var defaultFont = AWTFontRenderer(font)

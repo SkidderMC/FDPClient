@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import net.ccbluex.liquidbounce.utils.ClientUtils.mc
-import net.ccbluex.liquidbounce.utils.extensions.getBlock
 import net.ccbluex.liquidbounce.utils.extensions.renderBoundingBox
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.BlurShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.CircleShader

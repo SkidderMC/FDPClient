@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.*;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.ccbluex.liquidbounce.utils.math.MathUtils;
+import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
 import net.ccbluex.liquidbounce.features.value.IntegerValue;
@@ -42,7 +42,7 @@ public class NumberSetting extends Downward<IntegerValue> {
         if (this.iloveyou) {
             final float percentt = Math.min(1.0f, Math.max(0.0f, (mouseX - (this.modulex + 5.0f + this.pos.x + 55.0f)) / 99.0f * 1.3f));
             final double newValue = percentt * (((IntegerValue)this.setting).getMaximum() - ((IntegerValue)this.setting).getMinimum()) + ((IntegerValue)this.setting).getMinimum();
-            final double set = MathUtils.incValue(newValue, 1.0);
+            final double set = MathUtils.INSTANCE.incValue(newValue, 1.0);
             ((IntegerValue)this.setting).set(set);
         }
         final ClickGUIModule cg = (ClickGUIModule) FDPClient.moduleManager.getModule(ClickGUIModule.class);

@@ -30,7 +30,6 @@ public class WorldToScreen {
 
         Vector3f ndcSpacePos = new Vector3f(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w);
 
-//        System.out.println(pointInNdc);
 
         float screenX = ((ndcSpacePos.x + 1.0f) / 2.0f) * screenWidth;
         float screenY = ((1.0f - ndcSpacePos.y) / 2.0f) * screenHeight;
@@ -51,5 +50,4 @@ public class WorldToScreen {
                 vec.x * mat.m03 + vec.y * mat.m13 + vec.z * mat.m23 + vec.w * mat.m33
         );
     }
-
 }

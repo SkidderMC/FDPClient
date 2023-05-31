@@ -185,5 +185,4 @@ public class ShaderUtil extends MinecraftInstance {
         return shader;
     }
 
-
 }

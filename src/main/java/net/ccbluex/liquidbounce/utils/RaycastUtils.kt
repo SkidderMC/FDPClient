@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 
-
 object RaycastUtils : MinecraftInstance() {
 
     @JvmStatic

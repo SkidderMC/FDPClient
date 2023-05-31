@@ -9,9 +9,9 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.impl.Fonts;
-import net.ccbluex.liquidbounce.utils.math.MathUtils;
+import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.timer.Timer;
+import net.ccbluex.liquidbounce.utils.timer.TickTimer;
 import net.ccbluex.liquidbounce.features.value.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -26,8 +26,8 @@ public class Setting {
     public Value setting;
     private Module module;
     public boolean opened;
-    private final Timer backSpace = new Timer();
-    private final Timer caretTimer = new Timer();
+    private final TickTimer backSpace = new TickTimer();
+    private final TickTimer caretTimer = new TickTimer();
     public int height;
     public float percent = 0;
 
@@ -69,7 +69,7 @@ public class Setting {
                 double difference = numberValue.getMaximum() - numberValue.getMinimum();
                 double value = numberValue.getMinimum() +
                         MathHelper.clamp_double((mouseX - (module.tab.getPosX() + 1)) / 99, 0, 1) * difference;
-                double set = MathUtils.incValue(value,0.01);
+                double set = MathUtils.INSTANCE.incValue(value,0.01);
 
                 numberValue.set(set);
              //   EventManager.call(new SettingEvent(module.getModule(), setting.getName(), setting.getSliderNumber()));
@@ -102,7 +102,7 @@ public class Setting {
                 double difference = integerValue.getMaximum() - integerValue.getMinimum();
                 double value = integerValue.getMinimum() +
                         MathHelper.clamp_double((mouseX - (module.tab.getPosX() + 1)) / 99, 0, 1) * difference;
-                double set = MathUtils.incValue(value,1);
+                double set = MathUtils.INSTANCE.incValue(value,1);
 
                 integerValue.set(set);
                 //   EventManager.call(new SettingEvent(module.getModule(), setting.getName(), setting.getSliderNumber()));

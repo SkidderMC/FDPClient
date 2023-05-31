@@ -5,22 +5,12 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.shader.Framebuffer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 public enum SmoothRenderUtils {
     ;
-
 
     public static void drawRect(float left, float top, float right, float bottom, final int color) {
         if (left < right) {

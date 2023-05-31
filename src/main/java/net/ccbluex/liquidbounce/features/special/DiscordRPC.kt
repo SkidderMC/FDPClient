@@ -7,6 +7,7 @@ import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule
 import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.ClientUtils.mc
 import org.json.JSONObject
 import java.time.OffsetDateTime
 import kotlin.concurrent.thread

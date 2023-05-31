@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.particles;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
 public final class EvictingList<T> extends LinkedList<T> {

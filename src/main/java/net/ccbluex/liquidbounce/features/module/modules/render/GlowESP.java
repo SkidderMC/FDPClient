@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.value.IntegerValue;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.files.animations.Animation;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.files.animations.impl.DecelerateAnimation;
-import net.ccbluex.liquidbounce.utils.math.MathUtils;
+import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.ShaderUtil;
@@ -167,7 +167,7 @@ public class GlowESP extends Module {
 
         final FloatBuffer buffer = BufferUtils.createFloatBuffer(256);
         for (int i = 1; i <= radius.getValue(); i++) {
-            buffer.put(MathUtils.calculateGaussianValue(i, radius.get() / 2));
+            buffer.put(MathUtils.INSTANCE.calculateGaussianValue(i, radius.get() / 2));
         }
         buffer.rewind();
 

@@ -60,5 +60,4 @@ public class Stencil {
         EXTFramebufferObject.glFramebufferRenderbufferEXT(36160, 36096, 36161, stencil_depth_buffer_ID);
     }
 
-
 }

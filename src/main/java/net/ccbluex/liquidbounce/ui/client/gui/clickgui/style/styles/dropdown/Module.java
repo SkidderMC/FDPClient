@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.timer.Timer;
+import net.ccbluex.liquidbounce.utils.timer.TickTimer;
 import net.ccbluex.liquidbounce.features.value.TextValue;
 import net.ccbluex.liquidbounce.features.value.Value;
 import net.minecraft.client.Minecraft;
@@ -30,7 +30,7 @@ public class Module {
     public Tab tab;
     public boolean opened;
     public List<Setting> settings = new CopyOnWriteArrayList<>();
-    public Timer hoverTimer = new Timer();
+    public TickTimer hoverTimer = new TickTimer();
     public Module(net.ccbluex.liquidbounce.features.module.Module module, Tab tab) {
         this.module = module;
         this.tab = tab;

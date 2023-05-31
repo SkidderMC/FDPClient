@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.animations.Animatio
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.animations.Direction;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.animations.impl.DecelerateAnimation;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.animations.impl.EaseInOutQuad;
-import net.ccbluex.liquidbounce.utils.math.MathUtils;
+import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
 import net.ccbluex.liquidbounce.features.value.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -156,11 +156,11 @@ public class SettingComponents extends Component {
             if (!setting.getDisplayable())
                 continue;
 
-            float settingY = (float) MathUtils.roundToHalf(y + (count * rectHeight));
+            float settingY = (float) MathUtils.INSTANCE.roundToHalf(y + (count * rectHeight));
             if (setting instanceof FloatValue) {
                 FloatValue numberSetting = (FloatValue) setting;
 
-                String value = Float.toString((float) MathUtils.round(numberSetting.getValue(), 0.01));
+                String value = Float.toString((float) MathUtils.INSTANCE.round(numberSetting.getValue(), 0.01));
                 float regularFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(numberSetting.getName() + ": ");
                 float valueFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(value);
 
@@ -222,7 +222,7 @@ public class SettingComponents extends Component {
             if (setting instanceof IntegerValue) {
                 IntegerValue numberSetting = (IntegerValue) setting;
 
-                String value = Float.toString((float) MathUtils.round(numberSetting.getValue(), 1));
+                String value = Float.toString((float) MathUtils.INSTANCE.round(numberSetting.getValue(), 1));
                 float regularFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(numberSetting.getName() + ": ");
                 float valueFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(value);
 
@@ -284,7 +284,7 @@ public class SettingComponents extends Component {
             if (setting instanceof NumberValue) {
                 NumberValue numberSetting = (NumberValue) setting;
 
-                String value = Float.toString((float) MathUtils.round(numberSetting.getValue(), numberSetting.getInc()));
+                String value = Float.toString((float) MathUtils.INSTANCE.round(numberSetting.getValue(), numberSetting.getInc()));
                 float regularFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(numberSetting.getName() + ": ");
                 float valueFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(value);
 
@@ -353,7 +353,7 @@ public class SettingComponents extends Component {
                 OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
                 GlStateManager.enableBlend();
 
-                Fonts.SF.SF_18.SF_18.drawString(booleanSetting.getName(), (int) MathUtils.roundToHalf(x + 4), settingY +
+                Fonts.SF.SF_18.SF_18.drawString(booleanSetting.getName(), (int) MathUtils.INSTANCE.roundToHalf(x + 4), settingY +
                         5, textColor.getRGB());
 
                 float switchWidth = 16;

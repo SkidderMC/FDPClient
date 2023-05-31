@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.normal.Main;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.normal.Screen;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.render.StencilUtil;
-import net.ccbluex.liquidbounce.utils.math.MathUtils;
+import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
@@ -141,7 +141,7 @@ public class MainScreen implements Screen {
             moduleRect.height = 17;
             moduleRect.panelLimitY = y;
             moduleRect.openingAnimation = openingAnimation;
-            moduleRect.y = (float) (y + categoryRectHeight + (count * 17) + MathUtils.roundToHalf(scroll));
+            moduleRect.y = (float) (y + categoryRectHeight + (count * 17) + MathUtils.INSTANCE.roundToHalf(scroll));
             moduleRect.width = rectWidth;
             moduleRect.drawScreen(mouseX, mouseY);
 

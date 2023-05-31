@@ -1,5 +1,13 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.utils
 
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.util.*
 import kotlin.math.PI
 import kotlin.math.exp
 import kotlin.math.pow
@@ -104,4 +112,50 @@ object MathUtils {
 
         return outPoints.toTypedArray()
     }
+
+    fun round(value: Double, inc: Double): Double {
+        return if (inc == 0.0) value else if (inc == 1.0) Math.round(value).toDouble() else {
+            val halfOfInc = inc / 2.0
+            val floored = Math.floor(value / inc) * inc
+            if (value >= floored + halfOfInc) BigDecimal(Math.ceil(value / inc) * inc)
+                .toDouble() else BigDecimal(floored)
+                .toDouble()
+        }
+    }
+
+    fun calculateGaussianDistribution(x: Float, sigma: Float): Double {
+        val random = Random()
+        return Math.sqrt(sigma.toDouble()) * random.nextGaussian() + x
+    }
+
+    fun interpolateFloat(oldValue: Float, newValue: Float, interpolationValue: Double): Float {
+        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toFloat()
+    }
+
+    fun roundToHalf(d: Double): Double {
+        return Math.round(d * 2.0) / 2.0
+    }
+
+    fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
+        return oldValue + (newValue - oldValue) * interpolationValue
+    }
+
+    fun calculateGaussianValue(x: Float, sigma: Float): Float {
+        val PI = 3.141592653
+        val output = 1.0 / Math.sqrt(2.0 * PI * (sigma * sigma))
+        return (output * Math.exp(-(x * x) / (2.0 * (sigma * sigma)))).toFloat()
+    }
+
+    fun incValue(`val`: Double, inc: Double): Double {
+        val one = 1.0 / inc
+        return Math.round(`val` * one) / one
+    }
+
+    fun round(value: Double, places: Int): Double {
+        require(places >= 0)
+        var bd = BigDecimal(value)
+        bd = bd.setScale(places, RoundingMode.HALF_UP)
+        return bd.toDouble()
+    }
+
 }

@@ -9,8 +9,8 @@ import java.awt.*;
 
 public enum BlendUtils {
     ;
-
     BlendUtils() {
+
     }
 
     public static Color getHealthColor(float health, float maxHealth) {

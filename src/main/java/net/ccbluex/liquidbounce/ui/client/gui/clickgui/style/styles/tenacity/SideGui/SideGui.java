@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.normal.TimerUtil;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.objects.Drag;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.render.DrRenderUtils;
 
-import net.ccbluex.liquidbounce.utils.math.MathUtils;
+import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
 import net.minecraft.client.gui.ScaledResolution;
 
@@ -22,9 +22,6 @@ import java.awt.*;
 import java.util.HashMap;
 
 public class SideGui extends GuiPanel {
-
-  //  private final ConfigPanel configPanel = new ConfigPanel();
-  //  private final ScriptPanel scriptPanel = new ScriptPanel();
   private final String[] categories = {"Scripts", "Configs"};
     public boolean focused;
     public Animation clickAnimation;
@@ -103,8 +100,8 @@ public class SideGui extends GuiPanel {
 
 
         if (!clickAnimation.isDone()) {
-            drag.setX(MathUtils.interpolateFloat(sr.getScaledWidth() - 30, focused ? sr.getScaledWidth() / 2f - rectWidth / 2f : drag.getX(), (float) clickAnimation.getOutput()));
-            drag.setY(MathUtils.interpolateFloat(sr.getScaledHeight() / 2f - rectHeight / 2f, drag.getY(), (float) clickAnimation.getOutput()));
+            drag.setX(MathUtils.INSTANCE.interpolateFloat(sr.getScaledWidth() - 30, focused ? sr.getScaledWidth() / 2f - rectWidth / 2f : drag.getX(), (float) clickAnimation.getOutput()));
+            drag.setY(MathUtils.INSTANCE.interpolateFloat(sr.getScaledHeight() / 2f - rectHeight / 2f, drag.getY(), (float) clickAnimation.getOutput()));
         }
 
         boolean gradient = drag.getX() + rectWidth > sr.getScaledWidth() && focused && (clickAnimation.isDone() && clickAnimation.getDirection().equals(Direction.FORWARDS));

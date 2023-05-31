@@ -1,12 +1,4 @@
-
-//
-// Decompiled by Procyon v0.5.36
-// 
-
 package net.ccbluex.liquidbounce.utils.misc;
-
-
-import net.ccbluex.liquidbounce.utils.misc.Animation;
 
 public class SmoothStepAnimation extends Animation  {
     public SmoothStepAnimation(final int ms, final double endPoint) {

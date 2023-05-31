@@ -4,8 +4,6 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils;
-
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 public final class AnimationUtils {
 
     public static float animate(float target, float current, float speed) {

@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
-import java.awt.*;
-
 public enum Colors {
     WHITE(-65794),
     GREY(-9868951);
