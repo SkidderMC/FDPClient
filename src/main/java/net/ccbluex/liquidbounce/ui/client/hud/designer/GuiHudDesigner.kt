@@ -22,16 +22,14 @@ class GuiHudDesigner : GuiScreen() {
     override fun initGui() {
         Keyboard.enableRepeatEvents(true)
         editorPanel = EditorPanel(this, width / 2, height / 2)
-        super.initGui()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         FDPClient.hud.render(true, partialTicks)
         FDPClient.hud.handleMouseMove(mouseX, mouseY)
 
-        if (!FDPClient.hud.elements.contains(selectedElement)) {
+        if (!FDPClient.hud.elements.contains(selectedElement))
             selectedElement = null
-        }
 
         val wheel = Mouse.getDWheel()
 
@@ -40,13 +38,12 @@ class GuiHudDesigner : GuiScreen() {
         if (wheel != 0) {
             for (element in FDPClient.hud.elements) {
                 if (element.isInBorder(mouseX / element.scale - element.renderX,
-                                mouseY / element.scale - element.renderY)) {
+                        mouseY / element.scale - element.renderY)) {
                     element.scale = element.scale + if (wheel > 0) 0.05f else -0.05f
                     break
                 }
             }
         }
-        super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
@@ -60,7 +57,7 @@ class GuiHudDesigner : GuiScreen() {
         FDPClient.hud.handleMouseClick(mouseX, mouseY, mouseButton)
 
         if (!(mouseX >= editorPanel.x && mouseX <= editorPanel.x + editorPanel.width && mouseY >= editorPanel.y &&
-                        mouseY <= editorPanel.y + min(editorPanel.realHeight, 200))) {
+                    mouseY <= editorPanel.y + min(editorPanel.realHeight, 200))) {
             selectedElement = null
             editorPanel.create = false
         }
@@ -90,9 +87,8 @@ class GuiHudDesigner : GuiScreen() {
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         when (keyCode) {
-            Keyboard.KEY_DELETE -> if (Keyboard.KEY_DELETE == keyCode && selectedElement != null) {
-                FDPClient.hud.removeElement(selectedElement!!)
-            }
+            Keyboard.KEY_DELETE ->
+                if (selectedElement != null) FDPClient.hud.removeElement(selectedElement!!)
 
             Keyboard.KEY_ESCAPE -> {
                 selectedElement = null

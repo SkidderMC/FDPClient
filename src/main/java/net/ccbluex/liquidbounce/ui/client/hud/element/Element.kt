@@ -155,7 +155,7 @@ abstract class Element(
 /**
  * Element info
  */
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class ElementInfo(val name: String, val blur: Boolean = false, val single: Boolean = false, val force: Boolean = false, val disableScale: Boolean = false, val priority: Int = 0, val retrieveDamage: Boolean = false)
 
 /**

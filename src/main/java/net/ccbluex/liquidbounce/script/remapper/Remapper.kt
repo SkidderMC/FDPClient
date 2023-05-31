@@ -75,22 +75,13 @@ object Remapper {
     /**
      * Remap field
      */
-    fun remapField(clazz: Class<*>, name: String): String {
-        if (!fields.containsKey(clazz.name)) {
-            return name
-        }
+    fun remapField(clazz : Class<*>, name : String) =
+        fields[clazz.name]?.getOrDefault(name, name) ?: name
 
-        return fields[clazz.name]!!.getOrDefault(name, name)
-    }
 
     /**
      * Remap method
      */
-    fun remapMethod(clazz: Class<*>, name: String, desc: String): String {
-        if (!methods.containsKey(clazz.name)) {
-            return name
-        }
-
-        return methods[clazz.name]!!.getOrDefault(name + desc, name)
-    }
+    fun remapMethod(clazz : Class<*>, name : String, desc : String) =
+        methods[clazz.name]?.getOrDefault(name + desc, name) ?: name
 }

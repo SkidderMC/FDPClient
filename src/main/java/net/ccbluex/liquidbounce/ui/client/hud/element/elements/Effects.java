@@ -123,6 +123,7 @@ public class Effects extends Element {
         return animation;
     }
 
+
     @Override
     public Border drawElement(float partialTicks) {
         return draw();

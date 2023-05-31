@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.features.value.*
+import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule
 import net.minecraft.client.gui.Gui
 import net.minecraft.util.MathHelper
 import org.lwjgl.input.Mouse
@@ -98,7 +99,8 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
 
             val v = 197 * (-scroll / (realHeight - 170F))
             RenderUtils.drawRect(x + width - 5F, y + 15 + v, x + width - 2F, y + 20 + v,
-                    Color(37, 126, 255).rgb)
+                Color(
+                    ClickGUIModule.colorRedValue.get(), ClickGUIModule.colorGreenValue.get(), ClickGUIModule.colorBlueValue.get()).rgb)
 
             GL11.glDisable(GL11.GL_SCISSOR_TEST)
             GL11.glPopMatrix()
@@ -319,7 +321,8 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
                     // Slider mark
                     val sliderValue = x + ((prevWidth - 18F) * (current - min) / (max - min))
                     RenderUtils.drawRect(8F + sliderValue, y + height + 9F, sliderValue + 11F, y + height +
-                            15F, Color(37, 126, 255).rgb)
+                            15F, Color(
+                        ClickGUIModule.colorRedValue.get(), ClickGUIModule.colorGreenValue.get(), ClickGUIModule.colorBlueValue.get()).rgb)
 
                     // Slider changer
                     if (mouseX >= x + 8 && mouseX <= x + prevWidth && mouseY >= y + height + 9 && mouseY <= y + height + 15 &&
@@ -355,7 +358,8 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
                     // Slider mark
                     val sliderValue = x + ((prevWidth - 18F) * (current - min) / (max - min))
                     RenderUtils.drawRect(8F + sliderValue, y + height + 9F, sliderValue + 11F, y + height +
-                            15F, Color(37, 126, 255).rgb)
+                            15F, Color(
+                        ClickGUIModule.colorRedValue.get(), ClickGUIModule.colorGreenValue.get(), ClickGUIModule.colorBlueValue.get()).rgb)
 
                     // Slider changer
                     if (mouseX >= x + 8 && mouseX <= x + prevWidth && mouseY >= y + height + 9 && mouseY <= y + height + 15 &&
@@ -437,7 +441,8 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
 
         // Header
         //Gui.drawRect(x, y, x + width, y + 12, Color(0, 0, 0, 150).rgb)
-        RenderUtils.drawRoundedCornerRect(x.toFloat()-3f, y-1.5F, x + width.toFloat()+4, y + 12F ,3f, Color(32,150,243, 255).rgb)
+        RenderUtils.drawRoundedCornerRect(x.toFloat()-3f, y-1.5F, x + width.toFloat()+4, y + 12F ,3f, Color(
+            ClickGUIModule.colorRedValue.get(), ClickGUIModule.colorGreenValue.get(), ClickGUIModule.colorBlueValue.get()).rgb)
         Fonts.font32.drawString("§l${element.name}", x + 2F, y + 3.5F, Color.WHITE.rgb)
 
         // Delete button

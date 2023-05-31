@@ -1285,9 +1285,8 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
 
     override val tag: String
         get() = when (displayMode.get().lowercase()) {
-                             "simple" -> targetModeValue.get() + ""
-                             "lesssimple" -> rangeValue.get().toString() + " " + targetModeValue.get().toString() + " " + autoBlockValue.get().toString()
-                             "complicated" -> "M:" + targetModeValue.get() + ", AB:" + autoBlockValue.get() + ", R:" + rangeValue.get() + ", CPS:" + minCpsValue.get() + " - " + maxCpsValue.get() 
-                             else -> targetModeValue.get() + ""
-                        }
+         "simple" -> targetModeValue.get() + ""
+         "lesssimple" -> rangeValue.get().toString() + " " + targetModeValue.get().toString() + " " + autoBlockValue.get().toString()
+          "complicated" -> "M:" + targetModeValue.get() + ", AB:" + autoBlockValue.get() + ", R:" + rangeValue.get() + ", CPS:" + minCpsValue.get() + " - " + maxCpsValue.get()else -> targetModeValue.get() + ""
+        }
 }
