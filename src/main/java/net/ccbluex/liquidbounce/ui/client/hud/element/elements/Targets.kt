@@ -350,20 +350,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     private fun drawVape(target: EntityLivingBase) {
-        RoundedUtil.drawRound(0F, 0F, 110f, 40f, 1f, Color(30, 30, 30, 240))
 
-        GL11.glPushMatrix()
-        GL11.glTranslated(19.0, 33.0, 0.0)
-        GlStateManager.disableBlend()
-        GL11.glEnable(GL11.GL_SCISSOR_TEST)
-        GLUtils.makeScissorBox(3F, 4F, 31F, 31F)
-        val pitch: Float = target.rotationPitch
-        target.rotationPitch = 0F
-        GuiInventory.drawEntityOnScreen(0, 0, 14, -100.0f, 0f, target)
-        target.rotationPitch = pitch
-        GL11.glDisable(GL11.GL_SCISSOR_TEST)
-        GlStateManager.enableBlend()
-        GL11.glPopMatrix()
+        RenderUtils.drawEntityOnScreen(16, 55, 25, entity)
 
         Fonts.fontTenacityBold35.drawString(target.name, 36.5f, 12.6f / 2f - Fonts.fontTenacityBold35.height / 2f, -1)
 
@@ -391,26 +379,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             105f - Fonts.fontTenacityBold35.getStringWidth(hp),
             (12.6f - Fonts.fontTenacityBold35.height) / 2f,
             -1)
-
-        if (target is EntityPlayer) {
-            val arrayList: MutableList<ItemStack> = target.inventory.armorInventory.toMutableList()
-            if (target.inventory.getCurrentItem() != null) arrayList.add(target.inventory.getCurrentItem())
-            if (arrayList.isEmpty()) return
-            var n = 0f
-            arrayList.reverse()
-            GL11.glPushMatrix()
-            GL11.glTranslatef((x + 36.5f).toFloat(), (y + 18.5f).toFloat(), 0f)
-            GL11.glScaled(0.8, 0.8, 0.8)
-            for (item in arrayList) {
-                RoundedUtil.drawRound(n, 0f, 16f, 16f, 0.5f, Color(26, 25, 26))
-                RenderHelper.enableGUIStandardItemLighting()
-                mc.renderItem.renderItemAndEffectIntoGUI(item, n.toInt(), 0)
-                RenderHelper.disableStandardItemLighting()
-                n += 17
-            }
-            GL11.glScalef(1f, 1f, 1f)
-            GL11.glPopMatrix()
-        }
     }
 
     private fun drawAstolfo(target: EntityLivingBase) {
@@ -2117,6 +2085,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "vape" -> Border(0F, 0F, 110F, 40F)
             "liquid" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(), 36F)
             "fdp" -> Border(0F, 0F, 150F, 47F)
+            "fdp2" -> Border(0F, 0F, 110F, 40F)
             "flux" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
                 .coerceAtLeast(70)
                 .toFloat(), 34F)
