@@ -351,7 +351,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     private fun drawVape(target: EntityLivingBase) {
 
-        RenderUtils.drawEntityOnScreen(16, 55, 25, entity)
+        RenderUtils.drawEntityOnScreen(16, 55, 25, target)
 
         Fonts.fontTenacityBold35.drawString(target.name, 36.5f, 12.6f / 2f - Fonts.fontTenacityBold35.height / 2f, -1)
 
