@@ -13,8 +13,8 @@ class LegitSpeed : SpeedMode("Legit") {
     
     private val cpuSPEED = BoolValue("Legit-AlanWOOD-CPU-BYPASS-$$$$", true)
     
-    override fun onStrafe() {
-        if (cpuSPEED.get()) mc.timer.timerSpeed = 1.004
+    override fun onUpadte() {
+        if (cpuSPEED.get()) mc.timer.timerSpeed = 1.004f
         if (mc.thePlayer.isInWater) return
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) mc.thePlayer.jump()
