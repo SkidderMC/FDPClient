@@ -9,8 +9,10 @@ import com.google.common.base.Predicates;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HurtCam;
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.render.CameraClip;
+import net.ccbluex.liquidbounce.features.module.modules.render.KillESP;
 import net.ccbluex.liquidbounce.features.module.modules.render.Tracers;
 import net.ccbluex.liquidbounce.features.module.modules.render.PerspectiveMod;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
@@ -146,12 +148,18 @@ public abstract class MixinEntityRenderer {
 
     @Inject(method = "setupCameraTransform", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;setupViewBobbing(F)V", shift = At.Shift.BEFORE))
     private void setupCameraViewBobbingBefore(final CallbackInfo callbackInfo) {
-        if (FDPClient.moduleManager.getModule(Tracers.class).getState()) GL11.glPushMatrix();
+        final KillESP killESP = FDPClient.moduleManager.getModule(KillESP.class);
+        final KillAura aura = FDPClient.moduleManager.getModule(KillAura.class);
+
+        if ((killESP != null && aura != null && killESP.getModeValue().get().equalsIgnoreCase("tracers") && !aura.getTargetModeValue().get().equalsIgnoreCase("multi") && aura.getCurrentTarget() != null) || FDPClient.moduleManager.getModule(Tracers.class).getState()) GL11.glPushMatrix();
     }
 
     @Inject(method = "setupCameraTransform", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;setupViewBobbing(F)V", shift = At.Shift.AFTER))
     private void setupCameraViewBobbingAfter(final CallbackInfo callbackInfo) {
-        if (FDPClient.moduleManager.getModule(Tracers.class).getState()) GL11.glPopMatrix();
+        final KillESP killESP = FDPClient.moduleManager.getModule(KillESP.class);
+        final KillAura aura = FDPClient.moduleManager.getModule(KillAura.class);
+
+        if ((killESP != null && aura != null && killESP.getModeValue().get().equalsIgnoreCase("tracers") && !aura.getTargetModeValue().get().equalsIgnoreCase("multi") && aura.getCurrentTarget() != null) || FDPClient.moduleManager.getModule(Tracers.class).getState()) GL11.glPopMatrix();
     }
 
     /**

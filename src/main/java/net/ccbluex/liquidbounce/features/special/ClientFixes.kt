@@ -39,7 +39,6 @@ object ClientFixes : MinecraftInstance(), Listenable {
         "CheatBreaker"
     )
 
-
     @EventTarget
     fun onPacket(event: PacketEvent) = runCatching {
         val packet = event.packet

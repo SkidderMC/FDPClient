@@ -48,7 +48,6 @@ object HUD : Module("HUD", category = ModuleCategory.CLIENT, array = false, defa
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder").displayable { !arraylistYAxisAnimTypeValue.equals("NONE") }
     val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
-    private val buttonValue = ListValue("Button", arrayOf("Better", "RGBRounded", "Wolfram", "Rounded", "Hyperium", "RGB", "Badlion", "Flat", "FLine", "Rise", "Vanilla"), "Rounded")
 
     private var lastFontEpsilon = 0f
 
@@ -149,18 +148,4 @@ object HUD : Module("HUD", category = ModuleCategory.CLIENT, array = false, defa
         return arrayOf(firstColor, secondColor)
     }
 
-    fun getButtonRenderer(button: GuiButton): AbstractButtonRenderer? {
-        return when (buttonValue.get().lowercase()) {
-            "better" -> BetterButtonRenderer(button)
-            "rounded" -> RoundedButtonRenderer(button)
-            "fline" -> FLineButtonRenderer(button)
-            "rise" -> RiseButtonRenderer(button)
-            "hyperium" -> HyperiumButtonRenderer(button)
-            "rgb" -> RGBButtonRenderer(button)
-            "badlion" -> BadlionTwoButtonRenderer(button)
-            "rgbrounded" -> RGBRoundedButtonRenderer(button)
-            "wolfram" -> WolframButtonRenderer(button)
-            else -> null // vanilla or unknown
-        }
-    }
 }

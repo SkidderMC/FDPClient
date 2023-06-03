@@ -35,9 +35,17 @@ public class Scroll {
         return scrollAnimation.isDone();
     }
 
-    public float getScroll() {
+    public double getScroll() {
         scroll = (float) (rawScroll - scrollAnimation.getOutput());
         return scroll;
+    }
+
+    public void setMinScroll(float val) {
+        minScroll = val;
+    }
+
+    public void setMaxScroll(float val) {
+        maxScroll = val;
     }
 
 }

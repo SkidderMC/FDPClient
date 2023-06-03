@@ -22,7 +22,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C03PacketPlayer.*
 
-class SuperKnockback : Module(name = "SuperKnockback", category = ModuleCategory.COMBAT) {
+object SuperKnockback : Module(name = "SuperKnockback", category = ModuleCategory.COMBAT) {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val modeValue = ListValue("Mode", arrayOf("Legit", "Silent", "SprintReset", "SneakPacket"), "Silent")
     private val onlyMoveValue = BoolValue("OnlyMove", true)

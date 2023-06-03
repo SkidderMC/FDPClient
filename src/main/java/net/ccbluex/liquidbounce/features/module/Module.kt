@@ -145,7 +145,7 @@ open class Module @JvmOverloads constructor(
             }
         }
     var yPosAnimation: Animation? = null
-    var yPos = 0f
+    open var yPos = 0f
         get() {
             if (yPosAnimation != null) {
                 field = yPosAnimation!!.value.toFloat()

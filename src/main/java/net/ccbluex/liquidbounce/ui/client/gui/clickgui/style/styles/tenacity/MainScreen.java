@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.normal.Main;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.normal.Screen;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.render.StencilUtil;
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.render.Scroll;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.minecraft.client.gui.ScaledResolution;
 
@@ -151,7 +152,7 @@ public class MainScreen implements Screen {
         if (hoveringMods) {
             category.getScroll().onScroll(30);
             float hiddenHeight = (float) ((count * 17) - allowedHeight);
-            //category.getScroll().setMinScroll(Math.max(0, hiddenHeight));
+            category.getScroll().setMinScroll(Math.max(0, hiddenHeight));
         }
 
         StencilUtil.uninitStencilBuffer();

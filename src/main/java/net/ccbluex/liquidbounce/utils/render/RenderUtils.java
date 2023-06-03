@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
+import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.features.module.modules.render.KillESP;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
@@ -293,7 +295,7 @@ public final class RenderUtils extends MinecraftInstance {
     public static double getAnimationState(double animation, double finalState, double speed) {
         float add = (float) (0.01D * speed);
 
-        animation = animation < finalState ? (animation +  add < finalState ? animation +  add : finalState) : (animation -  add > finalState ? animation -  add : finalState);
+        animation = animation < finalState ? (Math.min(animation + add, finalState)) : (Math.max(animation - add, finalState));
         return animation;
     }
 
@@ -1325,6 +1327,46 @@ public final class RenderUtils extends MinecraftInstance {
         tessellator.draw();
     }
 
+    public static void drawEntityBox(final Entity entity, final Color color, final boolean outline) {
+        final RenderManager renderManager = mc.getRenderManager();
+        final Timer timer = mc.timer;
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        enableGlCap(GL_BLEND);
+        disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST);
+        glDepthMask(false);
+
+        final double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks
+                - renderManager.renderPosX;
+        final double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks
+                - renderManager.renderPosY;
+        final double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks
+                - renderManager.renderPosZ;
+
+        final AxisAlignedBB entityBox = entity.getEntityBoundingBox();
+        final AxisAlignedBB axisAlignedBB = new AxisAlignedBB(
+                entityBox.minX - entity.posX + x - 0.05D,
+                entityBox.minY - entity.posY + y,
+                entityBox.minZ - entity.posZ + z - 0.05D,
+                entityBox.maxX - entity.posX + x + 0.05D,
+                entityBox.maxY - entity.posY + y + 0.15D,
+                entityBox.maxZ - entity.posZ + z + 0.05D
+        );
+
+        if (outline) {
+            glLineWidth(1F);
+            enableGlCap(GL_LINE_SMOOTH);
+            glColor(color.getRed(), color.getGreen(), color.getBlue(), 95);
+            drawSelectionBoundingBox(axisAlignedBB);
+        }
+
+        glColor(color.getRed(), color.getGreen(), color.getBlue(), outline ? 26 : 35);
+        drawFilledBox(axisAlignedBB);
+        GlStateManager.resetColor();
+        glDepthMask(true);
+        resetCaps();
+    }
+
     public static void drawEntityBox(final Entity entity, final Color color, final boolean outline, final boolean box, final float outlineWidth) {
         final RenderManager renderManager = mc.getRenderManager();
         final Timer timer = mc.timer;
@@ -1419,7 +1461,8 @@ public final class RenderUtils extends MinecraftInstance {
                 .offset(x, y, z);
 
         drawAxisAlignedBB(new AxisAlignedBB(axisAlignedBB.minX, axisAlignedBB.maxY + 0.2, axisAlignedBB.minZ, axisAlignedBB.maxX, axisAlignedBB.maxY + 0.26, axisAlignedBB.maxZ),
-                color,false,true,2F);
+                color
+        );
     }
 
     public static void drawFilledBox(final AxisAlignedBB axisAlignedBB) {
@@ -1830,6 +1873,47 @@ public final class RenderUtils extends MinecraftInstance {
         glDepthMask(true);
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
+    }
+
+    public static void drawPlatforms(final Entity entity, final Color color) {
+        final RenderManager renderManager = mc.getRenderManager();
+        final Timer timer = mc.timer;
+
+        KillESP killESP = FDPClient.moduleManager.getModule(KillESP.class);
+        if (killESP == null)
+            return;
+
+        final double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks
+                - renderManager.renderPosX;
+        final double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks
+                - renderManager.renderPosY;
+        final double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks
+                - renderManager.renderPosZ;
+
+        final AxisAlignedBB axisAlignedBB = entity.getEntityBoundingBox()
+                .offset(-entity.posX, -entity.posY, -entity.posZ)
+                .offset(x, y - killESP.getMoveMarkValue().get(), z);
+
+        drawAxisAlignedBB(
+                new AxisAlignedBB(axisAlignedBB.minX, axisAlignedBB.maxY + 0.2, axisAlignedBB.minZ, axisAlignedBB.maxX, axisAlignedBB.maxY + 0.26, axisAlignedBB.maxZ),
+                color
+        );
+    }
+
+    public static void drawAxisAlignedBB(final AxisAlignedBB axisAlignedBB, final Color color) {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        glLineWidth(2F);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(false);
+        glColor(color);
+        drawFilledBox(axisAlignedBB);
+        GlStateManager.resetColor();
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
     }
 
     public static void drawRectBasedBorder(float x, float y, float x2, float y2, float width, int color1) {
@@ -2568,17 +2652,17 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void enableSmoothLine(float width) {
-        GL11.glDisable(3008);
-        GL11.glEnable(3042);
-        GL11.glBlendFunc(770, 771);
-        GL11.glDisable(3553);
-        GL11.glDisable(2929);
-        GL11.glDepthMask(false);
-        GL11.glEnable(2884);
-        GL11.glEnable(2848);
-        GL11.glHint(3154, 4354);
-        GL11.glHint(3155, 4354);
-        GL11.glLineWidth(width);
+        GL11.glDisable((int)3008);
+        GL11.glEnable((int)3042);
+        GL11.glBlendFunc((int)770, (int)771);
+        GL11.glDisable((int)3553);
+        GL11.glDisable((int)2929);
+        GL11.glDepthMask((boolean)false);
+        GL11.glEnable((int)2884);
+        GL11.glEnable((int)2848);
+        GL11.glHint((int)3154, (int)4354);
+        GL11.glHint((int)3155, (int)4354);
+        GL11.glLineWidth((float)width);
     }
 
     public static void disableSmoothLine() {

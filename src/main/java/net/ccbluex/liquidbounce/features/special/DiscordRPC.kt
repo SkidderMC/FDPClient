@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.special
 
 import com.jagrosh.discordipc.IPCClient
@@ -17,7 +22,6 @@ object DiscordRPC {
     private val timestamp = OffsetDateTime.now()
     private var running = false
     private var fdpwebsite = "fdpinfo.github.io - "
-
 
     fun run() {
         ipcClient.setListener(object : IPCListener {
@@ -54,12 +58,13 @@ object DiscordRPC {
         builder.setLargeImage(if (discordRPCModule.animated.get()){"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.gif"} else {"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.png"})
         builder.setDetails(fdpwebsite + FDPClient.CLIENT_VERSION)
         ServerUtils.getRemoteIp().also {
-            val str = (if(discordRPCModule.showServerValue.get()) "Server: $it\n" else "\n") + (if(discordRPCModule.showNameValue.get()) "Username: ${if(mc.thePlayer != null) mc.thePlayer.name else mc.session.username}\n" else "\n") + (if(discordRPCModule.showHealthValue.get()) "HP: ${mc.thePlayer.health}\n" else "\n") + (if(discordRPCModule.showOtherValue.get()) "PlayTime: ${if(mc.isSingleplayer) "SinglePlayer\n" else SessionUtils.getFormatSessionTime()} Kills: ${StatisticsUtils.getKills()} Deaths: ${StatisticsUtils.getDeaths()}\n" else "\n")
-            builder.setState(if(it.equals("idling", true)) "Idling" else str)
+            val str = (if(discordRPCModule.showServerValue.get()) "Server: $it\n" else "\n") + (if(discordRPCModule.showNameValue.get()) "IGN: ${if(mc.thePlayer != null) mc.thePlayer.name else mc.session.username}\n" else "\n") + (if(discordRPCModule.showHealthValue.get()) "HP: ${mc.thePlayer.health}\n" else "\n") + (if(discordRPCModule.showModuleValue.get()) "Enable: ${FDPClient.moduleManager.modules.count{ it.state }} of ${FDPClient.moduleManager.modules.size} Modules\n" else "\n") + (if(discordRPCModule.showOtherValue.get()) "Time: ${if(mc.isSingleplayer) "SinglePlayer\n" else SessionUtils.getFormatSessionTime()} Kills: ${StatisticsUtils.getKills()} Deaths: ${StatisticsUtils.getDeaths()}\n" else "\n")
+            builder.setState(if(it.equals("Injecting", true)) "Injecting" else str)
         }
 
         // Check ipc client is connected and send rpc
-        if (ipcClient.status == PipeStatus.CONNECTED) ipcClient.sendRichPresence(builder.build())
+        if (ipcClient?.status == PipeStatus.CONNECTED)
+            ipcClient?.sendRichPresence(builder.build())
     }
 
     fun stop() {
