@@ -26,7 +26,7 @@ class LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT)
     var currentTarget: EntityLivingBase? = null
     private var shown = false
 
-    val killaura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
+    val killaura = FDPClient.moduleManager.getModule(KillAura::class.java) as KillAura
 
 
     override fun onDisable() {
