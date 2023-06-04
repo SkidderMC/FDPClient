@@ -6,7 +6,6 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -16,8 +15,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.world.WorldSettings
 
-@ModuleInfo(name = "LegitReach", category = ModuleCategory.COMBAT)
-class LegitReach : Module() {
+class LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT) {
 
     var fakePlayer: EntityOtherPlayerMP? = null
     private val aura = BoolValue("Aura", false)
@@ -28,7 +26,7 @@ class LegitReach : Module() {
     var currentTarget: EntityLivingBase? = null
     private var shown = false
 
-    val killaura = Centauri.moduleManager.getModule(KillAura::class.java) as KillAura
+    val killaura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
 
 
     override fun onDisable() {
