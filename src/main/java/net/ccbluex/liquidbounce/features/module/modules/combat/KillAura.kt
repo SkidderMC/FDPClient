@@ -393,7 +393,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             }
         }
 
-        if (autoBlockValue.equals("Range") && ( autoBlockPacketValue.equals("Delayed") && delayBlock) {
+        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Delayed") && delayBlock) {
               startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
               delayBlock = false
         }
