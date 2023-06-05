@@ -24,7 +24,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.*
 
 object SuperKnockback : Module(name = "SuperKnockback", category = ModuleCategory.COMBAT) {
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val modeValue = ListValue("Mode", arrayOf("Legit", "Silent", "SprintReset", "SneakPacket"), "Silent")
+    private val modeValue = ListValue("Mode", arrayOf("Wtap", "Legit", "Silent", "SprintReset", "SneakPacket"), "Silent")
     private val onlyMoveValue = BoolValue("OnlyMove", true)
     private val onlyMoveForwardValue = BoolValue("OnlyMoveForward", true). displayable { onlyMoveValue.get() }
     private val onlyGroundValue = BoolValue("OnlyGround", false)
@@ -47,6 +47,8 @@ object SuperKnockback : Module(name = "SuperKnockback", category = ModuleCategor
             }
                 
             when (modeValue.get().lowercase()) {
+                
+                "wtap" -> mc.gameSettings.keyBindForward.pressed = false
                 
                 "legit" -> {
                     ticks = 2
