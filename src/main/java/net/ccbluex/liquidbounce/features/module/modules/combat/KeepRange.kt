@@ -26,10 +26,12 @@ object KeepRange : Module("KeepRange", category = ModuleCategory.COMBAT) {
     private val minDistance = FloatValue("MinDistance", 2.3F, 0F, 4F)
     private val maxDistance = FloatValue("MaxDistance", 4.0F, 3F, 7F)
     private val onlyForward = BoolValue("OnlyForward", true)
+    private val onlyCombo = BoolValue("OnlyCombat", true)
 
     private val keepTick = IntegerValue("KeepTick", 10, 0, 40)
     private val restTick = IntegerValue("RestTick", 4, 0, 40)
-
+    
+    private var comboing = false
     private val ticks = TickTimer()
     var target: EntityPlayer? = null
     private val binds = arrayOf(
@@ -41,9 +43,11 @@ object KeepRange : Module("KeepRange", category = ModuleCategory.COMBAT) {
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
+        if (mc.thePlayer.hurtTime < 1) comboing = true
         target = if (event.targetEntity is EntityPlayer) event.targetEntity else return
     }
     @EventTarget fun onStrafe(event: StrafeEvent) {
+        if (onlyCombo.get() && !comboing) return
         if (mode.equals("CancelMove")) {
             target?.let {
                 if (mc.thePlayer.getDistanceToEntityBox(it) <= minDistance.get() && !ticks.hasTimePassed(keepTick.get())) {
@@ -56,6 +60,7 @@ object KeepRange : Module("KeepRange", category = ModuleCategory.COMBAT) {
     }
     @EventTarget fun onUpdate(event: UpdateEvent) {
         if (target == null) return
+        if (onlyCombo.get() && !comboing) return
         if (ticks.hasTimePassed(keepTick.get() + restTick.get())) ticks.reset()
         ticks.update()
         val distance = mc.thePlayer.getDistanceToEntityBox(target!!)
