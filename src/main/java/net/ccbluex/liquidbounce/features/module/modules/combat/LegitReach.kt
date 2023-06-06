@@ -176,7 +176,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
                 packets.add(packet as Packet<INetHandlerPlayClient>)
             }
         } else if (mode.equals("AllIncomingPackets")) {
-            if (packet is Packet<INetHandlerPlayClient>) {
+            if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
                 event.cancelEvent()
                 packets.add(packet as Packet<INetHandlerPlayClient>)
             }
