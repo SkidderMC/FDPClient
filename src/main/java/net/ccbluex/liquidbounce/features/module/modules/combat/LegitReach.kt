@@ -57,7 +57,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
     
     private fun clearPackets() {
         while (!packets.isEmpty()) {
-            PacketUtils.handlePacket(packets.take())
+            PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
         }
     }
 
@@ -176,7 +176,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
                 packets.add(packet as Packet<INetHandlerPlayClient>)
             }
         } else if (mode.equals("AllIncomingPackets")) {
-            if (packet is Packet<INetHandlerPlayClient?>) {
+            if (packet is Packet<INetHandlerPlayClient>) {
                 event.cancelEvent()
                 packets.add(packet as Packet<INetHandlerPlayClient>)
             }
