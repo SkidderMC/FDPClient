@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.FDPClient
@@ -15,7 +20,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.world.WorldSettings
 
-class LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT) {
+object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT) {
 
     var fakePlayer: EntityOtherPlayerMP? = null
     private val aura = BoolValue("Aura", false)
