@@ -17,12 +17,15 @@ import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.server.*
 import net.minecraft.network.play.INetHandlerPlayClient
 import net.minecraft.world.WorldSettings
+import java.util.concurrent.LinkedBlockingQueue
 
 object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT) {
 
@@ -36,7 +39,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
     var currentTarget: EntityLivingBase? = null
     private var shown = false
     
-    private val packets = LinkedList<Packet<INetHandlerPlayClient>>()
+    private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayClient>>()
 
     val killaura = FDPClient.moduleManager.getModule(KillAura::class.java) as KillAura
 
@@ -113,7 +116,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
                     (fakePlayer ?: return).setCurrentItemOrArmor(index, equipmentInSlot)
                 }
             }
-            if (Intavetest.get() && mc.thePlayer.ticksExisted % intavetesthurttime.get() == 0) {
+            if (mode.equals("IntaveTest") && mc.thePlayer.ticksExisted % intavetesthurttime.get() == 0) {
                 if (fakePlayer != null) {
                     (fakePlayer ?: return).rotationYawHead = (currentTarget ?: return).rotationYawHead
                     (fakePlayer ?: return).renderYawOffset = (currentTarget ?: return).renderYawOffset
@@ -121,7 +124,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
                     (fakePlayer ?: return).rotationYawHead = (currentTarget ?: return).rotationYawHead
                 }
                 pulseTimer.reset()
-            }else   if (!Intavetest.get() && pulseTimer.hasTimePassed(pulseDelayValue.get().toLong())) {
+            }else   if (!mode.equals("IntaveTest") && pulseTimer.hasTimePassed(pulseDelayValue.get().toLong())) {
                 if (fakePlayer != null) {
                     (fakePlayer ?: return).rotationYawHead = (currentTarget ?: return).rotationYawHead
                     (fakePlayer ?: return).renderYawOffset = (currentTarget ?: return).renderYawOffset
