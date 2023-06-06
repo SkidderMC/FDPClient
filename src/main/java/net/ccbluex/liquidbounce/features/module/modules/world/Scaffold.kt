@@ -70,11 +70,11 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "Spoof")
 
     // Basic stuff
-    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Hypixel", "OFF"), "Always")
+    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Alternating", "Hypixel", "OFF"), "Always")
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val searchValue = BoolValue("Search", true)
     private val downValue = BoolValue("Down", false)
-    private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Pre")
+    private val placeModeValue = ListValue("PlaceTiming", arrayOf("All", "Pre", "Post"), "Pre")
 
     // Eagle
     private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Off"), "Off")
@@ -86,7 +86,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards", "Snap", "BackSnap"), "Backwards")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards", "Snap"), "Backwards")
     private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom"), "AAC")
     private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove"), "MoveDirection").displayable { rotationsValue.equals("Advanced") }
     private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla"), "Static").displayable { rotationsValue.equals("Advanced") }
@@ -248,6 +248,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
 
     //Other
     private var doSpoof = false
+    
 
     //NCP
     private var offGroundTicks: Int = 0
@@ -436,6 +437,8 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
                 zitterDirection = !zitterDirection
             }
         }
+        
+        if (placeModeValue.equals("All")) place()
     }
 
     @EventTarget
@@ -907,52 +910,110 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
         if (progress >= 1) progress = 1f
         val scaledResolution = ScaledResolution(mc)
         val info = blocksAmount.toString() + " Blocks"
-        if (counterDisplayValue.equals("FDP")) {
-            GlStateManager.pushMatrix()
-            val info = LanguageManager.getAndFormat("ui.scaffold.blocks", blocksAmount)
-            val slot = InventoryUtils.findAutoBlockBlock()
-            val height = event.scaledResolution.scaledHeight
-            val width = event.scaledResolution.scaledWidth
-            val w2=(mc.fontRendererObj.getStringWidth(info))
-            RenderUtils.drawRoundedCornerRect(
-                (width - w2 - 20) / 2f,
-                height * 0.8f - 24f,
-                (width + w2 + 18) / 2f,
-                height * 0.8f + 12f,
-                3f,
-                Color(43, 45, 48).rgb
-            )
-            mc.fontRendererObj.drawCenteredString("▼",width / 2.0f + 2f, height * 0.8f+8f,Color(43,45,48).rgb)
-            var stack = barrier
-            if (slot != -1) {
-                if (mc.thePlayer.inventory.getCurrentItem() != null) {
-                    val handItem = mc.thePlayer.inventory.getCurrentItem().item
-                    if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
-                        stack = mc.thePlayer.inventory.getCurrentItem()
+        when (counterDisplayValue.get().lowercase()) {
+            "fdp" -> {
+                GlStateManager.pushMatrix()
+                val info = LanguageManager.getAndFormat("ui.scaffold.blocks", blocksAmount)
+                val slot = InventoryUtils.findAutoBlockBlock()
+                val height = event.scaledResolution.scaledHeight
+                val width = event.scaledResolution.scaledWidth
+                val w2=(mc.fontRendererObj.getStringWidth(info))
+                RenderUtils.drawRoundedCornerRect(
+                    (width - w2 - 20) / 2f,
+                    height * 0.8f - 24f,
+                    (width + w2 + 18) / 2f,
+                    height * 0.8f + 12f,
+                    3f,
+                    Color(43, 45, 48).rgb
+                )
+                mc.fontRendererObj.drawCenteredString("▼",width / 2.0f + 2f, height * 0.8f+8f,Color(43,45,48).rgb)
+                var stack = barrier
+                if (slot != -1) {
+                    if (mc.thePlayer.inventory.getCurrentItem() != null) {
+                        val handItem = mc.thePlayer.inventory.getCurrentItem().item
+                        if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
+                            stack = mc.thePlayer.inventory.getCurrentItem()
+                        }
+                    }
+                    if (stack == barrier) {
+                        stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
+                        if (stack == null) {
+                            stack = barrier
+                        }
                     }
                 }
-                if (stack == barrier) {
-                    stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
-                    if (stack == null) {
-                        stack = barrier
-                    }
-                }
-            }
 
-            RenderHelper.enableGUIStandardItemLighting()
-            mc.renderItem.renderItemIntoGUI(stack, width / 2 - 10, (height * 0.8 - 20).toInt())
-            RenderHelper.disableStandardItemLighting()
-            mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
-            GlStateManager.popMatrix()
-        }
-        if (counterDisplayValue.equals("Simple")) {
-            Fonts.minecraftFont.drawString(
-                blocksAmount.toString() + " Blocks",
-                scaledResolution.scaledWidth / 1.95f,
-                (scaledResolution.scaledHeight / 2 + 20).toFloat(),
-                -1,
-                true
-            )
+                RenderHelper.enableGUIStandardItemLighting()
+                mc.renderItem.renderItemIntoGUI(stack, width / 2 - 10, (height * 0.8 - 20).toInt())
+                RenderHelper.disableStandardItemLighting()
+                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
+                GlStateManager.popMatrix()
+            }
+            "rise" -> {
+                GlStateManager.pushMatrix()
+                val info = blocksAmount
+                val slot = InventoryUtils.findAutoBlockBlock()
+                val height = event.scaledResolution.scaledHeight
+                val width = event.scaledResolution.scaledWidth
+                val w2=(mc.fontRendererObj.getStringWidth(info))
+                RenderUtils.drawRoundedCornerRect(
+                    (width - w2 - 20) / 2f,
+                    height * 0.8f - 24f,
+                    (width + w2 + 18) / 2f,
+                    height * 0.8f + 12f,
+                    5f,
+                    Color(20, 20, 20, 100).rgb
+                )
+                var stack = barrier
+                if (slot != -1) {
+                    if (mc.thePlayer.inventory.getCurrentItem() != null) {
+                        val handItem = mc.thePlayer.inventory.getCurrentItem().item
+                        if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
+                            stack = mc.thePlayer.inventory.getCurrentItem()
+                        }
+                    }
+                    if (stack == barrier) {
+                        stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
+                        if (stack == null) {
+                            stack = barrier
+                        }
+                    }
+                }
+
+                RenderHelper.enableGUIStandardItemLighting()
+                mc.renderItem.renderItemIntoGUI(stack, width / 2 - 10, (height * 0.8 - 20).toInt())
+                RenderHelper.disableStandardItemLighting()
+                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
+                GlStateManager.popMatrix()
+            }
+            
+            "rise6" -> {
+                rise6
+                val info = blocksAmount.toString() + " Blocks"
+                val height = event.scaledResolution.scaledHeight
+                val width = event.scaledResolution.scaledWidth
+                val w2=(mc.fontRendererObj.getStringWidth(info))
+                RenderUtils.drawRoundedCornerRect(
+                    (width - w2 - 20) / 2f,
+                    height * 0.8f - 12f,
+                    (width + w2 + 18) / 2f,
+                    height * 0.8f + 12f,
+                    4f,
+                    Color(30, 30, 30, 120).rgb
+                )
+                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
+            }
+            
+        
+            "simple" -> {
+                Fonts.minecraftFont.drawString(
+                    blocksAmount.toString() + " Blocks",
+                    scaledResolution.scaledWidth / 1.95f,
+                    (scaledResolution.scaledHeight / 2 + 20).toFloat(),
+                    -1,
+                    true
+                )
+            }
         }
     }
 
@@ -1166,7 +1227,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
             if (silentRotationValue.get()) {
                 val limitedRotation =
                     RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
-                if (rotationsValue.equals("Snap") || rotationsValue.equals("BackSnap")) {
+                if (rotationsValue.equals("Snap")) {
                     RotationUtils.setTargetRotation(limitedRotation, 0)
                 } else {
                     RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
@@ -1211,6 +1272,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround
             "hypixel" -> mc.thePlayer.onGround
+            "alternating" -> mc.thePlayer.ticksExisted % 2 == 0
             else -> false
         }
 
