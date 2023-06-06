@@ -199,7 +199,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
     private val teleportNoMotionValue = BoolValue("TowerTeleportNoMotion", false).displayable { towerModeValue.equals("Teleport") }
 
     // Visuals
-    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Simple"), "FDP")
+    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Rise", "Rise6", "Simple"), "FDP")
     private val markValue = BoolValue("Mark", false)
 
     /**
@@ -951,7 +951,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
             }
             "rise" -> {
                 GlStateManager.pushMatrix()
-                val info = blocksAmount
+                val info = blocksAmount.toString()
                 val slot = InventoryUtils.findAutoBlockBlock()
                 val height = event.scaledResolution.scaledHeight
                 val width = event.scaledResolution.scaledWidth
@@ -988,7 +988,6 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
             }
             
             "rise6" -> {
-                rise6
                 val info = blocksAmount.toString() + " Blocks"
                 val height = event.scaledResolution.scaledHeight
                 val width = event.scaledResolution.scaledWidth
