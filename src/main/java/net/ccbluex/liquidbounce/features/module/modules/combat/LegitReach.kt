@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -41,7 +42,6 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
     
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayClient>>()
 
-    val killaura = FDPClient.moduleManager.getModule(KillAura::class.java) as KillAura
 
 
     override fun onDisable() {
@@ -98,7 +98,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
     @EventTarget
     fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         if ( mode.equals("FakePlayer") || mode.equals("IntaveTest") ) {
-            if (aura.get() && !killaura.state) {
+            if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state)) {
                 removeFakePlayer()
             }
             if (mc.thePlayer == null) return
