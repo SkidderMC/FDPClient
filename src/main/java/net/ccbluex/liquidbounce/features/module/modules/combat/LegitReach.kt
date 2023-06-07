@@ -187,11 +187,14 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
+        if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state) return
         
         if (mode.equals("TargetPackets")) {
-            if (packet is S12PacketEntityVelocity) {
-                event.cancelEvent()
-                packets.add(packet as Packet<INetHandlerPlayClient>)
+            if (packet is S14PacketEntity) {
+                if (packet.entityID == currentTarget.entityID) {
+                    event.cancelEvent()
+                    packets.add(packet as Packet<INetHandlerPlayClient>)
+                }
             }
         } else if (mode.equals("AllIncomingPackets")) {
             if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
