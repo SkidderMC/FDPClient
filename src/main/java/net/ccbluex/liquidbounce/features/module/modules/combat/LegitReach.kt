@@ -191,7 +191,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
         
         if (mode.equals("TargetPackets")) {
             if (packet is S14PacketEntity) {
-                if (packet.entityID == currentTarget.entityID) {
+                if (packet.entityId == currentTarget.entityId) {
                     event.cancelEvent()
                     packets.add(packet as Packet<INetHandlerPlayClient>)
                 }
