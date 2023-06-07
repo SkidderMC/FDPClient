@@ -98,7 +98,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
     @EventTarget
     fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         if ( mode.equals("FakePlayer") || mode.equals("IntaveTest") ) {
-            if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state)) {
+            if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state) {
                 removeFakePlayer()
             }
             if (mc.thePlayer == null) return
