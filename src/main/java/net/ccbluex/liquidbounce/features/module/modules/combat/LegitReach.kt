@@ -76,7 +76,25 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
         if ( mode.equals("FakePlayer") || mode.equals("IntaveTest") ) {
             if (fakePlayer == null) {
                 currentTarget = event.targetEntity as EntityLivingBase?
-                shown = false
+                val faker = EntityOtherPlayerMP(
+                        mc.theWorld ?: return,
+                        mc.netHandler.getPlayerInfo((currentTarget ?: return).uniqueID ?: return).gameProfile ?: return
+                )
+
+                faker.rotationYawHead = (currentTarget ?: return).rotationYawHead
+                faker.renderYawOffset = (currentTarget ?: return).renderYawOffset
+                faker.copyLocationAndAnglesFrom(currentTarget ?: return)
+                faker.rotationYawHead = (currentTarget ?: return).rotationYawHead
+                faker.health = (currentTarget ?: return).health
+                val indices = (0..4).toList().toIntArray()
+                for (index in indices) {
+                    val equipmentInSlot = (currentTarget ?: return).getEquipmentInSlot(index) ?: continue
+                    faker.setCurrentItemOrArmor(index, equipmentInSlot)
+                }
+                (mc.theWorld ?: return).addEntityToWorld(-1337, faker)
+
+                fakePlayer = faker
+                shown = true
             } else {
                 if (event.targetEntity == fakePlayer) {
                     attackEntity(currentTarget ?: return)
@@ -124,7 +142,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
                     (fakePlayer ?: return).rotationYawHead = (currentTarget ?: return).rotationYawHead
                 }
                 pulseTimer.reset()
-            }else   if (!mode.equals("IntaveTest") && pulseTimer.hasTimePassed(pulseDelayValue.get().toLong())) {
+            } else if (mode.equals("FakePlayer") && pulseTimer.hasTimePassed(pulseDelayValue.get().toLong())) {
                 if (fakePlayer != null) {
                     (fakePlayer ?: return).rotationYawHead = (currentTarget ?: return).rotationYawHead
                     (fakePlayer ?: return).renderYawOffset = (currentTarget ?: return).renderYawOffset
@@ -177,6 +195,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
             }
         } else if (mode.equals("AllIncomingPackets")) {
             if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
+                if (mc.thePlayer.ticksExisted < 20) return
                 event.cancelEvent()
                 packets.add(packet as Packet<INetHandlerPlayClient>)
             }
