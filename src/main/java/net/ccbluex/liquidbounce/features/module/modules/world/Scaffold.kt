@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.world
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
@@ -184,13 +185,13 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
             val i = extraClickMinDelayValue.get()
             if (i > newValue) set(i)
         }
-    }.displayable { !extraClickValue.equals("OFF") && extraClickMinDelayValue.displayable } as IntegerValue
+    }.displayable { !extraClickValue.equals("OFF") && extraClickValue.displayable } as IntegerValue
     private val extraClickMinDelayValue: IntegerValue = object : IntegerValue("ExtraClickMinDelay", 50, 20, 300) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = extraClickMaxDelayValue.get()
             if (i < newValue) set(i)
         }
-    }.displayable { !extraClickValue.equals("OFF") && extraClickMinDelayValue.displayable } as IntegerValue
+    }.displayable { !extraClickValue.equals("OFF") && extraClickValue.displayable } as IntegerValue
     
     private val moveFixValue = BoolValue("StrafeFix", false).displayable { bypassOptions.get() }
 
@@ -504,7 +505,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepLengthValue.get()> 0 && lockRotation != null && silentRotationValue.get()) {
             if (rotationsValue.equals("BackSnap") {
-                val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)), placeRotation.rotation.pitch), rotationSpeed)
+                val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180), placeRotation.rotation.pitch), rotationSpeed)
                 RotationUtils.setTargetRotation(limitedRotation, 1)
             } else {
                 val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation, rotationSpeed)
@@ -917,7 +918,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
         progress = (System.currentTimeMillis() - lastMS).toFloat() / 100f
         lastMS = System.currentTimeMillis()
         if (progress >= 1) progress = 1f
-        val easing = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf("BACK"), EaseUtils.EnumEasingOrder.valueOf("In"), progress).toFloat()
+        val eeasing = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf("BACK"), EaseUtils.EnumEasingOrder.valueOf("In"), progress).toFloat()
         
         
         val scaledResolution = ScaledResolution(mc)
@@ -1012,7 +1013,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
                     4f,
                     Color(30, 30, 30, 120).rgb
                 )
-                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 1f - easing * 0.2f, Color.WHITE.rgb, false)
+                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 1f - eeasing * 0.2f, Color.WHITE.rgb, false)
             }
             
         
