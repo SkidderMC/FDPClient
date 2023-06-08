@@ -505,7 +505,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepLengthValue.get()> 0 && lockRotation != null && silentRotationValue.get()) {
             if (rotationsValue.equals("BackSnap")) {
-                val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180), 80.0), rotationSpeed)
+                val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180), 80.0f), rotationSpeed)
                 RotationUtils.setTargetRotation(limitedRotation, 1)
             } else {
                 val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation, rotationSpeed)
