@@ -504,8 +504,8 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
 
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepLengthValue.get()> 0 && lockRotation != null && silentRotationValue.get()) {
-            if (rotationsValue.equals("BackSnap") {
-                val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180), placeRotation.rotation.pitch), rotationSpeed)
+            if (rotationsValue.equals("BackSnap")) {
+                val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180), 80.0), rotationSpeed)
                 RotationUtils.setTargetRotation(limitedRotation, 1)
             } else {
                 val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation, rotationSpeed)
@@ -918,7 +918,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
         progress = (System.currentTimeMillis() - lastMS).toFloat() / 100f
         lastMS = System.currentTimeMillis()
         if (progress >= 1) progress = 1f
-        val eeasing = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf("BACK"), EaseUtils.EnumEasingOrder.valueOf("In"), progress).toFloat()
+        val eeasing = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf("BACK"), EaseUtils.EnumEasingOrder.valueOf("In"), progress.toDouble()).toFloat()
         
         
         val scaledResolution = ScaledResolution(mc)
