@@ -74,6 +74,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if ( mode.equals("FakePlayer") || mode.equals("IntaveTest") ) {
+            clearPackets()
             if (fakePlayer == null) {
                 currentTarget = event.targetEntity as EntityLivingBase?
                 val faker = EntityOtherPlayerMP(
