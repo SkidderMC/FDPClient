@@ -29,7 +29,7 @@ class Aimbot : Module(name = "Aimbot", category = ModuleCategory.COMBAT) {
     private val smoothValue = BoolValue("Smooth", false)
     private val smoothAngleValue = IntegerValue("SmoothMinAngle", 30, 1, 180).displayable { smoothValue.get() }
     private val fovValue = FloatValue("FOV", 180F, 1F, 180F)
-    private val centerValue = BoolValue("Center", false)
+    private val rotMode = ListValue("RotationMode", arrayOf("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine"), "HalfUp")
     private val lockValue = BoolValue("Lock", true)
     private val onClickValue = BoolValue("OnClick", false)
     private val onClickDurationValue = IntegerValue("OnClickDuration", 500, 100, 1000).displayable { onClickValue.get() }
@@ -63,15 +63,17 @@ class Aimbot : Module(name = "Aimbot", category = ModuleCategory.COMBAT) {
         val calcBaseSpeed = turnSpeedValue.get() + Math.random() * randomTurnValue.get() - Math.random() * randomTurnValue.get()
         val angleDiff = RotationUtils.getRotationDifference(entity)
         val calcPrecent = if (angleDiff >= smoothAngleValue.get() || !smoothValue.get()) { 1.0 } else { angleDiff / smoothAngleValue.get() }
-
+        
         val rotation = RotationUtils.limitAngleChange(
             Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
-            if (centerValue.get()) {
-                RotationUtils.toRotation(RotationUtils.getCenter(entity.hitBox), true)
-            } else {
-                RotationUtils.searchCenter(entity.hitBox, false, false, true,
-                    false).rotation
-            },
+            RotationUtils.toRotation(RotationUtils.calculateCenter(
+                        rotMode.get(),
+                        false,
+                        0.0,
+                        entity.hitBox,
+                        true,
+                        true
+            )),
             (calcBaseSpeed * calcPrecent).toFloat()
         )
 
