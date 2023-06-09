@@ -24,7 +24,7 @@ class Eagle : Module(name = "Eagle", category = ModuleCategory.PLAYER) {
     private val holdTime = IntegerValue("MaxSneakTime", 120, 0, 900).displayable{ limitTimeValue.get() }
     private val onlyGround = BoolValue("OnlyGround", true)
     private val onlyLookingDown = BoolValue("OnlyLookingDown", true)
-    private val onlyMovingzBack = BoolValue("OnlyMovingBack", true)
+    private val onlyMovingBack = BoolValue("OnlyMovingBack", true)
     
     private val holdTimer = MSTimer()
     
