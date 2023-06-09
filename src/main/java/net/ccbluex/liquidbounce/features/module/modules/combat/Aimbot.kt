@@ -66,12 +66,12 @@ class Aimbot : Module(name = "Aimbot", category = ModuleCategory.COMBAT) {
             Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
             (RotationUtils.calculateCenter(
                         rotMode.get(),
-                        false,
+                        "Horizontal",
                         0.1,
                         entity.hitBox,
                         false,
-                        true
-            )),
+                        true)
+            ).rotation,
             (calcBaseSpeed * calcPrecent).toFloat()
         )
 
