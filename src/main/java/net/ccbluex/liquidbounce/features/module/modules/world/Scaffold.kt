@@ -918,7 +918,6 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
         progress = (System.currentTimeMillis() - lastMS).toFloat() / 100f
         lastMS = System.currentTimeMillis()
         if (progress >= 1) progress = 1f
-        val eeasing = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf("BACK"), EaseUtils.EnumEasingOrder.valueOf("In"), progress.toDouble()).toFloat()
         
         
         val scaledResolution = ScaledResolution(mc)
@@ -1001,6 +1000,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
             }
             
             "rise6" -> {
+                val eeasing = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf("BACK"), EaseUtils.EnumEasingOrder.valueOf("In"), progress.toDouble()).toFloat()
                 val info = "Amount " + blocksAmount.toString()
                 val height = event.scaledResolution.scaledHeight
                 val width = event.scaledResolution.scaledWidth
@@ -1045,7 +1045,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
             )
             val placeInfo = get(blockPos)
             if (BlockUtils.isReplaceable(blockPos) && placeInfo != null) {
-                RenderUtils.drawBlockBox(blockPos, Color(markRedValue.get(), markBlueValue.get(), markBlueValue.get(), 100), false, true, 1f)
+                RenderUtils.drawBlockBox(blockPos, Color(markRedValue.get(), markGreenValue.get(), markBlueValue.get(), 100), false, true, 1f)
                 break
             }
         }
