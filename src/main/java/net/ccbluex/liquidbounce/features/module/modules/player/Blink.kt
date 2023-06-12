@@ -139,5 +139,5 @@ class Blink : Module(name = "Blink", category = ModuleCategory.PLAYER) {
     }
 
     override val tag: String
-        get() = BlinkUtils.bufferSize() + " " + packets.size()
+        get() = BlinkUtils.bufferSize() + ""
 }
