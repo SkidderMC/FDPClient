@@ -29,8 +29,7 @@ class NCPLatestLongjump : LongJumpMode("NCPLatest") {
         cancelTeleport = false
         if (warn.get())
             ClientUtils.displayChatMessage("§8[§c§lNCPLatest§8] §aYou must be under a block to bypass")
-        if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1.4, mc.thePlayer.posZ)).block == Blocks.air)
-            longjump.state = false
+
     }
     
     override fun onUpdate(event: UpdateEvent) {
