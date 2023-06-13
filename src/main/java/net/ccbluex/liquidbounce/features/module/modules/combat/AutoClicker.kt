@@ -109,7 +109,7 @@ class AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMBA
             }
          }
         if (blockValue.get() && mc.thePlayer.heldItem?.item is ItemSword && mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && blockOnClick.get() && Mouse.isButtonDown(1)) {
-            mc.gameSettings.keyBindUseItem.isKeyDown = false
+            mc.gameSettings.keyBindUseItem.pressed = false
         }
         if (blockValue.get() && timer.hasTimePassed(1) && mc.thePlayer.heldItem?.item is ItemSword && mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get()) {
             if (blockOnClick.get()) {
