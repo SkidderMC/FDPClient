@@ -63,12 +63,12 @@ object TickBase : Module("TickBase", category = ModuleCategory.COMBAT) {
     private fun sleep() {
         if (skippedTick > 0) {
             try {
-                Thread.sleep(1L * skippedTick)
+                Thread.sleep(2L * skippedTick)
                 skippedTick = 0
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
-            mc.timer.timerSpeed = 0.075f + skippedTick
+            mc.timer.timerSpeed = 0.125f + skippedTick
         }
     }
 
@@ -78,7 +78,7 @@ object TickBase : Module("TickBase", category = ModuleCategory.COMBAT) {
         val dx = mc.thePlayer.posX - target.posX
         val dz = mc.thePlayer.posZ - target.posZ
         if (MathHelper.sqrt_double(dx * dx + dz * dz) > rangeValue.value) {
-            preTick = (1 * (MathHelper.sqrt_double(dx * dx + dz * dz) - rangeValue.value)).toInt()
+            preTick = (12 * (MathHelper.sqrt_double(dx * dx + dz * dz) - rangeValue.value)).toInt()
             skippedTick += preTick
             return true
         }
