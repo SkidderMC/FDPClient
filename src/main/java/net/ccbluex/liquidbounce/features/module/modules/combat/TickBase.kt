@@ -68,17 +68,17 @@ object TickBase : Module("TickBase", category = ModuleCategory.COMBAT) {
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
-            mc.timer.timerSpeed = 0.054f + skippedTick
+            mc.timer.timerSpeed = 0.1f + skippedTick
         }
     }
 
     fun shouldSkip(): Boolean {
         val target = killAura!!.currentTarget
-        if (target == null || skippedTick > 5 || !mc.thePlayer.isSprinting) return false
+        if (target == null || skippedTick > 6 || !mc.thePlayer.isSprinting) return false
         val dx = mc.thePlayer.posX - target.posX
         val dz = mc.thePlayer.posZ - target.posZ
         if (MathHelper.sqrt_double(dx * dx + dz * dz) > rangeValue.value) {
-            preTick = (2 * (MathHelper.sqrt_double(dx * dx + dz * dz) - rangeValue.value)).toInt()
+            preTick = (1 * (MathHelper.sqrt_double(dx * dx + dz * dz) - rangeValue.value)).toInt()
             skippedTick += preTick
             return true
         }
