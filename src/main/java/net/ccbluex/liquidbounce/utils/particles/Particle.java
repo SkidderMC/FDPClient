@@ -48,8 +48,8 @@ public class Particle {
         this.position.xCoord += this.delta.xCoord;
         this.position.yCoord += this.delta.yCoord;
         this.position.zCoord += this.delta.zCoord;
-        this.delta.xCoord *= 0.999F;
-        this.delta.yCoord -= 0.000026;
-        this.delta.zCoord *= 0.999F;
+        this.delta.xCoord *= 0.998F;
+        this.delta.yCoord -= 0.000031;
+        this.delta.zCoord *= 0.998F;
     }
 }

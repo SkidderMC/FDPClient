@@ -46,6 +46,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
 
     override fun onDisable() {
         removeFakePlayer()
+        clearPackets()
     }
 
     private fun removeFakePlayer() {

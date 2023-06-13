@@ -15,9 +15,7 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.features.value.BoolValue
-import net.ccbluex.liquidbounce.features.value.FloatValue
-import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import kotlin.random.Random
 
@@ -66,14 +64,14 @@ class Aimbot : Module(name = "Aimbot", category = ModuleCategory.COMBAT) {
         
         val rotation = RotationUtils.limitAngleChange(
             Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
-            RotationUtils.toRotation(RotationUtils.calculateCenter(
+            (RotationUtils.calculateCenter(
                         rotMode.get(),
-                        false,
-                        0.0,
+                        "Horizontal",
+                        0.1,
                         entity.hitBox,
-                        true,
-                        true
-            )),
+                        false,
+                        true)
+            ).rotation,
             (calcBaseSpeed * calcPrecent).toFloat()
         )
 

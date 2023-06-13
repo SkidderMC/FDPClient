@@ -90,10 +90,7 @@ class Tracers : Module(name = "Tracers", category = ModuleCategory.RENDER) {
         GL11.glVertex3d(eyeVector.xCoord,
             if(playerHeightValue.get()) { mc.thePlayer.getEyeHeight().toDouble() } else { 0.0 } + eyeVector.yCoord,
             eyeVector.zCoord)
-        GL11.glVertex3d(x, y, z)
-        if(entityHeightValue.get()) {
-            GL11.glVertex3d(x, y + entity.height, z)
-        }
+        GL11.glVertex3d(x, if(entityHeightValue.get()) { y + entity.height } else { y }, z)
         GL11.glEnd()
     }
 }

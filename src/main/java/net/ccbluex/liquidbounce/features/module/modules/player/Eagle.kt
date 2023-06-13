@@ -32,14 +32,14 @@ class Eagle : Module(name = "Eagle", category = ModuleCategory.PLAYER) {
     
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (!limitTimeValue.get()) {
+            sneakValue = false
+        }
         if ( ( !onlyGround.get() || mc.thePlayer.onGround ) && ( !onlyLookingDown.get() || mc.thePlayer.rotationPitch.toDouble() > 65.0 ) && ( !onlyMovingBack.get() || mc.gameSettings.keyBindBack.pressed ) &&
                 mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX + mc.thePlayer.motionX.toDouble() * motionPredictValue.get().toDouble(), mc.thePlayer.posY - 1.0, mc.thePlayer.posZ + mc.thePlayer.motionZ.toDouble() * motionPredictValue.get().toDouble())).block == Blocks.air) {
             sneakValue = true
             holdTimer.reset()
         } else if (holdTimer.hasTimePassed(holdTime.get().toLong()) && limitTimeValue.get()) {
-            sneakValue = false
-        }
-        if (!limitTimeValue.get()) {
             sneakValue = false
         }
         mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || sneakValue)
