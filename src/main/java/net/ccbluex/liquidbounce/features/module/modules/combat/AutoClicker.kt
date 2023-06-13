@@ -19,6 +19,7 @@ import net.minecraft.client.settings.KeyBinding
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemSword
 import kotlin.random.Random
+import org.lwjgl.input.Mouse
 
 class AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMBAT) {
 
@@ -49,6 +50,7 @@ class AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMBA
     private val leftValue = BoolValue("LeftClick", true)
     private val leftSwordOnlyValue = BoolValue("LeftSwordOnly", false).displayable { leftValue.get() }
     private val blockValue = BoolValue("AutoBlock", false). displayable { leftValue.get() }
+    private val blockOnClick = BoolValue("AutoBlockOnRightClick", true). displayable { leftValue.get() && blockValue.get() }
     private val jitterValue = BoolValue("Jitter", false)
     
 
@@ -106,8 +108,17 @@ class AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMBA
                     mc.thePlayer.rotationPitch = -90F
             }
          }
-        if (blockValue.get() && timer.hasTimePassed(1) && mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get()) {
-            KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+        if (blockValue.get() && mc.thePlayer.heldItem?.item is ItemSword && mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && blockOnClick.get() && Mouse.isButtonDown(1)) {
+            mc.gameSettings.keyBindUseItem.isKeyDown = false
+        }
+        if (blockValue.get() && timer.hasTimePassed(1) && mc.thePlayer.heldItem?.item is ItemSword && mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get()) {
+            if (blockOnClick.get()) {
+                if (Mouse.isButtonDown(1)) {
+                    KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+                }
+            } else {
+                KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+            }
         }
     }
 
