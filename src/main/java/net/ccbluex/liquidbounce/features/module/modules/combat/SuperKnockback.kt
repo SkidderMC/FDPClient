@@ -61,9 +61,8 @@ object SuperKnockback : Module(name = "SuperKnockback", category = ModuleCategor
 
                 "SprintReset" -> {
                     if (mc.thePlayer.isSprinting) {
-                        mc.thePlayer.isSprinting = false
+                        mc.thePlayer.isSprinting = true
                     }
-                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
                     mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
                 }
                 
