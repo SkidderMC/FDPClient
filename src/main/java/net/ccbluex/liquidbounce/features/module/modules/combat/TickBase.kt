@@ -63,7 +63,7 @@ object TickBase : Module("TickBase", category = ModuleCategory.COMBAT) {
     private fun sleep() {
         if (skippedTick > 0) {
             try {
-                Thread.sleep(2L * skippedTick)
+                Thread.sleep(1L * skippedTick)
                 skippedTick = 0
             } catch (e: InterruptedException) {
                 e.printStackTrace()
