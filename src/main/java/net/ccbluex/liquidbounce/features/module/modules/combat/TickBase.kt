@@ -68,7 +68,7 @@ object TickBase : Module("TickBase", category = ModuleCategory.COMBAT) {
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
-            mc.timer.timerSpeed = 0.054f + skippedTick
+            mc.timer.timerSpeed = 0.090f + skippedTick
         }
     }
 
