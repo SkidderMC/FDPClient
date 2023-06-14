@@ -580,7 +580,7 @@ class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyB
                     fakeJump()
                     mc.thePlayer.motionY = 0.41999998688698
                 } else if (mc.thePlayer.motionY < 0.1) {
-                    mc.thePlayer.motionY = -0.15523200451
+                    mc.thePlayer.motionY = -0.08 * 0.98
                 }
             }
             "ncp" -> {
