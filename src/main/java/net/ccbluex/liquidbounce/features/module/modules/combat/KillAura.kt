@@ -121,7 +121,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             if (i < newValue) set(i)
         }
     }.displayable { !autoBlockValue.equals("Off") && autoBlockValue.displayable }
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Delayed2", "Legit", "OldIntave", "OldHypixel", "Test"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Delayed2", "Legit", "OldIntave", "OldHypixel", "Test", "HoldKey"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val smartAutoBlockValue = BoolValue("SmartAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
@@ -397,6 +397,13 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
               startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
               delayBlock = false
         }
+        
+        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("HoldKey") && canBlock) {
+            if (inRangeDiscoveredTargets.isEmpty()) {
+                mc.gameSettings.keyBindUseItem.pressed = false
+            } else if (mc.thePlayer.getDistanceToEntityBox(target) < maxRange) {
+                mc.gameSettings.keyBindUseItem.pressed = true
+            }
 
 
         if ((attackTimingValue.equals("Pre") && event.eventState != EventState.PRE) || (attackTimingValue.equals("Post") && !(event.eventState == EventState.POST)) || attackTimingValue.equals("All"))
@@ -460,6 +467,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
         FDPClient.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
 
         FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(rotationStrafeValue.equals("Silent"), !rotationStrafeValue.equals("Off") && !rotationModeValue.equals("None"))
+                
 
         if (attackTimingValue.equals("All")) {
             runAttackLoop()
@@ -476,7 +484,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
     private fun runAttackLoop() {
 
         // legit auto block, block if about to get damage, else, dont block
-        if (autoBlockPacketValue.equals("Legit")) {
+        if (autoBlockPacketValue.equals("Legit") && autoBlockValue.equals("Range")) {
             if (mc.thePlayer.hurtTime > 8) {
                 legitBlocking = 0
                 if (blockingStatus) stopBlocking()
@@ -742,7 +750,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     blockingStatus = false
                 }
-                "legit", "oldhypixel", "test" -> null
+                "legit", "oldhypixel", "test", "holdkey" -> null
                 else -> null
             }
         }
@@ -756,7 +764,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                 }
                 when (autoBlockPacketValue.get().lowercase()) {
                     "vanilla", "afterattack", "oldintave" -> startBlocking(entity, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange))
-                    "aftertick", "oldhypixel", "legit", "delayed2", "test" -> null
+                    "aftertick", "oldhypixel", "legit", "delayed2", "test", "holdkey" -> null
                     "delayed" -> delayBlock = true
                     else -> null
                 }
