@@ -404,6 +404,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             } else if (mc.thePlayer.getDistanceToEntityBox(target) < maxRange) {
                 mc.gameSettings.keyBindUseItem.pressed = true
             }
+        }
 
 
         if ((attackTimingValue.equals("Pre") && event.eventState != EventState.PRE) || (attackTimingValue.equals("Post") && !(event.eventState == EventState.POST)) || attackTimingValue.equals("All"))
