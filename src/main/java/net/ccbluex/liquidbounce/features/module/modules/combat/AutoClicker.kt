@@ -101,6 +101,8 @@ class AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMBA
                 } else {
                     mc.gameSettings.keyBindUseItem.pressed = true
                 }
+            } else {
+                mc.gameSettings.keyBindUseItem.pressed = false
             }
         }
             
