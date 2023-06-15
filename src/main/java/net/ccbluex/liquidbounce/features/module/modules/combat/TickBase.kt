@@ -10,13 +10,12 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.minecraft.entity.EntityLivingBase
 
-object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT) {
+object TickBase : Module(name = "TickBase", category = ModuleCategory.COMBAT) {
     
     private var ticks = 0
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        
         if (event.targetEntity is EntityLivingBase) {
             mc.timer.timerSpeed = 0.1F
             ticks = 10
