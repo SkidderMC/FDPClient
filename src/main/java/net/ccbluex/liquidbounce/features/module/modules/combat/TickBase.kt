@@ -8,11 +8,9 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.entity.EntityLivingBase
 
-@ModuleInfo(name = "TimerBase", category = ModuleCategory.COMBAT)
-class TimerBase : Module() {
+object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT) {
     
     private var ticks = 0
 
@@ -20,8 +18,6 @@ class TimerBase : Module() {
     fun onAttack(event: AttackEvent) {
         
         if (event.targetEntity is EntityLivingBase) {
-            val entity = event.targetEntity
-            target = entity.entityId
             mc.timer.timerSpeed = 0.1F
             ticks = 10
         }
