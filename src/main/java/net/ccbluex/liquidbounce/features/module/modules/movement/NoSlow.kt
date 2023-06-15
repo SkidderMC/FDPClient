@@ -28,7 +28,7 @@ import kotlin.math.sqrt
 
 class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "HypixelNew", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDogBlink", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
     private val antiSwitchItem = BoolValue("AntiSwitchItem", false)
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
@@ -74,14 +74,8 @@ class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
     private var lastBlockingStat = false
 
     override fun onEnable() {
-        if (modeValue.equals("HypixelNew")) {
-            BlinkUtils.setBlinkState(all = true)
-        }
     }
     override fun onDisable() {
-        if (modeValue.equals("HypixelNew")) {
-            BlinkUtils.setBlinkState(off = true, release = true)
-        }
         msTimer.reset()
         pendingFlagApplyPacket = false
         sendBuf = false
@@ -224,7 +218,7 @@ class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
                     sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
                 }
 
-                "watchdog2", "hypixelnew" -> {
+                "watchdog2" -> {
                     if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
                     } else {
@@ -284,9 +278,16 @@ class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
     fun onUpdate(event: UpdateEvent) {
         if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
-        if (modeValue.equals("HypixelNew") && (lastBlockingStat || isBlocking)) {
-            if(msTimer.hasTimePassed(150)) {
-                BlinkUtils.releasePacket()
+        if (modeValue.equals("WatchDogBlink")) {
+            if(msTimer.hasTimePassed(230)) {
+                if(packetBuf.isNotEmpty()) {
+                    PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
+                    for(packet in packetBuf) {
+                        PacketUtils.sendPacketNoEvent(packet)
+                    }
+                    packetBuf.clear()
+                    PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
+                }
                 msTimer.reset()
             }
         }
@@ -347,6 +348,15 @@ class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
             }
             if (!mc.thePlayer.isUsingItem || !mc.thePlayer.isBlocking) {
                 sendPacket = true
+            }
+        }
+        if(modeValue.equals("WatchDogBlink")) {
+            if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity) {
+                packetBuf.add(packet as Packet<INetHandlerPlayServer>)
+                event.cancelEvent()
+            }
+            if (packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
+                event.cancelEvent()
             }
         }
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && nextTemp) {
