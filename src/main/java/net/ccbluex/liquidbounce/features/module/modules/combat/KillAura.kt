@@ -407,7 +407,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             if (inRangeDiscoveredTargets.isEmpty()) {
                 mc.gameSettings.keyBindUseItem.pressed = false
             } else if (mc.thePlayer.getDistanceToEntityBox(target) < maxRange) {
-                if ( attackTimer.hasTimePassed(attackDelay * 0.1) && attackTimer.hasTimePassed(attackDelay * 0.9)){
+                if ( attackTimer.hasTimePassed((attackDelay.toDouble() * 0.1).toLong()) && attackTimer.hasTimePassed((attackDelay.toDouble() * 0.9).toLong())){
                     mc.gameSettings.keyBindUseItem.pressed = true
                 } else {
                     mc.gameSettings.keyBindUseItem.pressed = false
