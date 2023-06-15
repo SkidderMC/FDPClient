@@ -106,8 +106,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             
             if (packet.motionY / 8000.0 > 0.1) {
                 if (damageBoost.get()) {
-                    mc.thePlayer.motionX *= 1.2
-                    mc.thePlayer.motionZ *= 1.2
+                    mc.thePlayer.motionX *= 1.05
+                    mc.thePlayer.motionZ *= 1.05
                 }
             }
         }
