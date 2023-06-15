@@ -27,7 +27,7 @@ import kotlin.math.sqrt
 
 class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "HypixelNew", "WatchDog", "Watchdog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
     private val antiSwitchItem = BoolValue("AntiSwitchItem", false)
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
@@ -72,7 +72,15 @@ class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
     private var sendPacket = false
     private var lastBlockingStat = false
 
+    override fun onEnable() {
+        if (modeValue.equals("HypixelNew")) {
+            BlinkUtils.setBlinkState(all = true)
+        }
+    }
     override fun onDisable() {
+        if (modeValue.equals("HypixelNew")) {
+            BlinkUtils.setBlinkState(off = true, release = true)
+        }
         msTimer.reset()
         pendingFlagApplyPacket = false
         sendBuf = false
@@ -215,7 +223,7 @@ class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
                     sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
                 }
 
-                "watchdog2" -> {
+                "watchdog2", "hypixelnew" -> {
                     if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
                     } else {
@@ -275,6 +283,12 @@ class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
     fun onUpdate(event: UpdateEvent) {
         if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
+        if (modeValue.equals("HypixelNew") && (lastBlockingStat || isBlocking)) {
+            if(msTimer.hasTimePassed(150)) {
+                BlinkUtils.releasePacket()
+                msTimer.reset()
+            }
+        }
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
                 nextTemp = false
