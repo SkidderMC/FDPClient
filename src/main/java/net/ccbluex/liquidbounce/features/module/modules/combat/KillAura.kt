@@ -121,7 +121,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             if (i < newValue) set(i)
         }
     }.displayable { !autoBlockValue.equals("Off") && autoBlockValue.displayable }
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Delayed2", "Legit", "OldIntave", "OldHypixel", "Test", "HoldKey"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Delayed2", "Legit", "OldIntave", "Test", "HoldKey", "KeyBlock"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val smartAutoBlockValue = BoolValue("SmartAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
@@ -360,6 +360,10 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
         canSwing = false
 
         stopBlocking()
+        if (autoBlockPacketValue.equals("HoldKey") || autoBlockPacketValue.equals("KeyBlock")) {
+            mc.gameSettings.keyBindUseItem.pressed = false
+        }
+        
         RotationUtils.setTargetRotationReverse(
             RotationUtils.serverRotation,
             if (keepDirectionValue.get()) { keepDirectionTickValue.get() + 1 } else { 1 },
@@ -379,14 +383,6 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
         updateHitable()
         val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
 
-        if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && autoBlockPacketValue.equals("OldHypixel")) {
-             if (mc.thePlayer.swingProgressInt == 1) {
-                stopBlocking()
-            } else if (mc.thePlayer.swingProgressInt == 2) {
-                startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-            }
-        }
-
         if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && ( autoBlockPacketValue.equals("Delayed2") || autoBlockPacketValue.equals("Test"))) {
              if (mc.thePlayer.swingProgressInt == 1) {
                  startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
@@ -403,6 +399,19 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                 mc.gameSettings.keyBindUseItem.pressed = false
             } else if (mc.thePlayer.getDistanceToEntityBox(target) < maxRange) {
                 mc.gameSettings.keyBindUseItem.pressed = true
+            }
+        }
+        
+        mc.gameSettings.keyBindUseItem.pressed = true
+        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("KeyBlock") && canBlock) {
+            if (inRangeDiscoveredTargets.isEmpty()) {
+                mc.gameSettings.keyBindUseItem.pressed = false
+            } else if (mc.thePlayer.getDistanceToEntityBox(target) < maxRange) {
+                if ( attackTimer.hasTimePassed(attackDelay * 0.1) && attackTimer.hasTimePassed(attackDelay * 0.9)){
+                    mc.gameSettings.keyBindUseItem.pressed = true
+                } else {
+                    mc.gameSettings.keyBindUseItem.pressed = false
+                }
             }
         }
 
@@ -751,7 +760,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     blockingStatus = false
                 }
-                "legit", "oldhypixel", "test", "holdkey" -> null
+                "legit", "test", "holdkey" -> null
                 else -> null
             }
         }
@@ -765,7 +774,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                 }
                 when (autoBlockPacketValue.get().lowercase()) {
                     "vanilla", "afterattack", "oldintave" -> startBlocking(entity, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange))
-                    "aftertick", "oldhypixel", "legit", "delayed2", "test", "holdkey" -> null
+                    "aftertick", "legit", "delayed2", "test", "holdkey" -> null
                     "delayed" -> delayBlock = true
                     else -> null
                 }
