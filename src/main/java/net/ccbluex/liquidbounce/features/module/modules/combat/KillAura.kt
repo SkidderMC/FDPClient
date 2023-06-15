@@ -401,19 +401,6 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                 mc.gameSettings.keyBindUseItem.pressed = true
             }
         }
-        
-        mc.gameSettings.keyBindUseItem.pressed = true
-        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("KeyBlock") && canBlock) {
-            if (inRangeDiscoveredTargets.isEmpty()) {
-                mc.gameSettings.keyBindUseItem.pressed = false
-            } else if (mc.thePlayer.getDistanceToEntityBox(target) < maxRange) {
-                if ( attackTimer.hasTimePassed((attackDelay.toDouble() * 0.1).toLong()) && attackTimer.hasTimePassed((attackDelay.toDouble() * 0.9).toLong())){
-                    mc.gameSettings.keyBindUseItem.pressed = true
-                } else {
-                    mc.gameSettings.keyBindUseItem.pressed = false
-                }
-            }
-        }
 
 
         if ((attackTimingValue.equals("Pre") && event.eventState != EventState.PRE) || (attackTimingValue.equals("Post") && !(event.eventState == EventState.POST)) || attackTimingValue.equals("All"))
@@ -1028,6 +1015,17 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             stopBlocking()
             discoveredTargets.clear()
             inRangeDiscoveredTargets.clear()
+        }
+        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("KeyBlock") && canBlock) {
+            if (inRangeDiscoveredTargets.isEmpty()) {
+                mc.gameSettings.keyBindUseItem.pressed = false
+            } else if (mc.thePlayer.getDistanceToEntityBox(target) < maxRange) {
+                if ( attackTimer.hasTimePassed((attackDelay.toDouble() * 0.1).toLong()) && attackTimer.hasTimePassed((attackDelay.toDouble() * 0.9).toLong())){
+                    mc.gameSettings.keyBindUseItem.pressed = true
+                } else {
+                    mc.gameSettings.keyBindUseItem.pressed = false
+                }
+            }
         }
         if (currentTarget != null && attackTimer.hasTimePassed(attackDelay) && currentTarget!!.hurtTime <= hurtTimeValue.get()) {
             clicks++
