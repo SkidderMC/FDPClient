@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
@@ -43,10 +44,17 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayClient>>()
 
 
-
+    override fun onEnable() {
+        if (mode.equals("AllIncomingPackets")) {
+            BlinkUtils.setBlinkState(all = true)
+        }
+    }
     override fun onDisable() {
         removeFakePlayer()
         clearPackets()
+        if (mode.equals("AllIncomingPackets")) {
+            BlinkUtils.setBlinkState(off = true, release = true)
+        }
     }
 
     private fun removeFakePlayer() {
@@ -60,6 +68,7 @@ object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT
         while (!packets.isEmpty()) {
             PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
         }
+        BlinkUtils.releasePacket()
     }
 
 
