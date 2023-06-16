@@ -55,7 +55,7 @@ class DelayedVelocity : VelocityMode("Delayed") {
                 queuePacket(delayValue.get().toLong())
             }
         }
-        if (blink && blinkValue.get()) {
+        if (blink && blinkValue.get() && packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && mc.thePlayer.ticksExisted > 10) {
             event.cancelEvent()
             packets.add(packet as Packet<INetHandlerPlayClient>)
         }
