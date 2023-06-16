@@ -52,7 +52,7 @@ class DelayedVelocity : VelocityMode("Delayed") {
                 event.cancelEvent()
                 veloTick = mc.thePlayer.ticksExisted
                 packets.add(packet as Packet<INetHandlerPlayClient>)
-                queuePacket(delayValue.toLong())
+                queuePacket(delayValue.get().toLong())
             }
         }
         if (blink && blinkValue.get()) {
@@ -64,13 +64,13 @@ class DelayedVelocity : VelocityMode("Delayed") {
             if (packet is S32PacketConfirmTransaction && veloTick == mc.thePlayer.ticksExisted) {
                 event.cancelEvent()
                 packets.add(packet as Packet<INetHandlerPlayClient>)
-                queuePacket(delayValue.toLong())
+                queuePacket(delayValue.get().toLong())
             }
         }
     }
     
     override fun onUpdate(event: UpdateEvent) {
-        if (blink && blinkValue.get() && delayTimer.hasTimePassed(delayValue.toLong())) {
+        if (blink && blinkValue.get() && delayTimer.hasTimePassed(delayValue.get().toLong())) {
             clearPackets()
             blink = false
         }
@@ -89,7 +89,7 @@ class DelayedVelocity : VelocityMode("Delayed") {
     
     private /*suspend*/ fun queuePacket(delayTime: Long) {
         Timer().schedule(delayTime) {
-            PacketUtils.handlePacket(packetBuffer.poll())
+            PacketUtils.handlePacket(packets.poll())
         }
     }
 }
