@@ -16,7 +16,7 @@ object TickBase : Module(name = "TickBase", category = ModuleCategory.COMBAT) {
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        if (event.targetEntity is EntityLivingBase) {
+        if (event.targetEntity is EntityLivingBase && ticks == 0) {
             ticks = 10
         }
     }
