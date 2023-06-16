@@ -17,15 +17,16 @@ object TickBase : Module(name = "TickBase", category = ModuleCategory.COMBAT) {
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase) {
-            mc.timer.timerSpeed = 0.1F
             ticks = 10
         }
     }
     
     @EventTarget 
     fun onUpdate(event: UpdateEvent) {
-
-        if (ticks > 1) {
+        if (ticks == 10) {
+            mc.timer.timerSpeed = 0.11F
+            ticks --
+        } else if (ticks > 1) {
             mc.timer.timerSpeed = 20f
             ticks --
         } else if (ticks == 1) {
