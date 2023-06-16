@@ -89,7 +89,7 @@ class DelayedVelocity : VelocityMode("Delayed") {
     
     private /*suspend*/ fun queuePacket(delayTime: Long) {
         Timer().schedule(delayTime) {
-            PacketUtils.handlePacket(packets.poll())
+            PacketUtils.handlePacket(packets.poll() as Packet<INetHandlerPlayClient?> )
         }
     }
 }
