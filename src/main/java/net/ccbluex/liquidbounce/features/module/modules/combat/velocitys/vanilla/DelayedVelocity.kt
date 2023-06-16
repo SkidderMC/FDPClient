@@ -79,7 +79,7 @@ class DelayedVelocity : VelocityMode("Delayed") {
     private fun clearPackets() {
         if (blinkValue.get()) {
             while (!packets.isEmpty()) {
-                PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
+                PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient>)
             }
             if (blinkOutbound.get()) {
                 BlinkUtils.setBlinkState(off = true, release = true)
