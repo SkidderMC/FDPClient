@@ -10,8 +10,7 @@ class HypixelVelocity : VelocityMode("Hypixel") {
         val packet = event.packet
         if(packet is S12PacketEntityVelocity) {
           event.cancelEvent()
-          if (mc.thePlayer.onGround) 
-            mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
+          mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
         }
     }
 }
