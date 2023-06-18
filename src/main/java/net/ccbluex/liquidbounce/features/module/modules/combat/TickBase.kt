@@ -6,6 +6,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.value.FloatValue
@@ -19,7 +20,7 @@ object TickBase : Module(name = "TickBase", category = ModuleCategory.COMBAT) {
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        if (event.targetEntity is EntityLivingBase && ticks == 0) {
+        if (event.targetEntity is EntityLivingBase && ticks == 0 && MovementUtils.isMoving()) {
             ticks = 10
         }
     }
