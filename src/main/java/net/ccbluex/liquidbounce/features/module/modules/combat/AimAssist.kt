@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -22,8 +21,7 @@ import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.utils.LocationCache
 import kotlin.random.Random
 
-@ModuleInfo(name = "AimAssist", category = ModuleCategory.COMBAT)
-class AimAssist : Module() {
+class AimAssist : Module(name = "AimAssist", category = ModuleCategory.COMBAT) {
 
     private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)
     private val playerPredictValue = FloatValue("PlayerPredictAmount", 1.2f, -2f, 3f)
