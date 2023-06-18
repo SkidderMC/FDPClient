@@ -14,8 +14,8 @@ import net.minecraft.entity.EntityLivingBase
 object TickBase : Module(name = "TickBase", category = ModuleCategory.COMBAT) {
 
     private var ticks = 0
-    val BoostAmount = FloatValue("BoostTimer", 20f, 1f, 50f)
-    val ChargeAmount = FloatValue("ChargeTimer", 0.3f, 0.05f, 1f)
+    val BoostAmount = FloatValue("BoostTimer", 10f, 1f, 50f)
+    val ChargeAmount = FloatValue("ChargeTimer", 0.11f, 0.05f, 1f)
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
