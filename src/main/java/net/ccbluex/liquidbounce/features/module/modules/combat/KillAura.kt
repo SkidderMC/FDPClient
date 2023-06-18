@@ -32,6 +32,9 @@ import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.item.ItemBlock
+import net.minecraft.item.ItemBucketMilk
+import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
@@ -105,6 +108,8 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
     private val blinkCheck = BoolValue("BlinkCheck", true).displayable { attackDisplay.get() }
     private val noScaffValue = BoolValue("NoScaffold", true).displayable { attackDisplay.get() }
     private val noFlyValue = BoolValue("NoFly", false).displayable { attackDisplay.get() }
+    private val noEat = BoolValue("NoEat", true).displayable { attackDisplay.get() }
+    private val noBlocking = BoolValue("NoBlocking", false).displayable { attackDisplay.get() }
 
     // Bypass
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { attackDisplay.get() }
@@ -1286,9 +1291,13 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
      */
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
-                || (blinkCheck.get() && FDPClient.moduleManager[Blink::class.java]!!.state) || FDPClient.moduleManager[FreeCam::class.java]!!.state ||
-                (noScaffValue.get() && FDPClient.moduleManager[Scaffold::class.java]!!.state) || (noFlyValue.get() && FDPClient.moduleManager[Fly::class.java]!!.state) || (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer ||
-                    System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get()))
+                || (blinkCheck.get() && FDPClient.moduleManager[Blink::class.java]!!.state) 
+                || FDPClient.moduleManager[FreeCam::class.java]!!.state 
+                || (noScaffValue.get() && FDPClient.moduleManager[Scaffold::class.java]!!.state)
+                || (noFlyValue.get() && FDPClient.moduleManager[Fly::class.java]!!.state) 
+                || (noEat.get() && mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk))
+                || (noBlocking.get() && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock)
+                || (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get()))
 
 
     /**
