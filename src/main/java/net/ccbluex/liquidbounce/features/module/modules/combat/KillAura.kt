@@ -752,6 +752,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     blockingStatus = false
                 }
+                "keyblock" -> mc.gameSettings.keyBindUseItem.pressed = false
                 "legit", "test", "holdkey" -> null
                 else -> null
             }
@@ -766,6 +767,7 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
                 }
                 when (autoBlockPacketValue.get().lowercase()) {
                     "vanilla", "afterattack", "oldintave" -> startBlocking(entity, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange))
+                    "keyblock" -> mc.gameSettings.keyBindUseItem.pressed = true
                     "aftertick", "legit", "delayed2", "test", "holdkey" -> null
                     "delayed" -> delayBlock = true
                     else -> null
@@ -1020,17 +1022,6 @@ class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, key
             stopBlocking()
             discoveredTargets.clear()
             inRangeDiscoveredTargets.clear()
-        }
-        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("KeyBlock") && canBlock) {
-            if (inRangeDiscoveredTargets.isEmpty()) {
-                mc.gameSettings.keyBindUseItem.pressed = false
-            } else  {
-                if ( attackTimer.hasTimePassed((attackDelay.toDouble() * 0.1).toLong()) && !attackTimer.hasTimePassed((attackDelay.toDouble() * 0.9).toLong())){
-                    mc.gameSettings.keyBindUseItem.pressed = true
-                } else {
-                    mc.gameSettings.keyBindUseItem.pressed = false
-                }
-            }
         }
         if (currentTarget != null && attackTimer.hasTimePassed(attackDelay) && currentTarget!!.hurtTime <= hurtTimeValue.get()) {
             clicks++
