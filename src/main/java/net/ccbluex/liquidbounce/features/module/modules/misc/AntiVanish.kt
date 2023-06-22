@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S1DPacketEntityEffect
 
-class AntiVanish : Module(name = "AntiVanish", category = ModuleCategory.MISC) {
+object AntiVanish : Module(name = "AntiVanish", category = ModuleCategory.MISC, defaultOn = false) {
     private var lastNotify = -1L
 
     @EventTarget

@@ -28,7 +28,7 @@ import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
 import kotlin.random.Random
 
-class Stealer : Module(name = "Stealer", category = ModuleCategory.WORLD) {
+object Stealer : Module(name = "Stealer", category = ModuleCategory.WORLD, defaultOn = false) {
     /**
      * OPTIONS
      */

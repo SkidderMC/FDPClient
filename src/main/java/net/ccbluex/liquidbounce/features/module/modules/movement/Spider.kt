@@ -20,7 +20,7 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
-class Spider : Module(name = "Spider", category = ModuleCategory.MOVEMENT) {
+object Spider : Module(name = "Spider", category = ModuleCategory.MOVEMENT, defaultOn = false) {
 
     private val modeValue = ListValue("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan"), "Collide")
     private val motionValue = FloatValue("Motion", 0.42F, 0.1F, 1F)

@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 
-class XRay : Module(name = "XRay", category = ModuleCategory.RENDER, autoDisable = EnumAutoDisableType.RESPAWN, moduleCommand = false) {
+class XRay : Module(name = "XRay", category = ModuleCategory.RENDER, autoDisable = EnumAutoDisableType.RESPAWN, moduleCommand = false, defaultOn = false) {
     val xrayBlocks = mutableListOf<Block>(
             Blocks.bed,
             Blocks.coal_ore,

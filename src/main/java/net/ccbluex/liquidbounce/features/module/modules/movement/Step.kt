@@ -24,7 +24,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Step : Module(name = "Step", category = ModuleCategory.MOVEMENT) {
+object Step : Module(name = "Step", category = ModuleCategory.MOVEMENT, defaultOn = false) {
 
     /**
      * OPTIONS

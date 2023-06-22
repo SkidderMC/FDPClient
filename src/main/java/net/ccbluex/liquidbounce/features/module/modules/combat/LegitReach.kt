@@ -29,7 +29,7 @@ import net.minecraft.network.play.INetHandlerPlayClient
 import net.minecraft.world.WorldSettings
 import java.util.concurrent.LinkedBlockingQueue
 
-object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT) {
+object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT, defaultOn = false) {
 
     var fakePlayer: EntityOtherPlayerMP? = null
     private val aura = BoolValue("Aura", false)

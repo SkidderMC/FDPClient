@@ -25,7 +25,7 @@ import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-class HighJump : Module(name = "HighJump", category = ModuleCategory.MOVEMENT) {
+object HighJump : Module(name = "HighJump", category = ModuleCategory.MOVEMENT, defaultOn = false) {
     private val heightValue = FloatValue("Height", 2f, 1.1f, 7f)
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "StableMotion", "Damage", "AACv3", "DAC", "Mineplex", "Matrix", "MatrixWater"), "Vanilla")
     private val glassValue = BoolValue("OnlyGlassPane", false)

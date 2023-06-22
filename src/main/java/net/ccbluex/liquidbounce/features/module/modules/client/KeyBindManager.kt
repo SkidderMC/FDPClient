@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import org.lwjgl.input.Keyboard
 
-class KeyBindManager : Module("KeyBindManager", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RMENU, canEnable = false) {
+object KeyBindManager : Module("KeyBindManager", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RMENU, canEnable = false, defaultOn = false) {
     override fun onEnable() {
         mc.displayGuiScreen(FDPClient.keyBindManager)
     }

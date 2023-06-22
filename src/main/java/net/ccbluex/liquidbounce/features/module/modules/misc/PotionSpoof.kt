@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 
-class PotionSpoof : Module(name = "PotionSpoof",  category = ModuleCategory.MISC) {
+object PotionSpoof : Module(name = "PotionSpoof",  category = ModuleCategory.MISC, defaultOn = false) {
     private val speedValue = BoolValue("Speed", false)
     private val moveSlowDownValue = BoolValue("Slowness", false)
     private val hasteValue = BoolValue("Haste", false)

@@ -21,7 +21,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Velocity : Module(name = "Velocity", category = ModuleCategory.COMBAT) {
+object Velocity : Module(name = "Velocity", category = ModuleCategory.COMBAT, defaultOn = false) {
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.velocitys", VelocityMode::class.java)
         .map { it.newInstance() as VelocityMode }
         .sortedBy { it.modeName }

@@ -21,7 +21,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemBow
 import java.awt.Color
 
-class BowAimbot : Module(name = "BowAimbot", category = ModuleCategory.COMBAT) {
+object BowAimbot : Module(name = "BowAimbot", category = ModuleCategory.COMBAT, defaultOn = false) {
 
     private val silentValue = BoolValue("Silent", true)
     private val predictValue = BoolValue("Predict", true)

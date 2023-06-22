@@ -23,7 +23,7 @@ public class NameProtect extends Module {
 
     private static ModuleCategory category = ModuleCategory.MISC;
     public NameProtect() {
-        super("NameProtect", category = ModuleCategory.MISC);
+        super("NameProtect", category = ModuleCategory.MISC, false);
     }
 
     private final TextValue fakeNameValue = new TextValue("FakeName", "&cProtected User");

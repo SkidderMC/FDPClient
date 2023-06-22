@@ -24,7 +24,7 @@ import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.ResourceLocation
 
-class HitEffect : Module(name = "HitEffect", category = ModuleCategory.RENDER) {
+object HitEffect : Module(name = "HitEffect", category = ModuleCategory.RENDER, defaultOn = false) {
 
     private val timingValue = ListValue("Timing", arrayOf("Attack", "Kill"), "Attack")
     private val modeValue = ListValue("Mode", arrayOf("Lighting", "Blood", "Fire", "Critical", "MagicCritical"), "Lighting")

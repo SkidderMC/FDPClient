@@ -30,7 +30,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
 import kotlin.math.*
 
-class HackerDetector : Module(name = "HackerDetector", category = ModuleCategory.PLAYER) {
+object HackerDetector : Module(name = "HackerDetector", category = ModuleCategory.PLAYER, defaultOn = false) {
     private val combatCheckValue = BoolValue("Combat", true)
     private val movementCheckValue = BoolValue("Movement", true)
     private val debugModeValue = BoolValue("Debug", false)

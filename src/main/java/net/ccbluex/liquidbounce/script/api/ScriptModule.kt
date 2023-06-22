@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.features.value.Value
 
 @Suppress("unused")
-class ScriptModule(private val moduleObject: JSObject) : Module(name = "ScriptModule", category = ModuleCategory.MISC) {
+class ScriptModule(private val moduleObject: JSObject) : Module(name = "ScriptModule", category = ModuleCategory.MISC, defaultOn = false) {
 
     private val events = HashMap<String, JSObject>()
     private val _values = LinkedHashMap<String, Value<*>>()

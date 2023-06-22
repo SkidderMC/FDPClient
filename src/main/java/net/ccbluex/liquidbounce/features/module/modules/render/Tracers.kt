@@ -22,7 +22,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class Tracers : Module(name = "Tracers", category = ModuleCategory.RENDER) {
+object Tracers : Module(name = "Tracers", category = ModuleCategory.RENDER, defaultOn = false) {
 
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
     private val thicknessValue = FloatValue("Thickness", 2F, 1F, 5F)

@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.minecraft.potion.Potion
 
-class PotionEffectRemover : Module(name = "RemoveEffect",  category = ModuleCategory.COMBAT) {
+object RemoveEffect : Module(name = "RemoveEffect",  category = ModuleCategory.COMBAT, defaultOn = false) {
 
     private val shouldRemoveSlowness = BoolValue("Slowness", false)
     private val shouldRemoveMiningFatigue = BoolValue("MiningFatigue", false)

@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.value.BoolValue
 
-class NoRotateSet : Module(name = "NoRotateSet", category = ModuleCategory.MISC) {
+object NoRotateSet : Module(name = "NoRotateSet", category = ModuleCategory.MISC, defaultOn = false) {
     val noLoadingValue = BoolValue("NoLoading", true)
     val overwriteTeleportValue = BoolValue("SilentConfirm", true)
     val rotateValue = BoolValue("SilentConfirmSetRotation", true).displayable { overwriteTeleportValue.get() }

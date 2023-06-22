@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.input.Mouse
 
-class MidClick : Module(name = "MidClick", category = ModuleCategory.PLAYER) {
+object MidClick : Module(name = "MidClick", category = ModuleCategory.PLAYER, defaultOn = false) {
 
     private var wasDown = false
 

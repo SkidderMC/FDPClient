@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class Crosshair : Module(name = "Crosshair", category = ModuleCategory.RENDER) {
+object Crosshair : Module(name = "Crosshair", category = ModuleCategory.RENDER, defaultOn = false) {
     // Color
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "Slowly", "Rainbow"), "Custom")
     private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorModeValue.equals("Custom") }

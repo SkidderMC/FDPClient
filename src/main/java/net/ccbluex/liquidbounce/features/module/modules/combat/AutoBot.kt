@@ -23,7 +23,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-class AutoBot : Module("AutoBot", category = ModuleCategory.COMBAT) {
+object AutoBot : Module("AutoBot", category = ModuleCategory.COMBAT, defaultOn = false) {
     private val autoSoupValue = BoolValue("AutoSoup", true)
     private val autoPotValue = BoolValue("AutoPot", true)
     private val autoBowValue = BoolValue("AutoBow", true)

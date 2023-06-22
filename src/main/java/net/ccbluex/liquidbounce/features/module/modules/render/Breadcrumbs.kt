@@ -24,7 +24,7 @@ import org.lwjgl.util.glu.GLU
 import org.lwjgl.util.glu.Sphere
 import java.awt.Color
 
-class Breadcrumbs : Module(name = "Breadcrumbs", category = ModuleCategory.RENDER) {
+object Breadcrumbs : Module(name = "Breadcrumbs", category = ModuleCategory.RENDER, defaultOn = false) {
     private val typeValue = ListValue("Type", arrayOf("Line", "Rect", "Sphere", "Rise"), "Line")
     private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() }

@@ -33,7 +33,7 @@ public class BowJump extends Module {
 
     private static ModuleCategory category = ModuleCategory.MOVEMENT;
     public BowJump() {
-        super("BowJump", category = ModuleCategory.MOVEMENT);
+        super("BowJump", category = ModuleCategory.MOVEMENT, false);
     }
 
     private final BoolValue hypixelBypassValue = new BoolValue("hypixelBypass", true);

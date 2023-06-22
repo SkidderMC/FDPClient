@@ -32,7 +32,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
-class InvManager : Module(name = "InvManager", category = ModuleCategory.PLAYER) {
+object InvManager : Module(name = "InvManager", category = ModuleCategory.PLAYER, defaultOn = false) {
 
     /**
      * OPTIONS

@@ -23,7 +23,7 @@ import net.ccbluex.liquidbounce.features.value.TextValue
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S3FPacketCustomPayload
-class AutoReport : Module(name = "AutoReport", category = ModuleCategory.PLAYER) {
+object AutoReport : Module(name = "AutoReport", category = ModuleCategory.PLAYER, defaultOn = false) {
     private val modeValue = ListValue("Mode", arrayOf("Hit", "All"), "Hit")
     private val commandValue = TextValue("Command", "/reportar %name%")
     private val tipValue = BoolValue("Tip", true)

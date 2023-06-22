@@ -34,7 +34,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class FightBot : Module(name = "FightBot", category = ModuleCategory.COMBAT) {
+object FightBot : Module(name = "FightBot", category = ModuleCategory.COMBAT, defaultOn = false) {
     private val pathRenderValue = BoolValue("PathRender", true)
     private val jumpResetValue = BoolValue("JumpReset", true)
     private val autoJumpValue = BoolValue("AutoJump", false)

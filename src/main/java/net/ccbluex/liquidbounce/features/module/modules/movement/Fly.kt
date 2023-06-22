@@ -20,7 +20,7 @@ import net.minecraft.network.play.server.S19PacketEntityStatus
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class Fly : Module(name = "Fly", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, keyBind = Keyboard.KEY_F) {
+object Fly : Module(name = "Fly", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, keyBind = Keyboard.KEY_F, defaultOn = false) {
 
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.flys", FlyMode::class.java)
         .map { it.newInstance() as FlyMode }

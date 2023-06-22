@@ -23,7 +23,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 
-class OldJesus : Module(name = "OldJesus", category = ModuleCategory.MOVEMENT) {
+object OldJesus : Module(name = "OldJesus", category = ModuleCategory.MOVEMENT, defaultOn = false) {
     val modeValue = ListValue("Mode", arrayOf("Vanilla", "NCP", "Jump", "AAC", "AACFly", "AAC3.3.11", "AAC4.2.1", "Horizon1.4.6", "Spartan", "Twilight", "Matrix", "SilentYPort", "Dolphin", "Legit"), "Vanilla")
     private val noJumpValue = BoolValue("NoJump", false)
     private val yportUpValue = FloatValue("YPort-Up", 0.1f, 0.0f, 0.5f).displayable { modeValue.equals("SilentYPort") }

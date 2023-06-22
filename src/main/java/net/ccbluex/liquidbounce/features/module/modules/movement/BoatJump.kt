@@ -21,7 +21,7 @@ import net.minecraft.util.Vec3
 import kotlin.math.cos
 import kotlin.math.sin
 
-class BoatJump : Module(name = "BoatJump", category = ModuleCategory.MOVEMENT) {
+object BoatJump : Module(name = "BoatJump", category = ModuleCategory.MOVEMENT, FastLadder) {
     private val modeValue = ListValue("Mode", arrayOf("Boost", "Launch", "Matrix"), "Boost")
     private val hBoostValue = FloatValue("HBoost", 2f, 0f, 6f)
     private val vBoostValue = FloatValue("VBoost", 2f, 0f, 6f)

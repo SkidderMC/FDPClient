@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.value.ListValue
 import kotlin.math.cos
 import kotlin.math.sin
 
-class BoatFly : Module(name = "BoatFly", category = ModuleCategory.MOVEMENT) {
+object BoatFly : Module(name = "BoatFly", category = ModuleCategory.MOVEMENT, defaultOn = false) {
     private val modeValue = ListValue("Mode", arrayOf("Motion", "Clip", "Velocity"), "Motion")
     private val speedValue = FloatValue("Speed", 0.3f, 0.0f, 1.0f)
 

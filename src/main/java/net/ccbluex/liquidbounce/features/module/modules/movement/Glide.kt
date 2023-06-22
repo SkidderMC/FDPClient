@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.server.S19PacketEntityStatus
 
-class Glide : Module(name = "Glide", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG) {
+object Glide : Module(name = "Glide", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, defaultOn = false) {
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.glides", GlideMode::class.java)
         .map { it.newInstance() as GlideMode }
         .sortedBy { it.modeName }

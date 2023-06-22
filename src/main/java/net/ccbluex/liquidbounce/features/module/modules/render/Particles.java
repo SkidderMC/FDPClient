@@ -26,7 +26,7 @@ public final class Particles extends Module {
     private static ModuleCategory category = ModuleCategory.RENDER;
 
     public Particles() {
-        super("Particles", category = ModuleCategory.RENDER);
+        super("Particles", category = ModuleCategory.RENDER, false);
     }
     private final IntegerValue amount = new IntegerValue("Amount", 10, 1, 20);
 

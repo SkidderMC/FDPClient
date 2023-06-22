@@ -18,7 +18,7 @@ import net.minecraft.network.play.server.S45PacketTitle
 import java.util.*
 import kotlin.concurrent.schedule
 
-class AutoLogin : Module(name = "AutoLogin", category = ModuleCategory.MISC) {
+object AutoLogin : Module(name = "AutoLogin", category = ModuleCategory.MISC, defaultOn = false) {
     private val registerCommandValue = TextValue("Register", "/register %p %p")
     private val loginCommandValue = TextValue("Login", "/login %p")
     private val passwordValue = TextValue("Password", "password")

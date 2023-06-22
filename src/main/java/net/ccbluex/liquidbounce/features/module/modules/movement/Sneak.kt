@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.client.C0BPacketEntityAction
 
-class Sneak : Module(name = "Sneak", category = ModuleCategory.MOVEMENT) {
+object Sneak : Module(name = "Sneak", category = ModuleCategory.MOVEMENT, defaultOn = false) {
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Vanilla2", "Packet", "NCP"), "Vanilla")
     private val onlySneakValue = BoolValue("OnlySneak", false)
     @EventTarget

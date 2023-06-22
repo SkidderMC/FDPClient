@@ -26,7 +26,7 @@ import net.minecraft.util.EnumFacing
 import java.util.*
 import kotlin.math.sqrt
 
-class NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT) {
+object NoSlow : Module(name = "NoSlow", category = ModuleCategory.MOVEMENT, defaultOn = false) {
     //Basic settings
     private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDogBlink", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
     private val antiSwitchItem = BoolValue("AntiSwitchItem", false)

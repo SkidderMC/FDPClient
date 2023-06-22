@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.player.EntityPlayer
 
-object KeepRange : Module("KeepRange", category = ModuleCategory.COMBAT) {
+object KeepRange : Module("KeepRange", category = ModuleCategory.COMBAT, defaultOn = false) {
 
     private val mode = ListValue("Mode", arrayOf("ReleaseKey", "CancelMove"), "ReleaseKey")
     private val minDistance = FloatValue("MinDistance", 2.3F, 0F, 4F)

@@ -20,7 +20,7 @@ import net.minecraft.item.ItemTool
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 
-class AutoWeapon : Module(name = "AutoWeapon", category = ModuleCategory.COMBAT) {
+object AutoWeapon : Module(name = "AutoWeapon", category = ModuleCategory.COMBAT, defaultOn = false) {
     private val onlySwordValue = BoolValue("OnlySword", false)
     private val silentValue = BoolValue("SpoofItem", false)
     private val ticksValue = IntegerValue("SpoofTicks", 10, 1, 20).displayable { silentValue.get() }

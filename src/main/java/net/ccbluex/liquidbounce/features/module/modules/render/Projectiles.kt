@@ -21,7 +21,7 @@ import net.minecraft.util.*
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class Projectiles : Module(name = "Projectiles", category = ModuleCategory.RENDER) {
+object Projectiles : Module(name = "Projectiles", category = ModuleCategory.RENDER, defaultOn = false) {
 
     private val dynamicBowPower = BoolValue("DynamicBowPower", true)
 

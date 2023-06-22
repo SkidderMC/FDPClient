@@ -15,7 +15,7 @@ public final class PerspectiveMod extends Module {
     private static ModuleCategory category = ModuleCategory.RENDER;
 
     public PerspectiveMod() {
-        super("PerspectiveMod", category = ModuleCategory.RENDER);
+        super("PerspectiveMod", category = ModuleCategory.RENDER, false);
     }
 
     private static final Minecraft mc = Minecraft.getMinecraft();

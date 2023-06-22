@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.special.DiscordRPC
 import net.ccbluex.liquidbounce.features.value.*
 
-class DiscordRPCModule : Module("DiscordRPC", category = ModuleCategory.CLIENT) {
+object DiscordRPCModule : Module("DiscordRPC", category = ModuleCategory.CLIENT, defaultOn = true) {
     val showServerValue = BoolValue("ShowServer", false)
     val showNameValue = BoolValue("ShowName", false)
     val showHealthValue = BoolValue("ShowHealth", true)

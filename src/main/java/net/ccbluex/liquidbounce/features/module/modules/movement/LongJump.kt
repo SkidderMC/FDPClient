@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 
-class LongJump : Module(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG) {
+object LongJump : Module(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, defaultOn = false) {
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.longjumps", LongJumpMode::class.java)
         .map { it.newInstance() as LongJumpMode }
         .sortedBy { it.modeName }

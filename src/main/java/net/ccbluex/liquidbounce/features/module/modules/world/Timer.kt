@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 
-class Timer : Module("Timer", category = ModuleCategory.WORLD, autoDisable = EnumAutoDisableType.RESPAWN) {
+object Timer : Module("Timer", category = ModuleCategory.WORLD, autoDisable = EnumAutoDisableType.RESPAWN, defaultOn = false) {
 
     private val speedValue = FloatValue("Speed", 2F, 0.1F, 10F)
     private val onMoveValue = BoolValue("OnMove", true)

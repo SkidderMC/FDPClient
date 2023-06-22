@@ -29,7 +29,7 @@ import net.minecraft.util.AxisAlignedBB
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class KillESP : Module(name = "KillESP", category = ModuleCategory.RENDER) {
+class KillESP : Module(name = "KillESP", category = ModuleCategory.RENDER, defaultOn = false) {
 
     val modeValue = ListValue("Mode", arrayOf("Default", "Box", "Jello", "Tracers", "Zavz"), "Zavz")
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Mixer", "Health"), "Custom")

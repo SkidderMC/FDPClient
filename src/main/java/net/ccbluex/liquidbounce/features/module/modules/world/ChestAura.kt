@@ -26,7 +26,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import kotlin.concurrent.schedule
 
-object ChestAura : Module(name = "ChestAura", category = ModuleCategory.WORLD) {
+object ChestAura : Module(name = "ChestAura", category = ModuleCategory.WORLD, defaultOn = false) {
 
     private val rangeValue = FloatValue("Range", 5F, 1F, 6F)
     private val delayValue = IntegerValue("Delay", 100, 50, 500)

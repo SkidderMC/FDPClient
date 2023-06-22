@@ -17,7 +17,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Strafe : Module(name = "Strafe", category = ModuleCategory.MOVEMENT) {
+object Strafe : Module(name = "Strafe", category = ModuleCategory.MOVEMENT, defaultOn = false) {
 
     private var strengthValue= FloatValue("Strength", 0.5F, 0F, 1F)
     private var noMoveStopValue = BoolValue("NoMoveStop", false)

@@ -9,6 +9,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 
-class FastPlace : Module(name = "FastPlace", category = ModuleCategory.WORLD) {
+object FastPlace : Module(name = "FastPlace", category = ModuleCategory.WORLD, defaultOn = false) {
     val speedValue = IntegerValue("Speed", 0, 0, 4)
 }

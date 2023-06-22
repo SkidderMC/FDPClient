@@ -23,7 +23,7 @@ import net.minecraft.network.play.server.*
 import net.minecraft.world.WorldSettings
 import java.util.*
 
-object AntiBot : Module(name = "AntiBot", category = ModuleCategory.MISC) {
+object AntiBot : Module(name = "AntiBot", category = ModuleCategory.MISC, defaultOn = false) {
 
     private val tabValue = BoolValue("Tab", true)
     private val tabModeValue = ListValue("TabMode", arrayOf("Equals", "Contains"), "Contains").displayable { tabValue.get() }

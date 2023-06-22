@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.client.gui.inventory.GuiInventory
 
-class NoInvClose : Module(name = "NoInvClose", category = ModuleCategory.MISC) {
+object NoInvClose : Module(name = "NoInvClose", category = ModuleCategory.MISC, defaultOn = false) {
     @EventTarget
     fun onPacket(event: PacketEvent){
         if (mc.theWorld == null || mc.thePlayer == null) return

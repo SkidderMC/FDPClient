@@ -33,7 +33,7 @@ import net.minecraft.util.Vec3
 import java.awt.Color
 import kotlin.math.roundToInt
 
-class Nuker : Module(name = "Nuker", category = ModuleCategory.WORLD) {
+class Nuker : Module(name = "Nuker", category = ModuleCategory.WORLD, defaultOn = false) {
 
     private val radiusValue = FloatValue("Radius", 5.2F, 1F, 6F)
     private val throughWallsValue = BoolValue("ThroughWalls", false)

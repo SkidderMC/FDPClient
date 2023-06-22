@@ -33,7 +33,7 @@ import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
 import java.text.DecimalFormat
 
-class ESP : Module(name = "ESP", category = ModuleCategory.RENDER) {
+object ESP : Module(name = "ESP", category = ModuleCategory.RENDER, defaultOn = false) {
     val modeValue = ListValue(
         "Mode",
         arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "CSGO", "CSGO-Old", "Outline", "ShaderOutline", "ShaderGlow", "Jello"),

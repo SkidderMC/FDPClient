@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
-class AirJump : Module(name = "AirJump", category = ModuleCategory.MOVEMENT) {
+object AirJump : Module(name = "AirJump", category = ModuleCategory.MOVEMENT, defaultOn = false) {
     private val spoofGroundValue = BoolValue("SpoofGround", false)
     @EventTarget
     fun onUpdate(event: UpdateEvent) {

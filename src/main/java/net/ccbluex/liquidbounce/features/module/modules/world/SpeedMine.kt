@@ -17,7 +17,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-class SpeedMine : Module(name = "SpeedMine", category = ModuleCategory.WORLD) {
+object SpeedMine : Module(name = "SpeedMine", category = ModuleCategory.WORLD, defaultOn = false) {
 
     private val speedValue = FloatValue("Speed", 1.5f, 1f, 3f)
     private var facing: EnumFacing? = null

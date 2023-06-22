@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.value.BoolValue
 
-class TrueSight : Module(name = "TrueSight", category = ModuleCategory.RENDER) {
+object TrueSight : Module(name = "TrueSight", category = ModuleCategory.RENDER, defaultOn = false) {
     val barriersValue = BoolValue("Barriers", true)
     val entitiesValue = BoolValue("Entities", true)
 }

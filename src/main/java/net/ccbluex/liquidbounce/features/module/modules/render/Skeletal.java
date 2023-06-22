@@ -26,7 +26,7 @@ public class Skeletal extends Module {
     private static ModuleCategory category = ModuleCategory.RENDER;
 
     public Skeletal() {
-        super("Skeletal", category = ModuleCategory.RENDER);
+        super("Skeletal", category = ModuleCategory.RENDER, false);
     }
 
     private final Map playerRotationMap = new WeakHashMap();

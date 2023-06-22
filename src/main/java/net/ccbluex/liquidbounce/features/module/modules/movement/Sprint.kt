@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.client.C0BPacketEntityAction
-class Sprint : Module(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true) {
+object Sprint : Module(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true) {
     val useItemValue = BoolValue("UseItem", true)
     val useItemSwordValue = BoolValue("UseItemOnlySword", false).displayable{ useItemValue.get() }
     val hungryValue = BoolValue("Hungry", true)

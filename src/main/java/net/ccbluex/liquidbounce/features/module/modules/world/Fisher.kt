@@ -19,7 +19,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
-object Fisher : Module(name = "Fisher", category = ModuleCategory.WORLD) {
+object Fisher : Module(name = "Fisher", category = ModuleCategory.WORLD, defaultOn = false) {
 
     private val detectionValue = ListValue("Detection", arrayOf("Motion", "Sound"), "Sound")
     private val recastValue = BoolValue("Recast", true)

@@ -22,7 +22,7 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ChinaHat : Module(name = "ChinaHat", category = ModuleCategory.RENDER) {
+object ChinaHat : Module(name = "ChinaHat", category = ModuleCategory.RENDER, defaultOn = false) {
 
     private val heightValue = FloatValue("Height", 0.3f, 0.1f, 0.7f)
     private val radiusValue = FloatValue("Radius", 0.7f, 0.3f, 1.5f)

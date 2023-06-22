@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-class Freeze : Module(name = "Freeze", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.RESPAWN) {
+object Freeze : Module(name = "Freeze", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.RESPAWN, defaultOn = false) {
     private var motionX = 0.0
     private var motionY = 0.0
     private var motionZ = 0.0

@@ -17,7 +17,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 
-class Eagle : Module(name = "Eagle", category = ModuleCategory.PLAYER) {
+object Eagle : Module(name = "Eagle", category = ModuleCategory.PLAYER, defaultOn = false) {
     
     private val motionPredictValue = FloatValue("MotionPredictAmount", 0.2f, 0.0f, 2.0f)
     private val limitTimeValue = BoolValue("SneakTimeLimit", false)

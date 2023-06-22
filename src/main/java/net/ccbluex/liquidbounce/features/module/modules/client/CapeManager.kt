@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 
-object CapeManager : Module("CapeManager", category = ModuleCategory.CLIENT, canEnable = false) {
+object CapeManager : Module("CapeManager", category = ModuleCategory.CLIENT, canEnable = false, defaultOn = true) {
     override fun onEnable() {
         mc.displayGuiScreen(GuiCapeManager)
     }

@@ -27,7 +27,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.roundToInt
 
-class ItemESP : Module(name = "ItemESP", category = ModuleCategory.RENDER) {
+object ItemESP : Module(name = "ItemESP", category = ModuleCategory.RENDER, defaultOn = false) {
     private val entityConvertedPointsMap: MutableMap<EntityItem, DoubleArray> = HashMap()
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Exhibition", "LightBox", "ShaderOutline", "ShaderGlow"), "Box")
     private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }

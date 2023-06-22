@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.features.value.TextValue
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S1DPacketEntityEffect
 
-class AntiStaff : Module(name = "AntiStaff", category = ModuleCategory.MISC) {
+object AntiStaff : Module(name = "AntiStaff", category = ModuleCategory.MISC, defaultOn = false) {
 
     private val serversText = TextValue("Servers", "")
     

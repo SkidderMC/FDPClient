@@ -8,4 +8,4 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 
-class CameraClip : Module(name = "CameraClip", category = ModuleCategory.RENDER)
+object CameraClip : Module(name = "CameraClip", category = ModuleCategory.RENDER, defaultOn = false)

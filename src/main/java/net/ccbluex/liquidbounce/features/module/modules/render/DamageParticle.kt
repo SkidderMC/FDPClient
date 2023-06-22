@@ -23,7 +23,7 @@ import java.math.BigDecimal
 import java.util.*
 import kotlin.math.abs
 
-class DamageParticle : Module(name = "DamageParticle", category = ModuleCategory.RENDER) {
+object DamageParticle : Module(name = "DamageParticle", category = ModuleCategory.RENDER, defaultOn = false) {
 
     private val aliveTicksValue = IntegerValue("AliveTicks", 20, 10, 50)
     private val sizeValue = IntegerValue("Size", 3, 1, 7)

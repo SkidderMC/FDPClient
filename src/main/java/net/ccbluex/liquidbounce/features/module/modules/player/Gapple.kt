@@ -27,7 +27,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.MathHelper
 import java.util.*
 
-class Gapple : Module(name = "Gapple", category = ModuleCategory.PLAYER) {
+object Gapple : Module(name = "Gapple", category = ModuleCategory.PLAYER, defaultOn = false) {
 
     private val modeValue = ListValue("Mode", arrayOf("Auto", "LegitAuto", "Legit", "Head"), "Auto")
     private val percent = FloatValue("HealthPercent", 75.0f, 1.0f, 100.0f)

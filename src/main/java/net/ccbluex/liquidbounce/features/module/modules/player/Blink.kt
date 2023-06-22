@@ -26,7 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import org.lwjgl.opengl.GL11
 import java.util.*
 
-class Blink : Module(name = "Blink", category = ModuleCategory.PLAYER) {
+object Blink : Module(name = "Blink", category = ModuleCategory.PLAYER, defaultOn = false) {
     
     private val outgoingValue = BoolValue("OutGoing", true)
     private val inboundValue = BoolValue("Inbound", false)

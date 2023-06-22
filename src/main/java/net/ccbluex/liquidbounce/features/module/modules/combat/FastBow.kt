@@ -19,7 +19,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-class FastBow : Module(name = "FastBow", category = ModuleCategory.COMBAT) {
+object FastBow : Module(name = "FastBow", category = ModuleCategory.COMBAT, defaultOn = false) {
 
     private val packetsValue = IntegerValue("Packets", 20, 3, 20)
     private val delay = IntegerValue("Delay", 0, 0, 500)

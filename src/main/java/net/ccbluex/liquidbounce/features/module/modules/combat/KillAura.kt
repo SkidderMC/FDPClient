@@ -47,7 +47,7 @@ import java.awt.Color
 import java.util.*
 import kotlin.math.*
 
-class KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_G) {
+object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_G, defaultOn = false) {
     /**
      * OPTIONS
      */

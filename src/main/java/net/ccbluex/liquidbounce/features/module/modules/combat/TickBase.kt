@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.minecraft.entity.EntityLivingBase
 
-object TickBase : Module(name = "TickBase", category = ModuleCategory.COMBAT) {
+object TickBase : Module(name = "TickBase", category = ModuleCategory.COMBAT, defaultOn = false) {
 
     private var ticks = 0
 

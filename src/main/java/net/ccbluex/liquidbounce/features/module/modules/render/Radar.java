@@ -26,7 +26,7 @@ public class Radar extends Module  {
     private static ModuleCategory category = ModuleCategory.RENDER;
 
     public Radar() {
-        super("Radar", category = ModuleCategory.RENDER);
+        super("Radar", category = ModuleCategory.RENDER, false);
     }
     private boolean dragging;
     float hue;

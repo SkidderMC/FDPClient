@@ -29,7 +29,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.roundToInt
 
-class NameTags : Module(name = "NameTags", category = ModuleCategory.RENDER) {
+object NameTags : Module(name = "NameTags", category = ModuleCategory.RENDER, defaultOn = false) {
     private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello"), "Liquid")
     private val healthValue = BoolValue("Health", true).displayable { modeValue.equals("Liquid") }
     private val pingValue = BoolValue("Ping", true).displayable { modeValue.equals("Liquid") }

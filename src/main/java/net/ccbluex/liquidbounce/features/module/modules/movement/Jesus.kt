@@ -17,7 +17,7 @@ import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 
-class Jesus : Module(name = "Jesus", category = ModuleCategory.MOVEMENT) {
+object Jesus : Module(name = "Jesus", category = ModuleCategory.MOVEMENT, defaultOn = false) {
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.jesus", JesusMode::class.java)
         .map { it.newInstance() as JesusMode }
         .sortedBy { it.modeName }

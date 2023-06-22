@@ -12,7 +12,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemArmor
 
-class Teams : Module(name = "Teams", category = ModuleCategory.MISC) {
+object Teams : Module(name = "Teams", category = ModuleCategory.MISC, defaultOn = false) {
 
     private val scoreboardValue = BoolValue("ScoreboardTeam", true)
     private val colorValue = BoolValue("Color", true)

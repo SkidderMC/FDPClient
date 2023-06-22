@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.util.*
 
-object Backtrack : Module("Backtrack", category = ModuleCategory.COMBAT) {
+object Backtrack : Module("Backtrack", category = ModuleCategory.COMBAT, defaultOn = false) {
 
     // This will be used as maximum possible delay. (In milliseconds)
     private val maximumDelay = IntegerValue("MaxDelay", 250, 0, 1000)
@@ -34,9 +34,8 @@ object Backtrack : Module("Backtrack", category = ModuleCategory.COMBAT) {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        val packet = event.packet
 
-        when (packet) {
+        when (val packet = event.packet) {
             // Check if packet is a spawn player packet
             is S0CPacketSpawnPlayer -> {
                 // Insert first backtrack data
@@ -129,9 +128,9 @@ object Backtrack : Module("Backtrack", category = ModuleCategory.COMBAT) {
         }
     }
 
-    fun getBacktrackData(id: UUID) = backtrackedPlayer[id]
+    private fun getBacktrackData(id: UUID) = backtrackedPlayer[id]
 
-    fun removeBacktrackData(id: UUID) {
+    private fun removeBacktrackData(id: UUID) {
         backtrackedPlayer.remove(id)
     }
 

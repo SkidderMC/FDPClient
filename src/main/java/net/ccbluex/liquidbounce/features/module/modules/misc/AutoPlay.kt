@@ -26,7 +26,7 @@ import net.minecraft.util.IChatComponent
 import java.util.*
 import kotlin.concurrent.schedule
 
-class AutoPlay : Module(name = "AutoPlay", category = ModuleCategory.MISC) {
+object AutoPlay : Module(name = "AutoPlay", category = ModuleCategory.MISC, defaultOn = false) {
 
     private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "Pika", "Hydracraft", "HyCraft", "MineFC/HeroMC_Bedwars", "Supercraft"), "BlocksMC")
 

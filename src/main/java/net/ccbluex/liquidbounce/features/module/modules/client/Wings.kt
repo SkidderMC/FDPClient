@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 
-object Wings : Module(name = "Wings", category = ModuleCategory.CLIENT, array = false) {
+object Wings : Module(name = "Wings", category = ModuleCategory.CLIENT, array = false, defaultOn = false) {
     private val onlyThirdPerson = BoolValue("OnlyThirdPerson", true)
     val ColourType = ListValue("Color Type", arrayOf("Custom", "Chroma", "None"), "Chroma")
     val CR = IntegerValue("R", 255, 0, 255).displayable { ColourType.get().equals("Custom") }

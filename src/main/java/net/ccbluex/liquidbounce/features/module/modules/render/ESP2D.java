@@ -90,7 +90,7 @@ public final class ESP2D extends Module {
 
     private static ModuleCategory category = ModuleCategory.RENDER;
     public ESP2D() {
-        super("ESP2D", category = ModuleCategory.RENDER);
+        super("ESP2D", category = ModuleCategory.RENDER, false);
         this.viewport = GLAllocation.createDirectIntBuffer(16);
         this.modelview = GLAllocation.createDirectFloatBuffer(16);
         this.projection = GLAllocation.createDirectFloatBuffer(16);

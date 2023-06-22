@@ -22,7 +22,7 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
-class JumpCircle : Module(name = "JumpCircle", category = ModuleCategory.RENDER) {
+object JumpCircle : Module(name = "JumpCircle", category = ModuleCategory.RENDER, defaultOn = false) {
 
     val disappearTime = IntegerValue("Time", 1000, 1000,3000)
     val radius = FloatValue("Radius", 2f, 1f,5f)

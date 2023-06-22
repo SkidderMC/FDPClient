@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 import java.text.DecimalFormat
 
-class LightningDetect : Module(name = "LightningDetect", category = ModuleCategory.WORLD, array = false, defaultOn = true) {
+object LightningDetect : Module(name = "LightningDetect", category = ModuleCategory.WORLD, array = false, defaultOn = true) {
     private val debugValue = BoolValue("debug", false)
 
     private val decimalFormat = DecimalFormat("0.0")

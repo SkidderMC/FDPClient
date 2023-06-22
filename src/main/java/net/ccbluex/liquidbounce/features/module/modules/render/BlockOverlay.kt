@@ -24,7 +24,7 @@ import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class BlockOverlay : Module(name = "BlockOverlay", category = ModuleCategory.RENDER) {
+object BlockOverlay : Module(name = "BlockOverlay", category = ModuleCategory.RENDER, defaultOn = false) {
     private val colorRedValue = IntegerValue("Red", 68, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorGreenValue = IntegerValue("Green", 117, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { !colorRainbowValue.get() }

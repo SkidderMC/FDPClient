@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 
-class HealthWarn : Module(name = "HealthWarn", category = ModuleCategory.MISC, defaultOn = true) {
+object HealthWarn : Module(name = "HealthWarn", category = ModuleCategory.MISC, defaultOn = true) {
 
     private val healthValue = IntegerValue("Health", 7, 1, 20)
 

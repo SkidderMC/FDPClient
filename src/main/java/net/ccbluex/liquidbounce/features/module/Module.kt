@@ -32,7 +32,7 @@ open class Module @JvmOverloads constructor(
     val canEnable: Boolean = true,
     var autoDisable: EnumAutoDisableType = EnumAutoDisableType.NONE,
     val moduleCommand: Boolean = true,
-    val defaultOn: Boolean = true,
+    var defaultOn: Boolean,
     val forceNoSound: Boolean = false,
     var triggerType: EnumTriggerType = EnumTriggerType.TOGGLE
 ) : MinecraftInstance(), Listenable, Annotation {

@@ -45,7 +45,7 @@ public class GlowESP extends Module {
     private static ModuleCategory category = ModuleCategory.RENDER;
 
     public GlowESP() {
-        super("GlowESP", category = ModuleCategory.RENDER);
+        super("GlowESP", category = ModuleCategory.RENDER, false);
     }
 
     public final FloatValue radius = new FloatValue("Radius", 2, 1F, 30F);

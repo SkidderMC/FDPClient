@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.value.BoolValue
 
-class SafeWalk : Module(name = "SafeWalk", category = ModuleCategory.MOVEMENT) {
+object SafeWalk : Module(name = "SafeWalk", category = ModuleCategory.MOVEMENT, defaultOn = false) {
 
     private val airSafeValue = BoolValue("AirSafe", false)
     private val onlyVoidValue = BoolValue("OnlyPredictVoid", false)

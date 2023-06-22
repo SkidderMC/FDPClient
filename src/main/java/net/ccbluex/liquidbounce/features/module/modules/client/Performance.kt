@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.value.BoolValue
 
-object Performance : Module("Performance", category = ModuleCategory.CLIENT) {
+object Performance : Module("Performance", category = ModuleCategory.CLIENT, defaultOn = true) {
     @JvmField
     var staticParticleColorValue = BoolValue("StaticParticleColor", false)
     @JvmField

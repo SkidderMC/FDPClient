@@ -26,7 +26,6 @@ import net.minecraft.util.MathHelper
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.util.*
-
 object HUD : Module("HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true) {
     val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Default")
     val clolormode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")

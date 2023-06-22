@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.abs
 
-class SuperheroFX : Module(name = "SuperheroFX", category = ModuleCategory.RENDER) {
+object SuperHeroFX : Module(name = "SuperHeroFX", category = ModuleCategory.RENDER, defaultOn = false) {
 
     private val textParticles = mutableListOf<FXParticle>()
     private val generateTimer = MSTimer()
@@ -61,7 +61,7 @@ class SuperheroFX : Module(name = "SuperheroFX", category = ModuleCategory.RENDE
     }
 
 }
-class FXParticle(val posX: Double, val posY: Double, val posZ: Double, val animHDir: Double, val animVDir: Double): MinecraftInstance() {
+class FXParticle(val posX: Double, val posY: Double, val posZ: Double, private val animHDir: Double, private val animVDir: Double): MinecraftInstance() {
     private val messageString: String = listOf("kaboom", "bam", "zap", "smash", "fatality", "kapow", "wham").random()
     private val color: Color = listOf(Color.BLUE, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW).random()
 

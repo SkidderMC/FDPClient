@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.minecraft.util.BlockPos
 
-class AutoTool : Module(name = "AutoTool", category = ModuleCategory.PLAYER) {
+object AutoTool : Module(name = "AutoTool", category = ModuleCategory.PLAYER, defaultOn = false) {
 
     @EventTarget
     fun onClick(event: ClickBlockEvent) {

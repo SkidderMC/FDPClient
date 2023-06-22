@@ -23,7 +23,7 @@ import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 
-object Refill : Module(name = "Refill", category = ModuleCategory.PLAYER) {
+object Refill : Module(name = "Refill", category = ModuleCategory.PLAYER, defaultOn = false) {
 
     private val delayValue = IntegerValue("Delay", 400, 10, 1000)
 
