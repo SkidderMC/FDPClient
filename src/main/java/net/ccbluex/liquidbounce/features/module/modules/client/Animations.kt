@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
-object Animations : Module("Animations", category = ModuleCategory.CLIENT, canEnable = false) {
+object Animations : Module("Animations", category = ModuleCategory.CLIENT, canEnable = false, defaultOn = true) {
     val blockingModeValue = ListValue(
         "BlockingMode", arrayOf("1.7", "Akrien", "Avatar", "ETB", "Exhibition", "Dortware", "Push", "Reverse", "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX", "Swank", "Jello", "Rotate", "Liquid", "Fall", "Yeet", "Yeet2", "None"), "1.7")
 

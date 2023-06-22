@@ -25,7 +25,7 @@ import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
-object FollowTargetHud : Module(name = "FollowTargetHud", category = ModuleCategory.RENDER, defaultOn = false) {
+class FollowTargetHud : Module(name = "FollowTargetHud", category = ModuleCategory.RENDER, defaultOn = false) {
     private val zoomIn = BoolValue("ZoomIn", true)
     private val zoomTicks = IntegerValue("ZoomInTicks", 4, 2, 15).displayable {zoomIn.get()}
     private val modeValue = ListValue("Mode", arrayOf("Juul", "Jello", "Material", "Material2", "Arris", "FDP"), "Juul")

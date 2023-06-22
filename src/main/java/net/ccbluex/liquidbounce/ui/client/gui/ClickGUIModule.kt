@@ -29,7 +29,7 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
 
-object ClickGUIModule : Module(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false) {
+object ClickGUIModule : Module(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false, defaultOn = false) {
 
     val styleValue: ListValue = object : ListValue(
         "Style",
