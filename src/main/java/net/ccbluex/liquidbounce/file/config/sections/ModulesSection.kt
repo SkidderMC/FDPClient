@@ -3,12 +3,16 @@ package net.ccbluex.liquidbounce.file.config.sections
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Module
-
 import net.ccbluex.liquidbounce.file.config.ConfigSection
 
 class ModulesSection : ConfigSection("modules") {
     override fun load(json: JsonObject) {
-
+        // set them to default setting
+        FDPClient.moduleManager.modules.forEach {
+            it.values.forEach { value ->
+                value.setDefault()
+            }
+        }
         // load config
         for (entrySet in json.entrySet()) {
             val module = FDPClient.moduleManager.getModule(entrySet.key) ?: continue
@@ -27,7 +31,7 @@ class ModulesSection : ConfigSection("modules") {
             }
 
             if (data.has("trigger")) {
-                module.triggerType = Module.EnumTriggerType.valueOf(data.get("trigger").asString)
+                module.triggerType =  Module.EnumTriggerType.valueOf(data.get("trigger").asString)
             }
 
             if (data.has("autodisable")) {
@@ -49,7 +53,7 @@ class ModulesSection : ConfigSection("modules") {
         FDPClient.moduleManager.modules.forEach {
             val moduleJson = JsonObject()
 
-            if (it.canEnable || it.triggerType != Module.EnumTriggerType.PRESS) {
+            if (it.canEnable || it.triggerType !=  Module.EnumTriggerType.PRESS) {
                 moduleJson.addProperty("state", it.state)
             }
 

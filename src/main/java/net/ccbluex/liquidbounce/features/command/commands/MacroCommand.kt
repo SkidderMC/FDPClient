@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.features.macro.Macro
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import org.lwjgl.input.Keyboard
 
-class MacroCommand : Command("macro", arrayOf("m")) {
+object MacroCommand : Command("macro", arrayOf("m")) {
     override fun execute(args: Array<String>) {
         if (args.size > 1) {
             val arg1 = args[1]

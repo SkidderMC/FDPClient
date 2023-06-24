@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 
-class FakeNameCommand : Command("SetFakeName", emptyArray()){
+object FakeNameCommand : Command("SetFakeName", emptyArray()){
     override fun execute(args: Array<String>) {
         if(args.size > 2) {
             val module = FDPClient.moduleManager.getModule(args[1]) ?: return

@@ -6,7 +6,7 @@ import java.awt.Desktop
 import java.io.File
 import java.nio.file.Files
 
-class ConfigCommand : Command("config", arrayOf("cfg")) {
+object ConfigCommand : Command("config", arrayOf("cfg")) {
     override fun execute(args: Array<String>) {
         if (args.size > 1) {
             when (args[1].lowercase()) {

@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.features.command.Command
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
-class DamageCommand : Command("damage", arrayOf("hurt")) {
+object DamageCommand : Command("damage", arrayOf("hurt")) {
     /**
      * Execute commands with provided [args]
      */

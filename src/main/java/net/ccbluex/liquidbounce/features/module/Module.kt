@@ -23,12 +23,13 @@ import net.ccbluex.liquidbounce.utils.render.Translate
 import net.ccbluex.liquidbounce.features.value.Value
 import org.lwjgl.input.Keyboard
 import java.util.ArrayList
+
 open class Module @JvmOverloads constructor(
     var name: String,
     var description: String = "",
     var category: ModuleCategory,
-    var keyBind: Int = Keyboard.CHAR_NONE,
-    var array: Boolean = true,
+    keyBind: Int = Keyboard.CHAR_NONE,
+    array: Boolean = true,
     val canEnable: Boolean = true,
     var autoDisable: EnumAutoDisableType = EnumAutoDisableType.NONE,
     val moduleCommand: Boolean = true,
@@ -37,17 +38,17 @@ open class Module @JvmOverloads constructor(
     var triggerType: EnumTriggerType = EnumTriggerType.TOGGLE
 ) : MinecraftInstance(), Listenable, Annotation {
 
-    var tKeyBind = keyBind
-    set(keyBind) {
-        field = keyBind
+    var keyBind = keyBind
+        set(new) {
+            field = new
 
         if (!FDPClient.isStarting) {
             FDPClient.configManager.smartSave()
         }
     }
-    var tArray = array
-        set(array) {
-            field = array
+    var array = array
+        set(new) {
+            field = new
 
             if (!FDPClient.isStarting) {
                 FDPClient.configManager.smartSave()

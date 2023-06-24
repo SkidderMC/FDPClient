@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 
-class MatchCommand : Command("match", arrayOf("match")) {
+object MatchCommand : Command("match", arrayOf("match")) {
     /**
      * Execute commands with provided [args]
      */

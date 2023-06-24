@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import java.io.File
 import java.io.IOException
 
-class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
+object ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
     /**
      * Execute commands with provided [args]
      */

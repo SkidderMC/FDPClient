@@ -28,11 +28,11 @@ object DamageParticle : Module(name = "DamageParticle", category = ModuleCategor
     private val aliveTicksValue = IntegerValue("AliveTicks", 20, 10, 50)
     private val sizeValue = IntegerValue("Size", 3, 1, 7)
     private val colourValue = ListValue("ColourType", arrayOf("Damage", "Custom", "Rainbow"), "Custom")
-    private val colorRedValue = IntegerValue("Red", 68, 0, 255).displayable { colourValue.get().equals("Custom") }
-    private val colorGreenValue = IntegerValue("Green", 117, 0, 255).displayable { colourValue.get().equals("Custom") }
-    private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { colourValue.get().equals("Custom") }
+    private val colorRedValue = IntegerValue("Red", 68, 0, 255).displayable { colourValue.get() == "Custom" }
+    private val colorGreenValue = IntegerValue("Green", 117, 0, 255).displayable { colourValue.get() == "Custom" }
+    private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { colourValue.get() == "Custom" }
     private val colorAlphaValue = IntegerValue("Alpha", 100, 0, 255)
-    private val shadowValue = ListValue("Mode", arrayOf("LB", "Default", "Autumn", "Outline", "None"), "Outline").displayable { !colourValue.get().equals("Damage") }
+    private val shadowValue = ListValue("Mode", arrayOf("LB", "Default", "Autumn", "Outline", "None"), "Outline").displayable { colourValue.get() != "Damage" }
     private val healthData = mutableMapOf<Int, Float>()
     private val particles = mutableListOf<SingleParticle>()
 
@@ -44,8 +44,8 @@ object DamageParticle : Module(name = "DamageParticle", category = ModuleCategor
                     val lastHealth = healthData.getOrDefault(entity.entityId,entity.maxHealth)
                     healthData[entity.entityId] = entity.health
                     if(lastHealth == entity.health) continue
-                    val colourPrefix = if (colourValue.get().equals("Damage")) (if(lastHealth>entity.health){"§c"}else{"§a"}) else ""
-                    val prefix = if (!colourValue.get().equals("Rainbow")) (if(lastHealth>entity.health){"❤"}else{"❤"}) else (if(lastHealth>entity.health){"-"}else{"+"})
+                    val colourPrefix = if (colourValue.get() == "Damage") (if(lastHealth>entity.health){"§c"}else{"§a"}) else ""
+                    val prefix = if (colourValue.get() != "Rainbow") (if(lastHealth>entity.health){"❤"}else{"❤"}) else (if(lastHealth>entity.health){"-"}else{"+"})
                     particles.add(SingleParticle(colourPrefix + prefix + BigDecimal(abs(lastHealth - entity.health).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP).toDouble()
                         ,entity.posX - 0.5 + Random(System.currentTimeMillis()).nextInt(5).toDouble() * 0.1
                         ,entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0
@@ -89,7 +89,7 @@ object DamageParticle : Module(name = "DamageParticle", category = ModuleCategor
                 GL11.glDepthMask(false)
                 val x = -(mc.fontRendererObj.getStringWidth(particle.str) / 2)
                 val y = -(mc.fontRendererObj.FONT_HEIGHT - 1)
-                if(!colourValue.get().equals("Damage")){
+                if(colourValue.get() != "Damage"){
                     when (shadowValue.get()) {
                         "LB" -> {mc.fontRendererObj.drawString(particle.str, (x + 1), (y + 1), Color(0, 0, 0, 150).rgb)}
                         "Autumn" -> {mc.fontRendererObj.drawString(particle.str, (x + 1), (y + 1), Color(20, 20, 20, 150).rgb)}
@@ -102,7 +102,7 @@ object DamageParticle : Module(name = "DamageParticle", category = ModuleCategor
                         }
                     }
                 }
-                mc.fontRendererObj.drawString(particle.str, (-(mc.fontRendererObj.getStringWidth(particle.str) / 2)).toFloat(), (-(mc.fontRendererObj.FONT_HEIGHT - 1)).toFloat(), (if (colourValue.get().equals("Rainbow")) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())).rgb, false)
+                mc.fontRendererObj.drawString(particle.str, (-(mc.fontRendererObj.getStringWidth(particle.str) / 2)).toFloat(), (-(mc.fontRendererObj.FONT_HEIGHT - 1)).toFloat(), (if (colourValue.get() == "Rainbow") ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())).rgb, false)
                 GL11.glColor4f(187.0f, 255.0f, 255.0f, 1.0f)
                 GL11.glDepthMask(true)
                 GlStateManager.doPolygonOffset(1.0f, 1500000.0f)

@@ -7,7 +7,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import java.util.function.Consumer
 import javax.vecmath.Vector3d
 
-class TeleportCommand : Command("tp", arrayOf("teleport")) {
+object TpCommand : Command("tp", arrayOf("teleport")) {
 
     /**
      * Execute commands with provided [args]

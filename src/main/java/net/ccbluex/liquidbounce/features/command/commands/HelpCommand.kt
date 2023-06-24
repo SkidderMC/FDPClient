@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
-class HelpCommand : Command("help", emptyArray()) {
+object HelpCommand : Command("help", emptyArray()) {
     /**
      * Execute commands with provided [args]
      */
