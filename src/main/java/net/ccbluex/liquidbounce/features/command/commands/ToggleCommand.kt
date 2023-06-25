@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 
-object ToggleCommand : Command("toggle", arrayOf("t")) {
+class ToggleCommand : Command("toggle", arrayOf("t")) {
     /**
      * Execute commands with provided [args]
      */

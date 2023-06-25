@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 
-object ModuleTriggerCommand : Command("moduletrigger", arrayOf("trigger")) {
+class ModuleTriggerCommand : Command("moduletrigger", arrayOf("trigger")) {
     private val modes = Module.EnumTriggerType.values().map { it.name.lowercase() }.toTypedArray()
 
     override fun execute(args: Array<String>) {

@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
-object HideCommand : Command("hide", emptyArray()) {
+class HideCommand : Command("hide", emptyArray()) {
 
     /**
      * Execute commands with provided [args]

@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 
-object BlinkCancelCommand : Command("BlinkCancel", emptyArray()) {
+class BlinkCancelCommand : Command("BlinkCancel", emptyArray()) {
     /**
      * Execute commands with provided [args]
      */

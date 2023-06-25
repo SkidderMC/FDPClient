@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.minecraft.network.play.client.C01PacketChatMessage
 
-object SayCommand : Command("say", emptyArray()) {
+class SayCommand : Command("say", emptyArray()) {
     /**
      * Execute commands with provided [args]
      */

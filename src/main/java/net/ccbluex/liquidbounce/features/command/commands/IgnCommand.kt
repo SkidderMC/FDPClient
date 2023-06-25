@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
-object IgnCommand : Command("ign", emptyArray()) {
+class IgnCommand : Command("ign", emptyArray()) {
     /**
      * Execute commands with provided [args]
      */

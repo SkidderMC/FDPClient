@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.features.special.UUIDSpoofer
 
-object UUIDCommand : Command("uuid", emptyArray()) {
+class UUIDCommand : Command("uuid", emptyArray()) {
 
     /**
      * Execute commands with provided [args]

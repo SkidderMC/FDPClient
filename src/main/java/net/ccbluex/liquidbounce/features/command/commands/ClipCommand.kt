@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import kotlin.math.cos
 import kotlin.math.sin
 
-object ClipCommand : Command("clip", emptyArray()) {
+class ClipCommand : Command("clip", emptyArray()) {
     override fun execute(args: Array<String>) {
         if (args.size > 2) {
             val dist: Double

@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 
-object FocusCommand : Command("focus", emptyArray()) {
+class FocusCommand : Command("focus", emptyArray()) {
 
     /**
      * Execute commands with provided [args]

@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 
-object AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
+class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
     private val modes = Module.EnumAutoDisableType.values().map { it.name.lowercase() }.toTypedArray()
 
     override fun execute(args: Array<String>) {
