@@ -312,6 +312,7 @@ object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, ke
     private var canHitselect = false
     private val hitselectTimer = MSTimer()
 
+    private val delayBlockTimer = MSTimer()
     private var delayBlock = false
     private var legitBlocking = 0
 
@@ -392,11 +393,6 @@ object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, ke
              if (mc.thePlayer.swingProgressInt == 1) {
                  startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
             }
-        }
-
-        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Delayed") && delayBlock) {
-              startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-              delayBlock = false
         }
         
         if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("HoldKey") && canBlock) {
@@ -767,9 +763,8 @@ object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, ke
                 }
                 when (autoBlockPacketValue.get().lowercase()) {
                     "vanilla", "afterattack", "oldintave" -> startBlocking(entity, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange))
-                    "keyblock" -> mc.gameSettings.keyBindUseItem.pressed = true
+                    "delayed", "keyblock" -> delayBlockTimer.reset()
                     "aftertick", "legit", "delayed2", "test", "holdkey" -> null
-                    "delayed" -> delayBlock = true
                     else -> null
                 }
             }
@@ -1028,6 +1023,21 @@ object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, ke
             attackTimer.reset()
             attackDelay = getAttackDelay(minCpsValue.get(), maxCpsValue.get())
         }
+
+        if (currentTarget != null && attackTimer.hasTimePassed((attackDelay.toDouble() * 0.9).toLong()) && (autoBlockValue.equals("Range") && canBlock) && autoBlockPacketValue.equals("KeyBlock")) {
+             mc.gameSettings.keyBindUseItem.pressed = false
+        }
+
+        if (currentTarget != null && delayBlockTimer.hasTimePassed(30) && (autoBlockValue.equals("Range") && canBlock)) {
+            if (autoBlockPacketValue.equals("KeyBlock")) {
+                mc.gameSettings.keyBindUseItem.pressed = false
+            }
+            if (autoBlockPacketValue.equals("Delayed")) {
+                val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
+                startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+            }
+        }
+                
 
         discoveredTargets.forEach {
             when (markValue.get().lowercase()) {
