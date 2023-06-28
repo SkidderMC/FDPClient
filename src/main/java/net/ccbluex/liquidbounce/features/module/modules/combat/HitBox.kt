@@ -10,5 +10,5 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.value.FloatValue
 
 object HitBox : Module(name = "HitBox", category = ModuleCategory.COMBAT, defaultOn = false) {
-    val sizeValue = FloatValue("Size", 0.4F, 0F, 1F)
+    val sizeValue = FloatValue("Size", 1.0F, 0F, 1F)
 }
