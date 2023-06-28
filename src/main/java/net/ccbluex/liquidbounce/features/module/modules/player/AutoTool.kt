@@ -5,16 +5,21 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.ClickBlockEvent
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.minecraft.util.BlockPos
 
 object AutoTool : Module(name = "AutoTool", category = ModuleCategory.PLAYER, defaultOn = false) {
 
+    private val noCombat = BoolValue("NoCombat", true)
+
     @EventTarget
     fun onClick(event: ClickBlockEvent) {
+        if (FDPClient.combatManager.inCombat && noCombat.get()) return
         switchSlot(event.clickedBlock ?: return)
     }
 
