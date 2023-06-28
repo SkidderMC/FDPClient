@@ -1016,7 +1016,7 @@ object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, ke
             hitable = false
             stopBlocking()
             discoveredTargets.clear()
-            inRangeDiscoveredTargets.clear()mc.gameSettings.keyBindUseItem.pressed = false
+            inRangeDiscoveredTargets.clear()
         }
         if (currentTarget != null && attackTimer.hasTimePassed(attackDelay) && currentTarget!!.hurtTime <= hurtTimeValue.get()) {
             clicks++
