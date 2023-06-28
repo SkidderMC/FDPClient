@@ -389,7 +389,7 @@ object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, ke
         updateHitable()
         val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
 
-        if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && ( autoBlockPacketValue.equals("Delayed2") || autoBlockPacketValue.equals("Test"))) {
+        if (autoBlockValue.equals("Range") && event.eventState == EventState.PRE && ( autoBlockPacketValue.equals("Delayed2") || autoBlockPacketValue.equals("Test"))) {
              if (mc.thePlayer.swingProgressInt == 1) {
                  startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
             }
@@ -1030,7 +1030,7 @@ object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, ke
 
         if (currentTarget != null && delayBlockTimer.hasTimePassed(30) && (autoBlockValue.equals("Range") && canBlock)) {
             if (autoBlockPacketValue.equals("KeyBlock")) {
-                mc.gameSettings.keyBindUseItem.pressed = false
+                mc.gameSettings.keyBindUseItem.pressed = true
             }
             if (autoBlockPacketValue.equals("Delayed")) {
                 val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
