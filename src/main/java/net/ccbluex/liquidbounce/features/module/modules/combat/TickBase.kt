@@ -16,7 +16,7 @@ object TickBase : Module(name = "TickBase", category = ModuleCategory.COMBAT, de
 
     private var ticks = 0
 
-    val ticksAmount = IntegerValue("BoostTicks", 10, 1, 20)
+    val ticksAmount = IntegerValue("BoostTicks", 10, 3, 20)
     val BoostAmount = FloatValue("BoostTimer", 10f, 1f, 50f)
     val ChargeAmount = FloatValue("ChargeTimer", 0.11f, 0.05f, 1f)
 
