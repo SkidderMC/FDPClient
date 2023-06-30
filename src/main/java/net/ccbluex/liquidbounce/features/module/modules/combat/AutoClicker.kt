@@ -201,6 +201,7 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
         dragClickDelay = dragDelay
             
         return dragClickDelay
+        
 
         // val dragClickPause = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
         // val dragClickLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get())
