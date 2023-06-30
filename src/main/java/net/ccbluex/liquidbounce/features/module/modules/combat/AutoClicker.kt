@@ -22,7 +22,7 @@ import org.lwjgl.input.Mouse
 
 object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMBAT, defaultOn = false) {
 
-    private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "LegitJitter", "LegitButterfly"), "Normal")
+    private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "Drag", "LegitJitter", "LegitButterfly"), "Normal")
     private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable {modeValue.equals("LegitJitter")}
     private val legitButterflyValue = ListValue("LegitButterflyMode", arrayOf("Butterfly1", "Butterfly2"), "Butterfly1").displayable {modeValue.equals("LegitButterfly")}
 
@@ -52,7 +52,48 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
     private val blockValue = BoolValue("AutoBlock", false). displayable { leftValue.get() }
     private val blockOnClick = BoolValue("AutoBlockOnRightClick", true). displayable { leftValue.get() && blockValue.get() }
     private val jitterValue = BoolValue("Jitter", false)
+
+    //Drag
     
+    private val dragMaxPauseValue: IntegerValue = object: IntegerValue("Drag-MaxPause", 15, 6, 20) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val minPause = dragMinPauseValue.get()
+            if (minPause > newValue) {
+                set(minPause)
+            }
+        }
+    }
+    
+    private val dragMinPauseValue: IntegerValue = object: IntegerValue("Drag-MinPause", 7, 6, 20) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val maxPause = dragMaxPauseValue.get()
+            if (maxPause < newValue) {
+                set(maxPause)
+            }
+        }
+    }
+    
+    private val dragMaxLengthValue: IntegerValue = object: IntegerValue("Drag-MaxLength", 25, 17, 50) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val minLength = dragMinLengthValue.get()
+            if (minLength > newValue) {
+                set(minLength)
+            }
+        }
+    }
+    private val dragMinLengthValue: IntegerValue = object: IntegerValue("Drag-MinLength", 18, 17, 50) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val maxLength = dragMaxLengthValue.get()
+            if (maxLength < newValue) {
+                set(maxLength)
+            }
+        }
+    }
+
+    private var dragClickDelay = 18
+    private var Length = 0
+    private var Delay = 0
+    private var dragStart = 0;
 
     // Gaussian
     private val gaussianCpsValue = IntegerValue("Gaussian-CPS", 5, 1, 40).displayable { modeValue.equals("Gaussian") }
@@ -130,6 +171,9 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
         if(modeValue.equals("Gaussian")) {
             gaussianUpdateDelay()
         }
+        if(modeValue.equals("Drag")) {
+            dragUpdateDelay()
+        }
     }
 
     private fun gaussianUpdateDelay(): Float {
@@ -137,6 +181,32 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
             .coerceAtLeast(1F)) // 1000ms = 1s
         return gaussianClickDelay
     }
+
+    private fun dragUpdateDelay(): Int {
+        val dragClickPause = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
+
+        if (dragClickDelay <= 0) {
+            // Drag clicking is not active, start 
+            dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
+            dragStart = System.currentTimeMillis().toInt()
+            Length = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
+        }
+    
+        val currentTime = System.currentTimeMillis().toInt()
+        val timeElapsed = currentTime - dragStart
+    
+        if (timeElapsed >= Length) {
+            // The duration of dragLength has elapsed, stop the drag clicking
+            dragClickDelay = 100000
+        } else if (timeElapsed >= dragClickPause) {
+
+            // Reset the drag click delay
+            dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
+        }
+    
+        return dragClickDelay
+    }
+    
     
     private fun updateClicks(): Int {
         when (modeValue.get().lowercase()) {
@@ -148,7 +218,9 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
                 gaussianUpdateDelay()
                 cDelay = gaussianClickDelay.toInt()
             }
-
+            "drag" -> {
+                cDelay = dragClickDelay.toInt()
+            }
             "legitjitter" -> {
                 when (legitJitterValue.get().lowercase()) {
                     "jitter1" -> {
