@@ -91,9 +91,10 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
     }
 
     private var dragClickDelay = 18
-    private var Length = 0
-    private var Delay = 0
+    private var dragLength = 0
+    private var dragDelay = 0
     private var dragStart = 0;
+    val dragClickPause = 0
 
     // Gaussian
     private val gaussianCpsValue = IntegerValue("Gaussian-CPS", 5, 1, 40).displayable { modeValue.equals("Gaussian") }
@@ -183,28 +184,63 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
     }
 
     private fun dragUpdateDelay(): Int {
-        val dragClickPause = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
+        if (dragLength < 0)
+        {
+            dragDelay--
 
-        if (dragClickDelay <= 0) {
-            // Drag clicking is not active, start 
-            dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
-            dragStart = System.currentTimeMillis().toInt()
-            Length = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
-        }
-    
-        val currentTime = System.currentTimeMillis().toInt()
-        val timeElapsed = currentTime - dragStart
-    
-        if (timeElapsed >= Length) {
-            // The duration of dragLength has elapsed, stop the drag clicking
-            dragClickDelay = 100000
-        } else if (timeElapsed >= dragClickPause) {
+            if (dragDelay < 0){
+                dragDelay = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
+                dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
+            }
+            else if (Random.nextInt(0, 1) < 0.95){
+                dragLength--
+            }
 
-            // Reset the drag click delay
-            dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
+            
         }
-    
+        dragClickDelay = dragDelay
+            
         return dragClickDelay
+
+        // val dragClickPause = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
+        // val dragClickLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get())
+        // dragStart = System.currentTimeMillis().toInt()
+        
+        
+        // // Checks if it has been clicking for dragLength and clicks
+        // if (System.currentTimeMillis().toInt() - dragStart < dragClickLength){
+        //     dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
+        // }
+
+        // val pauseStart = System.currentTimeMillis().toInt()
+        // if (pauseStart + dragStart + dragClickPause >= System.currentTimeMillis().toInt()) {
+        //     dragClickDelay = 1000000
+        // }
+        
+        // // reset
+        // dragStart = System.currentTimeMillis().toInt() 
+        // return dragClickDelay
+
+        // if (dragClickDelay <= 0) {
+        //     // Drag clicking is not active, start 
+        //     dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
+        //     dragStart = System.currentTimeMillis().toInt()
+        //     Length = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
+        // }
+    
+        // val currentTime = System.currentTimeMillis().toInt()
+        // val timeElapsed = currentTime - dragStart
+    
+        // if (timeElapsed >= Length) {
+        //     // The duration of dragLength has elapsed, stop the drag clicking
+        //     dragClickDelay = 100000
+        // } else if (timeElapsed >= dragClickPause) {
+
+        //     // Reset the drag click delay
+        //     dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
+        // }
+    
+        // return dragClickDelay
     }
     
     
