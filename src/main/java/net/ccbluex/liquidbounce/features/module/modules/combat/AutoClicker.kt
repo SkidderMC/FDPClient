@@ -172,9 +172,9 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
         if(modeValue.equals("Gaussian")) {
             gaussianUpdateDelay()
         }
-        if(modeValue.equals("Drag")) {
-            dragUpdateDelay()
-        }
+        // if(modeValue.equals("Drag")) {
+            // dragUpdateDelay()
+        // }
     }
 
     private fun gaussianUpdateDelay(): Float {
@@ -183,24 +183,24 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
         return gaussianClickDelay
     }
 
-    private fun dragUpdateDelay(): Int {
-        if (dragLength < 0)
-        {
-            dragDelay--
+    // private fun dragUpdateDelay(): Int {
+    //     if (dragLength < 0)
+    //     {
+    //         dragDelay--
 
-            if (dragDelay < 0){
-                dragDelay = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
-                dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
-            }
-            else if (Random.nextInt(0, 1) < 0.95){
-                dragLength--
-            }
+    //         if (dragDelay < 0){
+    //             dragDelay = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
+    //             dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
+    //         }
+    //         else if (Random.nextInt(0, 1) < 0.95){
+    //             dragLength--
+    //         }
 
             
-        }
-        dragClickDelay = dragDelay
+    //     }
+    //     dragClickDelay = dragDelay
             
-        return dragClickDelay
+    //     return dragClickDelay
         
 
         // val dragClickPause = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
@@ -242,7 +242,7 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
         // }
     
         // return dragClickDelay
-    }
+    // }
     
     
     private fun updateClicks(): Int {
@@ -256,6 +256,22 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
                 cDelay = gaussianClickDelay.toInt()
             }
             "drag" -> {
+                if (dragLength < 0)
+                {
+                    dragDelay--
+
+                    if (dragDelay < 0){
+                        dragDelay = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
+                        dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
+                    }
+                    else if (Random.nextInt(0, 1) < 0.95){
+                        dragLength--
+                    }
+
+                    
+                }
+                dragClickDelay = dragDelay
+                
                 cDelay = dragClickDelay.toInt()
             }
             "legitjitter" -> {
