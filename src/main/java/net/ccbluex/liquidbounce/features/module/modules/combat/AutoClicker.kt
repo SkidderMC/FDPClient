@@ -26,8 +26,8 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "Drag", "LegitJitter", "LegitButterfly"), "Normal")
     private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable {modeValue.equals("LegitJitter")}
     private val legitButterflyValue = ListValue("LegitButterflyMode", arrayOf("Butterfly1", "Butterfly2"), "Butterfly1").displayable {modeValue.equals("LegitButterfly")}
-    print("This is print")
-    System.out.println("This is sys prntln")
+    // print("This is print")
+    // System.out.println("This is sys prntln")
 
     // Normal
     private val normalMaxCPSValue: IntegerValue = object : IntegerValue("Normal-MaxCPS", 8, 1, 40) {
@@ -275,8 +275,8 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
                 dragClickDelay = dragDelay
                 
                 cDelay = dragClickDelay.toInt()
-                print(cDelay);
-                System.out.println(cDelay)
+                // print(cDelay);
+                // System.out.println(cDelay)
             }
             "legitjitter" -> {
                 when (legitJitterValue.get().lowercase()) {
