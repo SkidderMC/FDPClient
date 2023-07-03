@@ -19,13 +19,15 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemSword
 import kotlin.random.Random
 import org.lwjgl.input.Mouse
+import net.ccbluex.liquidbounce.script.api.global.Chat
 
 object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMBAT, defaultOn = false) {
 
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "Drag", "LegitJitter", "LegitButterfly"), "Normal")
     private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable {modeValue.equals("LegitJitter")}
     private val legitButterflyValue = ListValue("LegitButterflyMode", arrayOf("Butterfly1", "Butterfly2"), "Butterfly1").displayable {modeValue.equals("LegitButterfly")}
-
+    print("This is print")
+    System.out.println("This is sys prntln")
 
     // Normal
     private val normalMaxCPSValue: IntegerValue = object : IntegerValue("Normal-MaxCPS", 8, 1, 40) {
@@ -55,20 +57,20 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
 
     //Drag
     
-    private val dragMaxPauseValue: IntegerValue = object: IntegerValue("Drag-MaxPause", 15, 6, 20) {
+    private val dragMaxDelayValue: IntegerValue = object: IntegerValue("Drag-MaxPause", 15, 6, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
-            val minPause = dragMinPauseValue.get()
-            if (minPause > newValue) {
-                set(minPause)
+            val minDelay = dragMinDelayValue.get()
+            if (minDelay > newValue) {
+                set(minDelay)
             }
         }
     }
     
-    private val dragMinPauseValue: IntegerValue = object: IntegerValue("Drag-MinPause", 7, 6, 20) {
+    private val dragMinDelayValue: IntegerValue = object: IntegerValue("Drag-MinPause", 7, 6, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
-            val maxPause = dragMaxPauseValue.get()
-            if (maxPause < newValue) {
-                set(maxPause)
+            val maxDelay = dragMaxDelayValue.get()
+            if (maxDelay < newValue) {
+                set(maxDelay)
             }
         }
     }
@@ -261,7 +263,7 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
                     dragDelay--
 
                     if (dragDelay < 0){
-                        dragDelay = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
+                        dragDelay = Random.nextInt(dragMinDelayValue.get(), dragMaxDelayValue.get()).toInt()
                         dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
                     }
                     else if (Random.nextInt(0, 1) < 0.95){
@@ -273,6 +275,8 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
                 dragClickDelay = dragDelay
                 
                 cDelay = dragClickDelay.toInt()
+                print(cDelay);
+                System.out.println(cDelay)
             }
             "legitjitter" -> {
                 when (legitJitterValue.get().lowercase()) {
