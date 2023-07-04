@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.features.value.*
@@ -20,7 +21,8 @@ import net.minecraft.item.ItemSword
 import kotlin.random.Random
 import org.lwjgl.input.Mouse
 
-object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "AutoClicker", category = ModuleCategory.COMBAT)
+object AutoClicker : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "LegitJitter", "LegitButterfly"), "Normal")
     private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable {modeValue.equals("LegitJitter")}

@@ -34,7 +34,7 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
 
     override fun onEnable() {
         if (warn.get())
-            ClientUtils.displayChatMessage("§8[§c§lMatrix-Dmg-Fly§8] §aGetting damage from other entities (players, arrows, snowballs, eggs...) is required to bypass.")
+            ClientUtils.displayChatMessage("§8[§c§lMatrix-Dmg-Flight§8] §aGetting damage from other entities (players, arrows, snowballs, eggs...) is required to bypass.")
         velocitypacket = false
         packetymotion = 0.0
         tick = 0

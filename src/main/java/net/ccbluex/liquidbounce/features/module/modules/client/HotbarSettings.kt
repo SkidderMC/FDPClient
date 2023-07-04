@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.Animation
@@ -21,7 +22,6 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.GuiIngame
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -35,14 +35,16 @@ import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.text.SimpleDateFormat
 import kotlin.math.max
-object HotbarSettings : Module("Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true) {
+
+@ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
+object HotbarSettings : Module() {
     val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Full", "LB", "Rise", "Gradient", "Overflow", "Glow", "Glowing", "Dock", "Exhi", "BlueIce", "Win11", "Bread"), "Rounded")
-    val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
-    val hotbarEaseValue = BoolValue("HotbarEase", true)
+    private val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
+    private val hotbarEaseValue = BoolValue("HotbarEase", true)
     private val BlurValue = BoolValue("Blur", false)
     private val BlurAmount = FloatValue("BlurAmount", 10F, 1F, 100F).displayable { BlurValue.get() }
     private val ItemCountValue = BoolValue("ItemColorCount", false)
-    val ItemFontValue = ListValue("ItemFont", arrayOf("MiSans", "Minecraft"), "Minecraft")
+    private val ItemFontValue = ListValue("ItemFont", arrayOf("MiSans", "Minecraft"), "Minecraft")
     private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
     private val hotbarAnimTypeValue = EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
     private val hotbarAnimOrderValue = EaseUtils.getEnumEasingOrderList("HotbarAnimOrder").displayable { hotbarEaseValue.get() }

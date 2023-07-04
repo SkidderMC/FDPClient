@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.EntityKilledEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -24,7 +25,8 @@ import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.ResourceLocation
 
-object HitEffect : Module(name = "HitEffect", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "HitEffect", category = ModuleCategory.RENDER)
+object HitEffect : Module() {
 
     private val timingValue = ListValue("Timing", arrayOf("Attack", "Kill"), "Attack")
     private val modeValue = ListValue("Mode", arrayOf("Lighting", "Blood", "Fire", "Critical", "MagicCritical"), "Lighting")

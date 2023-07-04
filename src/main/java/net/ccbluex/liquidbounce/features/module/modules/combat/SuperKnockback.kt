@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -22,7 +23,9 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C03PacketPlayer.*
 
-class SuperKnockback : Module(name = "SuperKnockback", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "SuperKnockback", category = ModuleCategory.COMBAT)
+class SuperKnockback : Module() {
+
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
     private val modeValue = ListValue("Mode", arrayOf("Wtap", "Legit", "Silent", "SprintReset", "SneakPacket"), "Silent")
     private val onlyMoveValue = BoolValue("OnlyMove", true)

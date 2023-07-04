@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -20,7 +21,8 @@ import net.ccbluex.liquidbounce.features.value.TextValue
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S1DPacketEntityEffect
 
-object AntiStaff : Module(name = "AntiStaff", category = ModuleCategory.MISC, defaultOn = false) {
+@ModuleInfo(name = "AntiStaff", category = ModuleCategory.MISC)
+object AntiStaff : Module() {
 
     private val serversText = TextValue("Servers", "")
     

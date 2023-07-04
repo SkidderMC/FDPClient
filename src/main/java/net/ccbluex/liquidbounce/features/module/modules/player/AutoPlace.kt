@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.utils.MouseUtils
@@ -22,7 +23,9 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import org.lwjgl.input.Mouse
 
 
-class AutoPlace : Module(name = "AutoPlace", category = ModuleCategory.PLAYER, defaultOn = false) {
+@ModuleInfo(name = "AutoPlace", category = ModuleCategory.PLAYER)
+object AutoPlace : Module() {
+
     private val dl = FloatValue("Delay", 0F, 0F, 10F)
     private val md = BoolValue("MouseDown", false)
     private var l = 0L

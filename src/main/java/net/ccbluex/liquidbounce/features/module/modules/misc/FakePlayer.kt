@@ -7,9 +7,12 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.client.entity.EntityOtherPlayerMP
 
-object FakePlayer : Module(name = "FakePlayer", category = ModuleCategory.MISC, defaultOn = false) {
+@ModuleInfo(name = "FakePlayer", category = ModuleCategory.MISC)
+object FakePlayer : Module() {
+
     private var fakePlayer: EntityOtherPlayerMP? = null
 
     override fun onEnable() {

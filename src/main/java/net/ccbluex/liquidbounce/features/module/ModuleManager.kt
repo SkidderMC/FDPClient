@@ -131,7 +131,7 @@ class ModuleManager : Listenable {
     @EventTarget
     private fun onKey(event: KeyEvent) {
         if (pendingBindModule == null) {
-            modules.toMutableList().filter { it.triggerType == Module.EnumTriggerType.TOGGLE && it.keyBind == event.key }.forEach { it.toggle() }
+            modules.toMutableList().filter { it.triggerType == EnumTriggerType.TOGGLE && it.keyBind == event.key }.forEach { it.toggle() }
         } else {
             skip++
             if (skip <= 1) {
@@ -150,7 +150,7 @@ class ModuleManager : Listenable {
         if (pendingBindModule != null || Minecraft.getMinecraft().currentScreen != null) {
             return
         }
-        modules.filter { it.triggerType == Module.EnumTriggerType.PRESS }.forEach { it.state = Keyboard.isKeyDown(it.keyBind) }
+        modules.filter { it.triggerType == EnumTriggerType.PRESS }.forEach { it.state = Keyboard.isKeyDown(it.keyBind) }
     }
 
     override fun handleEvents() = true

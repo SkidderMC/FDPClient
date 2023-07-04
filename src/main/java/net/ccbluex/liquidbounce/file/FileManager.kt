@@ -10,7 +10,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.macro.Macro
-import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.file.configs.*
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
@@ -205,7 +205,7 @@ class FileManager : MinecraftInstance() {
                         module.keyBind = jsonModule["KeyBind"].asInt
                         if (jsonModule.has("Array")) module.array = jsonModule["Array"].asBoolean
                         if (jsonModule.has("AutoDisable")) module.autoDisable =
-                            Module.EnumAutoDisableType.valueOf(jsonModule["AutoDisable"].asString)
+                            EnumAutoDisableType.valueOf(jsonModule["AutoDisable"].asString)
                     }
                 }
             } catch (t: Throwable) {

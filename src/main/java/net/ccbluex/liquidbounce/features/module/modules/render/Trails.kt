@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
@@ -26,7 +27,9 @@ import org.lwjgl.util.glu.GLU
 import org.lwjgl.util.glu.Sphere
 import java.awt.Color
 
-object Trails : Module(name = "Trails", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "Trails", category = ModuleCategory.RENDER)
+object Trails : Module() {
+
     private val typeValue = ListValue("Type", arrayOf("Line", "Rect",  "heart", "lava", "smoke", "cloud", "flame", "slime", "water", "firework"), "Lava")
     private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() && colorAlphaValue.displayable }
     private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() && colorAlphaValue.displayable }

@@ -2,13 +2,19 @@ package net.ccbluex.liquidbounce.file.config.sections
 
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
+import net.ccbluex.liquidbounce.features.module.EnumTriggerType
 import net.ccbluex.liquidbounce.file.config.ConfigSection
 
 class ModulesSection : ConfigSection("modules") {
     override fun load(json: JsonObject) {
         // set them to default setting
         FDPClient.moduleManager.modules.forEach {
+            val moduleInfo = it.moduleInfo
+            it.state = moduleInfo.defaultOn
+            it.keyBind = moduleInfo.keyBind
+            it.array = moduleInfo.array
+            it.autoDisable = moduleInfo.autoDisable
             it.values.forEach { value ->
                 value.setDefault()
             }
@@ -31,11 +37,11 @@ class ModulesSection : ConfigSection("modules") {
             }
 
             if (data.has("trigger")) {
-                module.triggerType =  Module.EnumTriggerType.valueOf(data.get("trigger").asString)
+                module.triggerType = EnumTriggerType.valueOf(data.get("trigger").asString)
             }
 
             if (data.has("autodisable")) {
-                module.autoDisable = Module.EnumAutoDisableType.valueOf(data.get("autodisable").asString)
+                module.autoDisable = EnumAutoDisableType.valueOf(data.get("autodisable").asString)
             }
 
             val values = data.getAsJsonObject("values")
@@ -53,7 +59,7 @@ class ModulesSection : ConfigSection("modules") {
         FDPClient.moduleManager.modules.forEach {
             val moduleJson = JsonObject()
 
-            if (it.canEnable || it.triggerType !=  Module.EnumTriggerType.PRESS) {
+            if (it.canEnable || it.triggerType != EnumTriggerType.PRESS) {
                 moduleJson.addProperty("state", it.state)
             }
 

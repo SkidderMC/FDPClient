@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -21,7 +22,9 @@ import net.minecraft.util.BlockPos
 import java.awt.Color
 import kotlin.math.abs
 
-object PrevFallPos : Module(name = "PrevFallPos", category = ModuleCategory.PLAYER, defaultOn = false) {
+@ModuleInfo(name = "PrevFallPos", category = ModuleCategory.PLAYER)
+object PrevFallPos : Module() {
+
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
     private val outlineWidthValue = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
     private val fallDistValue = FloatValue("FallDist", 1.15F, 0F, 5F)

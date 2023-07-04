@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.render.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -26,7 +27,8 @@ import java.util.concurrent.LinkedBlockingQueue
 import org.lwjgl.opengl.GL11
 import java.util.*
 
-object Blink : Module(name = "Blink", category = ModuleCategory.PLAYER, defaultOn = false) {
+@ModuleInfo(name = "Blink", category = ModuleCategory.PLAYER)
+object Blink : Module() {
     
     private val outgoingValue = BoolValue("OutGoing", true)
     private val inboundValue = BoolValue("Inbound", false)

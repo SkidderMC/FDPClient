@@ -10,11 +10,13 @@ import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 
-object NoWeb : Module(name = "NoWeb", category = ModuleCategory.MOVEMENT, defaultOn = false) {
+@ModuleInfo(name = "NoWeb", category = ModuleCategory.MOVEMENT)
+object NoWeb : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("None", "FastFall", "OldAAC", "LAAC", "Rewinside", "Horizon", "Spartan", "AAC4", "AAC5", "Matrix", "Test", "IntaveTest"), "None")
     private val horizonSpeed = FloatValue("HorizonSpeed", 0.1F, 0.01F, 0.8F)

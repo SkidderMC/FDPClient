@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -25,7 +26,9 @@ import java.awt.Color
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
-class FollowTargetHud : Module(name = "FollowTargetHud", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "FollowTargetHud", category = ModuleCategory.RENDER)
+class FollowTargetHud : Module() {
+
     private val zoomIn = BoolValue("ZoomIn", true)
     private val zoomTicks = IntegerValue("ZoomInTicks", 4, 2, 15).displayable {zoomIn.get()}
     private val modeValue = ListValue("Mode", arrayOf("Juul", "Jello", "Material", "Material2", "Arris", "FDP"), "Juul")

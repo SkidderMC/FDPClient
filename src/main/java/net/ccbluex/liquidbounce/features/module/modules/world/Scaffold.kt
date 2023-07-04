@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
@@ -49,7 +50,8 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.*
 
-class Scaffold : Module(name = "Scaffold", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_V, defaultOn = false) {
+@ModuleInfo(name = "Scaffold", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_V)
+class Scaffold : Module() {
     
     // Block place
     private val placeOptions = BoolValue("Placement Options: ", true)

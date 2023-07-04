@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -24,7 +25,9 @@ import org.lwjgl.util.glu.GLU
 import org.lwjgl.util.glu.Sphere
 import java.awt.Color
 
-object Breadcrumbs : Module(name = "Breadcrumbs", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "Breadcrumbs", category = ModuleCategory.RENDER)
+object Breadcrumbs : Module() {
+
     private val typeValue = ListValue("Type", arrayOf("Line", "Rect", "Sphere", "Rise"), "Line")
     private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() }

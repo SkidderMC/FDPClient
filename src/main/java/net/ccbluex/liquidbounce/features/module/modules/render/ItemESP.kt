@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.Colors
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -27,7 +28,9 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.roundToInt
 
-object ItemESP : Module(name = "ItemESP", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "ItemESP", category = ModuleCategory.RENDER)
+object ItemESP : Module() {
+
     private val entityConvertedPointsMap: MutableMap<EntityItem, DoubleArray> = HashMap()
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Exhibition", "LightBox", "ShaderOutline", "ShaderGlow"), "Box")
     private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }

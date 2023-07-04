@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -22,7 +23,8 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-object Tracers : Module(name = "Tracers", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "Tracers", category = ModuleCategory.RENDER)
+object Tracers : Module() {
 
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
     private val thicknessValue = FloatValue("Thickness", 2F, 1F, 5F)

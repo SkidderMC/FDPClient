@@ -10,13 +10,16 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.server.S03PacketTimeUpdate
 import net.minecraft.network.play.server.S2BPacketChangeGameState
 
-object Ambience : Module(name = "Ambience", category = ModuleCategory.WORLD, defaultOn = false) {
+@ModuleInfo(name = "Ambience", category = ModuleCategory.WORLD)
+object Ambience : Module() {
+
     private val timeModeValue = ListValue("TimeMode", arrayOf("None", "Normal", "Custom"), "Normal")
     private val weatherModeValue = ListValue("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
     private val customWorldTimeValue = IntegerValue("CustomTime", 1, 0, 24).displayable { timeModeValue.equals("Custom") }

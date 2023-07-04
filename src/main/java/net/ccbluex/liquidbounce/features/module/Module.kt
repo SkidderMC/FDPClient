@@ -24,49 +24,41 @@ import net.ccbluex.liquidbounce.features.value.Value
 import org.lwjgl.input.Keyboard
 import java.util.ArrayList
 
-open class Module @JvmOverloads constructor(
-    var name: String,
-    var description: String = "",
-    var category: ModuleCategory,
-    keyBind: Int = Keyboard.CHAR_NONE,
-    array: Boolean = true,
-    val canEnable: Boolean = true,
-    var autoDisable: EnumAutoDisableType = EnumAutoDisableType.NONE,
-    val moduleCommand: Boolean = true,
-    var defaultOn: Boolean,
-    val forceNoSound: Boolean = false,
-    var triggerType: EnumTriggerType = EnumTriggerType.TOGGLE
-) : MinecraftInstance(), Listenable, Annotation {
-
-    var keyBind = keyBind
-        set(new) {
-            field = new
-
-        if (!FDPClient.isStarting) {
-            FDPClient.configManager.smartSave()
-        }
-    }
-    var array = array
-        set(new) {
-            field = new
+open class Module : MinecraftInstance(), Listenable {
+    // Module information
+    val translate = Translate(0F,0F)
+    val tab = Translate(0f , 0f)
+    var expanded: Boolean = false
+    val animation: AnimationHelper
+    var name: String
+    private var suffix: String? = null
+    private val properties: List<Value<*>> = ArrayList<Value<*>>()
+    private var toggled = false
+    var localizedName = ""
+        get() = field.ifEmpty { name }
+    var description: String
+    var category: ModuleCategory
+    var keyBind = Keyboard.CHAR_NONE
+        set(keyBind) {
+            field = keyBind
 
             if (!FDPClient.isStarting) {
                 FDPClient.configManager.smartSave()
             }
         }
+    var array = true
+        set(array) {
+            field = array
 
-    val translate = Translate(0F,0F)
-    val animation: AnimationHelper
-        get() {
-            TODO()
+            if (!FDPClient.isStarting) {
+                FDPClient.configManager.smartSave()
+            }
         }
-    val tab = Translate(0f , 0f)
-    var expanded: Boolean = false
-    private var suffix: String? = null
-    private val properties: List<Value<*>> = ArrayList<Value<*>>()
-    var toggled = false
-    var localizedName = ""
-        get() = field.ifEmpty { name }
+    val canEnable: Boolean
+    var autoDisable: EnumAutoDisableType
+    var triggerType: EnumTriggerType
+    val moduleCommand: Boolean
+    val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
     var splicedName = ""
         get() {
             if (field.isEmpty()) {
@@ -83,6 +75,19 @@ open class Module @JvmOverloads constructor(
             }
             return field
         }
+
+    init {
+        name = moduleInfo.name
+        animation = AnimationHelper(this)
+        description = moduleInfo.description.ifEmpty { LanguageManager.getAndFormat("module.$name.description") }
+        category = moduleInfo.category
+        keyBind = moduleInfo.keyBind
+        array = moduleInfo.array
+        canEnable = moduleInfo.canEnable
+        autoDisable = moduleInfo.autoDisable
+        moduleCommand = moduleInfo.moduleCommand
+        triggerType = moduleInfo.triggerType
+    }
 
     open fun onLoad() {
         localizedName = if(LanguageManager.getAndFormat("module.$name.name") == "module.$name.name") {
@@ -129,7 +134,7 @@ open class Module @JvmOverloads constructor(
 
     // HUD
     val hue = Math.random().toFloat()
-    var slideAnimation: Animation? = null
+    private var slideAnimation: Animation? = null
     var slide = 0f
         get() {
             if (slideAnimation != null) {
@@ -252,17 +257,5 @@ open class Module @JvmOverloads constructor(
      * Events should be handled when module is enabled
      */
     override fun handleEvents() = state
-
-    enum class EnumAutoDisableType {
-        NONE,
-        RESPAWN,
-        FLAG,
-        GAME_END
-    }
-
-    enum class EnumTriggerType {
-        TOGGLE,
-        PRESS
-    }
 
 }

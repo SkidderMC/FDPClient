@@ -2,11 +2,11 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 
 class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
-    private val modes = Module.EnumAutoDisableType.values().map { it.name.lowercase() }.toTypedArray()
+    private val modes = EnumAutoDisableType.values().map { it.name.lowercase() }.toTypedArray()
 
     override fun execute(args: Array<String>) {
         if (args.size > 2) {
@@ -18,9 +18,9 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
             }
 
             module.autoDisable = try {
-                Module.EnumAutoDisableType.valueOf(args[2].uppercase())
+                EnumAutoDisableType.valueOf(args[2].uppercase())
             } catch (e: IllegalArgumentException) {
-                Module.EnumAutoDisableType.NONE
+                EnumAutoDisableType.NONE
             }
             playEdit()
 

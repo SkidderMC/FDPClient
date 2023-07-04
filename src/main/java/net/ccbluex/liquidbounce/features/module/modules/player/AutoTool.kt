@@ -11,9 +11,11 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.util.BlockPos
 
-object AutoTool : Module(name = "AutoTool", category = ModuleCategory.PLAYER, defaultOn = false) {
+@ModuleInfo(name = "AutoTool", category = ModuleCategory.PLAYER)
+object AutoTool : Module() {
 
     private val noCombat = BoolValue("NoCombat", true)
 

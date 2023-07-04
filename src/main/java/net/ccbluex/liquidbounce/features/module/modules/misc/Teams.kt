@@ -7,12 +7,14 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemArmor
 
-object Teams : Module(name = "Teams", category = ModuleCategory.MISC, defaultOn = false) {
+@ModuleInfo(name = "Teams", category = ModuleCategory.MISC)
+class Teams : Module() {
 
     private val scoreboardValue = BoolValue("ScoreboardTeam", true)
     private val colorValue = BoolValue("Color", true)

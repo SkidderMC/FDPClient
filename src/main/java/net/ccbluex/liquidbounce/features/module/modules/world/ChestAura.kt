@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
@@ -26,8 +27,8 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import kotlin.concurrent.schedule
 
-object ChestAura : Module(name = "ChestAura", category = ModuleCategory.WORLD, defaultOn = false) {
-
+@ModuleInfo(name = "ChestAura", category = ModuleCategory.WORLD)
+object ChestAura : Module() {
     private val rangeValue = FloatValue("Range", 5F, 1F, 6F)
     private val delayValue = IntegerValue("Delay", 100, 50, 500)
     private val throughWallsValue = BoolValue("ThroughWalls", true)

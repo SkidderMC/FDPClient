@@ -31,18 +31,18 @@ class VulcanFastFly : FlyMode("VulcanFast") {
         vticks = 0
         doCancel = false
         if(verticalValue.get()) {
-            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §cVertical Flying sometimes flag!")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §cVertical Flying sometimes flag!")
         }
         if(mc.thePlayer.posY % 1 != 0.0) {
             fly.state = false
-            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §cPlease stand on a solid block to fly!")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §cPlease stand on a solid block to fly!")
             isSuccess = true
             return
         }
         stage = FlyStage.FLYING
         isSuccess = false
-        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §aPlease press Sneak before you land on ground!")
-        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §7Tips: DO NOT Use killaura when you're flying!")
+        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §aPlease press Sneak before you land on ground!")
+        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §7Tips: DO NOT Use killaura when you're flying!")
         startX = mc.thePlayer.posX
         startY = mc.thePlayer.posY
         startZ = mc.thePlayer.posZ
@@ -52,8 +52,8 @@ class VulcanFastFly : FlyMode("VulcanFast") {
         mc.timer.timerSpeed = 1.0f
         if (!isSuccess) {
             mc.thePlayer.setPosition(startX, startY, startZ)
-            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §cFly attempt Failed...")
-            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Fly§8] §cIf it keeps happen, Don't use it again in CURRENT gameplay")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §cFly attempt Failed...")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §cIf it keeps happen, Don't use it again in CURRENT gameplay")
         }
     }
 
@@ -104,9 +104,9 @@ class VulcanFastFly : FlyMode("VulcanFast") {
                         mc.thePlayer.setPosition(fixedX, fixedY, fixedZ)
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ, true))
                         doCancel = true
-                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aWaiting for landing...")
+                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Flight§8] §aWaiting for landing...")
                     } else {
-                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
+                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Flight§8] §cYou can only land on a solid block!")
                     }
                 }
             }
@@ -114,7 +114,7 @@ class VulcanFastFly : FlyMode("VulcanFast") {
                 vticks++
                 doCancel = false
                 if(vticks == 60) {
-                    ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
+                    ClientUtils.displayChatMessage("§8[§c§lVulcan-Flight§8] §cSeems took a long time! Please turn off the Flight manually")
                 }
                 mc.timer.timerSpeed = 1f
                 MovementUtils.resetMotion(true)

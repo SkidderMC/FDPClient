@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
@@ -33,7 +34,8 @@ import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
 import java.text.DecimalFormat
 
-object ESP : Module(name = "ESP", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "ESP", category = ModuleCategory.RENDER)
+object ESP : Module() {
     val modeValue = ListValue(
         "Mode",
         arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "CSGO", "CSGO-Old", "Outline", "ShaderOutline", "ShaderGlow", "Jello"),

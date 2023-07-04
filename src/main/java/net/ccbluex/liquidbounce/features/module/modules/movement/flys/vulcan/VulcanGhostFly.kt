@@ -34,8 +34,8 @@ class VulcanGhostFly : FlyMode("VulcanGhost") {
         flags = 0
         mc.thePlayer.setPosition(mc.thePlayer.posX, (mc.thePlayer.posY * 2).roundToInt().toDouble() / 2, mc.thePlayer.posZ)
         stage = FlyStage.WAITING
-        ClientUtils.displayChatMessage("§8[§c§lVulcan-Ghost-Fly§8] §aPlease press Sneak before you land on ground!")
-        ClientUtils.displayChatMessage("§8[§c§lVulcan-Ghost-Fly§8] §aYou can go Up/Down by pressing Jump/Sneak")
+        ClientUtils.displayChatMessage("§8[§c§lVulcan-Ghost-Flight§8] §aPlease press Sneak before you land on ground!")
+        ClientUtils.displayChatMessage("§8[§c§lVulcan-Ghost-Flight§8] §aYou can go Up/Down by pressing Jump/Sneak")
     }
     
     override fun onDisable() {
@@ -81,7 +81,7 @@ class VulcanGhostFly : FlyMode("VulcanGhost") {
                     groundY = mc.thePlayer.posY - 1.0
                     groundX = mc.thePlayer.posX
                     groundZ = mc.thePlayer.posZ
-                    ClientUtils.displayChatMessage("§8[§c§lVulcan-Ghost-Fly§8] §aWaiting to land...")
+                    ClientUtils.displayChatMessage("§8[§c§lVulcan-Ghost-Flight§8] §aWaiting to land...")
                 }
                 mc.thePlayer.onGround = true
                 mc.thePlayer.motionY = 0.0

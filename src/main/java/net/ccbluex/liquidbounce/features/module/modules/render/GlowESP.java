@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.value.IntegerValue;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.files.animations.Animation;
@@ -40,13 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL20.glUniform1;
+@ModuleInfo(name = "GlowESP", category = ModuleCategory.RENDER)
 public class GlowESP extends Module {
-
-    private static ModuleCategory category = ModuleCategory.RENDER;
-
-    public GlowESP() {
-        super("GlowESP", category = ModuleCategory.RENDER, false);
-    }
 
     public final FloatValue radius = new FloatValue("Radius", 2, 1F, 30F);
     public final FloatValue exposure = new FloatValue("Exposure", 2.2F, 1F, 3.5F);

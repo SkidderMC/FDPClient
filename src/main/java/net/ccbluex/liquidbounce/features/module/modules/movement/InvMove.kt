@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -24,7 +25,8 @@ import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 
-object InventoryMove : Module(name = "InventoryMove", category = ModuleCategory.MOVEMENT, defaultOn = false) {
+@ModuleInfo(name = "InvMove", category = ModuleCategory.MOVEMENT)
+object InvMove : Module() {
 
     private val noDetectableValue = BoolValue("NoDetectable", false)
     private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "PacketInv", "None"), "None")

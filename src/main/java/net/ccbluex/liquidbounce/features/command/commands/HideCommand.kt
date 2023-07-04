@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
 class HideCommand : Command("hide", emptyArray()) {
@@ -36,7 +36,7 @@ class HideCommand : Command("hide", emptyArray()) {
 
                 args[1].equals("reset", true) -> {
                     for (module in FDPClient.moduleManager.modules)
-                        module.array = module::class.java.getAnnotation(Module::class.java).array
+                        module.array = module::class.java.getAnnotation(ModuleInfo::class.java).array
 
                     alert("Reset hidden modules.")
                     return
@@ -72,9 +72,9 @@ class HideCommand : Command("hide", emptyArray()) {
 
         return when (args.size) {
             1 -> FDPClient.moduleManager.modules
-                    .map { it.name }
-                    .filter { it.startsWith(moduleName, true) }
-                    .toList()
+                .map { it.name }
+                .filter { it.startsWith(moduleName, true) }
+                .toList()
             else -> emptyList()
         }
     }

@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.PathUtils
@@ -34,7 +35,8 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.concurrent.thread
 
-object InfiniteAura : Module(name = "InfiniteAura", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "InfiniteAura", category = ModuleCategory.COMBAT)
+object InfiniteAura : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Aura", "Click"), "Aura")
     private val targetsValue = IntegerValue("Targets", 3, 1, 10).displayable { modeValue.equals("Aura") }

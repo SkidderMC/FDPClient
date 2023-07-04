@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
@@ -20,7 +21,8 @@ import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.player.EntityPlayer
 
-object KeepRange : Module("KeepRange", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "KeepRange", category = ModuleCategory.COMBAT)
+object KeepRange : Module() {
 
     private val mode = ListValue("Mode", arrayOf("ReleaseKey", "CancelMove"), "ReleaseKey")
     private val minDistance = FloatValue("MinDistance", 2.3F, 0F, 4F)

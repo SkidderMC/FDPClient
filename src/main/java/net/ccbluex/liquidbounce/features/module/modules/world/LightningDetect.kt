@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -17,7 +18,9 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 import java.text.DecimalFormat
 
-object LightningDetect : Module(name = "LightningDetect", category = ModuleCategory.WORLD, array = false, defaultOn = true) {
+@ModuleInfo(name = "LightningDetect", category = ModuleCategory.WORLD, array = false, defaultOn = true)
+object LightningDetect : Module() {
+
     private val debugValue = BoolValue("debug", false)
 
     private val decimalFormat = DecimalFormat("0.0")

@@ -7,16 +7,12 @@ package net.ccbluex.liquidbounce.features.module.modules.render;
 
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.Display;
 
+@ModuleInfo(name = "PerspectiveMod", category = ModuleCategory.RENDER)
 public final class PerspectiveMod extends Module {
-
-    private static ModuleCategory category = ModuleCategory.RENDER;
-
-    public PerspectiveMod() {
-        super("PerspectiveMod", category = ModuleCategory.RENDER, false);
-    }
 
     private static final Minecraft mc = Minecraft.getMinecraft();
     public static boolean perspectiveToggled = false;

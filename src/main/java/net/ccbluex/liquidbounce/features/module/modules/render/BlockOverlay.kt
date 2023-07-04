@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.canBeClicked
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
@@ -24,7 +25,9 @@ import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-object BlockOverlay : Module(name = "BlockOverlay", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "BlockOverlay", category = ModuleCategory.RENDER)
+object BlockOverlay : Module() {
+
     private val colorRedValue = IntegerValue("Red", 68, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorGreenValue = IntegerValue("Green", 117, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { !colorRainbowValue.get() }

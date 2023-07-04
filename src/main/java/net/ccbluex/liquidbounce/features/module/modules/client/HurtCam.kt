@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -17,7 +18,9 @@ import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import java.awt.Color
-object HurtCam : Module("HurtCam", category = ModuleCategory.CLIENT, canEnable = false, defaultOn = false) {
+
+@ModuleInfo(name = "HurtCam", category = ModuleCategory.CLIENT, canEnable = false)
+object HurtCam : Module() {
     val modeValue = ListValue("Mode", arrayOf("Vanilla", "Cancel", "FPS"), "Vanilla")
     private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { modeValue.equals("FPS") }
     private val colorGreenValue = IntegerValue("G", 0, 0, 255).displayable { modeValue.equals("FPS") }

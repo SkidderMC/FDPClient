@@ -7,13 +7,16 @@ package net.ccbluex.liquidbounce.features.module.modules.world
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 
-object Timer : Module("Timer", category = ModuleCategory.WORLD, autoDisable = EnumAutoDisableType.RESPAWN, defaultOn = false) {
+@ModuleInfo(name = "Timer", category = ModuleCategory.WORLD, autoDisable = EnumAutoDisableType.RESPAWN)
+object Timer : Module() {
 
     private val speedValue = FloatValue("Speed", 2F, 0.1F, 10F)
     private val onMoveValue = BoolValue("OnMove", true)

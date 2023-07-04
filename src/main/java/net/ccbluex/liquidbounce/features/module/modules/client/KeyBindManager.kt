@@ -8,9 +8,11 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import org.lwjgl.input.Keyboard
 
-object KeyBindManager : Module("KeyBindManager", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RMENU, canEnable = false, defaultOn = false) {
+@ModuleInfo(name = "KeyBindManager", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RMENU, canEnable = false)
+object KeyBindManager : Module() {
     override fun onEnable() {
         mc.displayGuiScreen(FDPClient.keyBindManager)
     }

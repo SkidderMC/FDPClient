@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
@@ -33,7 +34,8 @@ import net.minecraft.util.Vec3
 import java.awt.Color
 import kotlin.math.roundToInt
 
-class Nuker : Module(name = "Nuker", category = ModuleCategory.WORLD, defaultOn = false) {
+@ModuleInfo(name = "Nuker", category = ModuleCategory.WORLD)
+class Nuker : Module() {
 
     private val radiusValue = FloatValue("Radius", 5.2F, 1F, 6F)
     private val throughWallsValue = BoolValue("ThroughWalls", false)

@@ -10,12 +10,14 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.input.Mouse
 
-object MidClick : Module(name = "MidClick", category = ModuleCategory.PLAYER, defaultOn = false) {
+@ModuleInfo(name = "MidClick", category = ModuleCategory.PLAYER)
+object MidClick : Module() {
 
     private var wasDown = false
 

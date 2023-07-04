@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
@@ -35,12 +36,12 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.awt.Color
 
-object Fucker : Module(name = "Fucker", category = ModuleCategory.WORLD, defaultOn = false) {
+@ModuleInfo(name = "Fucker", category = ModuleCategory.WORLD)
+object Fucker : Module() {
 
     /**
      * SETTINGS
      */
-
     private val blockValue = BlockValue("Block", 26)
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val throughWallsValue = ListValue("ThroughWalls", arrayOf("None", "Raycast", "Around"), "None")

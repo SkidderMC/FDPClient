@@ -8,11 +8,13 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.minecraft.entity.EntityLivingBase
 
-object TickBase : Module(name = "TickBase", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "TickBase", category = ModuleCategory.COMBAT)
+object TickBase : Module() {
 
     private var ticks = 0
 

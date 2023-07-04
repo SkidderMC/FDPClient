@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.TextValue
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
@@ -19,7 +20,9 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.network.play.server.S02PacketChat
 
-object AutoGG : Module(name = "AutoGG", category = ModuleCategory.MISC, defaultOn = false) {
+@ModuleInfo(name = "AutoGG", category = ModuleCategory.MISC)
+object AutoGG : Module() {
+
     private val winCheckValue = TextValue("WinCheck", "Winner")
     private val delayValue = IntegerValue("Delay", 1000, 1000, 5000)
     private val ggMessageValue = TextValue("GGMessage", "GG!")

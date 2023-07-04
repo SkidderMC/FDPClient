@@ -9,8 +9,10 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 
-object NoClickDelay : Module(name = "NoClickDelay", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "NoClickDelay", category = ModuleCategory.COMBAT)
+object NoClickDelay : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {

@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.EntityUtils
@@ -30,7 +31,9 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
 import kotlin.math.*
 
-object HackerDetector : Module(name = "HackerDetector", category = ModuleCategory.PLAYER, defaultOn = false) {
+@ModuleInfo(name = "HackerDetector", category = ModuleCategory.PLAYER)
+object HackerDetector : Module() {
+
     private val combatCheckValue = BoolValue("Combat", true)
     private val movementCheckValue = BoolValue("Movement", true)
     private val debugModeValue = BoolValue("Debug", false)

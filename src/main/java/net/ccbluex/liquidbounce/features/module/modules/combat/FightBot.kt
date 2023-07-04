@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.features.module.modules.movement.Step
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -34,7 +35,9 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-object FightBot : Module(name = "FightBot", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "FightBot", category = ModuleCategory.COMBAT)
+object FightBot : Module() {
+
     private val pathRenderValue = BoolValue("PathRender", true)
     private val jumpResetValue = BoolValue("JumpReset", true)
     private val autoJumpValue = BoolValue("AutoJump", false)

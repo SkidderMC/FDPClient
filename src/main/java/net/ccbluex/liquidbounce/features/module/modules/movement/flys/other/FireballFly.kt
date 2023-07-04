@@ -32,7 +32,7 @@ class FireballFly : FlyMode("Fireball") {
 
     override fun onEnable() {
         if (warn.get())
-            ClientUtils.displayChatMessage("§8[§c§lFireball-Fly§8] §aGetting exlposion from a fireball or tnt is required to bypass.")
+            ClientUtils.displayChatMessage("§8[§c§lFireball-Flight§8] §aGetting exlposion from a fireball or tnt is required to bypass.")
         velocitypacket = false
         tick = 0
     }

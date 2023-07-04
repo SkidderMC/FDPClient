@@ -2,11 +2,11 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.EnumTriggerType
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 
 class ModuleTriggerCommand : Command("moduletrigger", arrayOf("trigger")) {
-    private val modes = Module.EnumTriggerType.values().map { it.name.lowercase() }.toTypedArray()
+    private val modes = EnumTriggerType.values().map { it.name.lowercase() }.toTypedArray()
 
     override fun execute(args: Array<String>) {
         if (args.size > 2) {
@@ -18,9 +18,9 @@ class ModuleTriggerCommand : Command("moduletrigger", arrayOf("trigger")) {
             }
 
             module.triggerType = try {
-                Module.EnumTriggerType.valueOf(args[2].uppercase())
+                EnumTriggerType.valueOf(args[2].uppercase())
             } catch (e: IllegalArgumentException) {
-                Module.EnumTriggerType.TOGGLE
+                EnumTriggerType.TOGGLE
             }
             playEdit()
 

@@ -81,7 +81,7 @@ public class TenacityClickGUI extends GuiScreen {
             initGui();
         }
         //   if (Main.walk.isEnabled()) {
-        //        InventoryMove.updateStates();
+        //        InvMove.updateStates();
         //     }
 
         //If the closing animation finished then change the gui screen to null

@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.extensions.getFullName
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
@@ -23,7 +24,8 @@ import net.minecraft.network.play.server.*
 import net.minecraft.world.WorldSettings
 import java.util.*
 
-object AntiBot : Module(name = "AntiBot", category = ModuleCategory.MISC, defaultOn = false) {
+@ModuleInfo(name = "AntiBot", category = ModuleCategory.MISC)
+object AntiBot : Module() {
 
     private val tabValue = BoolValue("Tab", true)
     private val tabModeValue = ListValue("TabMode", arrayOf("Equals", "Contains"), "Contains").displayable { tabValue.get() }

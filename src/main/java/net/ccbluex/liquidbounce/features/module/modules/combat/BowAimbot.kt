@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -21,7 +22,8 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemBow
 import java.awt.Color
 
-object BowAimbot : Module(name = "BowAimbot", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "BowAimbot", category = ModuleCategory.COMBAT)
+object BowAimbot : Module() {
 
     private val silentValue = BoolValue("Silent", true)
     private val predictValue = BoolValue("Predict", true)

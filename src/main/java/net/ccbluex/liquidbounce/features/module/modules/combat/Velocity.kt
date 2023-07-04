@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -21,7 +22,9 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-object Velocity : Module(name = "Velocity", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "Velocity", category = ModuleCategory.COMBAT)
+object Velocity : Module() {
+
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.velocitys", VelocityMode::class.java)
         .map { it.newInstance() as VelocityMode }
         .sortedBy { it.modeName }

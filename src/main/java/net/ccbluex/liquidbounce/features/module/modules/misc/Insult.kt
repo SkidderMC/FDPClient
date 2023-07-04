@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.event.EntityKilledEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.FileUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -21,7 +22,8 @@ import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.entity.player.EntityPlayer
 import java.io.File
 
-object Insult : Module(name = "Insult", category = ModuleCategory.MISC, defaultOn = false) {
+@ModuleInfo(name = "Insult", category = ModuleCategory.MISC)
+object Insult : Module() {
 
     val modeValue = ListValue(
         "Mode", arrayOf(

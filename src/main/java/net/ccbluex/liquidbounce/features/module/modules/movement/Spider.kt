@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
@@ -20,7 +21,8 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
-object Spider : Module(name = "Spider", category = ModuleCategory.MOVEMENT, defaultOn = false) {
+@ModuleInfo(name = "Spider", category = ModuleCategory.MOVEMENT)
+object Spider : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan"), "Collide")
     private val motionValue = FloatValue("Motion", 0.42F, 0.1F, 1F)

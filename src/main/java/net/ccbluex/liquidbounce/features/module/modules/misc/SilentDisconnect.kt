@@ -7,5 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 
-object SilentDisconnect : Module(name = "SilentDisconnect", category = ModuleCategory.MISC, defaultOn = false)
+@ModuleInfo(name = "SilentDisconnect", category = ModuleCategory.MISC)
+object SilentDisconnect : Module()

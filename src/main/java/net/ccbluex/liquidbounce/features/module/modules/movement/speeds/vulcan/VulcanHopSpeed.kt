@@ -28,7 +28,7 @@ class VulcanHopSpeed : SpeedMode("VulcanHop") {
             mc.gameSettings.keyBindJump.pressed = false
             mc.thePlayer.jump()
             if (!mc.thePlayer.isAirBorne) {
-                return //Prevent flag with Fly
+                return //Prevent flag with Flight
             }
             mc.timer.timerSpeed = 1.25f
             wasTimer = true

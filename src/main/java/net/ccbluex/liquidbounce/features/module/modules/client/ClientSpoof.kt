@@ -7,11 +7,14 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.button.*
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.client.gui.GuiButton
-object ClientSpoof : Module("ClientSpoof", category = ModuleCategory.CLIENT, defaultOn = true) {
+
+@ModuleInfo(name = "ClientSpoof", category = ModuleCategory.CLIENT, defaultOn = true)
+object ClientSpoof : Module() {
 
     val modeValue = ListValue("Payloads", arrayOf("Vanilla", "Forge", "Lunar", "LabyMod", "CheatBreaker", "PvPLounge"), "LabyMod")
     private val buttonValue = ListValue("Button", arrayOf("Better", "RGBRounded", "Wolfram", "Rounded", "Hyperium", "RGB", "Badlion", "Flat", "FLine", "Rise", "Vanilla"), "Hyperium")

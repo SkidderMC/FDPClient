@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -17,7 +18,8 @@ import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.potion.Potion
 
-object Regen : Module(name = "Regen", category = ModuleCategory.PLAYER, defaultOn = false) {
+@ModuleInfo(name = "Regen", category = ModuleCategory.PLAYER)
+object Regen : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan", "AAC4NoFire"), "Vanilla")
     private val healthValue = IntegerValue("Health", 18, 0, 20)

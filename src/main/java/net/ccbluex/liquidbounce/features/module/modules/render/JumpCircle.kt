@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
@@ -22,7 +23,8 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
-object JumpCircle : Module(name = "JumpCircle", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "JumpCircle", category = ModuleCategory.RENDER)
+object JumpCircle : Module() {
 
     val disappearTime = IntegerValue("Time", 1000, 1000,3000)
     val radius = FloatValue("Radius", 2f, 1f,5f)

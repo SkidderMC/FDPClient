@@ -11,13 +11,15 @@ import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-object Strafe : Module(name = "Strafe", category = ModuleCategory.MOVEMENT, defaultOn = false) {
+@ModuleInfo(name = "Strafe", category = ModuleCategory.MOVEMENT)
+object Strafe : Module() {
 
     private var strengthValue= FloatValue("Strength", 0.5F, 0F, 1F)
     private var noMoveStopValue = BoolValue("NoMoveStop", false)

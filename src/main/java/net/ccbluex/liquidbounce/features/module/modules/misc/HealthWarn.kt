@@ -10,11 +10,13 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 
-object HealthWarn : Module(name = "HealthWarn", category = ModuleCategory.MISC, defaultOn = true) {
+@ModuleInfo(name = "HealthWarn", category = ModuleCategory.MISC, array = false, defaultOn = true)
+object HealthWarn : Module() {
 
     private val healthValue = IntegerValue("Health", 7, 1, 20)
 

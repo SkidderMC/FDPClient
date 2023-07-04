@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -21,7 +22,8 @@ import net.minecraft.util.*
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-object Projectiles : Module(name = "Projectiles", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "Projectiles", category = ModuleCategory.RENDER)
+object Projectiles : Module() {
 
     private val dynamicBowPower = BoolValue("DynamicBowPower", true)
 

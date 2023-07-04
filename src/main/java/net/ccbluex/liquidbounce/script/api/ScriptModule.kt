@@ -9,11 +9,13 @@ import jdk.nashorn.api.scripting.JSObject
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.features.value.Value
 
 @Suppress("unused")
-class ScriptModule(private val moduleObject: JSObject) : Module(name = "ScriptModule", category = ModuleCategory.MISC, defaultOn = false) {
+@ModuleInfo(name = "ScriptModule", category = ModuleCategory.MISC)
+class ScriptModule(private val moduleObject: JSObject) : Module() {
 
     private val events = HashMap<String, JSObject>()
     private val _values = LinkedHashMap<String, Value<*>>()

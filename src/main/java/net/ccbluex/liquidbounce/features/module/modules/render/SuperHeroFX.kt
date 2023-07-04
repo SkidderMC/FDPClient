@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -21,7 +22,8 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.abs
 
-object SuperHeroFX : Module(name = "SuperHeroFX", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "SuperheroFX", category = ModuleCategory.RENDER)
+object SuperheroFX : Module() {
 
     private val textParticles = mutableListOf<FXParticle>()
     private val generateTimer = MSTimer()

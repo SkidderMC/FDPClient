@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiDesync;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
-import net.ccbluex.liquidbounce.features.module.modules.movement.InventoryMove;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Flight;
+import net.ccbluex.liquidbounce.features.module.modules.movement.InvMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
@@ -180,7 +180,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 double yawDiff = yaw - lastReportedYaw;
                 double pitchDiff = pitch - lastReportedPitch;
                 
-                final Fly fly = FDPClient.moduleManager.getModule(Fly.class);
+                final Flight fly = FDPClient.moduleManager.getModule(Flight.class);
                 final Criticals criticals = FDPClient.moduleManager.getModule(Criticals.class);
                 final AntiDesync antiDesync = FDPClient.moduleManager.getModule(AntiDesync.class);
                 boolean moved = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 9.0E-4D || this.positionUpdateTicks >= 20 || (fly.getState() && fly.getAntiDesync()) || (criticals.getState() && criticals.getAntiDesync()) || (antiDesync.getState() && xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 0.0D);
@@ -264,7 +264,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         final Sprint sprint = FDPClient.moduleManager.getModule(Sprint.class);
         final NoSlow noSlow = FDPClient.moduleManager.getModule(NoSlow.class);
         final KillAura killAura = FDPClient.moduleManager.getModule(KillAura.class);
-        final InventoryMove inventoryMove = FDPClient.moduleManager.getModule(InventoryMove.class);
+        final InvMove inventoryMove = FDPClient.moduleManager.getModule(InvMove.class);
         final Scaffold scaffold = FDPClient.moduleManager.getModule(Scaffold.class);
         final StrafeFix strafeFix = FDPClient.moduleManager.getModule(StrafeFix.class);
         

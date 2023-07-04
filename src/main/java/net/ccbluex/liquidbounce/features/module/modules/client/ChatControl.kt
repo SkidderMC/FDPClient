@@ -7,9 +7,11 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 
-object ChatControl : Module("ChatControl", category = ModuleCategory.CLIENT, defaultOn = true) {
+@ModuleInfo(name = "ChatControl", category = ModuleCategory.CLIENT, defaultOn = true)
+object ChatControl : Module() {
     val chatLimitValue = BoolValue("NoChatLimit", true)
     val chatClearValue = BoolValue("NoChatClear", true)
     val chatCombineValue = BoolValue("ChatCombine", true)

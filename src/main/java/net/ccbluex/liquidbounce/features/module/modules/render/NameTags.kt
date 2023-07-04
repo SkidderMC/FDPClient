@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.features.module.modules.player.HackerDetector
@@ -29,7 +30,9 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.roundToInt
 
-object NameTags : Module(name = "NameTags", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "NameTags", category = ModuleCategory.RENDER)
+object NameTags : Module() {
+
     private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello"), "Liquid")
     private val healthValue = BoolValue("Health", true).displayable { modeValue.equals("Liquid") }
     private val pingValue = BoolValue("Ping", true).displayable { modeValue.equals("Liquid") }

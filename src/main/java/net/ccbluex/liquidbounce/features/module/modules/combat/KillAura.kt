@@ -9,8 +9,9 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
-import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
+import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
@@ -47,7 +48,8 @@ import java.awt.Color
 import java.util.*
 import kotlin.math.*
 
-object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_G, defaultOn = false) {
+@ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_G)
+object KillAura : Module() {
     /**
      * OPTIONS
      */
@@ -1295,7 +1297,7 @@ object KillAura : Module(name = "KillAura", category = ModuleCategory.COMBAT, ke
                 || (blinkCheck.get() && FDPClient.moduleManager[Blink::class.java]!!.state) 
                 || FDPClient.moduleManager[FreeCam::class.java]!!.state 
                 || (noScaffValue.get() && FDPClient.moduleManager[Scaffold::class.java]!!.state)
-                || (noFlyValue.get() && FDPClient.moduleManager[Fly::class.java]!!.state) 
+                || (noFlyValue.get() && FDPClient.moduleManager[Flight::class.java]!!.state)
                 || (noEat.get() && mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk))
                 || (noBlocking.get() && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock)
                 || (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get()))

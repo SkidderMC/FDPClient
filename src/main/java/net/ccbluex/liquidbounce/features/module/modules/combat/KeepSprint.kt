@@ -8,10 +8,13 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 
-object KeepSprint : Module(name = "KeepSprint", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "KeepSprint", category = ModuleCategory.COMBAT)
+object KeepSprint : Module() {
+
     val s = FloatValue("Motion", 0.0F , 0.0F, 1.0F)
     val aws = BoolValue("AlwaysSprint", false)
 }

@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -22,7 +23,8 @@ import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
-object ChinaHat : Module(name = "ChinaHat", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "ChinaHat", category = ModuleCategory.RENDER)
+object ChinaHat : Module() {
 
     private val heightValue = FloatValue("Height", 0.3f, 0.1f, 0.7f)
     private val radiusValue = FloatValue("Radius", 0.7f, 0.3f, 1.5f)

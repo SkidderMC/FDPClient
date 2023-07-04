@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.TickEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
@@ -29,7 +30,8 @@ import net.minecraft.util.AxisAlignedBB
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class KillESP : Module(name = "KillESP", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "KillESP", category = ModuleCategory.RENDER)
+class KillESP : Module() {
 
     val modeValue = ListValue("Mode", arrayOf("Default", "Box", "Jello", "Tracers", "Zavz"), "Zavz")
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "Slowly", "Fade", "Mixer", "Health"), "Custom")

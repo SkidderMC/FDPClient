@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacketNoEvent
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.minecraft.init.Blocks
@@ -17,7 +18,8 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-object SpeedMine : Module(name = "SpeedMine", category = ModuleCategory.WORLD, defaultOn = false) {
+@ModuleInfo(name = "SpeedMine", category = ModuleCategory.WORLD)
+object SpeedMine : Module() {
 
     private val speedValue = FloatValue("Speed", 1.5f, 1f, 3f)
     private var facing: EnumFacing? = null

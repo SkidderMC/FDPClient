@@ -7,12 +7,16 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 
-class XRay : Module(name = "XRay", category = ModuleCategory.RENDER, autoDisable = EnumAutoDisableType.RESPAWN, moduleCommand = false, defaultOn = false) {
+@ModuleInfo(name = "XRay", category = ModuleCategory.RENDER, autoDisable = EnumAutoDisableType.RESPAWN, moduleCommand = false)
+class XRay : Module() {
+
     val xrayBlocks = mutableListOf<Block>(
             Blocks.bed,
             Blocks.coal_ore,

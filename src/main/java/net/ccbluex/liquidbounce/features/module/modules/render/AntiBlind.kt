@@ -11,13 +11,16 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 
-object AntiBlind : Module(name = "AntiBlind", category = ModuleCategory.RENDER, defaultOn = false) {
+@ModuleInfo(name = "AntiBlind", category = ModuleCategory.RENDER)
+object AntiBlind : Module() {
+
     val confusionEffectValue = BoolValue("Confusion", true)
     val pumpkinEffectValue = BoolValue("Pumpkin", true)
     val fireEffectValue = FloatValue("FireAlpha", 0.3f, 0f, 1f)

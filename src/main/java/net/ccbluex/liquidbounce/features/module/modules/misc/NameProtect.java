@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.TextEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.file.configs.FriendsConfig;
 import net.ccbluex.liquidbounce.utils.misc.StringUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -19,12 +20,8 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 
 import java.util.Objects;
 
+@ModuleInfo(name = "NameProtect", category = ModuleCategory.CLIENT)
 public class NameProtect extends Module {
-
-    private static ModuleCategory category = ModuleCategory.MISC;
-    public NameProtect() {
-        super("NameProtect", category = ModuleCategory.MISC, false);
-    }
 
     private final TextValue fakeNameValue = new TextValue("FakeName", "&cProtected User");
     private final TextValue allFakeNameValue = new TextValue("AllPlayersFakeName", "FDP");

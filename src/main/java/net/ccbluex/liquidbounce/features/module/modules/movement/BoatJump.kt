@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
@@ -21,7 +22,9 @@ import net.minecraft.util.Vec3
 import kotlin.math.cos
 import kotlin.math.sin
 
-object BoatJump : Module(name = "BoatJump", category = ModuleCategory.MOVEMENT, defaultOn = false) {
+@ModuleInfo(name = "BoatJump", category = ModuleCategory.MOVEMENT)
+object BoatJump : Module() {
+
     private val modeValue = ListValue("Mode", arrayOf("Boost", "Launch", "Matrix"), "Boost")
     private val hBoostValue = FloatValue("HBoost", 2f, 0f, 6f)
     private val vBoostValue = FloatValue("VBoost", 2f, 0f, 6f)

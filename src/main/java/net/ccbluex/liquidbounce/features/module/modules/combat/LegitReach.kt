@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.BlinkUtils
@@ -29,7 +30,8 @@ import net.minecraft.network.play.INetHandlerPlayClient
 import net.minecraft.world.WorldSettings
 import java.util.concurrent.LinkedBlockingQueue
 
-object LegitReach : Module(name = "LegitReach", category = ModuleCategory.COMBAT, defaultOn = false) {
+@ModuleInfo(name = "LegitReach", category = ModuleCategory.COMBAT)
+object LegitReach : Module() {
 
     var fakePlayer: EntityOtherPlayerMP? = null
     private val aura = BoolValue("Aura", false)

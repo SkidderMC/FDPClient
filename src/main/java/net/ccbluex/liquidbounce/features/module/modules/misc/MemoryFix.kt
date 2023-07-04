@@ -9,8 +9,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 
-object MemoryFix : Module(name = "MemoryFix",  category = ModuleCategory.MISC, defaultOn = false) {
+@ModuleInfo(name = "MemoryFix",  category = ModuleCategory.MISC)
+object MemoryFix : Module() {
     override fun onEnable() {
         Runtime.getRuntime().gc()
     }

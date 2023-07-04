@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.value.ListValue;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
@@ -29,12 +30,8 @@ import net.minecraft.util.EnumFacing;
 
 import java.awt.*;
 
+@ModuleInfo(name = "BowJump", category = ModuleCategory.MOVEMENT)
 public class BowJump extends Module {
-
-    private static ModuleCategory category = ModuleCategory.MOVEMENT;
-    public BowJump() {
-        super("BowJump", category = ModuleCategory.MOVEMENT, false);
-    }
 
     private final BoolValue hypixelBypassValue = new BoolValue("hypixelBypass", true);
     private final ListValue modeValue = new ListValue("BoostMode", new String[] {"Strafe","SpeedInAir"}, "Strafe");

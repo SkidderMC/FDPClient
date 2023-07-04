@@ -7,8 +7,10 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMode
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
@@ -16,7 +18,9 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.minecraft.network.play.server.S19PacketEntityStatus
 
-object Glide : Module(name = "Glide", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG, defaultOn = false) {
+@ModuleInfo(name = "Glide", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
+object Glide : Module() {
+
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.glides", GlideMode::class.java)
         .map { it.newInstance() as GlideMode }
         .sortedBy { it.modeName }

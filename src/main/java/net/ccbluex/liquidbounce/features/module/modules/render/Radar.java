@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.render.Colors;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.StringConversions;
@@ -21,13 +22,8 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 
-public class Radar extends Module  {
-
-    private static ModuleCategory category = ModuleCategory.RENDER;
-
-    public Radar() {
-        super("Radar", category = ModuleCategory.RENDER, false);
-    }
+@ModuleInfo(name = "Radar", category = ModuleCategory.RENDER)
+public class Radar extends Module {
     private boolean dragging;
     float hue;
     public final FloatValue scale = new FloatValue("scale",2.0f, 1.0f, 3.0f);

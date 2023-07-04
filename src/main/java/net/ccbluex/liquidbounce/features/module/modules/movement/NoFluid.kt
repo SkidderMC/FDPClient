@@ -7,9 +7,11 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.BoolValue
 
-object NoFluid : Module(name = "NoFluid",  category = ModuleCategory.MOVEMENT, defaultOn = false) {
+@ModuleInfo(name = "NoFluid",  category = ModuleCategory.MOVEMENT)
+object NoFluid : Module() {
 
     val waterValue = BoolValue("Water", true)
     val lavaValue = BoolValue("Lava", true)
