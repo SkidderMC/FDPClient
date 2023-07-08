@@ -20,14 +20,14 @@ import net.minecraft.item.ItemSword
 import kotlin.random.Random
 import org.lwjgl.input.Mouse
 import net.ccbluex.liquidbounce.script.api.global.Chat
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 
 object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMBAT, defaultOn = false) {
 
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "Drag", "LegitJitter", "LegitButterfly"), "Normal")
     private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable {modeValue.equals("LegitJitter")}
     private val legitButterflyValue = ListValue("LegitButterflyMode", arrayOf("Butterfly1", "Butterfly2"), "Butterfly1").displayable {modeValue.equals("LegitButterfly")}
-    // print("This is print")
-    // System.out.println("This is sys prntln")
+    
 
     // Normal
     private val normalMaxCPSValue: IntegerValue = object : IntegerValue("Normal-MaxCPS", 8, 1, 40) {
@@ -56,7 +56,9 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
     private val jitterValue = BoolValue("Jitter", false)
 
     //Drag
-    
+    private var dragLengthTimer = System.currentTimeMillis()
+    private var dragDelayTimer = System.currentTimeMillis()
+
     private val dragMaxDelayValue: IntegerValue = object: IntegerValue("Drag-MaxPause", 15, 6, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val minDelay = dragMinDelayValue.get()
@@ -93,10 +95,13 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
     }
 
     private var dragClickDelay = 18
-    private var dragLength = 0
-    private var dragDelay = 0
+    private var dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toLong()
+    private var dragDelay = Random.nextInt(dragMinDelayValue.get(), dragMaxDelayValue.get()).toLong()
     private var dragStart = 0;
-    val dragClickPause = 0
+    // val dragClickPause = 0
+    private var click = true
+    private var drag = true
+    
 
     // Gaussian
     private val gaussianCpsValue = IntegerValue("Gaussian-CPS", 5, 1, 40).displayable { modeValue.equals("Gaussian") }
@@ -117,6 +122,12 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
 
     @EventTarget
     fun onRender(event: Render3DEvent) {
+
+        if (!click){
+            mc.gameSettings.keyBindUseItem.pressed = false
+            mc.gameSettings.keyBindAttack.pressed = false
+        }
+
         if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() &&
             System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && (!breakStopValue.get() || mc.playerController.curBlockDamageMP == 0F)) {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
@@ -148,8 +159,7 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
             } else {
                 mc.gameSettings.keyBindUseItem.pressed = false
             }
-        }
-            
+        }     
     }
 
 
@@ -174,9 +184,7 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
         if(modeValue.equals("Gaussian")) {
             gaussianUpdateDelay()
         }
-        // if(modeValue.equals("Drag")) {
-            // dragUpdateDelay()
-        // }
+
     }
 
     private fun gaussianUpdateDelay(): Float {
@@ -185,68 +193,6 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
         return gaussianClickDelay
     }
 
-    // private fun dragUpdateDelay(): Int {
-    //     if (dragLength < 0)
-    //     {
-    //         dragDelay--
-
-    //         if (dragDelay < 0){
-    //             dragDelay = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
-    //             dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
-    //         }
-    //         else if (Random.nextInt(0, 1) < 0.95){
-    //             dragLength--
-    //         }
-
-            
-    //     }
-    //     dragClickDelay = dragDelay
-            
-    //     return dragClickDelay
-        
-
-        // val dragClickPause = Random.nextInt(dragMinPauseValue.get(), dragMaxPauseValue.get()).toInt()
-        // val dragClickLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get())
-        // dragStart = System.currentTimeMillis().toInt()
-        
-        
-        // // Checks if it has been clicking for dragLength and clicks
-        // if (System.currentTimeMillis().toInt() - dragStart < dragClickLength){
-        //     dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
-        // }
-
-        // val pauseStart = System.currentTimeMillis().toInt()
-        // if (pauseStart + dragStart + dragClickPause >= System.currentTimeMillis().toInt()) {
-        //     dragClickDelay = 1000000
-        // }
-        
-        // // reset
-        // dragStart = System.currentTimeMillis().toInt() 
-        // return dragClickDelay
-
-        // if (dragClickDelay <= 0) {
-        //     // Drag clicking is not active, start 
-        //     dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
-        //     dragStart = System.currentTimeMillis().toInt()
-        //     Length = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
-        // }
-    
-        // val currentTime = System.currentTimeMillis().toInt()
-        // val timeElapsed = currentTime - dragStart
-    
-        // if (timeElapsed >= Length) {
-        //     // The duration of dragLength has elapsed, stop the drag clicking
-        //     dragClickDelay = 100000
-        // } else if (timeElapsed >= dragClickPause) {
-
-        //     // Reset the drag click delay
-        //     dragClickDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
-        // }
-    
-        // return dragClickDelay
-    // }
-    
-    
     private fun updateClicks(): Int {
         when (modeValue.get().lowercase()) {
             "normal" -> {
@@ -258,26 +204,26 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
                 cDelay = gaussianClickDelay.toInt()
             }
             "drag" -> {
-                if (dragLength < 0)
-                {
-                    dragDelay--
-
-                    if (dragDelay < 0){
-                        dragDelay = Random.nextInt(dragMinDelayValue.get(), dragMaxDelayValue.get()).toInt()
-                        dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toInt()
-                    }
-                    else if (Random.nextInt(0, 1) < 0.95){
-                        dragLength--
-                    }
-
-                    
+                mc.thePlayer.sendChatMessage("The drag section began executing")
+            
+                val currentTime = System.currentTimeMillis()
+            
+                if (currentTime < dragLengthTimer + dragLength) {
+                    cDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
+                    mc.thePlayer.sendChatMessage("dragging" + cDelay.toString())
+                    click = true
+                } else if (currentTime < dragDelayTimer + dragDelay) {
+                    mc.thePlayer.sendChatMessage("Not dragging")
+                    click = false
+                } else {
+                    mc.thePlayer.sendChatMessage("Reseting Stuff...")
+                    dragLengthTimer = currentTime
+                    dragDelayTimer = currentTime
+                    dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toLong()
+                    dragDelay = Random.nextInt(dragMinDelayValue.get(), dragMaxDelayValue.get()).toLong()
                 }
-                dragClickDelay = dragDelay
-                
-                cDelay = dragClickDelay.toInt()
-                // print(cDelay);
-                // System.out.println(cDelay)
             }
+            
             "legitjitter" -> {
                 when (legitJitterValue.get().lowercase()) {
                     "jitter1" -> {
