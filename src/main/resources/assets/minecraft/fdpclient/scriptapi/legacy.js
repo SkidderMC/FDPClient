@@ -87,7 +87,7 @@ var _AdaptedModule = function (module) {
 
     this.module = module;
 
-    this.moduleManager = Java.type("net.ccbluex.liquidbounce.LiquidBounce").moduleManager;
+    this.moduleManager = Java.type("net.ccbluex.liquidbounce.FDPClient").moduleManager;
 
     this.getName = function () {
         return this.module.getName();
@@ -154,7 +154,7 @@ Object.defineProperty(_AdaptedModule.prototype, "bind", {
 
 var _ModuleManager = function () {
 
-    this.moduleManager = Java.type("net.ccbluex.liquidbounce.LiquidBounce").moduleManager;
+    this.moduleManager = Java.type("net.ccbluex.liquidbounce.FDPClient").moduleManager;
     this.Module = Java.type("net.ccbluex.liquidbounce.features.module.Module");
     this.ArrayList = Java.type("java.util.ArrayList");
 
@@ -239,7 +239,7 @@ var _ModuleManager = function () {
 var _CommandManager = function () {
 
     this.Command = Java.type("net.ccbluex.liquidbounce.features.command.Command");
-    this.commandManager = Java.type("net.ccbluex.liquidbounce.LiquidBounce").commandManager;
+    this.commandManager = Java.type("net.ccbluex.liquidbounce.FDPClient").commandManager;
 
     this.registerCommand = function (scriptCommand) {
         script.registerCommand({
