@@ -101,6 +101,8 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
     // val dragClickPause = 0
     private var click = true
     private var drag = true
+    var isDragging = false
+    var dragStartTime = 0L
     
 
     // Gaussian
@@ -205,22 +207,30 @@ object AutoClicker : Module(name = "AutoClicker", category = ModuleCategory.COMB
             }
             "drag" -> {
                 mc.thePlayer.sendChatMessage("The drag section began executing")
-            
-                val currentTime = System.currentTimeMillis()
-            
-                if (currentTime < dragLengthTimer + dragLength) {
+
+                if (!isDragging) {
+                    // Start the drag action
+                    isDragging = true
+                    dragStartTime = System.currentTimeMillis()
                     cDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
-                    mc.thePlayer.sendChatMessage("dragging" + cDelay.toString())
-                    click = true
-                } else if (currentTime < dragDelayTimer + dragDelay) {
-                    mc.thePlayer.sendChatMessage("Not dragging")
-                    click = false
+                    mc.thePlayer.sendChatMessage("Dragging " + cDelay.toString())
                 } else {
-                    mc.thePlayer.sendChatMessage("Reseting Stuff...")
-                    dragLengthTimer = currentTime
-                    dragDelayTimer = currentTime
-                    dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toLong()
-                    dragDelay = Random.nextInt(dragMinDelayValue.get(), dragMaxDelayValue.get()).toLong()
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime < dragStartTime + dragLength) {
+                        // Continue dragging
+                        click = true
+                    } else if (currentTime < dragStartTime + dragDelay) {
+                        // Not dragging anymore
+                        click = false
+                        mc.thePlayer.sendChatMessage("Not dragging")
+                    } else {
+                        // Reset the drag action
+                        mc.thePlayer.sendChatMessage("Resetting Stuff...")
+                        isDragging = false
+                        dragStartTime = currentTime
+                        dragLength = Random.nextInt(dragMinLengthValue.get(), dragMaxLengthValue.get()).toLong()
+                        dragDelay = Random.nextInt(dragMinDelayValue.get(), dragMaxDelayValue.get()).toLong()
+                    }
                 }
             }
             
