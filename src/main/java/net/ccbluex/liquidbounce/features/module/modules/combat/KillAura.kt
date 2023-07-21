@@ -390,12 +390,6 @@ object KillAura : Module() {
 
         updateHitable()
         val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
-
-        if (autoBlockValue.equals("Range") && event.eventState == EventState.PRE && ( autoBlockPacketValue.equals("Delayed2") || autoBlockPacketValue.equals("Test"))) {
-             if (mc.thePlayer.swingProgressInt == 1) {
-                 startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-            }
-        }
         
         if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("HoldKey") && canBlock) {
             if (inRangeDiscoveredTargets.isEmpty()) {
@@ -463,11 +457,19 @@ object KillAura : Module() {
             stopBlocking()
             return
         }
+        
 
         FDPClient.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
 
         FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(rotationStrafeValue.equals("Silent"), !rotationStrafeValue.equals("Off") && !rotationModeValue.equals("None"))
-                
+
+        val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
+        
+        if (autoBlockValue.equals("Range") && ( autoBlockPacketValue.equals("Delayed2") || autoBlockPacketValue.equals("Test"))) {
+             if (mc.thePlayer.swingProgressInt == 1) {
+                 startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+            }
+        }
 
         if (attackTimingValue.equals("All")) {
             runAttackLoop()
