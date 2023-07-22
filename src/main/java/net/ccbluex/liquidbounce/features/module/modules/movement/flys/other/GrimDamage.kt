@@ -10,7 +10,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 class GrimDamage : FlyMode("GrimDamage") {
     override fun onEnable() {
         if(mc.isSingleplayer) {
-            FDPClient.hud.addNotification(Notification("GrimDamage", "Damage GrimAC Fly (TNT ONLY Is A Test!)", NotifyType.ERROR))
+            FDPClient.hud.addNotification(Notification("GrimDamage", "Damage GrimAC Fly (TNT ONLY Is A Test!!)", NotifyType.ERROR))
             fly.state = false
         }
     }
