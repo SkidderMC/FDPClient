@@ -31,7 +31,7 @@ import kotlin.math.sqrt
 object NoSlow : Module() {
 
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDogBlink", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "OldIntave", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDogBlink", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "Intave" "OldIntave", "GrimAC"), "Vanilla")
     private val antiSwitchItem = BoolValue("AntiSwitchItem", false)
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
@@ -243,6 +243,21 @@ object NoSlow : Module() {
                         )
                     }
                 }
+                   "intave" -> {
+                if ((mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking) && timer.hasTimePassed(placeDelay)) {
+                    mc.playerController.syncCurrentPlayItem()
+                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+                    if (event.eventState == EventState.POST) {
+                        placeDelay = 200L
+                        if (fasterDelay) {
+                            placeDelay = 100L
+                            fasterDelay = false
+                        } else
+                            fasterDelay = true
+                        timer.reset()
+                    }
+                }
+            }
                    "oldintave" -> {
                 if(mc.thePlayer.isUsingItem){
                     if (event.eventState == EventState.PRE){
