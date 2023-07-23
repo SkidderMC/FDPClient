@@ -34,6 +34,7 @@ object OldIntave : FlyMode("OldIntave") {
             if (mc.thePlayer.ticksExisted % 3 == 0) {
                 mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
                 mc.thePlayer.setPosition(serverPosX, serverPosY, serverPosZ)
+            }                
         } else {
             mc.timer.timerSpeed = 0.3f
         }
