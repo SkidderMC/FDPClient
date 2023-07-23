@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.Velocit
 
 class IntaveVelocity : VelocityMode("Intave") {
     override fun onVelocity(event: UpdateEvent) {
-        if (mc.thePlayer.hurtTime == 9) {//0.00000012 reduce lmao
+        if (mc.thePlayer.hurtTime == 9) {
             mc.thePlayer.movementInput.jump = true
         }
     }
