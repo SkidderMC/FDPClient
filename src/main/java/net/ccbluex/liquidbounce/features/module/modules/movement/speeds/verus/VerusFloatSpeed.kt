@@ -31,7 +31,6 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
                 lastStopped = false
             }
 
-            event.setOnGround(true);
             MovementUtils.strafe(0.41f)
             mc.thePlayer.motionY = 0.42
             mc.timer.timerSpeed = 2.1f
@@ -60,7 +59,6 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
 
             mc.thePlayer.motionY = 0.0
             mc.timer.timerSpeed = 0.9f
-            event.setOnGround(true);
 
             mc.thePlayer.onGround = true
         }
