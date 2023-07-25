@@ -31,7 +31,7 @@ import kotlin.math.sqrt
 object NoSlow : Module() {
 
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDogBlink", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDogBlink", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "OldIntave", "GrimAC"), "Vanilla")
     private val antiSwitchItem = BoolValue("AntiSwitchItem", false)
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
@@ -243,6 +243,17 @@ object NoSlow : Module() {
                         )
                     }
                 }
+                   "oldintave" -> {
+                if(mc.thePlayer.isUsingItem){
+                    if (event.eventState == EventState.PRE){
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    }
+                    if(event.eventState == EventState.POST){
+                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
+                    }
+                }
+            }
                 "switchitem" -> {
                     PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem  % 8 + 1))
                     PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
@@ -250,7 +261,6 @@ object NoSlow : Module() {
             }
         }
     }
-
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
         if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
