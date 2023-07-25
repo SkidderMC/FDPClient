@@ -19,7 +19,7 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
 
         if (!(mc.thePlayer.moveForward > 0)){
             lastStopped = true
-            return
+            return;
         }
         
         if (!mc.gameSettings.keyBindJump.isKeyDown) {
@@ -27,6 +27,7 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
                 
                 if (MovementUtils.getSpeed() > 0.3){
                     lastStopped = false
+                    
                 }
 
                 ticks = 0
@@ -34,11 +35,11 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
                 mc.thePlayer.motionY = 0.42
                 mc.timer.timerSpeed = 2.1f
                 isFloating = true
-            } else if (isFloating) {
+            } else{
                 if (ticks >= 10) {
                     verusBypass = true
                     MovementUtils.strafe(0.35f)
-                    isFloating = false
+                    return
                 }
 
                 if (verusBypass) {
