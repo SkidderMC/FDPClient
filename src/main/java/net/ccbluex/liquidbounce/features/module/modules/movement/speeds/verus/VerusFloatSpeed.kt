@@ -14,7 +14,7 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
         lastStopped = false
     }
 
-    override fun onPreMotion(event: PreMotionEvent) {
+    override fun onPreMotion() {
         
         if (mc.gameSettings.keyBindJump.isKeyDown) {
             return
@@ -64,7 +64,7 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
 
             mc.thePlayer.onGround = true
         }
-        
+
         ticks++
     }
     
