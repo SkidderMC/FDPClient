@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.event.PreMotionEvent
 
 class VerusFloatSpeed : SpeedMode("VerusFloat") {
 
@@ -13,7 +14,7 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
         lastStopped = false
     }
 
-    override fun onPreMotion() {
+    override fun onPreMotion(event: PreMotionEvent) {
         
         if (mc.gameSettings.keyBindJump.isKeyDown) {
             return
@@ -28,9 +29,9 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
             
             if (MovementUtils.getSpeed() > 0.3){
                 lastStopped = false
-                
             }
 
+            event.setOnGround(true);
             ticks = 0
             MovementUtils.strafe(0.41f)
             mc.thePlayer.motionY = 0.42
@@ -59,6 +60,7 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
 
             mc.thePlayer.motionY = 0.0
             mc.timer.timerSpeed = 0.9f
+            event.setOnGround(true);
 
             mc.thePlayer.onGround = true
         }
