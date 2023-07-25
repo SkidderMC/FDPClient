@@ -25,7 +25,7 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
         if (!mc.gameSettings.keyBindJump.isKeyDown) {
             if (mc.thePlayer.onGround) {
                 
-                if (MovementUtils.speed() > 0.3){
+                if (MovementUtils.getSpeed() > 0.3){
                     lastStopped = false
                 }
 
