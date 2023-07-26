@@ -10,11 +10,11 @@ import net.minecraft.network.play.client.C03PacketPlayer
 class GrimDamage : FlyMode("GrimDamage") {
     override fun onEnable() {
         if(mc.isSingleplayer) {
-            FDPClient.hud.addNotification(Notification("GrimDamage", "Damage GrimAC Fly (TNT ONLY Is A Test!!)", NotifyType.ERROR))
+            FDPClient.hud.addNotification(Notification("GrimDamage", "Damage GrimAC Fly (TNT ONLY IS A TEST!!)", NotifyType.ERROR))
             fly.state = false
         }
     }
-    override fun onEntityDamage(event: EntityDamageEvent) {
+    override fun onUpdate(event: UpdateEvent) {
         if(mc.isSingleplayer) return
         
         mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX+1000, mc.thePlayer.posY, mc.thePlayer.posZ+1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
