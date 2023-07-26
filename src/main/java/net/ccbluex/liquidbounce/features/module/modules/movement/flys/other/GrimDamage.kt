@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.block.tnt
+// import net.minecraft.block.tnt
 import net.minecraft.network.Packet
 
 
