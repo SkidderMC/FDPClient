@@ -12,7 +12,7 @@ class MurderDetector : Module() {
 
     private var murderer: EntityPlayer? = null
 
-    override fun onUpdate() {
+    fun onPreMotion() {
         if (mc.thePlayer.ticksExisted % 2 == 0 || this.murderer != null) {
             return
         }
@@ -20,7 +20,7 @@ class MurderDetector : Module() {
         for (player in mc.theWorld.playerEntities) {
             if (player.heldItem != null) {
                 if (player.heldItem.displayName.contains("Knife", ignoreCase = true)) {
-                    ClientUtils.displayChatMessage("${player.getName} is The Murderer.")
+                    ClientUtils.displayChatMessage(player.getName() + "is The Murderer.")
                     murderer = player
                 }
             }
