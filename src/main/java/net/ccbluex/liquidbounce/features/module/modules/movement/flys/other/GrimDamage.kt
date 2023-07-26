@@ -15,8 +15,8 @@ class GrimDamage : FlyMode("GrimDamage") {
         if(mc.isSingleplayer) {
             FDPClient.hud.addNotification(Notification("GrimDamage", "Damage GrimAC Fly (TNT ONLY IS A TEST!!)", NotifyType.ERROR))
             fly.state = false
-            velocitypacket = false
         }
+        velocitypacket = false
     }
     override fun onUpdate(event: UpdateEvent) {
         if(mc.isSingleplayer) return
