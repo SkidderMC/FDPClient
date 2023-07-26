@@ -8,7 +8,6 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
     private var ticks = 0
     private var verusBypass = false
     private var lastStopped = true
-    private var isFloating = false
     
     override fun onEnable() {
         verusBypass = false
@@ -38,7 +37,7 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
             ticks = 0
             isFloating = true
             
-        } else if (isFloating){
+        } else{
             if (ticks >= 10) {
                 verusBypass = true
                 MovementUtils.strafe(0.35f)
@@ -63,7 +62,6 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
             mc.timer.timerSpeed = 0.9f
 
             mc.thePlayer.onGround = true
-            isFloating = false
         }
 
         ticks++
