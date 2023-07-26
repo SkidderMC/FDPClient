@@ -14,14 +14,14 @@ class MurderDetector() : Module(){
 
     override fun onPreMotion() {
     
-        if (mc.thePlayer.ticksExisted % 2 == 0 || murderer != null) {
+        if (mc.thePlayer.ticksExisted % 2 == 0 || this.murderer != null) {
                 return;
             }
 
         for (player in mc.theWorld.playerEntities){
             if (player.getHeldItem() != null){
                 if (player.getHeldItem().getDisplayName().contains("Knife")) {
-                    ClientUtils.displayChatMessage(player.getCommandSenderName() + " is The Murderer.");
+                    ClientUtils.displayChatMessage(player.getDisplayName() + " is The Murderer.");
                     murderer = player;
                 }
             }
