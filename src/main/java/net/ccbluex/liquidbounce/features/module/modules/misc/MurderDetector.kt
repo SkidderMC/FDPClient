@@ -7,26 +7,23 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.entity.player.EntityPlayer
 
-@ModuleInfo(name="MurderDetector", category = ModuleCategory.MISC)
-class MurderDetector() : Module(){
-    
-    private EntityPlayer murderer;
+@ModuleInfo(name = "MurderDetector", category = ModuleCategory.MISC)
+class MurderDetector : Module() {
 
-    override fun onPreMotion() {
-    
+    private var murderer: EntityPlayer? = null
+
+    override fun onUpdate() {
         if (mc.thePlayer.ticksExisted % 2 == 0 || this.murderer != null) {
-                return;
-            }
+            return
+        }
 
-        for (player in mc.theWorld.playerEntities){
-            if (player.getHeldItem() != null){
-                if (player.getHeldItem().getDisplayName().contains("Knife")) {
-                    ClientUtils.displayChatMessage(player.getDisplayName() + " is The Murderer.");
-                    murderer = player;
+        for (player in mc.theWorld.playerEntities) {
+            if (player.heldItem != null) {
+                if (player.heldItem.displayName.contains("Knife", ignoreCase = true)) {
+                    ClientUtils.displayChatMessage("${player.displayName} is The Murderer.")
+                    murderer = player
                 }
             }
         }
-
     }
 }
-
