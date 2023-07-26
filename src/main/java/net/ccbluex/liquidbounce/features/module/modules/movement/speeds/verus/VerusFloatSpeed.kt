@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.event.PreMotionEvent
+
 
 class VerusFloatSpeed : SpeedMode("VerusFloat") {
 
