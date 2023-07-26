@@ -20,7 +20,7 @@ class MurderDetector : Module() {
         for (player in mc.theWorld.playerEntities) {
             if (player.heldItem != null) {
                 if (player.heldItem.displayName.contains("Knife", ignoreCase = true)) {
-                    ClientUtils.displayChatMessage("${player.displayName} is The Murderer.")
+                    ClientUtils.displayChatMessage("${player.getName} is The Murderer.")
                     murderer = player
                 }
             }
