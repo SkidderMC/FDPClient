@@ -76,7 +76,7 @@ class Scaffold : Module() {
     private val downValue = BoolValue("Down", false).displayable { placeOptions.get() }
     private val placeModeValue = ListValue("PlaceTiming", arrayOf("All", "Pre", "Post"), "All").displayable { placeOptions.get() }
     
-    private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "JumpUpY", "OFF"), "WhenSpeed").displayable { placeOptions.get() }
+    private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "JumpUpY", "MotionY", "OFF"), "WhenSpeed").displayable { placeOptions.get() }
     private val hitableCheckValue = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple").displayable { placeOptions.get() }
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6).displayable { placeOptions.get() }
    
@@ -297,6 +297,10 @@ class Scaffold : Module() {
                     if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
                         mc.thePlayer.jump()
                     }
+                }
+                "motiony" -> {
+                    canSameY = true
+                    if (MovementUtils.isMoving() && mc.thePlayer.onGround) mc.thePlayer.motionY = 0.42
                 }
                 "jumpupy" -> {
                     canSameY = false
