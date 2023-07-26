@@ -14,7 +14,7 @@ class GrimDamage : FlyMode("GrimDamage") {
             fly.state = false
         }
     }
-    override fun onUpdate(event: EntityDamageEvent) {
+    override fun onEntityDamage(event: EntityDamageEvent) {
         if(mc.isSingleplayer) return
         
         mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX+1000, mc.thePlayer.posY, mc.thePlayer.posZ+1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
