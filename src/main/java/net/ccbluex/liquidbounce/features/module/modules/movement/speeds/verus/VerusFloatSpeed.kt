@@ -35,7 +35,6 @@ class VerusFloatSpeed : SpeedMode("VerusFloat") {
             mc.thePlayer.motionY = 0.42
             mc.timer.timerSpeed = 2.1f
             ticks = 0
-            isFloating = true
             
         } else{
             if (ticks >= 10) {
