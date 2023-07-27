@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
-import net.ccbluex.liquidbounce.utils.MathUtils
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 
 @ModuleInfo(name = "Timer", category = ModuleCategory.WORLD, autoDisable = EnumAutoDisableType.RESPAWN)
 object Timer : Module() {
@@ -49,7 +49,7 @@ object Timer : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (MovementUtils.isMoving() || !onMoveValue.get()) {
-            mc.timer.timerSpeed = MathUtils.getRandom(minSpeedValue.get(), maxSpeedValue.get())
+            mc.timer.timerSpeed = RandomUtils.nextInt(minSpeedValue.get(), maxSpeedValue.get())
             return
         }
 
@@ -57,5 +57,5 @@ object Timer : Module() {
     }
 
     override val tag: String?
-        get() = "${MathUtils.getRandom(minSpeedValue.get(), maxSpeedValue.get()).toString()}"
+        get() = "${RandomUtils.nextInt(minSpeedValue.get(), maxSpeedValue.get()).toString()}"
 }
