@@ -18,7 +18,23 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 @ModuleInfo(name = "Timer", category = ModuleCategory.WORLD, autoDisable = EnumAutoDisableType.RESPAWN)
 object Timer : Module() {
 
-    private val speedValue = FloatValue("Speed", 2F, 0.1F, 10F)
+    // private val minSpeedValue = FloatValue("Speed", 2F, 0.1F, 10F)
+    private val maxSpeedValue: FloatValue = object : FloatValue("Max-Timer", 2F, 0.1F, 10F) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val minTimer = minSpeedValue.get()
+            if (minTimer > newValue) {
+                set(minTimer)
+            }
+        }
+    }
+    private val minSpeedValue: FloatValue = object : FloatValue("Min-Timer", 2F, 0.1F, 10F)  {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val maxTimer = maxSpeedValue.get()
+            if (maxTimer < newValue) {
+                set(maxTimer)
+            }
+        }
+    }
     private val onMoveValue = BoolValue("OnMove", true)
 
     override fun onDisable() {
@@ -32,7 +48,7 @@ object Timer : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (MovementUtils.isMoving() || !onMoveValue.get()) {
-            mc.timer.timerSpeed = speedValue.get()
+            mc.timer.timerSpeed = MathUtil.getRandom(minSpeedValue.get(), maxSpeedValue.get())
             return
         }
 
