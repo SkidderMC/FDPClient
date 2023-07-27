@@ -18,6 +18,7 @@ import net.minecraft.util.BlockPos
 object AutoTool : Module() {
 
     private val noCombat = BoolValue("NoCombat", true)
+    private val silent = BoolValue("Silent", false)
 
     @EventTarget
     fun onClick(event: ClickBlockEvent) {
@@ -42,7 +43,11 @@ object AutoTool : Module() {
         }
 
         if (bestSlot != -1) {
-            mc.thePlayer.inventory.currentItem = bestSlot
+            if (!silent.get()) {
+                mc.thePlayer.inventory.currentItem = bestSlot
+            } else {
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(bestSlot))
+                mc.playerController.updateController()
         }
     }
 }
