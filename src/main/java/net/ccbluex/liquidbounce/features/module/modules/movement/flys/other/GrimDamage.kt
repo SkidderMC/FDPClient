@@ -16,12 +16,14 @@ class GrimDamage : FlyMode("GrimDamage") {
             FDPClient.hud.addNotification(Notification("GrimDamage", "Damage GrimAC Fly (TNT ONLY IS A TEST!!)", NotifyType.ERROR))
             fly.state = false
         }
+        velocitypacket = false
     }
     override fun onUpdate(event: UpdateEvent) {
         if(mc.isSingleplayer) return
 
         if (velocitypacket){
-            mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX+1000, mc.thePlayer.posY, mc.thePlayer.posZ+1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+            mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX+50, mc.thePlayer.posY, mc.thePlayer.posZ+50, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+            velocitypacket = false
         }
     }
 
