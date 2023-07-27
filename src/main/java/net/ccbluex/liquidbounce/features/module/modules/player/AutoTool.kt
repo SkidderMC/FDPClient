@@ -48,9 +48,8 @@ object AutoTool : Module() {
                     mc.thePlayer.inventory.currentItem = bestSlot
                 } else {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(bestSlot))
-                    mc.playerController.updateController()
-                }
-            }                
+                    mc.playerController.updateController()             
         }
     }
+  }
 }
