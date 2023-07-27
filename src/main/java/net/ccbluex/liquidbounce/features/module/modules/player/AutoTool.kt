@@ -43,12 +43,12 @@ object AutoTool : Module() {
             }
         }
 
-        if (bestSlot != -1) {
-            if (!silent.get()) {
-                mc.thePlayer.inventory.currentItem = bestSlot
-            } else {
-                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(bestSlot))
-                mc.playerController.updateController()
+            if (bestSlot != -1) {
+                if (!silent.get()) {
+                    mc.thePlayer.inventory.currentItem = bestSlot
+                } else {
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(bestSlot))
+                    mc.playerController.updateController()
         }
     }
 }
