@@ -25,6 +25,9 @@ import java.awt.Color
 @ModuleInfo(name = "Projectiles", category = ModuleCategory.RENDER)
 object Projectiles : Module() {
 
+    private val colorRedValue = IntegerValue("Color-Red", 255, 0, 255)
+    private val colorGreenValue = IntegerValue("Color-Green", 255, 0, 255)
+    private val colorBlueValue = IntegerValue("Color-Blue", 255, 0, 255)
     private val dynamicBowPower = BoolValue("DynamicBowPower", true)
 
     @EventTarget
@@ -202,7 +205,7 @@ object Projectiles : Module() {
         RenderUtils.disableGlCap(GL11.GL_DEPTH_TEST, GL11.GL_ALPHA_TEST, GL11.GL_TEXTURE_2D)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
-        RenderUtils.glColor(if (hitEntity) { Color(255, 140, 140) } else { Color(140, 255, 140) })
+        RenderUtils.glColor(if (hitEntity) { Color(255, 140, 140) } else { Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()) })
         GL11.glLineWidth(2f)
 
         worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
@@ -223,7 +226,7 @@ object Projectiles : Module() {
                 2 -> GL11.glRotatef(90F, 1F, 0F, 0F)
             }
 
-            RenderUtils.drawAxisAlignedBB(AxisAlignedBB(-0.5, 0.0, -0.5, 0.5, 0.1, 0.5), if (hitEntity) { Color(255, 140, 140) } else { Color(140, 255, 140) }, true, true, 3f)
+            RenderUtils.drawAxisAlignedBB(AxisAlignedBB(-0.5, 0.0, -0.5, 0.5, 0.1, 0.5), if (hitEntity) { Color(255, 140, 140) } else { Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()) }, true, true, 3f)
         }
         GL11.glPopMatrix()
         GL11.glDepthMask(true)
