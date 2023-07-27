@@ -49,7 +49,7 @@ object Timer : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (MovementUtils.isMoving() || !onMoveValue.get()) {
-            mc.timer.timerSpeed = RandomUtils.nextInt(minSpeedValue.get(), maxSpeedValue.get())
+            mc.timer.timerSpeed = RandomUtils.nextFloat(minSpeedValue.get(), maxSpeedValue.get())
             return
         }
 
@@ -57,5 +57,5 @@ object Timer : Module() {
     }
 
     override val tag: String?
-        get() = "${RandomUtils.nextInt(minSpeedValue.get(), maxSpeedValue.get()).toString()}"
+        get() = "${RandomUtils.nextFloat(minSpeedValue.get(), maxSpeedValue.get()).toString()}"
 }
