@@ -49,6 +49,8 @@ object AutoTool : Module() {
                 } else {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(bestSlot))
                     mc.playerController.updateController()
+                }
+            }                
         }
     }
 }
