@@ -22,12 +22,13 @@ import java.util.Objects;
 
 @ModuleInfo(name = "NameProtect", category = ModuleCategory.CLIENT)
 public class NameProtect extends Module {
-
     private final TextValue fakeNameValue = new TextValue("FakeName", "&cProtected User");
     private final TextValue allFakeNameValue = new TextValue("AllPlayersFakeName", "FDP");
     public final BoolValue selfValue = new BoolValue("Yourself", true);
     public final BoolValue tagValue = new BoolValue("Tag", false);
     public final BoolValue allPlayersValue = new BoolValue("AllPlayers", false);
+    public final BoolValue nameSpoofValue = new BoolValue("NameSpoof", false);
+    public final TextValue customNameValue = new TextValue("CustomName", "");
 
     @EventTarget
     public void onText(final TextEvent event) {
@@ -37,15 +38,25 @@ public class NameProtect extends Module {
         for (final FriendsConfig.Friend friend : FDPClient.fileManager.getFriendsConfig().getFriends())
             event.setText(StringUtils.replace(event.getText(), friend.getPlayerName(), ColorUtils.translateAlternateColorCodes(friend.getAlias()) + "§f"));
 
+        String playerName = mc.thePlayer.getName();
+        if (nameSpoofValue.get() && !customNameValue.get().isEmpty()) {
+            playerName = customNameValue.get();
+        }
+
         event.setText(StringUtils.replace(
                 event.getText(),
                 mc.thePlayer.getName(),
-                (selfValue.get() ? (tagValue.get() ? StringUtils.injectAirString(mc.thePlayer.getName()) + " §7(§r" + ColorUtils.translateAlternateColorCodes(fakeNameValue.get() + "§r§7)") : ColorUtils.translateAlternateColorCodes(fakeNameValue.get()) + "§r") : mc.thePlayer.getName())
+                (selfValue.get() ? (tagValue.get() ? StringUtils.injectAirString(playerName) + " §7(§r" + ColorUtils.translateAlternateColorCodes(fakeNameValue.get() + "§r§7)") : ColorUtils.translateAlternateColorCodes(fakeNameValue.get()) + "§r") : playerName)
         ));
 
-        if(allPlayersValue.get())
-            for(final NetworkPlayerInfo playerInfo : mc.getNetHandler().getPlayerInfoMap())
-                event.setText(StringUtils.replace(event.getText(), playerInfo.getGameProfile().getName(), ColorUtils.translateAlternateColorCodes(allFakeNameValue.get()) + "§f"));
+        if (allPlayersValue.get()) {
+            for (final NetworkPlayerInfo playerInfo : mc.getNetHandler().getPlayerInfoMap()) {
+                String playerInfoName = playerInfo.getGameProfile().getName();
+                if (nameSpoofValue.get() && !customNameValue.get().isEmpty()) {
+                    playerInfoName = customNameValue.get();
+                }
+                event.setText(StringUtils.replace(event.getText(), playerInfoName, ColorUtils.translateAlternateColorCodes(allFakeNameValue.get()) + "§f"));
+            }
+        }
     }
-
 }

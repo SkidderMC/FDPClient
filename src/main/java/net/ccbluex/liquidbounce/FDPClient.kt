@@ -42,7 +42,7 @@ object FDPClient {
     const val COLORED_NAME = "§7[§b§lFDPClient§7] "
     const val CLIENT_CREATOR = "CCBlueX, Zywl & SkidderMC TEAM"
     const val CLIENT_WEBSITE = "fdpinfo.github.io"
-    const val CLIENT_VERSION = "v5.3.5"
+    const val CLIENT_VERSION = "v5.4.0"
 
     // Flags
     var isStarting = true

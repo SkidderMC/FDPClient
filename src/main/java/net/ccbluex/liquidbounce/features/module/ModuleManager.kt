@@ -40,7 +40,7 @@ class ModuleManager : Listenable {
 
         modules.forEach { it.onInitialize() }
 
-        modules.forEach { it.onLoad() }
+            modules.forEach { it.onLoad() }
 
         FDPClient.eventManager.registerListener(AutoDisable)
 

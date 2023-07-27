@@ -101,7 +101,7 @@ object HotbarSettings : Module() {
                 RenderUtils.drawRect(itemX.toFloat(), (sr.scaledHeight - 22).toFloat(), (itemX + 22).toFloat(), (sr.scaledHeight - 21).toFloat(), rainbow())
                 RenderUtils.drawRect(itemX.toFloat(), (sr.scaledHeight - 21).toFloat(), (itemX + 22).toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, hotbarAlphaValue.get()))
                 RenderHelper.enableGUIStandardItemLighting()
-                for (Index in 0..8) { HotbarItems(Index, sr.scaledWidth / 2 - 90 + Index * 20 + 2, sr.scaledHeight - 19); HotbarTextOverlay(sr.scaledWidth / 2 - 90 + Index * 20 + 2, sr.scaledHeight - 19, null as String?, Index) }
+                for (Index: Int in 0..8) { HotbarItems(Index, sr.scaledWidth / 2 - 90 + Index * 20 + 2, sr.scaledHeight - 19); HotbarTextOverlay(sr.scaledWidth / 2 - 90 + Index * 20 + 2, sr.scaledHeight - 19, null as String?, Index) }
                 RenderHelper.disableStandardItemLighting()
             }
             hotbarValue.get() == "Full" -> {
@@ -181,12 +181,16 @@ object HotbarSettings : Module() {
                 GlStateManager.pushMatrix()
                 for (item in 0..8) {
                     var height = sr.scaledHeight - 19
-                    if (item == entityplayer.inventory.currentItem) {
-                        height = sr.scaledHeight - 23
-                    } else if (item == entityplayer.inventory.currentItem + 1 || item == entityplayer.inventory.currentItem - 1) {
-                        height = sr.scaledHeight - 21
-                    } else if (item == entityplayer.inventory.currentItem + 2 || item == entityplayer.inventory.currentItem - 2) {
-                        height = sr.scaledHeight - 20
+                    when (item) {
+                        entityplayer.inventory.currentItem -> {
+                            height = sr.scaledHeight - 23
+                        }
+                        entityplayer.inventory.currentItem + 1, entityplayer.inventory.currentItem - 1 -> {
+                            height = sr.scaledHeight - 21
+                        }
+                        entityplayer.inventory.currentItem + 2, entityplayer.inventory.currentItem - 2 -> {
+                            height = sr.scaledHeight - 20
+                        }
                     }
                     HotbarItems(item, sr.scaledWidth / 2 - 90 + item * 20 + 2, height)
                     HotbarTextOverlay(sr.scaledWidth / 2 - 90 + item * 20 + 2, height, null as String?, item)
@@ -243,7 +247,7 @@ object HotbarSettings : Module() {
             HotbarTextOverlay(xPos, yPos, null as String?, index)
         }
     }
-    fun HotbarDurabilityOverlay(stack: ItemStack?, xPosition: Int, yPosition: Int) {
+    private fun HotbarDurabilityOverlay(stack: ItemStack?, xPosition: Int, yPosition: Int) {
         if (stack != null) {
             if (stack.item.showDurabilityBar(stack)) {
                 GlStateManager.disableTexture2D()
@@ -256,7 +260,7 @@ object HotbarSettings : Module() {
             }
         }
     }
-    fun HotbarTextOverlay(xPosition: Int, yPosition: Int, text: String?, index: Int) {
+    private fun HotbarTextOverlay(xPosition: Int, yPosition: Int, text: String?, index: Int) {
         val entityplayer = mc.renderViewEntity as EntityPlayer
         val stack = entityplayer.inventory.mainInventory[index]
         if (stack != null) {
