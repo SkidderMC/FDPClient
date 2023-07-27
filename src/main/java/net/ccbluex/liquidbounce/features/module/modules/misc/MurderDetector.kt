@@ -6,9 +6,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.entity.player.EntityPlayer
+import net.ccbluex.liquidbounce.event.WorldEvent
 
 @ModuleInfo(name = "MurderDetector", category = ModuleCategory.MISC)
-class MurderDetector : Module() {
+object MurderDetector : Module() {
 
     private var murderer: EntityPlayer? = null
 
@@ -26,4 +27,8 @@ class MurderDetector : Module() {
             }
         }
     }
+
+    fun onWorld(event: WorldEvent){
+        murderer = null;
+    }   
 }
