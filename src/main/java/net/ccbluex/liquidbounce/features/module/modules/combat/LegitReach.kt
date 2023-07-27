@@ -6,25 +6,15 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.BlinkUtils
+import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.features.module.*
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.features.value.BoolValue
-import net.ccbluex.liquidbounce.features.value.IntegerValue
-import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.features.value.*
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.Packet
-import net.minecraft.network.play.client.C02PacketUseEntity
+import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
 import net.minecraft.network.play.INetHandlerPlayClient
 import net.minecraft.world.WorldSettings
@@ -128,6 +118,9 @@ object LegitReach : Module() {
 
     @EventTarget
     fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
+            if (!FDPClient.combatManager.inCombat) {
+               removeFakePlayer()
+            }
         if ( mode.equals("FakePlayer") || mode.equals("IntaveTest") ) {
             if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state) {
                 removeFakePlayer()
@@ -203,14 +196,14 @@ object LegitReach : Module() {
         if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state) return
         
         if (mode.equals("TargetPackets")) {
-            if (packet is S14PacketEntity) {
+            if (packet is S14PacketEntity && FDPClient.combatManager.inCombat) {
                 if (packet.getEntity(mc.theWorld) == currentTarget) {
                     event.cancelEvent()
                     packets.add(packet as Packet<INetHandlerPlayClient>)
                 }
             }
         } else if (mode.equals("AllIncomingPackets")) {
-            if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
+            if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && FDPClient.combatManager.inCombat) {
                 if (mc.thePlayer.ticksExisted < 20) return
                 event.cancelEvent()
                 packets.add(packet as Packet<INetHandlerPlayClient>)
