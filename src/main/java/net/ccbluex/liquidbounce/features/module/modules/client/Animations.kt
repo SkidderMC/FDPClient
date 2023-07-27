@@ -39,7 +39,7 @@ object Animations : Module() {
     val itemPosZValue = FloatValue("ItemPosZ", -1.00F, -1.0F, 1.0F)
     val itemScaleValue = FloatValue("ItemScale", 0.26f, 0.0f, 2.0f)
     val swingAnimValue = BoolValue("SwingAnim", false)
-    val swingSpetedValue = FloatValue("SwingSpeed", 1f, 0.5f, 5.0f)
+    val swingSpeedValue = FloatValue("SwingSpeed", 1f, 0.5f, 5.0f)
     val anythingBlockValue = BoolValue("AnythingBlock", false)
     @JvmStatic
     val noBlockParticles = BoolValue("NoBlockParticles", false)
