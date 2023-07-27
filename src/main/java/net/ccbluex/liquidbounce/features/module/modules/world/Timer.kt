@@ -49,7 +49,7 @@ object Timer : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (MovementUtils.isMoving() || !onMoveValue.get()) {
-            mc.timer.timerSpeed = MathUtil.getRandom(minSpeedValue.get(), maxSpeedValue.get())
+            mc.timer.timerSpeed = MathUtils.getRandom(minSpeedValue.get(), maxSpeedValue.get())
             return
         }
 
@@ -57,5 +57,5 @@ object Timer : Module() {
     }
 
     override val tag: String?
-        get() = "${MathUtil.getRandom(minSpeedValue.get(), maxSpeedValue.get()).toString()}"
+        get() = "${MathUtils.getRandom(minSpeedValue.get(), maxSpeedValue.get()).toString()}"
 }
