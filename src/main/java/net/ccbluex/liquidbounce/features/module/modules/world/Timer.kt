@@ -56,5 +56,5 @@ object Timer : Module() {
     }
 
     override val tag: String?
-        get() = "${speedValue.get().toString()}"
+        get() = "${MathUtil.getRandom(minSpeedValue.get(), maxSpeedValue.get()).toString()}"
 }
