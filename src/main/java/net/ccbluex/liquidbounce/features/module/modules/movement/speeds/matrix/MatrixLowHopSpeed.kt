@@ -13,3 +13,4 @@ class MatrixLowHopSpeed : SpeedMode("MatrixLowHop") {
             mc.thePlayer.motionY -= 0.116 * 0.03;
         }
     }
+}
