@@ -29,7 +29,7 @@ class GrimVelocity : VelocityMode("Grim") {
             flagTimer.reset()
         }
 
-        if (flagPauseValue.get() && flagTimer.hasTimePassed(flagPauseValue.get().toLong())){
+        if (!flagTimer.hasTimePassed(flagPauseValue.get().toLong())){
             return
         }
 
@@ -46,7 +46,7 @@ class GrimVelocity : VelocityMode("Grim") {
 
     override fun onUpdate(event: UpdateEvent) {
 
-        if (flagPauseValue.get() && flagTimer.hasTimePassed(flagPauseValue.get().toLong())){
+        if (!flagTimer.hasTimePassed(flagPauseValue.get().toLong())){
             return
         }
 
