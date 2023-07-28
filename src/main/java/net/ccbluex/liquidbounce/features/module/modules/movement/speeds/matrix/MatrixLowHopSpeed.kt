@@ -6,15 +6,10 @@ import net.minecraft.client.settings.GameSettings
 import net.ccbluex.liquidbounce.event.MoveEvent
 
 class MatrixLowHopSpeed : SpeedMode("MatrixLowHop") {
-
-    override fun onMotion() {
-
-    }
+    
     override fun onUpdate() {
         if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
             mc.thePlayer.jump()
             mc.thePlayer.motionY -= 0.116 * 0.03;
         }
     }
-    override fun onMove(event: MoveEvent?) {}
-}
