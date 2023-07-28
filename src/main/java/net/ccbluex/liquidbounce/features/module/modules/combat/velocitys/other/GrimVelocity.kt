@@ -5,19 +5,34 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.ccbluex.liquidbounce.utils.timer.MSTime
 
 class GrimVelocity : VelocityMode("Grim") {
     var cancelPacket = 6
     var resetPersec = 8
     var grimTCancel = 0
     var updates = 0
+    var flagTimer = MSTimer()
+    private val flagPauseValue = IntegerValue("FlagPause-Time", 50, 100, 5000)
 
     override fun onEnable() {
         grimTCancel = 0
+        flagTimer.reset()
     }
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
+
+        if (packet is S08PacketPlayerPosLook){
+            flagTimer.reset()
+        }
+
+        if (flagPauseValue.get() && flagTimer.hasTimePassed(flagPauseValue.get().toLong())){
+            return
+        }
+
+
         if (packet is S12PacketEntityVelocity && packet.entityID == mc.thePlayer.entityId) {
             event.cancelEvent()
             grimTCancel = cancelPacket
@@ -29,6 +44,11 @@ class GrimVelocity : VelocityMode("Grim") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
+
+        if (flagPauseValue.get() && flagTimer.hasTimePassed(flagPauseValue.get().toLong())){
+            return
+        }
+
         updates++
 
         if (resetPersec > 0) {
