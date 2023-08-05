@@ -143,5 +143,22 @@ reobf {
         mappingType = "SEARGE"
     }
 }
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = uri('https://maven.pkg.github.com/SkidderMC/ProtoHax')
 
+            credentials {
+                username = System.getenv("USERNAME_GITHUB")
+                password = System.getenv("TOKEN_GITHUB")
+            }
+        }
+    }
+}
 tasks.reobfJar.dependsOn(shadowJar)
