@@ -52,7 +52,7 @@ object ClickGUIModule : Module() {
             "Black",
             "White"
         ),
-        "Black"
+        "LB+"
     ) {
         override fun onChanged(oldValue: String, newValue: String) {
             updateStyle()
