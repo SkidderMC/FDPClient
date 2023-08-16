@@ -74,6 +74,8 @@ object KillAura : Module() {
         }
     }.displayable {!simulateCooldown.get() && attackDisplay.get()} as IntegerValue
 
+    private val CpsReduceValue = BoolValue("CPSReduceVelocity", false)
+
     private val simulateCooldown = BoolValue("SimulateCooldown", false).displayable { attackDisplay.get() }
     private val cooldownNoDupAtk = BoolValue("NoDuplicateAttack", false).displayable { simulateCooldown.get() && attackDisplay.get() }
 
@@ -128,7 +130,7 @@ object KillAura : Module() {
             if (i < newValue) set(i)
         }
     }.displayable { !autoBlockValue.equals("Off") && autoBlockValue.displayable }
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Delayed2", "Legit", "OldIntave", "Test", "HoldKey", "KeyBlock"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Delayed2", "Legit", "OldIntave", "Test", "HoldKey", "KeyBlock","Gay"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val smartAutoBlockValue = BoolValue("SmartAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
@@ -471,6 +473,14 @@ object KillAura : Module() {
             }
         }
 
+        if (autoBlockPacketValue.equals("Gay") && autoBlockValue.equals("Range")) {
+            if (mc.thePlayer.ticksExisted % 3 == 1) {
+                startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+            } else if (mc.thePlayer.ticksExisted % 3 == 2) {
+                stopBlocking()
+            }
+        }
+
         if (attackTimingValue.equals("All")) {
             runAttackLoop()
         }
@@ -484,6 +494,16 @@ object KillAura : Module() {
 
 
     private fun runAttackLoop() {
+
+        if (autoBlockPacketValue.equals("Gay") && autoBlockValue.equals("Range")) {
+            if (mc.thePlayer.ticksExisted % 3 > 0) {
+                return
+            }
+        }
+
+        if (CpsReduceValue.get() && mc.thePlayer.hurtTime > 8){
+            clicks += 4
+        }
 
         // legit auto block, block if about to get damage, else, dont block
         if (autoBlockPacketValue.equals("Legit") && autoBlockValue.equals("Range")) {
@@ -753,7 +773,7 @@ object KillAura : Module() {
                     blockingStatus = false
                 }
                 "keyblock" -> mc.gameSettings.keyBindUseItem.pressed = false
-                "legit", "test", "holdkey" -> null
+                "legit", "test", "holdkey", "gay" -> null
                 else -> null
             }
         }
@@ -768,7 +788,7 @@ object KillAura : Module() {
                 when (autoBlockPacketValue.get().lowercase()) {
                     "vanilla", "afterattack", "oldintave" -> startBlocking(entity, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange))
                     "delayed", "keyblock" -> delayBlockTimer.reset()
-                    "aftertick", "legit", "delayed2", "test", "holdkey" -> null
+                    "aftertick", "legit", "delayed2", "test", "holdkey", "gay" -> null
                     else -> null
                 }
             }
