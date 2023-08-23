@@ -117,7 +117,7 @@ object NoWeb : Module() {
                     mc.thePlayer.jumpMovementFactor = 0.08f
                 }
             }
-            "intavetest" -> {
+            "intave14" -> {
                 if (mc.thePlayer.movementInput.moveStrafe == 0.0F && mc.gameSettings.keyBindForward.isKeyDown && mc.thePlayer.isCollidedVertically) {
                     mc.thePlayer.jumpMovementFactor = 0.74F
                 } else {
