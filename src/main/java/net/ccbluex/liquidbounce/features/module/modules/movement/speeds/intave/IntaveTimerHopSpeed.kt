@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 
-class IntaveSpeed : SpeedMode("Intave") {
+class IntaveTimerHopSpeed : SpeedMode("IntaveTimerHop") {
 
     override fun onUpdate(){
         if (MovementUtils.isMoving()) {
