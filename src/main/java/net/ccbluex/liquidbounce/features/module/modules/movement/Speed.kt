@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.FDPClient
@@ -106,14 +101,9 @@ object Speed : Module() {
     override val tag: String
         get() = modeValue.get()
 
-    /**
-     * 读取mode中的value并和本体中的value合并
-     * 所有的value必须在这个之前初始化
-     */
     override val values = super.values.toMutableList().also {
         modes.map { mode ->
             mode.values.forEach { value ->
-                //it.add(value.displayable { modeValue.equals(mode.modeName) })
                 val displayableFunction = value.displayableFunction
                 it.add(value.displayable { displayableFunction.invoke() && modeValue.equals(mode.modeName) })
             }

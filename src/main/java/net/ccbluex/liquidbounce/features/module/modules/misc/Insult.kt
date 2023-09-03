@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.features.module.modules.misc
 
 import com.google.gson.JsonArray
@@ -101,7 +96,7 @@ object Insult : Module() {
     private fun sendInsultWords(msg: String, name: String) {
         var message = msg.replace("%name%", name)
         if (waterMarkValue.get()) {
-            message = "[FDPClient] $message"
+            message = "[OkClient] $message"
         }
         mc.thePlayer.sendChatMessage(message)
     }
