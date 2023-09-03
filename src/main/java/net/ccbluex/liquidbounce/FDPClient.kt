@@ -35,9 +35,9 @@ object FDPClient {
     // Client information
     const val CLIENT_NAME = "OkClient"
     const val COLORED_NAME = "§7[§b§lOkClient§7] "
-    const val CLIENT_CREATOR = "CCBlueX, Zywl & SkidderMC TEAM"
-    const val CLIENT_WEBSITE = "fdpinfo.github.io"
-    const val CLIENT_VERSION = "v5.4.0"
+    const val CLIENT_CREATOR = "ok"
+    const val CLIENT_WEBSITE = ""
+    const val CLIENT_VERSION = "v1.0"
 
     // Flags
     var isStarting = true
