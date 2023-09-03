@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.ui.cape
 
 import com.google.gson.JsonObject
@@ -30,7 +25,7 @@ object GuiCapeManager : GuiScreen() {
     val capeList = mutableListOf<ICape>()
 
     init {
-        arrayOf("classic", "classic2", "aurora", "forest", "rose", "lavender", "ocean", "modern1", "modern2", "lava", "citrus", "fire", "nightlife", "abstract", "blur", "owner").forEach {
+        arrayOf("aurora", "forest", "rose", "lavender", "ocean", "modern1", "modern2", "lava", "citrus", "fire").forEach {
             try {
                 embeddedCapes.add(loadCapeFromResource(it, "assets/minecraft/fdpclient/cape/$it.png"))
             } catch (e: Throwable){

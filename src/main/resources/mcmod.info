@@ -1,14 +1,14 @@
 [
   {
-    "modid": "fdpclient",
-    "name": "FDPClient",
+    "modid": "okclient",
+    "name": "okClient",
     "description": "Minecraft 1.8 Utility mod",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "https://fdpinfo.github.io",
+    "url": "ok",
     "updateUrl": "",
-    "authorList": ["CCBlueX", "Zywl", "SkidderMC"],
-    "credits": "",
+    "authorList": ["ok"],
+    "credits": "ok",
     "logoFile": "",
     "screenshots": [],
     "dependencies": []

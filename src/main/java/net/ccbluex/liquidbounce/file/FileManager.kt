@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.file
 
 import com.google.gson.GsonBuilder
@@ -20,7 +15,7 @@ import java.io.*
 import javax.imageio.ImageIO
 
 class FileManager : MinecraftInstance() {
-    val dir = File(mc.mcDataDir, "FDPCLIENT-1.8")
+    val dir = File(mc.mcDataDir, "ok")
     val fontsDir = File(dir, "fonts")
     val configsDir = File(dir, "configs")
     val soundsDir = File(dir, "sounds")
