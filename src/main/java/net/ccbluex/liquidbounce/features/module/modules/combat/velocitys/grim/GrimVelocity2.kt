@@ -14,7 +14,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.world.World
 
-class GrimVelocity2 : VelocityMode("Grim2") {
+class GrimVelocity2 : VelocityMode("GrimC07") {
     private val alwaysValue = BoolValue("${valuePrefix}Always", true)
 
     private val onlyAirValue = BoolValue("${valuePrefix}OnlyBreakAir", true)
