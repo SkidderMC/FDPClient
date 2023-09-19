@@ -37,7 +37,7 @@ class GrimVelocity2 : VelocityMode("Grim2") {
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet is S08PacketPosLook)
+        if (packet is S08PacketPlayerPosLook)
             flagTimer.reset()
         if (!flagTimer.hasTimePassed(flagPauseValue.get().toLong())) {
             gotVelo = false
