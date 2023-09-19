@@ -31,4 +31,5 @@ abstract class VelocityMode(val modeName: String) : MinecraftInstance() {
     open fun onJump(event: JumpEvent) {}
     open fun onStep(event: StepEvent) {}
     open fun onStrafe(event: StrafeEvent) {}
+    open fun onTick(event: TickEvent) {}
 }

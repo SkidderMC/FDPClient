@@ -179,6 +179,11 @@ object Velocity : Module() {
     fun onStep(event: StepEvent) {
         mode.onStep(event)
     }
+
+    @EventTarget
+    fun onTick(event: TickEvent) {
+        mode.onTick(event)
+    }
     override val tag: String
         get() = if (modeValue.get() == "Simple")
             "${(horizontalValue.get() * 100).toInt()}% ${(verticalValue.get() * 100).toInt()}% ${chanceValue.get()}%"
