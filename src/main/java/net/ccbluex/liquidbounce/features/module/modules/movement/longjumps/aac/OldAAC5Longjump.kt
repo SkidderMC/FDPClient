@@ -5,8 +5,11 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJ
 import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class OldAAC5Longjump : LongJumpMode("OldAAC5") {
-    override fun onUpdate(event: UpdateEvent) {
+    override fun onEnable() {
         sendLegacy()
+    }
+        
+    override fun onUpdate(event: UpdateEvent) {
         mc.thePlayer.motionY += 0.031470000997
         MovementUtils.strafe(MovementUtils.getSpeed() * 1.0114514f)
         mc.timer.timerSpeed = 1.0114514f
