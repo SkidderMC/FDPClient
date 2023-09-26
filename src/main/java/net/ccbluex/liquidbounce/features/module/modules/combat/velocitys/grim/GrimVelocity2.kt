@@ -64,23 +64,23 @@ class GrimVelocity2 : VelocityMode("GrimC07") {
         val theWorld = mc.theWorld ?: return
         if (gotVelo || alwaysValue.get()) { // packet processed event pls
             val pos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
-            if (checkBlock(pos, theWorld) || checkBlock(pos.up(), theWorld)) {
-                if (sendC03Value.get()) {
-                    if (C06Value.get())
-                        mc.netHandler.addToSendQueue(C03PacketPlayer.C06PacketPlayerPosLook(thePlayer.posX, thePlayer.posY, thePlayer.posZ, thePlayer.rotationYaw, thePlayer.rotationPitch, thePlayer.onGround))
-                    else
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(thePlayer.onGround))
-                }
+            if (checkBlock(pos) || checkBlock(pos.up())) {
+                gotVelo = false
             }
-            gotVelo = false
         }
     }
 
-    fun checkBlock(pos: BlockPos, theWorld: World): Boolean {
-        if (!onlyAirValue.get() || theWorld.isAirBlock(pos)) {
+    fun checkBlock(pos: BlockPos): Boolean {
+        if (!onlyAirValue.get() || mc.theWorld.isAirBlock(pos)) {
+            if (sendC03Value.get()) {
+                if (C06Value.get())
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, mc.thePlayer.onGround))
+                else
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+            }
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, EnumFacing.DOWN))
             if (worldValue.get())
-                theWorld.setBlockToAir(pos)
+                mc.theWorld.setBlockToAir(pos)
             return true
         }
         return false
