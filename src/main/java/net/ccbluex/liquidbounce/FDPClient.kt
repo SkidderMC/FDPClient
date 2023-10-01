@@ -142,16 +142,6 @@ object FDPClient {
         eventManager.registerListener(macroManager)
         eventManager.registerListener(combatManager)
 
-        // Load configs
-        fileManager.loadConfigs(
-            fileManager.accountsConfig,
-            fileManager.friendsConfig,
-            fileManager.specialConfig,
-            fileManager.subscriptsConfig,
-            fileManager.hudConfig,
-            fileManager.xrayConfig
-        )
-
         // Load client fonts
         Fonts.loadFonts()
 
@@ -174,6 +164,16 @@ object FDPClient {
         mainMenu = GuiLaunchOptionSelectMenu()
         hud = HUD.createDefault()
 
+        // Load configs
+        fileManager.loadConfigs(
+            fileManager.accountsConfig,
+            fileManager.friendsConfig,
+            fileManager.specialConfig,
+            fileManager.subscriptsConfig,
+            fileManager.hudConfig,
+            fileManager.xrayConfig
+        )
+        
         // Run update checker
         if (CLIENT_VERSION != "unknown") {
             thread(block = this::checkUpdate)
