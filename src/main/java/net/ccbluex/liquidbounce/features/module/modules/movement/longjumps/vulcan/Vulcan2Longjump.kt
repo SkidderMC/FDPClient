@@ -87,6 +87,7 @@ class Vulcan2Longjump : LongJumpMode("Vulcan2") {
     }
     
     override fun onAttemptDisable() {
+        mc.timer.timerSpeed = 1.0f
         longjump.state = false
     }
     
