@@ -17,7 +17,7 @@ class GuiMicrosoftLoginPending(private val prevGui: GuiScreen) : GuiScreen() {
     override fun initGui() {
         server = MicrosoftAccount.Companion.buildFromOpenBrowser(object : MicrosoftAccount.OAuthHandler {
             override fun openUrl(url: String) {
-                stage = "Check your browser for continue..."
+                stage = "Check your browser to continue. Browser didn't open? Check your minecraft log."
                 ClientUtils.logInfo("Opening URL: $url")
                 MiscUtils.showURL(url)
             }
