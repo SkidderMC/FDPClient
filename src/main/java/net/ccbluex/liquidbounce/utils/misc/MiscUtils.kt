@@ -27,7 +27,9 @@ object MiscUtils : MinecraftInstance() {
 
     fun showURL(url: String) {
         try {
+            if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             Desktop.getDesktop().browse(URI(url))
+            }
         } catch (e: IOException) {
             e.printStackTrace()
         } catch (e: URISyntaxException) {
