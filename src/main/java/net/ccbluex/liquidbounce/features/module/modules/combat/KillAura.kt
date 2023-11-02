@@ -693,7 +693,7 @@ object KillAura : Module() {
         }
 
         // Find best target
-        for (entity in discoveredTargets) {
+        for (entity in inRangeDiscoveredTargets) {
             // Update rotations to current target
             if (!updateRotations(entity)) {
                 var success = false
