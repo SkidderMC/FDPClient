@@ -130,7 +130,7 @@ object KillAura : Module() {
             if (i < newValue) set(i)
         }
     }.displayable { !autoBlockValue.equals("Off") && autoBlockValue.displayable }
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Delayed2", "Legit", "OldIntave", "Test", "HoldKey", "KeyBlock","Legit2"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Delayed2", "Legit", "OldIntave", "Test", "HoldKey", "KeyBlock", "Legit2", "Test2"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val smartAutoBlockValue = BoolValue("SmartAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
@@ -564,6 +564,11 @@ object KillAura : Module() {
             return
         }
 
+        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Test2") && blockingStatus) {
+            stopBlocking()
+            return
+        }
+
 
         if (simulateCooldown.get() && CooldownHelper.getAttackCooldownProgress() < 1.0f) {
             return
@@ -580,6 +585,14 @@ object KillAura : Module() {
             }
         } catch (e: java.lang.IllegalStateException) {
             return
+        }
+
+        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Test2") && !blockingStatus) {
+            if (discoveredTargets.isNotEmpty()) {
+                val target = this.currentTarget ?: discoveredTargets.first()
+                startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+                blockingStatus = true
+            }
         }
     }
 
