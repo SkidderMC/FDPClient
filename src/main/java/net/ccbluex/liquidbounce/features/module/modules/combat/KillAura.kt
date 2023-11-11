@@ -512,8 +512,8 @@ object KillAura : Module() {
                 if (blockingStatus) stopBlocking()
                 blockingStatus = false
             } else {
-                if (mc.thePlayer.hurtTime == 2) {
-                    legitBlocking = 5
+                if (mc.thePlayer.hurtTime == 1) {
+                    legitBlocking = 4
                     // extra tick to make it work if u have high ping
                 } else if (legitBlocking > 0) {
                     legitBlocking--
@@ -523,8 +523,8 @@ object KillAura : Module() {
                         startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
                         blockingStatus = true
                     }
-                    if (clicks > 0)
-                        clicks = 1
+                    if (clicks > 2)
+                        clicks = 2
                     return
                 } else {
                     if (!canHitselect && hitselectValue.get()) {
@@ -532,6 +532,8 @@ object KillAura : Module() {
                     } else {
                         if (blockingStatus) stopBlocking()
                         blockingStatus = false
+                        return 
+                        // prevent hypixel flag
                     }
                 }
             }
