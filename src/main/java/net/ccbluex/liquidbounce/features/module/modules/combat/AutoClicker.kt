@@ -110,6 +110,7 @@ object AutoClicker : Module() {
                 "percent" -> (System.currentTimeMillis() - leftLastSwing >= leftDelay * blockPercentStartValue.get().toDouble() && System.currentTimeMillis() - leftLastSwing <= leftDelay * blockPercentEndValue.get().toDouble()) 
                 "ticks" -> (blockTicks <= blockTicksValue.get())
                 "miliseconds" -> (System.currentTimeMillis() - leftLastSwing >= blockMsValue.get().toDouble())
+                else -> false
             }
 
             if ( !blockOnClick.get() || Mouse.isButtonDown(1)) {
