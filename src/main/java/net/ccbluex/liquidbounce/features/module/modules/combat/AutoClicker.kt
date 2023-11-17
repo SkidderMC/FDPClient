@@ -53,6 +53,11 @@ object AutoClicker : Module() {
     private val breakStopValue = BoolValue("BreakingStop", true).displayable { leftValue.get() }
     private val blockValue = BoolValue("AutoBlock", false). displayable { leftValue.get() }
     private val blockOnClick = BoolValue("AutoBlockOnRightClick", true). displayable { leftValue.get() && blockValue.get() }
+    private val blockMode = ListValue("AutoblockMode", arrayOf("Percent", "Click", "Ticks", "Miliseconds"), "Percent"). displayable { leftValue.get() && blockValue.get() }
+    private val blockPercentStartValue = FloatValue("PercentStart", 0.2f, 0.05f, 1f).displayable { blockMode.displayable && blockMode.equals("Percent") }
+    private val blockPercentEndValue = FloatValue("PercentEnd", 0.8f, 0.05f, 1f).displayable { blockMode.displayable && blockMode.equals("Percent") }
+    private val blockTicksValue = IntegerValue("BlockTicks", 2, 1, 10).displayable { blockMode.displayable && blockMode.equals("Ticks") }
+    private val blockMsValue = IntegerValue("BlockMiliseconds", 80, 1, 1000).displayable { blockMode.displayable && blockMode.equals("Miliseconds") }
     private val jitterValue = BoolValue("Jitter", false)
     
 
@@ -71,6 +76,10 @@ object AutoClicker : Module() {
     private var delayNum = 0
     private var cDelay = 0
 
+    private var doBlock = false
+    private var clickBlocked = false
+    private var blockTicks = 0
+
 
 
     @EventTarget
@@ -78,6 +87,9 @@ object AutoClicker : Module() {
         if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() &&
             System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && (!breakStopValue.get() || mc.playerController.curBlockDamageMP == 0F)) {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
+            clickBlocked = false
+            blockTicks = 0
+
 
            leftLastSwing = System.currentTimeMillis()
            leftDelay = updateClicks().toLong()
@@ -93,18 +105,23 @@ object AutoClicker : Module() {
         
         if (blockValue.get() && mc.thePlayer.heldItem?.item is ItemSword && mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && blockOnClick.get() && Mouse.isButtonDown(1) && (!breakStopValue.get() || mc.playerController.curBlockDamageMP == 0F)) {
             mc.gameSettings.keyBindUseItem.pressed = false
-        }
-        if (blockValue.get() && mc.thePlayer.heldItem?.item is ItemSword && mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && (!breakStopValue.get() || mc.playerController.curBlockDamageMP == 0F)) {
-            if (System.currentTimeMillis() - leftLastSwing >= leftDelay * 0.1 && System.currentTimeMillis() - leftLastSwing <= leftDelay * 0.8) {
-                if (blockOnClick.get()) {
-                    if (Mouse.isButtonDown(1)) {
-                        mc.gameSettings.keyBindUseItem.pressed = true
+
+            doBlock = when(blockMode.get().lowercase()) {
+                "percent" -> (System.currentTimeMillis() - leftLastSwing >= leftDelay * blockPercentStartValue.get().toDouble() && System.currentTimeMillis() - leftLastSwing <= leftDelay * blockPercentEndValue.get().toDouble()) 
+                "ticks" -> (blockTicks <= blockTicksValue.get())
+                "miliseconds" -> (System.currentTimeMillis() - leftLastSwing >= blockMsValue.get().toDouble())
+                else -> false
+            }
+
+            if ( !blockOnClick.get() || Mouse.isButtonDown(1)) {
+                if (blockMode.equals("Click")) {
+                    if ( !clickBlocked && System.currentTimeMillis() - leftLastSwing > 1 ) {
+                        clickBlocked = true
+                        KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
                     }
                 } else {
-                    mc.gameSettings.keyBindUseItem.pressed = true
+                    mc.gameSettings.keyBindUseItem.pressed = doBlock
                 }
-            } else {
-                mc.gameSettings.keyBindUseItem.pressed = false
             }
         }
             
@@ -113,6 +130,7 @@ object AutoClicker : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        blockTicks ++
         if (jitterValue.get() && (leftValue.get() && mc.gameSettings.keyBindAttack.isKeyDown || rightValue.get() && mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem)) {
             if (Random.nextBoolean()) mc.thePlayer.rotationYaw += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
 
