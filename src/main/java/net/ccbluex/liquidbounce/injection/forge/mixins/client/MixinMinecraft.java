@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
-import net.ccbluex.liquidbounce.features.module.modules.render.PerspectiveMod;
+import net.ccbluex.liquidbounce.features.module.modules.visual.PerspectiveMod;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
 import net.ccbluex.liquidbounce.utils.CPSCounter;

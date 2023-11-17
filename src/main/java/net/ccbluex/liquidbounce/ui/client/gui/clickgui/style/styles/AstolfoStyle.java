@@ -46,13 +46,13 @@ public class AstolfoStyle extends Style {
         if (categoryName.equals("movement")) {
             return new Color(46, 205, 111, 175);
         }
-        if (categoryName.equals("render")) {
+        if (categoryName.equals("visual")) {
             return new Color(76, 143, 200, 175);
         }
         if (categoryName.equals("world")) {
             return new Color(233, 215, 100, 175);
         }
-        if (categoryName.equals("misc")) {
+        if (categoryName.equals("other")) {
             return new Color(244, 157, 19, 175);
         }
         return ClickGUIModule.INSTANCE.generateColor();

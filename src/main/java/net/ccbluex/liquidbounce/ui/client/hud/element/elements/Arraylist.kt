@@ -110,7 +110,7 @@ class Arraylist(
     val delay = intArrayOf(0)
 
     private fun shouldExpect(module: Module): Boolean {
-        return noRenderModules.get() && module.category == ModuleCategory.RENDER
+        return noRenderModules.get() && module.category == ModuleCategory.VISUAL
     }
 
     private fun changeCase(inStr: String): String {

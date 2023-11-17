@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;

@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.render.Glint;
+import net.ccbluex.liquidbounce.features.module.modules.visual.Glint;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLivingBase;

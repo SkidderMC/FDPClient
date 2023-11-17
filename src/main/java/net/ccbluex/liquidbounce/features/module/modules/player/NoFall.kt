@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
-import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
+import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.features.value.ListValue

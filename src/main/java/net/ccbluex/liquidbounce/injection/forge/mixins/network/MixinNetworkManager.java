@@ -13,7 +13,7 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
+import net.ccbluex.liquidbounce.features.module.modules.other.SilentDisconnect;
 import net.ccbluex.liquidbounce.features.special.ProxyManager;
 import net.ccbluex.liquidbounce.utils.BlinkUtils;
 import net.ccbluex.liquidbounce.utils.ClientUtils;

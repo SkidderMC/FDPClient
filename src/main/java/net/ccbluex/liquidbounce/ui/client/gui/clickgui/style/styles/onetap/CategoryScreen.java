@@ -43,14 +43,14 @@ public class CategoryScreen
         if (moduleCategory.getDisplayName().equals("Movement")) {
             return "move";
         }
-        if (moduleCategory.getDisplayName().equals("Render")) {
-            return "visuals";
+        if (moduleCategory.getDisplayName().equals("Visual")) {
+            return "visual";
         }
         if (moduleCategory.getDisplayName().equals("World")) {
             return "world";
         }
-        if (moduleCategory.getDisplayName().equals("Misc")) {
-            return "misc";
+        if (moduleCategory.getDisplayName().equals("Other")) {
+            return "other";
         }
         if (moduleCategory.getDisplayName().equals("Exploit")) {
             return "exploit";

@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.command.CommandManager
-import net.ccbluex.liquidbounce.features.module.modules.misc.Insult
+import net.ccbluex.liquidbounce.features.module.modules.other.Insult
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 

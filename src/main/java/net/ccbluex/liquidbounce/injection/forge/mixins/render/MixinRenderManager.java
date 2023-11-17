@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import net.ccbluex.liquidbounce.features.module.modules.render.PerspectiveMod;
+import net.ccbluex.liquidbounce.features.module.modules.visual.PerspectiveMod;
 import net.minecraft.client.renderer.entity.RenderManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

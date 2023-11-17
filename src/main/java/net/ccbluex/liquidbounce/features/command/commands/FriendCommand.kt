@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
+import net.ccbluex.liquidbounce.features.module.modules.other.AntiBot
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 

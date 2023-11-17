@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
-import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
+import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.utils.*

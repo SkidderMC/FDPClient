@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
-import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;

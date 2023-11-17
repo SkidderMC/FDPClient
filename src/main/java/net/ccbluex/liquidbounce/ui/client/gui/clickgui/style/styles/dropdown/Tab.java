@@ -41,11 +41,11 @@ public class Tab {
             l = "A";
         } else if (enumModuleType.name().equalsIgnoreCase("Player")) {
             l = "B";
-        } else if (enumModuleType.name().equalsIgnoreCase("Render")) {
+        } else if (enumModuleType.name().equalsIgnoreCase("Visual")) {
             l = "C";
         } else if (enumModuleType.name().equalsIgnoreCase("Exploit")) {
             l = "G";
-        } else if (enumModuleType.name().equalsIgnoreCase("Misc")) {
+        } else if (enumModuleType.name().equalsIgnoreCase("Other")) {
             l = "F";
         } else if (enumModuleType.name().equalsIgnoreCase("Client")) {
             l = "E";

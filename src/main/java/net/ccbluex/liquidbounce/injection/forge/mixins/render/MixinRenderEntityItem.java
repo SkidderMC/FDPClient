@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.render.Chams;
-import net.ccbluex.liquidbounce.features.module.modules.render.ItemPhysics;
+import net.ccbluex.liquidbounce.features.module.modules.visual.Chams;
+import net.ccbluex.liquidbounce.features.module.modules.visual.ItemPhysics;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.Render;

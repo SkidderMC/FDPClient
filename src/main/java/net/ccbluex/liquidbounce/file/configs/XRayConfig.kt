@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.file.configs
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.features.module.modules.render.XRay
+import net.ccbluex.liquidbounce.features.module.modules.visual.XRay
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.ClientUtils

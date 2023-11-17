@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.impl.B
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.impl.ListElement
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.impl.IntElement
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.impl.FloatElement
-import net.ccbluex.liquidbounce.ui.client.gui.newVer.extensions.animSmooth
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance

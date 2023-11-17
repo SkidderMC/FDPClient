@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.render.XRay;
+import net.ccbluex.liquidbounce.features.module.modules.visual.XRay;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
 import org.spongepowered.asm.mixin.Mixin;

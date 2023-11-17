@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.render.Chams;
-import net.ccbluex.liquidbounce.features.module.modules.render.NameTags;
-import net.ccbluex.liquidbounce.features.module.modules.render.TrueSight;
+import net.ccbluex.liquidbounce.features.module.modules.visual.Chams;
+import net.ccbluex.liquidbounce.features.module.modules.visual.NameTags;
+import net.ccbluex.liquidbounce.features.module.modules.visual.TrueSight;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.minecraft.client.Minecraft;

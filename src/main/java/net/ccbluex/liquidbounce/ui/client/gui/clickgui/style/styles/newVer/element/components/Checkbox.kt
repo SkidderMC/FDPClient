@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui.newVer.element.components
 
-import net.ccbluex.liquidbounce.ui.client.gui.newVer.extensions.animLinear
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.extensions.animLinear
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11

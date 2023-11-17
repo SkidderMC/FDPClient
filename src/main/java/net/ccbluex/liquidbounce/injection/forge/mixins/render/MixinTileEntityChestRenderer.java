@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.render.Chams;
+import net.ccbluex.liquidbounce.features.module.modules.visual.Chams;
 import net.minecraft.client.renderer.tileentity.TileEntityChestRenderer;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;

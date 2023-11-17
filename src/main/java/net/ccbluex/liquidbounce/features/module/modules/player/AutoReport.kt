@@ -13,8 +13,8 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
-import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
+import net.ccbluex.liquidbounce.features.module.modules.other.AntiBot
+import net.ccbluex.liquidbounce.features.module.modules.other.Teams
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue

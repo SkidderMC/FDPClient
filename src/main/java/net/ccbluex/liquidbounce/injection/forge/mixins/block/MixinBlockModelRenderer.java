@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.render.XRay;
+import net.ccbluex.liquidbounce.features.module.modules.visual.XRay;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.renderer.WorldRenderer;

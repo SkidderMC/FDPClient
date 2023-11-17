@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.render.Breadcrumbs
+import net.ccbluex.liquidbounce.features.module.modules.visual.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.features.value.BoolValue

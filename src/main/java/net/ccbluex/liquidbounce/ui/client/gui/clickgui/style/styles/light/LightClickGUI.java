@@ -469,11 +469,11 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             categoryYpos = 140;
         if (currentCategory == ModuleCategory.EXPLOIT)
             categoryYpos = 175;
-        if (currentCategory == ModuleCategory.MISC)
+        if (currentCategory == ModuleCategory.OTHER)
             categoryYpos = 210;
         if (currentCategory == ModuleCategory.CLIENT)
             categoryYpos = 245;
-        if (currentCategory == ModuleCategory.RENDER)
+        if (currentCategory == ModuleCategory.VISUAL)
             categoryYpos = 280;
 
         // detect mouse clicking on categories
@@ -558,8 +558,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         if (isCategoryHovered(startX - 5, startY + 3 + 195, startX + 35 + categoryAnimation, startY + 13 + 220, mouseX, mouseY)) {
             categoryYpos = 210;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
-                if (currentCategory != ModuleCategory.MISC) {
-                    currentCategory = ModuleCategory.MISC;
+                if (currentCategory != ModuleCategory.OTHER) {
+                    currentCategory = ModuleCategory.OTHER;
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
@@ -588,8 +588,8 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         if (isCategoryHovered(startX - 5, startY + 3 + 265, startX + 35 + categoryAnimation, startY + 13 + 290, mouseX, mouseY)) {
             categoryYpos = 280;
             if (Mouse.isButtonDown(0) && !categoryMouse) {
-                if (currentCategory != ModuleCategory.RENDER) {
-                    currentCategory = ModuleCategory.RENDER;
+                if (currentCategory != ModuleCategory.VISUAL) {
+                    currentCategory = ModuleCategory.VISUAL;
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;

@@ -128,16 +128,22 @@ object MathUtils {
         return Math.sqrt(sigma.toDouble()) * random.nextGaussian() + x
     }
 
-    fun interpolateFloat(oldValue: Float, newValue: Float, interpolationValue: Double): Float {
-        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toFloat()
-    }
-
     fun roundToHalf(d: Double): Double {
         return Math.round(d * 2.0) / 2.0
     }
 
     fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
         return oldValue + (newValue - oldValue) * interpolationValue
+    }
+
+    @JvmStatic
+    fun interpolateFloat(oldValue: Float, newValue: Float, interpolationValue: Double): Float {
+        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toFloat()
+    }
+
+    @JvmStatic
+    fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Double): Int {
+        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toInt()
     }
 
     fun calculateGaussianValue(x: Float, sigma: Float): Float {
