@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.ColorManager
-import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.components.ToggleSwitch
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.element.components.ToggleSwitch
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.ValueElement
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.impl.BooleanElement
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.impl.ListElement

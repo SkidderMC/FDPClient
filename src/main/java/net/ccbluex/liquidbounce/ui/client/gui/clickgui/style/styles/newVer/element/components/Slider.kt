@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.ui.client.gui.newVer.element.components
+package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.element.components
 
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.extensions.animSmooth

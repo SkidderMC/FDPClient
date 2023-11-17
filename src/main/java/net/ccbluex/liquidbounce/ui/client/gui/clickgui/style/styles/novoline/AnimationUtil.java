@@ -2,11 +2,11 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline;
 
 public class AnimationUtil {
     public static float fastmax(float a, float b) {
-        return (a >= b) ? a : b;
+        return Math.max(a, b);
     }
 
     public static float fastmin(float a, float b) {
-        return (a <= b) ? a : b;
+        return Math.min(a, b);
     }
 
     public static float moveUD(final float current, final float end, final float smoothSpeed, final float minSpeed) {

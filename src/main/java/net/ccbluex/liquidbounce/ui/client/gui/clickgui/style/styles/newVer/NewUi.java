@@ -174,8 +174,9 @@ public class NewUi extends GuiScreen {
         searchElement.handleMouseRelease(mouseX, mouseY, state, 230, 50, width - 260, height - 80, categoryElements);
         if (!searchElement.isTyping())
             for (CategoryElement ce : categoryElements) {
-                if (ce.getFocused())
-                ce.handleMouseRelease(mouseX, mouseY, state, 230, 50, width - 260, height - 80);
+                if (ce.getFocused()) {
+                    ce.handleMouseRelease(mouseX, mouseY, state, 230, 50, width - 260, height - 80);
+                }
             }
         super.mouseReleased(mouseX, mouseY, state);
     }

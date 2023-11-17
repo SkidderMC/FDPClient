@@ -15,7 +15,6 @@ import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.util.ArrayList;
 
-
 public class Window {
     public final ModuleCategory category;
     public final ArrayList<Button> buttons = Lists.newArrayList();

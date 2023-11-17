@@ -23,6 +23,8 @@ class AACv3Longjump : LongJumpMode("AACv3") {
                 EnumFacing.EAST -> x = +value
                 EnumFacing.SOUTH -> z = +value
                 EnumFacing.WEST -> x = -value
+                EnumFacing.DOWN -> TODO()
+                EnumFacing.UP -> TODO()
             }
 
             mc.thePlayer.setPosition(mc.thePlayer.posX + x, mc.thePlayer.posY, mc.thePlayer.posZ + z)
