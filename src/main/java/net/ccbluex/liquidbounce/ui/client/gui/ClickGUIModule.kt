@@ -22,7 +22,6 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.light.LightC
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline.ClickyUI
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.OtcClickGUi
-import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.tenacity.TenacityClickGUI
 import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
@@ -59,10 +58,6 @@ object ClickGUIModule : Module() {
         }
     }
 
-    val backback = BoolValue("Background Accent", true)
-    val scrollMode = ListValue("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")
-    val colormode = ListValue("Setting Accent", arrayOf("White", "Color"), "Color")
-    val clickHeight = IntegerValue("Tab Height", 250, 100, 500)
     val scaleValue = FloatValue("Scale", 0.70f, 0.7f, 2f)
     val maxElementsValue = IntegerValue("MaxElements", 20, 1, 35)
     val backgroundValue = ListValue("Background", arrayOf("Default", "Gradient", "None"), "None")
@@ -75,24 +70,14 @@ object ClickGUIModule : Module() {
     val getClosePrevious = BoolValue("ClosePrevious", false)
     val disp = BoolValue("DisplayValue", true)
 
-    private var lightClickGUI = LightClickGUI()
-    private var otcGui = OtcClickGUi()
-    private var novoline = ClickyUI()
-    private var slight = SlightUI()
-    private var dropdown = DropdownGUI()
-    private var tena = TenacityClickGUI()
-    private var bjur = BjurStyle()
-
     override fun onEnable() {
         when {
-            styleValue.get().contains("Novoline") -> mc.displayGuiScreen(novoline)
-            styleValue.get().contains("OneTap") -> mc.displayGuiScreen(otcGui)
-            styleValue.get().contains("Light") -> mc.displayGuiScreen(lightClickGUI)
-            styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(dropdown)
-            styleValue.get().equals("Tenacity", ignoreCase = true) -> mc.displayGuiScreen(tena)
+            styleValue.get().contains("Novoline") -> mc.displayGuiScreen(ClickyUI.getInstance())
+            styleValue.get().contains("OneTap") -> mc.displayGuiScreen(OtcClickGUi.getInstance())
+            styleValue.get().contains("Light") -> mc.displayGuiScreen(LightClickGUI.getInstance())
+            styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(DropdownGUI.getInstance())
             styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())
-            styleValue.get().equals("Bjur", ignoreCase = true) -> mc.displayGuiScreen(bjur)
-            styleValue.get().contains("Slight") -> mc.displayGuiScreen(slight)
+            styleValue.get().contains("Slight") -> mc.displayGuiScreen(SlightUI.getInstance())
             else -> {
                 updateStyle()
                 mc.displayGuiScreen(modernuiLaunchOption.clickGui)

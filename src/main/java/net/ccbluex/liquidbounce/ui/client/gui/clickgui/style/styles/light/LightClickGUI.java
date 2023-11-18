@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.light.LightSettings.InputBox;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.light.ModuleSettings.Settings;
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.NewUi;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.AnimationHelper;
@@ -29,8 +30,10 @@ import java.io.IOException;
 
 public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
 
-    // light style by dg636 & opzywl
-
+    private static LightClickGUI instance;
+    public static LightClickGUI getInstance() {
+        return instance == null ? instance = new LightClickGUI() : instance;
+    }
     private ModuleCategory currentCategory = ModuleCategory.COMBAT;
     private Module currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
     private float startX = 50, startY = 25;

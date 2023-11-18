@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown;
 
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.Slight.SlightUI;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiScreen;
@@ -20,6 +21,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 public class DropdownGUI extends GuiScreen {
+
+    private static DropdownGUI instance;
+    public static DropdownGUI getInstance() {
+        return instance == null ? instance = new DropdownGUI() : instance;
+    }
 
     private final List<Tab> tabs = new CopyOnWriteArrayList<>();
     private boolean dragging;
