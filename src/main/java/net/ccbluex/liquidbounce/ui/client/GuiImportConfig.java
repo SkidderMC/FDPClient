@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.client.button.FlatButtonRenderer;
+import net.ccbluex.liquidbounce.features.module.impl.client.button.FlatButtonRenderer;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.gui.modernui.GuiScriptLoadMenu;
 import net.ccbluex.liquidbounce.ui.client.gui.scriptOnline.ScriptSubscribe;

@@ -7,9 +7,9 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.KeyEvent;
-import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.world.Stealer;
+import net.ccbluex.liquidbounce.features.module.impl.client.Animations;
+import net.ccbluex.liquidbounce.features.module.impl.combat.KillAura;
+import net.ccbluex.liquidbounce.features.module.impl.world.Stealer;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
