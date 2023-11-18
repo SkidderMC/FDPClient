@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.impl.exploit.ViaVersionFix;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.minecraft.block.BlockLadder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;

@@ -2,8 +2,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.impl.client.ClientSpoof;
-import net.ccbluex.liquidbounce.features.module.impl.client.button.AbstractButtonRenderer;
+import net.ccbluex.liquidbounce.features.module.modules.client.ClientSpoof;
+import net.ccbluex.liquidbounce.features.module.modules.client.button.AbstractButtonRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;

@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.logo;
 
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.api.FontManager;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.impl.SimpleFontManager;
+
 public class info {
     public static String Name = "FDPCLIENT";
 

@@ -21,9 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CFontRenderer extends CFont {
-    protected final CharData[] boldChars = new CharData[256];
-    protected final CharData[] italicChars = new CharData[256];
-    protected final CharData[] boldItalicChars = new CharData[256];
+    protected final CFont.CharData[] boldChars = new CFont.CharData[256];
+    protected final CFont.CharData[] italicChars = new CFont.CharData[256];
+    protected final CFont.CharData[] boldItalicChars = new CFont.CharData[256];
     private final int[] colorCode = new int[32];
     private final String colorcodeIdentifiers = "0123456789abcdefklmnor";
     protected DynamicTexture texBold;
@@ -302,7 +302,7 @@ public class CFontRenderer extends CFont {
         if (shadow) {
             color = new Color(0, 0, 0).getRGB();
         }
-        CharData[] currentData = this.charData;
+        CFont.CharData[] currentData = this.charData;
         float alpha = ((float) ((color >> 24) & 255)) / 255.0f;
         boolean bold = false;
         boolean italic = false;
@@ -412,7 +412,7 @@ public class CFontRenderer extends CFont {
         if (shadow) {
             color = new Color(0, 0, 0).getRGB();
         }
-        CharData[] currentData = this.charData;
+        CFont.CharData[] currentData = this.charData;
         float alpha = ((float) ((color >> 24) & 255)) / 255.0f;
         boolean bold = false;
         boolean italic = false;
@@ -513,7 +513,7 @@ public class CFontRenderer extends CFont {
             return 0;
         }
         int width = 0;
-        CharData[] currentData = this.charData;
+        CFont.CharData[] currentData = this.charData;
         boolean bold = false;
         boolean italic = false;
         int size = text.length();

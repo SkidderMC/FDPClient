@@ -7,11 +7,11 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
-import net.ccbluex.liquidbounce.features.module.impl.client.Animations;
-import net.ccbluex.liquidbounce.features.module.impl.client.HUD;
-import net.ccbluex.liquidbounce.features.module.impl.client.HotbarSettings;
-import net.ccbluex.liquidbounce.features.module.impl.render.AntiBlind;
-import net.ccbluex.liquidbounce.features.module.impl.render.Crosshair;
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings;
+import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.visual.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
@@ -87,7 +87,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if (hotbarType.equals("Minecraft")) {
                 this.drawTexturedModalRect( sr.getScaledWidth() / 2 - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
-                this.drawTexturedModalRect(((sr.getScaledWidth() / 2) - 91 + net.ccbluex.liquidbounce.features.module.impl.client.HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20)) - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+                this.drawTexturedModalRect(((sr.getScaledWidth() / 2) - 91 + net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20)) - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
             }
             this.zLevel = f;
             RenderHelper.enableGUIStandardItemLighting();

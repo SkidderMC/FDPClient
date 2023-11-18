@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.impl
 
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.ValueElement
-import net.ccbluex.liquidbounce.ui.client.gui.newVer.extensions.animSmooth
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils

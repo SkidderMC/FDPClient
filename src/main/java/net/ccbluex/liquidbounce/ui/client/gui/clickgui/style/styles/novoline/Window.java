@@ -15,7 +15,6 @@ import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.util.ArrayList;
 
-
 public class Window {
     public final ModuleCategory category;
     public final ArrayList<Button> buttons = Lists.newArrayList();
@@ -72,7 +71,7 @@ public class Window {
 
         allX = 12;
         int height = 15 + current;
-        if (category.name().equals("Misc")) {
+        if (category.name().equals("Other")) {
             if (height > 250 - 143) {
                 height = 250 - 143;
             }
@@ -92,7 +91,7 @@ public class Window {
                 height = 270 - 58;
             }
         }
-        if (!category.name().equals("Player") && !category.name().equals("Misc")
+        if (!category.name().equals("Player") && !category.name().equals("Other")
                 && !category.name().equals("Combat") && !category.name().equals("Movement")) {
             if (height > 316) {
                 height = 316;
@@ -128,16 +127,16 @@ public class Window {
         RenderUtils.drawBorderedRect(x - 0.5, y - 0.5, x + 91 + allX, y + expand, 0.05f, new Color(29, 29, 29).getRGB(), new Color(40, 40, 40).getRGB());
 
 
-        if (category.name().equals("Misc")) {
+        if (category.name().equals("Other")) {
             Fonts.font35.drawStringWithShadow("Exploit", x + 4, y + 5, -1);
         }
         if (category.name().equals("World")) {
             Fonts.font35.drawStringWithShadow("Misc", x + 4, y + 5, -1);
         }
-        if (category.name().equals("Render")) {
-            Fonts.font35.drawStringWithShadow("Visuals", x + 4, y + 5, -1);
+        if (category.name().equals("Visual")) {
+            Fonts.font35.drawStringWithShadow("Visual", x + 4, y + 5, -1);
         }
-        if (!category.name().equals("Render") && !category.name().equals("Misc") && !category.name().equals("World")) {
+        if (!category.name().equals("Visual") && !category.name().equals("Misc") && !category.name().equals("World")) {
             Fonts.font35.drawStringWithShadow(category.name(), x + 4, y + 5, -1);
         }
         //Icons start
@@ -145,10 +144,10 @@ public class Window {
         if (category.name().equals("Combat")) {
             novoicons.drawString("a", x + 78 + allX, y + 7, -1);
         }
-        if (category.name().equals("Misc")) {
+        if (category.name().equals("Other")) {
             novoicons.drawString("G", x + 78 + allX, y + 5, -1);
         }
-        if (category.name().equals("Render")) {
+        if (category.name().equals("Visual")) {
             novoicons.drawString("f", x + 78 + allX, y + 6, -1);
         }
         if (category.name().equals("Player")) {

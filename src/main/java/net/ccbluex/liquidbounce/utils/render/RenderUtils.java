@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.impl.render.KillESP;
+import net.ccbluex.liquidbounce.features.module.modules.visual.KillESP;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
@@ -2156,6 +2156,24 @@ public final class RenderUtils extends MinecraftInstance {
         final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
         final float factor = scaledResolution.getScaleFactor() * scaleOffset;
         glScissor((int) (x * factor), (int) ((scaledResolution.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
+    }
+
+    public static void drawUnfilledCircle(double x, double y, float radius, float lineWidth, int color) {
+        GLUtil.setup2DRendering();
+        color(color);
+        glLineWidth(lineWidth);
+        glEnable(GL_LINE_SMOOTH);
+        glBegin(GL_POINT_BIT);
+
+        int i = 0;
+        while (i <= 360) {
+            glVertex2d(x + Math.sin((double) i * 3.141526 / 180.0) * (double) radius, y + Math.cos((double) i * 3.141526 / 180.0) * (double) radius);
+            ++i;
+        }
+
+        glEnd();
+        glDisable(GL_LINE_SMOOTH);
+        GLUtil.end2DRendering();
     }
 
     public static void resetCaps(final String scale) {

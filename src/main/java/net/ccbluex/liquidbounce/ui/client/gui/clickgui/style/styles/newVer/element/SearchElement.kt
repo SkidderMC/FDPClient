@@ -2,9 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.elem
 
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.IconManager
-import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.CategoryElement
-import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.SearchBox
-import net.ccbluex.liquidbounce.ui.client.gui.newVer.extensions.animSmooth
+import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -13,7 +11,6 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 
 import java.awt.Color
-import java.util.List
 import kotlin.math.abs
 
 class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val height: Float) {

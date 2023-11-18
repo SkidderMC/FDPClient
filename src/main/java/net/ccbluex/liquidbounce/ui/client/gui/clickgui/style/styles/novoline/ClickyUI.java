@@ -6,7 +6,6 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline;
 
 import com.google.common.collect.Lists;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.OtcClickGUi;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,11 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ClickyUI extends GuiScreen {
-
-    private static ClickyUI instance;
-    public static ClickyUI getInstance() {
-        return instance == null ? instance = new ClickyUI() : instance;
-    }
     public static ArrayList<Window> windows = Lists.newArrayList();
     public int scrollVelocity;
     public static boolean binding;

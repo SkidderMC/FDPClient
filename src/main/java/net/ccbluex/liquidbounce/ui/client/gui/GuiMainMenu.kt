@@ -10,7 +10,6 @@ import net.minecraft.client.gui.*
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.client.Minecraft;
 
-
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         fun isFastRenderEnabled(): Boolean {

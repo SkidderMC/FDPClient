@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline;
 
-
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
@@ -51,7 +50,7 @@ public class Button {
             y2 += 15;
         }
         if (index != 0) {
-            int FPS = Minecraft.getMinecraft().getDebugFPS() == 0 ? 1 : Minecraft.getMinecraft().getDebugFPS();
+            int FPS = Minecraft.getDebugFPS() == 0 ? 1 : Minecraft.getDebugFPS();
             Button b2 = parent.buttons.get(index - 1);
             y = b2.y + 15 + animationsize;
             if (b2.expand) {
@@ -104,7 +103,7 @@ public class Button {
         //if(HUD.Breathinglamp.get()){
 
         Color Ranbow = new Color(Color.HSBtoRGB(
-                (float) ((double) Minecraft.getMinecraft().thePlayer.ticksExisted / 50.0 + Math.sin((double) 50 / 50.0 * 1.6))
+                (float) ((double) Minecraft.getMinecraft().thePlayer.ticksExisted / 50.0 + Math.sin(1.6))
                         % 1.0f,
                 0.5f, 1.0f));
         return cheat.getState() ? Ranbow.getRGB() : new Color(40,40,40).getRGB();
@@ -114,7 +113,7 @@ public class Button {
     }
 
     private void smoothalphas() {
-        int FPS = Minecraft.getMinecraft().getDebugFPS() == 0 ? 1 : Minecraft.getMinecraft().getDebugFPS();
+        int FPS = Minecraft.getDebugFPS() == 0 ? 1 : Minecraft.getDebugFPS();
         if (cheat.getState()) {
             smoothalpha = (int) AnimationUtil.moveUD(smoothalpha, 255, processFPS(FPS, 1000, 0.013F), processFPS(FPS, 1000, 0.011F));
         } else {

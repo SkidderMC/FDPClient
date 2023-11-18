@@ -45,7 +45,6 @@ object ClickGUIModule : Module() {
             "LiquidBounce",
             "Tenacity5",
             "Slight",
-            "Bjur",
             "Null",
             "Slowly",
             "Black",
@@ -70,14 +69,20 @@ object ClickGUIModule : Module() {
     val getClosePrevious = BoolValue("ClosePrevious", false)
     val disp = BoolValue("DisplayValue", true)
 
+    private var lightClickGUI = LightClickGUI()
+    private var otcGui = OtcClickGUi()
+    private var novoline = ClickyUI()
+    private var slight = SlightUI()
+    private var dropdown = DropdownGUI()
+
     override fun onEnable() {
         when {
-            styleValue.get().contains("Novoline") -> mc.displayGuiScreen(ClickyUI.getInstance())
-            styleValue.get().contains("OneTap") -> mc.displayGuiScreen(OtcClickGUi.getInstance())
-            styleValue.get().contains("Light") -> mc.displayGuiScreen(LightClickGUI.getInstance())
-            styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(DropdownGUI.getInstance())
+            styleValue.get().contains("Novoline") -> mc.displayGuiScreen(novoline)
+            styleValue.get().contains("OneTap") -> mc.displayGuiScreen(otcGui)
+            styleValue.get().contains("Light") -> mc.displayGuiScreen(lightClickGUI)
+            styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(dropdown)
             styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())
-            styleValue.get().contains("Slight") -> mc.displayGuiScreen(SlightUI.getInstance())
+            styleValue.get().contains("Slight") -> mc.displayGuiScreen(slight)
             else -> {
                 updateStyle()
                 mc.displayGuiScreen(modernuiLaunchOption.clickGui)

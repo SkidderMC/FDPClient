@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap;
 
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.light.LightClickGUI;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.Utils.OtcScroll;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -17,11 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OtcClickGUi extends GuiScreen  {
-
-    private static OtcClickGUi instance;
-    public static OtcClickGUi getInstance() {
-        return instance == null ? instance = new OtcClickGUi() : instance;
-    }
     private static float mainx;
     private float x;
     private static float mainy;
@@ -46,8 +40,6 @@ public class OtcClickGUi extends GuiScreen  {
             this.x += Fonts.fontTahoma.getStringWidth(this.newcatename(category)) + 10;
         }
     }
-
-
     
     public String newcatename(final ModuleCategory moduleCategory) {
         if (moduleCategory.getDisplayName().equals("Combat")) {

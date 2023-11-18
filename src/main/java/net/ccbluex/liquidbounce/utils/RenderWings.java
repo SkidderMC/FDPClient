@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.impl.client.Wings;
+import net.ccbluex.liquidbounce.features.module.modules.client.Wings;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;

@@ -4,7 +4,6 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.value.*;
-import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.onetap.OtcClickGUi;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.Colors;
@@ -26,10 +25,6 @@ import java.util.Map;
 
 public class SlightUI extends GuiScreen implements GuiYesNoCallback {
 
-    private static SlightUI instance;
-    public static SlightUI getInstance() {
-        return instance == null ? instance = new SlightUI() : instance;
-    }
     public static ModuleCategory currentModuleType = ModuleCategory.COMBAT;
     public static Module currentModule = (Module) FDPClient.moduleManager.getModuleInCategory(currentModuleType).get(0);
     public static float startX = 100.0F;

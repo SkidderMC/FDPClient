@@ -243,7 +243,7 @@ class Notification(
                         RenderUtils.drawRoundedCornerRect(5F, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
                     }
 
-                    else -> {}
+                    FadeState.END -> TODO()
                 }
             } else {
                 RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
@@ -257,7 +257,7 @@ class Notification(
             return false
         }
         
-        if (style.equals("FDP")) {
+        if (style == "FDP") {
 
             if (blurRadius != 0f) {
                 BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale), (27f - 5f) * scale, blurRadius)
@@ -282,7 +282,7 @@ class Notification(
                         RenderUtils.drawRoundedCornerRect(5F, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
                     }
 
-                    else -> {}
+                    FadeState.END -> TODO()
                 }
             } else {
                 RenderUtils.drawRoundedCornerRect(0F + 3f, 0F, width.toFloat() + 5f, 27f - 5f, 2f, colors.rgb)
