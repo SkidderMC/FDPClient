@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.impl.client.Animations;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.minecraft.client.Minecraft;

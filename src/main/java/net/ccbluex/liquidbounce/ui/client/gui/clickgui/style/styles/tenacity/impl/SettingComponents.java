@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.objects.PasswordFie
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.render.GuiEvents;
 import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.impl.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.animations.Animation;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.animations.Direction;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.utils.animations.impl.DecelerateAnimation;

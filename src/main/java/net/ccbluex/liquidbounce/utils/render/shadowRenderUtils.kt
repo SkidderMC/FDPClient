@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
-import net.ccbluex.liquidbounce.features.module.modules.client.UIEffects
+import net.ccbluex.liquidbounce.features.module.impl.client.UIEffects
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

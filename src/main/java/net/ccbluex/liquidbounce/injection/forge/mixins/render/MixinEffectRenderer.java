@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 
-import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.impl.client.Animations;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityParticleEmitter;
 import org.spongepowered.asm.mixin.Mixin;

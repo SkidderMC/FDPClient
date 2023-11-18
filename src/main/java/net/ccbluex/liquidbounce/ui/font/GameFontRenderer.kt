@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.font
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.TextEvent
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.impl.client.HUD
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils

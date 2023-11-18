@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
+import net.ccbluex.liquidbounce.features.module.impl.client.Rotations;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;

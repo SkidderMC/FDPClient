@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.render.NoFOV;
+import net.ccbluex.liquidbounce.features.module.impl.render.NoFOV;
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;

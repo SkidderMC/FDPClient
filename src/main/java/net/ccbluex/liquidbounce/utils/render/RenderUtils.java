@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.render.KillESP;
+import net.ccbluex.liquidbounce.features.module.impl.render.KillESP;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;

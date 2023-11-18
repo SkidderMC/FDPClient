@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.performance;
 
 import com.google.common.collect.ImmutableSetMultimap;
-import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
+import net.ccbluex.liquidbounce.features.module.impl.client.Performance;
 import net.ccbluex.liquidbounce.injection.access.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

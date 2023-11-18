@@ -7,10 +7,10 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.BlockBBEvent;
-import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
-import net.ccbluex.liquidbounce.features.module.modules.player.NoFall;
-import net.ccbluex.liquidbounce.features.module.modules.render.XRay;
-import net.ccbluex.liquidbounce.features.module.modules.world.NoSlowBreak;
+import net.ccbluex.liquidbounce.features.module.impl.combat.Criticals;
+import net.ccbluex.liquidbounce.features.module.impl.player.NoFall;
+import net.ccbluex.liquidbounce.features.module.impl.render.XRay;
+import net.ccbluex.liquidbounce.features.module.impl.world.NoSlowBreak;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockState;

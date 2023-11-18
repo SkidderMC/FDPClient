@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown;
 import net.ccbluex.liquidbounce.FDPClient;
 
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.impl.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
