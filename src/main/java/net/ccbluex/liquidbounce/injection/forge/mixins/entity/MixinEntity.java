@@ -7,11 +7,11 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
-import net.ccbluex.liquidbounce.features.module.impl.client.Performance;
-import net.ccbluex.liquidbounce.features.module.impl.combat.HitBox;
-import net.ccbluex.liquidbounce.features.module.impl.movement.NoFluid;
-import net.ccbluex.liquidbounce.features.module.impl.movement.StrafeFix;
-import net.ccbluex.liquidbounce.features.module.impl.exploit.ViaVersionFix;
+import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
+import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.minecraft.block.Block;

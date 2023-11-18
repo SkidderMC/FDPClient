@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.IconManager;
-import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.element.CategoryElement;
+import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.CategoryElement;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.element.SearchElement;
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.ModuleElement;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
@@ -174,9 +174,8 @@ public class NewUi extends GuiScreen {
         searchElement.handleMouseRelease(mouseX, mouseY, state, 230, 50, width - 260, height - 80, categoryElements);
         if (!searchElement.isTyping())
             for (CategoryElement ce : categoryElements) {
-                if (ce.getFocused()) {
-                    ce.handleMouseRelease(mouseX, mouseY, state, 230, 50, width - 260, height - 80);
-                }
+                if (ce.getFocused())
+                ce.handleMouseRelease(mouseX, mouseY, state, 230, 50, width - 260, height - 80);
             }
         super.mouseReleased(mouseX, mouseY, state);
     }

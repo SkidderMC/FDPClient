@@ -5,13 +5,12 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown;
 
-import lombok.Getter;
-
-@Getter
 public class Client {
     private static Client INSTANCE;
     public DropdownGUI dropDownGUI;
-
+    public DropdownGUI getDropDownGUI() {
+        return dropDownGUI;
+    }
     public static Client getInstance() {
 
         try {

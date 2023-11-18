@@ -27,7 +27,6 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 public class LiquidBounceStyle extends Style {
@@ -283,7 +282,7 @@ public class LiquidBounceStyle extends Style {
 
     private BigDecimal round(final float f) {
         BigDecimal bd = new BigDecimal(Float.toString(f));
-        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        bd = bd.setScale(2, 4);
         return bd;
     }
 }

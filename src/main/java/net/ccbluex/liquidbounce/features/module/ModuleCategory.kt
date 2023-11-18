@@ -14,14 +14,13 @@ enum class ModuleCategory(val displayName: String, val configName: String, val h
     COMBAT("%module.category.combat%", "Combat", "&#xe000;"),
     PLAYER("%module.category.player%", "Player", "&#xe7fd;"),
     MOVEMENT("%module.category.movement%", "Movement", "&#xe566;"),
-    VISUAL("%module.category.visual%", "Visual", "&#xe417;"),
+    RENDER("%module.category.render%", "Render", "&#xe417;"),
     CLIENT("%module.category.client%", "Client", "&#xe869;"),
     WORLD("%module.category.world%", "World", "&#xe55b;"),
-    OTHER("%module.category.other%", "Other", "&#xe5d3;"),
+    MISC("%module.category.misc%", "Misc", "&#xe5d3;"),
     EXPLOIT("%module.category.exploit%", "Exploit", "&#xe868;");
 
     var namee: String? = null
-    var icon: String? = null
     var posX = 0
     var expanded = false
 
@@ -34,7 +33,6 @@ enum class ModuleCategory(val displayName: String, val configName: String, val h
 
     open fun ModuleCategory(name: String?) {
         namee = name
-        icon = icon
         posX = 40 + Main.categoryCount * 120
         drag = Drag(posX.toFloat(), posY.toFloat())
         expanded = true

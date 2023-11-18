@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.impl.visual.Glint;
+import net.ccbluex.liquidbounce.features.module.modules.render.Glint;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.model.IBakedModel;
 import org.spongepowered.asm.mixin.Mixin;

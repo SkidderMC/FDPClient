@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.element
+package net.ccbluex.liquidbounce.ui.client.gui.newVer.element
 
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.client.gui.GuiTextField

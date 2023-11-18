@@ -5,11 +5,10 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.dropdown;
 
-import lombok.Getter;
 import net.ccbluex.liquidbounce.FDPClient;
 
 import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule;
-import net.ccbluex.liquidbounce.features.module.impl.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 public class Module {
-    @Getter
     private final net.ccbluex.liquidbounce.features.module.Module module;
     public int yPerModule, y;
     public Tab tab;
@@ -41,26 +39,26 @@ public class Module {
         }
     }
     private double length = 3, anim = 5;
-    private final int alph = 0;
+    private int alph = 0;
     float fraction = 0;
     float fractionBackground = 0;
     public void drawScreen(int mouseX, int mouseY) {
 
         Minecraft instance = Minecraft.getMinecraft();
-        int debugFPS = Minecraft.getDebugFPS();
+        int debugFPS = instance.getDebugFPS();
         if (module.getState() && fraction < 1) {
-            fraction += (float) (0.0025 * (2000 / debugFPS));
+            fraction += 0.0025 * (2000 / debugFPS);
         }
         if (!module.getState() && fraction > 0) {
-            fraction -= (float) (0.0025 * (2000 / debugFPS));
+            fraction -= 0.0025 * (2000 / debugFPS);
         }
 
         if (!module.getState()) {
             if (isHovered(mouseX, mouseY) && fractionBackground < 1) {
-                fractionBackground += (float) (0.0025 * (2000 / debugFPS));
+                fractionBackground += 0.0025 * (2000 / debugFPS);
             }
             if (!isHovered(mouseX, mouseY) && fractionBackground > 0) {
-                fractionBackground -= (float) (0.0025 * (2000 / debugFPS));
+                fractionBackground -= 0.0025 * (2000 / debugFPS);
             }
 
         }
@@ -83,7 +81,7 @@ public class Module {
             }
         }
 
-        HUD hud = FDPClient.moduleManager.getModule(HUD.class);
+        HUD hud = (HUD) FDPClient.moduleManager.getModule(HUD.class);
         Color colorHUD = ClickGUIModule.INSTANCE.generateColor();
         Color white = new Color(0xFFFFFF);
 
@@ -155,13 +153,13 @@ public class Module {
             for (Setting setting : settings.stream().filter(s -> s.setting.getDisplayable() ).collect(Collectors.toList())) {
                 gay += 15;
             }
-            return gay;
+            return tab.modules.indexOf(this) == tab.modules.size() - 1 ? gay : gay;
         } else {
             return 14;
         }
     }
 
-    private final float alpha = 0;
+    private float alpha = 0;
 
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         if (isHovered(mouseX, mouseY)) {
@@ -171,8 +169,8 @@ public class Module {
                     break;
                 case 1:
                     if (!module.getValues().isEmpty()) {
-                        final ClickGUIModule clickGUI = FDPClient.moduleManager.getModule(ClickGUIModule.class);
-                        if (!opened && ClickGUIModule.INSTANCE.getGetClosePrevious().get())
+                        final ClickGUIModule clickGUI = (ClickGUIModule) FDPClient.moduleManager.getModule(ClickGUIModule.class);
+                        if (!opened && clickGUI.INSTANCE.getGetClosePrevious().get())
                             tab.modules.forEach(module -> {
                                 if (module.opened)
                                     module.opened = false;
@@ -218,5 +216,8 @@ public class Module {
         return mouseX >= tab.getPosX() && mouseY >= y && mouseX <= tab.getPosX() + 101 && mouseY <= y + yPerModule;
     }
     private void update() {
+    }
+    public net.ccbluex.liquidbounce.features.module.Module getModule() {
+        return module;
     }
 }

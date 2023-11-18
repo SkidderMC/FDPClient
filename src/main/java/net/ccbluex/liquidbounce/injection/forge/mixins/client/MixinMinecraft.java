@@ -6,11 +6,11 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.*;
-import net.ccbluex.liquidbounce.features.module.impl.client.SoundModule;
-import net.ccbluex.liquidbounce.features.module.impl.client.Rotations;
-import net.ccbluex.liquidbounce.features.module.impl.combat.AutoClicker;
-import net.ccbluex.liquidbounce.features.module.impl.exploit.MultiActions;
-import net.ccbluex.liquidbounce.features.module.impl.visual.PerspectiveMod;
+import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
+import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
+import net.ccbluex.liquidbounce.features.module.modules.render.PerspectiveMod;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
 import net.ccbluex.liquidbounce.utils.CPSCounter;

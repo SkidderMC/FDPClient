@@ -6,13 +6,13 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.features.module.impl.client.Target.animalValue
-import net.ccbluex.liquidbounce.features.module.impl.client.Target.deadValue
-import net.ccbluex.liquidbounce.features.module.impl.client.Target.invisibleValue
-import net.ccbluex.liquidbounce.features.module.impl.client.Target.mobValue
-import net.ccbluex.liquidbounce.features.module.impl.client.Target.playerValue
-import net.ccbluex.liquidbounce.features.module.impl.other.AntiBot.isBot
-import net.ccbluex.liquidbounce.features.module.impl.other.Teams
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.animalValue
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.deadValue
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisibleValue
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.mobValue
+import net.ccbluex.liquidbounce.features.module.modules.client.Target.playerValue
+import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot.isBot
+import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase

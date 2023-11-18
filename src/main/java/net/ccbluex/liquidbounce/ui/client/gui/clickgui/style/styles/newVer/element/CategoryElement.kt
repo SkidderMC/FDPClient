@@ -1,10 +1,10 @@
-package net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.element
+package net.ccbluex.liquidbounce.ui.client.gui.newVer.element
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.ModuleElement
-import net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.newVer.extensions.animSmooth
+import net.ccbluex.liquidbounce.ui.client.gui.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MouseUtils

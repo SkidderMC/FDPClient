@@ -47,8 +47,6 @@ public interface Fonts {
 
 		final class ICONFONT_35 {
 
-			public static final FontRenderer ICONFONT_35 = ICONFONT.ofSize(35);
-
             private ICONFONT_35() {
 			}
 		}
