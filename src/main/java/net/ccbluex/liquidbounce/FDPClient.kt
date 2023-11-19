@@ -18,8 +18,6 @@ import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption
 import net.ccbluex.liquidbounce.ui.client.gui.GuiLaunchOptionSelectMenu
-import net.ccbluex.liquidbounce.ui.client.gui.scriptOnline.ScriptSubscribe
-import net.ccbluex.liquidbounce.ui.client.gui.scriptOnline.Subscriptions
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
@@ -68,7 +66,6 @@ object FDPClient {
     lateinit var moduleManager: ModuleManager
     lateinit var commandManager: CommandManager
     lateinit var eventManager: EventManager
-    private lateinit var subscriptions: Subscriptions
     lateinit var fileManager: FileManager
     lateinit var scriptManager: ScriptManager
     lateinit var tipSoundManager: TipSoundManager
@@ -116,7 +113,6 @@ object FDPClient {
         // Initialize managers
         fileManager = FileManager()
         configManager = ConfigManager()
-        subscriptions = Subscriptions()
         eventManager = EventManager()
         commandManager = CommandManager()
         macroManager = MacroManager()
@@ -178,19 +174,6 @@ object FDPClient {
         if (CLIENT_VERSION != "unknown") {
             thread(block = this::checkUpdate)
         }
-
-        // Load script subscripts
-        ClientUtils.logInfo("Loading Script Subscripts...")
-        fileManager.subscriptsConfig.subscripts.forEach { subscript ->
-            Subscriptions.addSubscribes(ScriptSubscribe(subscript.url, subscript.name))
-        }
-        scriptManager.disableScripts()
-        scriptManager.unloadScripts()
-        Subscriptions.subscribes.forEach { scriptSubscribe ->
-            scriptSubscribe.load()
-        }
-        scriptManager.loadScripts()
-        scriptManager.enableScripts()
 
         // Set title
         ClientUtils.setTitle()
