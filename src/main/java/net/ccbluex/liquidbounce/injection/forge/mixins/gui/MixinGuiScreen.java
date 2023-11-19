@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
-import net.ccbluex.liquidbounce.features.special.GradientBackground;
 import net.ccbluex.liquidbounce.font.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.particles.ParticleUtils;
@@ -133,14 +132,11 @@ public abstract class MixinGuiScreen {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         if(GuiBackground.Companion.getEnabled()) {
-            if (FDPClient.INSTANCE.getBackground() == null) {
-                GradientBackground.INSTANCE.draw(width, height);
-            }else{
+            if (FDPClient.INSTANCE.getBackground() != null) {
                 mc.getTextureManager().bindTexture(FDPClient.INSTANCE.getBackground());
                 Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
             }
-        
-            
+
             GlStateManager.resetColor();
             if (GuiBackground.Companion.getParticles())
                 ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);

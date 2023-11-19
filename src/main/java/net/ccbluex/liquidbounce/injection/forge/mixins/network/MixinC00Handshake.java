@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
-import net.ccbluex.liquidbounce.features.special.ClientSpoof;
+import net.ccbluex.liquidbounce.handler.network.ClientSpoof;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.handshake.client.C00Handshake;

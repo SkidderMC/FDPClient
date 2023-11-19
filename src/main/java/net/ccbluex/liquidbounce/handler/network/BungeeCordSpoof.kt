@@ -4,11 +4,12 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 
-package net.ccbluex.liquidbounce.features.special
+package net.ccbluex.liquidbounce.handler.network
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.handler.other.UUIDSpoofer
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.EnumConnectionState
 import net.minecraft.network.handshake.client.C00Handshake

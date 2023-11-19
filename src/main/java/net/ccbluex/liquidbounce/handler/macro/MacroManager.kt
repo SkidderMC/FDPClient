@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.macro
+package net.ccbluex.liquidbounce.handler.macro
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent

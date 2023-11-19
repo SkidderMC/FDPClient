@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.special
+package net.ccbluex.liquidbounce.handler.discord
 
 import com.jagrosh.discordipc.IPCClient
 import com.jagrosh.discordipc.IPCListener

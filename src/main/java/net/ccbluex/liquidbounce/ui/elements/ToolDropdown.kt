@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.ui.elements
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.features.special.BungeeCordSpoof
-import net.ccbluex.liquidbounce.features.special.ClientFixes
+import net.ccbluex.liquidbounce.handler.network.BungeeCordSpoof
+import net.ccbluex.liquidbounce.handler.network.ClientFixes
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils

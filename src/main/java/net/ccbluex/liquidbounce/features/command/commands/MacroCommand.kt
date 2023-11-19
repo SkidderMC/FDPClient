@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.macro.Macro
+import net.ccbluex.liquidbounce.handler.macro.Macro
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import org.lwjgl.input.Keyboard
 

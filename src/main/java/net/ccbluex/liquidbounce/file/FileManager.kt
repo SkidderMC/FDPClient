@@ -9,7 +9,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.features.macro.Macro
+import net.ccbluex.liquidbounce.handler.macro.Macro
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.file.configs.*
 import net.ccbluex.liquidbounce.utils.ClientUtils

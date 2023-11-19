@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.special
+package net.ccbluex.liquidbounce.handler.network
 
 import io.netty.bootstrap.ChannelFactory
 import io.netty.channel.socket.oio.OioSocketChannel

@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.special
+package net.ccbluex.liquidbounce.handler.other
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
@@ -7,7 +7,7 @@ import net.minecraft.network.handshake.client.C00Handshake
 
 object ServerSpoof : Listenable {
     var enable = false
-    var address = "redesky.com"
+    var address = "eu.loyisa.cn"
 
     @EventTarget
     fun onPacket(event: PacketEvent) {

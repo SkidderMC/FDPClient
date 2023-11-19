@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.special
+package net.ccbluex.liquidbounce.handler.combat
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*

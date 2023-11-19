@@ -9,11 +9,15 @@ import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
-import net.ccbluex.liquidbounce.features.macro.MacroManager
+import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
-import net.ccbluex.liquidbounce.features.special.*
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.config.ConfigManager
+import net.ccbluex.liquidbounce.handler.combat.CombatManager
+import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
+import net.ccbluex.liquidbounce.handler.network.BungeeCordSpoof
+import net.ccbluex.liquidbounce.handler.network.ClientFixes
+import net.ccbluex.liquidbounce.handler.other.ServerSpoof
 import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption
@@ -128,7 +132,6 @@ object FDPClient {
         // Register listeners
         eventManager.registerListener(RotationUtils())
         eventManager.registerListener(ClientFixes)
-        eventManager.registerListener(ClientSpoof())
         eventManager.registerListener(InventoryUtils)
         eventManager.registerListener(BungeeCordSpoof())
         eventManager.registerListener(ServerSpoof)

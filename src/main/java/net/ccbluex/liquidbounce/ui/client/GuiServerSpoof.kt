@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.features.special.ServerSpoof
+import net.ccbluex.liquidbounce.handler.other.ServerSpoof
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField

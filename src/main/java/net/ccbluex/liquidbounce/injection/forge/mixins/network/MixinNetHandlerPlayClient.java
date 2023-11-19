@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.PackSpoofer;
 import net.ccbluex.liquidbounce.features.module.modules.other.NoRotateSet;
 import net.ccbluex.liquidbounce.features.module.modules.other.SilentDisconnect;
-import net.ccbluex.liquidbounce.features.special.ClientFixes;
+import net.ccbluex.liquidbounce.handler.network.ClientFixes;
 import net.ccbluex.liquidbounce.utils.BlinkUtils;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.TransferUtils;

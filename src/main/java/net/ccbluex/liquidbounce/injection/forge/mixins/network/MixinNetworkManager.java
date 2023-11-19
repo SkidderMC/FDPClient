@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.other.SilentDisconnect;
-import net.ccbluex.liquidbounce.features.special.ProxyManager;
+import net.ccbluex.liquidbounce.handler.network.ProxyManager;
 import net.ccbluex.liquidbounce.utils.BlinkUtils;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;

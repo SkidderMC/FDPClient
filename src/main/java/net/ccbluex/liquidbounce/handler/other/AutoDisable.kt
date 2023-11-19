@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.special
+package net.ccbluex.liquidbounce.handler.other
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.EnumTriggerType
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -26,7 +25,7 @@ object AutoDisable : Listenable {
             .filter { it.state && it.autoDisable == EnumAutoDisableType.RESPAWN && it.triggerType == EnumTriggerType.TOGGLE }
             .forEach { module ->
                 module.state = false
-                FDPClient.hud.addNotification(Notification(this.name, "Disabled ${module.name} due world Changed.", NotifyType.WARNING, 2000))
+                FDPClient.hud.addNotification(Notification(name, "Disabled ${module.name} due world Changed.", NotifyType.WARNING, 2000))
             }
     }
 
@@ -37,7 +36,7 @@ object AutoDisable : Listenable {
                 .filter { it.state && it.autoDisable == EnumAutoDisableType.FLAG && it.triggerType == EnumTriggerType.TOGGLE }
                 .forEach { module ->
                     module.state = false
-                    FDPClient.hud.addNotification(Notification(this.name, "Disabled ${module.name} due flags.", NotifyType.WARNING, 2000))
+                    FDPClient.hud.addNotification(Notification(name, "Disabled ${module.name} due flags.", NotifyType.WARNING, 2000))
                 }
         }
     }
@@ -47,7 +46,7 @@ object AutoDisable : Listenable {
             .filter { it.state && it.autoDisable == EnumAutoDisableType.GAME_END }
             .forEach { module ->
                 module.state = false
-                FDPClient.hud.addNotification(Notification(this.name, "Disabled ${module.name} due to game end.", NotifyType.WARNING, 2000))
+                FDPClient.hud.addNotification(Notification(name, "Disabled ${module.name} due to game end.", NotifyType.WARNING, 2000))
             }
     }
 

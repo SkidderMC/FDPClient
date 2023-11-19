@@ -4,7 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 
-package net.ccbluex.liquidbounce.features.special
+package net.ccbluex.liquidbounce.handler.other
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 
