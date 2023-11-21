@@ -26,8 +26,6 @@ class SpecialConfig(file: File) : FileConfig(file) {
         ClientFixes.blockFML = true
         ClientFixes.blockProxyPacket = true
         ClientFixes.blockPayloadPackets = true
-        ServerSpoof.enable = false
-        ServerSpoof.address = "redesky.com"
         GuiBackground.enabled = true
         GuiBackground.particles = false
         GuiAltManager.randomAltField.text = "F%nD%nP%n_%s%s%s"
@@ -70,16 +68,6 @@ class SpecialConfig(file: File) : FileConfig(file) {
             ClientFixes.clientBrand = jsonValue.get("ClientBrand").getAsString();
             }
         }
-        if (json.has("serverspoof")) {
-            val jsonValue = json.getAsJsonObject("serverspoof")
-
-            if (jsonValue.has("enable")) {
-                ServerSpoof.enable = jsonValue.get("enable").asBoolean
-            }
-            if (jsonValue.has("address")) {
-                ServerSpoof.address = jsonValue.get("address").asString
-            }
-        }
         if (json.has("proxy")) {
             val jsonValue = json.getAsJsonObject("proxy")
 
@@ -119,11 +107,6 @@ class SpecialConfig(file: File) : FileConfig(file) {
         antiForgeJson.addProperty("block-proxy", ClientFixes.blockProxyPacket)
         antiForgeJson.addProperty("block-payload", ClientFixes.blockPayloadPackets)
         json.add("anti-forge", antiForgeJson)
-
-        val serverSpoofJson = JsonObject()
-        serverSpoofJson.addProperty("enable", ServerSpoof.enable)
-        serverSpoofJson.addProperty("address", ServerSpoof.address)
-        json.add("serverspoof", serverSpoofJson)
 
         val proxyJson = JsonObject()
         proxyJson.addProperty("enable", ProxyManager.isEnable)

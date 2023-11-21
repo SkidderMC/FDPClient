@@ -4,6 +4,8 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
+import cc.paimonmc.viamcp.ViaMCP;
+import cc.paimonmc.viamcp.utils.AttackOrder;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
@@ -25,11 +27,13 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.main.GameConfiguration;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Util;
@@ -100,6 +104,10 @@ public abstract class MixinMinecraft {
 
     private float prevYaw = 0.0f;
 
+    @Inject(method = "<init>", at = @At("RETURN"))
+    public void injectConstructor(GameConfiguration p_i45547_1_, CallbackInfo ci) {
+        ViaMCP.staticInit();
+    }
 
     @Inject(method = "run", at = @At("HEAD"))
     private void init(CallbackInfo callbackInfo) {
@@ -196,6 +204,14 @@ public abstract class MixinMinecraft {
         CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
         if (FDPClient.moduleManager.getModule(AutoClicker.class).getState())
             leftClickCounter = 0;
+    }
+
+    @Redirect(
+            method = "clickMouse",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;attackEntity(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/entity/Entity;)V")
+    )
+    public void fixAttackOrder_VanillaAttack(PlayerControllerMP controller, EntityPlayer player, Entity e) {
+        AttackOrder.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
     }
 
     @Inject(method = "middleClickMouse", at = @At("HEAD"))

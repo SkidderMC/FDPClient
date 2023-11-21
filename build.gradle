@@ -11,8 +11,10 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url = "https://maven.minecraftforge.net/" }
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
+    maven { url = "https://repo.viaversion.com" }
 }
 
 version = "5.4.0"
@@ -39,7 +41,20 @@ minecraft {
 configurations {
     include
     implementation.extendsFrom(include)
+
+    external
+    compile.extendsFrom(external)
+
+    runtimeOnly.canBeResolved = true
 }
+
+def viaLibs = [
+        "com.viaversion:viaversion:${project.viaversion_version}",
+        "com.viaversion:viabackwards:${project.viabackwards_version}",
+        "com.viaversion:viarewind-universal:${project.viarewind_version}",
+        "org.yaml:snakeyaml:${project.snake_yml_version}",
+        "org.slf4j:slf4j-api:${project.slf4j_version}"
+]
 
 dependencies {
     implementation 'org.projectlombok:lombok:1.18.26'
@@ -51,6 +66,16 @@ dependencies {
         exclude module: "launchwrapper"
         exclude module: "log4j-core"
         exclude module: "slf4j-api"
+    }
+
+    for (final def via in viaLibs) {
+        include(via)
+    }
+
+    include('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {
+        exclude module: 'asm-commons'
+        exclude module: 'asm-tree'
+        exclude module: 'asm'
     }
 
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")

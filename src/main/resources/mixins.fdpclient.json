@@ -64,6 +64,7 @@
     "network.MixinC17PacketCustomPayload",
     "network.MixinS3FPacketCustomPayload",
     "network.MixinBlockedServers",
+    "network.MixinNetworkManagerChInit",
     "performance.MixinBlock",
     "performance.MixinChunk",
     "performance.MixinWorld",

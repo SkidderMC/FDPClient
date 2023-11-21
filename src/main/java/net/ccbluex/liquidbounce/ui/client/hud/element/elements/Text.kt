@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
+import cc.paimonmc.viamcp.ViaMCP
+import cc.paimonmc.viamcp.protocols.ProtocolCollection
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -130,6 +132,7 @@ class Text(
             "cps", "lcps" -> return CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString()
             "mcps" -> return CPSCounter.getCPS(CPSCounter.MouseButton.MIDDLE).toString()
             "rcps" -> return CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString()
+            "portalVersion" -> ProtocolCollection.getProtocolById(ViaMCP.getInstance().version).getName()
             else -> null // Null = don't replace
         }
     }
