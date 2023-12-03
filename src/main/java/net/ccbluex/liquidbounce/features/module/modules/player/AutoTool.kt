@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.util.BlockPos
 
@@ -21,9 +22,13 @@ object AutoTool : Module() {
     private val noCombat = BoolValue("NoCombat", true)
     private val silent = BoolValue("Silent", false)
 
+    private val noCombatTimer = MSTimer()
+
     @EventTarget
     fun onClick(event: ClickBlockEvent) {
-        if (FDPClient.combatManager.inCombat && noCombat.get()) return
+        if (FDPClient.combatManager.inCombat) noCombatTimer.reset()
+
+        if (noCombat.get() && !noCombatTimer.hasTimePassed(800L)) return
         switchSlot(event.clickedBlock ?: return)
     }
 
