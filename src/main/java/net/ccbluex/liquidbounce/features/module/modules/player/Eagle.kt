@@ -14,8 +14,15 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.minecraft.client.settings.GameSettings
+import net.ccbluex.liquidbounce.utils.MouseUtils
+import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks
+import net.minecraft.item.ItemBlock
 import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.MovingObjectPosition.MovingObjectType
+import org.lwjgl.input.Mouse
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 
 @ModuleInfo(name = "Eagle", category = ModuleCategory.PLAYER)
@@ -27,6 +34,8 @@ object Eagle : Module() {
     private val onlyGround = BoolValue("OnlyGround", true)
     private val onlyLookingDown = BoolValue("OnlyLookingDown", true)
     private val onlyMovingBack = BoolValue("OnlyMovingBack", true)
+    private val autoPlace = BoolValue("AutoPlace", true)
+    private val md = BoolValue("PlaceOnMouseDown",  true). displayable { autoPlace.get() }
     
     private val holdTimer = MSTimer()
     
@@ -54,5 +63,47 @@ object Eagle : Module() {
 
     override fun onDisable() {
         mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
+    }
+
+    private var l = 0L
+    private var f = 0
+    private var lm: MovingObjectPosition? = null
+    private var lp: BlockPos? = null
+
+    @EventTarget
+    fun onRender(event: Render3DEvent) {
+        if (mc.currentScreen == null && !mc.thePlayer.capabilities.isFlying) {
+            val i = mc.thePlayer.heldItem
+            if (i != null && i.item is ItemBlock) {
+                val m = mc.objectMouseOver
+                if (m != null && m.typeOfHit == MovingObjectType.BLOCK && (m.sideHit != EnumFacing.UP && m.sideHit != EnumFacing.DOWN) || (m.sideHit == EnumFacing.NORTH || m.sideHit == EnumFacing.EAST || m.sideHit == EnumFacing.SOUTH || m.sideHit == EnumFacing.WEST)) {
+                    if (this.lm != null && this.f.toDouble() < 1f) {
+                        ++this.f
+                    } else {
+                        this.lm = m
+                        val pos = m.blockPos
+                        if (this.lp == null || pos.x != lp!!.x || pos.y != lp!!.y || pos.z != lp!!.z) {
+                            val b = mc.theWorld.getBlockState(pos).block
+                            if (b != null && b !== Blocks.air && b !is BlockLiquid) {
+                                if (!md.get() || Mouse.isButtonDown(1)) {
+                                    val n = System.currentTimeMillis()
+                                    if (n - this.l >= 25L) {
+                                        this.l = n
+                                        if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, i, pos, m.sideHit, m.hitVec)) {
+                                            MouseUtils.setMouseButtonState(1, true)
+                                            mc.thePlayer.swingItem()
+                                            mc.itemRenderer.resetEquippedProgress()
+                                            MouseUtils.setMouseButtonState(1, false)
+                                            this.lp = pos
+                                            this.f = 0
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
