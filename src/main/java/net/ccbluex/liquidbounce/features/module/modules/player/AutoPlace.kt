@@ -26,7 +26,7 @@ import org.lwjgl.input.Mouse
 @ModuleInfo(name = "AutoPlace", category = ModuleCategory.PLAYER)
 object AutoPlace : Module() {
 
-    private val dl = FloatValue("Delay", 0F, 0F, 10F)
+    private val dl = FloatValue("Delay", 0F, 0F, 4F)
     private val md = BoolValue("MouseDown", false)
     private var l = 0L
     private var f = 0
