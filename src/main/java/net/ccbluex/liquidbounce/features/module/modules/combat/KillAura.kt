@@ -320,6 +320,8 @@ object KillAura : Module() {
     private var delayBlock = false
     private var legitBlocking = 0
 
+    private var test2_block = false
+
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
         var aabb = it.hitBox
@@ -474,9 +476,9 @@ object KillAura : Module() {
         }
 
         if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
-            if (mc.thePlayer.ticksExisted % 3 == 1) {
+            if (mc.thePlayer.ticksExisted % 4 == 1) {
                 startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-            } else if (mc.thePlayer.ticksExisted % 3 == 2) {
+            } else if (mc.thePlayer.ticksExisted % 4 == 3) {
                 stopBlocking()
             }
         }
@@ -496,7 +498,7 @@ object KillAura : Module() {
     private fun runAttackLoop() {
 
         if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
-            if (mc.thePlayer.ticksExisted % 3 > 0) {
+            if (mc.thePlayer.ticksExisted % 4 > 0) {
                 return
             }
         }
@@ -566,7 +568,7 @@ object KillAura : Module() {
             return
         }
 
-        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Test2") && blockingStatus) {
+        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Test2") && blockingStatus && clicks > 0) {
             stopBlocking()
             return
         }
@@ -589,13 +591,7 @@ object KillAura : Module() {
             return
         }
 
-        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Test2") && !blockingStatus) {
-            if (discoveredTargets.isNotEmpty()) {
-                val target = this.currentTarget ?: discoveredTargets.first()
-                startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-                blockingStatus = true
-            }
-        }
+        test2_block = true
     }
 
     /**
@@ -1074,6 +1070,15 @@ object KillAura : Module() {
             if (autoBlockPacketValue.equals("Delayed")) {
                 val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
                 startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+            }
+
+            if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Test2") && !blockingStatus && test2_block) {
+                if (discoveredTargets.isNotEmpty()) {
+                    val target = this.currentTarget ?: discoveredTargets.first()
+                    startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+                    blockingStatus = true
+                    test2_block = false
+                }
             }
         }
                 
