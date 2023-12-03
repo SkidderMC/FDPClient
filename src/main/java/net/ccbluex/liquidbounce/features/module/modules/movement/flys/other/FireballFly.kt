@@ -27,18 +27,18 @@ class FireballFly : FlyMode("Fireball") {
         if (warn.get())
             ClientUtils.displayChatMessage("§8[§c§lFireball-Flight§8] §aGetting exlposion from a fireball or tnt from behind is required to bypass.")
         velocitypacket = false
-        beforeVelo = false
-        mc.thePlayer.rotationYaw += 180.0
-        mc.thePlayer.rotationPitch = 70.0
+        mc.thePlayer.rotationYaw += 180f
+        mc.thePlayer.rotationPitch = 70f
     }
 
     override fun onUpdate(event: UpdateEvent) {
         mc.timer.timerSpeed = 1.0f
         if(velocitypacket) {
-            mc.thePlayer.rotationYaw += 180.0
-            mc.thePlayer.rotationPitch = 30.0
+            mc.thePlayer.rotationYaw += 180f
+            mc.thePlayer.rotationPitch = 30f
             mc.thePlayer.motionX *=  boostValue.get().toDouble()
             mc.thePlayer.motionZ *=  boostValue.get().toDouble()
+            velocitypacket = false
         }
     }
 
@@ -50,7 +50,6 @@ class FireballFly : FlyMode("Fireball") {
         val packet = event.packet
 
         if (packet is S27PacketExplosion ) {
-            tick = 0
             velocitypacket = true
         }
     }
