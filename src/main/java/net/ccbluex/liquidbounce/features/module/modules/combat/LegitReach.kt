@@ -1,4 +1,4 @@
-/*
+e/*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
@@ -41,14 +41,14 @@ object LegitReach : Module() {
 
 
     override fun onEnable() {
-        if (mode.equals("AllIncomingPackets")) {
+        if (mode.equals("IncomingBlink")) {
             BlinkUtils.setBlinkState(all = true)
         }
     }
     override fun onDisable() {
         removeFakePlayer()
         clearPackets()
-        if (mode.equals("AllIncomingPackets")) {
+        if (mode.equals("IncomingBlink")) {
             BlinkUtils.setBlinkState(off = true, release = true)
         }
     }
@@ -120,7 +120,7 @@ object LegitReach : Module() {
                 currentTarget = event.targetEntity as EntityLivingBase?
             }
             currentTarget?.let {
-                if (mc.thePlayer.getDistanceToEntityBox(it) > 2.5f) {
+                if (mc.thePlayer.getDistanceToEntityBox(it) > 2f) {
                     if (comboCounter >= 2) {
                         backtrack = true
                     }
@@ -215,7 +215,7 @@ object LegitReach : Module() {
             comboCounter = 0
         }
         
-        if (mode.equals("AllIncomingPackets") && backtrack) {
+        if (mode.equals("IncomingBlink") && backtrack) {
             if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
                 if (mc.thePlayer.ticksExisted < 20) return
                 event.cancelEvent()
