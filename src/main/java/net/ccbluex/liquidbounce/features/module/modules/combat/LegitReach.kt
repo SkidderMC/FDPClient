@@ -1,4 +1,4 @@
-/*
+e/*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.*
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.features.value.*
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.EntityLivingBase
@@ -34,6 +35,9 @@ object LegitReach : Module() {
     private var shown = false
     
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayClient>>()
+
+    private var comboCounter = 0
+    private var backtrack = false
 
 
     override fun onEnable() {
