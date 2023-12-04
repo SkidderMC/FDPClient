@@ -25,7 +25,7 @@ object LegitReach : Module() {
 
     var fakePlayer: EntityOtherPlayerMP? = null
     private val aura = BoolValue("Aura", false)
-    private val mode = ListValue("Mode", arrayOf("FakePlayer", "IntaveTest", "AllIncomingPackets", "TargetPackets"), "FakePlayer")
+    private val mode = ListValue("Mode", arrayOf("FakePlayer", "IntaveTest", "IncomingBlink"), "IncomingBlink")
     private val pulseDelayValue = IntegerValue("PulseDelay", 200, 50, 500)
     private val intavetesthurttime = IntegerValue("Packets", 5, 0, 30).displayable { mode.equals("IntaveTest") }
     
@@ -61,6 +61,7 @@ object LegitReach : Module() {
             PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
         }
         BlinkUtils.releasePacket()
+        backtrack = false
     }
 
 
@@ -75,6 +76,7 @@ object LegitReach : Module() {
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
+        comboCounter ++
         if ( mode.equals("FakePlayer") || mode.equals("IntaveTest") ) {
             clearPackets()
             if (fakePlayer == null) {
@@ -112,6 +114,13 @@ object LegitReach : Module() {
             if (event.targetEntity != currentTarget) {
                 clearPackets()
                 currentTarget = event.targetEntity as EntityLivingBase?
+            }
+            currentTarget?.let {
+                if (mc.thePlayer.getDistanceToEntityBox(it) > 2.5f) {
+                    if (comboCounter >= 2) {
+                        backtrack = true
+                    }
+                }
             }
         }
     }
@@ -193,17 +202,17 @@ object LegitReach : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state) return
+        if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state) {
+            clearPackets()
+            return
+        }
+
+        if (packet is S12PacketEntityVelocity) {
+            comboCounter = 0
+        }
         
-        if (mode.equals("TargetPackets")) {
-            if (packet is S14PacketEntity && FDPClient.combatManager.inCombat) {
-                if (packet.getEntity(mc.theWorld) == currentTarget) {
-                    event.cancelEvent()
-                    packets.add(packet as Packet<INetHandlerPlayClient>)
-                }
-            }
-        } else if (mode.equals("AllIncomingPackets")) {
-            if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && FDPClient.combatManager.inCombat) {
+        if (mode.equals("AllIncomingPackets") && backtrack) {
+            if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
                 if (mc.thePlayer.ticksExisted < 20) return
                 event.cancelEvent()
                 packets.add(packet as Packet<INetHandlerPlayClient>)
