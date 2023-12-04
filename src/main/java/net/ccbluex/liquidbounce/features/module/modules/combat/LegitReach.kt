@@ -213,6 +213,7 @@ object LegitReach : Module() {
 
         if (packet is S12PacketEntityVelocity) {
             comboCounter = 0
+            clearPackets()
         }
         
         if (mode.equals("IncomingBlink") && backtrack) {
