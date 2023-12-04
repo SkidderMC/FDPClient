@@ -15,25 +15,32 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.client.settings.GameSettings
+import net.minecraft.item.ItemFireball
+import net.minecraft.item.ItemStack
 
 class FireballFly : FlyMode("Fireball") {
 
 
-    private val warn = BoolValue("${valuePrefix}DamageWarn",true)
     private val boostValue = FloatValue("${valuePrefix}BoostAmount", 1.2f, 1f, 2f)
 
     private var velocitypacket = false
     private var ticks = 0
     private var beforeVelo = false
 
+    private var startingSlot = 0
+
     override fun onEnable() {
-        if (warn.get())
-            ClientUtils.displayChatMessage("§8[§c§lFireball-Flight§8] §aGetting exlposion from a fireball or tnt from behind is required to bypass.")
         velocitypacket = false
-        mc.thePlayer.rotationYaw += 180f
-        mc.thePlayer.rotationPitch = 60f
         beforeVelo = true
         ticks = 0
+        var fbSlot = getFBSlot()
+        if (fbSlot == -1) {
+            ClientUtils.displayChatMessage("§8[§c§lFireball-Flight§8] §aYou need a fireball to fly.")
+            fly.state = false
+        } else {
+            startingSlot = mc.thePlayer.inventory.currentItem 
+            mc.thePlayer.inventory.currentItem = fbSlot
+        }
     }
 
     override fun onUpdate(event: UpdateEvent) {
@@ -41,15 +48,25 @@ class FireballFly : FlyMode("Fireball") {
         if (beforeVelo) {
             if (mc.thePlayer.onGround) {
                 mc.thePlayer.jump()
+                MovementUtils.strafe(0.41f)
+            } else if (ticks == 1) {
+                mc.thePlayer.rotationYaw += 180f
+                mc.thePlayer.rotationPitch = 65f
+            } else {
+                mc.gameSettings.keyBindBack.pressed = true
+                mc.gameSettings.keyBindForward.pressed = true
             }
-            mc.gameSettings.keyBindBack.pressed = true
+            if (ticks == 3) {
+                KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+            }
         } else {
-            ticks ++
-            if (ticks > 6) {
+            if (ticks > 10) {
                 mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
                 fly.state = false
             }
         }
+
+        ticks ++
         
         if(velocitypacket) {
             mc.thePlayer.rotationYaw += 180f
@@ -66,6 +83,9 @@ class FireballFly : FlyMode("Fireball") {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1f
+        mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
+        mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
+        mc.thePlayer.inventory.currentItem = startingSlot
     }
 
     override fun onPacket(event: PacketEvent) {
@@ -74,5 +94,15 @@ class FireballFly : FlyMode("Fireball") {
         if (packet is S27PacketExplosion ) {
             velocitypacket = true
         }
+    }
+
+    private fun getFBSlot(): Int {
+        for(i in 36..45) {
+            var stack = mc.thePlayer.inventoryContainer.getSlot(i).getStack()
+            if (stack != null && stack.getItem() is ItemFireball) {
+                return i - 36
+            }
+        }
+        return -1
     }
 }
