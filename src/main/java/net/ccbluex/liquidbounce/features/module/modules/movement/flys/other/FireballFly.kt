@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.minecraft.network.play.server.S27PacketExplosion
+import net.minecraft.client.settings.GameSettings
 
 class FireballFly : FlyMode("Fireball") {
 
@@ -22,23 +23,44 @@ class FireballFly : FlyMode("Fireball") {
     private val boostValue = FloatValue("${valuePrefix}BoostAmount", 1.2f, 1f, 2f)
 
     private var velocitypacket = false
+    private var ticks = 0
+    private var beforeVelo = false
 
     override fun onEnable() {
         if (warn.get())
             ClientUtils.displayChatMessage("§8[§c§lFireball-Flight§8] §aGetting exlposion from a fireball or tnt from behind is required to bypass.")
         velocitypacket = false
         mc.thePlayer.rotationYaw += 180f
-        mc.thePlayer.rotationPitch = 70f
+        mc.thePlayer.rotationPitch = 60f
+        beforeVelo = true
+        ticks = 0
     }
 
     override fun onUpdate(event: UpdateEvent) {
         mc.timer.timerSpeed = 1.0f
+        if (beforeVelo) {
+            if (mc.thePlayer.onGround) {
+                mc.thePlayer.jump()
+            }
+            mc.gameSettings.keyBindBack.pressed = true
+        } else {
+            ticks ++
+            if (ticks > 6) {
+                mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
+                fly.state = false
+            }
+        }
+        
         if(velocitypacket) {
             mc.thePlayer.rotationYaw += 180f
             mc.thePlayer.rotationPitch = 30f
             mc.thePlayer.motionX *=  boostValue.get().toDouble()
             mc.thePlayer.motionZ *=  boostValue.get().toDouble()
             velocitypacket = false
+            beforeVelo = false
+            mc.gameSettings.keyBindForward.pressed = true
+            mc.gameSettings.keyBindBack.pressed = false
+            ticks = 0
         }
     }
 
