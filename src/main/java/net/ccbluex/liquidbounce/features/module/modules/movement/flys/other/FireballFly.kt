@@ -17,6 +17,7 @@ import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.item.ItemFireball
 import net.minecraft.item.ItemStack
+import net.minecraft.client.settings.KeyBinding
 
 class FireballFly : FlyMode("Fireball") {
 
