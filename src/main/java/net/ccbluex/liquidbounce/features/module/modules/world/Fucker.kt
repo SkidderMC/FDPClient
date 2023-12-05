@@ -163,12 +163,12 @@ object Fucker : Module() {
             // Destory block
             actionValue.equals("destroy") || surroundings || !isRealBlock -> {
                 if (throughWallsValue.equals("Hypixel")) {
-                    val blockPos = find(26)
+                    val blockPos = find(26)?: return
                     if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
                     !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
-                        currentPos = blockPos.up()
+                        currentPos = blockPos.up()?: return
                     } else {
-                        currentPos = blockPos
+                        currentPos = blockPos?: return
                     }
                 }
 
