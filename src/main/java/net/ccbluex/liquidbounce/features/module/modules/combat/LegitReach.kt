@@ -27,7 +27,8 @@ object LegitReach : Module() {
     var fakePlayer: EntityOtherPlayerMP? = null
     private val aura = BoolValue("Aura", false)
     private val mode = ListValue("Mode", arrayOf("FakePlayer", "IntaveTest", "IncomingBlink"), "IncomingBlink")
-    private val pulseDelayValue = IntegerValue("PulseDelay", 200, 50, 500)
+    private val pulseDelayValue = IntegerValue("MaxBacktrackLength", 200, 50, 1000)
+    private val velocityValue = BoolValue("StopOnVelocity", true). displayable (mode.equals("IncomingBlink") }
     private val intavetesthurttime = IntegerValue("Packets", 5, 0, 30).displayable { mode.equals("IntaveTest") }
     
     private val pulseTimer = MSTimer()
@@ -211,7 +212,7 @@ object LegitReach : Module() {
             return
         }
 
-        if (packet is S12PacketEntityVelocity) {
+        if (packet is S12PacketEntityVelocity && velocityValue.get()) {
             comboCounter = 0
             clearPackets()
         }
