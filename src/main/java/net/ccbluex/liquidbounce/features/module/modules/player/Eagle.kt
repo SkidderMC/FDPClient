@@ -88,7 +88,7 @@ object Eagle : Module() {
                             if (b != null && b !== Blocks.air && b !is BlockLiquid) {
                                 if (!md.get() || Mouse.isButtonDown(1)) {
                                     val n = System.currentTimeMillis()
-                                    if (n - this.l >= 25L) {
+                                    if (n - this.l >= 70L) {
                                         this.l = n
                                         if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, i, pos, m.sideHit, m.hitVec)) {
                                             MouseUtils.setMouseButtonState(1, true)
