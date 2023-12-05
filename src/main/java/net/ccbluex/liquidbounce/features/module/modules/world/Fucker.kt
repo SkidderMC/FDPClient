@@ -44,7 +44,7 @@ object Fucker : Module() {
      */
     private val blockValue = BlockValue("Block", 26)
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
-    private val throughWallsValue = ListValue("ThroughWalls", arrayOf("None", "Raycast", "Around"), "None")
+    private val throughWallsValue = ListValue("ThroughWalls", arrayOf("None", "Raycast", "Around", "Hypixel"), "None")
     private val renderValue = ListValue("Render-Mode", arrayOf("Box", "Outline", "2D", "None"), "Box")
     private val rangeValue = FloatValue("Range", 5F, 1F, 7F)
     private val actionValue = ListValue("Action", arrayOf("Destroy", "Use"), "Destroy")
@@ -162,6 +162,17 @@ object Fucker : Module() {
         when {
             // Destory block
             actionValue.equals("destroy") || surroundings || !isRealBlock -> {
+                if (throughWallsValue.equals("Hypixel")) {
+                    val blockPos = find(26)
+                    if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
+                    !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
+                        currentPos = blockPos.up()
+                    } else {
+                        currentPos = blockPos
+                    }
+                }
+
+                
                 // Auto Tool
                 val autoTool = FDPClient.moduleManager[AutoTool::class.java]!!
                 if (autoTool.state) {
@@ -315,7 +326,7 @@ object Fucker : Module() {
                 false -> TODO()
             }
             if (firstPosBed != null)
-                FDPClient.hud.addNotification(Notification(name,"Found second Bed block at ${firstPosBed!!.x.toInt()} ${firstPosBed!!.y.toInt()} ${firstPosBed!!.z.toInt()}", NotifyType.SUCCESS))
+                FDPClient.hud.addNotification(Notification(name,"Found second ${getBlockName(targetID)} block at ${firstPosBed!!.x.toInt()} ${firstPosBed!!.y.toInt()} ${firstPosBed!!.z.toInt()}", NotifyType.SUCCESS))
         }
     }
     return if (ignoreFirstBlockValue.get() && (firstPos == nearestBlock || firstPosBed == nearestBlock)) null else nearestBlock
