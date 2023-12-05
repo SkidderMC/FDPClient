@@ -28,7 +28,7 @@ object LegitReach : Module() {
     private val aura = BoolValue("Aura", false)
     private val mode = ListValue("Mode", arrayOf("FakePlayer", "IntaveTest", "IncomingBlink"), "IncomingBlink")
     private val pulseDelayValue = IntegerValue("MaxBacktrackLength", 200, 50, 1000)
-    private val velocityValue = BoolValue("StopOnVelocity", true). displayable (mode.equals("IncomingBlink") }
+    private val velocityValue = BoolValue("StopOnVelocity", true). displayable { mode.equals("IncomingBlink") }
     private val intavetesthurttime = IntegerValue("Packets", 5, 0, 30).displayable { mode.equals("IntaveTest") }
     
     private val pulseTimer = MSTimer()
