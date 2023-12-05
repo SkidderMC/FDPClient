@@ -511,12 +511,14 @@ object KillAura : Module() {
         if (autoBlockPacketValue.equals("Legit") && autoBlockValue.equals("Range")) {
             if (mc.thePlayer.hurtTime > 8) {
                 legitBlocking = 0
-                if (blockingStatus) stopBlocking()
-                blockingStatus = false
+                if (blockingStatus) {
+                    stopBlocking()
+                    blockingStatus = false
+                    return
+                }
             } else {
                 if (mc.thePlayer.hurtTime == 1) {
-                    legitBlocking = 4
-                    // extra tick to make it work if u have high ping
+                    legitBlocking = 3
                 } else if (legitBlocking > 0) {
                     legitBlocking--
                     // this code is correct u idiots
