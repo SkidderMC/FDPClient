@@ -7,7 +7,6 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 
 class HypixelBlinkNofall : NoFallMode("HypixelBlink") {
-    val blink = LiquidBounce.moduleManager[Blink::class.java]!!
 
     private var enabled = false
 
@@ -19,10 +18,10 @@ class HypixelBlinkNofall : NoFallMode("HypixelBlink") {
         if (mc.thePlayer.fallDistance > 1.5) {
             if (!enabled) {
                 BlinkUtils.setBlinkState(all = true)
-                enabed = true
+                enabled = true
             }
         } else {
-            enbaed = false
+            enabled = false
         }
         if(enabled && event.packet is C03PacketPlayer) {
             event.packet.onGround = true
