@@ -106,6 +106,16 @@ object Fucker : Module() {
         if (pos == null || Block.getIdFromBlock(BlockUtils.getBlock(pos)) != targetId ||
             BlockUtils.getCenterDistance(pos!!) > rangeValue.get()) {
             pos = find(targetId)
+
+            if (throughWallsValue.equals("Hypixel")) {
+                val blockPos = find(26)?: return
+                if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
+                !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
+                    pos = blockPos.up()?: return
+                } else {
+                    pos = blockPos?: return
+                }
+            }
         }
 
         // Reset current breaking when there is no target block
@@ -120,7 +130,7 @@ object Fucker : Module() {
         // Surroundings
         var surroundings = false
 
-        if (surroundingsValue.get()) {
+        if (surroundingsValue.get() && !throughWallsValue.equals("Hypixel")) {
             val eyes = mc.thePlayer.getPositionEyes(1F)
             val blockPos = mc.theWorld.rayTraceBlocks(eyes, rotations.vec, false,
                     false, true).blockPos
@@ -135,6 +145,8 @@ object Fucker : Module() {
                 rotations = RotationUtils.faceBlock(currentPos) ?: return
             }
         }
+
+        
 
         // Reset switch timer when position changed
         if (oldPos != null && oldPos != currentPos) {
@@ -162,16 +174,6 @@ object Fucker : Module() {
         when {
             // Destory block
             actionValue.equals("destroy") || surroundings || !isRealBlock -> {
-                if (throughWallsValue.equals("Hypixel")) {
-                    val blockPos = find(26)?: return
-                    if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
-                    !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
-                        currentPos = blockPos.up()?: return
-                    } else {
-                        currentPos = blockPos?: return
-                    }
-                }
-
                 
                 // Auto Tool
                 val autoTool = FDPClient.moduleManager[AutoTool::class.java]!!
