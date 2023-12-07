@@ -120,7 +120,7 @@ object Fucker : Module() {
 
         if (throughWallsValue.equals("Hypixel")) {
             if (pos != null) {
-                if (!BlockUtils.isFullBlock(blockPos)) {
+                if (!BlockUtils.isFullBlock(pos)) {
                     val blockPos = find(26)?: return
                     if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
                     !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
