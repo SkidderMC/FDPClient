@@ -301,8 +301,8 @@ class Scaffold : Module() {
             if (towerTick > 0) {
                 ++towerTick
                 if (towerTick > 6) {
-                    mc.thePlayer.motionX *= 0.9f
-                    mc.thePlayer.motionZ *= 0.9f
+                    mc.thePlayer.motionX *= 0.97f
+                    mc.thePlayer.motionZ *= 0.97f
                 }
                 if (towerTick > 16) {
                     towerTick = 0
