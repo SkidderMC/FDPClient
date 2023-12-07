@@ -11,13 +11,14 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.BlinkUtils
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import kotlin.random.Random
 
 @ModuleInfo(name = "DynamicLag", category = ModuleCategory.COMBAT)
-object DynamicLag : Module() {        BlinkUtils.setBlinkState(all = true)
+object DynamicLag : Module() {       
 
     private val lagDelay = MSTimer()
     private val lagDuration = MSTimer()
@@ -97,13 +98,29 @@ object DynamicLag : Module() {        BlinkUtils.setBlinkState(all = true)
         if (resetTimers) {
           when (currentState) {
             1 -> {
-              durationLength = 300L + Random.nextInt(0, 153).toLong()
-              delayLength = 1000L + Random.nextInt(0, 302).toLong()
+                durationLength = 300L + Random.nextInt(0, 153).toLong()
+                delayLength = 1000L + Random.nextInt(0, 302).toLong()
+            }
+            2 -> {
+                durationLength = 320L + Random.nextInt(0, 83).toLong()
+                delayLength = 300L + Random.nextInt(0, 120).toLong()
+            }
+            3 -> {
+                durationLength = 230L + Random.nextInt(0, 60).toLong()
+                delayLength = 120L + Random.nextInt(0, 45).toLong()
+            }
+            4 -> {
+                durationLength = 430L + Random.nextInt(0, 120).toLong()
+                delayLength = 30 + Random.nextInt(0, 40).toLong()
+            }
+            5 -> {
+                durationLength = 150L + Random.nextInt(0, 50).toLong()
+                delayLength = 30 + Random.nextInt(0, 30).toLong()
             }
             else -> {
               durationLength = 1L
               delayLength = 1L
-              //   place holder code, must fix later
+              // shouldnt happen
             }
           }
         }
