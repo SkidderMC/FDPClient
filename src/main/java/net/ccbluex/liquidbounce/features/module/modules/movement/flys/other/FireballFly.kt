@@ -53,12 +53,14 @@ class FireballFly : FlyMode("Fireball") {
             } else if (ticks == 1) {
                 mc.thePlayer.rotationYaw += 180f
                 mc.thePlayer.rotationPitch = 65f
-            } else {
                 mc.gameSettings.keyBindBack.pressed = true
                 mc.gameSettings.keyBindForward.pressed = true
-            }
-            if (ticks == 3) {
                 KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+            } else if (ticks == 3) {
+                mc.thePlayer.rotationYaw += 180f
+                mc.thePlayer.rotationPitch = 30f
+                mc.gameSettings.keyBindForward.pressed = true
+                mc.gameSettings.keyBindBack.pressed = false
             }
         } else {
             if (ticks > 10) {
@@ -70,14 +72,10 @@ class FireballFly : FlyMode("Fireball") {
         ticks ++
         
         if(velocitypacket) {
-            mc.thePlayer.rotationYaw += 180f
-            mc.thePlayer.rotationPitch = 30f
             mc.thePlayer.motionX *=  boostValue.get().toDouble()
             mc.thePlayer.motionZ *=  boostValue.get().toDouble()
             velocitypacket = false
             beforeVelo = false
-            mc.gameSettings.keyBindForward.pressed = true
-            mc.gameSettings.keyBindBack.pressed = false
             ticks = 0
         }
     }
