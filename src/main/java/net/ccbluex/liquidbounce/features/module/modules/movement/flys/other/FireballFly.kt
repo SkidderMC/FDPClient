@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.features.value.BoolValue
 import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.item.ItemFireball
@@ -31,6 +32,7 @@ class FireballFly : FlyMode("Fireball") {
     private var startingSlot = 0
 
     override fun onEnable() {
+        FDPClient.moduleManager[Velocity::class.java]!!.state = false
         velocitypacket = false
         beforeVelo = true
         ticks = 0
@@ -77,6 +79,7 @@ class FireballFly : FlyMode("Fireball") {
             velocitypacket = false
             beforeVelo = false
             ticks = 0
+            FDPClient.moduleManager[Velocity::class.java]!!.state = true
         }
     }
 
