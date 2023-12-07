@@ -20,9 +20,7 @@ class HypixelBlinkNofall : NoFallMode("HypixelBlink") {
                 BlinkUtils.setBlinkState(all = true)
                 enabled = true
             }
-        } else {
-            enabled = false
-        }
+        } 
         if(enabled && event.packet is C03PacketPlayer) {
             event.packet.onGround = true
         }
