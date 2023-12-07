@@ -73,30 +73,32 @@ object Eagle : Module() {
 
     @EventTarget
     fun onRender(event: Render3DEvent) {
-        if (mc.currentScreen == null && !mc.thePlayer.capabilities.isFlying) {
-            val i = mc.thePlayer.heldItem
-            if (i != null && i.item is ItemBlock) {
-                val m = mc.objectMouseOver
-                if (m != null && m.typeOfHit == MovingObjectType.BLOCK && (m.sideHit != EnumFacing.UP && m.sideHit != EnumFacing.DOWN) || (m.sideHit == EnumFacing.NORTH || m.sideHit == EnumFacing.EAST || m.sideHit == EnumFacing.SOUTH || m.sideHit == EnumFacing.WEST)) {
-                    if (this.lm != null && this.f.toDouble() < 1f) {
-                        ++this.f
-                    } else {
-                        this.lm = m
-                        val pos = m.blockPos
-                        if (this.lp == null || pos.x != lp!!.x || pos.y != lp!!.y || pos.z != lp!!.z) {
-                            val b = mc.theWorld.getBlockState(pos).block
-                            if (b != null && b !== Blocks.air && b !is BlockLiquid) {
-                                if (!md.get() || Mouse.isButtonDown(1)) {
-                                    val n = System.currentTimeMillis()
-                                    if (n - this.l >= 70L) {
-                                        this.l = n
-                                        if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, i, pos, m.sideHit, m.hitVec)) {
-                                            MouseUtils.setMouseButtonState(1, true)
-                                            mc.thePlayer.swingItem()
-                                            mc.itemRenderer.resetEquippedProgress()
-                                            MouseUtils.setMouseButtonState(1, false)
-                                            this.lp = pos
-                                            this.f = 0
+        if (autoPlace.get() && sneakValue) {
+            if (mc.currentScreen == null && !mc.thePlayer.capabilities.isFlying) {
+                val i = mc.thePlayer.heldItem
+                if (i != null && i.item is ItemBlock) {
+                    val m = mc.objectMouseOver
+                    if (m != null && m.typeOfHit == MovingObjectType.BLOCK && (m.sideHit != EnumFacing.UP && m.sideHit != EnumFacing.DOWN) || (m.sideHit == EnumFacing.NORTH || m.sideHit == EnumFacing.EAST || m.sideHit == EnumFacing.SOUTH || m.sideHit == EnumFacing.WEST)) {
+                        if (this.lm != null && this.f.toDouble() < 1f) {
+                            ++this.f
+                        } else {
+                            this.lm = m
+                            val pos = m.blockPos
+                            if (this.lp == null || pos.x != lp!!.x || pos.y != lp!!.y || pos.z != lp!!.z) {
+                                val b = mc.theWorld.getBlockState(pos).block
+                                if (b != null && b !== Blocks.air && b !is BlockLiquid) {
+                                    if (!md.get() || Mouse.isButtonDown(1)) {
+                                        val n = System.currentTimeMillis()
+                                        if (n - this.l >= 70L) {
+                                            this.l = n
+                                            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, i, pos, m.sideHit, m.hitVec)) {
+                                                MouseUtils.setMouseButtonState(1, true)
+                                                mc.thePlayer.swingItem()
+                                                mc.itemRenderer.resetEquippedProgress()
+                                                MouseUtils.setMouseButtonState(1, false)
+                                                this.lp = pos
+                                                this.f = 0
+                                            }
                                         }
                                     }
                                 }
