@@ -30,8 +30,10 @@ class FireballFly : FlyMode("Fireball") {
     private var beforeVelo = false
 
     private var startingSlot = 0
+    private var veloStatus = false
 
     override fun onEnable() {
+        veloStatus = FDPClient.moduleManager[Velocity::class.java]!!.state
         FDPClient.moduleManager[Velocity::class.java]!!.state = false
         velocitypacket = false
         beforeVelo = true
@@ -79,7 +81,7 @@ class FireballFly : FlyMode("Fireball") {
             velocitypacket = false
             beforeVelo = false
             ticks = 0
-            FDPClient.moduleManager[Velocity::class.java]!!.state = true
+            FDPClient.moduleManager[Velocity::class.java]!!.state = veloStatus
         }
     }
 
