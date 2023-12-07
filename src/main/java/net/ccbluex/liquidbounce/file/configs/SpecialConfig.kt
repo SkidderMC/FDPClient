@@ -8,7 +8,6 @@ import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.handler.network.AutoReconnect
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
 import net.ccbluex.liquidbounce.handler.network.ProxyManager
-import net.ccbluex.liquidbounce.handler.other.ServerSpoof
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import java.io.File

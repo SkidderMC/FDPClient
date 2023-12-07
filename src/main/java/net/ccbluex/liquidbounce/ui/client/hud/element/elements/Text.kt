@@ -119,8 +119,6 @@ class Text(
                     SessionUtils.getFormatSessionTime()
                 }
             }
-            "kills" -> StatisticsUtils.getKills().toString()
-            "deaths" -> StatisticsUtils.getDeaths().toString()
             "username" -> mc.getSession().username
             "clientName" -> FDPClient.CLIENT_NAME
             "clientVersion" -> FDPClient.CLIENT_VERSION

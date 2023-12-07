@@ -57,14 +57,14 @@ object DiscordRPC {
         builder.setStartTimestamp(timestamp)
         builder.setLargeImage(if (discordRPCModule.animated.get()){"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.gif"} else {"https://skiddermc.github.io/repo/skiddermc/FDPclient/dcrpc/fdp.png"})
         builder.setDetails(fdpwebsite + FDPClient.CLIENT_VERSION)
-        ServerUtils.getRemoteIp().also {
-            val str = (if(discordRPCModule.showServerValue.get()) "Server: $it\n" else "\n") + (if(discordRPCModule.showNameValue.get()) "IGN: ${if(mc.thePlayer != null) mc.thePlayer.name else mc.session.username}\n" else "\n") + (if(discordRPCModule.showHealthValue.get()) "HP: ${mc.thePlayer.health}\n" else "\n") + (if(discordRPCModule.showModuleValue.get()) "Enable: ${FDPClient.moduleManager.modules.count{ it.state }} of ${FDPClient.moduleManager.modules.size} Modules\n" else "\n") + (if(discordRPCModule.showOtherValue.get()) "Time: ${if(mc.isSingleplayer) "SinglePlayer\n" else SessionUtils.getFormatSessionTime()} Kills: ${StatisticsUtils.getKills()} Deaths: ${StatisticsUtils.getDeaths()}\n" else "\n")
+        ServerUtils.getRemoteIp().also { it ->
+            val str = (if(discordRPCModule.showServerValue.get()) "Server: $it\n" else "\n") + (if(discordRPCModule.showNameValue.get()) "IGN: ${if(mc.thePlayer != null) mc.thePlayer.name else mc.session.username}\n" else "\n") + (if(discordRPCModule.showHealthValue.get()) "HP: ${mc.thePlayer.health}\n" else "\n") + (if(discordRPCModule.showModuleValue.get()) "Enable: ${FDPClient.moduleManager.modules.count{ it.state }} of ${FDPClient.moduleManager.modules.size} Modules\n" else "\n") + (if(discordRPCModule.showOtherValue.get()) "Time: ${if(mc.isSingleplayer) "SinglePlayer\n" else SessionUtils.getFormatSessionTime()}\n" else "\n")
             builder.setState(if(it.equals("Injecting", true)) "Injecting" else str)
         }
 
         // Check ipc client is connected and send rpc
-        if (ipcClient?.status == PipeStatus.CONNECTED)
-            ipcClient?.sendRichPresence(builder.build())
+        if (ipcClient.status == PipeStatus.CONNECTED)
+            ipcClient.sendRichPresence(builder.build())
     }
 
     fun stop() {

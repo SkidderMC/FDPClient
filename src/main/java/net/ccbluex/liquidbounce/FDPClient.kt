@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
 import net.ccbluex.liquidbounce.handler.network.BungeeCordSpoof
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
-import net.ccbluex.liquidbounce.handler.other.ServerSpoof
 import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption
@@ -134,9 +133,7 @@ object FDPClient {
         eventManager.registerListener(ClientFixes)
         eventManager.registerListener(InventoryUtils)
         eventManager.registerListener(BungeeCordSpoof())
-        eventManager.registerListener(ServerSpoof)
         eventManager.registerListener(SessionUtils())
-        eventManager.registerListener(StatisticsUtils())
         eventManager.registerListener(LocationCache())
         eventManager.registerListener(macroManager)
         eventManager.registerListener(combatManager)
