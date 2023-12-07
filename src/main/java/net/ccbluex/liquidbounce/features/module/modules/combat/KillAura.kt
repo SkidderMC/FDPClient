@@ -476,9 +476,9 @@ object KillAura : Module() {
         }
 
         if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
-            if (mc.thePlayer.ticksExisted % 4 == 1) {
+            if (mc.thePlayer.ticksExisted % 4 == 1 && (!smartAutoBlockValue.get() || mc.thePlayer.hurtTime < 3)) {
                 startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-            } else if (mc.thePlayer.ticksExisted % 4 == 3) {
+            } else if (mc.thePlayer.ticksExisted % 4 == 3 || (smartAutoBlockValue.get() && mc.thePlayer.hurtTime > 3)) {
                 stopBlocking()
             }
         }
@@ -498,7 +498,7 @@ object KillAura : Module() {
     private fun runAttackLoop() {
 
         if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
-            if (mc.thePlayer.ticksExisted % 4 > 0) {
+            if (mc.thePlayer.ticksExisted % 4 > 0 && (!smartAutoBlockValue.get() || mc.thePlayer.hurtTime < 3)) {
                 return
             }
         }
