@@ -312,6 +312,9 @@ class Scaffold : Module() {
                 if (mc.thePlayer.onGround) {
                     if (towerTick == 0 || towerTick == 5) {
                         mc.thePlayer.motionY = 0.42
+                        MovementUtils.move(0.1f)
+                        mc.thePlayer.motionX *= 1.08f
+                        mc.thePlayer.motionZ *= 1.08f
                         towerTick = 1
                     }
                 } else if (mc.thePlayer.motionY > -0.0784000015258789) {
