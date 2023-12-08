@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.world
+package net.ccbluex.liquidbounce.features.module.modules.worlde
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
@@ -302,8 +302,8 @@ class Scaffold : Module() {
             if (towerTick > 0) {
                 ++towerTick
                 if (towerTick > 6) {
-                    mc.thePlayer.motionX *= 1.05f
-                    mc.thePlayer.motionZ *= 1.05f
+                    mc.thePlayer.motionX *= 0.99f
+                    mc.thePlayer.motionZ *= 0.99f
                 }
                 if (towerTick > 16) {
                     towerTick = 0
@@ -314,8 +314,8 @@ class Scaffold : Module() {
                     if (towerTick == 0 || towerTick == 5) {
                         mc.thePlayer.motionY = 0.42
                         MovementUtils.move(0.1f)
-                        mc.thePlayer.motionX *= 1.12f
-                        mc.thePlayer.motionZ *= 1.12f
+                        mc.thePlayer.motionX *= 1.1f
+                        mc.thePlayer.motionZ *= 1.1f
                         towerTick = 1
                     }
                 } else if (mc.thePlayer.motionY > -0.0784000015258789) {
@@ -416,8 +416,13 @@ class Scaffold : Module() {
 
         mc.thePlayer.isSprinting = canSprint
         if (sprintValue.equals("Hypixel")) {
-            mc.thePlayer.motionX *= 0.72
-            mc.thePlayer.motionZ *= 0.72
+            if (mc.thePlayer.onGround) {
+                mc.thePlayer.motionX *= 0.72
+                mc.thePlayer.motionZ *= 0.72
+            } else {
+                mc.thePlayer.motionX *= 0.92
+                mc.thePlayer.motionZ *= 0.92
+            }
         }
 
         if (mc.thePlayer.onGround) {
