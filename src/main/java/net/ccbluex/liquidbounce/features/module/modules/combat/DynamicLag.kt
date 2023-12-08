@@ -101,23 +101,23 @@ object DynamicLag : Module() {
           when (currentState) {
             1 -> {
                 durationLength = 300L + Random.nextInt(0, 153).toLong()
-                delayLength = 1000L + Random.nextInt(0, 302).toLong()
+                delayLength = 1500L + Random.nextInt(0, 500).toLong()
             }
             2 -> {
                 durationLength = 320L + Random.nextInt(0, 83).toLong()
-                delayLength = 300L + Random.nextInt(0, 120).toLong()
+                delayLength = 1000L + Random.nextInt(0, 120).toLong()
             }
             3 -> {
                 durationLength = 230L + Random.nextInt(0, 60).toLong()
-                delayLength = 120L + Random.nextInt(0, 45).toLong()
+                delayLength = 140L + Random.nextInt(0, 45).toLong()
             }
             4 -> {
-                durationLength = 430L + Random.nextInt(0, 120).toLong()
-                delayLength = 30 + Random.nextInt(0, 40).toLong()
+                durationLength = 650L + Random.nextInt(0, 120).toLong()
+                delayLength = 80L + Random.nextInt(0, 40).toLong()
             }
             5 -> {
-                durationLength = 150L + Random.nextInt(0, 50).toLong()
-                delayLength = 30 + Random.nextInt(0, 30).toLong()
+                durationLength = 200L + Random.nextInt(0, 100).toLong()
+                delayLength = 100L + Random.nextInt(0, 30).toLong()
             }
             else -> {
               durationLength = 1L
