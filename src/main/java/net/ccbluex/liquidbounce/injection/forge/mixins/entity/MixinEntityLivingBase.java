@@ -117,7 +117,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {
         if (FDPClient.moduleManager.getModule(NoJumpDelay.class).getState())
-            jumpTicks = FDPClient.moduleManager.getModule(NoJumpDelay.class).getTicks();
+            jumpTicks = FDPClient.moduleManager.getModule(NoJumpDelay.class).getTicks().get();
     }
 
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
