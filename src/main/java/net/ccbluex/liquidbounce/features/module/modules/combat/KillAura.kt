@@ -323,6 +323,7 @@ object KillAura : Module() {
     private var legitBlocking = 0
 
     private var test2_block = false
+    private var legit2Blink = false
 
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
@@ -479,13 +480,15 @@ object KillAura : Module() {
 
         if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
             if (mc.thePlayer.ticksExisted % 4 == 1 && (!smartAutoBlockValue.get() || mc.thePlayer.hurtTime < 3)) {
-                if (legitBlockBlinkValue.get()) {
+                if (legitBlockBlinkValue.get() || legit2Blink) {
                     BlinkUtils.setBlinkState(off = true, release = true)
+                    legit2Blink = false
                 }
                 startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
             } else if (mc.thePlayer.ticksExisted % 4 == 3 || (smartAutoBlockValue.get() && mc.thePlayer.hurtTime > 3)) {
                 if (legitBlockBlinkValue.get()) {
                     BlinkUtils.setBlinkState(all = true)
+                    legit2Blink = false
                 }
                 stopBlocking()
             }
