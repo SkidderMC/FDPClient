@@ -298,11 +298,12 @@ class Scaffold : Module() {
                 towerTick = 0
                 return
             }
+            MovementUtils.move(0.03f)
             if (towerTick > 0) {
                 ++towerTick
                 if (towerTick > 6) {
-                    mc.thePlayer.motionX *= 0.97f
-                    mc.thePlayer.motionZ *= 0.97f
+                    mc.thePlayer.motionX *= 1.05f
+                    mc.thePlayer.motionZ *= 1.05f
                 }
                 if (towerTick > 16) {
                     towerTick = 0
@@ -313,8 +314,8 @@ class Scaffold : Module() {
                     if (towerTick == 0 || towerTick == 5) {
                         mc.thePlayer.motionY = 0.42
                         MovementUtils.move(0.1f)
-                        mc.thePlayer.motionX *= 1.08f
-                        mc.thePlayer.motionZ *= 1.08f
+                        mc.thePlayer.motionX *= 1.12f
+                        mc.thePlayer.motionZ *= 1.12f
                         towerTick = 1
                     }
                 } else if (mc.thePlayer.motionY > -0.0784000015258789) {
