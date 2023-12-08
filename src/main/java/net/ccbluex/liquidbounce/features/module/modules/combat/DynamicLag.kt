@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -46,7 +47,8 @@ object DynamicLag : Module() {
         BlinkUtils.setBlinkState(off = true, release = true)
     }
 
-    override fun onUpdate(event: UpdateEvent) {
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
         if(FDPClient.moduleManager[Blink::class.java]!!.state) {
             lagDelay.reset()
             lagDuration.reset()
@@ -61,7 +63,7 @@ object DynamicLag : Module() {
         for (entity in mc.theWorld.loadedEntityList) {
           val it = entity as EntityLivingBase
            if (mc.thePlayer.getDistanceToEntityBox(it) < closestEntity) {
-               closestEntity = mc.thePlayer.getDistanceToEntityBox(it)
+               closestEntity = mc.thePlayer.getDistanceToEntityBox(it).toFloat()
            }
         }
 
