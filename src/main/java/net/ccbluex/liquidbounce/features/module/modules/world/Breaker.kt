@@ -36,8 +36,8 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.awt.Color
 
-@ModuleInfo(name = "Fucker", category = ModuleCategory.WORLD)
-object Fucker : Module() {
+@ModuleInfo(name = "Breaker", category = ModuleCategory.WORLD)
+object Breaker : Module() {
 
     /**
      * SETTINGS
@@ -266,36 +266,31 @@ object Fucker : Module() {
                 }
             }
         }
-
-        @EventTarget
-        fun onRender3D(event: Render3DEvent) {
-            when (renderValue.get().lowercase()) {
-                "box" -> RenderUtils.drawBlockBox(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY else Color.RED, false)
-                "outline" -> RenderUtils.drawBlockBox(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY else Color.RED, true)
-                "2d" -> RenderUtils.draw2D(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY.rgb else Color.RED.rgb, Color.BLACK.rgb)
-            }
-        }
-
-        @EventTarget
-        fun onRender2D(event: Render2DEvent) {
-            val sc = ScaledResolution(mc)
-            if (coolDownValue.get() > 0 && !coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) {
-                val timeLeft = "Cooldown: ${(coolDownTimer.hasTimeLeft(coolDownValue.get().toLong() * 1000L) / 1000L).toInt()}s"
-                val strWidth = Fonts.minecraftFont.getStringWidth(timeLeft)
-
-                Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2 - 1, sc.getScaledHeight() / 2 - 70, 0x000000)
-                Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2 + 1, sc.getScaledHeight() / 2 - 70, 0x000000)
-                Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 69, 0x000000)
-                Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 71, 0x000000)
-                Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 70, -1)
-            }
-        }
-
     }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        RenderUtils.drawBlockBox(pos ?: return, Color.RED, false, true, 1F)
+        when (renderValue.get().lowercase()) {
+            "box" -> RenderUtils.drawBlockBox(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY else Color.RED, false)
+            "outline" -> RenderUtils.drawBlockBox(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY else Color.RED, true)
+            "2d" -> RenderUtils.draw2D(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY.rgb else Color.RED.rgb, Color.BLACK.rgb)
+            else -> RenderUtils.drawBlockBox(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY else Color.RED, false)
+        }
+    }
+
+    @EventTarget
+    fun onRender2D(event: Render2DEvent) {
+        val sc = ScaledResolution(mc)
+        if (coolDownValue.get() > 0 && !coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) {
+            val timeLeft = "Cooldown: ${(coolDownTimer.hasTimeLeft(coolDownValue.get().toLong() * 1000L) / 1000L).toInt()}s"
+            val strWidth = Fonts.minecraftFont.getStringWidth(timeLeft)
+
+            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2 - 1, sc.getScaledHeight() / 2 - 70, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2 + 1, sc.getScaledHeight() / 2 - 70, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 69, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 71, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 70, -1)
+        }
     }
 
     /**
