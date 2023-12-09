@@ -321,6 +321,7 @@ object KillAura : Module() {
     private val delayBlockTimer = MSTimer()
     private var delayBlock = false
     private var legitBlocking = 0
+    private var legitCancelAtk = false
 
     private var test2_block = false
     private var legit2Blink = false
@@ -494,6 +495,43 @@ object KillAura : Module() {
             }
         }
 
+        legitCancelAtk = false
+        if (autoBlockPacketValue.equals("Legit") && autoBlockValue.equals("Range")) {
+            if (mc.thePlayer.hurtTime > 8) {
+                legitBlocking = 0
+                if (blockingStatus) {
+                    stopBlocking()
+                    blockingStatus = false
+                    legitCancelAtk = true
+                }
+            } else {
+                if (mc.thePlayer.hurtTime == 1) {
+                    legitBlocking = 3
+                } else if (legitBlocking > 0) {
+                    legitBlocking--
+                    // this code is correct u idiots
+                    if (discoveredTargets.isNotEmpty() && !blockingStatus) {
+                        val target = this.currentTarget ?: discoveredTargets.first()
+                        startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+                        blockingStatus = true
+                    }
+                    if (clicks > 2)
+                        clicks = 2
+                    legitCancelAtk = true
+                } else {
+                    if (!canHitselect && hitselectValue.get()) {
+                        legitBlocking = 3
+                    } else {
+                        if (blockingStatus) stopBlocking()
+                        blockingStatus = false
+                        legitCancelAtk = true
+                        // prevent hypixel flag
+                    }
+                }
+            }
+        }
+
+
         if (attackTimingValue.equals("All")) {
             runAttackLoop()
         }
@@ -520,38 +558,7 @@ object KillAura : Module() {
 
         // legit auto block, block if about to get damage, else, dont block
         if (autoBlockPacketValue.equals("Legit") && autoBlockValue.equals("Range")) {
-            if (mc.thePlayer.hurtTime > 8) {
-                legitBlocking = 0
-                if (blockingStatus) {
-                    stopBlocking()
-                    blockingStatus = false
-                    return
-                }
-            } else {
-                if (mc.thePlayer.hurtTime == 1) {
-                    legitBlocking = 3
-                } else if (legitBlocking > 0) {
-                    legitBlocking--
-                    // this code is correct u idiots
-                    if (discoveredTargets.isNotEmpty() && !blockingStatus) {
-                        val target = this.currentTarget ?: discoveredTargets.first()
-                        startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-                        blockingStatus = true
-                    }
-                    if (clicks > 2)
-                        clicks = 2
-                    return
-                } else {
-                    if (!canHitselect && hitselectValue.get()) {
-                        legitBlocking = 3
-                    } else {
-                        if (blockingStatus) stopBlocking()
-                        blockingStatus = false
-                        return 
-                        // prevent hypixel flag
-                    }
-                }
-            }
+            if (legitCancelAtk) return
         }
 
 
