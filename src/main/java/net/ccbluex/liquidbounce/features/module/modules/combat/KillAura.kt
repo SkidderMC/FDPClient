@@ -385,6 +385,10 @@ object KillAura : Module() {
             if (keepDirectionValue.get()) { keepDirectionTickValue.get() + 1 } else { 1 },
             if (rotationRevValue.get()) { rotationRevTickValue.get() + 1 } else { 0 }
         )
+        if (legit2Blink) {
+            BlinkUtils.setBlinkState(off = true, release = true)
+            legit2Blink = false
+        }
     }
 
     /**
@@ -447,6 +451,10 @@ object KillAura : Module() {
             stopBlocking()
             discoveredTargets.clear()
             inRangeDiscoveredTargets.clear()
+            if (legit2Blink) {
+                BlinkUtils.setBlinkState(off = true, release = true)
+                legit2Blink = false
+            }
             return
         }
 
@@ -456,6 +464,10 @@ object KillAura : Module() {
             currentTarget = null
             hitable = false
             if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
+            if (legit2Blink) {
+                BlinkUtils.setBlinkState(off = true, release = true)
+                legit2Blink = false
+            }
             return
         }
 
@@ -463,6 +475,10 @@ object KillAura : Module() {
 
         if (discoveredTargets.isEmpty()) {
             stopBlocking()
+            if (legit2Blink) {
+                BlinkUtils.setBlinkState(off = true, release = true)
+                legit2Blink = false
+            }
             return
         }
         
