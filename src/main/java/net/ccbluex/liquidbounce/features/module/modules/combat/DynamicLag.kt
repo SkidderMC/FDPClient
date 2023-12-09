@@ -108,12 +108,12 @@ object DynamicLag : Module() {
                 delayLength = 1000L + Random.nextInt(0, 120).toLong()
             }
             3 -> {
-                durationLength = 230L + Random.nextInt(0, 60).toLong()
-                delayLength = 140L + Random.nextInt(0, 45).toLong()
+                durationLength = 300L + Random.nextInt(0, 60).toLong()
+                delayLength = 250L + Random.nextInt(0, 45).toLong()
             }
             4 -> {
-                durationLength = 650L + Random.nextInt(0, 120).toLong()
-                delayLength = 80L + Random.nextInt(0, 40).toLong()
+                durationLength = 750L + Random.nextInt(0, 120).toLong()
+                delayLength = 120L + Random.nextInt(0, 40).toLong()
             }
             5 -> {
                 durationLength = 200L + Random.nextInt(0, 100).toLong()

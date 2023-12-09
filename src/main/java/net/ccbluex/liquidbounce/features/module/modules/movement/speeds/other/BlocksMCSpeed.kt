@@ -38,10 +38,10 @@ class BlocksMCSpeed : SpeedMode("BlocksMC") {
                 }
             }
             MovementUtils.strafe(MovementUtils.getSpeed() * (1.06f + 0.1f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)))
-            if (MovementUtils.getSpeed() < 0.277f + 0.15f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+            if (MovementUtils.getSpeed() < 0.277f + 0.015f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                 wasSlow = true
             if (wasSlow) 
-                MovementUtils.strafe(0.277f + 0.15f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                MovementUtils.strafe(0.277f + 0.015f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                
             
         } else {
