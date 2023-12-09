@@ -54,7 +54,7 @@ class NCPLatestFly : FlyMode("NCPLatest") {
       
         if (mc.thePlayer.onGround) {
             wasOnGround = true
-            mc.thePlayer.motionY = 0.42f
+            mc.thePlayer.motionY = 0.42
             MovementUtils.strafe(10f)
         } else if (wasOnGround) {
             MovementUtils.strafe(9.6f)
