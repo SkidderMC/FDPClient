@@ -12,7 +12,6 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-
 object ToolDropdown {
 
     private var fullHeight = 0F

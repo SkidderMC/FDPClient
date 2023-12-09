@@ -4,8 +4,9 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 
-package net.ccbluex.liquidbounce.ui.font;
+package net.ccbluex.liquidbounce.ui.font.cf;
 
+import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.renderer.GlStateManager;
@@ -93,7 +94,7 @@ public class CFontRenderer extends CFont {
             } else if (isChinese(s.charAt(0))) {
                 x += (float)font.getStringWidth(s);
             } else {
-                x += (float)Fonts.font35.getStringWidth(s);
+                x += (float) Fonts.font35.getStringWidth(s);
             }
         }
         return x+5;

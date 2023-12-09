@@ -4,8 +4,9 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 
-package net.ccbluex.liquidbounce.ui.font;
+package net.ccbluex.liquidbounce.ui.font.cf;
 
+import net.ccbluex.liquidbounce.ui.font.cf.CFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 

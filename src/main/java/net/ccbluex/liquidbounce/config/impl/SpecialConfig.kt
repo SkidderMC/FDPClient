@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.handler.network.AutoReconnect
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
 import net.ccbluex.liquidbounce.handler.network.ProxyManager
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
-import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
+import net.ccbluex.liquidbounce.ui.altmanager.GuiAltManager
 import java.io.File
 import java.net.Proxy
 

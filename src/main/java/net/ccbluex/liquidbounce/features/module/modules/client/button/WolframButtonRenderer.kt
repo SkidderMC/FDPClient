@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client.button
 
 import net.ccbluex.liquidbounce.utils.render.EaseUtils.easeInOutQuad
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.ui.font.FontLoaders
+import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import java.awt.Color

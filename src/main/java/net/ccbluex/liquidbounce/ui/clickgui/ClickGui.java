@@ -36,9 +36,8 @@ public class ClickGui extends GuiScreen {
     private Panel clickedPanel;
     private int mouseX;
     private int mouseY;
-    private double slide, progress = 0;
 
-    public long lastMS = System.currentTimeMillis();
+    private double slide, progress = 0;
 
     public ClickGui() {
         final int width = 100;
@@ -62,10 +61,10 @@ public class ClickGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (progress < 1) progress = (float)(System.currentTimeMillis() - lastMS) / (500F / Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getAnimSpeedValue().get()); // fully fps async
+        if (progress < 1) progress += 0.1 * (1 - partialTicks);
         else progress = 1;
 
-        switch (ClickGUIModule.INSTANCE.getAnimationValue().get().toLowerCase()) {
+        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).INSTANCE.getAnimationValue().get().toLowerCase()) {
             case "liquidbounce":
             case "ziul":
                 slide = EaseUtils.easeOutBack(progress);
@@ -87,29 +86,26 @@ public class ClickGui extends GuiScreen {
 
         final double scale = Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getScaleValue().get();
 
-        mouseX /= (int) scale;
-        mouseY /= (int) scale;
+        mouseX /= scale;
+        mouseY /= scale;
 
         this.mouseX = mouseX;
         this.mouseY = mouseY;
 
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getBackgroundValue().get()) {
+        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).INSTANCE.getBackgroundValue().get()) {
             case "Default":
                 drawDefaultBackground();
                 break;
             case "Gradient":
-                drawGradientRect(0, 0, width, height,
-                        ColorUtils.reAlpha(ClickGUIModule.generateColor(), Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getGradEndValue().get()).getRGB(),
-                        ColorUtils.reAlpha(ClickGUIModule.generateColor(), Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getGradStartValue().get()).getRGB());
+                drawGradientRect(0, 0, width, height, ColorUtils.reAlpha(ClickGUIModule.INSTANCE.generateColor(), 40).getRGB(), ClickGUIModule.INSTANCE.generateColor().getRGB());
                 break;
             default:
                 break;
         }
 
-        GlStateManager.disableAlpha();
-        GlStateManager.enableAlpha();
+        drawDefaultBackground();
 
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getAnimationValue().get().toLowerCase()) {
+        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).INSTANCE.getAnimationValue().get().toLowerCase()) {
             case "bread":
                 GlStateManager.translate(0, (1.0 - slide) * height * 2.0, 0);
                 GlStateManager.scale(scale, scale + (1.0 - slide) * 2.0, scale);
@@ -151,15 +147,15 @@ public class ClickGui extends GuiScreen {
         if (Mouse.hasWheel()) {
             int wheel = Mouse.getDWheel();
             boolean handledScroll = false;
-            
+
             for (int i = panels.size() - 1; i >= 0; i--)
                 if (panels.get(i).handleScroll(mouseX, mouseY, wheel)) {
-			        handledScroll = true;
-			        break;
-		        }
-            
+                    handledScroll = true;
+                    break;
+                }
+
             if (!handledScroll)
-		        handleScroll(wheel);
+                handleScroll(wheel);
         }
 
         GlStateManager.disableLighting();
@@ -184,24 +180,21 @@ public class ClickGui extends GuiScreen {
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
-    
+
     private void handleScroll(final int wheel) {
         if (wheel == 0)
             return;
-		
+
         for(final Panel panel : panels)
-	        panel.setY(panel.getY() + wheel);
+            panel.setY(panel.getY() + wheel);
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         final double scale = Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getScaleValue().get();
 
-        mouseX /= (int) scale;
-        mouseY /= (int) scale;
-
-        mouseX /= (int) scale;
-        mouseY /= (int) scale;
+        mouseX /= scale;
+        mouseY /= scale;
 
         for (final Panel panel : panels) {
             panel.mouseClicked(mouseX, mouseY, mouseButton);
@@ -228,8 +221,8 @@ public class ClickGui extends GuiScreen {
     protected void mouseReleased(int mouseX, int mouseY, int state) {
         final double scale = Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getScaleValue().get();
 
-        mouseX /= (int) scale;
-        mouseY /= (int) scale;
+        mouseX /= scale;
+        mouseY /= scale;
 
         for (Panel panel : panels) {
             panel.mouseReleased(mouseX, mouseY, state);
@@ -273,7 +266,7 @@ public class ClickGui extends GuiScreen {
     public void onGuiClosed() {
         FDPClient.fileManager.saveConfig(modernuiLaunchOption.getClickGuiConfig());
         slide = 0;
-	progress = 0;
+        progress = 0;
     }
 
     @Override

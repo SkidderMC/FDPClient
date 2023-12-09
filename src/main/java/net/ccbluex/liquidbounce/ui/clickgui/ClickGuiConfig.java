@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.ui.clickgui.elements.Element;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -21,7 +20,7 @@ public class ClickGuiConfig extends FileConfig {
     }
 
     @Override
-    public void loadConfig(@NotNull String config) {
+    public void loadConfig(String config) {
         final JsonElement jsonElement = new JsonParser().parse(config);
 
         if (jsonElement instanceof JsonNull)
@@ -64,7 +63,6 @@ public class ClickGuiConfig extends FileConfig {
         }
     }
 
-    @NotNull
     @Override
     public String saveConfig() {
         final JsonObject jsonObject = new JsonObject();

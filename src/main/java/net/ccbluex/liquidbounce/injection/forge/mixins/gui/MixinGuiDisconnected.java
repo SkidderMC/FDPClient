@@ -9,7 +9,7 @@ import me.liuli.elixir.account.MinecraftAccount;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.handler.network.ClientFixes;
 import net.ccbluex.liquidbounce.handler.network.AutoReconnect;
-import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
+import net.ccbluex.liquidbounce.ui.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.ccbluex.liquidbounce.utils.SessionUtils;
 import net.ccbluex.liquidbounce.utils.extensions.RendererExtensionKt;

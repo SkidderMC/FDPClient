@@ -4,7 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 
-package net.ccbluex.liquidbounce.ui.font;
+package net.ccbluex.liquidbounce.ui.font.cf;
 
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;

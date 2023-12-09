@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.ui.client.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.ui.font.FontLoaders;
-import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
+import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
+import net.ccbluex.liquidbounce.ui.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.MainMenuButton;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;

@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.ui.client.altmanager.sub
+package net.ccbluex.liquidbounce.ui.altmanager.sub
 
 import me.liuli.elixir.account.MicrosoftAccount
 import me.liuli.elixir.compat.OAuthServer

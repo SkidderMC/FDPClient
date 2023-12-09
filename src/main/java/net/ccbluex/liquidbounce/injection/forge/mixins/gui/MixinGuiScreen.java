@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
-import net.ccbluex.liquidbounce.ui.font.FontLoaders;
+import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.particles.ParticleUtils;
 import net.minecraft.client.Minecraft;
