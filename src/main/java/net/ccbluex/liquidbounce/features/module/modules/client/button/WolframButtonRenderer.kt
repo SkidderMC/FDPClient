@@ -7,8 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client.button
 
 import net.ccbluex.liquidbounce.utils.render.EaseUtils.easeInOutQuad
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
-import net.ccbluex.liquidbounce.font.FontLoaders
+import net.ccbluex.liquidbounce.ui.font.FontLoaders
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import java.awt.Color
@@ -39,7 +38,8 @@ class WolframButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) 
         }
         val percent = easeInOutQuad(animation)
         if (button.enabled) {
-            val half = FontLoaders.F18.DisplayFontWidths(FontLoaders.F18,button.displayString)  / 2.0
+            val half = FontLoaders.F18.DisplayFontWidths(
+                FontLoaders.F18,button.displayString)  / 2.0
             val center = button.xPosition + (button.width / 2.0)
             RenderUtils.drawRect(
                 center - percent * half,

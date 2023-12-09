@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.font.CFontRenderer
-import net.ccbluex.liquidbounce.font.FontLoaders
+import net.ccbluex.liquidbounce.ui.font.CFontRenderer
+import net.ccbluex.liquidbounce.ui.font.FontLoaders
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -111,7 +111,7 @@ class Notification(
         index: Int, font: CFontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float,
         contentShadow: Boolean,
         titleShadow: Boolean,
-        motionBlur: Boolean, 
+        motionBlur: Boolean,
         whiteText: Boolean,
         modeColored: Boolean,
         parent: Notifications.Companion

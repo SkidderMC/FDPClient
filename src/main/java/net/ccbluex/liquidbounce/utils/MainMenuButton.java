@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils;
 
-import net.ccbluex.liquidbounce.ui.client.gui.clickgui.fonts.impl.Fonts;
+import net.ccbluex.liquidbounce.ui.clickgui.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 
 import java.awt.*;

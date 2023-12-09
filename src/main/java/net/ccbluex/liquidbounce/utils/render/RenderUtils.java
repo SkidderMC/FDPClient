@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.*;
 
 import static java.lang.Math.*;
-import static net.ccbluex.liquidbounce.ui.client.gui.clickgui.style.styles.novoline.AnimationUtil.getAnimationState;
+import static net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.AnimationUtil.getAnimationState;
 import static net.minecraft.client.renderer.GlStateManager.disableBlend;
 import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
 import static org.lwjgl.opengl.GL11.*;

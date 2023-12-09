@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client.button;
 
-import net.ccbluex.liquidbounce.font.CFontRenderer;
-import net.ccbluex.liquidbounce.font.FontLoaders;
+import net.ccbluex.liquidbounce.ui.font.CFontRenderer;
+import net.ccbluex.liquidbounce.ui.font.FontLoaders;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.minecraft.client.Minecraft;

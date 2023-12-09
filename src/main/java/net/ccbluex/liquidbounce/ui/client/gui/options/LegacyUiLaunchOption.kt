@@ -4,10 +4,10 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption
-import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule
-import net.ccbluex.liquidbounce.ui.client.gui.ClickGuiConfig
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGuiConfig
 import net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu
-import net.ccbluex.liquidbounce.ui.client.gui.clickgui.ClickGui
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGui
 import java.io.File
 
 @LaunchFilterInfo([EnumLaunchFilter.MODERN_UI])

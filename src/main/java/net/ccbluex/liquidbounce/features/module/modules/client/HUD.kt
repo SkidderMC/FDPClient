@@ -12,9 +12,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.value.*
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager.height
-import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule.colorBlueValue
-import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule.colorGreenValue
-import net.ccbluex.liquidbounce.ui.client.gui.ClickGUIModule.colorRedValue
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule.colorBlueValue
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule.colorGreenValue
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule.colorRedValue
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
