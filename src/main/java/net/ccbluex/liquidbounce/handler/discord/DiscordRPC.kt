@@ -17,8 +17,8 @@ import org.json.JSONObject
 import java.time.OffsetDateTime
 import kotlin.concurrent.thread
 
-object DiscordRPC {
-    private val ipcClient = IPCClient(1021236965108109333)
+object DiscordRPC {                   
+    private val ipcClient = IPCClient(1183085624195022942)
     private val timestamp = OffsetDateTime.now()
     private var running = false
     private var fdpwebsite = "fdpinfo.github.io - "
