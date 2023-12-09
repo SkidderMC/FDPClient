@@ -25,6 +25,7 @@ import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.minecraft.client.gui.inventory.GuiContainer
@@ -134,6 +135,7 @@ object KillAura : Module() {
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val smartAutoBlockValue = BoolValue("SmartAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
+    private val legitBlockBlinkValue = BoolValue("Legit2Blink", true).displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Legit2") }
     private val alwaysBlockDisplayValue = BoolValue("AlwaysRenderBlocking", true).displayable { autoBlockValue.displayable && autoBlockValue.equals("Range") }
 
     // Raycast
@@ -321,6 +323,7 @@ object KillAura : Module() {
     private var legitBlocking = 0
 
     private var test2_block = false
+    private var legit2Blink = false
 
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
@@ -477,8 +480,16 @@ object KillAura : Module() {
 
         if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
             if (mc.thePlayer.ticksExisted % 4 == 1 && (!smartAutoBlockValue.get() || mc.thePlayer.hurtTime < 3)) {
+                if (legitBlockBlinkValue.get() || legit2Blink) {
+                    BlinkUtils.setBlinkState(off = true, release = true)
+                    legit2Blink = false
+                }
                 startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
             } else if (mc.thePlayer.ticksExisted % 4 == 3 || (smartAutoBlockValue.get() && mc.thePlayer.hurtTime > 3)) {
+                if (legitBlockBlinkValue.get()) {
+                    BlinkUtils.setBlinkState(all = true)
+                    legit2Blink = false
+                }
                 stopBlocking()
             }
         }
