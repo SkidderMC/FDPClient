@@ -505,7 +505,7 @@ object KillAura : Module() {
             } else if (mc.thePlayer.ticksExisted % 4 == 3 || (smartAutoBlockValue.get() && mc.thePlayer.hurtTime > 3)) {
                 if (legitBlockBlinkValue.get()) {
                     BlinkUtils.setBlinkState(all = true)
-                    legit2Blink = false
+                    legit2Blink = true
                 }
                 stopBlocking()
             }
