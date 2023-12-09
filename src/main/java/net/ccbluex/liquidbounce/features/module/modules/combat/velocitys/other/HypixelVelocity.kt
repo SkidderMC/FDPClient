@@ -7,7 +7,6 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 
 class HypixelVelocity : VelocityMode("Hypixel") {
 
-    private val blinkTimer = MSTimer()
     override fun onVelocityPacket(event: PacketEvent) {
         val packet = event.packet
         if(packet is S12PacketEntityVelocity) {
