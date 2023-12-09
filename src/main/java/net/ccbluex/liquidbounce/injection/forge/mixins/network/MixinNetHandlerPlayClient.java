@@ -50,7 +50,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static net.ccbluex.liquidbounce.script.api.global.Chat.alert;
+import static net.ccbluex.liquidbounce.handler.script.api.global.Chat.alert;
 
 @Mixin(NetHandlerPlayClient.class)
 public abstract class MixinNetHandlerPlayClient {

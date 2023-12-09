@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.injection.transformers;
 
 import net.ccbluex.liquidbounce.handler.network.ClientSpoof;
-import net.ccbluex.liquidbounce.script.remapper.injection.utils.ClassUtils;
-import net.ccbluex.liquidbounce.script.remapper.injection.utils.NodeUtils;
+import net.ccbluex.liquidbounce.handler.script.remapper.injection.utils.ClassUtils;
+import net.ccbluex.liquidbounce.handler.script.remapper.injection.utils.NodeUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.tree.*;

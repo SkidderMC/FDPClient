@@ -11,8 +11,8 @@ import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
-import net.ccbluex.liquidbounce.file.FileManager
-import net.ccbluex.liquidbounce.file.config.ConfigManager
+import net.ccbluex.liquidbounce.config.FileManager
+import net.ccbluex.liquidbounce.config.core.ConfigManager
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
 import net.ccbluex.liquidbounce.handler.network.BungeeCordSpoof
@@ -21,7 +21,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption
 import net.ccbluex.liquidbounce.ui.client.gui.GuiLaunchOptionSelectMenu
-import net.ccbluex.liquidbounce.script.ScriptManager
+import net.ccbluex.liquidbounce.handler.script.ScriptManager
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
@@ -165,7 +165,6 @@ object FDPClient {
             fileManager.accountsConfig,
             fileManager.friendsConfig,
             fileManager.specialConfig,
-            fileManager.subscriptsConfig,
             fileManager.hudConfig,
             fileManager.xrayConfig
         )
