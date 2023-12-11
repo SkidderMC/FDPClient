@@ -90,12 +90,14 @@ object KillAura : Module() {
             if (i < newValue) set(i)
         }
     }.displayable { attackDisplay.get() } as FloatValue
+    
+    private val throughWallsValue = BoolValue("AimThroughWalls", false)
     private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 1.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = rangeValue.get()
             if (i < newValue) set(i)
         }
-    }.displayable { attackDisplay.get() } as FloatValue
+    }.displayable { attackDisplay.get() && throughWallsValue.get() } as FloatValue
     private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f).displayable { attackDisplay.get() }
 
     private val swingRangeValue = object : FloatValue("SwingRange", 5f, 0f, 8f) {
@@ -897,7 +899,7 @@ object KillAura : Module() {
                         (randomCenRangeValue.get()).toDouble(),
                         boundingBox,
                         predictValue.get(),
-                        true
+                        throughWallsValue.get()
                 ) ?: return false
 
         if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = 89.9f
