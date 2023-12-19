@@ -9,6 +9,7 @@ import me.liuli.elixir.account.MinecraftAccount;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.handler.network.ClientFixes;
 import net.ccbluex.liquidbounce.handler.network.AutoReconnect;
+import net.ccbluex.liquidbounce.protocol.api.ProtocolSelector;
 import net.ccbluex.liquidbounce.ui.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.ccbluex.liquidbounce.utils.SessionUtils;
@@ -95,6 +96,12 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 ClientFixes.INSTANCE.setEnabled(!ClientFixes.INSTANCE.getEnabled());
                 forgeBypassButton.displayString = "%ui.antiForge%: " + (ClientFixes.INSTANCE.getEnabled() ? "%ui.on%" : "%ui.off%");
                 FDPClient.fileManager.saveConfig(FDPClient.fileManager.getSpecialConfig());
+                break;
+            case 998:
+                mc.displayGuiScreen(new GuiAltManager((GuiScreen) (Object) this));
+                break;
+            case 1151:
+                mc.displayGuiScreen(new ProtocolSelector((GuiScreen) (Object) this));
                 break;
         }
     }

@@ -17,7 +17,9 @@ import net.ccbluex.liquidbounce.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
@@ -25,6 +27,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.CapabilityDispatcher;
 import net.raphimc.vialoader.util.VersionEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -38,130 +41,270 @@ import java.util.Random;
 import java.util.UUID;
 
 @Mixin(Entity.class)
-public abstract class MixinEntity {
+public abstract class MixinEntity implements ICommandSender {
 
+    /**
+     * The Pos x.
+     */
     @Shadow
     public double posX;
 
+    /**
+     * The Pos y.
+     */
     @Shadow
     public double posY;
 
+    /**
+     * The Pos z.
+     */
     @Shadow
     public double posZ;
+    /**
+     * The Rotation pitch.
+     */
+    @Shadow
+    public float rotationPitch;
+    /**
+     * The Rotation yaw.
+     */
+    @Shadow
+    public float rotationYaw;
+    /**
+     * The Riding entity.
+     */
+    @Shadow
+    public Entity ridingEntity;
+    /**
+     * The Motion x.
+     */
+    @Shadow
+    public double motionX;
+    /**
+     * The Motion y.
+     */
+    @Shadow
+    public double motionY;
+    /**
+     * The Motion z.
+     */
+    @Shadow
+    public double motionZ;
+    /**
+     * The On ground.
+     */
+    @Shadow
+    public boolean onGround;
+    /**
+     * The Is air borne.
+     */
+    @Shadow
+    public boolean isAirBorne;
+    /**
+     * The No clip.
+     */
+    @Shadow
+    public boolean noClip;
+    /**
+     * The World obj.
+     */
+    @Shadow
+    public World worldObj;
+
+    /**
+     * The Is in web.
+     */
+    @Shadow
+    public boolean isInWeb;
+    /**
+     * The Step height.
+     */
+    @Shadow
+    public float stepHeight;
+    /**
+     * The Is collided horizontally.
+     */
+    @Shadow
+    public boolean isCollidedHorizontally;
+    /**
+     * The Is collided vertically.
+     */
+    @Shadow
+    public boolean isCollidedVertically;
+    /**
+     * The Is collided.
+     */
+    @Shadow
+    public boolean isCollided;
+    /**
+     * The Distance walked modified.
+     */
+    @Shadow
+    public float distanceWalkedModified;
+    /**
+     * The Distance walked on step modified.
+     */
+    @Shadow
+    public float distanceWalkedOnStepModified;
+    /**
+     * The Fire resistance.
+     */
+    @Shadow
+    public int fireResistance;
+    /**
+     * The Time until portal.
+     */
+    @Shadow
+    public int timeUntilPortal;
+    /**
+     * The Width.
+     */
+    @Shadow
+    public float width;
+    /**
+     * The Prev rotation pitch.
+     */
+    @Shadow
+    public float prevRotationPitch;
+    /**
+     * The Prev rotation yaw.
+     */
+    @Shadow
+    public float prevRotationYaw;
+    /**
+     * The Rand.
+     */
+    @Shadow
+    protected Random rand;
+    /**
+     * The In portal.
+     */
+    @Shadow
+    protected boolean inPortal;
+    @Shadow
+    private int nextStepDistance;
+    @Shadow
+    private int fire;
+    @Shadow(remap = false)
+    private CapabilityDispatcher capabilities;
+
+    /**
+     * Is sprinting boolean.
+     *
+     * @return the boolean
+     */
+    @Shadow
+    public abstract void setSprinting(boolean sprinting);
 
     @Shadow
     public abstract boolean isSprinting();
 
-    @Shadow
-    public float rotationPitch;
-
-    @Shadow
-    public float rotationYaw;
-
+    /**
+     * Gets entity bounding box.
+     *
+     * @return the entity bounding box
+     */
     @Shadow
     public abstract AxisAlignedBB getEntityBoundingBox();
 
+    /**
+     * Sets entity bounding box.
+     *
+     * @param bb the bb
+     */
     @Shadow
-    public Entity ridingEntity;
+    public abstract void setEntityBoundingBox(AxisAlignedBB bb);
 
+    /**
+     * Gets distance to entity.
+     *
+     * @param entityIn the entity in
+     * @return the distance to entity
+     */
     @Shadow
-    public double motionX;
+    public abstract float getDistanceToEntity(Entity entityIn);
 
-    @Shadow
-    public double motionY;
-
-    @Shadow
-    public double motionZ;
-
-    @Shadow
-    public boolean onGround;
-
-    @Shadow
-    public boolean isAirBorne;
-
-    @Shadow
-    public boolean noClip;
-
-    @Shadow
-    public World worldObj;
-
+    /**
+     * Move entity.
+     *
+     * @param x the x
+     * @param y the y
+     * @param z the z
+     */
     @Shadow
     public void moveEntity(double x, double y, double z) {
     }
 
-    @Shadow
-    public boolean isInWeb;
-
-    @Shadow
-    public float stepHeight;
-
-    @Shadow
-    public boolean isCollidedHorizontally;
-
-    @Shadow
-    public boolean isCollidedVertically;
-
-    @Shadow
-    public boolean isCollided;
-
-    @Shadow
-    public float distanceWalkedModified;
-
-    @Shadow
-    public float distanceWalkedOnStepModified;
-
+    /**
+     * Is in water boolean.
+     *
+     * @return the boolean
+     */
     @Shadow
     public abstract boolean isInWater();
 
-    @Shadow
-    protected Random rand;
-
-    @Shadow
-    public int fireResistance;
-
-    @Shadow
-    protected boolean inPortal;
-
-    @Shadow
-    public int timeUntilPortal;
-
-    @Shadow
-    public float width;
-    @Shadow
-    public abstract void setSprinting(boolean sprinting);
+    /**
+     * Is riding boolean.
+     *
+     * @return the boolean
+     */
     @Shadow
     public abstract boolean isRiding();
 
-    @Shadow
-    public abstract void setFire(int seconds);
-
+    /**
+     * Deal fire damage.
+     *
+     * @param amount the amount
+     */
     @Shadow
     protected abstract void dealFireDamage(int amount);
 
+    /**
+     * Is wet boolean.
+     *
+     * @return the boolean
+     */
     @Shadow
     public abstract boolean isWet();
 
+    /**
+     * Add entity crash info.
+     *
+     * @param category the category
+     */
     @Shadow
     public abstract void addEntityCrashInfo(CrashReportCategory category);
 
+    /**
+     * Do block collisions.
+     */
     @Shadow
     protected abstract void doBlockCollisions();
 
+    /**
+     * Play step sound.
+     *
+     * @param pos     the pos
+     * @param blockIn the block in
+     */
     @Shadow
     protected abstract void playStepSound(BlockPos pos, Block blockIn);
 
+    /**
+     * Gets vector for rotation.
+     *
+     * @param pitch the pitch
+     * @param yaw   the yaw
+     * @return the vector for rotation
+     */
     @Shadow
-    public abstract void setEntityBoundingBox(AxisAlignedBB bb);
+    protected abstract Vec3 getVectorForRotation(float pitch, float yaw);
 
-    @Shadow
-    private int nextStepDistance;
-
-    @Shadow
-    private int fire;
-
-    @Shadow
-    public abstract Vec3 getVectorForRotation(float pitch, float yaw);
-
+    /**
+     * Gets unique id.
+     *
+     * @return the unique id
+     */
     @Shadow
     public abstract UUID getUniqueID();
 
@@ -171,19 +314,58 @@ public abstract class MixinEntity {
     @Shadow
     public abstract boolean equals(Object p_equals_1_);
 
-    @Shadow public abstract float getEyeHeight();
+    /**
+     * Is inside of material boolean.
+     *
+     * @param materialIn the material in
+     * @return the boolean
+     */
+    @Shadow
+    public abstract boolean isInsideOfMaterial(Material materialIn);
 
+    /**
+     * Gets next step distance.
+     *
+     * @return the next step distance
+     */
     public int getNextStepDistance() {
         return nextStepDistance;
     }
 
+    /**
+     * Sets next step distance.
+     *
+     * @param nextStepDistance the next step distance
+     */
     public void setNextStepDistance(int nextStepDistance) {
         this.nextStepDistance = nextStepDistance;
     }
 
+    /**
+     * Gets fire.
+     *
+     * @return the fire
+     */
     public int getFire() {
         return fire;
     }
+
+    /**
+     * Sets fire.
+     *
+     * @param seconds the seconds
+     */
+    @Shadow
+    public abstract void setFire(int seconds);
+
+    @Shadow
+    public abstract float getEyeHeight();
+
+    @Shadow
+    public abstract Vec3 getLook(float p_getLook_1_);
+
+    @Shadow
+    protected abstract boolean getFlag(int p_getFlag_1_);
 
     @Inject(method = "moveFlying", at = @At("HEAD"), cancellable = true)
     private void handleRotations(float strafe, float forward, float friction, final CallbackInfo callbackInfo) {
