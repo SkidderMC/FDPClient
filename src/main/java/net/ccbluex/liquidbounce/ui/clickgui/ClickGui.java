@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.elements.ButtonElement;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.Element;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.ui.clickgui.style.Style;
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.SlowlyStyle;
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.BlackStyle;
 import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
@@ -32,7 +32,7 @@ import java.util.Objects;
 public class ClickGui extends GuiScreen {
 
     public final List<Panel> panels = new ArrayList<>();
-    public Style style = new SlowlyStyle();
+    public Style style = new BlackStyle();
     private Panel clickedPanel;
     private int mouseX;
     private int mouseY;

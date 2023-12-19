@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
 import net.ccbluex.liquidbounce.handler.network.BungeeCordSpoof
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
+import net.ccbluex.liquidbounce.handler.network.ClientSpoof
 import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption
@@ -42,7 +43,7 @@ object FDPClient {
     const val CLIENT_NAME = "FDPClient"
     const val COLORED_NAME = "§7[§b§lFDPClient§7] "
     const val CLIENT_CREATOR = "CCBlueX, Zywl & SkidderMC TEAM"
-    const val CLIENT_WEBSITE = "fdpinfo.github.io"
+    const val CLIENT_WEBSITE = "https://fdpinfo.github.io"
     const val CLIENT_VERSION = "v5.5.0"
 
     // Flags
@@ -75,6 +76,7 @@ object FDPClient {
     lateinit var combatManager: CombatManager
     lateinit var macroManager: MacroManager
     lateinit var configManager: ConfigManager
+    lateinit var clientSpoof: ClientSpoof
 
     // Some UI things
     lateinit var hud: HUD
@@ -124,6 +126,7 @@ object FDPClient {
         keyBindManager = KeyBindManager()
         combatManager = CombatManager()
         tipSoundManager = TipSoundManager()
+        clientSpoof = ClientSpoof()
 
         // Load language
         LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
@@ -137,6 +140,7 @@ object FDPClient {
         eventManager.registerListener(LocationCache())
         eventManager.registerListener(macroManager)
         eventManager.registerListener(combatManager)
+        eventManager.registerListener(ClientSpoof())
 
         // Load client fonts
         Fonts.loadFonts()

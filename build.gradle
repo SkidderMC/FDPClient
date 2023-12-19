@@ -14,7 +14,7 @@ repositories {
     maven { url = "https://maven.minecraftforge.net/" }
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
-    maven { url = "https://repo.viaversion.com" }
+    maven { url = "https://repo.viaversion.com/" }
 }
 
 version = "5.4.0"
@@ -52,6 +52,8 @@ def viaLibs = [
         "com.viaversion:viaversion:${project.viaversion_version}",
         "com.viaversion:viabackwards:${project.viabackwards_version}",
         "com.viaversion:viarewind-universal:${project.viarewind_version}",
+        "net.raphimc:ViaLoader:${project.vialoader_version}",
+        "net.raphimc:ViaAprilFools:${project.viaaprilfools_version}",
         "org.yaml:snakeyaml:${project.snake_yml_version}",
         "org.slf4j:slf4j-api:${project.slf4j_version}"
 ]
@@ -70,6 +72,10 @@ dependencies {
 
     for (final def via in viaLibs) {
         include(via)
+    }
+
+    include ("net.raphimc:ViaLegacy:${project.vialegacy_version}") {
+        exclude group: "com.google.code.gson", module: "gson"
     }
 
     include('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {
@@ -169,3 +175,12 @@ reobf {
     }
 }
 tasks.reobfJar.dependsOn(shadowJar)
+
+configurations {
+    compileClasspath {
+        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
+    }
+    include {
+        attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
+    }
+}

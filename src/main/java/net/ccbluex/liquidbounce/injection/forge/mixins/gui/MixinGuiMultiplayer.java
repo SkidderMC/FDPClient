@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import cc.paimonmc.viamcp.gui.AsyncVersionSlider;
 import net.ccbluex.liquidbounce.ui.client.GuiProxySelect;
 import net.ccbluex.liquidbounce.ui.elements.ToolDropdown;
 import net.minecraft.client.Minecraft;
@@ -25,14 +24,10 @@ public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
         buttonList.add(toolButton = new GuiButton(997, 5, 8, 138, 20, "Tools"));
-   //     buttonList.add(new GuiButton(998, width - 104, 8, 98, 20, "%ui.serverSpoof%"));
         buttonList.add(new GuiButton(999, width - 208, 8, 98, 20, "Proxy"));
+        buttonList.add(new GuiButton(1151, 4, height - 24, 68, 20, "Protocol"));
     }
 
-    @Inject(method = "createButtons",at = @At("HEAD"))
-    public void createButtons(CallbackInfo ci){
-        buttonList.add(new AsyncVersionSlider(-1, this.width - 104, 8, 98, 20));
-    }
 
     @Inject(method = "actionPerformed", at = @At("HEAD"))
     private void actionPerformed(GuiButton button, CallbackInfo callbackInfo) {

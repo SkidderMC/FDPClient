@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.features.value.FloatValue
 import net.ccbluex.liquidbounce.features.value.IntegerValue
 import net.ccbluex.liquidbounce.features.value.ListValue
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.*
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.Slight.SlightUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.light.LightClickGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
@@ -38,13 +37,10 @@ object ClickGUIModule : Module() {
             "OneTap",
             "Light",
             "Novoline",
-            "Astolfo",
             "LB+",
-            "LiquidBounce",
-            "Tenacity5",
-            "Slight",
+            "Astolfo",
+            "Mixed",
             "Null",
-            "Slowly",
             "Black",
             "White"
         ),
@@ -70,7 +66,6 @@ object ClickGUIModule : Module() {
     private var lightClickGUI = LightClickGUI()
     private var otcGui = OtcClickGUi()
     private var novoline = ClickyUI()
-    private var slight = SlightUI()
     private var dropdown = DropdownGUI()
 
     override fun onEnable() {
@@ -80,7 +75,6 @@ object ClickGUIModule : Module() {
             styleValue.get().contains("Light") -> mc.displayGuiScreen(lightClickGUI)
             styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(dropdown)
             styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())
-            styleValue.get().contains("Slight") -> mc.displayGuiScreen(slight)
             else -> {
                 updateStyle()
                 mc.displayGuiScreen(modernuiLaunchOption.clickGui)
@@ -90,11 +84,9 @@ object ClickGUIModule : Module() {
     }
     private fun updateStyle() {
         when (styleValue.get().lowercase(Locale.getDefault())) {
-            "liquidbounce" -> modernuiLaunchOption.clickGui.style = LiquidBounceStyle()
             "null" -> modernuiLaunchOption.clickGui.style = NullStyle()
-            "slowly" -> modernuiLaunchOption.clickGui.style = SlowlyStyle()
             "black", "white" -> modernuiLaunchOption.clickGui.style = if (styleValue.get() == "White") WhiteStyle() else BlackStyle()
-            "tenacity5" -> modernuiLaunchOption.clickGui.style = TenacityStyle()
+            "mixed" -> modernuiLaunchOption.clickGui.style = MixedStyle()
             "astolfo" -> modernuiLaunchOption.clickGui.style = AstolfoStyle()
         }
     }

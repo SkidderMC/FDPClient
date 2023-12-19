@@ -16,6 +16,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
+import net.ccbluex.liquidbounce.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.minecraft.block.Block;
@@ -32,100 +34,177 @@ import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import net.raphimc.vialoader.util.VersionEnum;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
+import java.util.Objects;
 
 @Mixin(EntityPlayerSP.class)
 public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
-    @Shadow
-    private boolean serverSneakState;
+    @Unique
+    private boolean viaForge$prevOnGround;
 
+    /**
+     * The Server sprint state.
+     */
     @Shadow
     public boolean serverSprintState;
+    /**
+     * The Sprinting ticks left.
+     */
+    @Shadow
+    public int sprintingTicksLeft;
+    /**
+     * The Time in portal.
+     */
+    @Shadow
+    public float timeInPortal;
+    /**
+     * The Prev time in portal.
+     */
+    @Shadow
+    public float prevTimeInPortal;
+    /**
+     * The Movement input.
+     */
+    @Shadow
+    public MovementInput movementInput;
+    /**
+     * The Horse jump power.
+     */
+    @Shadow
+    public float horseJumpPower;
+    /**
+     * The Horse jump power counter.
+     */
+    @Shadow
+    public int horseJumpPowerCounter;
+    /**
+     * The Send queue.
+     */
+    @Shadow
+    @Final
+    public NetHandlerPlayClient sendQueue;
+    /**
+     * The Sprint toggle timer.
+     */
+    @Shadow
+    protected int sprintToggleTimer;
+    /**
+     * The Mc.
+     */
+    @Shadow
+    protected Minecraft mc;
+    @Shadow
+    private boolean serverSneakState;
+    @Shadow
+    private double lastReportedPosX;
+    @Shadow
+    public int positionUpdateTicks;
+    @Shadow
+    private double lastReportedPosY;
+    @Shadow
+    private double lastReportedPosZ;
+    @Shadow
+    private float lastReportedYaw;
+    @Shadow
+    private float lastReportedPitch;
+    @Unique
+    private boolean lastOnGround;
 
+    /**
+     * Play sound.
+     *
+     * @param name   the name
+     * @param volume the volume
+     * @param pitch  the pitch
+     */
     @Shadow
     public abstract void playSound(String name, float volume, float pitch);
 
-    @Shadow
-    public int sprintingTicksLeft;
-
-    @Shadow
-    protected int sprintToggleTimer;
-
-    @Shadow
-    public float timeInPortal;
-
-    @Shadow
-    public float prevTimeInPortal;
-
-    @Shadow
-    protected Minecraft mc;
-
-    @Shadow
-    public MovementInput movementInput;
-
+    /**
+     * Sets sprinting.
+     *
+     * @param sprinting the sprinting
+     */
     @Shadow
     public abstract void setSprinting(boolean sprinting);
 
+    /**
+     * Push out of blocks boolean.
+     *
+     * @param x the x
+     * @param y the y
+     * @param z the z
+     * @return the boolean
+     */
     @Shadow
     protected abstract boolean pushOutOfBlocks(double x, double y, double z);
 
+    /**
+     * Send player abilities.
+     */
     @Shadow
     public abstract void sendPlayerAbilities();
 
-    @Shadow
-    public float horseJumpPower;
-
-    @Shadow
-    public int horseJumpPowerCounter;
-
+    /**
+     * Send horse jump.
+     */
     @Shadow
     protected abstract void sendHorseJump();
 
+    /**
+     * Is riding horse boolean.
+     *
+     * @return the boolean
+     */
     @Shadow
     public abstract boolean isRidingHorse();
 
     @Shadow
-    @Final
-    public NetHandlerPlayClient sendQueue;
-
-    @Shadow
     public abstract boolean isSneaking();
 
-    @Shadow
-    private double lastReportedPosX;
+    /**
+     * Is current view entity boolean.
+     *
+     * @return the boolean
+     * @author As_pw
+     * @reason Fix Video
+     */
+    @Overwrite
+    protected boolean isCurrentViewEntity() {
+        final Flight flight = Objects.requireNonNull(FDPClient.moduleManager.getModule(Flight.class));
 
-    @Shadow
-    private int positionUpdateTicks;
-
-    @Shadow
-    private double lastReportedPosY;
-
-    @Shadow
-    private double lastReportedPosZ;
-
-    @Shadow
-    private float lastReportedYaw;
-
-    @Shadow
-    private float lastReportedPitch;
-
-    @Shadow
-    protected abstract boolean isCurrentViewEntity();
+        return (mc.getRenderViewEntity() != null && mc.getRenderViewEntity().equals(this)) || (FDPClient.moduleManager != null && flight.getState());
+    }
     private boolean debug_AttemptSprint = false;
+
+    @Redirect(method = "onUpdateWalkingPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/NetHandlerPlayClient;addToSendQueue(Lnet/minecraft/network/Packet;)V", ordinal = 7))
+    public void emulateIdlePacket(NetHandlerPlayClient instance, Packet p_addToSendQueue_1_) {
+        if (ProtocolBase.getManager().getTargetVersion().isNewerThan(VersionEnum.r1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+            if (this.viaForge$prevOnGround == this.onGround) {
+                return;
+            }
+        }
+        instance.addToSendQueue(p_addToSendQueue_1_);
+    }
+
+    @Inject(method = "onUpdateWalkingPlayer", at = @At("RETURN"))
+    public void saveGroundState(CallbackInfo ci) {
+        this.viaForge$prevOnGround = this.onGround;
+    }
 
     /**
      * @author CCBlueX, liulihaocai

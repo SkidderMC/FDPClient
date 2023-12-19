@@ -13,7 +13,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.ViaVersionFix;
 import net.ccbluex.liquidbounce.injection.access.IWorld;
+import net.ccbluex.liquidbounce.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
+import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
@@ -23,6 +25,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.raphimc.vialoader.util.VersionEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
@@ -214,16 +218,15 @@ public abstract class MixinEntity {
 
     @Inject(method = "getCollisionBorderSize", at = @At("HEAD"), cancellable = true)
     private void getCollisionBorderSize(final CallbackInfoReturnable<Float> callbackInfoReturnable) {
-        final HitBox hitBox = FDPClient.moduleManager.getModule(HitBox.class);
-        final ViaVersionFix viaVersionFix = FDPClient.moduleManager.getModule(ViaVersionFix.class);
+        final HitBox hitBoxes = Objects.requireNonNull(FDPClient.moduleManager.getModule(HitBox.class));
 
-        if (hitBox.getState() && EntityUtils.INSTANCE.isSelected(((Entity)((Object)this)),true)) {
-            if (viaVersionFix.getState()) {
-                callbackInfoReturnable.setReturnValue(hitBox.getSizeValue().get());
+        if (hitBoxes.getState() && EntityUtils.INSTANCE.isSelected(((Entity) ((Object) this)), true)) {
+            if (ProtocolBase.getManager().getTargetVersion().getProtocol() != VersionEnum.r1_8.getProtocol() && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+                callbackInfoReturnable.setReturnValue(hitBoxes.getSizeValue().get());
             } else {
-                callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());
+                callbackInfoReturnable.setReturnValue(0.1F + hitBoxes.getSizeValue().get());
             }
-        } else if (viaVersionFix.getState()) {
+        } else if (ProtocolBase.getManager().getTargetVersion().getProtocol() != VersionEnum.r1_8.getProtocol() && !MinecraftInstance.mc.isIntegratedServerRunning()) {
             callbackInfoReturnable.setReturnValue(0.0F);
         }
     }

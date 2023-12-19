@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.GuiModList;
 
 import java.awt.*;
 import java.io.IOException;
@@ -31,7 +30,7 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
         this.butt.add(new MainMenuButton("G", "SinglePlayer", () -> this.mc.displayGuiScreen(new GuiSelectWorld(this))));
         this.butt.add(new MainMenuButton("H", "MultiPlayer", () -> this.mc.displayGuiScreen(new GuiMultiplayer(this))));
         this.butt.add(new MainMenuButton("I", "AltManager", () -> this.mc.displayGuiScreen(new GuiAltManager(this))));
-        this.butt.add(new MainMenuButton("J", "Mods", () -> this.mc.displayGuiScreen(new GuiModList(this)), 0.5F));
+        this.butt.add(new MainMenuButton("J", "Misc", () -> this.mc.displayGuiScreen(new GuiInfo(this)), 0.5F));
         this.butt.add(new MainMenuButton("K", "Options", () -> this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings))));
         this.butt.add(new MainMenuButton("L", "Languages", () -> this.mc.displayGuiScreen(new GuiLanguage(this, this.mc.gameSettings, this.mc.getLanguageManager()))));
         this.butt.add(new MainMenuButton("M", "Quit", () -> this.mc.shutdown()));
