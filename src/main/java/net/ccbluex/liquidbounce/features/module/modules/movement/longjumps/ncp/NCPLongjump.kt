@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.value.FloatValue
 
 class NCPLongjump : LongJumpMode("NCP") {
     private val ncpBoostValue = FloatValue("${valuePrefix}Boost", 4.25f, 1f, 10f)

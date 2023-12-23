@@ -1,9 +1,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.vanilla
 
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 
 class CancelVelocity : VelocityMode("Cancel") {

@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.protocol.api;
+package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import net.raphimc.vialoader.util.VersionEnum;
 

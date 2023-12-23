@@ -7,8 +7,8 @@ import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
-import net.ccbluex.liquidbounce.features.value.IntegerValue;
-import net.ccbluex.liquidbounce.features.value.Value;
+import net.ccbluex.liquidbounce.value.IntegerValue;
+import net.ccbluex.liquidbounce.value.Value;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.MathHelper;
 

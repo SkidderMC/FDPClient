@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
-import net.ccbluex.liquidbounce.features.value.*
+import net.ccbluex.liquidbounce.value.*
 
 class VerusHopSpeed : SpeedMode("VerusHop") {
 

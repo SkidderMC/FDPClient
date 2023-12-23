@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.protocol.api.ProtocolSelector;
+import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolSelector;
 import net.ccbluex.liquidbounce.ui.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.client.GuiProxySelect;
 import net.ccbluex.liquidbounce.ui.elements.ToolDropdown;

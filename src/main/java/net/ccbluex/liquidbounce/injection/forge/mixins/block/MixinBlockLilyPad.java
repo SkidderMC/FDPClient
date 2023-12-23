@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
-import net.ccbluex.liquidbounce.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockLilyPad;
@@ -16,8 +16,6 @@ import net.minecraft.world.World;
 import net.raphimc.vialoader.util.VersionEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-
-import java.util.Objects;
 
 @Mixin(BlockLilyPad.class)
 public abstract class MixinBlockLilyPad extends BlockBush {

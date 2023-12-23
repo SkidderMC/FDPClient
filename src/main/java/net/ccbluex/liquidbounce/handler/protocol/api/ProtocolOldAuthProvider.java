@@ -1,7 +1,7 @@
-package net.ccbluex.liquidbounce.protocol.api;
+package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import net.ccbluex.liquidbounce.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.raphimc.vialegacy.protocols.release.protocol1_3_1_2to1_2_4_5.providers.OldAuthProvider;
 
 public class ProtocolOldAuthProvider extends OldAuthProvider {

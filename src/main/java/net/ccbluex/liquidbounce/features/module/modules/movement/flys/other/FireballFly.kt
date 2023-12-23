@@ -11,14 +11,11 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.features.value.BoolValue
-import net.ccbluex.liquidbounce.features.value.FloatValue
-import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.item.ItemFireball
-import net.minecraft.item.ItemStack
 import net.minecraft.client.settings.KeyBinding
 
 class FireballFly : FlyMode("Fireball") {

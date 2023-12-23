@@ -7,8 +7,8 @@ import net.ccbluex.liquidbounce.utils.misc.Direction;
 import net.ccbluex.liquidbounce.utils.misc.EaseInOutQuad;
 import net.ccbluex.liquidbounce.utils.misc.Animation;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.features.value.ListValue;
-import net.ccbluex.liquidbounce.features.value.Value;
+import net.ccbluex.liquidbounce.value.ListValue;
+import net.ccbluex.liquidbounce.value.Value;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;

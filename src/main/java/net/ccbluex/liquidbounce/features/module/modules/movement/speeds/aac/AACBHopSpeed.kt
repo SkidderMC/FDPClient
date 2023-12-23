@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.util.MathHelper
 import kotlin.math.cos
 import kotlin.math.sin

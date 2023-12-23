@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.value.FloatValue
 
 class VerusYPortSpeed : SpeedMode("VerusYPort") {
 	private val speedValue = FloatValue("${valuePrefix}Speed", 0.61f, 0.1f, 1f)

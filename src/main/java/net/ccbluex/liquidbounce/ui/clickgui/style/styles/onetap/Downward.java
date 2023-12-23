@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.onetap;
 
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.onetap.Utils.Position;
-import net.ccbluex.liquidbounce.features.value.Value;
+import net.ccbluex.liquidbounce.value.Value;
 import net.minecraft.client.gui.Gui;
 
 public abstract class Downward<V extends Value> extends Gui  {

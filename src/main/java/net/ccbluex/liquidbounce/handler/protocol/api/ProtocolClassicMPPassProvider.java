@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.protocol.api;
+package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;

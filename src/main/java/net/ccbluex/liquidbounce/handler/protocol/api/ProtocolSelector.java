@@ -1,7 +1,7 @@
-package net.ccbluex.liquidbounce.protocol.api;
+package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import net.ccbluex.liquidbounce.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;

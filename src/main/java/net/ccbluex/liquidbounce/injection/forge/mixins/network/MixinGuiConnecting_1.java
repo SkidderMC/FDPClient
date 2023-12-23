@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
-import net.ccbluex.liquidbounce.protocol.ProtocolBase;
-import net.ccbluex.liquidbounce.protocol.api.ExtendedServerData;
+import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.handler.protocol.api.ExtendedServerData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.NetworkManager;
 import net.raphimc.vialoader.util.VersionEnum;

@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.protocol.api;
+package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import net.raphimc.vialegacy.protocols.release.protocol1_8to1_7_6_10.providers.GameProfileFetcher;
 

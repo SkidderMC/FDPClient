@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.value.FloatValue
 
 class NCPYPort2Speed : SpeedMode("NCPYPort2") {
     var ticks = 0

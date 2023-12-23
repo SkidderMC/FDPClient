@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.onetap.Utils.Position;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
-import net.ccbluex.liquidbounce.features.value.*;
+import net.ccbluex.liquidbounce.value.*;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;

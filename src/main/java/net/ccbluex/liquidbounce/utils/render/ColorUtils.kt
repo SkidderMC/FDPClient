@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils.render
 
 import com.ibm.icu.text.NumberFormat
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
@@ -21,6 +22,10 @@ object ColorUtils {
     private val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
     private val startTime = System.currentTimeMillis()
 
+    @JvmStatic
+    fun getBackgroundBrighterColor(): Color {
+        return Color(185, 185, 185, 80)
+    }
     @JvmField
     val hexColors = IntArray(16)
 
@@ -383,6 +388,11 @@ object ColorUtils {
     }
 
     @JvmStatic
+    fun getFontColor(target: Any): Color {
+        return Color(0xAEB5B9)
+    }
+
+    @JvmStatic
     fun otherAstolfo(delay: Int, offset: Int, index: Int): Int {
         var rainbowDelay = Math.ceil((System.currentTimeMillis() + (delay * index).toLong()).toDouble()) / offset
         return Color.getHSBColor(if ((360.0.also { rainbowDelay %= it } / 360.0).toFloat()
@@ -421,6 +431,41 @@ object ColorUtils {
 
     fun toRGB(f: Float, f2: Float, f3: Float, f4: Float): Int {
         return toRGB((f * 255.0f).toInt(), (f2 * 255.0f).toInt(), (f3 * 255.0f).toInt(), (f4 * 255.0f).toInt())
+    }
+
+    @JvmStatic
+    fun setColor(color: Int) {
+        setColorAlpha(color)
+    }
+
+    fun setColorAlpha(color: Int) {
+        val alpha = (color shr 24 and 255) / 255f
+        val red = (color shr 16 and 255) / 255f
+        val green = (color shr 8 and 255) / 255f
+        val blue = (color and 255) / 255f
+        GlStateManager.color(red, green, blue, alpha)
+    }
+
+    @JvmStatic
+    fun clearColor() {
+        GlStateManager.color(1f, 1f, 1f, 1f)
+    }
+
+    @JvmStatic
+    fun getChroma(index: Int, speed: Double, saturation: Float, opacity: Int): Color {
+        val angle = ((System.currentTimeMillis() / speed + index) % 360).toFloat() / 360f
+        val c = Color(Color.HSBtoRGB(angle, saturation, 1f))
+        return Color(c.red, c.green, c.blue, opacity)
+    }
+
+    @JvmStatic
+    fun getChroma(index: Int): Color {
+        return getChroma(index, 35.0, 0.7f, 160)
+    }
+
+    @JvmStatic
+    fun getIconColorAlpha(): Color {
+        return Color(185, 185, 185, 190)
     }
 
 }

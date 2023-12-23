@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.element.componen
 import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.ValueElement
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MouseUtils
-import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.value.BoolValue
 
 import java.awt.Color
 

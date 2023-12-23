@@ -18,10 +18,10 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.skyRainbow
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.features.value.BoolValue
-import net.ccbluex.liquidbounce.features.value.FloatValue
-import net.ccbluex.liquidbounce.features.value.IntegerValue
-import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.GuiIngame
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -70,28 +70,36 @@ object HotbarSettings : Module() {
                 // date and time
                 val dateFormat = SimpleDateFormat("dd/MM/yy")
                 val date = dateFormat.format(System.currentTimeMillis())
-                FontLoaders.F14.drawString(date, sr.scaledWidth - FontLoaders.F14.getStringWidth(date) - 4F,sr.scaledHeight - 9F,  Color(255, 255, 255).rgb)
+                FontLoaders.F14.drawString(date,
+                    (sr.scaledWidth - FontLoaders.F14.getStringWidth(date) - 4F).toFloat(),sr.scaledHeight - 9F,  Color(255, 255, 255).rgb)
                 val hourFormat = SimpleDateFormat("HH:mm")
                 val time = hourFormat.format(System.currentTimeMillis())
-                FontLoaders.F14.drawString(time, sr.scaledWidth - FontLoaders.F14.getStringWidth(time) - 4F,sr.scaledHeight - 18F,  Color(255, 255, 255).rgb)
+                FontLoaders.F14.drawString(time,
+                    (sr.scaledWidth - FontLoaders.F14.getStringWidth(time) - 4F).toFloat(),sr.scaledHeight - 18F,  Color(255, 255, 255).rgb)
                 // get distance date takes up
                 val padding = max(FontLoaders.F14.getStringWidth(time), FontLoaders.F14.getStringWidth(date)) + 10
                 // fake icons
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/1.png"), (sr.scaledWidth - padding) - 10, sr.scaledHeight - 17, 10, 10)
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/2.png"), (sr.scaledWidth - padding) - 28, sr.scaledHeight - 17, 10, 10)
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/3.png"), (sr.scaledWidth - padding) - 46, sr.scaledHeight - 17, 10, 10)
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/1.png"),
+                    ((sr.scaledWidth - padding) - 10).toInt(), sr.scaledHeight - 17, 10, 10)
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/2.png"),
+                    ((sr.scaledWidth - padding) - 28).toInt(), sr.scaledHeight - 17, 10, 10)
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/3.png"),
+                    ((sr.scaledWidth - padding) - 46).toInt(), sr.scaledHeight - 17, 10, 10)
                 // lang idicator
                 val loccode = mc.gameSettings.language.uppercase()
                 val lang = loccode.substringBefore("_", "null")
                 val region = loccode.substringAfter("_", "null")
-                FontLoaders.F14.drawString(lang, (sr.scaledWidth - padding) - 62F,sr.scaledHeight - 17F,  Color(255, 255, 255).rgb)
-                FontLoaders.F14.drawString(region, (sr.scaledWidth - padding) - 62F,sr.scaledHeight - 10F,  Color(255, 255, 255).rgb)
+                FontLoaders.F14.drawString(lang,
+                    ((sr.scaledWidth - padding) - 62F).toFloat(),sr.scaledHeight - 17F,  Color(255, 255, 255).rgb)
+                FontLoaders.F14.drawString(region,
+                    ((sr.scaledWidth - padding) - 62F).toFloat(),sr.scaledHeight - 10F,  Color(255, 255, 255).rgb)
                 // fake expand tray icon
                 val paddingAfter = (max(
                     FontLoaders.F14.getStringWidth(time),
                     FontLoaders.F14.getStringWidth(date)
                 ) + 10) + (max(FontLoaders.F14.getStringWidth(lang), FontLoaders.F14.getStringWidth(region)) + 2)
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/up.png"), (sr.scaledWidth - paddingAfter) - 68, sr.scaledHeight - 17, 10, 10)
+                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/up.png"),
+                    ((sr.scaledWidth - paddingAfter) - 68).toInt(), sr.scaledHeight - 17, 10, 10)
             }
             hotbarValue.get() ==  "Rise" -> {
                 if(BlurValue.get() && BlurAmount.get() > 1F ) {

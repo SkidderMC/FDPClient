@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 import java.text.DecimalFormat
 

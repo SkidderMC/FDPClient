@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.protocol.api;
+package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfileRepository;

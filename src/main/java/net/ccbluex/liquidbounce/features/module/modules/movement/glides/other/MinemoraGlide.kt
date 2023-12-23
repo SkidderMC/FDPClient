@@ -2,8 +2,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.glides.other
 
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMode
-import net.ccbluex.liquidbounce.features.value.IntegerValue
-import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 
 class MinemoraGlide : GlideMode("Minemora") {
     private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Glide1", "Glide2"), "Glide1")

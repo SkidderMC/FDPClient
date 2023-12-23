@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.features.value.Value
+import net.ccbluex.liquidbounce.value.Value
 
 abstract class NoFallMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"

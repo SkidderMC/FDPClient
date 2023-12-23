@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.features.value.Value
+import net.ccbluex.liquidbounce.value.Value
 import net.minecraft.util.BlockPos
 
 abstract class JesusMode(val modeName: String) : MinecraftInstance() {

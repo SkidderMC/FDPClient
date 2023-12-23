@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.features.value.Value
+import net.ccbluex.liquidbounce.value.Value
 
 @Suppress("unused")
 @ModuleInfo(name = "ScriptModule", category = ModuleCategory.OTHER)

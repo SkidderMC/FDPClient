@@ -50,7 +50,7 @@ class KeyBindManager : GuiScreen() {
 //        GL11.glPopMatrix()
         GL11.glScalef(0.5f, 0.5f, 0.5f)
 
-        GL11.glTranslatef(width * 0.2f, height * 0.2f + FontLoaders.C18.height * 2.3f, 0F)
+        GL11.glTranslatef(width * 0.2f, (height * 0.2f + FontLoaders.C18.height * 2.3f).toFloat(), 0F)
         val scale = mcWidth / baseWidth.toFloat()
         // It's easier to use scale
         GL11.glScalef(scale, scale, scale)
@@ -78,7 +78,7 @@ class KeyBindManager : GuiScreen() {
                     val scaledMouseX = (mouseX - width * 0.2f) / scale
                     val scaledMouseY = (mouseY - (height * 0.2f + FontLoaders.C18.height * 2.3f)) / scale
 
-                    nowDisplayKey!!.stroll(scaledMouseX, scaledMouseY, wheel)
+                    nowDisplayKey!!.stroll(scaledMouseX, scaledMouseY.toFloat(), wheel)
                 }
             }
         }
@@ -105,12 +105,12 @@ class KeyBindManager : GuiScreen() {
                     if (scaledMouseX > key.posX && scaledMouseY > key.posY &&
                         scaledMouseX < (key.posX + key.width) && scaledMouseY < (key.posY + key.height)
                     ) {
-                        key.click(scaledMouseX, scaledMouseY)
+                        key.click(scaledMouseX, scaledMouseY.toFloat())
                         break
                     }
                 }
             } else {
-                nowDisplayKey!!.click(scaledMouseX, scaledMouseY)
+                nowDisplayKey!!.click(scaledMouseX, scaledMouseY.toFloat())
             }
         } else {
             popUI!!.onClick(width, height, mouseX, mouseY)

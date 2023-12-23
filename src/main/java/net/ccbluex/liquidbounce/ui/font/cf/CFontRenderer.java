@@ -508,7 +508,7 @@ public class CFontRenderer extends CFont {
     }
 
     @Override // net.ccbluex.liquidbounce.CFont
-    public int getStringWidth(String text) {
+    public double getStringWidth(String text) {
         if (text == null) {
             return 0;
         }

@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.vanilla
 
 import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 
 class AttackReduceVelocity : VelocityMode("AttackReduce") {

@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.value.*
+import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager.height
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule.colorBlueValue
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule.colorGreenValue

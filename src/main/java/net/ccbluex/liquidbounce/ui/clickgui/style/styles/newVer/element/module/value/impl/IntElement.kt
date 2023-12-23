@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value.ValueE
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 
 import java.awt.Color
 

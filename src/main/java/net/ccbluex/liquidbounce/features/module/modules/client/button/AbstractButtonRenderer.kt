@@ -18,7 +18,7 @@ abstract class AbstractButtonRenderer(protected val button: GuiButton) {
             button.displayString,
             button.xPosition + button.width / 2f - FontLoaders.F18.DisplayFontWidths(
                 FontLoaders.F18,button.displayString) / 2f,
-            button.yPosition + button.height / 2f - FontLoaders.F18.height / 2f,
+            (button.yPosition + button.height / 2f - FontLoaders.F18.height / 2f).toFloat(),
             if (button.enabled) Color.WHITE.rgb else Color.GRAY.rgb,
             FontLoaders.F18
         )

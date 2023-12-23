@@ -11,9 +11,12 @@ import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Objects;
 
 @Mixin(GuiButton.class)
 public abstract class MixinGuiButton extends Gui {
@@ -52,7 +55,8 @@ public abstract class MixinGuiButton extends Gui {
    @Shadow
    public String displayString;
 
-   protected final AbstractButtonRenderer buttonRenderer = FDPClient.moduleManager.getModule(ClientSpoof.class).getButtonRenderer((GuiButton)(Object)this);
+   @Unique
+   protected final AbstractButtonRenderer buttonRenderer = Objects.requireNonNull(FDPClient.moduleManager.getModule(ClientSpoof.class)).getButtonRenderer((GuiButton)(Object)this);
 
    /**
     * @author liuli

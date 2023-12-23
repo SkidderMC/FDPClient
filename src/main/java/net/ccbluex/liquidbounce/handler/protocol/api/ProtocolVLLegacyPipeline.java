@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.protocol.api;
+package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import net.raphimc.vialoader.netty.VLLegacyPipeline;

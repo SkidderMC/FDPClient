@@ -3,7 +3,6 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.client.settings.GameSettings
-import net.ccbluex.liquidbounce.features.value.BoolValue
 
 class Matrix692Speed : SpeedMode("Matrix6.9.2") {
     private var wasTimer = false

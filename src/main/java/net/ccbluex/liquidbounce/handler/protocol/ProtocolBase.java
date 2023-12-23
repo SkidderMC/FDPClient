@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.protocol;
+package net.ccbluex.liquidbounce.handler.protocol;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.connection.UserConnectionImpl;
@@ -6,7 +6,7 @@ import com.viaversion.viaversion.protocol.ProtocolPipelineImpl;
 import io.netty.channel.Channel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.AttributeKey;
-import net.ccbluex.liquidbounce.protocol.api.*;
+import net.ccbluex.liquidbounce.handler.protocol.api.*;
 import net.raphimc.vialoader.ViaLoader;
 import net.raphimc.vialoader.impl.platform.*;
 import net.raphimc.vialoader.netty.CompressionReorderEvent;

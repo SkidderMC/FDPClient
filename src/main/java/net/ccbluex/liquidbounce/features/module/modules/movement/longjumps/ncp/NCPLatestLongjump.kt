@@ -8,12 +8,10 @@ import net.ccbluex.liquidbounce.utils.TransferUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.BlinkUtils
-import net.ccbluex.liquidbounce.features.value.FloatValue
-import net.ccbluex.liquidbounce.features.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.init.Blocks
-import net.minecraft.util.BlockPos
 
 class NCPLatestLongjump : LongJumpMode("NCPLatest") {
     private val ncpBoostValue = FloatValue("${valuePrefix}Boost", 10f, 1f, 10f)

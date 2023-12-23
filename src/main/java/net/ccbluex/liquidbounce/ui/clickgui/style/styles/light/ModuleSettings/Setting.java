@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.clickgui.style.styles.light.ModuleSettings;
 
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
-import net.ccbluex.liquidbounce.features.value.*;
+import net.ccbluex.liquidbounce.value.*;
 
 public abstract class Setting {
     protected final GameFontRenderer font = Fonts.font40;

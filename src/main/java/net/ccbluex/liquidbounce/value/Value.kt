@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient
  */
-package net.ccbluex.liquidbounce.features.value
+package net.ccbluex.liquidbounce.value
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
@@ -44,8 +44,6 @@ abstract class Value<T>(val name: String, var value: T) {
         }
     }
 
-
-
     fun get() = value
 
     fun setDefault() {
@@ -61,8 +59,6 @@ abstract class Value<T>(val name: String, var value: T) {
 
     protected open fun onChange(oldValue: T, newValue: T) {}
     protected open fun onChanged(oldValue: T, newValue: T) {}
-
-    // this is better api for ListValue and TextValue
 
     open class ColorValue(name: String, value: Int, canDisplay: () -> Boolean) : Value<Int>(name, value) {
         val minimum: Int = -10000000

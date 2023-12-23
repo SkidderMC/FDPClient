@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.value.FloatValue
 
 class BoostLongjump : LongJumpMode("Boost") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 0.48f, 0.0f, 3.0f)

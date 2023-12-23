@@ -4,8 +4,8 @@ import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.onetap.*;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.features.value.TextValue;
-import net.ccbluex.liquidbounce.features.value.Value;
+import net.ccbluex.liquidbounce.value.TextValue;
+import net.ccbluex.liquidbounce.value.Value;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;

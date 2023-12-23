@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.Translate
-import net.ccbluex.liquidbounce.features.value.Value
+import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
 import java.util.ArrayList
 

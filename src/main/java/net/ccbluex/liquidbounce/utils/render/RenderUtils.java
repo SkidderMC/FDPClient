@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.*;
 
 import static java.lang.Math.*;
-import static net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.AnimationUtil.getAnimationState;
 import static net.minecraft.client.renderer.GlStateManager.disableBlend;
 import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
 import static org.lwjgl.opengl.GL11.*;
@@ -2383,6 +2382,55 @@ public final class RenderUtils extends MinecraftInstance {
         worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
         tessellator.draw();
+    }
+
+    public static void drawRound(float x, float y, float width, float height, float radius, Color color) {
+        RenderUtils.drawRoundCustom(x, y, width, height, radius, color, true, true, true, true);
+    }
+    public static void drawRoundCustom(float x, float y, float width, float height, float radius, Color c, boolean leftTop, boolean leftBottom, boolean rightBottom, boolean rightTop) {
+        GL11.glPushAttrib(0);
+        GL11.glScaled(0.5D, 0.5D, 0.5D);
+        GlStateManager.enableBlend();
+        x *= 2D;
+        y *= 2D;
+        width *= 2D;
+        height *= 2D;
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        ColorUtils.clearColor();
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glBegin(GL11.GL_POLYGON);
+        ColorUtils.setColor(c.getRGB());
+        int i;
+
+        if (leftTop)
+            for (i = 0; i <= 90; i += 3)
+                GL11.glVertex2d(x + radius + Math.sin(i * Math.PI / 180D) * radius * -1D, y + radius + Math.cos(i * Math.PI / 180D) * radius * -1D);
+        else GL11.glVertex2d(x, y);
+
+        if (leftBottom)
+            for (i = 90; i <= 180; i += 3)
+                GL11.glVertex2d(x + radius + Math.sin(i * Math.PI / 180D) * radius * -1D, y + height - radius + Math.cos(i * Math.PI / 180D) * radius * -1D);
+        else GL11.glVertex2d(x, y + height);
+
+        if (rightBottom)
+            for (i = 0; i <= 90; i += 3)
+                GL11.glVertex2d(x + width - radius + Math.sin(i * Math.PI / 180D) * radius, y + height - radius + Math.cos(i * Math.PI / 180D) * radius);
+        else GL11.glVertex2d(x + width, y + height);
+
+        if (rightTop)
+            for (i = 90; i <= 180; i += 3)
+                GL11.glVertex2d(x + width - radius + Math.sin(i * Math.PI / 180D) * radius, y + radius + Math.cos(i * Math.PI / 180D) * radius);
+        else GL11.glVertex2d(x + width, y);
+
+        GL11.glEnd();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        GlStateManager.disableBlend();
+        GL11.glScaled(2D, 2D, 2D);
+        GL11.glPopAttrib();
+        ColorUtils.clearColor();
     }
 
     public static void originalRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color) {

@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.jesus.vanilla
 import net.ccbluex.liquidbounce.event.BlockBBEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.jesus.JesusMode
-import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks

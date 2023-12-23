@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.revers
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
-import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.value.FloatValue
 
 class SmoothReverseVelocity : VelocityMode("SmoothReverse") {
     private val smoothReverseStrengthValue = FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F)

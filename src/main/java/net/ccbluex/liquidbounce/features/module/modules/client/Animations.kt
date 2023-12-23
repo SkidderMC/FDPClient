@@ -9,10 +9,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
-import net.ccbluex.liquidbounce.features.value.BoolValue
-import net.ccbluex.liquidbounce.features.value.FloatValue
-import net.ccbluex.liquidbounce.features.value.IntegerValue
-import net.ccbluex.liquidbounce.features.value.ListValue
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "Animations", category = ModuleCategory.CLIENT, canEnable = false)
 object Animations : Module() {
@@ -43,7 +43,6 @@ object Animations : Module() {
     val anythingBlockValue = BoolValue("AnythingBlock", false)
     @JvmStatic
     val noBlockParticles = BoolValue("NoBlockParticles", false)
-
 
     var flagRenderTabOverlay = false
         get() = field && tabShowPlayerSkinValue.get()

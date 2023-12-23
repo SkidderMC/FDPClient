@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic;
 
-import net.ccbluex.liquidbounce.features.value.Value;
+import net.ccbluex.liquidbounce.value.Value;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

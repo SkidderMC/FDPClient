@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.onetap.ModuleRender;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.onetap.OtcClickGUi;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.features.value.ColorValue;
+import net.ccbluex.liquidbounce.value.ColorValue;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;

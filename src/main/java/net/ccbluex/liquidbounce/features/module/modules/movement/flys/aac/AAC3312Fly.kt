@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.aac
 
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
-import net.ccbluex.liquidbounce.features.value.FloatValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import org.lwjgl.input.Keyboard
 
 class AAC3312Fly : FlyMode("AAC3.3.12") {

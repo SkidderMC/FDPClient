@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.ui.elements
 
 import net.ccbluex.liquidbounce.FDPClient
@@ -23,11 +28,11 @@ object ToolDropdown {
     @JvmStatic
     fun handleDraw(button: GuiButton) {
         val gray = Color(100, 100, 100).rgb
-        val bWidth = button.getButtonWidth().toFloat()
+        val bWidth = button.buttonWidth.toFloat()
 
         glPushMatrix()
-        glTranslatef(button.xPosition.toFloat() + button.getButtonWidth().toFloat() - 10F, button.yPosition.toFloat() + 10F, 0F)
-        if (button.isMouseOver())
+        glTranslatef(button.xPosition.toFloat() + button.buttonWidth.toFloat() - 10F, button.yPosition.toFloat() + 10F, 0F)
+        if (button.isMouseOver)
             glTranslatef(0F, if (dropState) -1F else 1F, 0F)
         glPushMatrix()
         glRotatef(180F * (fullHeight / 100F), 0F, 0F, 1F)
@@ -67,7 +72,7 @@ object ToolDropdown {
     fun handleClick(mouseX: Int, mouseY: Int, button: GuiButton): Boolean {
         val bX = button.xPosition.toFloat()
         val bY = button.yPosition.toFloat()
-        val bWidth = button.getButtonWidth().toFloat()
+        val bWidth = button.buttonWidth.toFloat()
         if (dropState && isMouseOver(mouseX, mouseY, bX, bY + 20F, bWidth, fullHeight)) {
             when {
                 isMouseOver(mouseX, mouseY, bX, bY + 20F, bWidth, 20F) -> ClientFixes.enabled = !ClientFixes.enabled
@@ -90,7 +95,7 @@ object ToolDropdown {
         dropState = !dropState
     }
 
-    fun drawToggleSwitch(x: Float, y: Float, width: Float, height: Float, state: Boolean) {
+    private fun drawToggleSwitch(x: Float, y: Float, width: Float, height: Float, state: Boolean) {
         val borderColor = if (state) Color(0, 140, 255).rgb else Color(160, 160, 160).rgb
         val mainColor = if (state) borderColor else Color(24, 24, 24).rgb
         RenderUtils.originalRoundedRect(x - 0.5F, y - 0.5F, x + width + 0.5F, y + height + 0.5F, (height + 1F) / 2F, borderColor)
@@ -101,7 +106,7 @@ object ToolDropdown {
             RenderUtils.drawFilledCircle(x + 2F + (height - 4F) / 2F, y + 2F + (height - 4F) / 2F, (height - 4F) / 2F, Color(160, 160, 160))
     }
 
-    fun drawCheckbox(x: Float, y: Float, width: Float, state: Boolean) {
+    private fun drawCheckbox(x: Float, y: Float, width: Float, state: Boolean) {
         val borderColor = if (state) Color(0, 140, 255).rgb else Color(160, 160, 160).rgb
         val mainColor = if (state) borderColor else Color(24, 24, 24).rgb
         RenderUtils.originalRoundedRect(x - 0.5F, y - 0.5F, x + width + 0.5F, y + width + 0.5F, 3F, borderColor)

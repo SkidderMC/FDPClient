@@ -1,8 +1,12 @@
-package net.ccbluex.liquidbounce.features.value
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.value
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import java.util.*
 
 /**
  * List value represents a selectable list of values
@@ -12,27 +16,15 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
     var openList = false
 
     @JvmField
-    var isShown = false
-
-    var anim=0;
-    @JvmField
     var open=true;
 
     init {
         this.value = value
     }
 
-    fun listtoggle(){
-        openList=!openList;
-    }
-
     fun getModeListNumber(mode: String) = values.indexOf(mode)
     init {
         this.value = value
-    }
-
-    fun containsValue(string: String): Boolean {
-        return Arrays.stream(values).anyMatch { it.equals(string, ignoreCase = true) }
     }
 
     override fun changeValue(value: String) {
@@ -52,10 +44,6 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
         return values[i]
     }
 
-    fun isMode(string: String): Boolean {
-        return this.value.equals(string, ignoreCase = true)
-    }
-
     fun indexOf(mode: String): Int {
         for (i in values.indices) {
             if (values[i].equals(mode, true)) return i
@@ -69,5 +57,3 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
         if (element.isJsonPrimitive) changeValue(element.asString)
     }
 }
-
-

@@ -1,7 +1,7 @@
-package net.ccbluex.liquidbounce.protocol;
+package net.ccbluex.liquidbounce.handler.protocol;
 
-import net.ccbluex.liquidbounce.protocol.api.ProtocolGameProfileFetcher;
-import net.ccbluex.liquidbounce.protocol.api.VFPlatform;
+import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolGameProfileFetcher;
+import net.ccbluex.liquidbounce.handler.protocol.api.VFPlatform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.realms.RealmsSharedConstants;
 import net.minecraft.util.Session;

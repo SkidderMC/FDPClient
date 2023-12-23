@@ -16,7 +16,6 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL20
@@ -456,5 +455,10 @@ object GLUtils {
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_DEPTH_TEST)
         glDepthMask(true)
+    }
+
+    @JvmStatic
+    fun stopScale() {
+        GlStateManager.popMatrix()
     }
 }

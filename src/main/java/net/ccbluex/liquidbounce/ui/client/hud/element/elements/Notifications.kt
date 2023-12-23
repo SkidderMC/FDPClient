@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.features.value.*
+import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.minecraft.util.ResourceLocation
 import net.minecraft.client.renderer.GlStateManager
@@ -118,8 +118,8 @@ class Notification(
         
     ): Boolean {
         this.width = 100.coerceAtLeast(
-            font.getStringWidth(content)
-                .coerceAtLeast(font.getStringWidth(title)) + 15
+            (font.getStringWidth(content)
+                .coerceAtLeast(font.getStringWidth(title)) + 15).toInt()
         )
         val realY = -(index + 1) * height
         val nowTime = System.currentTimeMillis()

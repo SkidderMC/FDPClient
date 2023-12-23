@@ -1,4 +1,9 @@
-package net.ccbluex.liquidbounce.features.value
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.value
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive

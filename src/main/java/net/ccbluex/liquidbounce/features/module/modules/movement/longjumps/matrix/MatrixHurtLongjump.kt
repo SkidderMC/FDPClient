@@ -3,8 +3,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.matr
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
-import net.ccbluex.liquidbounce.features.value.FloatValue
-import net.ccbluex.liquidbounce.features.value.IntegerValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.cos
 import kotlin.math.sin

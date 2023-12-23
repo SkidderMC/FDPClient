@@ -2,8 +2,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import io.netty.channel.Channel;
 
-import net.ccbluex.liquidbounce.protocol.ProtocolBase;
-import net.ccbluex.liquidbounce.protocol.api.VFNetworkManager;
+import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.handler.protocol.api.VFNetworkManager;
 import net.minecraft.network.NetworkManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

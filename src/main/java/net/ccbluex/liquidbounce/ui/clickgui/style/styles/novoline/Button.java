@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.features.value.Value;
+import net.ccbluex.liquidbounce.value.Value;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
 
