@@ -28,7 +28,7 @@ class FileManager : MinecraftInstance() {
     val capesDir = File(dir, "capes")
     val themesDir = File(dir, "themes")
     val accountsConfig = AccountsConfig(File(dir, "accounts.json"))
-    var friendsConfig = FriendsConfig(File(dir, "friends.json"))
+    val friendsConfig = FriendsConfig(File(dir, "friends.json"))
     val xrayConfig = XRayConfig(File(dir, "xray-blocks.json"))
     val hudConfig = HudConfig(File(dir, "hud.json"))
     val specialConfig = SpecialConfig(File(dir, "special.json"))

@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.injection.implementations.IMixinItemStack
+import net.ccbluex.liquidbounce.injection.forge.mixins.item.MixinItemStack
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -58,7 +58,7 @@ object Refill : Module() {
         for (slot in 36..44) {
             val stack = mc.thePlayer.inventoryContainer.getSlot(slot).stack ?: continue
             if (stack.stackSize == stack.maxStackSize
-                    || (System.currentTimeMillis() - (stack as IMixinItemStack).itemDelay) < itemDelayValue.get()) continue
+                    || (System.currentTimeMillis() - (stack as MixinItemStack).itemDelay) < itemDelayValue.get()) continue
 
             when (modeValue.get()) {
                 "Swap" -> {

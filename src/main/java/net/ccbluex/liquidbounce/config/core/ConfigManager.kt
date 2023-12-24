@@ -53,7 +53,7 @@ class ConfigManager {
         val json = if (configFile.exists()) {
             JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject
         } else {
-            JsonObject() // 这样方便一点,虽然效率会低
+            JsonObject()
         }
 
         for (section in sections) {
@@ -238,13 +238,6 @@ class ConfigManager {
             oldSettingDir.delete()
         }
     }
-
-//    fun toLegacy(name: String){
-//        if(!LiquidBounce.fileManager.legacySettingsDir.exists())
-//            LiquidBounce.fileManager.legacySettingsDir.mkdir()
-//
-//        val jsonObject=JsonParser().parse()
-//    }
 
     /**
      * Register [section]

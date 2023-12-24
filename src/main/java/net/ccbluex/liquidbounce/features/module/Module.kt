@@ -22,13 +22,11 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.Translate
 import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
-import java.util.ArrayList
 
 open class Module : MinecraftInstance(), Listenable {
     // Module information
     val translate = Translate(0F,0F)
     val tab = Translate(0f , 0f)
-    var expanded: Boolean = false
     val animation: AnimationHelper
     var name: String
     private var suffix: String? = null
@@ -147,8 +145,15 @@ open class Module : MinecraftInstance(), Listenable {
         }
         set(value) {
             if (slideAnimation == null || (slideAnimation != null && slideAnimation!!.to != value.toDouble())) {
-                slideAnimation = Animation(EaseUtils.EnumEasingType.valueOf(HUD.arraylistXAxisAnimTypeValue.get()), EaseUtils.EnumEasingOrder.valueOf(HUD.arraylistXAxisAnimOrderValue.get()), field.toDouble(), value.toDouble(), HUD.arraylistXAxisAnimSpeedValue.get() * 30L).start()
+                slideAnimation = Animation(
+                    EaseUtils.EnumEasingType.valueOf(HUD.arraylistXAxisAnimTypeValue.get()),
+                    EaseUtils.EnumEasingOrder.valueOf(HUD.arraylistXAxisAnimOrderValue.get()),
+                    field.toDouble(),
+                    value.toDouble(),
+                    HUD.arraylistXAxisAnimSpeedValue.get() * 30L
+                ).start()
             }
+            field = value
         }
     var yPosAnimation: Animation? = null
     open var yPos = 0f
@@ -163,8 +168,15 @@ open class Module : MinecraftInstance(), Listenable {
         }
         set(value) {
             if (yPosAnimation == null || (yPosAnimation != null && yPosAnimation!!.to != value.toDouble())) {
-                yPosAnimation = Animation(EaseUtils.EnumEasingType.valueOf(HUD.arraylistYAxisAnimTypeValue.get()), EaseUtils.EnumEasingOrder.valueOf(HUD.arraylistYAxisAnimOrderValue.get()), field.toDouble(), value.toDouble(), HUD.arraylistYAxisAnimSpeedValue.get() * 30L).start()
+                yPosAnimation = Animation(
+                    EaseUtils.EnumEasingType.valueOf(HUD.arraylistYAxisAnimTypeValue.get()),
+                    EaseUtils.EnumEasingOrder.valueOf(HUD.arraylistYAxisAnimOrderValue.get()),
+                    field.toDouble(),
+                    value.toDouble(),
+                    HUD.arraylistYAxisAnimSpeedValue.get() * 30L
+                ).start()
             }
+            field = value
         }
 
     // Tag

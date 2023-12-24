@@ -10,6 +10,11 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
+/**
+ * Hide Command
+ *
+ * Allows you to hide specific modules.
+ */
 class HideCommand : Command("hide", emptyArray()) {
 
     /**

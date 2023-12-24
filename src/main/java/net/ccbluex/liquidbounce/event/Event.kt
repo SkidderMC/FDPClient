@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.event
 
 open class Event
-
 open class CancellableEvent : Event() {
 
     /**

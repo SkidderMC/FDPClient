@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
@@ -38,9 +38,10 @@ import kotlin.math.max
 
 @ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HotbarSettings : Module() {
+
     val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Full", "LB", "Rise", "Gradient", "Overflow", "Glow", "Glowing", "Dock", "Exhi", "BlueIce", "Win11", "Bread"), "Minecraft")
     private val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
-    private val hotbarEaseValue = BoolValue("HotbarEase", true)
+    private val hotbarEaseValue = BoolValue("HotbarEase", false)
     private val BlurValue = BoolValue("Blur", false)
     private val BlurAmount = FloatValue("BlurAmount", 10F, 1F, 100F).displayable { BlurValue.get() }
     private val ItemCountValue = BoolValue("ItemColorCount", false)
@@ -51,7 +52,7 @@ object HotbarSettings : Module() {
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         val sr = event.scaledResolution
-        val i = sr.getScaledWidth() / 2
+        val i = sr.scaledWidth / 2
         val entityplayer = mc.renderViewEntity as EntityPlayer
         val itemX = sr.scaledWidth / 2 - 91 + getHotbarEasePos(entityplayer.inventory.currentItem * 20)
         val posInv = (91 - i + itemX).toFloat()
@@ -268,6 +269,7 @@ object HotbarSettings : Module() {
             }
         }
     }
+    @JvmStatic
     private fun HotbarTextOverlay(xPosition: Int, yPosition: Int, text: String?, index: Int) {
         val entityplayer = mc.renderViewEntity as EntityPlayer
         val stack = entityplayer.inventory.mainInventory[index]
@@ -325,7 +327,9 @@ object HotbarSettings : Module() {
         }
         set(value) {
             var hotbarSpeed = hotbarAnimSpeedValue.get()
-            if(hotbarValue.get() == "Dock"){ hotbarSpeed = 4}
+            if (hotbarValue.get() == "Dock") {
+                hotbarSpeed = 4
+            }
             if (easeAnimation == null || (easeAnimation != null && easeAnimation!!.to != value.toDouble())) {
                 easeAnimation = Animation(
                     EaseUtils.EnumEasingType.valueOf(hotbarAnimTypeValue.get()),
@@ -335,6 +339,7 @@ object HotbarSettings : Module() {
                     hotbarSpeed * 30L
                 ).start()
             }
+            field = value
         }
     fun getHotbarEasePos(x: Int): Int {
         if (!hotbarEaseValue.get()) return x

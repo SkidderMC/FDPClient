@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
-import net.ccbluex.liquidbounce.handler.network.ClientSpoof;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.handshake.client.C00Handshake;
@@ -17,8 +16,14 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(C00Handshake.class)
 public class MixinC00Handshake {
 
+    /**
+     * The Port.
+     */
     @Shadow
     public int port;
+    /**
+     * The Ip.
+     */
     @Shadow
     public String ip;
     @Shadow
@@ -26,11 +31,8 @@ public class MixinC00Handshake {
     @Shadow
     private EnumConnectionState requestedState;
 
-    /**
-     * @author CCBlueX
-     */
     @ModifyConstant(method = "writePacketData", constant = @Constant(stringValue = "\u0000FML\u0000"))
     private String injectAntiForge(String constant) {
-        return ClientSpoof.enabled && !Minecraft.getMinecraft().isIntegratedServerRunning() ? "" : "\u0000FML\u0000";
+        return !Minecraft.getMinecraft().isIntegratedServerRunning() ? "" : "\u0000FML\u0000";
     }
 }

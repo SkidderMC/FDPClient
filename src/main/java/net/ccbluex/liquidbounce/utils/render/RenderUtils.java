@@ -59,6 +59,14 @@ public final class RenderUtils extends MinecraftInstance {
 
     public static int deltaTime;
 
+    public static int width() {
+        return new ScaledResolution(Minecraft.getMinecraft()).getScaledWidth();
+    }
+
+    public static int height() {
+        return new ScaledResolution(Minecraft.getMinecraft()).getScaledHeight();
+    }
+
     private static final int[] DISPLAY_LISTS_2D = new int[4];
 
     static {

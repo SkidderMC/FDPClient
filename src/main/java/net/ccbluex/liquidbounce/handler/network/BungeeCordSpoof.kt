@@ -9,7 +9,6 @@ package net.ccbluex.liquidbounce.handler.network
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.handler.other.UUIDSpoofer
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.EnumConnectionState
 import net.minecraft.network.handshake.client.C00Handshake
@@ -20,7 +19,7 @@ class BungeeCordSpoof : MinecraftInstance(), Listenable {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if (packet is C00Handshake && enabled && packet.requestedState == EnumConnectionState.LOGIN)
-            packet.ip = "${packet.ip}\u0000${getRandomIpPart()}.${getRandomIpPart()}.${getRandomIpPart()}.${getRandomIpPart()}\u0000${UUIDSpoofer.getUUID()}"
+            packet.ip = "${packet.ip}\u0000${getRandomIpPart()}.${getRandomIpPart()}.${getRandomIpPart()}.${getRandomIpPart()}\u0000"
     }
 
     private fun getRandomIpPart(): String = RANDOM.nextInt(256).toString()

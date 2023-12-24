@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.ChatControl;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.font.cf.CFontRenderer;
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;

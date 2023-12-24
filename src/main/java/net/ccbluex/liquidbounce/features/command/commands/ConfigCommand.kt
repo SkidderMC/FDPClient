@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.FDPClient
@@ -6,6 +11,13 @@ import java.awt.Desktop
 import java.io.File
 import java.nio.file.Files
 
+/**
+ * Config Command
+ *
+ * Provides various subcommands related to the configuration,
+ * such as loading configuration from an external source or an API
+ * and listing available configurations.
+ */
 class ConfigCommand : Command("config", arrayOf("cfg")) {
     override fun execute(args: Array<String>) {
         if (args.size > 1) {
@@ -80,7 +92,7 @@ class ConfigCommand : Command("config", arrayOf("cfg")) {
                 }
 
                 "save" -> {
-                    FDPClient.configManager.save(true, true)
+                    FDPClient.configManager.save(true, forceSave = true)
                     alert("Saved config ${FDPClient.configManager.nowConfig}")
                 }
 

@@ -49,6 +49,12 @@ public class Fonts {
     @FontDetails(fontName = "SF", fontSize = 35)
     public static GameFontRenderer fontSFUI35;
 
+    @FontDetails(fontName = "SF", fontSize = 15)
+    public static GameFontRenderer fontSFUI15;
+
+    @FontDetails(fontName = "SF", fontSize = 17)
+    public static GameFontRenderer fontSFUI17;
+
     @FontDetails(fontName = "SF", fontSize = 40)
     public static GameFontRenderer fontSFUI40;
 
@@ -136,6 +142,7 @@ public class Fonts {
         SFUI40 = new GameFontRenderer(getFont("SF.ttf", 20));
         SFUI35 = new GameFontRenderer(getFont("SF.ttf", 18));
         SFUI24 = new GameFontRenderer(getFont("SF.ttf", 10));
+        fontSFUI15 = new GameFontRenderer(getFont("SF.ttf", 35));
         fontSFUI35 = new GameFontRenderer(getFont("SF.ttf", 35));
         fontSFUI40 = new GameFontRenderer(getFont("SF.ttf", 40));
         fontBold180 = new GameFontRenderer(getFont("Roboto-Bold.ttf", 180));

@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic;
 import lombok.Getter;
 import net.ccbluex.liquidbounce.FDPClient;
 
-import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.clickgui.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;

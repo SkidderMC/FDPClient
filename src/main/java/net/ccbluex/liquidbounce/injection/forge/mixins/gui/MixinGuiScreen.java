@@ -10,14 +10,15 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.particles.ParticleUtils;
+import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatStyle;
@@ -127,19 +128,38 @@ public abstract class MixinGuiScreen {
     /**
      * @author CCBlueX
      */
-    @Inject(method = "drawBackground", at = @At("RETURN"))
+    @Inject(method = "drawBackground", at = @At("HEAD"), cancellable = true)
     private void drawClientBackground(final CallbackInfo callbackInfo) {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
+
         if(GuiBackground.Companion.getEnabled()) {
-            if (FDPClient.INSTANCE.getBackground() != null) {
+            if (FDPClient.INSTANCE.getBackground() == null) {
+                BackgroundShader.BACKGROUND_SHADER.startShader();
+
+                final Tessellator instance = Tessellator.getInstance();
+                final WorldRenderer worldRenderer = instance.getWorldRenderer();
+                worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+                worldRenderer.pos(0, height, 0.0D).endVertex();
+                worldRenderer.pos(width, height, 0.0D).endVertex();
+                worldRenderer.pos(width, 0, 0.0D).endVertex();
+                worldRenderer.pos(0, 0, 0.0D).endVertex();
+                instance.draw();
+
+                BackgroundShader.BACKGROUND_SHADER.stopShader();
+            }else{
+                final ScaledResolution scaledResolution = new ScaledResolution(mc);
+                final int width = scaledResolution.getScaledWidth();
+                final int height = scaledResolution.getScaledHeight();
+
                 mc.getTextureManager().bindTexture(FDPClient.INSTANCE.getBackground());
-                Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
             }
 
-            GlStateManager.resetColor();
             if (GuiBackground.Companion.getParticles())
-                ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
+                net.ccbluex.liquidbounce.utils.render.ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
+            callbackInfo.cancel();
         }
     }
 

@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.gui
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
+import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -46,6 +47,7 @@ class GuiInfo(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun actionPerformed(button: GuiButton) {
         when (button.id) {
+            1 -> mc.displayGuiScreen(GuiBackground(this))
             2 -> BUTTON_VERSIONS
             3 -> MiscUtils.showURL(FDPClient.CLIENT_WEBSITE)
             5 -> {

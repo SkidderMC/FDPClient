@@ -11,6 +11,11 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import org.lwjgl.input.Keyboard
 
+/**
+ * Bind Command
+ *
+ * Allows you to bind a key to a module, which means that the module will be activated when the key is pressed.
+ */
 class BindCommand : Command("bind", emptyArray()) {
     /**
      * Execute commands with provided [args]

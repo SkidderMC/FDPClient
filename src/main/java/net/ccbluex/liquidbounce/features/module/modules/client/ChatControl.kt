@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 
 @ModuleInfo(name = "ChatControl", category = ModuleCategory.CLIENT, defaultOn = true)
 object ChatControl : Module() {
+
     val chatLimitValue = BoolValue("NoChatLimit", true)
     val chatClearValue = BoolValue("NoChatClear", true)
     val chatCombineValue = BoolValue("ChatCombine", true)

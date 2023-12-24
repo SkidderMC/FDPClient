@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager.height
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule.colorBlueValue
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule.colorGreenValue
@@ -19,6 +18,10 @@ import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.MathHelper
@@ -30,9 +33,10 @@ import java.util.*
 object HUD : Module() {
     val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Default")
     private val clolormode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")
-    val hueInterpolation = BoolValue("hueInterpolation", false)
+    val shadowAlpha = IntegerValue("Shadow Alpha", 150, 0, 155)
     val movingcolors = BoolValue("MovingColors", false)
     val inventoryParticle = BoolValue("InventoryParticle", false)
+    val hueInterpolation = BoolValue("hueInterpolation", false)
     private val blurValue = BoolValue("Blur", false)
     private val HealthValue = BoolValue("Health", true)
     private val waterMark = BoolValue("Watermark", true)
@@ -147,5 +151,4 @@ object HUD : Module() {
         }
         return arrayOf(firstColor, secondColor)
     }
-
 }

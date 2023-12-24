@@ -10,6 +10,11 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
+/**
+ * Help Command
+ *
+ * Provides a help page for displaying other commands.
+ */
 class HelpCommand : Command("help", emptyArray()) {
     /**
      * Execute commands with provided [args]

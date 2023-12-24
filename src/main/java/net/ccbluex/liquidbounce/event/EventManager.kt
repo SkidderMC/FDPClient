@@ -11,9 +11,6 @@ class EventManager : MinecraftInstance() {
 
     private val registry = HashMap<Class<out Event>, MutableList<EventHook>>()
 
-//    private val counter = HashMap<Class<out Event>, Int>()
-//    private var lastSyncTime = System.currentTimeMillis()
-
     /**
      * Register [listener]
      */
@@ -89,8 +86,8 @@ class EventManager : MinecraftInstance() {
                     throwable.printStackTrace()
                 }
             }
-        }catch (e :Exception){
-            e.printStackTrace();
+        } catch (e :Exception) {
+            e.printStackTrace()
         }
     }
 }

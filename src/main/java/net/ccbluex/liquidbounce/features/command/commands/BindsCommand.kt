@@ -10,6 +10,12 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import org.lwjgl.input.Keyboard
 
+/**
+ * Binds Command
+ *
+ * Allows you to manage the bindings of modules to keys.
+ * It provides subcommands to add, remove, list and clear bindings.
+ */
 class BindsCommand : Command("binds", emptyArray()) {
     /**
      * Execute commands with provided [args]

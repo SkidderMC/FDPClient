@@ -9,6 +9,7 @@ import com.ibm.icu.text.NumberFormat
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ChatAllowedCharacters
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
@@ -466,6 +467,15 @@ object ColorUtils {
     @JvmStatic
     fun getIconColorAlpha(): Color {
         return Color(185, 185, 185, 190)
+    }
+
+    @JvmStatic
+    fun glColor(color: Color) {
+        val red = color.red / 255f
+        val green = color.green / 255f
+        val blue = color.blue / 255f
+        val alpha = color.alpha / 255f
+        GL11.glColor4f(red, green, blue, alpha)
     }
 
 }
