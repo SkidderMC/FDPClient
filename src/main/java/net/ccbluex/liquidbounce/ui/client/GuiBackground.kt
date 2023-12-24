@@ -24,7 +24,7 @@ class GuiBackground(private val prevGui: GuiScreen) : GuiScreen() {
     companion object {
         var enabled = true
         var particles = false
-        var blur = false
+        var shader = false
     }
 
     private lateinit var enabledButton: GuiButton
@@ -61,9 +61,9 @@ class GuiBackground(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     private fun updateButtons() {
-        enabledButton.displayString = "%ui.status% (${if (enabled) "%ui.on%" else "%ui.off%"})"
-        blurButton.displayString = "Background Blur (${if (blur) "%ui.on%" else "%ui.off%"})"
-        particlesButton.displayString = "%ui.background.particles% (${if (particles) "%ui.on%" else "%ui.off%"})"
+        enabledButton.displayString = "Status (${if (enabled) "ON" else "OFF"})"
+        blurButton.displayString = " Shadow (${if (shader) "ON" else "OFF"})"
+        particlesButton.displayString = "Particles (${if (particles) "ON" else "OFF"})"
         val hasCustomBackground = FDPClient.background != null
         lastButton.enabled = !hasCustomBackground
         nextButton.enabled = !hasCustomBackground
@@ -77,7 +77,7 @@ class GuiBackground(private val prevGui: GuiScreen) : GuiScreen() {
                 enabled = !enabled
             }
             9 -> {
-                blur = !blur
+                shader = !shader
             }
             2 -> {
                 particles = !particles
