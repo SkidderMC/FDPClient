@@ -17,20 +17,12 @@ public class AttackFixer {
     }
 
     public static void sendFixedAttack(final EntityPlayer entityIn, final Entity target) {
-        if (ProtocolBase.getManager().getTargetVersion().getProtocol() != VersionEnum.r1_8.getProtocol()) {
-            send1_9Attack(entityIn, target);
+        if (ProtocolBase.getManager().getTargetVersion().isNewerThan(VersionEnum.r1_8)) {
+            mc.playerController.attackEntity(entityIn, target);
+            mc.thePlayer.swingItem();
         } else {
-            send1_8Attack(entityIn, target);
+            mc.thePlayer.swingItem();
+            mc.playerController.attackEntity(entityIn, target);
         }
-    }
-
-    private static void send1_8Attack(EntityPlayer entityIn, Entity target) {
-        mc.thePlayer.swingItem();
-        mc.playerController.attackEntity(entityIn, target);
-    }
-
-    private static void send1_9Attack(EntityPlayer entityIn, Entity target) {
-        mc.playerController.attackEntity(entityIn, target);
-        mc.thePlayer.swingItem();
     }
 }
