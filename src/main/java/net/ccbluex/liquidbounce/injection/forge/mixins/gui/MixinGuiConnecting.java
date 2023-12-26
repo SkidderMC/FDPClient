@@ -105,9 +105,9 @@ public abstract class MixinGuiConnecting extends GuiScreen {
      */
     @Overwrite
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        ScaledResolution scaledResolution = new ScaledResolution(MinecraftInstance.mc);
-
         this.drawDefaultBackground();
+
+        RenderUtils.drawLoadingCircle(this.width / 2, this.height / 4 + 70);
 
         String ip = "Unknown";
 
@@ -115,8 +115,8 @@ public abstract class MixinGuiConnecting extends GuiScreen {
         if (serverData != null)
             ip = serverData.serverIP;
 
-        drawCenteredString(fontRendererObj, "Logging in to", scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 4 + 102, 16777215);
-        drawCenteredString(fontRendererObj, "§7" + ip, scaledResolution.getScaledWidth() / 2, scaledResolution.getScaledHeight() / 4 + 115, 16777215);
+        RendererExtensionKt.drawCenteredString(fontRendererObj, "Connecting to", this.width / 2, this.height / 4 + 102, 16777215);
+        RendererExtensionKt.drawCenteredString(fontRendererObj, "§d" + ip, this.width / 2, this.height / 4 + 120, 0x5281FB, true);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

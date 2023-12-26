@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.modules.client.ColorManager
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -74,7 +74,7 @@ object ChinaHat : Module() {
         val radius = radiusValue.get().toDouble()
         for(i in 0..360 step 5) {
             if(colorRainbowValue.get()) {
-                RenderUtils.glColor(Color.getHSBColor(if (i <180) { HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (i / 180f) } else { HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f), colorAlphaValue.get() / 255f)
+                RenderUtils.glColor(Color.getHSBColor(if (i <180) { ColorManager.rainbowStartValue.get() + (ColorManager.rainbowStopValue.get() - ColorManager.rainbowStartValue.get()) * (i / 180f) } else { ColorManager.rainbowStartValue.get() + (ColorManager.rainbowStopValue.get() - ColorManager.rainbowStartValue.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f), colorAlphaValue.get() / 255f)
             }
             GL11.glVertex3d(cos(i.toDouble() * Math.PI / 180.0) * radius, 0.0, sin(i.toDouble() * Math.PI / 180.0) * radius)
         }

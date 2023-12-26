@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -22,20 +23,22 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 
 @ModuleInfo(name = "Tracers", category = ModuleCategory.VISUAL)
 object Tracers : Module() {
 
-    private val colorModeValue = ListValue("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
+    private val colorMode = ListValue("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
+
     private val thicknessValue = FloatValue("Thickness", 2F, 1F, 5F)
-    private val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { colorModeValue.equals("Custom") }
-    private val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { colorModeValue.equals("Custom") }
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { colorModeValue.equals("Custom") }
-    private val colorAlphaValue = IntegerValue("A", 150, 0, 255)
-    private val distanceMultplierValue = FloatValue("DistanceMultiplier", 5F, 0.1F, 10F).displayable { colorModeValue.equals("DistanceColor") }
-    private val playerHeightValue = BoolValue("PlayerHeight", true)
-    private val entityHeightValue = BoolValue("EntityHeight", true)
+
+    private val colorRedValue = IntegerValue("R", 0, 0, 255)
+    private val colorGreenValue = IntegerValue("G", 160, 0, 255)
+    private val colorBlueValue = IntegerValue("B", 255, 0, 255)
+
     private val directLineValue = BoolValue("Directline", false)
+    private val fovModeValue = ListValue("FOV-Mode", arrayOf("All", "Back", "Front"), "All")
+    private val fovValue = FloatValue("FOV", 180F, 0F, 180F).displayable { !fovModeValue.get().equals("all", true) }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -47,24 +50,28 @@ object Tracers : Module() {
         GL11.glDisable(GL11.GL_DEPTH_TEST)
         GL11.glDepthMask(false)
 
-        for (entity in mc.theWorld.loadedEntityList) {
+        GL11.glBegin(GL11.GL_LINES)
+
+        for (entity in if (fovModeValue.get().equals("all", true)) mc.theWorld.loadedEntityList else mc.theWorld.loadedEntityList.filter { if (fovModeValue.get().equals("back", true)) RotationUtils.getRotationBackDifference(it) <= fovValue.get() else RotationUtils.getRotationDifference(it) <= fovValue.get() }) {
             if (entity != null && entity != mc.thePlayer && EntityUtils.isSelected(entity, false)) {
-                var dist = (mc.thePlayer.getDistanceToEntity(entity) * distanceMultplierValue.get()).toInt()
+                var dist = (mc.thePlayer.getDistanceToEntity(entity) * 2).toInt()
 
                 if (dist > 255) dist = 255
 
-                val colorMode = colorModeValue.get().lowercase()
+                val colorMode = colorMode.get().lowercase(Locale.getDefault())
                 val color = when {
-                    EntityUtils.isFriend(entity) -> Color(0, 0, 255)
-                    colorMode == "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
-                    colorMode == "distancecolor" -> Color(255 - dist, dist, 0)
+                    EntityUtils.isFriend(entity) -> Color(0, 255, 0, 200)
+                    colorMode == "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 150)
+                    colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
                     colorMode == "rainbow" -> ColorUtils.rainbow()
-                    else -> Color.WHITE
+                    else -> Color(255, 255, 255, 150)
                 }
 
                 drawTraces(entity, color, !directLineValue.get())
             }
         }
+
+        GL11.glEnd()
 
         GL11.glEnable(GL11.GL_TEXTURE_2D)
         GL11.glDisable(GL11.GL_LINE_SMOOTH)
@@ -86,13 +93,16 @@ object Tracers : Module() {
             .rotatePitch((-Math.toRadians(mc.thePlayer.rotationPitch.toDouble())).toFloat())
             .rotateYaw((-Math.toRadians(mc.thePlayer.rotationYaw.toDouble())).toFloat())
 
-        RenderUtils.glColor(color, colorAlphaValue.get())
+        RenderUtils.glColor(color)
 
-        GL11.glBegin(GL11.GL_LINE_STRIP)
-        GL11.glVertex3d(eyeVector.xCoord,
-            if(playerHeightValue.get()) { mc.thePlayer.getEyeHeight().toDouble() } else { 0.0 } + eyeVector.yCoord,
-            eyeVector.zCoord)
-        GL11.glVertex3d(x, if(entityHeightValue.get()) { y + entity.height } else { y }, z)
-        GL11.glEnd()
+        GL11.glVertex3d(eyeVector.xCoord, mc.thePlayer.getEyeHeight().toDouble() + eyeVector.yCoord, eyeVector.zCoord)
+        if (drawHeight) {
+            GL11.glVertex3d(x, y, z)
+            GL11.glVertex3d(x, y, z)
+            GL11.glVertex3d(x, y + entity.height, z)
+        } else {
+            GL11.glVertex3d(x, y + entity.height / 2.0, z)
+        }
+
     }
 }

@@ -10,9 +10,9 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -21,7 +21,6 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import org.lwjgl.input.Mouse
-
 
 @ModuleInfo(name = "AutoPlace", category = ModuleCategory.PLAYER)
 object AutoPlace : Module() {

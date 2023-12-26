@@ -50,7 +50,7 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
                     if (Objects.requireNonNull(clientSpoof).modeValue.get().equals("Custom")) {
                         try {
                             final C17PacketCustomPayload customPayload = (C17PacketCustomPayload) packet;
-                            customPayload.data = (new PacketBuffer(Unpooled.buffer()).writeString(clientSpoof.CustomClient.get()));
+                            customPayload.data = new PacketBuffer(Unpooled.buffer()).writeString(clientSpoof.CustomClient.get());
                         } catch (final Exception e) {
                             e.printStackTrace();
                         }

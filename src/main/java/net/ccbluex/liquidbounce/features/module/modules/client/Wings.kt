@@ -24,7 +24,6 @@ object Wings : Module() {
     val CB = IntegerValue("B", 255, 0, 255).displayable { ColourType.get() == "Custom" }
     var wingStyle = ListValue("WingStyle", arrayOf("Dragon", "Simple"),"Dragon")
 
-
     @EventTarget
     fun onRenderPlayer(event: Render3DEvent) {
         if (onlyThirdPerson.get() && mc.gameSettings.thirdPersonView == 0) return

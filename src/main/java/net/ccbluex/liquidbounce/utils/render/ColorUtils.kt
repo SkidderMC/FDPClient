@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import com.ibm.icu.text.NumberFormat
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.modules.client.ColorManager
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.opengl.GL11
@@ -205,12 +205,12 @@ object ColorUtils {
     @JvmStatic
     fun hslRainbow(
         index: Int,
-        lowest: Float = HUD.rainbowStartValue.get(),
-        bigest: Float = HUD.rainbowStopValue.get(),
+        lowest: Float = ColorManager.rainbowStartValue.get(),
+        bigest: Float = ColorManager.rainbowStopValue.get(),
         indexOffset: Int = 300,
-        timeSplit: Int = HUD.rainbowSpeedValue.get(),
-        saturation: Float = HUD.rainbowSaturationValue.get(),
-        brightness: Float = HUD.rainbowBrightnessValue.get()
+        timeSplit: Int = ColorManager.rainbowSpeedValue.get(),
+        saturation: Float = ColorManager.rainbowSaturationValue.get(),
+        brightness: Float = ColorManager.rainbowBrightnessValue.get()
     ): Color {
         return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
     }
@@ -316,6 +316,20 @@ object ColorUtils {
         } else start?.let { end?.let { it1 -> interpolateColorC(it, it1, angle / 360f) } }
     }
 
+    @JvmStatic
+    fun getGradientOffset(color1: Color, color2: Color, offset: Double): Color? {
+        var offset = offset
+        if (offset > 1) {
+            val left = offset % 1
+            val off = offset.toInt()
+            offset = if (off % 2 == 0) left else 1 - left
+        }
+        val percent = 1 - offset
+        val red = (color1.red * percent + color2.red * offset).toInt()
+        val green = (color1.green * percent + color2.green * offset).toInt()
+        val part = (color1.blue * percent + color2.blue * offset).toInt()
+        return Color(red, green, part)
+    }
 
     @JvmStatic
     fun rainbowc(speed: Int, index: Int, saturation: Float, brightness: Float, opacity: Float): Color? {

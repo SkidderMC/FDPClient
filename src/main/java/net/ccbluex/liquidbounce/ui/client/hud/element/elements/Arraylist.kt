@@ -43,9 +43,9 @@ class Arraylist(
     //Color settings
     private val colorDisplay = BoolValue("Color Options:", true)
     private val colorModeValue = ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "AnotherRainbow", "Slowly", "SkyRainbow", "Static"), "Slowly").displayable { colorDisplay.get() }
-    private val colorRedValue = IntegerValue("Text-R", 0, 0, 255).displayable { colorDisplay.get() }
-    private val colorGreenValue = IntegerValue("Text-G", 111, 0, 255).displayable { colorDisplay.get() }
-    private val colorBlueValue = IntegerValue("Text-B", 255, 0, 255).displayable { colorDisplay.get() }
+    val colorRedValue = IntegerValue("Text-R", 0, 0, 255).displayable { colorDisplay.get() }
+    val colorGreenValue = IntegerValue("Text-G", 111, 0, 255).displayable { colorDisplay.get() }
+    val colorBlueValue = IntegerValue("Text-B", 255, 0, 255).displayable { colorDisplay.get() }
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10).displayable { colorDisplay.get() }
     private val cRainbowSecValue = IntegerValue("CRainbow-Seconds", 2, 1, 10).displayable { colorDisplay.get() }
     private val cRainbowDistValue = IntegerValue("CRainbow-Distance", 2, 1, 6).displayable { colorDisplay.get() }

@@ -1,5 +1,7 @@
 /*
- * ZAVZ Hacked Client
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.client;
 
@@ -21,7 +23,6 @@ public class ClientSpoof extends Module {
     public String getTag() {
         return modeValue.get();
     }
-
     public AbstractButtonRenderer getButtonRenderer(GuiButton button) {
         String lowerCaseButtonValue = buttonValue.get().toLowerCase();
         switch (lowerCaseButtonValue) {

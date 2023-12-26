@@ -69,6 +69,5 @@ object HurtCam : Module() {
         return if (colorRainbow.get()) ColorUtils.reAlpha(ColorUtils.rainbow(), alpha) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), alpha)
     }
 
-    // always handle event
     override fun handleEvents() = true
 }

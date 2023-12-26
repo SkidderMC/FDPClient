@@ -17,7 +17,5 @@ object Target : Module() {
     val mobValue = BoolValue("Mob", true)
     val invisibleValue = BoolValue("Invisible", false)
     val deadValue = BoolValue("Dead", false)
-
-    // always handle event
     override fun handleEvents() = true
 }

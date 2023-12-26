@@ -81,6 +81,13 @@ class MotionEvent(val eventState: EventState) : Event() {
     }
 }
 
+
+/**
+ * Called when entity is going to be rendered
+ */
+class RenderEntityEvent(val entity: Entity, val x: Double, val y: Double, val z: Double, val entityYaw: Float,
+                        val partialTicks: Float) : Event()
+
 /**
  * Called when a model updates
  */

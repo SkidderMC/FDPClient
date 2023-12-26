@@ -32,7 +32,7 @@ object AutoReport : Module() {
     private val commandValue = TextValue("Command", "/reportar %name%")
     private val tipValue = BoolValue("Tip", true)
     private val allDelayValue = IntegerValue("AllDelay", 500, 0, 1000)
-    private val blockBooksValue = BoolValue("BlockBooks", false) // 绕过Hypixel /report举报弹出书
+    private val blockBooksValue = BoolValue("BlockBooks", false)
 
     private val reported = mutableListOf<String>()
     private val delayTimer = MSTimer()
@@ -43,7 +43,7 @@ object AutoReport : Module() {
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        val entity = event.targetEntity ?: return
+        val entity = event.targetEntity
         if (isTarget(entity)) {
             doReport(entity as EntityPlayer)
         }
@@ -73,7 +73,7 @@ object AutoReport : Module() {
 
     fun doReport(player: EntityPlayer) = doReport(player.name)
 
-    fun doReport(name: String): Boolean {
+    private fun doReport(name: String): Boolean {
         // pass this if reported
         if (reported.contains(name)) {
             return false

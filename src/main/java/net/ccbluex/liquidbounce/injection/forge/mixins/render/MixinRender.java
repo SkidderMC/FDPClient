@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
+import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.event.RenderEntityEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -22,5 +24,10 @@ public abstract class MixinRender {
     @Redirect(method={"renderLivingLabel(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V"}, at=@At(value="FIELD", target="Lnet/minecraft/client/renderer/entity/RenderManager;playerViewX:F"))
     private float renderLivingLabel(RenderManager renderManager) {
         return Minecraft.getMinecraft().gameSettings.thirdPersonView == 2 ? -renderManager.playerViewX : renderManager.playerViewX;
+    }
+
+    @Shadow
+    protected void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        FDPClient.eventManager.callEvent(new RenderEntityEvent(entity, x, y, z, entityYaw, partialTicks));
     }
 }

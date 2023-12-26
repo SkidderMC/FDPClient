@@ -1882,6 +1882,7 @@ public final class RenderUtils extends MinecraftInstance {
         glEnable(GL_DEPTH_TEST);
     }
 
+
     public static void drawPlatforms(final Entity entity, final Color color) {
         final RenderManager renderManager = mc.getRenderManager();
         final Timer timer = mc.timer;
@@ -1899,7 +1900,7 @@ public final class RenderUtils extends MinecraftInstance {
 
         final AxisAlignedBB axisAlignedBB = entity.getEntityBoundingBox()
                 .offset(-entity.posX, -entity.posY, -entity.posZ)
-                .offset(x, y - killESP.getMoveMarkValue().get(), z);
+                .offset(x, y - killESP.moveMarkValue.get(), z);
 
         drawAxisAlignedBB(
                 new AxisAlignedBB(axisAlignedBB.minX, axisAlignedBB.maxY + 0.2, axisAlignedBB.minZ, axisAlignedBB.maxX, axisAlignedBB.maxY + 0.26, axisAlignedBB.maxZ),

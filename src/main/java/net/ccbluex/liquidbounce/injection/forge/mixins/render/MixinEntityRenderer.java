@@ -9,11 +9,8 @@ import com.google.common.base.Predicates;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HurtCam;
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.visual.CameraClip;
-import net.ccbluex.liquidbounce.features.module.modules.visual.KillESP;
-import net.ccbluex.liquidbounce.features.module.modules.visual.Tracers;
 import net.ccbluex.liquidbounce.features.module.modules.visual.PerspectiveMod;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
 import net.minecraft.block.Block;
@@ -27,7 +24,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.util.*;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,12 +35,10 @@ import static org.objectweb.asm.Opcodes.GETFIELD;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
-
-    @Shadow
-    public abstract void loadShader(ResourceLocation resourceLocationIn);
 
     @Shadow
     public abstract void setupCameraTransform(float partialTicks, int pass);
@@ -71,14 +65,14 @@ public abstract class MixinEntityRenderer {
 
     @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)
     private void injectHurtCameraEffect(CallbackInfo callbackInfo) {
-        if(!FDPClient.moduleManager.getModule(HurtCam.class).getModeValue().get().equalsIgnoreCase("Vanilla")) {
+        if(!Objects.requireNonNull(FDPClient.moduleManager.getModule(HurtCam.class)).getModeValue().get().equalsIgnoreCase("Vanilla")) {
             callbackInfo.cancel();
         }
     }
 
     @Inject(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Vec3;distanceTo(Lnet/minecraft/util/Vec3;)D"), cancellable = true)
     private void cameraClip(float partialTicks, CallbackInfo callbackInfo) {
-        if (FDPClient.moduleManager.getModule(CameraClip.class).getState()) {
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(CameraClip.class)).getState()) {
             callbackInfo.cancel();
 
             Entity entity = this.mc.getRenderViewEntity();
@@ -146,22 +140,6 @@ public abstract class MixinEntityRenderer {
         }
     }
 
-    @Inject(method = "setupCameraTransform", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;setupViewBobbing(F)V", shift = At.Shift.BEFORE))
-    private void setupCameraViewBobbingBefore(final CallbackInfo callbackInfo) {
-        final KillESP killESP = FDPClient.moduleManager.getModule(KillESP.class);
-        final KillAura aura = FDPClient.moduleManager.getModule(KillAura.class);
-
-        if ((killESP != null && aura != null && killESP.getModeValue().get().equalsIgnoreCase("tracers") && !aura.getTargetModeValue().get().equalsIgnoreCase("multi") && aura.getCurrentTarget() != null) || FDPClient.moduleManager.getModule(Tracers.class).getState()) GL11.glPushMatrix();
-    }
-
-    @Inject(method = "setupCameraTransform", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;setupViewBobbing(F)V", shift = At.Shift.AFTER))
-    private void setupCameraViewBobbingAfter(final CallbackInfo callbackInfo) {
-        final KillESP killESP = FDPClient.moduleManager.getModule(KillESP.class);
-        final KillAura aura = FDPClient.moduleManager.getModule(KillAura.class);
-
-        if ((killESP != null && aura != null && killESP.getModeValue().get().equalsIgnoreCase("tracers") && !aura.getTargetModeValue().get().equalsIgnoreCase("multi") && aura.getCurrentTarget() != null) || FDPClient.moduleManager.getModule(Tracers.class).getState()) GL11.glPopMatrix();
-    }
-
     /**
      * @author Liuli
      */
@@ -174,6 +152,7 @@ public abstract class MixinEntityRenderer {
 
             final Reach reach = FDPClient.moduleManager.getModule(Reach.class);
 
+            assert reach != null;
             double d0 = reach.getState() ? reach.getMaxRange() : mc.playerController.getBlockReachDistance();
             this.mc.objectMouseOver = entity.rayTrace(reach.getState() ? reach.getBuildReachValue().get() : d0, p_getMouseOver_1_);
             double d1 = d0;
@@ -242,6 +221,7 @@ public abstract class MixinEntityRenderer {
             }
             if (pointedEntity != null && flag && vec3.distanceTo(vec33) > (reach.getState() ? reach.getCombatReachValue().get() : 3)) {
                 this.pointedEntity = null;
+                assert vec33 != null;
                 this.mc.objectMouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec33, null, new BlockPos(vec33));
             }
 

@@ -6,7 +6,10 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.KeyEvent
+import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.ScreenEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -16,10 +19,8 @@ import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule.colorGreenValue
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule.colorRedValue
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.GuiChat
@@ -32,28 +33,20 @@ import java.util.*
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HUD : Module() {
     val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Default")
-    private val clolormode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")
-    val shadowAlpha = IntegerValue("Shadow Alpha", 150, 0, 155)
+    private val rainbowMode = ListValue("ColorMode", arrayOf("Rainbow", "Light Rainbow", "Static", "Double Color", "Default"), "Light Rainbow")
     val movingcolors = BoolValue("MovingColors", false)
     val inventoryParticle = BoolValue("InventoryParticle", false)
     val hueInterpolation = BoolValue("hueInterpolation", false)
-    private val blurValue = BoolValue("Blur", false)
-    private val HealthValue = BoolValue("Health", true)
-    private val waterMark = BoolValue("Watermark", true)
-    val rainbowStartValue = FloatValue("RainbowStart", 0.55f, 0f, 1f)
-    val rainbowStopValue = FloatValue("RainbowStop", 0.85f, 0f, 1f)
-    val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.45f, 0f, 1f)
-    val rainbowBrightnessValue = FloatValue("RainbowBrightness", 0.85f, 0f, 1f)
-    val rainbowSpeedValue = IntegerValue("RainbowSpeed", 1500, 500, 7000)
-    val arraylistXAxisAnimSpeedValue = IntegerValue("ArraylistXAxisAnimSpeed", 10, 5, 20)
-    val arraylistXAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistXAxisAnimType")
+    val blurValue = BoolValue("Blur", false)
+    val HealthValue = BoolValue("Health", true)
+    val waterMark = BoolValue("Watermark", true)
+    val arrayListValue = BoolValue("ArrayListAnimation", true)
+    val arraylistXAxisAnimSpeedValue = IntegerValue("ArraylistXAxisAnimSpeed", 10, 5, 20).displayable { arrayListValue.get() }
+    val arraylistXAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistXAxisAnimType").displayable { arrayListValue.get() }
     val arraylistXAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistXAxisHotbarAnimOrder").displayable { !arraylistXAxisAnimTypeValue.equals("NONE") }
-    val arraylistYAxisAnimSpeedValue = IntegerValue("ArraylistYAxisAnimSpeed", 10, 5, 20)
+    val arraylistYAxisAnimSpeedValue = IntegerValue("ArraylistYAxisAnimSpeed", 10, 5, 20).displayable { arrayListValue.get() }
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder").displayable { !arraylistYAxisAnimTypeValue.equals("NONE") }
-    private val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
-
-    private var lastFontEpsilon = 0f
 
     /**
      * Renders the HUD.
@@ -79,29 +72,15 @@ object HUD : Module() {
             "FDP",
             3.0f,
             3.0f,
-            colors?.get(0)?.rgb ?: rainbow().rgb
+            colors[0].rgb
         )
         width += mc.fontRendererObj.getStringWidth("FDP")
         mc.fontRendererObj.drawStringWithShadow(
             "CLIENT",
             width.toFloat(),
             3.0f,
-            colors?.get(1)?.rgb ?: rainbow().rgb
+            colors[1].rgb
         )
-    }
-
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        FDPClient.hud.update()
-        if (mc.currentScreen == null && lastFontEpsilon != fontEpsilonValue.get()) {
-            lastFontEpsilon = fontEpsilonValue.get()
-            alert("You need to reload FDPClient to apply changes!")
-        }
-    }
-
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
-        lastFontEpsilon = fontEpsilonValue.get()
     }
 
     @EventTarget
@@ -122,10 +101,10 @@ object HUD : Module() {
         FDPClient.hud.handleKey('a', event.key)
     }
 
-    fun getClientColors(): Array<Color>? {
+    fun getClientColors(): Array<Color> {
         val firstColor: Color
         val secondColor: Color
-        when (clolormode.get().lowercase(Locale.getDefault())) {
+        when (rainbowMode.get().lowercase(Locale.getDefault())) {
             "light rainbow" -> {
                 firstColor = ColorUtils.rainbowc(15, 1, .6f, 1F, 1F)!!
                 secondColor = ColorUtils.rainbowc(15, 40, .6f, 1F, 1F)!!
@@ -151,4 +130,5 @@ object HUD : Module() {
         }
         return arrayOf(firstColor, secondColor)
     }
+
 }
