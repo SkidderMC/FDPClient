@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.client;
+package net.ccbluex.liquidbounce.ui.client.hud.element.elements;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventTarget;
@@ -11,13 +11,14 @@ import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
 import java.lang.reflect.Field;
-@ModuleInfo(name = "ColorManager", category = ModuleCategory.CLIENT)
+@ElementInfo(name = "Cooldown")
 public class ColorManager extends Module {
     @EventTarget
     public void onRender2D(Render2DEvent render2DEvent) {

@@ -8,9 +8,9 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.client.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings;
-import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.visual.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.minecraft.client.Minecraft;
@@ -105,16 +105,16 @@ public abstract class MixinGuiInGame extends MixinGui {
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
     private void renderPumpkinOverlay(final CallbackInfo callbackInfo) {
-        final AntiBlind antiBlind = FDPClient.moduleManager.getModule(AntiBlind.class);
+        final VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
 
-        if(antiBlind.getState() && antiBlind.getPumpkinEffectValue().get())
+        if(camera.getState() && camera.getPumpkinEffectValue().get())
             callbackInfo.cancel();
     }
 
     @Inject(method = "renderBossHealth", at = @At("HEAD"), cancellable = true)
     private void renderBossHealth(CallbackInfo callbackInfo) {
-        final AntiBlind antiBlind = FDPClient.moduleManager.getModule(AntiBlind.class);
-        if (antiBlind.getState() && antiBlind.getBossHealthValue().get())
+        final VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
+        if (camera.getState() && camera.getBossHealthValue().get())
             callbackInfo.cancel();
     }
 

@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.UpdateModelEvent;
 
-import net.ccbluex.liquidbounce.features.module.modules.visual.PlayerEdit;
+import net.ccbluex.liquidbounce.features.module.modules.visual.CustomModel;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
@@ -114,8 +114,8 @@ public class MixinModelPlayer extends ModelBiped {
 
     @Inject(method = {"render"}, at = {@At("HEAD")}, cancellable = true)
     public void renderHook(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
-        PlayerEdit playerEdit = FDPClient.moduleManager.getModule(PlayerEdit.class);
-        if (PlayerEdit.customModel.get() && (FDPClient.moduleManager.getModule(PlayerEdit.class).onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || FDPClient.moduleManager.getModule(PlayerEdit.class).onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(PlayerEdit.class).getState()) {
+        CustomModel playerEdit = FDPClient.moduleManager.getModule(CustomModel.class);
+        if (CustomModel.customModel.get() && (FDPClient.moduleManager.getModule(CustomModel.class).onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || FDPClient.moduleManager.getModule(CustomModel.class).onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(CustomModel.class).getState()) {
             ci.cancel();
             renderCustom(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         }
@@ -350,10 +350,10 @@ public class MixinModelPlayer extends ModelBiped {
         }
 
 
-        PlayerEdit playerEdit = FDPClient.moduleManager.getModule(PlayerEdit.class);
+        CustomModel playerEdit = FDPClient.moduleManager.getModule(CustomModel.class);
         GlStateManager.pushMatrix();
-        if (PlayerEdit.customModel.get() && (FDPClient.moduleManager.getModule(PlayerEdit.class).onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || FDPClient.moduleManager.getModule(PlayerEdit.class).onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(PlayerEdit.class).getState()) {
-            if (PlayerEdit.mode.get().contains("Rabbit")) {
+        if (CustomModel.customModel.get() && (FDPClient.moduleManager.getModule(CustomModel.class).onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || FDPClient.moduleManager.getModule(CustomModel.class).onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(CustomModel.class).getState()) {
+            if (CustomModel.mode.get().contains("Rabbit")) {
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(1.25D, 1.25D, 1.25D);
                 GlStateManager.translate(0.0D, -0.3D, 0.0D);
@@ -374,7 +374,7 @@ public class MixinModelPlayer extends ModelBiped {
                 this.rabbitLleg.rotateAngleZ = this.bipedLeftLeg.rotateAngleZ;
                 this.rabbitBone.render(scale);
                 GlStateManager.popMatrix();
-            } else if (PlayerEdit.mode.get().contains("Freddy")) {
+            } else if (CustomModel.mode.get().contains("Freddy")) {
                 this.fredhead.rotateAngleX = this.bipedHead.rotateAngleX;
                 this.fredhead.rotateAngleY = this.bipedHead.rotateAngleY;
                 this.fredhead.rotateAngleZ = this.bipedHead.rotateAngleZ;
@@ -395,7 +395,7 @@ public class MixinModelPlayer extends ModelBiped {
                 GlStateManager.translate(0.0, 0.85, 0.0);
                 this.fredbody.render(scale);
                 GlStateManager.popMatrix();
-            } else if (PlayerEdit.mode.get().contains("Amogus")){
+            } else if (CustomModel.mode.get().contains("Amogus")){
                 this.bipedHead.rotateAngleY = netHeadYaw * 0.017453292F;
                 this.bipedHead.rotateAngleX = headPitch * 0.017453292F;
                 this.bipedBody.rotateAngleY = 0.0F;
@@ -416,9 +416,9 @@ public class MixinModelPlayer extends ModelBiped {
                 this.left_leg.rotateAngleY = 0.0F;
                 this.right_leg.rotateAngleZ = 0.0F;
                 this.left_leg.rotateAngleZ = 0.0F;
-                int bodyCustomColor = new Color(PlayerEdit.bodyColorR.get(), PlayerEdit.bodyColorG.get(), PlayerEdit.bodyColorB.get()).getRGB();
-                int eyeCustomColor = new Color(PlayerEdit.eyeColorR.get(), PlayerEdit.eyeColorG.get(), PlayerEdit.eyeColorB.get()).getRGB();
-                int legsCustomColor = new Color(PlayerEdit.legsColorR.get(), PlayerEdit.legsColorG.get(), PlayerEdit.legsColorB.get()).getRGB();
+                int bodyCustomColor = new Color(CustomModel.bodyColorR.get(), CustomModel.bodyColorG.get(), CustomModel.bodyColorB.get()).getRGB();
+                int eyeCustomColor = new Color(CustomModel.eyeColorR.get(), CustomModel.eyeColorG.get(), CustomModel.eyeColorB.get()).getRGB();
+                int legsCustomColor = new Color(CustomModel.legsColorR.get(), CustomModel.legsColorG.get(), CustomModel.legsColorB.get()).getRGB();
                 if (this.isChild) {
                     GlStateManager.scale(0.5F, 0.5F, 0.5F);
                     GlStateManager.translate(0.0F, 24.0F * scale, 0.0F);

@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.client.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -457,9 +457,9 @@ public abstract class MixinItemRenderer {
      */
     @Redirect(method="renderFireInFirstPerson", at=@At(value="INVOKE", target="Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
     private void renderFireInFirstPerson(float p_color_0_, float p_color_1_, float p_color_2_, float p_color_3_) {
-        final AntiBlind antiBlind = FDPClient.moduleManager.getModule(AntiBlind.class);
-        if(p_color_3_ != 1F && antiBlind.getState()){
-            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, antiBlind.getFireEffectValue().get());
+        final VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
+        if(p_color_3_ != 1F && camera.getState()){
+            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, camera.getFireEffectValue().get());
         }else{
             GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, p_color_3_);
         }

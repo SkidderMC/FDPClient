@@ -5,13 +5,12 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.FogColorEvent
-import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.event.TickEvent
+import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.visual.XRay
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -20,26 +19,37 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.network.play.server.S19PacketEntityStatus
+import net.minecraft.potion.Potion
+import net.minecraft.potion.PotionEffect
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-
-@ModuleInfo(name = "Camera", description = "Allows you to see through walls in third person view.", category = ModuleCategory.VISUAL)
-class Camera : Module(){
+@ModuleInfo(name = "VanillaTweaks", description = "Allows you to see through walls in third person view.", category = ModuleCategory.VISUAL)
+object VanillaTweaks : Module() {
     //
     var alpha2 = 0
     //
     val cameraClipValue = BoolValue("CameraClip", false)
-    val noHurtCam = BoolValue("NoHurtCam", false)
-    val antiBlindValue = BoolValue("AntiBlind", false)
+
+    val hurtCam = BoolValue("HurtCam", false)
+    val modeValue = ListValue("Mode", arrayOf("Vanilla", "Cancel", "FPS"), "Vanilla").displayable { hurtCam.get() }
+    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { modeValue.equals("FPS") }
+    private val colorGreenValue = IntegerValue("G", 0, 0, 255).displayable { modeValue.equals("FPS") }
+    private val colorBlueValue = IntegerValue("B", 0, 0, 255).displayable { modeValue.equals("FPS") }
+    private val colorRainbow = BoolValue("Rainbow", false).displayable { modeValue.equals("FPS") }
+    private val timeValue = IntegerValue("FPSTime", 1000, 0, 1500).displayable { modeValue.equals("FPS") }
+    private val fpsHeightValue = IntegerValue("FPSHeight", 25, 10, 50).displayable { modeValue.equals("FPS") }
 
     //AntiBlind
+    val antiBlindValue = BoolValue("AntiBlind", false)
     val confusionEffectValue = BoolValue("Confusion", false).displayable { antiBlindValue.get() }
-    val pumpkinEffect = BoolValue("Pumpkin", false).displayable  { antiBlindValue.get() }
-    val fireEffect = BoolValue("Fire", false).displayable  { antiBlindValue.get() }
-    val scoreBoard = BoolValue("Scoreboard", false).displayable  { antiBlindValue.get() }
-    val bossHealth = BoolValue("Boss-Health", false).displayable  { antiBlindValue.get() }
+    val pumpkinEffectValue = BoolValue("Pumpkin", true).displayable { antiBlindValue.get() }
+    val fireEffectValue = FloatValue("FireAlpha", 0.3f, 0f, 1f).displayable { antiBlindValue.get() }
+    private val fullBrightValue = BoolValue("FullBright", true).displayable { antiBlindValue.get() }
+    private val fullBrightModeValue = ListValue("FullBrightMode", arrayOf("None", "Gamma", "NightVision"), "Gamma").displayable { fullBrightValue.get() }
+    val bossHealthValue = BoolValue("Boss-Health", true).displayable { antiBlindValue.get() }
 
     //NoFOV
     val noFov = BoolValue("NoFOV", false)
@@ -83,8 +93,37 @@ class Camera : Module(){
     private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10).displayable  { fpsHurtCam.get() }
 
     private val motionBlur = BoolValue("Motionblur", false)
-    private val blurAmount = IntegerValue("BlurAmount", 2, 1, 10) { motionBlur.get() }
-    //FPSHurtCam
+    private val blurAmount = IntegerValue("BlurAmount", 1, 1, 10) { motionBlur.get() }
+
+    private var prevGamma = -1f
+    private var hurt = 0L
+
+    override fun onEnable() {
+        prevGamma = mc.gameSettings.gammaSetting
+    }
+
+    override fun onDisable() {
+        if (prevGamma == -1f) return
+        mc.gameSettings.gammaSetting = prevGamma
+        prevGamma = -1f
+        if (mc.thePlayer != null) mc.thePlayer.removePotionEffectClient(Potion.nightVision.id)
+    }
+
+    @EventTarget(ignoreCondition = true)
+    fun onUpdate(event: UpdateEvent) {
+        if (state || FDPClient.moduleManager[XRay::class.java]!!.state) {
+            if(fullBrightValue.get()) {
+                when (fullBrightModeValue.get().lowercase()) {
+                    "gamma" -> if (mc.gameSettings.gammaSetting <= 100f) mc.gameSettings.gammaSetting++
+                    "nightvision" -> mc.thePlayer.addPotionEffect(PotionEffect(Potion.nightVision.id, 1337, 1))
+                }
+            }
+        } else if (prevGamma != -1f) {
+            mc.gameSettings.gammaSetting = prevGamma
+            prevGamma = -1f
+        }
+    }
+
     @EventTarget
     private fun renderHud(event: Render2DEvent) {
         if (fpsHurtCam.get()) {
@@ -209,4 +248,51 @@ class Camera : Module(){
         event.setGreen(customFogGValue.get())
         event.setBlue(customFogBValue.get())
     }
+
+    @EventTarget(ignoreCondition = true)
+    fun onShutdown(event: ClientShutdownEvent) {
+        onDisable()
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+
+        when (modeValue.get().lowercase()) {
+            "fps" -> {
+                if (packet is S19PacketEntityStatus) {
+                    if (packet.opCode.toInt() == 2 && mc.thePlayer.equals(packet.getEntity(mc.theWorld))) {
+                        hurt = System.currentTimeMillis()
+                    }
+                }
+            }
+        }
+    }
+
+    @EventTarget
+    fun onRender2d(event: Render2DEvent) {
+        if (hurt == 0L) return
+
+        val passedTime = System.currentTimeMillis() - hurt
+        if (passedTime > timeValue.get()) {
+            hurt = 0L
+            return
+        }
+
+        val color = getHurtCamColor(
+            (((timeValue.get() - passedTime) / timeValue.get().toFloat()) * 255).toInt()
+        )
+        val color1 = getHurtCamColor(0)
+        val width = event.scaledResolution.scaledWidth_double
+        val height = event.scaledResolution.scaledHeight_double
+
+        RenderUtils.drawGradientSidewaysV(0.0, 0.0, width, fpsHeightValue.get().toDouble(), color.rgb, color1.rgb)
+        RenderUtils.drawGradientSidewaysV(0.0, height - fpsHeightValue.get(), width, height, color1.rgb, color.rgb)
+    }
+
+    private fun getHurtCamColor(alpha: Int): Color {
+        return if (colorRainbow.get()) ColorUtils.reAlpha(ColorUtils.rainbow(), alpha) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), alpha)
+    }
+
+    override fun handleEvents() = true
 }

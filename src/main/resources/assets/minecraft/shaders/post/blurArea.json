@@ -1,6 +1,7 @@
 {
     "targets": [
-        "swap"
+        "swap",
+        "result"
     ],
     "passes": [
         {
@@ -21,7 +22,7 @@
         {
             "name": "blurArea",
             "intarget": "swap",
-            "outtarget": "minecraft:main",
+            "outtarget": "result",
             "uniforms": [
                 {
                     "name": "BlurDir",

@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.visual.NoFOV;
+import net.ccbluex.liquidbounce.features.module.modules.client.VanillaTweaks;
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -32,10 +32,10 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
     @Inject(method = "getFovModifier", at = @At("HEAD"), cancellable = true)
     private void getFovModifier(CallbackInfoReturnable<Float> callbackInfoReturnable) {
-        final NoFOV fovModule = FDPClient.moduleManager.getModule(NoFOV.class);
+        final VanillaTweaks vanillaTweaks = FDPClient.moduleManager.getModule(VanillaTweaks.class);
 
-        if(fovModule.getState()) {
-            float newFOV = fovModule.getFovValue().get();
+        if(vanillaTweaks.getState()) {
+            float newFOV = vanillaTweaks.getFovValue().get();
 
             if(!this.isUsingItem()) {
                 callbackInfoReturnable.setReturnValue(newFOV);
