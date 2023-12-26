@@ -295,7 +295,7 @@ class Scaffold : Module() {
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) mc.timer.timerSpeed = timerValue.get()
 
-        if (towerModeValue.equals("WatchDog")) {
+        if (towerModeValue.equals("WatchDog") && towerStatus) {
             if (wdTick != 0) {
                 towerTick = 0
                 return
