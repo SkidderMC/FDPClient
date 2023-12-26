@@ -21,7 +21,6 @@ import net.minecraft.potion.PotionEffect
 @ModuleInfo(name = "AntiBlind", category = ModuleCategory.VISUAL)
 object AntiBlind : Module() {
 
-    val confusionEffectValue = BoolValue("Confusion", true)
     val pumpkinEffectValue = BoolValue("Pumpkin", true)
     val fireEffectValue = FloatValue("FireAlpha", 0.3f, 0f, 1f)
     private val fullBrightValue = BoolValue("FullBright", true)

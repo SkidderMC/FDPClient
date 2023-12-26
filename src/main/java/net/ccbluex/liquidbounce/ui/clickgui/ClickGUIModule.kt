@@ -10,10 +10,6 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.*
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.light.LightClickGUI
@@ -22,6 +18,10 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.ClickyUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.onetap.OtcClickGUi
 import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 import java.awt.Color
@@ -44,7 +44,7 @@ object ClickGUIModule : Module() {
             "Black",
             "White"
         ),
-        "Black"
+        "Mixed"
     ) {
         override fun onChanged(oldValue: String, newValue: String) {
             updateStyle()

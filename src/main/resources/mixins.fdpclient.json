@@ -84,6 +84,7 @@
     "render.MixinLayerSpiderEyes",
     "render.MixinLayerWitherAura",
     "render.MixinModelBiped",
+    "render.MixinModelPlayer",
     "render.MixinModelSkeleton",
     "render.MixinModelVillager",
     "render.MixinRender",
