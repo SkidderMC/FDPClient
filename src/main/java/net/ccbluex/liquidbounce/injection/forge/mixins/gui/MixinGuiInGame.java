@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.client.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings;
-import net.ccbluex.liquidbounce.features.module.modules.visual.Crosshair;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
@@ -120,8 +119,6 @@ public abstract class MixinGuiInGame extends MixinGui {
 
     @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
     private void injectCrosshair(CallbackInfoReturnable<Boolean> cir) {
-        final Crosshair crossHair = FDPClient.moduleManager.getModule(Crosshair.class);
-        if (crossHair.getState())
             cir.setReturnValue(false);
     }
  }

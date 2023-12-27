@@ -55,7 +55,7 @@ object ClickGUIModule : Module() {
     val maxElementsValue = IntegerValue("MaxElements", 20, 1, 35)
     val backgroundValue = ListValue("Background", arrayOf("Default", "Gradient", "None"), "None")
     val animationValue = ListValue("Animation", arrayOf("Bread", "Slide", "LiquidBounce", "Zoom", "Ziul", "None"), "Ziul")
-    val colorRainbow = BoolValue("Rainbow", true)
+    var colorRainbow = BoolValue("Rainbow", true)
     val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbow.get() } as IntegerValue

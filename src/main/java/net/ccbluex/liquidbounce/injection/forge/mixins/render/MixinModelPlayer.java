@@ -115,9 +115,12 @@ public class MixinModelPlayer extends ModelBiped {
     @Inject(method = {"render"}, at = {@At("HEAD")}, cancellable = true)
     public void renderHook(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
         CustomModel playerEdit = FDPClient.moduleManager.getModule(CustomModel.class);
-        if (CustomModel.customModel.get() && (FDPClient.moduleManager.getModule(CustomModel.class).onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || FDPClient.moduleManager.getModule(CustomModel.class).onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(CustomModel.class).getState()) {
-            ci.cancel();
-            renderCustom(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+        if (CustomModel.customModel.get()) {
+            FDPClient.moduleManager.getModule(CustomModel.class);
+            if ((CustomModel.onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || CustomModel.onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(CustomModel.class).getState()) {
+                ci.cancel();
+                renderCustom(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+            }
         }
     }
 
@@ -352,7 +355,7 @@ public class MixinModelPlayer extends ModelBiped {
 
         CustomModel playerEdit = FDPClient.moduleManager.getModule(CustomModel.class);
         GlStateManager.pushMatrix();
-        if (CustomModel.customModel.get() && (FDPClient.moduleManager.getModule(CustomModel.class).onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || FDPClient.moduleManager.getModule(CustomModel.class).onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(CustomModel.class).getState()) {
+        if (CustomModel.customModel.get() && (CustomModel.onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || CustomModel.onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(CustomModel.class).getState()) {
             if (CustomModel.mode.get().contains("Rabbit")) {
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(1.25D, 1.25D, 1.25D);

@@ -1193,7 +1193,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     private fun drawTenacity5(target: EntityLivingBase) {
-        val additionalWidth = Fonts.fontTenacityBold40.getStringWidth(target.name).coerceAtLeast(75)
+        val additionalWidth = Fonts.font40.getStringWidth(target.name).coerceAtLeast(75)
 
         //colors
         val c1 = ColorUtils.interpolateColorsBackAndForth(17, 0, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
@@ -1221,7 +1221,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glPopMatrix()
 
         // text
-        Fonts.fontTenacityBold40.drawCenteredString(target.name, 47 + (additionalWidth / 2f), 1f + Fonts.fontTenacityBold40.FONT_HEIGHT, Color.WHITE.rgb, false)
+        Fonts.font40.drawCenteredString(target.name, 47 + (additionalWidth / 2f), 1f + Fonts.font40.FONT_HEIGHT, Color.WHITE.rgb, false)
         val infoStr = ((((easingHP / target.maxHealth) * 100).roundToInt()).toString() + "% - " + ((mc.thePlayer.getDistanceToEntityBox(target)).roundToInt()).toString() + "M")
         Fonts.fontTenacity40.drawString(infoStr, 47f + ((additionalWidth - Fonts.fontTenacity40.getStringWidth(infoStr)) / 2f), 45f - (Fonts.fontTenacity40.FONT_HEIGHT), Color.WHITE.rgb, false)
 
@@ -1352,7 +1352,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     }
 
     private fun drawStitch(target: EntityLivingBase) {
-        val tWidth = (110F + Fonts.fontTenacityBold40.getStringWidth(target.name)).coerceAtLeast(120F)
+        val tWidth = (110F + Fonts.font40.getStringWidth(target.name)).coerceAtLeast(120F)
         // background
         RenderUtils.drawRoundedRect(0F, 0F, tWidth, 65F, 7F, Color(255, 255, 255, 40).rgb)
         // circle player avatar
@@ -1363,7 +1363,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawScaledCustomSizeModalCircle((tWidth.toInt()/2) - 15, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
         GL11.glPopMatrix()
         // name
-        Fonts.fontTenacityBold40.drawCenteredString(target.name, tWidth/2F, 39F, getColor(-1).rgb, false)
+        Fonts.font40.drawCenteredString(target.name, tWidth/2F, 39F, getColor(-1).rgb, false)
 
         "${ndecimalFormat.format((easingHP / target.maxHealth) * 100)}%".also {
             Fonts.font32.drawString(it, ((easingHP / target.maxHealth) * (tWidth - 5) - Fonts.font32.getStringWidth(it)).coerceAtLeast(40f), 60f - Fonts.font32.FONT_HEIGHT, Color.WHITE.rgb, false)

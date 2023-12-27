@@ -2801,5 +2801,4 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.disableBlend();
     }
 
-
 }

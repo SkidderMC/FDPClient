@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic;
 
+import lombok.Setter;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
@@ -24,28 +25,26 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 public class Setting {
     public Value setting;
-    private Module module;
-    public boolean opened;
+    private final Module module;
     private final TickTimer backSpace = new TickTimer();
-    private final TickTimer caretTimer = new TickTimer();
     public int height;
+    @Setter
     public float percent = 0;
 
     public Setting(Value setting, Module module) {
         this.setting = setting;
         this.module = module;
     }
-
-    public void setPercent(float percent) {
-        this.percent = percent;
+    public void setPercent(float value) {
+        this.percent = value;
     }
 
     public void drawScreen(int mouseX, int mouseY) {
         int y = getY();
-        HUD hud = (HUD) FDPClient.moduleManager.getModule(HUD.class);
+        HUD hud = FDPClient.moduleManager.getModule(HUD.class);
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         boolean scissor = scaledResolution.getScaleFactor() != 1;
-        double clamp = MathHelper.clamp_double(Minecraft.getMinecraft().getDebugFPS() / 30, 1, 9999);
+        double clamp = MathHelper.clamp_double((double) Minecraft.getDebugFPS() / 30, 1, 9999);
 
 
         if (setting instanceof FloatValue) {
@@ -62,7 +61,7 @@ public class Setting {
 
             percent = Math.max(0, Math.min(1, (float) (percent + (Math.max(0, Math.min(percentBar, 1)) - percent) * (0.2 / clamp))));
             RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 99, y + 14, new Color(0, 0, 0, 50).getRGB());
-            RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.INSTANCE.generateColor());
+            RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.generateColor());
             Fonts.SF.SF_18.SF_18.drawString(numberValue.getName() + " " + rounded, module.tab.getPosX() + 4, y + 5.5f, 0xffffffff, true);
 
             if (this.dragging) {
@@ -95,7 +94,7 @@ public class Setting {
 
             percent = Math.max(0, Math.min(1, (float) (percent + (Math.max(0, Math.min(percentBar, 1)) - percent) * (0.2 / clamp))));
             RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 99, y + 14, new Color(0, 0, 0, 50).getRGB());
-            RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.INSTANCE.generateColor());
+            RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.generateColor());
             Fonts.SF.SF_18.SF_18.drawString(integerValue.getName() + " " + rounded, module.tab.getPosX() + 4, y + 5.5f, 0xffffffff, true);
 
             if (this.dragging2) {
@@ -118,7 +117,7 @@ public class Setting {
             final BoolValue boolValue = (BoolValue) setting;
             RenderUtils.drawRect(module.tab.getPosX() + 89, y + 4, module.tab.getPosX() + 99, y + 14, new Color(0, 0, 0, 50).getRGB());
             if (boolValue.get()) {
-                RenderUtils.drawCheck(module.tab.getPosX() + 91, y + 8.5f, 2, ClickGUIModule.INSTANCE.generateColor().brighter().getRGB());
+                RenderUtils.drawCheck(module.tab.getPosX() + 91, y + 8.5f, 2, ClickGUIModule.generateColor().brighter().getRGB());
             }
 
             Fonts.SF.SF_18.SF_18.drawString(boolValue.getName(), module.tab.getPosX() + 4, y + 5.5f,
@@ -138,7 +137,7 @@ public class Setting {
            final TextValue textValue = (TextValue) setting;
         final String s = textValue.get();
 
-        if (textValue.getTextHovered() && Keyboard.isKeyDown(Keyboard.KEY_BACK) && this.backSpace.delay(100) && s.length() >= 1) {
+        if (textValue.getTextHovered() && Keyboard.isKeyDown(Keyboard.KEY_BACK) && this.backSpace.delay(100) && !s.isEmpty()) {
             textValue.set(s.substring(0, s.length() - 1));
             this.backSpace.reset();
         }
@@ -152,11 +151,9 @@ public class Setting {
             Fonts.SF.SF_16.SF_16.drawString(s, module.tab.getPosX() + 6, y + 10, 0xFFFFFFFF);
         }
 
+       }
+
     }
-
-
-        }
-
     private int getY() {
         int y = module.y + 14;
         for (Setting dropDownSetting : module.settings.stream().filter(s -> s.setting.getDisplayable()).collect(Collectors.toList())) {
@@ -217,28 +214,6 @@ public class Setting {
                 setting.setTextHovered(false);
             }
         }
-/*
-        if (setting.getSettingType() == SettingType.SELECTBOX) {
-            if (opened && mouseX >= module.tab.getPosX() && mouseX <= module.tab.getPosX() + 90) {
-                final List<String> acceptableValues = setting.getSelectBoxProperty().getAcceptableValues();
-                for (int i = 0; i < acceptableValues.size(); i++) {
-                    final int v = getY() + 17 + i * 17;
-                    if (mouseY >= v && mouseY <= v + 17) {
-                        final String s = acceptableValues.get(i);
-
-                        if (setting.getSelectBoxProperty().contains(s)) {
-                            setting.getSelectBoxProperty().remove(s);
-                        } else {
-                            setting.getSelectBoxProperty().add(s);
-                        }
-
-                        EventManager.call(new SettingEvent(module.getModule(), setting.getName(), setting.getSelectBoxProperty()));
-                    }
-                }
-            }
-        }
-         */
-
     }
 
     public void keyTyped(char typedChar, int keyCode) {
@@ -259,39 +234,12 @@ public class Setting {
         if (state == 0) dragging2 = false;
     }
 
-    /*
-    private boolean areHovered(int mouseX, int mouseY) {
-        int yS = getY() + 17;
-
-        if (opened) {
-            for (String value : setting.getSelectBoxProperty().getAcceptableValues()) {
-                yS += 17;
-            }
-        }
-
-        return mouseX <= module.tab.getPosX() && mouseY <= yS && mouseX >= module.tab.getPosX() + 90 && mouseY <= yS + 17;
-    }
-
-     */
-
-
     public boolean isHovered(int mouseX, int mouseY) {
         int y = getY();
-        if (setting instanceof FloatValue){}
 
-        if (setting instanceof IntegerValue){}
-
-          if (setting instanceof BoolValue)
+        if (setting instanceof BoolValue)
               return mouseX >= module.tab.getPosX() + 89 && mouseY >= y + 4 && mouseX <= module.tab
                       .getPosX() + 99 && mouseY <= y + 14;
-
-          /*
-            case BINDABLE:
-                String key = "[" + Keyboard.getKeyName(setting.getKeyBindValue().get().getKey()) + "]";
-                return mouseX >= module.tab.getPosX() + 97.5f - Fonts.SF.SF_18.SF_18.stringWidth(key) && mouseX <= module.tab.getPosX() + 97.5f && mouseY >= y + 4 && mouseY <= y + 14;
-
-           */
-
 
               return mouseX >= module.tab.getPosX() && mouseY >= y && mouseX <= module.tab
                       .getPosX() + 90 && mouseY <= y + 17;

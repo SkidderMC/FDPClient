@@ -9,15 +9,20 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
-import net.ccbluex.liquidbounce.value.*;
+import net.ccbluex.liquidbounce.utils.render.ColorUtils;
+import net.ccbluex.liquidbounce.value.BoolValue;
+import net.ccbluex.liquidbounce.value.FloatValue;
+import net.ccbluex.liquidbounce.value.IntegerValue;
+import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
 import java.lang.reflect.Field;
+import java.util.Locale;
+
 @ElementInfo(name = "Cooldown")
 public class ColorManager extends Module {
     @EventTarget
@@ -51,7 +56,9 @@ public class ColorManager extends Module {
     public static FloatValue ra = new FloatValue("Radius", 4.5f, 0.1f, 8.0f);
     public static IntegerValue c = new IntegerValue("ColorSpeed", 100, 10, 1000);
     public static BoolValue hueInterpolation = new BoolValue("Interpolate", false);
-    public static BoolValue chatPosition = new BoolValue("chatPosition", false);
+    public static BoolValue movingcolors = new BoolValue("MovingColors", false);
+
+    public static ListValue rainbowMode = new ListValue("ColorMode", new String[]{"Rainbow", "Light Rainbow", "Static", "Double Color", "Default"}, "Light Rainbow");
 
     // ColorElement instances
     public ColorElement[] colorElements = new ColorElement[10];
@@ -65,6 +72,8 @@ public class ColorManager extends Module {
             regenerateColors(oldValue != newValue);
         }
     };
+
+    public final BoolValue inventoryParticle = new BoolValue("InventoryParticle", false);
 
     public final ColorElement col1RedValue = new ColorElement(1, ColorElement.Material.RED);
     public final ColorElement col1GreenValue = new ColorElement(1, ColorElement.Material.GREEN);
@@ -179,5 +188,37 @@ public class ColorManager extends Module {
                 blue = blue2.get();
         return new Color(red, green, blue);
     }
+
+
+        public static Color[] getClientColors() {
+            Color firstColor;
+            Color secondColor;
+
+            switch (rainbowMode.get().toLowerCase(Locale.getDefault())) {
+                case "light rainbow":
+                    firstColor = ColorUtils.rainbowc(15, 1, .6f, 1F, 1F);
+                    secondColor = ColorUtils.rainbowc(15, 40, .6f, 1F, 1F);
+                    break;
+                case "rainbow":
+                    firstColor = ColorUtils.rainbowc(15, 1, 1F, 1F, 1F);
+                    secondColor = ColorUtils.rainbowc(15, 40, 1F, 1F, 1F);
+                    break;
+                case "double color":
+                    firstColor = ColorUtils.interpolateColorsBackAndForth(15, 0, Color.PINK, Color.BLUE, hueInterpolation.get());
+                    secondColor = ColorUtils.interpolateColorsBackAndForth(15, 90, Color.PINK, Color.BLUE, hueInterpolation.get());
+                    break;
+                case "static":
+                    firstColor = new Color(ClickGUIModule.INSTANCE.getColorRedValue().get(), ClickGUIModule.INSTANCE.getColorGreenValue().get(), ClickGUIModule.INSTANCE.getColorBlueValue().get());
+                    secondColor = firstColor;
+                    break;
+                default:
+                    firstColor = new Color(-1);
+                    secondColor = new Color(-1);
+                    break;
+            }
+
+            return new Color[]{firstColor, secondColor};
+        }
+
 
 }

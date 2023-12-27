@@ -22,7 +22,7 @@ object ChatControl : Module() {
     val chatClearValue = BoolValue("NoChatClear", true)
     val chatCombineValue = BoolValue("ChatCombine", true)
     val fontChatValue = BoolValue("FontChat", false)
-    val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
+    private val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
     val chatRectValue = BoolValue("ChatBackGround", false)
     val betterChatRectValue = BoolValue("BetterChatRect", false)
     val chatAnimValue = BoolValue("ChatAnimation", false)

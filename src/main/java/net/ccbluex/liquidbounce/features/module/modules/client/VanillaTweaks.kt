@@ -26,14 +26,19 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-@ModuleInfo(name = "VanillaTweaks", description = "Allows you to see through walls in third person view.", category = ModuleCategory.VISUAL)
+@ModuleInfo(name = "VanillaTweaks", description = "Vanilla Utilities.", category = ModuleCategory.VISUAL)
 object VanillaTweaks : Module() {
-    //
-    var alpha2 = 0
-    //
+
+    private var alpha2 = 0
+
+    // NoAchievements
+    val noAchievements = BoolValue("NoAchievements", false)
+
+    // CameraClip
     val cameraClipValue = BoolValue("CameraClip", false)
 
-    val hurtCam = BoolValue("HurtCam", false)
+    // HurtCam
+    private val hurtCam = BoolValue("HurtCam", false)
     val modeValue = ListValue("Mode", arrayOf("Vanilla", "Cancel", "FPS"), "Vanilla").displayable { hurtCam.get() }
     private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { modeValue.equals("FPS") }
     private val colorGreenValue = IntegerValue("G", 0, 0, 255).displayable { modeValue.equals("FPS") }
@@ -43,7 +48,7 @@ object VanillaTweaks : Module() {
     private val fpsHeightValue = IntegerValue("FPSHeight", 25, 10, 50).displayable { modeValue.equals("FPS") }
 
     //AntiBlind
-    val antiBlindValue = BoolValue("AntiBlind", false)
+    private val antiBlindValue = BoolValue("AntiBlind", false)
     val confusionEffectValue = BoolValue("Confusion", false).displayable { antiBlindValue.get() }
     val pumpkinEffectValue = BoolValue("Pumpkin", true).displayable { antiBlindValue.get() }
     val fireEffectValue = FloatValue("FireAlpha", 0.3f, 0f, 1f).displayable { antiBlindValue.get() }
@@ -52,7 +57,7 @@ object VanillaTweaks : Module() {
     val bossHealthValue = BoolValue("Boss-Health", true).displayable { antiBlindValue.get() }
 
     //NoFOV
-    val noFov = BoolValue("NoFOV", false)
+    private val noFov = BoolValue("NoFOV", false)
     val fovValue = FloatValue("FOV", 1f, 0f, 1.5f).displayable  { noFov.get() }
 
     //WorldColor
@@ -71,22 +76,15 @@ object VanillaTweaks : Module() {
     //CustomFog
     val customFog = BoolValue("CustomFog", false)
     val customFogDistance = FloatValue("FogDistance", 0.10f, 0.001f, 2.0f).displayable  { customFog.get() }
-    val customFogRValue = IntegerValue("FogRed", 255, 0, 255) { customFog.get() }
-    val customFogGValue = IntegerValue("FogGreen", 255, 0, 255) { customFog.get() }
-    val customFogBValue = IntegerValue("FogBlue", 255, 0, 255) { customFog.get() }
-
-    //CameraPosition
-    val smoothCamera = BoolValue("Smooth", false)
-    val cameraPositionValue = BoolValue("CameraPosition", false)
-    val cameraPositionYawValue = FloatValue("Yaw", 10F, -50F, 50F).displayable  { cameraPositionValue.get() }
-    val cameraPositionPitchValue = FloatValue("Pitch", 10F, -50F, 50F).displayable  { cameraPositionValue.get() }
-    val cameraPositionFovValue = FloatValue("DistanceFov", 4F, 1F, 50F).displayable  { cameraPositionValue.get() }
+    private val customFogRValue = IntegerValue("FogRed", 255, 0, 255) { customFog.get() }
+    private val customFogGValue = IntegerValue("FogGreen", 255, 0, 255) { customFog.get() }
+    private val customFogBValue = IntegerValue("FogBlue", 255, 0, 255) { customFog.get() }
 
     //FPSHurtCam
     private val fpsHurtCam = BoolValue("FPSHurtCam", false)
-    val hurtcamColorRValue = IntegerValue("HurtColorRed", 255, 0, 255) { fpsHurtCam.get() }
-    val hurtcamColorGValue = IntegerValue("HurtColorGreen", 255, 0, 255) { fpsHurtCam.get() }
-    val hurtcamColorBValue = IntegerValue("HurtColorBlue", 255, 0, 255) { fpsHurtCam.get() }
+    private val hurtcamColorRValue = IntegerValue("HurtColorRed", 255, 0, 255) { fpsHurtCam.get() }
+    private val hurtcamColorGValue = IntegerValue("HurtColorGreen", 255, 0, 255) { fpsHurtCam.get() }
+    private val hurtcamColorBValue = IntegerValue("HurtColorBlue", 255, 0, 255) { fpsHurtCam.get() }
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Slowly", "Fade"), "Custom").displayable { fpsHurtCam.get() }
     private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f).displayable  { fpsHurtCam.get() }
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f).displayable  { fpsHurtCam.get() }
@@ -161,6 +159,8 @@ object VanillaTweaks : Module() {
 
     @EventTarget
     fun onTick(event: TickEvent) {
+
+        mc.guiAchievement.clearAchievements()
         try {
 
             if (mc.thePlayer != null) {
@@ -186,6 +186,7 @@ object VanillaTweaks : Module() {
         }
     }
 
+    @JvmStatic
     fun drawGradientSidewaysV(left: Double, top: Double, right: Double, bottom: Double, col1: Int, col2: Int) {
         if (fpsHurtCam.get()) {
             val f = (col1 shr 24 and 255).toFloat() / 255.0f
@@ -219,13 +220,13 @@ object VanillaTweaks : Module() {
         }
     }
     fun getColor(index: Int): Color {
-        var colorModeValue = colorModeValue.get()
-        var colorRedValue = hurtcamColorRValue.get()
-        var colorGreenValue = hurtcamColorGValue.get()
-        var colorBlueValue = hurtcamColorBValue.get()
-        var mixerSecondsValue = mixerSecondsValue.get()
-        var saturationValue = saturationValue.get()
-        var brightnessValue = brightnessValue.get()
+        val colorModeValue = colorModeValue.get()
+        val colorRedValue = hurtcamColorRValue.get()
+        val colorGreenValue = hurtcamColorGValue.get()
+        val colorBlueValue = hurtcamColorBValue.get()
+        val mixerSecondsValue = mixerSecondsValue.get()
+        val saturationValue = saturationValue.get()
+        val brightnessValue = brightnessValue.get()
         return when (colorModeValue) {
             "Custom" -> Color(colorRedValue, colorGreenValue, colorBlueValue)
             "Rainbow" -> Color(
@@ -237,7 +238,7 @@ object VanillaTweaks : Module() {
                 )
             )
 
-            "Slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index, saturationValue, brightnessValue)!!
+            "Slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index, saturationValue, brightnessValue)
             else -> ColorUtils.fade(Color(colorRedValue, colorGreenValue, colorBlueValue), index, 100)
         }
     }

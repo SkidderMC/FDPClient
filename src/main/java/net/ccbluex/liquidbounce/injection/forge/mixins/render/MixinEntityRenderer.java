@@ -9,6 +9,7 @@ import com.google.common.base.Predicates;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.FogColorEvent;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.visual.PerspectiveMod;
@@ -541,7 +542,7 @@ public abstract class MixinEntityRenderer {
 
     @Overwrite
     private void orientCamera(float partialTicks) {
-        VanillaTweaks vanillaTweaks = FDPClient.moduleManager.getModule(VanillaTweaks.class);
+        HUD hud = FDPClient.moduleManager.getModule(HUD.class);
         Entity entity = this.mc.getRenderViewEntity();
         float f = entity.getEyeHeight();
         double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;
@@ -558,25 +559,25 @@ public abstract class MixinEntityRenderer {
                 GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
             }
         } else if (this.mc.gameSettings.thirdPersonView > 0) {
-            assert vanillaTweaks != null;
+            assert hud != null;
             float f2;
-            if (vanillaTweaks.getSmoothCamera().get() && vanillaTweaks.getState()) {
-                f2 = this.d3 = vanillaTweaks.getState() && vanillaTweaks.getCameraPositionValue().get() ? (float) Interpolator.LINEAR.interpolate((double) this.d3, (double) vanillaTweaks.getCameraPositionFovValue().get(), 5.0 / (double) Minecraft.getDebugFPS()) : (float) Interpolator.LINEAR.interpolate((double) this.d3, 4.0, 5.0 / (double) Minecraft.getDebugFPS());
+            if (hud.getSmoothCamera().get() && hud.getState()) {
+                f2 = this.d3 = hud.getState() && hud.getCameraPositionValue().get() ? (float) Interpolator.LINEAR.interpolate((double) this.d3, (double) hud.getCameraPositionFovValue().get(), 5.0 / (double) Minecraft.getDebugFPS()) : (float) Interpolator.LINEAR.interpolate((double) this.d3, 4.0, 5.0 / (double) Minecraft.getDebugFPS());
             }else{
-                f2 = this.d3 = vanillaTweaks.getState() && vanillaTweaks.getCameraPositionValue().get() ? vanillaTweaks.getCameraPositionFovValue().get(): (float) 4.0;
+                f2 = this.d3 = hud.getState() && hud.getCameraPositionValue().get() ? hud.getCameraPositionFovValue().get(): (float) 4.0;
             }
             if (Double.isNaN(this.d3)) {
                 this.d3 = 0.01f;
             }
-            this.d3 = (float) MathHelper.clamp_float((float) this.d3, 0.01F, (float) (vanillaTweaks.getState() && vanillaTweaks.getCameraPositionValue().get() ? (double) vanillaTweaks.getCameraPositionFovValue().get() : 4.0));
+            this.d3 = (float) MathHelper.clamp_float((float) this.d3, 0.01F, (float) (hud.getState() && hud.getCameraPositionValue().get() ? (double) hud.getCameraPositionFovValue().get() : 4.0));
             if (this.mc.gameSettings.debugCamEnable) {
                 GlStateManager.translate(0.0f, 0.0f, -this.d3);
             } else {
                 float f22;
                 float f1;
-                if (vanillaTweaks.getState() && vanillaTweaks.getCameraPositionValue().get()) {
-                    f1 = entity.rotationYaw + vanillaTweaks.getCameraPositionYawValue().get();
-                    f22 = entity.rotationPitch + vanillaTweaks.getCameraPositionPitchValue().get();
+                if (hud.getState() && hud.getCameraPositionValue().get()) {
+                    f1 = entity.rotationYaw + hud.getCameraPositionYawValue().get();
+                    f22 = entity.rotationPitch + hud.getCameraPositionPitchValue().get();
                 } else {
                     f1 = entity.rotationYaw;
                     f22 = entity.rotationPitch;
@@ -593,7 +594,7 @@ public abstract class MixinEntityRenderer {
                     float f3 = (i & 1) * 2 - 1;
                     float f4 = (i >> 1 & 1) * 2 - 1;
                     float f5 = (i >> 2 & 1) * 2 - 1;
-                    if (vanillaTweaks.getState() || (movingobjectposition = this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double) (f3 *= 0.1f), d1 + (double) (f4 *= 0.1f), d2 + (double) (f5 *= 0.1f)), new Vec3(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5))) == null || !((d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2))) < (double) this.d3))
+                    if (hud.getState() || (movingobjectposition = this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double) (f3 *= 0.1f), d1 + (double) (f4 *= 0.1f), d2 + (double) (f5 *= 0.1f)), new Vec3(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5))) == null || !((d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2))) < (double) this.d3))
                         continue;
                     this.d3 = (float) d7;
                 }

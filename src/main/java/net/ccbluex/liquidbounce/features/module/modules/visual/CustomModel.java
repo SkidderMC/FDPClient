@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 
-@ModuleInfo(name = "CustomModel", description = "Edit the player.", category = ModuleCategory.VISUAL)
+@ModuleInfo(name = "CustomModel", description = "Custom player.", category = ModuleCategory.VISUAL)
 public class CustomModel extends Module {
 
     public static BoolValue editPlayerSizeValue = new BoolValue("EditPlayerSize", false);
