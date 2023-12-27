@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.FogColorEvent;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
-import net.ccbluex.liquidbounce.features.module.modules.client.VanillaTweaks;
+import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.visual.PerspectiveMod;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;

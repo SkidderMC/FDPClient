@@ -27,6 +27,10 @@ import java.awt.Color
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HUD : Module() {
 
+    private val waterMark = BoolValue("Watermark", true)
+
+    private val crossHairValue = BoolValue("CrossHair", true)
+
     // UI EFFECT
     private val uiEffectValue = BoolValue("UIEffect", true)
     val buttonShadowValue = BoolValue("ShadowButton", true).displayable  { uiEffectValue.get() }
@@ -51,10 +55,6 @@ object HUD : Module() {
     val arraylistYAxisAnimSpeedValue = IntegerValue("ArraylistYAxisAnimSpeed", 10, 5, 20).displayable { arrayListValue.get() }
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder").displayable { !arraylistYAxisAnimTypeValue.equals("NONE") }
-
-    private val waterMark = BoolValue("Watermark", true)
-
-    private val crossHairValue = BoolValue("CrossHair", true)
 
     /**
      * Renders the HUD.

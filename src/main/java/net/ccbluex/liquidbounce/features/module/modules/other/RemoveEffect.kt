@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.combat
+package net.ccbluex.liquidbounce.features.module.modules.other
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.potion.Potion
 
-@ModuleInfo(name = "RemoveEffect", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "RemoveEffect", category = ModuleCategory.OTHER)
 object RemoveEffect : Module() {
 
     private val shouldRemoveSlowness = BoolValue("Slowness", false)

@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.client.VanillaTweaks;
+import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.visual.Chams;
 import net.ccbluex.liquidbounce.features.module.modules.visual.NameTags;
 import net.ccbluex.liquidbounce.features.module.modules.visual.TrueSight;

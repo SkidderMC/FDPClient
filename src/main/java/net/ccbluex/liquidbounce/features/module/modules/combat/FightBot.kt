@@ -330,32 +330,6 @@ object FightBot : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        /*GL11.glPushMatrix()
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDisable(GL11.GL_DEPTH_TEST)
-        mc.entityRenderer.disableLightmap()
-        val renderPosX = mc.renderManager.viewerPosX
-        val renderPosY = mc.renderManager.viewerPosY
-        val renderPosZ = mc.renderManager.viewerPosZ
-        for (point in path) {
-            var lastPosX = 114514.0
-            var lastPosY = 114514.0
-            var lastPosZ = 114514.0
-            GL11.glLineWidth(1f)
-            GL11.glEnable(GL11.GL_LINE_SMOOTH)
-            GL11.glBegin(GL11.GL_LINE_STRIP)
-            RenderUtils.glColor(Color(255,255,255).rgb)
-            GL11.glVertex3d(point.xCoord - renderPosX, point.yCoord - renderPosY, point.zCoord - renderPosZ)
-            GL11.glEnd()
-            GL11.glDisable(GL11.GL_LINE_SMOOTH)
-        }
-        GL11.glColor4d(1.0, 1.0, 1.0, 1.0)
-        GL11.glEnable(GL11.GL_DEPTH_TEST)
-        GL11.glDisable(GL11.GL_BLEND)
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glPopMatrix()*/
         synchronized(path) {
             if (path.isEmpty() || !pathRenderValue.get()) return
             val renderPosX = mc.renderManager.viewerPosX
@@ -375,8 +349,8 @@ object FightBot : Module() {
             var i = 0
             GL11.glLineWidth(2F)
             GL11.glBegin(GL11.GL_LINE_STRIP)
-            var last: Vec3? =null;
-            var last2: Vec3? =null;
+            var last: Vec3? =null
+            var last2: Vec3? =null
             for (vec in path) {
                 i += 100
                 RenderUtils.glColor(ColorManager.astolfoRainbow(50, 10-(i/2), i))
@@ -390,15 +364,6 @@ object FightBot : Module() {
                         var loops =
                             sqrt((vec.xCoord - last.xCoord) * (vec.xCoord - last.xCoord) + ((vec.zCoord - last.zCoord) * (vec.zCoord - last.zCoord)))
                         loops += sqrt((last2.xCoord - last.xCoord) * (last2.xCoord - last.xCoord) + ((last2.zCoord - last.zCoord) * (last2.zCoord - last.zCoord)))
-                        //FontLoaders.C18.drawString("绘制次数: "+loops,20,20,Color(255,255,255).rgb)
-                        /*var temp1 = (last.zCoord - y) / (last.xCoord - x);
-                        var temp2 = (last2.zCoord - y) / (last2.xCoord - x);
-                        var a = (temp1 - temp2) / (last.xCoord - last2.xCoord);
-                        var b = temp1 - a * (x + last.xCoord);
-                        var c = y - b * x - a * x * x;*/
-                        //for(t in 1..3){
-                        //    GL11.glVertex3d(((1 - t)*(1 - t)) * vec.xCoord + 2 * t * (1 - t) * last.xCoord + t * t * last2.xCoord, y, ((1 - t)*(1 - t)) * vec.zCoord + 2 * t * (1 - t) * last.zCoord + t * t * last2.zCoord)
-                        //}
 
                     }
                     if(last != null){
@@ -409,33 +374,6 @@ object FightBot : Module() {
                     e.printStackTrace()
                 }
                 GL11.glVertex3d(x, y, z)
-                //mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 2)
-                /*GL11.glLineWidth(2F)
-                GL11.glBegin(GL11.GL_LINE_STRIP)
-                GL11.glVertex3d(x - width, y, z - width)
-                GL11.glVertex3d(x - width, y, z - width)
-                GL11.glVertex3d(x - width, y + height, z - width)
-                GL11.glVertex3d(x + width, y + height, z - width)
-                GL11.glVertex3d(x + width, y, z - width)
-                GL11.glVertex3d(x - width, y, z - width)
-                GL11.glVertex3d(x - width, y, z + width)
-                GL11.glEnd()
-                GL11.glBegin(GL11.GL_LINE_STRIP)
-                GL11.glVertex3d(x + width, y, z + width)
-                GL11.glVertex3d(x + width, y + height, z + width)
-                GL11.glVertex3d(x - width, y + height, z + width)
-                GL11.glVertex3d(x - width, y, z + width)
-                GL11.glVertex3d(x + width, y, z + width)
-                GL11.glVertex3d(x + width, y, z - width)
-                GL11.glEnd()
-                GL11.glBegin(GL11.GL_LINE_STRIP)
-                GL11.glVertex3d(x + width, y + height, z + width)
-                GL11.glVertex3d(x + width, y + height, z - width)
-                GL11.glEnd()
-                GL11.glBegin(GL11.GL_LINE_STRIP)
-                GL11.glVertex3d(x - width, y + height, z + width)
-                GL11.glVertex3d(x - width, y + height, z - width)
-                GL11.glEnd()*/
             }
             GL11.glEnd()
             GL11.glDepthMask(true)

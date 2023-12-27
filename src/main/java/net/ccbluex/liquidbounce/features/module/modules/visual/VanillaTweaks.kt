@@ -3,14 +3,13 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.client
+package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.visual.XRay
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -137,7 +136,7 @@ object VanillaTweaks : Module() {
                         alpha2 -= 5
                     }
                 }
-                this.drawGradientSidewaysV(
+                drawGradientSidewaysV(
                     0.0,
                     0.0,
                     sr.scaledWidth.toDouble(),
@@ -145,7 +144,7 @@ object VanillaTweaks : Module() {
                     Color(color.red,color.green,color.blue,0).rgb,
                     Color(color.red,color.green,color.blue, alpha2).rgb
                 )
-                this.drawGradientSidewaysV(
+                drawGradientSidewaysV(
                     0.0,
                     (sr.scaledHeight - 25).toDouble(),
                     sr.scaledWidth.toDouble(),

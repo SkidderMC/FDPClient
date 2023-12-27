@@ -29,7 +29,6 @@ object AutoBot : Module() {
 
     private val autoSoupValue = BoolValue("AutoSoup", true)
     private val autoPotValue = BoolValue("AutoPot", true)
-    private val autoBowValue = BoolValue("AutoBow", true)
     private val antiFireBallValue = BoolValue("AntiFireBall", true)
 
     // Auto Soup
@@ -97,9 +96,6 @@ object AutoBot : Module() {
 
         return false
     }
-
-    // Auto Bow
-    private val autoBowWaitForBowAimValue = BoolValue("AutoBow-WaitForBowAimBot", true).displayable { autoBowValue.get() }
 
     // AntiFireball
     private val antiFireBallSwingValue = ListValue("AntiFireBall-Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { antiFireBallValue.get() }
@@ -286,16 +282,6 @@ object AutoBot : Module() {
                         }
                     }
                 }
-            }
-        }
-
-        if(autoBowValue.get()) {
-            val bowAimbot = FDPClient.moduleManager[BowAimbot::class.java]!!
-
-            if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item == Items.bow &&
-                mc.thePlayer.itemInUseDuration > 20 && (!autoBowWaitForBowAimValue.get() || !bowAimbot.state || bowAimbot.hasTarget())) {
-                mc.thePlayer.stopUsingItem()
-                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             }
         }
 
