@@ -27,11 +27,16 @@ object LegitReach : Module() {
     var fakePlayer: EntityOtherPlayerMP? = null
     private val aura = BoolValue("Aura", false)
     private val mode = ListValue("Mode", arrayOf("FakePlayer", "IntaveTest", "IncomingBlink"), "IncomingBlink")
-    private val pulseDelayValue = IntegerValue("MaxBacktrackLength", 200, 50, 1000)
+    private val pulseDelayValue = IntegerValue("BacktrackPulse", 200, 50, 1000)
+    private val maxDelayValue = IntegerValue("MaxBacktrackLength", 700, 50, 2000)
+    private val incomingBlink = BoolValue("IncomingBlink", true). displayable { mode.equals("IncomingBlink") }
     private val velocityValue = BoolValue("StopOnVelocity", true). displayable { mode.equals("IncomingBlink") }
+    private val outgoingBlink = BoolValue("OutgoingBlink", true).displayable { mode.equals("IncomingBlink") }
+    private val attackValue = BoolValue("ReleaseOnAttack", true). displayable { mode.equals("IncomingBlink") }
     private val intavetesthurttime = IntegerValue("Packets", 5, 0, 30).displayable { mode.equals("IntaveTest") }
     
     private val pulseTimer = MSTimer()
+    private val maxTimer = MSTimer()
     var currentTarget: EntityLivingBase? = null
     private var shown = false
     
@@ -41,15 +46,10 @@ object LegitReach : Module() {
     private var backtrack = false
 
 
-    override fun onEnable() {
-        if (mode.equals("IncomingBlink")) {
-            BlinkUtils.setBlinkState(all = true)
-        }
-    }
     override fun onDisable() {
         removeFakePlayer()
         clearPackets()
-        if (mode.equals("IncomingBlink")) {
+        if (mode.equals("IncomingBlink") && outgoingBlink.get()) {
             BlinkUtils.setBlinkState(off = true, release = true)
         }
     }
@@ -65,8 +65,7 @@ object LegitReach : Module() {
         while (!packets.isEmpty()) {
             PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
         }
-        BlinkUtils.releasePacket()
-        backtrack = false
+        if (outgoingBlink.get())  BlinkUtils.releasePacket()
     }
 
 
@@ -123,9 +122,14 @@ object LegitReach : Module() {
             currentTarget?.let {
                 if (mc.thePlayer.getDistanceToEntityBox(it) > 2f) {
                     if (comboCounter >= 2) {
+                        if (outgoingBlink.get()) BlinkUtils.setBlinkState(all = true)
                         backtrack = true
+                        maxTimer.reset()
                     }
                 }
+            }
+            if (attackValue.get() && outgoingBlink.get()) {
+                BlinkUtils.releasePacket()
             }
         }
     }
@@ -197,9 +201,13 @@ object LegitReach : Module() {
                 shown = true
             }
         } else {
-            if (pulseTimer.hasTimePassed(pulseDelayValue.get().toLong())) {
+            if (pulseTimer.hasTimePassed(pulseDelayValue.get().toLong()) && backtrack) {
                 pulseTimer.reset()
                 clearPackets()
+            }
+            if (maxTimer.hasTimePassed(maxDelayValue.get().toLong()) && backtrack) {
+                clearPackets()
+                backtrack = false
             }
         }
     }
@@ -209,6 +217,7 @@ object LegitReach : Module() {
         val packet = event.packet
         if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state) {
             clearPackets()
+            backtrack = false
             return
         }
 
@@ -220,8 +229,10 @@ object LegitReach : Module() {
         if (mode.equals("IncomingBlink") && backtrack) {
             if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
                 if (mc.thePlayer.ticksExisted < 20) return
-                event.cancelEvent()
-                packets.add(packet as Packet<INetHandlerPlayClient>)
+                if (incomingBlink.get()) {
+                    event.cancelEvent()
+                    packets.add(packet as Packet<INetHandlerPlayClient>)
+                }
             }
         }
     }
