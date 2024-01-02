@@ -37,7 +37,7 @@ object NoWeb : Module() {
             "none" -> mc.thePlayer.isInWeb = false
             "fastfall" -> {
                 //Bypass AAC(All) Vulcan Verus Matrix NCP3.17 HAWK Spartan
-                if (mc.thePlayer.onGround) mc.thePlayer.jump();
+                if (mc.thePlayer.onGround) mc.thePlayer.jump()
                 if (mc.thePlayer.motionY > 0f) {
                     mc.thePlayer.motionY -= mc.thePlayer.motionY * 2
                 }
