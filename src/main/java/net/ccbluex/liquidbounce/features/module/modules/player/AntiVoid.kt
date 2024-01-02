@@ -85,6 +85,7 @@ object AntiVoid : Module() {
                 if (!voidOnlyValue.get() || checkVoid()) {
                     canSpoof = mc.thePlayer.fallDistance > maxFallDistValue.get()
                 }
+                canSpoof = canSpoof || mc.thePlayer.onGround
             }
 
             "vulcan" -> {
