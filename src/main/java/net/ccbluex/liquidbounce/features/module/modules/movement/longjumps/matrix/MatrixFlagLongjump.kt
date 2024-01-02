@@ -12,39 +12,37 @@ import kotlin.math.sin
 
 class MatrixFlagLongjump : LongJumpMode("MatrixFlag") {
   
-    var isFlag = false
-    var doBoost = false
+    private var tryFlag = true
     override fun onEnable() {
-        isFlag = false
-        doBoost = false
-        sendLegacy()
+        tryFlag = false
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if (isFlag || !doBoost) return
-        var yaw = Math.toRadians(MovementUtils.movingYaw.toDouble())
-        mc.thePlayer.motionX = -sin(yaw) * 1.89
-        mc.thePlayer.motionZ = cos(yaw) * 1.89
-        mc.thePlayer.motionY = 0.42
+        if (mc.thePlayer.onGround) {
+            tryFlag = true
+        }
+        if (tryFlag) {
+            mc.thePlayer.motionY = 0.42
+            MovementUtils.strafe(1f)
+        } else {
+            mc.thePlayer.motionX *= 1.03
+            mc.thePlayer.motionZ *= 1.03
+        }
     }
     override fun onPacket(event: PacketEvent) {
         if(event.packet is S08PacketPlayerPosLook) {
-            isFlag = true
-            return
+            tryFlag = False
         }
     }
     override fun onAttemptJump() {
         MovementUtils.strafe()
-        doBoost = true
+        tryFlag = true
     }
     override fun onJump(event: JumpEvent) {
-        MovementUtils.strafe()
-        doBoost = true
+        tryFlag = true
         event.cancelEvent()
     }
     override fun onAttemptDisable() {
-        if (isFlag) {
-            longjump.state = false
-        }
+        longjump.state = false
     }
 }
