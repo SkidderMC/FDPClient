@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.*
 import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.value.*
@@ -45,6 +46,10 @@ object LegitReach : Module() {
     private var comboCounter = 0
     private var backtrack = false
 
+    private var offsetX = 0.0
+    private var offsetY = 0.0
+    private var offsetZ = 0.0
+
 
     override fun onDisable() {
         removeFakePlayer()
@@ -66,6 +71,9 @@ object LegitReach : Module() {
             PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
         }
         if (outgoingBlink.get())  BlinkUtils.releasePacket()
+        offsetX = 0.0
+        offsetY = 0.0
+        offsetZ = 0.0
     }
 
 
@@ -125,6 +133,9 @@ object LegitReach : Module() {
                         if (outgoingBlink.get()) BlinkUtils.setBlinkState(all = true)
                         backtrack = true
                         maxTimer.reset()
+                        offsetX = 0.0
+                        offsetY = 0.0
+                        offsetZ = 0.0
                     }
                 }
             }
@@ -225,6 +236,14 @@ object LegitReach : Module() {
             comboCounter = 0
             clearPackets()
         }
+
+        if (packet is S14PacketEntity) {
+            if (packet.entityId == (currentTarget ?: return).uniqueID) {
+                offsetX += packet.getPosX() / 32.0
+                offsetY += packet.getPosY() / 32.0
+                offsetZ += packet.getPosZ() / 32.0
+            }
+        }
         
         if (mode.equals("IncomingBlink") && backtrack) {
             if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
@@ -235,6 +254,21 @@ object LegitReach : Module() {
                 }
             }
         }
+    }
+
+    @EventTarget
+    fun onRender3D(event: Render3DEvent) {
+        if (currentTarget == null) return
+        val bb = currentTarget.entityBoundingBox.offset(
+            offsetX, offsetY, offsetZ
+        )
+        RenderUtils.AxisAlignedBB(
+            bb,
+            Color(255, 255, 255, 130),
+            false,
+            true,
+            4f
+        )
     }
 }
 
