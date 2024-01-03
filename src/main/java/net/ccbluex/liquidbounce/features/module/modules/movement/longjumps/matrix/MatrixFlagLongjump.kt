@@ -31,7 +31,7 @@ class MatrixFlagLongjump : LongJumpMode("MatrixFlag") {
     }
     override fun onPacket(event: PacketEvent) {
         if(event.packet is S08PacketPlayerPosLook) {
-            tryFlag = False
+            tryFlag = false
         }
     }
     override fun onAttemptJump() {
