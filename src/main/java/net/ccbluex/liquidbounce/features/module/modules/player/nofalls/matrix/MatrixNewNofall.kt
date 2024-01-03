@@ -28,6 +28,7 @@ class MatrixNewNofall : NoFallMode("MatrixNew") {
                     .isNotEmpty()) {
                 if(!event.packet.isOnGround && mc.thePlayer.motionY < -0.6) {
                     event.packet.onGround = true
+                    mc.thePlayer.onGround = true
                 }
             }
 

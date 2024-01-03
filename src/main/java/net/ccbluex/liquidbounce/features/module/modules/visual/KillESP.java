@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.ColorManager;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
+import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.AnimationUtils;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -369,12 +370,13 @@ public class KillESP extends Module {
 	}
 
 	private void renderBlockMode(Render3DEvent event) {
-		EntityLivingBase livingEntity = entity;
 
 		for (Entity entity : mc.theWorld.loadedEntityList) {
-			if (!(entity instanceof EntityLivingBase)) {
+			if (!(entity instanceof EntityLivingBase) || entity == mc.thePlayer ) {
 				continue;
 			}
+
+			EntityLivingBase livingEntity = (EntityLivingBase) entity;
 
 			if (BlockMode.get() || OtherBlockMode.get()) {
 				AxisAlignedBB originalBB = livingEntity.getEntityBoundingBox();
@@ -401,7 +403,7 @@ public class KillESP extends Module {
 
 	private void renderOtherBlockMode(Render3DEvent event) {
 		for (Entity entity : mc.theWorld.loadedEntityList) {
-			if (!(entity instanceof EntityLivingBase)) {
+			if (!(entity instanceof EntityLivingBase) || entity == mc.thePlayer ) {
 				continue;
 			}
 
