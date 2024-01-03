@@ -372,11 +372,11 @@ public class KillESP extends Module {
 	private void renderBlockMode(Render3DEvent event) {
 
 		for (Entity entity : mc.theWorld.loadedEntityList) {
-			if (!(entity instanceof EntityLivingBase) || !EntityUtils.isSelected(entity, true) ) {
+			if (!(entity instanceof EntityLivingBase) || entity == mc.thePlayer ) {
 				continue;
 			}
 
-			EntityLivingBase livingEntity = entity;
+			EntityLivingBase livingEntity = (EntityLivingBase) entity;
 
 			if (BlockMode.get() || OtherBlockMode.get()) {
 				AxisAlignedBB originalBB = livingEntity.getEntityBoundingBox();
@@ -403,7 +403,7 @@ public class KillESP extends Module {
 
 	private void renderOtherBlockMode(Render3DEvent event) {
 		for (Entity entity : mc.theWorld.loadedEntityList) {
-			if (!(entity instanceof EntityLivingBase) || !EntityUtils.isSelected(entity, true) ) {
+			if (!(entity instanceof EntityLivingBase) || entity == mc.thePlayer ) {
 				continue;
 			}
 
