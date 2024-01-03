@@ -29,7 +29,7 @@ object HUD : Module() {
 
     private val waterMark = BoolValue("Watermark", true)
 
-    private val crossHairValue = BoolValue("CrossHair", true)
+    val crossHairValue = BoolValue("CrossHair", true)
 
     // UI EFFECT
     private val uiEffectValue = BoolValue("UIEffect", true)
