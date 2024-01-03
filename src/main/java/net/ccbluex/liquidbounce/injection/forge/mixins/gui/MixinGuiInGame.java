@@ -119,6 +119,10 @@ public abstract class MixinGuiInGame extends MixinGui {
 
     @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
     private void injectCrosshair(CallbackInfoReturnable<Boolean> cir) {
-            cir.setReturnValue(false);
+        if (FDPClient.moduleManager.getModule(HUD.class).getState()) {
+            final HUD hud = FDPClient.moduleManager.getModule(HUD.class);
+            if (hud.getCrossHairValue().get()) 
+                cir.setReturnValue(false);
+        }
     }
  }
