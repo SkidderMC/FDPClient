@@ -44,11 +44,17 @@ public class Fonts {
     @FontDetails(fontName = "Roboto Medium", fontSize = 52)
     public static GameFontRenderer fontLarge;
 
-    @FontDetails(fontName = "SF", fontSize = 35)
-    public static GameFontRenderer fontSFUI35;
-
     @FontDetails(fontName = "SF", fontSize = 40)
-    public static GameFontRenderer fontSFUI40;
+    public static GameFontRenderer SF;
+
+    @FontDetails(fontName = "SFUI40", fontSize = 20)
+    public static GameFontRenderer SFUI40;
+
+    @FontDetails(fontName = "SFUI35", fontSize = 18)
+    public static GameFontRenderer SFUI35;
+
+    @FontDetails(fontName = "SFUI10", fontSize = 10)
+    public static GameFontRenderer SFUI10;
 
     @FontDetails(fontName = "Tahoma", fontSize = 35)
     public static GameFontRenderer fontTahoma;
@@ -83,6 +89,10 @@ public class Fonts {
 
         ClientUtils.INSTANCE.logInfo("Loading Fonts.");
 
+        SF = new GameFontRenderer(getFont("SF.ttf", 20));
+        SFUI40 = new GameFontRenderer(getFont("SF.ttf", 20));
+        SFUI35 = new GameFontRenderer(getFont("SF.ttf", 18));
+        SFUI10 = new GameFontRenderer(getFont("SF.ttf", 10));
         font35 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 35));
         font40 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 40));
         font72 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 72));

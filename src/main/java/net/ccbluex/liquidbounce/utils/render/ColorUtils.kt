@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import com.ibm.icu.text.NumberFormat
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.ColorManager
+import net.ccbluex.liquidbounce.features.module.modules.client.ColorManager
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.opengl.GL11
@@ -204,13 +204,13 @@ object ColorUtils {
 
     @JvmStatic
     fun hslRainbow(
-        index: Int,
-        lowest: Float = ColorManager.rainbowStartValue.get(),
-        bigest: Float = ColorManager.rainbowStopValue.get(),
-        indexOffset: Int = 300,
-        timeSplit: Int = ColorManager.rainbowSpeedValue.get(),
-        saturation: Float = ColorManager.rainbowSaturationValue.get(),
-        brightness: Float = ColorManager.rainbowBrightnessValue.get()
+            index: Int,
+            lowest: Float = ColorManager.rainbowStartValue.get(),
+            bigest: Float = ColorManager.rainbowStopValue.get(),
+            indexOffset: Int = 300,
+            timeSplit: Int = ColorManager.rainbowSpeedValue.get(),
+            saturation: Float = ColorManager.rainbowSaturationValue.get(),
+            brightness: Float = ColorManager.rainbowBrightnessValue.get()
     ): Color {
         return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
     }

@@ -68,7 +68,7 @@ public class Indicators extends Element {
         RenderUtils.drawNewRect(xX + 44, yX + 237 - 406, xX + 95, yX + 240.5 - 406, new Color(41, 41, 41, 255).getRGB());
         RenderUtils.drawNewRect(xX + 5, yX + 197 - 405, xX + 100, yX + 198 - 405, mainColor().getRGB());
 
-        Fonts.fontSFUI35.drawString("Indicators", xX + 37, yX + 202 - 406, -1);
+        Fonts.SFUI35.drawString("Indicators", xX + 37, yX + 202 - 406, -1);
 
         // armor
         final float armorValue = mc.thePlayer.getTotalArmorValue();
@@ -79,7 +79,7 @@ public class Indicators extends Element {
         this.armorBarWidth = AnimationHelper.animate(armorWidth, this.armorBarWidth, 0.0229999852180481);
         RenderUtils.drawRect(xX + 44, yX + 210 - 406, xX + 44 + this.armorBarWidth, yX + 213.5 - 406, mainColor().getRGB());
 
-        Fonts.fontSFUI35.drawString("Armor", xX + 8, yX + 211 - 406, -1);
+        Fonts.SFUI35.drawString("Armor", xX + 8, yX + 211 - 406, -1);
 
         // HurtTime
         double hurttimePercentage = MathHelper.clamp_double(mc.thePlayer.hurtTime, 0.0, 0.6);
@@ -87,7 +87,7 @@ public class Indicators extends Element {
         this.hurttimeBarWidth = AnimationHelper.animate(hurttimeWidth, this.hurttimeBarWidth, 0.0429999852180481);
         RenderUtils.drawRect(xX + 44, yX + 219 - 406, xX + 44 + this.hurttimeBarWidth, yX + 222.5 - 406, mainColor().getRGB());
 
-        Fonts.fontSFUI35.drawString("HurtTime", xX + 8, yX + 220 - 406, -1);
+        Fonts.SFUI35.drawString("HurtTime", xX + 8, yX + 220 - 406, -1);
 
         // HurtTime
         double bpsPercentage = MathHelper.clamp_double(currSpeed, 0.0, 1.0);
@@ -96,7 +96,7 @@ public class Indicators extends Element {
 
         RenderUtils.drawRect(xX + 44, yX + 228 - 406, xX + 44 + this.bpsBarWidth, yX + 231.5 - 406, mainColor().getRGB());
 
-        Fonts.fontSFUI35.drawString("BPS", xX + 8, yX + 229 - 406, -1);
+        Fonts.SFUI35.drawString("BPS", xX + 8, yX + 229 - 406, -1);
 
         // HurtTime
         final float health = mc.thePlayer.getHealth();
@@ -112,7 +112,7 @@ public class Indicators extends Element {
 
         RenderUtils.drawRect(xX + 44, yX + 237 - 406, xX + 44 + this.healthBarWidth, yX + 240.5 - 406, mainColor().getRGB());
 
-        Fonts.fontSFUI35.drawString("HP", xX + 8, yX + 238 - 406, -1);
+        Fonts.SFUI35.drawString("HP", xX + 8, yX + 238 - 406, -1);
         return new Border(xX + 5, yX + 198 - 405, xX + 100, yX + 246 - 408);
     }
 }

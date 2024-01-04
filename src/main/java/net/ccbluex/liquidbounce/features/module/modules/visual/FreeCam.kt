@@ -25,12 +25,12 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 object FreeCam : Module() {
 
     private val speedValue = FloatValue("Speed", 0.8f, 0.1f, 2f)
-    private val flyValue = BoolValue("Flight", true)
+    private val flyValue = BoolValue("Fly", true)
     private val noClipValue = BoolValue("NoClip", true)
     private val motionValue = BoolValue("RecordMotion", true)
     private val c03SpoofValue = BoolValue("C03Spoof", false)
 
-    private var fakePlayer: EntityOtherPlayerMP? = null
+    private lateinit var fakePlayer: EntityOtherPlayerMP
     private var motionX = 0.0
     private var motionY = 0.0
     private var motionZ = 0.0
@@ -53,10 +53,11 @@ object FreeCam : Module() {
 
         packetCount = 0
         fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
-        fakePlayer!!.clonePlayer(mc.thePlayer, true)
-        fakePlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
-        fakePlayer!!.copyLocationAndAnglesFrom(mc.thePlayer)
-        mc.theWorld.addEntityToWorld(-(Math.random() * 10000).toInt(), fakePlayer)
+        fakePlayer.clonePlayer(mc.thePlayer, true)
+        fakePlayer.rotationYawHead = mc.thePlayer.rotationYawHead
+        fakePlayer.absorptionAmount = mc.thePlayer.absorptionAmount
+        fakePlayer.copyLocationAndAnglesFrom(mc.thePlayer)
+        mc.theWorld.addEntityToWorld(-1000, fakePlayer)
         if (noClipValue.get()) {
             mc.thePlayer.noClip = true
         }
@@ -66,9 +67,9 @@ object FreeCam : Module() {
         if (mc.thePlayer == null || mc.theWorld == null) {
             return
         }
-        mc.thePlayer.setPositionAndRotation(fakePlayer!!.posX, fakePlayer!!.posY, fakePlayer!!.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
-        mc.theWorld.removeEntityFromWorld(fakePlayer!!.entityId)
-        fakePlayer = null
+
+        mc.thePlayer.setPositionAndRotation(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+        mc.theWorld.removeEntityFromWorld(fakePlayer.entityId)
         mc.thePlayer.motionX = motionX
         mc.thePlayer.motionY = motionY
         mc.thePlayer.motionZ = motionZ
@@ -76,15 +77,18 @@ object FreeCam : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if ((noClipValue.get())) {
+        if (noClipValue.get()) {
             mc.thePlayer.noClip = true
         }
+
         mc.thePlayer.fallDistance = 0f
+
         if (flyValue.get()) {
             val value = speedValue.get()
             mc.thePlayer.motionY = 0.0
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
+
             if (mc.gameSettings.keyBindJump.isKeyDown) {
                 mc.thePlayer.motionY += value.toDouble()
             }
@@ -92,6 +96,7 @@ object FreeCam : Module() {
             if (mc.gameSettings.keyBindSneak.isKeyDown) {
                 mc.thePlayer.motionY -= value.toDouble()
             }
+
             MovementUtils.strafe(value)
         }
     }
@@ -99,11 +104,12 @@ object FreeCam : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
+
         if (c03SpoofValue.get()) {
-            if (packet is C03PacketPlayer.C04PacketPlayerPosition || packet is C03PacketPlayer.C05PacketPlayerLook || packet is C03PacketPlayer.C06PacketPlayerPosLook) {
+            if (packet is C03PacketPlayer && (packet.rotating || packet.isMoving)) {
                 if (packetCount >= 20) {
                     packetCount = 0
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer!!.posX, fakePlayer!!.posY, fakePlayer!!.posZ, fakePlayer!!.rotationYaw, fakePlayer!!.rotationPitch, fakePlayer!!.onGround))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ, fakePlayer.rotationYaw, fakePlayer.rotationPitch, fakePlayer.onGround))
                 } else {
                     packetCount++
                     PacketUtils.sendPacketNoEvent(C03PacketPlayer(fakePlayer!!.onGround))
@@ -115,17 +121,20 @@ object FreeCam : Module() {
         }
 
         if (packet is S08PacketPlayerPosLook) {
-            fakePlayer!!.setPosition(packet.x, packet.y, packet.z)
-            // when teleport,motion reset
+            fakePlayer.setPosition(packet.x, packet.y, packet.z)
+            // when teleported, reset motion
+
             motionX = 0.0
             motionY = 0.0
             motionZ = 0.0
-            // apply the flag to bypass some anticheat
-            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer!!.posX, fakePlayer!!.posY, fakePlayer!!.posZ, fakePlayer!!.rotationYaw, fakePlayer!!.rotationPitch, fakePlayer!!.onGround))
+
+            // apply the flag to bypass some AntiCheat
+            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ, fakePlayer.rotationYaw, fakePlayer.rotationPitch, fakePlayer.onGround))
 
             event.cancelEvent()
         }
     }
+
     @EventTarget
     fun onWorldChange(event: WorldEvent) {
         // Disable when world changed

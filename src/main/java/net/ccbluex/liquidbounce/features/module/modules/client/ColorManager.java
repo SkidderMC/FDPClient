@@ -3,14 +3,15 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.hud.element.elements;
+package net.ccbluex.liquidbounce.features.module.modules.client;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
+import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
@@ -23,7 +24,7 @@ import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.Locale;
 
-@ElementInfo(name = "Cooldown")
+@ModuleInfo(name = "ColorManager", category = ModuleCategory.CLIENT)
 public class ColorManager extends Module {
     @EventTarget
     public void onRender2D(Render2DEvent render2DEvent) {
@@ -44,6 +45,9 @@ public class ColorManager extends Module {
     public static final FloatValue rainbowSaturationValue = new FloatValue("RainbowSaturation", 0.7f, 0f, 1f);
     public static final FloatValue rainbowBrightnessValue = new FloatValue("RainbowBrightness", 1f, 0f, 1f);
     public static final IntegerValue rainbowSpeedValue = new IntegerValue("RainbowSpeed", 1500, 500, 7000);
+
+    private float tempY = 65.0f;
+    private float tempHeight = 65.0f;
 
     public static IntegerValue r = new IntegerValue("Red-1", 255, 0, 255);
     public static IntegerValue g = new IntegerValue("Green-1", 0, 0, 255);
@@ -72,8 +76,6 @@ public class ColorManager extends Module {
             regenerateColors(oldValue != newValue);
         }
     };
-
-    public final BoolValue inventoryParticle = new BoolValue("InventoryParticle", false);
 
     public final ColorElement col1RedValue = new ColorElement(1, ColorElement.Material.RED);
     public final ColorElement col1GreenValue = new ColorElement(1, ColorElement.Material.GREEN);
@@ -110,7 +112,7 @@ public class ColorManager extends Module {
     public final ColorElement col9RedValue = new ColorElement(9, ColorElement.Material.RED, blendAmount);
     public final ColorElement col9GreenValue = new ColorElement(9, ColorElement.Material.GREEN, blendAmount);
     public final ColorElement col9BlueValue = new ColorElement(9, ColorElement.Material.BLUE, blendAmount);
-    
+
     public final ColorElement col10RedValue = new ColorElement(10, ColorElement.Material.RED, blendAmount);
     public final ColorElement col10GreenValue = new ColorElement(10, ColorElement.Material.GREEN, blendAmount);
     public final ColorElement col10BlueValue = new ColorElement(10, ColorElement.Material.BLUE, blendAmount);
@@ -119,7 +121,7 @@ public class ColorManager extends Module {
         final ColorManager colMixer = FDPClient.moduleManager.getModule(ColorManager.class);
         if (colMixer == null) return Color.white;
 
-        if (lastColors.length == 0 || lastFraction.length == 0) regenerateColors(true); // just to make sure it won't go white
+        if (lastColors.length <= 0 || lastFraction.length <= 0) regenerateColors(true); // just to make sure it won't go white
 
         return BlendUtils.blendColors(lastFraction, lastColors, (System.currentTimeMillis() + index) % (seconds * 1000) / (float) (seconds * 1000));
     }
@@ -128,15 +130,15 @@ public class ColorManager extends Module {
         final ColorManager colMixer = FDPClient.moduleManager.getModule(ColorManager.class);
 
         if (colMixer == null) return;
-            
+
         // color generation
-        if (forceValue || (lastColors.length == 0) || (lastColors.length != ((colMixer.blendAmount.get() * 2) - 1))) {
+        if (forceValue || lastColors.length <= 0 || lastColors.length != (colMixer.blendAmount.get() * 2) - 1) {
             Color[] generator = new Color[(colMixer.blendAmount.get() * 2) - 1];
 
             // reflection is cool
             for (int i = 1; i <= colMixer.blendAmount.get(); i++) {
                 Color result = Color.white;
-                try {                
+                try {
                     Field red = ColorManager.class.getField("col"+i+"RedValue");
                     Field green = ColorManager.class.getField("col"+i+"GreenValue");
                     Field blue = ColorManager.class.getField("col"+i+"BlueValue");
@@ -162,8 +164,9 @@ public class ColorManager extends Module {
             lastColors = generator;
         }
 
-        if (forceValue || lastFraction.length == 0 || lastFraction.length != (colMixer.blendAmount.get() * 2) - 1) {
-
+        // cache thingy
+        if (forceValue || lastFraction.length <= 0 || lastFraction.length != (colMixer.blendAmount.get() * 2) - 1) {
+            // color frac regenerate if necessary
             float[] colorFraction = new float[(colMixer.blendAmount.get() * 2) - 1];
 
             for (int i = 0; i <= (colMixer.blendAmount.get() * 2) - 2; i++)
@@ -176,49 +179,47 @@ public class ColorManager extends Module {
     }
 
     public Color getColor1() {
-        final int red = ColorManager.red.get(),
-                green = ColorManager.green.get(),
-                blue = ColorManager.blue.get();
+        final int red = this.red.get(),
+                green = this.green.get(),
+                blue = this.blue.get();
         return new Color(red, green, blue);
     }
 
     public Color getColor2() {
-        final int red = red2.get(),
-                green = green2.get(),
-                blue = blue2.get();
+        final int red = this.red2.get(),
+                green = this.green2.get(),
+                blue = this.blue2.get();
         return new Color(red, green, blue);
     }
 
+    public static Color[] getClientColors() {
+        Color firstColor;
+        Color secondColor;
 
-        public static Color[] getClientColors() {
-            Color firstColor;
-            Color secondColor;
-
-            switch (rainbowMode.get().toLowerCase(Locale.getDefault())) {
-                case "light rainbow":
-                    firstColor = ColorUtils.rainbowc(15, 1, .6f, 1F, 1F);
-                    secondColor = ColorUtils.rainbowc(15, 40, .6f, 1F, 1F);
-                    break;
-                case "rainbow":
-                    firstColor = ColorUtils.rainbowc(15, 1, 1F, 1F, 1F);
-                    secondColor = ColorUtils.rainbowc(15, 40, 1F, 1F, 1F);
-                    break;
-                case "double color":
-                    firstColor = ColorUtils.interpolateColorsBackAndForth(15, 0, Color.PINK, Color.BLUE, hueInterpolation.get());
-                    secondColor = ColorUtils.interpolateColorsBackAndForth(15, 90, Color.PINK, Color.BLUE, hueInterpolation.get());
-                    break;
-                case "static":
-                    firstColor = new Color(ClickGUIModule.INSTANCE.getColorRedValue().get(), ClickGUIModule.INSTANCE.getColorGreenValue().get(), ClickGUIModule.INSTANCE.getColorBlueValue().get());
-                    secondColor = firstColor;
-                    break;
-                default:
-                    firstColor = new Color(-1);
-                    secondColor = new Color(-1);
-                    break;
-            }
-
-            return new Color[]{firstColor, secondColor};
+        switch (rainbowMode.get().toLowerCase(Locale.getDefault())) {
+            case "light rainbow":
+                firstColor = ColorUtils.rainbowc(15, 1, .6f, 1F, 1F);
+                secondColor = ColorUtils.rainbowc(15, 40, .6f, 1F, 1F);
+                break;
+            case "rainbow":
+                firstColor = ColorUtils.rainbowc(15, 1, 1F, 1F, 1F);
+                secondColor = ColorUtils.rainbowc(15, 40, 1F, 1F, 1F);
+                break;
+            case "double color":
+                firstColor = ColorUtils.interpolateColorsBackAndForth(15, 0, Color.PINK, Color.BLUE, hueInterpolation.get());
+                secondColor = ColorUtils.interpolateColorsBackAndForth(15, 90, Color.PINK, Color.BLUE, hueInterpolation.get());
+                break;
+            case "static":
+                firstColor = new Color(ClickGUIModule.INSTANCE.getColorRedValue().get(), ClickGUIModule.INSTANCE.getColorGreenValue().get(), ClickGUIModule.INSTANCE.getColorBlueValue().get());
+                secondColor = firstColor;
+                break;
+            default:
+                firstColor = new Color(-1);
+                secondColor = new Color(-1);
+                break;
         }
 
+        return new Color[]{firstColor, secondColor};
+    }
 
 }

@@ -21,6 +21,7 @@ import java.nio.file.Files
 import java.util.*
 import kotlin.concurrent.schedule
 
+@Suppress("DEPRECATION")
 class ConfigManager {
     private val configSetFile = File(FDPClient.fileManager.dir, "config-settings.json")
 

@@ -6,15 +6,12 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.KeyEvent
-import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.event.ScreenEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.ColorManager
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.width
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -29,7 +26,7 @@ object HUD : Module() {
 
     private val waterMark = BoolValue("Watermark", true)
 
-    val crossHairValue = BoolValue("CrossHair", true)
+    val crossHairValue = BoolValue("CrossHair", false)
 
     // UI EFFECT
     private val uiEffectValue = BoolValue("UIEffect", true)
@@ -56,6 +53,10 @@ object HUD : Module() {
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder").displayable { !arraylistYAxisAnimTypeValue.equals("NONE") }
 
+    val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
+
+    private var lastFontEpsilon = 0f
+
     /**
      * Renders the HUD.
      */
@@ -66,33 +67,33 @@ object HUD : Module() {
         if (waterMark.get()) renderWatermark()
 
         if (crossHairValue.get()) {
-            val lrs1 = RenderUtils.width()
+            val lrs1 = width()
             val lrs2 = RenderUtils.height()
-
             if (mc.thePlayer.isSprinting) {
-                drawCrosshair(lrs1 / 2 - 3 - 3, lrs2 / 2, lrs1 / 2 + 6 - 8, lrs2 / 2 + 2 - 1)
-                drawCrosshair(lrs1 / 2 + 6 - 3, lrs2 / 2, lrs1 / 2 + 10 - 3, lrs2 / 2 + 1)
-                drawCrosshair(lrs1 / 2, lrs2 / 2 - 6, lrs1 / 2 + 1, lrs2 / 2 - 2)
-                drawCrosshair(lrs1 / 2, lrs2 / 2 + 6 - 3, lrs1 / 2 + 1, lrs2 / 2 + 7)
+                Gui.drawRect(lrs1 / 2 - 3 - 3, lrs2 / 2, lrs1 / 2 + 6 - 8, lrs2 / 2 + 2 - 1, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2 - 6).toFloat(), (lrs2 / 2).toFloat(), (lrs1 / 2 - 2).toFloat(), (lrs2 / 2 + 1).toFloat(), 0.7582394f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
+                Gui.drawRect(lrs1 / 2 + 6 - 3, lrs2 / 2, lrs1 / 2 + 10 - 3, lrs2 / 2 + 1, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2 + 3).toFloat(), (lrs2 / 2).toFloat(), (lrs1 / 2 + 7).toFloat(), (lrs2 / 2 + 1).toFloat(), 0.7635231f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
+                Gui.drawRect(lrs1 / 2, lrs2 / 2 - 6, lrs1 / 2 + 1, lrs2 / 2 - 2, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2 + 1 - 1).toFloat(), (lrs2 / 2 - 6).toFloat(), (lrs1 / 2 + 1).toFloat(), (lrs2 / 2 - 2).toFloat(), 0.7572856f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
+                Gui.drawRect(lrs1 / 2, lrs2 / 2 + 6 - 3, lrs1 / 2 + 1, lrs2 / 2 + 7, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2).toFloat(), (lrs2 / 2 + 6 - 3).toFloat(), (lrs1 / 2 + 1).toFloat(), (lrs2 / 2 + 10 - 3).toFloat(), 0.75438696f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
+                Gui.drawRect(lrs1 / 2, lrs2 / 2, lrs1 / 2 + 1, lrs2 / 2 + 1, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2).toFloat(), (lrs2 / 2).toFloat(), (lrs1 / 2 + 1).toFloat(), (lrs2 / 2 + 1).toFloat(), 0.75438696f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
             } else {
-                drawCrosshair(lrs1 / 2 + 10 - 19, lrs2 / 2, lrs1 / 2 + 5 - 10, lrs2 / 2 + 1)
-                drawCrosshair(lrs1 / 2, lrs2 / 2 - 9, lrs1 / 2 + 1, lrs2 / 2 - 5)
-                drawCrosshair(lrs1 / 2, lrs2 / 2 + 2 + 4, lrs1 / 2 + 1, lrs2 / 2 + 10)
+                Gui.drawRect(lrs1 / 2 + 10 - 19, lrs2 / 2, lrs1 / 2 + 5 - 10, lrs2 / 2 + 1, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2 - 9).toFloat(), (lrs2 / 2).toFloat(), (lrs1 / 2 - 5).toFloat(), (lrs2 / 2 + 1).toFloat(), 0.7582394f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
+                Gui.drawRect(lrs1 / 2 + 6, lrs2 / 2, lrs1 / 2 + 10, lrs2 / 2 + 1, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2 + 6).toFloat(), (lrs2 / 2).toFloat(), (lrs1 / 2 + 5 + 5).toFloat(), (lrs2 / 2 + 1).toFloat(), 0.7635231f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
+                Gui.drawRect(lrs1 / 2, lrs2 / 2 - 9, lrs1 / 2 + 1, lrs2 / 2 - 5, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2).toFloat(), (lrs2 / 2 - 9).toFloat(), (lrs1 / 2 + 1).toFloat(), (lrs2 / 2 - 5).toFloat(), 0.7572856f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
+                Gui.drawRect(lrs1 / 2, lrs2 / 2 + 2 + 4, lrs1 / 2 + 1, lrs2 / 2 + 10, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2).toFloat(), (lrs2 / 2 + 3 + 3).toFloat(), (lrs1 / 2 + 1).toFloat(), (lrs2 / 2 + 3 + 7).toFloat(), 0.75438696f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
+                Gui.drawRect(lrs1 / 2, lrs2 / 2, lrs1 / 2 + 1, lrs2 / 2 + 1, Color(255, 255, 255, 255).rgb)
+                RenderUtils.drawBorderedRect((lrs1 / 2).toFloat(), (lrs2 / 2).toFloat(), (lrs1 / 2 + 1).toFloat(), (lrs2 / 2 + 1).toFloat(), 0.75438696f, Color(0, 0, 0, 255).rgb, Color(255, 190, 255, 0).rgb)
             }
-            drawCrosshair(lrs1 / 2, lrs2 / 2, lrs1 / 2 + 1, lrs2 / 2 + 1)
         }
 
-    }
-
-    private fun drawCrosshair(x1: Int, y1: Int, x2: Int, y2: Int) {
-        val borderColor = Color(0, 0, 0, 255).rgb
-        val backgroundColor = Color(255, 255, 255, 255).rgb
-        val borderWidth = 1
-        val borderAlpha = 0.7582394f
-
-        Gui.drawRect(x1, y1, x2, y2, backgroundColor)
-        RenderUtils.drawBorderedRect((x1 - borderWidth).toDouble(), y1.toDouble(), x1.toDouble(), y2.toDouble(), borderAlpha.toDouble(), borderColor, Color(255, 190, 255, 0).rgb)
-        RenderUtils.drawBorderedRect(x2.toDouble(), y1.toDouble(), (x2 + borderWidth).toDouble(), y2.toDouble(), borderAlpha.toDouble(), borderColor, Color(255, 190, 255, 0).rgb)
     }
 
     /**
@@ -114,6 +115,20 @@ object HUD : Module() {
             3.0f,
             colors[1].rgb
         )
+    }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        FDPClient.hud.update()
+        if (mc.currentScreen == null && lastFontEpsilon != fontEpsilonValue.get()) {
+            lastFontEpsilon = fontEpsilonValue.get()
+            alert("You need to reload FDPClient to apply changes!")
+        }
+    }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent) {
+        lastFontEpsilon = fontEpsilonValue.get()
     }
 
     @EventTarget

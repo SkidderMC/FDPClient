@@ -28,6 +28,7 @@ object EaseUtils {
         return 1 - (1 - x) * (1 - x)
     }
 
+    @JvmStatic
     fun easeInOutQuad(x: Double): Double {
         return if (x < 0.5) { 2 * x * x } else { 1 - (-2 * x + 2).pow(2) / 2 }
     }
