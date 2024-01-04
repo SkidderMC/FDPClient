@@ -1221,7 +1221,7 @@ class Scaffold : Module() {
                     Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
                 "static2" -> {
-                    if ((MovementUtils.direction / 45).roundToInt() % 2 == 0) {
+                    if ((MovementUtils.direction / 45).roundToInt() % 2 == 1) {
                         Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 180), placeRotation.rotation.pitch)
                     } else {
                         Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
