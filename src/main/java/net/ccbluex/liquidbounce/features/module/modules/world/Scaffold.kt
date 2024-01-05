@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
-import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
+import net.ccbluex.liquidbounce.features.module.modules.movement.Strafe
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.*
@@ -614,7 +614,7 @@ class Scaffold : Module() {
             }
         }
         
-        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(!rotationsValue.equals("None"), moveFixValue.get())
+        FDPClient.moduleManager[Strafe::class.java]!!.applyForceStrafe(!rotationsValue.equals("None"), moveFixValue.get())
     }
 
     private fun fakeJump() {

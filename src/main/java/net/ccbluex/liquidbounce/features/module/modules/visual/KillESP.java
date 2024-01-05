@@ -59,6 +59,13 @@ public class KillESP extends Module {
     private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
     private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
     private final IntegerValue colorAlphaValue = new IntegerValue("Alpha", 255, 0, 255);
+    private final BoolValue circleValue = new BoolValue("Circle", false);
+    private final IntegerValue circleRedValue = new IntegerValue("CircleRed", 255, 0, 255);
+    private final IntegerValue circleGreenValue = new IntegerValue("CircleGreen", 255, 0, 255);
+    private final IntegerValue circleBlueValue = new IntegerValue("CircleBlue", 255, 0, 255);
+    private final IntegerValue circleAlphaValue = new IntegerValue("CircleAlpha", 255, 0, 255);
+    private final FloatValue circleThicknessValue = new FloatValue("CircleThickness", 2F, 1F, 5F);
+
     private final FloatValue speed = new FloatValue("Zavz-Speed", 0.1f, 0.0f, 10.0f);
     private final BoolValue dual = new BoolValue("Zavz-Dual", true);
     private final FloatValue jelloAlphaValue = new FloatValue("JelloEndAlphaPercent", 0.4F, 0F, 1F);
@@ -143,6 +150,57 @@ public class KillESP extends Module {
         if (SigmaMode.get()) {
             renderSigmaMode(event);
         }
+
+        if (circleValue.get()) {
+            renderCircleMode(event);
+        }
+
+    }
+
+    private void renderCircleMode(Render3DEvent event) {
+        GL11.glPushMatrix();
+
+        // Calculate interpolated player position for smooth rendering
+        double interpolatedX = mc.thePlayer.lastTickPosX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosX;
+        double interpolatedY = mc.thePlayer.lastTickPosY + (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosY;
+        double interpolatedZ = mc.thePlayer.lastTickPosZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosZ;
+        GL11.glTranslated(interpolatedX, interpolatedY, interpolatedZ);
+
+        // Set up OpenGL rendering states
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        GL11.glLineWidth(circleThicknessValue.get());
+        GL11.glColor4f(
+                circleRedValue.get() / 255.0F,
+                circleGreenValue.get() / 255.0F,
+                circleBlueValue.get() / 255.0F,
+                circleAlphaValue.get() / 255.0F
+        );
+
+        GL11.glRotatef(90F, 1F, 0F, 0F);
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+
+        for (int i = 0; i <= 360; i += 5) { // Adjust step for circle accuracy
+            double angleRadians = Math.toRadians(i);
+            GL11.glVertex2f(
+                    (float) (Math.cos(angleRadians) * aura.getRangeValue().get()),
+                    (float) (Math.sin(angleRadians) * aura.getRangeValue().get())
+            );
+        }
+
+        GL11.glEnd();
+
+        // Restore OpenGL states
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+
+        GL11.glPopMatrix();
     }
 
     private void renderSigmaMode(Render3DEvent event) {

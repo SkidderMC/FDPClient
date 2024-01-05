@@ -180,6 +180,13 @@ class Render2DEvent(val partialTicks: Float, val scaledResolution: ScaledResolut
 class Render3DEvent(val partialTicks: Float) : Event()
 
 /**
+ * Called when player jumps
+ *
+ * @param motion jump motion (y motion)
+ */
+class JumpEventFix(var motion: Float, var yaw: Float) : CancellableEvent()
+
+/**
  * Called when the screen changes
  */
 class ScreenEvent(val guiScreen: GuiScreen?) : Event()

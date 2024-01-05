@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
-import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Strafe;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
@@ -97,7 +97,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
         this.motionY = jumpEvent.getMotion();
         final Sprint sprint = FDPClient.moduleManager.getModule(Sprint.class);
-        final StrafeFix strafeFix = FDPClient.moduleManager.getModule(StrafeFix.class);
+        final Strafe strafeFix = FDPClient.moduleManager.getModule(Strafe.class);
 
         if (this.isSprinting()) {
             float fixedYaw = this.rotationYaw;

@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.FDPClient
@@ -29,7 +34,6 @@ object AutoBot : Module() {
 
     private val autoSoupValue = BoolValue("AutoSoup", true)
     private val autoPotValue = BoolValue("AutoPot", true)
-    private val antiFireBallValue = BoolValue("AntiFireBall", true)
 
     // Auto Soup
     private val autoSoupHealthValue = FloatValue("Health", 15f, 0f, 20f).displayable { autoSoupValue.get() }
@@ -96,11 +100,6 @@ object AutoBot : Module() {
 
         return false
     }
-
-    // AntiFireball
-    private val antiFireBallSwingValue = ListValue("AntiFireBall-Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { antiFireBallValue.get() }
-    private val antiFireBallrotationValue = BoolValue("AntiFireBall-Rotation", true).displayable { antiFireBallValue.get() }
-    private val antiFireBallTimer = MSTimer()
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -281,26 +280,6 @@ object AutoBot : Module() {
                             break
                         }
                     }
-                }
-            }
-        }
-
-        if(antiFireBallValue.get()) {
-            for (entity in mc.theWorld.loadedEntityList) {
-                if (entity is EntityFireball && mc.thePlayer.getDistanceToEntity(entity) < 5.5 && antiFireBallTimer.hasTimePassed(300)) {
-                    if (antiFireBallrotationValue.get()) {
-                        RotationUtils.setTargetRotation(RotationUtils.getRotationsNonLivingEntity(entity))
-                    }
-
-                    mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
-
-                    when(antiFireBallSwingValue.get().lowercase()) {
-                        "normal" -> mc.thePlayer.swingItem()
-
-                        "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
-                    }
-                    antiFireBallTimer.reset()
-                    break
                 }
             }
         }

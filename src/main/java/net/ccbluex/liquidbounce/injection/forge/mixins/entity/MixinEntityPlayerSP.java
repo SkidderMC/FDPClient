@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight;
 import net.ccbluex.liquidbounce.features.module.modules.movement.InvMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
-import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Strafe;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGui;
@@ -218,7 +218,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
     public void onUpdateWalkingPlayer(CallbackInfo ci) {
         try {
-            final StrafeFix strafeFix = FDPClient.moduleManager.getModule(StrafeFix.class);
+            final Strafe strafeFix = FDPClient.moduleManager.getModule(Strafe.class);
             strafeFix.updateOverwrite();
             
             FDPClient.eventManager.callEvent(new MotionEvent(EventState.PRE));
@@ -358,7 +358,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         final KillAura killAura = FDPClient.moduleManager.getModule(KillAura.class);
         final InvMove inventoryMove = FDPClient.moduleManager.getModule(InvMove.class);
         final Scaffold scaffold = FDPClient.moduleManager.getModule(Scaffold.class);
-        final StrafeFix strafeFix = FDPClient.moduleManager.getModule(StrafeFix.class);
+        final Strafe strafeFix = FDPClient.moduleManager.getModule(Strafe.class);
         
         if (this.sprintingTicksLeft > 0) {
             --this.sprintingTicksLeft;

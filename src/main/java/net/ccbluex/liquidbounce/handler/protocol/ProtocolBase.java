@@ -31,7 +31,7 @@ public class ProtocolBase {
 
         final VersionEnum version = VersionEnum.fromProtocolId(platform.getGameVersion());
         if (version == VersionEnum.UNKNOWN) {
-            throw new IllegalArgumentException("Unknown version " + platform.getGameVersion());
+            throw new IllegalArgumentException("Unknown Version " + platform.getGameVersion());
         }
 
         manager = new ProtocolBase(platform);

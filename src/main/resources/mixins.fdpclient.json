@@ -69,7 +69,6 @@
     "network.MixinNetworkManager_5",
     "network.MixinServerData",
     "network.MixinNetworkPlayerInfo",
-    "network.MixinServerPinger",
     "performance.MixinBlock",
     "performance.MixinChunk",
     "performance.MixinWorld",

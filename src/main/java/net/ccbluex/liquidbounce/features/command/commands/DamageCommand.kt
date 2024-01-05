@@ -24,7 +24,6 @@ class DamageCommand : Command("damage", arrayOf("hurt")) {
             }
         }
 
-        // Latest NoCheatPlus damage exploit
         val x = mc.thePlayer.posX
         val y = mc.thePlayer.posY
         val z = mc.thePlayer.posZ
@@ -35,7 +34,6 @@ class DamageCommand : Command("damage", arrayOf("hurt")) {
         }
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, true))
 
-        // Output message
-        chat("You were damaged.")
+        chat("You were damaged!")
     }
 }

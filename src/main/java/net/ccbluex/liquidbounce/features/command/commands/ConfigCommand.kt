@@ -18,7 +18,7 @@ import java.nio.file.Files
  * such as loading configuration from an external source or an API
  * and listing available configurations.
  */
-class ConfigCommand : Command("config", arrayOf("cfg")) {
+class ConfigCommand : Command("config", arrayOf("cfg", "c")) {
     override fun execute(args: Array<String>) {
         if (args.size > 1) {
             when (args[1].lowercase()) {
