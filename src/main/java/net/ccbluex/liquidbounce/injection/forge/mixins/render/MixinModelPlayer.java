@@ -29,77 +29,219 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
+import java.util.Objects;
 
 @Mixin(ModelPlayer.class)
 public class MixinModelPlayer extends ModelBiped {
 
+    /**
+     * The Left leg.
+     */
     public ModelRenderer left_leg;
+    /**
+     * The Right leg.
+     */
     public ModelRenderer right_leg;
+    /**
+     * The Body.
+     */
     public ModelRenderer body;
+    /**
+     * The Eye.
+     */
     public ModelRenderer eye;
+    /**
+     * The Rabbit bone.
+     */
     public ModelRenderer rabbitBone;
+    /**
+     * The Rabbit rleg.
+     */
     public ModelRenderer rabbitRleg;
+    /**
+     * The Rabbit larm.
+     */
     public ModelRenderer rabbitLarm;
+    /**
+     * The Rabbit rarm.
+     */
     public ModelRenderer rabbitRarm;
+    /**
+     * The Rabbit lleg.
+     */
     public ModelRenderer rabbitLleg;
+    /**
+     * The Rabbit head.
+     */
     public ModelRenderer rabbitHead;
+    /**
+     * The Fredhead.
+     */
     public ModelRenderer fredhead;
+    /**
+     * The Arm left.
+     */
     public ModelRenderer armLeft;
+    /**
+     * The Leg right.
+     */
     public ModelRenderer legRight;
+    /**
+     * The Leg left.
+     */
     public ModelRenderer legLeft;
+    /**
+     * The Arm right.
+     */
     public ModelRenderer armRight;
+    /**
+     * The Fredbody.
+     */
     public ModelRenderer fredbody;
+    /**
+     * The Arm leftpad 2.
+     */
     public ModelRenderer armLeftpad2;
+    /**
+     * The Torso.
+     */
     public ModelRenderer torso;
+    /**
+     * The Ear rightpad 1.
+     */
     public ModelRenderer earRightpad_1;
+    /**
+     * The Arm rightpad 2.
+     */
     public ModelRenderer armRightpad2;
+    /**
+     * The Leg leftpad.
+     */
     public ModelRenderer legLeftpad;
+    /**
+     * The Hat.
+     */
     public ModelRenderer hat;
+    /**
+     * The Leg leftpad 2.
+     */
     public ModelRenderer legLeftpad2;
+    /**
+     * The Arm right 2.
+     */
     public ModelRenderer armRight2;
+    /**
+     * The Leg right 2.
+     */
     public ModelRenderer legRight2;
+    /**
+     * The Ear rightpad.
+     */
     public ModelRenderer earRightpad;
+    /**
+     * The Arm left 2.
+     */
     public ModelRenderer armLeft2;
+    /**
+     * The Frednose.
+     */
     public ModelRenderer frednose;
+    /**
+     * The Ear left.
+     */
     public ModelRenderer earLeft;
+    /**
+     * The Foot right.
+     */
     public ModelRenderer footRight;
+    /**
+     * The Leg rightpad 2.
+     */
     public ModelRenderer legRightpad2;
+    /**
+     * The Leg rightpad.
+     */
     public ModelRenderer legRightpad;
+    /**
+     * The Arm leftpad.
+     */
     public ModelRenderer armLeftpad;
+    /**
+     * The Leg left 2.
+     */
     public ModelRenderer legLeft2;
+    /**
+     * The Foot left.
+     */
     public ModelRenderer footLeft;
+    /**
+     * The Hat 2.
+     */
     public ModelRenderer hat2;
+    /**
+     * The Arm rightpad.
+     */
     public ModelRenderer armRightpad;
+    /**
+     * The Ear right.
+     */
     public ModelRenderer earRight;
+    /**
+     * The Crotch.
+     */
     public ModelRenderer crotch;
+    /**
+     * The Jaw.
+     */
     public ModelRenderer jaw;
+    /**
+     * The Hand right.
+     */
     public ModelRenderer handRight;
+    /**
+     * The Hand left.
+     */
     public ModelRenderer handLeft;
     @Shadow
     private boolean smallArms;
+    /**
+     * The Biped left armwear.
+     */
     @Shadow
     public ModelRenderer bipedLeftArmwear;
 
+    /**
+     * The Biped right armwear.
+     */
     @Shadow
     public ModelRenderer bipedRightArmwear;
 
+    /**
+     * The Biped left legwear.
+     */
     @Shadow
     public ModelRenderer bipedLeftLegwear;
 
+    /**
+     * The Biped right legwear.
+     */
     @Shadow
     public ModelRenderer bipedRightLegwear;
 
+    /**
+     * The Biped body wear.
+     */
     @Shadow
     public ModelRenderer bipedBodyWear;
 
     @ModifyConstant(method = "<init>", constant = @Constant(floatValue = 2.5F))
     private float fixAlexArmHeight(float original) {
-        return 2.0F;
+        return 2F;
     }
 
     /**
-     * @author asbyth
-     * @reason Resolve item positions being incorrect on Alex models (MC-72397)
+     * @author opZywl
+     * @reason PostRender
      */
     @Overwrite
     public void postRenderArm(float scale) {
@@ -112,24 +254,44 @@ public class MixinModelPlayer extends ModelBiped {
         }
     }
 
+    /**
+     * Render hook.
+     *
+     * @param entityIn        the entity in
+     * @param limbSwing       the limb swing
+     * @param limbSwingAmount the limb swing amount
+     * @param ageInTicks      the age in ticks
+     * @param netHeadYaw      the net head yaw
+     * @param headPitch       the head pitch
+     * @param scale           the scale
+     * @param ci              the ci
+     */
     @Inject(method = {"render"}, at = {@At("HEAD")}, cancellable = true)
     public void renderHook(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
-        CustomModel playerEdit = FDPClient.moduleManager.getModule(CustomModel.class);
-        if (CustomModel.customModel.get()) {
-            FDPClient.moduleManager.getModule(CustomModel.class);
-            if ((CustomModel.onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || CustomModel.onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(CustomModel.class).getState()) {
-                ci.cancel();
-                renderCustom(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-            }
+        CustomModel customModel = Objects.requireNonNull(FDPClient.moduleManager.getModule(CustomModel.class));
+        if (customModel.getState()) {
+            ci.cancel();
+            renderCustom(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         }
     }
 
+    /**
+     * Sets rotation angle.
+     *
+     * @param modelRenderer the model renderer
+     * @param x             the x
+     * @param y             the y
+     * @param z             the z
+     */
     public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;
     }
 
+    /**
+     * Generatemodel.
+     */
     public void generatemodel() {
         body = new ModelRenderer(this);
         body.setRotationPoint(0.0F, 0.0F, 0.0F);
@@ -346,14 +508,24 @@ public class MixinModelPlayer extends ModelBiped {
         this.legLeft2.addChild(this.footLeft);
         this.fredhead.addChild(this.earLeft);
     }
-
+    /**
+     * Render custom.
+     *
+     * @param entityIn        the entity in
+     * @param limbSwing       the limb swing
+     * @param limbSwingAmount the limb swing amount
+     * @param ageInTicks      the age in ticks
+     * @param netHeadYaw      the net head yaw
+     * @param headPitch       the head pitch
+     * @param scale           the scale
+     */
     public void renderCustom(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         if (left_leg == null) {
             generatemodel();
         }
 
 
-        CustomModel playerEdit = FDPClient.moduleManager.getModule(CustomModel.class);
+        CustomModel customModel = FDPClient.moduleManager.getModule(CustomModel.class);
         GlStateManager.pushMatrix();
         if (CustomModel.customModel.get() && (CustomModel.onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || CustomModel.onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(CustomModel.class).getState()) {
             if (CustomModel.mode.get().contains("Rabbit")) {
@@ -377,7 +549,7 @@ public class MixinModelPlayer extends ModelBiped {
                 this.rabbitLleg.rotateAngleZ = this.bipedLeftLeg.rotateAngleZ;
                 this.rabbitBone.render(scale);
                 GlStateManager.popMatrix();
-            } else if (CustomModel.mode.get().contains("Freddy")) {
+            } else if (customModel.getState() && CustomModel.mode.get().contains("Freddy")) {
                 this.fredhead.rotateAngleX = this.bipedHead.rotateAngleX;
                 this.fredhead.rotateAngleY = this.bipedHead.rotateAngleY;
                 this.fredhead.rotateAngleZ = this.bipedHead.rotateAngleZ;

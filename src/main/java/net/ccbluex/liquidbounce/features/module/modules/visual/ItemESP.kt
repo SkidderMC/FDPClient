@@ -32,7 +32,7 @@ import kotlin.math.roundToInt
 object ItemESP : Module() {
 
     private val entityConvertedPointsMap: MutableMap<EntityItem, DoubleArray> = HashMap()
-    private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Exhibition", "LightBox", "ShaderOutline", "ShaderGlow"), "Box")
+    private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Exhibition", "LightBox", "ShaderOutline", "ShaderGlow"), "Exhibition")
     private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
     private val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !colorRainbowValue.get() }
     private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() }
@@ -58,10 +58,9 @@ object ItemESP : Module() {
         if (modeValue.get().equals("LightBox", ignoreCase = true)) {
             for (o in mc.theWorld.loadedEntityList) {
                 if (o !is EntityItem) continue
-                val item = o
-                val x = item.posX - mc.renderManager.renderPosX
-                val y = item.posY + 0.5 - mc.renderManager.renderPosY
-                val z = item.posZ - mc.renderManager.renderPosZ
+                val x = o.posX - mc.renderManager.renderPosX
+                val y = o.posY + 0.5 - mc.renderManager.renderPosY
+                val z = o.posZ - mc.renderManager.renderPosZ
                 GL11.glEnable(3042)
                 GL11.glLineWidth(2.0f)
                 GL11.glColor4f(1f, 1f, 1f, .75f)
@@ -82,42 +81,41 @@ object ItemESP : Module() {
             val pTicks = mc.timer.renderPartialTicks
             for (e2 in mc.theWorld.getLoadedEntityList()) {
                 if (e2 is EntityItem) {
-                    val ent = e2
-                    var x = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * pTicks
+                    var x = e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks
                     -mc.renderManager.viewerPosX + 0.36
-                    var y = (ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * pTicks
+                    var y = (e2.lastTickPosY + (e2.posY - e2.lastTickPosY) * pTicks
                             - mc.renderManager.viewerPosY)
-                    var z = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * pTicks
+                    var z = e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks
                     -mc.renderManager.viewerPosZ + 0.36
                     val topY: Double
-                    y = y + (ent.height + 0.15).also { topY = it }
+                    y += (e2.height + 0.15).also { topY = it }
                     val convertedPoints = RenderUtils.convertTo2D(x, y, z)
                     val convertedPoints2 = RenderUtils.convertTo2D(x - 0.36, y, z - 0.36)
                     val xd = 0.0
                     assert(convertedPoints2 != null)
                     if (convertedPoints2!![2] < 0.0 || convertedPoints2[2] >= 1.0) continue
-                    x = (ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
+                    x = (e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
                             - 0.36)
-                    z = (ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
+                    z = (e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
                             - 0.36)
                     val convertedPointsBottom = RenderUtils.convertTo2D(x, y, z)
-                    y = (ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * pTicks - mc.renderManager.viewerPosY
+                    y = (e2.lastTickPosY + (e2.posY - e2.lastTickPosY) * pTicks - mc.renderManager.viewerPosY
                             - 0.05)
                     val convertedPointsx = RenderUtils.convertTo2D(x, y, z)
-                    x = (ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
+                    x = (e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
                             - 0.36)
-                    z = (ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
+                    z = (e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
                             + 0.36)
                     val convertedPointsTop1 = RenderUtils.convertTo2D(x, topY, z)
                     val convertedPointsx2 = RenderUtils.convertTo2D(x, y, z)
-                    x = (ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
+                    x = (e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
                             + 0.36)
-                    z = (ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
+                    z = (e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
                             + 0.36)
                     val convertedPointsz = RenderUtils.convertTo2D(x, y, z)
-                    x = (ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
+                    x = (e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
                             + 0.36)
-                    z = (ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
+                    z = (e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
                             - 0.36)
                     val convertedPointsTop2 = RenderUtils.convertTo2D(x, topY, z)
                     val convertedPointsz2 = RenderUtils.convertTo2D(x, y, z)
@@ -129,24 +127,24 @@ object ItemESP : Module() {
                     assert(convertedPointsz != null)
                     assert(convertedPointsx2 != null)
                     assert(convertedPointsBottom != null)
-                    entityConvertedPointsMap[ent] = doubleArrayOf(
-                        convertedPoints!![0],
-                        convertedPoints[1], xd,
-                        convertedPoints[2],
-                        convertedPointsBottom!![0],
-                        convertedPointsBottom[1],
-                        convertedPointsBottom[2],
-                        convertedPointsx!![0],
-                        convertedPointsx[1],
-                        convertedPointsx[2],
-                        convertedPointsx2!![0],
-                        convertedPointsx2[1],
-                        convertedPointsx2[2],
-                        convertedPointsz!![0],
-                        convertedPointsz[1],
-                        convertedPointsz[2], convertedPointsz2!![0], convertedPointsz2[1], convertedPointsz2[2],
-                        convertedPointsTop1!![0], convertedPointsTop1[1], convertedPointsTop1[2],
-                        convertedPointsTop2!![0], convertedPointsTop2[1], convertedPointsTop2[2]
+                    entityConvertedPointsMap[e2] = doubleArrayOf(
+                            convertedPoints!![0],
+                            convertedPoints[1], xd,
+                            convertedPoints[2],
+                            convertedPointsBottom!![0],
+                            convertedPointsBottom[1],
+                            convertedPointsBottom[2],
+                            convertedPointsx!![0],
+                            convertedPointsx[1],
+                            convertedPointsx[2],
+                            convertedPointsx2!![0],
+                            convertedPointsx2[1],
+                            convertedPointsx2[2],
+                            convertedPointsz!![0],
+                            convertedPointsz[1],
+                            convertedPointsz[2], convertedPointsz2!![0], convertedPointsz2[1], convertedPointsz2[2],
+                            convertedPointsTop1!![0], convertedPointsTop1[1], convertedPointsTop1[2],
+                            convertedPointsTop2!![0], convertedPointsTop2[1], convertedPointsTop2[2]
                     )
                 }
             }
@@ -160,46 +158,46 @@ object ItemESP : Module() {
             for (ent in entityConvertedPointsMap.keys) {
                 val renderPositions = entityConvertedPointsMap[ent]
                 val renderPositionsBottom = doubleArrayOf(
-                    renderPositions!![4], renderPositions[5],
-                    renderPositions[6]
+                        renderPositions!![4], renderPositions[5],
+                        renderPositions[6]
                 )
                 val renderPositionsX = doubleArrayOf(
-                    renderPositions[7], renderPositions[8],
-                    renderPositions[9]
+                        renderPositions[7], renderPositions[8],
+                        renderPositions[9]
                 )
                 val renderPositionsX2 = doubleArrayOf(
-                    renderPositions[10], renderPositions[11],
-                    renderPositions[12]
+                        renderPositions[10], renderPositions[11],
+                        renderPositions[12]
                 )
                 val renderPositionsZ = doubleArrayOf(
-                    renderPositions[13], renderPositions[14],
-                    renderPositions[15]
+                        renderPositions[13], renderPositions[14],
+                        renderPositions[15]
                 )
                 val renderPositionsZ2 = doubleArrayOf(
-                    renderPositions[16], renderPositions[17],
-                    renderPositions[18]
+                        renderPositions[16], renderPositions[17],
+                        renderPositions[18]
                 )
                 val renderPositionsTop1 = doubleArrayOf(
-                    renderPositions[19], renderPositions[20],
-                    renderPositions[21]
+                        renderPositions[19], renderPositions[20],
+                        renderPositions[21]
                 )
                 val renderPositionsTop2 = doubleArrayOf(
-                    renderPositions[22], renderPositions[23],
-                    renderPositions[24]
+                        renderPositions[22], renderPositions[23],
+                        renderPositions[24]
                 )
                 GlStateManager.pushMatrix()
                 GlStateManager.scale(0.5, 0.5, 0.5)
                 if (mc.theWorld.loadedEntityList.contains(ent)) {
                     try {
                         val xValues = doubleArrayOf(
-                            renderPositions[0], renderPositionsBottom[0], renderPositionsX[0],
-                            renderPositionsX2[0], renderPositionsZ[0], renderPositionsZ2[0], renderPositionsTop1[0],
-                            renderPositionsTop2[0]
+                                renderPositions[0], renderPositionsBottom[0], renderPositionsX[0],
+                                renderPositionsX2[0], renderPositionsZ[0], renderPositionsZ2[0], renderPositionsTop1[0],
+                                renderPositionsTop2[0]
                         )
                         val yValues = doubleArrayOf(
-                            renderPositions[1], renderPositionsBottom[1], renderPositionsX[1],
-                            renderPositionsX2[1], renderPositionsZ[1], renderPositionsZ2[1], renderPositionsTop1[1],
-                            renderPositionsTop2[1]
+                                renderPositions[1], renderPositionsBottom[1], renderPositionsX[1],
+                                renderPositionsX2[1], renderPositionsZ[1], renderPositionsZ2[1], renderPositionsTop1[1],
+                                renderPositionsTop2[1]
                         )
                         var x = renderPositions[0]
                         var y = renderPositions[1]
@@ -246,50 +244,49 @@ object ItemESP : Module() {
                             ++n
                         }
                         RenderUtils.rectangleBordered(
-                            x + 0.5,
-                            y + 0.5,
-                            endx - 0.5,
-                            endy - 0.5,
-                            1.0,
-                            Colors.getColor(0, 0, 0, 0),
-                            Color(255, 255, 255).rgb
+                                x + 0.5,
+                                y + 0.5,
+                                endx - 0.5,
+                                endy - 0.5,
+                                1.0,
+                                Colors.getColor(0, 0, 0, 0),
+                                Color(255, 255, 255).rgb
                         )
                         RenderUtils.rectangleBordered(
-                            x - 0.5,
-                            y - 0.5,
-                            endx + 0.5,
-                            endy + 0.5,
-                            1.0,
-                            Colors.getColor(0, 0),
-                            Colors.getColor(0, 150)
+                                x - 0.5,
+                                y - 0.5,
+                                endx + 0.5,
+                                endy + 0.5,
+                                1.0,
+                                Colors.getColor(0, 0),
+                                Colors.getColor(0, 150)
                         )
                         RenderUtils.rectangleBordered(
-                            x + 1.5,
-                            y + 1.5,
-                            endx - 1.5,
-                            endy - 1.5,
-                            1.0,
-                            Colors.getColor(0, 0),
-                            Colors.getColor(0, 150)
+                                x + 1.5,
+                                y + 1.5,
+                                endx - 1.5,
+                                endy - 1.5,
+                                1.0,
+                                Colors.getColor(0, 0),
+                                Colors.getColor(0, 150)
                         )
                         val health = 20f
                         val progress = health / 20f
                         val difference = y - endy + 0.5
                         RenderUtils.rectangleBordered(
-                            x - 6.5, y - 0.5, x - 2.5,
-                            endy, 1.0, Color(30, 255, 30).rgb,
-                            Colors.getColor(0, 150)
+                                x - 6.5, y - 0.5, x - 2.5,
+                                endy, 1.0, Color(30, 255, 30).rgb,
+                                Colors.getColor(0, 150)
                         )
-                        //RenderUtils.rectangle((x - 5.5), (endy - 1.0), (x - 3.5),
-                        //         healthLocation,  customColor.getRGB());
+
                         RenderUtils.rectangle(x - 5.5, endy - 1.0, x - 3.5, endy + difference, Color(30, 255, 30).rgb)
                         if (-difference > 50.0) {
                             for (i in 1..9) {
                                 val dThing = difference / 10.0 * i
                                 RenderUtils.rectangle(
-                                    x - 6.5, endy - 0.5 + dThing,
-                                    x - 2.5, endy - 0.5 + dThing - 1.0,
-                                    Colors.getColor(0)
+                                        x - 6.5, endy - 0.5 + dThing,
+                                        x - 2.5, endy - 0.5 + dThing - 1.0,
+                                        Colors.getColor(0)
                                 )
                             }
                         }
@@ -320,32 +317,32 @@ object ItemESP : Module() {
                 alert("An error occurred while rendering all item entities for shader esp")
             }
             OutlineShader.OUTLINE_SHADER.stopDraw(
-                if (colorRainbowValue.get()) rainbow() else Color(
-                    colorRedValue.get(),
-                    colorGreenValue.get(),
-                    colorBlueValue.get()
-                ), 1f, 1f
+                    if (colorRainbowValue.get()) rainbow() else Color(
+                            colorRedValue.get(),
+                            colorGreenValue.get(),
+                            colorBlueValue.get()
+                    ), 1f, 1f
             )
         }
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
-        val shader = (if (modeValue.equals("shaderoutline")) OutlineShader.OUTLINE_SHADER else if (modeValue.equals("shaderglow")) GlowShader.GLOW_SHADER else null)
-            ?: return
-        val partialTicks = event.partialTicks
+        @EventTarget
+        fun onRender2D(event: Render2DEvent) {
+            val shader = (if (modeValue.equals("shaderoutline")) OutlineShader.OUTLINE_SHADER else if (modeValue.equals("shaderglow")) GlowShader.GLOW_SHADER else null)
+                    ?: return
+            val partialTicks = event.partialTicks
 
-        shader.startDraw(partialTicks)
+            shader.startDraw(partialTicks)
 
-        for (entity in mc.theWorld.loadedEntityList) {
-            if (!(entity is EntityItem || entity is EntityArrow)) continue
-            mc.renderManager.renderEntityStatic(entity, event.partialTicks, true)
+            for (entity in mc.theWorld.loadedEntityList) {
+                if (!(entity is EntityItem || entity is EntityArrow)) continue
+                mc.renderManager.renderEntityStatic(entity, event.partialTicks, true)
+            }
+
+            shader.stopDraw(getColor(), outlineWidth.get(), 1f)
         }
-
-        shader.stopDraw(getColor(), outlineWidth.get(), 1f)
-    }
     }
 
-    fun getIncremental(`val`: Double, inc: Double): Double {
+    private fun getIncremental(`val`: Double, inc: Double): Double {
         val one = 1.0 / inc
         return (`val` * one).roundToInt() / one
     }

@@ -18,6 +18,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
+
 object ColorUtils {
 
     private val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
@@ -255,6 +256,27 @@ object ColorUtils {
         if (hue > 0.5) hue = 0.5f - (hue - 0.5f)
         hue += 0.5f
         return Color.getHSBColor(hue, 0.4f, 1f)
+    }
+
+    @JvmStatic
+    fun astolfoRainbow(delay: Int, offset: Int, index: Int): Color {
+        var rainbowDelay = ceil((System.currentTimeMillis() + (delay * index).toLong()).toDouble()) / offset
+        return Color.getHSBColor(if (((360.0.also { rainbowDelay %= it }) / 360.0).toFloat().toDouble() < 0.5) -((rainbowDelay / 360.0).toFloat()) else (rainbowDelay / 360.0).toFloat(), 0.5f, 1.0f)
+    }
+
+    fun getFractionIndicies(fractions: FloatArray, progress: Float): IntArray {
+        var startPoint: Int
+        val range = IntArray(2)
+        startPoint = 0
+        while (startPoint < fractions.size && fractions[startPoint] <= progress) {
+            ++startPoint
+        }
+        if (startPoint >= fractions.size) {
+            startPoint = fractions.size - 1
+        }
+        range[0] = startPoint - 1
+        range[1] = startPoint
+        return range
     }
 
     @JvmStatic

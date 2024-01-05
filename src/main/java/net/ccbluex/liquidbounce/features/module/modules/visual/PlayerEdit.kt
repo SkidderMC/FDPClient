@@ -1,0 +1,50 @@
+package net.ccbluex.liquidbounce.features.module.modules.visual
+
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+
+
+/**
+ * The type Player edit.
+ */
+@ModuleInfo(name = "PlayerEdit", description = "", category = ModuleCategory.VISUAL)
+class PlayerEdit : Module() {
+
+    companion object {
+        @JvmField
+        val editPlayerSizeValue = BoolValue("PlayerSize", false)
+
+        /**
+         * The constant playerSizeValue.
+         */
+        @JvmField
+        val playerSizeValue = FloatValue("PlayerSize", 1.5f, 0.5f, 2.5f)
+
+        /**
+         * The constant rotatePlayer.
+         */
+        @JvmField
+        val rotatePlayer = BoolValue("PlayerRotate", true)
+
+        @JvmField
+        val xRot = FloatValue("X-Rotation", 90.0f, -180.0f, 180.0f)
+
+        @JvmField
+        val yPos = FloatValue("Y-Position", 0.0f, -5.0f, 5.0f)
+    }
+
+    @EventTarget
+    fun onMotion(event: MotionEvent?) {
+        if (editPlayerSizeValue.get()) mc.thePlayer.eyeHeight =
+            playerSizeValue.get() + 0.62f else mc.thePlayer.eyeHeight = mc.thePlayer.defaultEyeHeight
+    }
+
+    override fun onDisable() {
+        mc.thePlayer.eyeHeight = mc.thePlayer.defaultEyeHeight
+    }
+}

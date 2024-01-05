@@ -29,23 +29,36 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
+
+
 @Mixin(GuiIngame.class)
 public abstract class MixinGuiInGame extends MixinGui {
 
-    @Shadow
-    protected abstract void renderHotbarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer player);
-
+    /**
+     * The constant widgetsTexPath.
+     */
     @Shadow
     @Final
     protected static ResourceLocation widgetsTexPath;
-
-    @Shadow
+    /**
+     * The Overlay player list.
+     */
     @Final
-    protected GuiPlayerTabOverlay overlayPlayerList;
-
     @Shadow
-    @Final
-    protected Minecraft mc;
+    public GuiPlayerTabOverlay overlayPlayerList;
+
+    /**
+     * Render hotbar item.
+     *
+     * @param index        the index
+     * @param xPos         the x pos
+     * @param yPos         the y pos
+     * @param partialTicks the partial ticks
+     * @param player       the player
+     */
+    @Shadow
+    protected abstract void renderHotbarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer player);
 
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
     private void renderScoreboard(CallbackInfo callbackInfo) {
@@ -62,7 +75,7 @@ public abstract class MixinGuiInGame extends MixinGui {
         final HotbarSettings HotbarSettings = FDPClient.moduleManager.getModule(HotbarSettings.class);
         final EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
 
-        float tabHope = this.mc.gameSettings.keyBindPlayerList.isKeyDown() ? 1f : 0f;
+        float tabHope = mc.gameSettings.keyBindPlayerList.isKeyDown() ? 1f : 0f;
         final Animations animations = Animations.INSTANCE;
         if(animations.getTabHopePercent() != tabHope) {
             animations.setLastTabSync(System.currentTimeMillis());
@@ -121,7 +134,8 @@ public abstract class MixinGuiInGame extends MixinGui {
     private void injectCrosshair(CallbackInfoReturnable<Boolean> cir) {
         if (FDPClient.moduleManager.getModule(HUD.class).getState()) {
             final HUD hud = FDPClient.moduleManager.getModule(HUD.class);
-            if (hud.getCrossHairValue().get()) 
+            if (hud.getCrossHairValue().get()
+                || mc.gameSettings.thirdPersonView != 0 && hud.getNof5crossHair().get())
                 cir.setReturnValue(false);
         }
     }

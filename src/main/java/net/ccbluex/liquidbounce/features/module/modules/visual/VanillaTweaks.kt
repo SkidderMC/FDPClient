@@ -57,7 +57,7 @@ object VanillaTweaks : Module() {
 
     //NoFOV
     private val noFov = BoolValue("NoFOV", false)
-    val fovValue = FloatValue("FOV", 1f, 0f, 1.5f).displayable  { noFov.get() }
+    val fovValue = FloatValue("FOV", 1.2F, 0.8F, 1.5F).displayable  { noFov.get() }
 
     //WorldColor
     val worldColorValue = BoolValue("WorldColor", false)
@@ -89,8 +89,8 @@ object VanillaTweaks : Module() {
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f).displayable  { fpsHurtCam.get() }
     private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10).displayable  { fpsHurtCam.get() }
 
-    private val motionBlur = BoolValue("Motionblur", false)
-    private val blurAmount = IntegerValue("BlurAmount", 1, 1, 10) { motionBlur.get() }
+    private val motionBlur = BoolValue("MotionBlur", false)
+    private val blurAmount = IntegerValue("BlurAmount", 0, 0, 10) { motionBlur.get() }
 
     private var prevGamma = -1f
     private var hurt = 0L

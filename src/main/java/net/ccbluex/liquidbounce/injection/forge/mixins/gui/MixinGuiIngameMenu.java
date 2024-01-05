@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
+import net.ccbluex.liquidbounce.ui.client.gui.GuiTeleportation;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.minecraft.client.gui.GuiButton;
@@ -22,10 +23,9 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
         if(!this.mc.isIntegratedServerRunning()) {
-            this.buttonList.add(new GuiButton(1337, this.width / 2 - 100, this.height / 4 + 128, "%ui.reconnect%"));
+            this.buttonList.add(new GuiButton(1337, this.width / 2 - 100, this.height / 4 + 128, "Reconnect"));
             this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128 + 24,"Switcher"));
-        } else {
-            this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128,"Switcher"));
+            this.buttonList.add(new GuiButton(1000, 4, height - 24, 68, 20, "Misc"));
         }
     }
 
@@ -79,5 +79,8 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
         if (button.id == 1068) {
             mc.displayGuiScreen(new GuiMultiplayer((GuiScreen) (Object) this));
         }
+
+        if (button.id == 1000)
+            mc.displayGuiScreen(new GuiTeleportation((GuiScreen) (Object) this));
     }
 }

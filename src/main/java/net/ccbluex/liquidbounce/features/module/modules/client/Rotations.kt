@@ -30,6 +30,8 @@ object Rotations : Module() {
     val headValue = BoolValue("Head", false)
     val bodyValue = BoolValue("Body", false)
     val fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
+    val rotationMode = ListValue("Mode", arrayOf("Normal", "Silent"), "Normal")
+    val rotatingCheckValue = BoolValue("RotatingCheck", false)
     val nanValue = BoolValue("NaNCheck", true)
     val fakeValue = BoolValue("Ghost", true)
     var R = FloatValue("R", 255f, 0f, 255f)
@@ -44,6 +46,11 @@ object Rotations : Module() {
 
     @JvmStatic
     var headPitch = 0f
+
+    @JvmStatic
+    fun lerp(tickDelta: Float, old: Float, new: Float): Float {
+        return old + (new - old) * tickDelta
+    }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {

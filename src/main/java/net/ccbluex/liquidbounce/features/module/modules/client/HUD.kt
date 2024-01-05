@@ -10,15 +10,24 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGui
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
+import net.ccbluex.liquidbounce.ui.client.gui.GuiTeleportation
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.width
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.width
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.GuiChat
+import net.minecraft.client.gui.inventory.GuiInventory
+import net.minecraft.network.play.client.C14PacketTabComplete
+import net.minecraft.network.play.server.S2EPacketCloseWindow
+import net.minecraft.network.play.server.S3APacketTabComplete
+import net.minecraft.network.play.server.S45PacketTitle
 import java.awt.Color
 
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
@@ -27,6 +36,7 @@ object HUD : Module() {
     private val waterMark = BoolValue("Watermark", true)
 
     val crossHairValue = BoolValue("CrossHair", false)
+    val nof5crossHair = BoolValue("NoF5-CrossHair", true)
 
     // UI EFFECT
     private val uiEffectValue = BoolValue("UIEffect", true)
@@ -41,6 +51,10 @@ object HUD : Module() {
     val cameraPositionYawValue = FloatValue("Yaw", 10F, -50F, 50F).displayable  { cameraPositionValue.get() }
     val cameraPositionPitchValue = FloatValue("Pitch", 10F, -50F, 50F).displayable  { cameraPositionValue.get() }
     val cameraPositionFovValue = FloatValue("DistanceFov", 4F, 1F, 50F).displayable  { cameraPositionValue.get() }
+
+    private val noInvClose = BoolValue("NoInvClose", false)
+    private val noTitle = BoolValue("NoTitle", false)
+    private val antiTabComplete = BoolValue("AntiTabComplete", false)
 
     // ArrayList
     private val arrayList = BoolValue("ArrayList", true)
@@ -94,6 +108,22 @@ object HUD : Module() {
             }
         }
 
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        if (noTitle.get() && event.packet is S45PacketTitle) {
+            event.cancelEvent()
+        }
+
+        if (antiTabComplete.get() && (event.packet is C14PacketTabComplete || event.packet is S3APacketTabComplete)) {
+            event.cancelEvent()
+        }
+
+        if (mc.theWorld == null || mc.thePlayer == null) return
+        if (noInvClose.get() && event.packet is S2EPacketCloseWindow && (mc.currentScreen is GuiInventory || mc.currentScreen is NewUi || mc.currentScreen is ClickGui || mc.currentScreen is GuiChat || mc.currentScreen is GuiTeleportation)) {
+            event.cancelEvent()
+        }
     }
 
     /**
