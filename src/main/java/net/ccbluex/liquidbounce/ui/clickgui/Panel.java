@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.clickgui;
 
-import lombok.Getter;
-import lombok.Setter;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.Element;
@@ -22,33 +20,20 @@ import java.util.Objects;
 
 public abstract class Panel extends MinecraftInstance {
 
-    @Getter
     private final String name;
-    @Getter
     private final ModuleCategory category;
-    @Setter
-    @Getter
     public int x;
-    @Setter
-    @Getter
     public int y;
     public int x2;
     public int y2;
-    @Getter
     private final int width;
-    @Getter
     private final int height;
     private int scroll;
-    @Getter
     private int dragged;
-    @Setter
     private boolean open;
     public boolean drag;
     private boolean scrollbar;
-    @Getter
     private final List<Element> elements;
-    @Getter
-    @Setter
     private boolean visible;
 
     private float elementsHeight;
@@ -176,16 +161,68 @@ public abstract class Panel extends MinecraftInstance {
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getX() {
+        return this.x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
+    public void setX(int dragX) {
+        this.x = dragX;
+    }
+
+    public void setY(int dragY) {
+        this.y = dragY;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
     public boolean getScrollbar() {
         return this.scrollbar;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
     }
 
     public boolean getOpen() {
         return this.open;
     }
 
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public List<Element> getElements() {
+        return elements;
+    }
+
     public int getFade() {
         return (int) fade;
+    }
+
+    public int getDragged() {
+        return dragged;
+    }
+
+    public ModuleCategory getCategory() {
+        return category;
     }
 
     private int getElementsHeight() {
