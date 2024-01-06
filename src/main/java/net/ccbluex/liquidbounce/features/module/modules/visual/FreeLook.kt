@@ -12,7 +12,7 @@ import org.lwjgl.opengl.Display
 @ModuleInfo(name = "FreeLook",  description = "", category = ModuleCategory.VISUAL, keyBind = Keyboard.KEY_F9)
 class FreeLook : Module() {
     private val thirdPerson = BoolValue("ThirdPerson", true)
-    val reverse = BoolValue("Reverse", true)
+    val reverse = BoolValue("Reverse", false)
 
     override fun onEnable() {
         perspectiveToggled = !perspectiveToggled
