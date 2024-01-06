@@ -78,6 +78,20 @@ class KillAura : Module() {
 
     private val CpsReduceValue = BoolValue("CPSReduceVelocity", false).displayable { clickDisplay.get() }
 
+    private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = minTurnSpeedValue.get()
+            if (v > newValue) set(v)
+        }
+    }.displayable { clickDisplay.get() && !rotationModeValue.equals("LockView")} as FloatValue
+
+    private val minTurnSpeedValue: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 1f, 180f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = maxTurnSpeedValue.get()
+            if (v < newValue) set(v)
+        }
+    }.displayable { clickDisplay.get() && !rotationModeValue.equals("LockView")} as FloatValue
+
     // Attack Setting
 
     private val attackDisplay = BoolValue("Attack Options:", true)
@@ -227,8 +241,7 @@ class KillAura : Module() {
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f).displayable { bypassDisplay.get() }
     private val fakeSwingValue = BoolValue("FakeSwing", true).displayable { failRateValue.get() != 0f && failRateValue.displayable }
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") && bypassDisplay.get() }
-    private val movementFix = BoolValue("JumpFix", true).displayable { bypassDisplay.get() && !rotationModeValue.get().equals("none", true) && !rotationStrafeValue.equals("Off")}
-
+    private val movementFix = ListValue("MovementFix", arrayOf("Full", "Semi", "None"), "None").displayable { modeDisplay.get() && !rotationModeValue.get().equals("none", true) }
     // Tools
     private val toolsDisplay = BoolValue("Tools Options:", true)
 
@@ -488,7 +501,7 @@ class KillAura : Module() {
 
         FDPClient.moduleManager[TargetStrafe::class.java]!!.targetEntity = currentTarget?:return
 
-        FDPClient.moduleManager[Strafe::class.java]!!.applyForceStrafe(rotationStrafeValue.equals("Silent"), !rotationStrafeValue.equals("Off") && !rotationModeValue.equals("None"))
+        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(rotationStrafeValue.equals("Silent"), !rotationStrafeValue.equals("Off") && !rotationModeValue.equals("None"))
 
         val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
         
