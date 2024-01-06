@@ -105,6 +105,7 @@ public class Fonts {
         fontTahoma = new GameFontRenderer(getFontcustom(35,"Tahoma"));
         fontTahoma30 = new GameFontRenderer(getFontcustom(30,"Tahoma"));
         fontTenacity35 = new GameFontRenderer(getFontcustom(35, "tenacity"));
+        fontTenacityBold35 = new GameFontRenderer(getFontcustom(35, "tenacity-bold"));
         fontTenacity40 = new GameFontRenderer(getFontcustom(40,"tenacity"));
 
         getCustomFonts();
