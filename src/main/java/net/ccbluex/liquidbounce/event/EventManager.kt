@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * https://github.com/UnlegitMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.event
 
@@ -48,46 +48,24 @@ class EventManager : MinecraftInstance() {
         }
     }
 
-//    private fun printProfiler() {
-//        println("--- Event Profiler(${Date()}) ---")
-//
-//        var total = 0
-//        for((key, value) in counter.toList().sortedBy { it.second }) {
-//            println("${key.simpleName}: $value")
-//            total += value
-//        }
-//        println("total: $total")
-//
-//        counter.clear()
-//    }
-
     /**
      * Call event to listeners
      *
      * @param event to call
      */
     fun callEvent(event: Event) {
-//        if(System.currentTimeMillis() - lastSyncTime > 1000) {
-//            printProfiler()
-//            lastSyncTime = System.currentTimeMillis()
-//        }
-//        counter[event.javaClass] = counter.getOrDefault(event.javaClass, 0) + 1
-
         val targets = registry[event.javaClass] ?: return
-        try {
-            for (invokableEventTarget in targets) {
-                try {
-                    if (!invokableEventTarget.eventClass.handleEvents() && !invokableEventTarget.isIgnoreCondition) {
-                        continue
-                    }
 
-                    invokableEventTarget.method.invoke(invokableEventTarget.eventClass, event)
-                } catch (throwable: Throwable) {
-                    throwable.printStackTrace()
+        for (invokableEventTarget in targets) {
+            try {
+                if (!invokableEventTarget.eventClass.handleEvents() && !invokableEventTarget.isIgnoreCondition) {
+                    continue
                 }
+
+                invokableEventTarget.method.invoke(invokableEventTarget.eventClass, event)
+            } catch (throwable: Throwable) {
+                throwable.printStackTrace()
             }
-        } catch (e :Exception) {
-            e.printStackTrace()
         }
     }
 }

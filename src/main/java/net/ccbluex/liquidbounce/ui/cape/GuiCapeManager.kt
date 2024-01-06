@@ -22,19 +22,21 @@ import java.io.FileInputStream
 import javax.imageio.ImageIO
 
 object GuiCapeManager : GuiScreen() {
+
     private val jsonFile = File(FDPClient.fileManager.capesDir, "cape.json")
 
     private val embeddedCapes = mutableListOf<ICape>()
 
     var nowCape: ICape?
-    val capeList = mutableListOf<ICape>()
+    private val capeList = mutableListOf<ICape>()
 
     init {
         arrayOf("classic", "classic2", "aurora", "forest", "rose", "lavender", "ocean", "modern1", "modern2", "lava", "citrus", "fire", "nightlife", "abstract", "blur", "owner").forEach {
             try {
                 embeddedCapes.add(loadCapeFromResource(it, "assets/minecraft/fdpclient/cape/$it.png"))
-            } catch (e: Throwable){
-                System.out.println("Failed to load Capes")
+            } catch (e: Throwable) {
+                System.err.println("Failed to load cape '$it'")
+                e.printStackTrace()
             }
         }
         nowCape = embeddedCapes.random()
@@ -51,12 +53,12 @@ object GuiCapeManager : GuiScreen() {
         pushEmbeddedCape()
 
         // add capes from files
-        for (file in FDPClient.fileManager.capesDir.listFiles()) {
+        for (file in FDPClient.fileManager.capesDir.listFiles()!!) {
             if (file.isFile && !file.name.equals(jsonFile.name)) {
                 try {
                     val args = file.name.split(".").toTypedArray()
                     val name = java.lang.String.join(".", *args.copyOfRange(0, args.size - 1))
-                    capeList.add(if(args.last() == "gif") {
+                    capeList.add(if (args.last() == "gif") {
                         loadGifCapeFromFile(name, file)
                     } else {
                         loadCapeFromFile(name, file)
@@ -94,8 +96,6 @@ object GuiCapeManager : GuiScreen() {
     private fun loadCapeFromResource(name: String, loc: String) = SingleImageCape(name, ImageIO.read(GuiCapeManager::class.java.classLoader.getResourceAsStream(loc)))
 
     private fun loadCapeFromFile(name: String, file: File) = SingleImageCape(name, ImageIO.read(file))
-
-    private fun loadGifCapeFromResource(name: String, loc: String) = GifCape(name, GuiCapeManager::class.java.classLoader.getResourceAsStream(loc))
 
     private fun loadGifCapeFromFile(name: String, file: File) = GifCape(name, FileInputStream(file))
 

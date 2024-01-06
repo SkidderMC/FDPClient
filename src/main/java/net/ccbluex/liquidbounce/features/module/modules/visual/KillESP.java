@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.value.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Vec3;
 
 import net.minecraft.client.renderer.GlStateManager;
@@ -45,6 +46,8 @@ public class KillESP extends Module {
 
     // Module options
     private final BoolValue DefaultMode = new BoolValue("Default", false);
+
+    private final BoolValue fdpMode = new BoolValue("FDP", false);
     private final BoolValue JelloMode = new BoolValue("Jello", false);
     private final BoolValue SigmaMode = new BoolValue("Sigma", false);
     private final BoolValue TracersMode = new BoolValue("Tracers", false);
@@ -151,6 +154,10 @@ public class KillESP extends Module {
             renderSigmaMode(event);
         }
 
+        if (fdpMode.get()) {
+            renderFDPMode(event);
+        }
+
         if (circleValue.get()) {
             renderCircleMode(event);
         }
@@ -203,18 +210,69 @@ public class KillESP extends Module {
         GL11.glPopMatrix();
     }
 
+    private static final float RAINBOW_START_VALUE = 0.0f;
+    private static final float RAINBOW_STOP_VALUE = 1.0f;
+    private void renderFDPMode(Render3DEvent event) {
+
+        int drawTime = (int) (System.currentTimeMillis() % 1500);
+        boolean drawMode = drawTime > 750;
+        double drawPercent = drawTime / 750.0;
+
+        if (!drawMode) {
+            drawPercent = 1 - drawPercent;
+        } else {
+            drawPercent -= 1;
+        }
+
+        drawPercent = EaseUtils.easeInOutQuad(drawPercent);
+        mc.entityRenderer.disableLightmap();
+        GL11.glPushMatrix();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+        AxisAlignedBB bb = markEntity.getEntityBoundingBox();
+
+        float radius = (float) ((bb.maxX - bb.minX + (bb.maxZ - bb.minZ)) * 0.5f);
+        float height = (float) (bb.maxY - bb.minY);
+
+        double posX = markEntity.lastTickPosX + (markEntity.posX - markEntity.lastTickPosX) * mc.timer.renderPartialTicks;
+        double posY = markEntity.lastTickPosY + (markEntity.posY - markEntity.lastTickPosY) * mc.timer.renderPartialTicks;
+
+        double x = markEntity.lastTickPosX + (markEntity.posX - markEntity.lastTickPosX) * event.getPartialTicks() - mc.getRenderManager().viewerPosX;
+        double y = markEntity.lastTickPosY + (markEntity.posY - markEntity.lastTickPosY) * event.getPartialTicks() - mc.getRenderManager().viewerPosY;
+        double z = markEntity.lastTickPosZ + (markEntity.posZ - markEntity.lastTickPosZ) * event.getPartialTicks() - mc.getRenderManager().viewerPosZ;
+
+        mc.entityRenderer.disableLightmap();
+        GL11.glLineWidth((float) (radius * 8f));
+        GL11.glBegin(GL11.GL_LINE_STRIP);
+        for (int i = 0; i < 360; i += 10) {
+            float hue = i < 180 ? RAINBOW_START_VALUE + (RAINBOW_STOP_VALUE - RAINBOW_START_VALUE) * i / 180f : RAINBOW_START_VALUE + (RAINBOW_STOP_VALUE - RAINBOW_START_VALUE) * (-(i - 360)) / 180f;
+            Color color = Color.getHSBColor(hue, 0.7f, 1.0f);
+            GlStateManager.color(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1.0f);
+            GL11.glVertex3d(x - (float) Math.sin(i * Math.PI / 180F) * radius, y, z + (float) Math.cos(i * Math.PI / 180F) * radius);
+        }
+
+        GL11.glEnd();
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glPopMatrix();
+    }
+
     private void renderSigmaMode(Render3DEvent event) {
         long drawTime = System.currentTimeMillis() % 2000;
         boolean drawMode = drawTime > 1000;
         double drawPercent = drawTime / 1000.0;
-        // true when goes up
         if (!drawMode) {
             drawPercent = 1 - drawPercent;
-            drawPercent = EaseUtils.easeInOutQuad(drawPercent);
         } else {
             drawPercent -= 1;
-            drawPercent = EaseUtils.easeInOutQuad(drawPercent);
         }
+        drawPercent = easeInOutQuad(drawPercent);
 
         List<Vec3> points = new ArrayList<>();
         AxisAlignedBB bb = markEntity.getEntityBoundingBox();

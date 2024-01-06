@@ -10,10 +10,10 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.FogColorEvent;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
-import net.ccbluex.liquidbounce.features.module.modules.visual.PerspectiveMod;
-import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
+import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook;
 import net.ccbluex.liquidbounce.utils.Interpolator;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -31,18 +31,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.MinecraftForge;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -59,6 +57,34 @@ import java.util.Set;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
+
+    @Mutable
+    @Final
+    @Shadow
+    private final int[] lightmapColors;
+    @Mutable
+    @Final
+    @Shadow
+    private final DynamicTexture lightmapTexture;
+
+    @Shadow
+    private final float torchFlickerX;
+    @Shadow
+    private final float bossColorModifier;
+    @Shadow
+    private final float bossColorModifierPrev;
+    @Shadow
+    private Entity pointedEntity;
+    @Shadow
+    private Minecraft mc;
+    @Shadow
+    public float thirdPersonDistanceTemp;
+    @Shadow
+    public float thirdPersonDistance;
+    @Shadow
+    private boolean cloudFog;
+    @Shadow
+    private boolean lightmapUpdateNeeded;
 
     protected MixinEntityRenderer(int[] lightmapColors, DynamicTexture lightmapTexture, float torchFlickerX, float bossColorModifier, float bossColorModifierPrev, Minecraft mc, float thirdPersonDistanceTemp, float thirdPersonDistance) {
         this.lightmapColors = lightmapColors;
@@ -83,49 +109,8 @@ public abstract class MixinEntityRenderer {
     @Shadow
     private float fogColorBlue;
 
-    @Shadow
-    private float fogColor2;
-    @Shadow
-    private float fogColor1;
-
-    @Shadow
-    public abstract void loadShader(ResourceLocation resourceLocationIn);
-
-    @Shadow
-    private final int[] lightmapColors;
-
-    @Shadow
-    private final DynamicTexture lightmapTexture;
-
-    @Shadow
-    public abstract void setupCameraTransform(float partialTicks, int pass);
-
-    @Shadow
-    private Entity pointedEntity;
-    @Shadow
-    private float torchFlickerX;
-
-    @Shadow
-    private float bossColorModifier;
-
-    @Shadow
-    private float bossColorModifierPrev;
-    @Shadow
-    private Minecraft mc;
-
     float d3 = 0.0f;
 
-    @Shadow
-    private float thirdPersonDistanceTemp;
-
-    @Shadow
-    private boolean lightmapUpdateNeeded;
-
-    @Shadow
-    private float thirdPersonDistance;
-
-    @Shadow
-    private boolean cloudFog;
 
     @Inject(method = "renderWorldPass", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/EntityRenderer;renderHand:Z", shift = At.Shift.BEFORE))
     private void renderWorldPass(int pass, float partialTicks, long finishTimeNano, CallbackInfo callbackInfo) {
@@ -147,7 +132,7 @@ public abstract class MixinEntityRenderer {
     @Inject(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Vec3;distanceTo(Lnet/minecraft/util/Vec3;)D"), cancellable = true)
     private void cameraClip(float partialTicks, CallbackInfo callbackInfo) {
         final VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
-        if (camera.getState() && camera.getCameraClipValue().get()) {
+        if (Objects.requireNonNull(camera).getState() && camera.getCameraClipValue().get()) {
             callbackInfo.cancel();
 
             Entity entity = this.mc.getRenderViewEntity();
@@ -216,42 +201,39 @@ public abstract class MixinEntityRenderer {
     }
 
     /**
-     * @author Liuli
+     * @author opZywl
      */
-    @Overwrite
-    public void getMouseOver(float p_getMouseOver_1_) {
+    @Inject(method = "getMouseOver", at = @At("HEAD"), cancellable = true)
+    private void getMouseOver(float partialTicks, CallbackInfo ci) {
         Entity entity = this.mc.getRenderViewEntity();
-        if(entity != null && this.mc.theWorld != null) {
+        if (entity != null && this.mc.theWorld != null) {
             this.mc.mcProfiler.startSection("pick");
             this.mc.pointedEntity = null;
 
-            final Reach reach = FDPClient.moduleManager.getModule(Reach.class);
+            final Reach reach = Objects.requireNonNull(FDPClient.moduleManager.getModule(Reach.class));
 
-            assert reach != null;
-            double d0 = reach.getState() ? reach.getMaxRange() : mc.playerController.getBlockReachDistance();
-            this.mc.objectMouseOver = entity.rayTrace(reach.getState() ? reach.getBuildReachValue().get() : d0, p_getMouseOver_1_);
+            double d0 = reach.getState() ? reach.getMaxRange() : this.mc.playerController.getBlockReachDistance();
+            this.mc.objectMouseOver = entity.rayTrace(d0, partialTicks);
             double d1 = d0;
-            Vec3 vec3 = entity.getPositionEyes(p_getMouseOver_1_);
+            Vec3 vec3 = entity.getPositionEyes(partialTicks);
             boolean flag = false;
-            if(this.mc.playerController.extendedReach()) {
-                d0 = 6;
-                d1 = 6;
-            } else if (d0 > 3) {
+            if (this.mc.playerController.extendedReach()) {
+                d0 = 6.0D;
+                d1 = 6.0D;
+            } else if (d0 > 3.0D) {
                 flag = true;
             }
 
-            if(this.mc.objectMouseOver != null) {
+            if (this.mc.objectMouseOver != null) {
                 d1 = this.mc.objectMouseOver.hitVec.distanceTo(vec3);
             }
 
-            if(reach.getState()) {
-
-                final MovingObjectPosition movingObjectPosition = entity.rayTrace(reach.getBuildReachValue().get(), p_getMouseOver_1_);
-
-                if(movingObjectPosition != null) d1 = movingObjectPosition.hitVec.distanceTo(vec3);
+            if (reach.getState()) {
+                final MovingObjectPosition movingObjectPosition = entity.rayTrace(reach.getBuildReachValue().get(), partialTicks);
+                if (movingObjectPosition != null) d1 = movingObjectPosition.hitVec.distanceTo(vec3);
             }
 
-            Vec3 vec31 = entity.getLook(p_getMouseOver_1_);
+            Vec3 vec31 = entity.getLook(partialTicks);
             Vec3 vec32 = vec3.addVector(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0);
             this.pointedEntity = null;
             Vec3 vec33 = null;
@@ -261,7 +243,6 @@ public abstract class MixinEntityRenderer {
 
             for (Entity entity1 : list) {
                 float f1 = entity1.getCollisionBorderSize();
-
                 final ArrayList<AxisAlignedBB> boxes = new ArrayList<>();
                 boxes.add(entity1.getEntityBoundingBox().expand(f1, f1, f1));
                 Backtrack.INSTANCE.loopThroughBacktrackData(entity1, () -> {
@@ -272,16 +253,16 @@ public abstract class MixinEntityRenderer {
                 for (final AxisAlignedBB axisalignedbb : boxes) {
                     MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
                     if (axisalignedbb.isVecInside(vec3)) {
-                        if (d2 >= 0) {
+                        if (d2 >= 0.0D) {
                             this.pointedEntity = entity1;
                             vec33 = movingobjectposition == null ? vec3 : movingobjectposition.hitVec;
-                            d2 = 0;
+                            d2 = 0.0D;
                         }
                     } else if (movingobjectposition != null) {
                         double d3 = vec3.distanceTo(movingobjectposition.hitVec);
-                        if (d3 < d2 || d2 == 0) {
+                        if (d3 < d2 || d2 == 0.0D) {
                             if (entity1 == entity.ridingEntity && !entity.canRiderInteract()) {
-                                if (d2 == 0) {
+                                if (d2 == 0.0D) {
                                     this.pointedEntity = entity1;
                                     vec33 = movingobjectposition.hitVec;
                                 }
@@ -294,47 +275,83 @@ public abstract class MixinEntityRenderer {
                     }
                 }
             }
-            if (pointedEntity != null && flag && vec3.distanceTo(vec33) > (reach.getState() ? reach.getCombatReachValue().get() : 3)) {
-                this.pointedEntity = null;
-                assert vec33 != null;
-                this.mc.objectMouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec33, null, new BlockPos(vec33));
+
+            if (this.pointedEntity != null && flag) {
+                double maxDistance = reach.getState() ? reach.getCombatReachValue().get() : 3.0D;
+                if (vec3.distanceTo(vec33) > maxDistance) {
+                    this.pointedEntity = null;
+                    this.mc.objectMouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, Objects.requireNonNull(vec33), null, new BlockPos(vec33));
+                }
             }
 
-            if(this.pointedEntity != null && (d2 < d1 || this.mc.objectMouseOver == null)) {
+            if (this.pointedEntity != null && (d2 < d1 || this.mc.objectMouseOver == null)) {
                 this.mc.objectMouseOver = new MovingObjectPosition(this.pointedEntity, vec33);
-                if(this.pointedEntity instanceof EntityLivingBase || this.pointedEntity instanceof EntityItemFrame) {
+                if (this.pointedEntity instanceof EntityLivingBase || this.pointedEntity instanceof EntityItemFrame) {
                     this.mc.pointedEntity = this.pointedEntity;
                 }
             }
 
             this.mc.mcProfiler.endSection();
         }
+
+        ci.cancel();
     }
 
-
+    /**
+     * Update camera and render boolean.
+     *
+     * @param minecraft the minecraft
+     * @return the boolean
+     */
     @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;inGameHasFocus:Z", opcode = GETFIELD))
     public boolean updateCameraAndRender(Minecraft minecraft) {
-        return PerspectiveMod.overrideMouse();
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(FreeLook.class)).getState() && !Objects.requireNonNull(FDPClient.moduleManager.getModule(FreeLook.class)).getReverse().get()) {
+            return FreeLook.overrideMouse();
+        } else return mc.inGameHasFocus && Display.isActive();
     }
 
+    /**
+     * Gets rotation yaw.
+     *
+     * @param entity the entity
+     * @return the rotation yaw
+     */
     @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;rotationYaw:F", opcode = GETFIELD))
     public float getRotationYaw(Entity entity) {
-        return PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraYaw : entity.rotationYaw;
+        return FreeLook.perspectiveToggled ? FreeLook.cameraYaw : entity.rotationYaw;
     }
 
+    /**
+     * Gets prev rotation yaw.
+     *
+     * @param entity the entity
+     * @return the prev rotation yaw
+     */
     @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevRotationYaw:F", opcode = GETFIELD))
     public float getPrevRotationYaw(Entity entity) {
-        return PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraYaw : entity.prevRotationYaw;
+        return FreeLook.perspectiveToggled ? FreeLook.cameraYaw : entity.prevRotationYaw;
     }
 
+    /**
+     * Gets rotation pitch.
+     *
+     * @param entity the entity
+     * @return the rotation pitch
+     */
     @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;rotationPitch:F", opcode = GETFIELD))
     public float getRotationPitch(Entity entity) {
-        return PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraPitch : entity.rotationPitch;
+        return FreeLook.perspectiveToggled ? FreeLook.cameraPitch : entity.rotationPitch;
     }
 
+    /**
+     * Gets prev rotation pitch.
+     *
+     * @param entity the entity
+     * @return the prev rotation pitch
+     */
     @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevRotationPitch:F"))
     public float getPrevRotationPitch(Entity entity) {
-        return PerspectiveMod.perspectiveToggled ? PerspectiveMod.cameraPitch : entity.prevRotationPitch;
+        return FreeLook.perspectiveToggled ? FreeLook.cameraPitch : entity.prevRotationPitch;
     }
 
     /**
@@ -456,10 +473,6 @@ public abstract class MixinEntityRenderer {
     @Overwrite
     private void setupFog(int p_setupFog_1_, float p_setupFog_2_) {
         Entity entity = this.mc.getRenderViewEntity();
-        boolean flag = false;
-        if (entity instanceof EntityPlayer) {
-            flag = ((EntityPlayer)entity).capabilities.isCreativeMode;
-        }
 
         GL11.glFog(2918, this.setFogColorBuffer(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 1.0F));
         GL11.glNormal3f(0.0F, -1.0F, 0.0F);

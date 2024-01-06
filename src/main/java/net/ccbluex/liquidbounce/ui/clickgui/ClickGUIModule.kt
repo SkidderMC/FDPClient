@@ -44,7 +44,7 @@ object ClickGUIModule : Module() {
             "Black",
             "White"
         ),
-        "Mixed"
+        "Astolfo"
     ) {
         override fun onChanged(oldValue: String, newValue: String) {
             updateStyle()
@@ -53,8 +53,6 @@ object ClickGUIModule : Module() {
 
     val scaleValue = FloatValue("Scale", 0.70f, 0.7f, 2f)
     val maxElementsValue = IntegerValue("MaxElements", 20, 1, 35)
-    val backgroundValue = ListValue("Background", arrayOf("Default", "Gradient", "None"), "None")
-    val animationValue = ListValue("Animation", arrayOf("Bread", "Slide", "LiquidBounce", "Zoom", "Ziul", "None"), "Ziul")
     var colorRainbow = BoolValue("Rainbow", true)
     val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { !colorRainbow.get() } as IntegerValue

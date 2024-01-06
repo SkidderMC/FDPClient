@@ -99,7 +99,6 @@
     "render.MixinTileEntitySkullRenderer",
     "render.MixinRenderPlayer",
     "render.MixinVisGraph",
-    "render.MixinRenderManager",
     "item.MixinItemStack",
     "resources.MixinDefaultResourcePack",
     "patcher.bugfixes.MixinBlockFluidRenderer",

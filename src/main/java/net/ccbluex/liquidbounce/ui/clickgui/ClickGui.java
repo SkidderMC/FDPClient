@@ -14,10 +14,6 @@ import net.ccbluex.liquidbounce.ui.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.ui.clickgui.style.Style;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.BlackStyle;
 import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption;
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
-import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -36,8 +32,6 @@ public class ClickGui extends GuiScreen {
     private Panel clickedPanel;
     private int mouseX;
     private int mouseY;
-
-    private double slide, progress = 0;
 
     public ClickGui() {
         final int width = 100;
@@ -61,29 +55,6 @@ public class ClickGui extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (progress < 1) progress += 0.1 * (1 - partialTicks);
-        else progress = 1;
-
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).INSTANCE.getAnimationValue().get().toLowerCase()) {
-            case "liquidbounce":
-            case "ziul":
-                slide = EaseUtils.easeOutBack(progress);
-                break;
-            case "slide":
-            case "zoom":
-            case "bread":
-                slide = EaseUtils.easeOutQuart(progress);
-                break;
-            case "none":
-                slide = 1;
-                break;
-        }
-
-        if (Mouse.isButtonDown(0) && mouseX >= 5 && mouseX <= 50 && mouseY <= height - 5 && mouseY >= height - 50)
-            mc.displayGuiScreen(new GuiHudDesigner());
-
-        AWTFontRenderer.Companion.setAssumeNonVolatile(true);
-
         final double scale = Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getScaleValue().get();
 
         mouseX /= scale;
@@ -92,41 +63,9 @@ public class ClickGui extends GuiScreen {
         this.mouseX = mouseX;
         this.mouseY = mouseY;
 
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).INSTANCE.getBackgroundValue().get()) {
-            case "Default":
-                drawDefaultBackground();
-                break;
-            case "Gradient":
-                drawGradientRect(0, 0, width, height, ColorUtils.reAlpha(ClickGUIModule.INSTANCE.generateColor(), 40).getRGB(), ClickGUIModule.INSTANCE.generateColor().getRGB());
-                break;
-            default:
-                break;
-        }
-
         drawDefaultBackground();
 
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).INSTANCE.getAnimationValue().get().toLowerCase()) {
-            case "bread":
-                GlStateManager.translate(0, (1.0 - slide) * height * 2.0, 0);
-                GlStateManager.scale(scale, scale + (1.0 - slide) * 2.0, scale);
-                break;
-            case "slide":
-            case "liquidbounce":
-                GlStateManager.translate(0, (1.0 - slide) * height * 2.0, 0);
-                GlStateManager.scale(scale, scale, scale);
-                break;
-            case "zoom":
-                GlStateManager.translate((1.0 - slide) * (width / 2.0), (1.0 - slide) * (height / 2.0), (1.0 - slide) * (width / 2.0));
-                GlStateManager.scale(scale * slide, scale * slide, scale * slide);
-                break;
-            case "ziul":
-                GlStateManager.translate((1.0 - slide) * (width / 2.0), (1.0 - slide) * (height / 2.0), 0);
-                GlStateManager.scale(scale * slide, scale * slide, scale * slide);
-                break;
-            case "none":
-                GlStateManager.scale(scale, scale, scale);
-                break;
-        }
+        GlStateManager.scale(scale, scale, scale);
 
         for (final Panel panel : panels) {
             panel.updateFade(RenderUtils.deltaTime);
@@ -153,30 +92,13 @@ public class ClickGui extends GuiScreen {
                     handledScroll = true;
                     break;
                 }
-
             if (!handledScroll)
                 handleScroll(wheel);
         }
 
         GlStateManager.disableLighting();
         RenderHelper.disableStandardItemLighting();
-
-        switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(ClickGUIModule.class)).getAnimationValue().get().toLowerCase()) {
-            case "bread":
-            case "slide":
-            case "liquidbounce":
-                GlStateManager.translate(0, (1.0 - slide) * height * -2.0, 0);
-                break;
-            case "zoom":
-                GlStateManager.translate(-1 * (1.0 - slide) * (width / 2.0), -1 * (1.0 - slide) * (height / 2.0), -1 * (1.0 - slide) * (width / 2.0));
-                break;
-            case "ziul":
-                GlStateManager.translate(-1 * (1.0 - slide) * (width / 2.0), -1 * (1.0 - slide) * (height / 2.0), 0);
-                break;
-        }
         GlStateManager.scale(1, 1, 1);
-
-        AWTFontRenderer.Companion.setAssumeNonVolatile(false);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -204,6 +126,7 @@ public class ClickGui extends GuiScreen {
             if (mouseButton == 0 && panel.isHovering(mouseX, mouseY))
                 clickedPanel = panel;
         }
+
         if (clickedPanel != null) {
             clickedPanel.x2 = clickedPanel.x - mouseX;
             clickedPanel.y2 = clickedPanel.y - mouseY;
@@ -265,8 +188,6 @@ public class ClickGui extends GuiScreen {
     @Override
     public void onGuiClosed() {
         FDPClient.fileManager.saveConfig(modernuiLaunchOption.getClickGuiConfig());
-        slide = 0;
-        progress = 0;
     }
 
     @Override

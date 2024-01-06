@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles;
 
+
 import net.ccbluex.liquidbounce.ui.clickgui.Panel;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.ButtonElement;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.ModuleElement;
@@ -26,7 +27,6 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 public class MixedStyle extends Style {
@@ -47,7 +47,7 @@ public class MixedStyle extends Style {
             double i = MathHelper.clamp_double(((double) mouseX - (double) x) / ((double) width - 3), 0, 1);
 
             BigDecimal bigDecimal = new BigDecimal(Double.toString((min + (max - min) * i)));
-            bigDecimal = bigDecimal.setScale(2, RoundingMode.HALF_UP);
+            bigDecimal = bigDecimal.setScale(2, 4);
             return bigDecimal.floatValue();
         }
 
@@ -57,10 +57,10 @@ public class MixedStyle extends Style {
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
         if (panel.getFade() > 0) {
-        RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 26 + panel.getFade(), 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
-        RenderUtils.customRounded((float) panel.getX() + 2, (float) panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth() - 2, (float) panel.getY() + 19 + panel.getFade() + 5, 0f, 0f, 7, 7, new Color(33, 33, 33).getRGB());
+            RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 26 + panel.getFade(), 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB());
+            RenderUtils.customRounded((float) panel.getX() + 2, (float) panel.getY() + 17 + panel.getFade(), (float) panel.getX() + panel.getWidth() - 2, (float) panel.getY() + 19 + panel.getFade() + 5, 0f, 0f, 7, 7, new Color(33, 33, 33).getRGB());
         } else {
-        RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 18, 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB()); 
+            RenderUtils.drawGradientRoundedRect( panel.getX(), panel.getY() - 3, panel.getX() + panel.getWidth(), panel.getY() + 18, 7, new Color(241,135,251).getRGB(), new Color(67,156,251).getRGB());
         }
         GlStateManager.resetColor();
 
@@ -88,10 +88,12 @@ public class MixedStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-        if(moduleElement.getModule().getState()){
-            Gui.drawRect(moduleElement.getX() + 2, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() -2, moduleElement.getY() + moduleElement.getHeight(), hoverColor(new Color(0,0,0,30), moduleElement.hoverTime).getRGB());
+        //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(58,59,60), moduleElement.hoverTime).getRGB());
+        //Gui.drawRect(moduleElement.getX() - 1, moduleElement.getY() - 1, moduleElement.getX() + moduleElement.getWidth() + 1, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(0,0,0,20), moduleElement.hoverTime).getRGB());
+        if(moduleElement.getModule().getState() == true){
+            Gui.drawRect(moduleElement.getX() + 2, moduleElement.getY() - 5, moduleElement.getX() + moduleElement.getWidth() -2, moduleElement.getY() + moduleElement.getHeight(), hoverColor(new Color(0,0,0,30), moduleElement.hoverTime).getRGB());
         } else {
-            Gui.drawRect(moduleElement.getX() +2, moduleElement.getY() - 2, moduleElement.getX() + moduleElement.getWidth() - 2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
+            Gui.drawRect(moduleElement.getX() +2, moduleElement.getY(), moduleElement.getX() + moduleElement.getWidth() - 2, moduleElement.getY() + moduleElement.getHeight() + 1, hoverColor(new Color(33, 33, 33), moduleElement.hoverTime).getRGB());
         }
         GlStateManager.resetColor();
 
@@ -283,7 +285,7 @@ public class MixedStyle extends Style {
 
     private BigDecimal round(final float v) {
         BigDecimal bigDecimal = new BigDecimal(Float.toString(v));
-        bigDecimal = bigDecimal.setScale(2, RoundingMode.HALF_UP);
+        bigDecimal = bigDecimal.setScale(2, 4);
         return bigDecimal;
     }
 

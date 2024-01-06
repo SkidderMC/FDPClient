@@ -20,11 +20,4 @@ object Reach : Module() {
     val maxRange: Float
 
         get() = max(combatReachValue.get(), buildReachValue.get())
-
-    val hitReach: Float
-        get() = if (state) {
-            combatReachValue.get()
-        } else {
-            3f
-        }
 }
