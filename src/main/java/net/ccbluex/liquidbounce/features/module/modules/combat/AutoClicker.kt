@@ -300,7 +300,8 @@ class AutoClicker : Module() {
         get() = when (modeValue.get().lowercase()) {
             "normal" -> normalMinCPSValue.get().toString() + " - " + normalMaxCPSValue.get().toString()
             "legitjitter" -> legitJitterValue.get()
-            "legitbutterfly" -> legitbutterflyValue.get()
-            "gaussian" -> gaussianCpsValue.get()
+            "legitbutterfly" -> legitButterflyValue.get()
+            "gaussian" -> gaussianCpsValue.get().toString()
+            else -> modeValue.get()
         }
 }
